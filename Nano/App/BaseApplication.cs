@@ -22,6 +22,7 @@ namespace Nano.App
     //Versioning / api-explorer (https://dotnetcoretutorials.com/2017/01/17/api-versioning-asp-net-core/)
     //RabbitMQ setup
     // .UseUrls("http://localhost") TODO: investigate if usable
+    // application parts for views, somehow make standard views for Index, Create, Edit, Delete traversing all properties in html. Without using css and (js)
 
 
 
