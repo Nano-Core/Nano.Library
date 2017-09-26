@@ -1,10 +1,13 @@
 using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Nano.App.Hosting.Options;
+using Nano.Controllers;
 
 namespace Nano.App.Hosting.Extensions
 {
@@ -30,23 +33,35 @@ namespace Nano.App.Hosting.Extensions
 
             var section = configuration.GetSection("Hosting");
             var options = section?.Get<HostingOptions>() ?? new HostingOptions();
-            var assemblyPart = Assembly.GetAssembly(typeof(BaseApplication<>));
-
-            services
-                .AddMvc()
-                .AddControllersAsServices()
-                .AddViewComponentsAsServices()
-                .AddApplicationPart(assemblyPart);
+            var assemblyPart = Assembly.GetAssembly(typeof(BaseController<,>));
 
             services
                 .AddSingleton(options)
-                .Configure<HostingOptions>(section);
+                .Configure<HostingOptions>(section)
+                .Configure<RazorViewEngineOptions>(x =>
+                {
+                    x.FileProviders.Add(new EmbeddedFileProvider(assemblyPart));
+                })
+                .AddMvc(x =>
+                {
+                    x.ReturnHttpNotAcceptable = true;
+                    x.RespectBrowserAcceptHeader = true;
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("xml", "application/xml");
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("json", "application/json");
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("json", "application/javascript");
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("html", "text/html");
+                })
+                .AddXmlSerializerFormatters()
+                .AddApplicationPart(assemblyPart);
 
             if (options.EnableSession)
                 services.AddSession();
 
             if (options.EnableGzipCompression)
                 services.AddGzipCompression();
+
+            if (options.EnableRequestLocalization)
+                services.AddLocalization();
 
             return services;
         }

@@ -22,15 +22,14 @@ namespace Nano.App.Eventing.Extensions
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            if (configuration == null)
-                throw new ArgumentNullException(nameof(configuration));
-
-            var section = configuration.GetSection("Eventing");
+            var section = configuration.GetSection("Logging");
             var options = section?.Get<EventingOptions>() ?? new EventingOptions();
 
-            return services
+            services
                 .AddSingleton(options)
                 .Configure<EventingOptions>(section);
+
+            return services;
         }
     }
 }

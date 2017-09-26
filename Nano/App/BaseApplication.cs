@@ -11,20 +11,22 @@ using Nano.App.Config.Options;
 using Nano.App.Data.Extensions;
 using Nano.App.Eventing.Extensions;
 using Nano.App.Hosting.Extensions;
+using Nano.App.Hosting.Middleware.Interfaces;
 using Nano.App.Logging.Extensions;
-using Nano.App.Logging.Middleware.Interfaces;
-using Nano.App.Security.Extensions;
 
 namespace Nano.App
 {
-    // TODO
-    //Change tracking / onChanged events? for RabbitMQ and other triggers for calculating stats
-    //Versioning / api-explorer (https://dotnetcoretutorials.com/2017/01/17/api-versioning-asp-net-core/)
-    //RabbitMQ setup
-    // .UseUrls("http://localhost") TODO: investigate if usable
-    // application parts for views, somehow make standard views for Index, Create, Edit, Delete traversing all properties in html. Without using css and (js)
+    // TODO: Remove scope from controllers if not needed??
 
-
+    // TODO: Versioning / api-explorer (https://dotnetcoretutorials.com/2017/01/17/api-versioning-asp-net-core/)
+    // TODO: Support for more controller action (CreateMany, EditMany, DeleteMany, and also Patch possiblities for only passing update changes to the Edit endpoint.)
+    // TODO: Change tracking / onChanged events? for RabbitMQ and other triggers for calculating stats
+    // TODO: RabbitMQ setup
+    // TODO: look into using OWIN (https://docs.microsoft.com/en-us/aspnet/core/fundamentals/owin)
+    // TODO: Features / Middleware (https://docs.microsoft.com/en-us/aspnet/core/fundamentals/request-features)
+    // TODO: DOCKER: Fix dry-run mysql not ready (delay app start)
+    // TODO: Implement generic views, using reflection to show view model for 'Index', 'Create', 'Edit' and 'Delete'
+    // TODO: For xml request / response the querystring parameter "Format=xml" is required, should look at contenttype.
 
     /// <summary>
     /// Base Application (abstract).
@@ -60,7 +62,6 @@ namespace Nano.App
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
-
         }
 
         /// <summary>
@@ -85,32 +86,36 @@ namespace Nano.App
                 throw new ArgumentNullException(nameof(loggerFactory));
 
             var services = applicationBuilder.ApplicationServices;
-            var options = services.GetRequiredService<RootOptions>();
             var dbContext = services.GetRequiredService<DbContext>();
+            var rootOptions = services.GetRequiredService<RootOptions>();
 
-            if (options.Hosting.EnableSession)
+            if (rootOptions.Hosting.EnableSession)
                 applicationBuilder.UseSession();
 
-            if (options.Hosting.EnableGzipCompression)
+            if (rootOptions.Hosting.EnableGzipCompression)
                 applicationBuilder.UseResponseCompression();
 
-            if (options.Hosting.EnableRequestLocalization)
+            if (rootOptions.Hosting.EnableRequestLocalization)
                 applicationBuilder.UseRequestLocalization();
 
-            if (options.Logging.IncludeHttpContext)
-                applicationBuilder.UseMiddleware<IHttpContextLoggingMiddleware>();
+            if (rootOptions.Logging.IncludeHttpContext)
+                applicationBuilder.UseMiddleware<IHttpContextMiddleware>();
+
+            if (rootOptions.Logging.IncludeHttpRequestIdentifier)
+                applicationBuilder.UseMiddleware<IHttpRequestIdentifierMiddleware>();
 
             applicationBuilder
                 .UseStaticFiles()
-                .UseAuthentication()
+                // TODO .UseAuthentication()
                 .UseForwardedHeaders()
-                .UseMvc(x =>
+                .UseMvc(x => 
                 {
-                    x.MapRoute("default", "api/" + options.AppName + "/{controller=Home}/{action=Index}/{id?}");
+                    x.MapRoute("default", "api/" + rootOptions.AppName + "/{controller=Home}/{action=Index}/{id?}");
                 });
 
             if (hostingEnvironment.IsDevelopment())
             {
+                // TODO: Error handling (Home/Error/view(html), Return statuscode error for api and also why doesnt development exception pages not work
                 applicationBuilder
                     .UseBrowserLink()
                     .UseDatabaseErrorPage()
@@ -128,7 +133,7 @@ namespace Nano.App
 
             dbContext.Database
                 .EnsureCreatedAsync()
-                .ContinueWith(x => dbContext.AddIsolationLevel(options.Data.IsolationLevel))
+                .ContinueWith(x => dbContext.AddIsolationLevel(rootOptions.Data.IsolationLevel))
                 .ContinueWith(x => dbContext.Database.MigrateAsync())
                 .Wait();
         }
@@ -139,9 +144,10 @@ namespace Nano.App
         /// <typeparam name="TApplication">The type containing method for application start-up.</typeparam>
         /// <param name="captureErrors">Whether startup errors should be captured in the configuration settings of the web host. When enabled, startup exceptions will be caught and an error page will be returned. If disabled, startup exceptions will be propagated.</param>
         /// <returns></returns>
-        public static IWebHostBuilder GetWebHostBuilder<TApplication>(bool captureErrors = false)
+        public static IWebHostBuilder ConfigureApp<TApplication>(bool captureErrors = false)
             where TApplication : class
         {
+            const string URL = "http://*:80";
             const string NAME = "appsettings";
 
             var path = Directory.GetCurrentDirectory();
@@ -155,6 +161,7 @@ namespace Nano.App
 
             return new WebHostBuilder()
                 .UseKestrel()
+                .UseUrls(URL)
                 .UseContentRoot(path)
                 .UseEnvironment(environment)
                 .UseConfiguration(configuration)
@@ -165,7 +172,7 @@ namespace Nano.App
                     x.AddConfig(configuration);
                     x.AddHosting(configuration);
                     x.AddLogging(configuration);
-                    x.AddSecurity(configuration);
+                    // TODO x.AddSecurity(configuration);
                     x.AddEventing(configuration);
                     x.AddDataContext(configuration);
                 })

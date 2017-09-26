@@ -74,7 +74,7 @@ namespace Nano.App.Data.Extensions
                             break;
 
                         default:
-                            throw new NotSupportedException($"The provider: {options.Provider ?? "[NULL]"} is not supported.");
+                            throw new NotSupportedException($"The data context provider: {options.Provider ?? "[NULL]"} is not supported.");
                     }
                 });
         }

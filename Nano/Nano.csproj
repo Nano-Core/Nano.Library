@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0-pre</Version>
+    <Version>0.1.2-pre</Version>
     <ApplicationIcon>..\icon.ico</ApplicationIcon>
     <AssemblyVersion>0.1.0.0</AssemblyVersion>
     <FileVersion>0.1.0.0</FileVersion>
@@ -24,6 +24,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Views\Shared\_Layout.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\Shared\_ValidationScriptsPartial.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\_ViewImports.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\_ViewStart.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="GeoAPI" Version="1.7.5-pre4" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.0" />
@@ -33,9 +48,13 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Xml" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Runtime" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.0.0" />
@@ -46,6 +65,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational.Design" Version="2.0.0-preview1-final" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="2.0.0-preview1-final" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.0.0" />
@@ -54,6 +74,7 @@
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql.Design" Version="1.1.2" />
     <PackageReference Include="RabbitMQ.Client" Version="5.0.1" />
     <PackageReference Include="Serilog" Version="2.6.0-dev-00894" />
+    <PackageReference Include="Serilog.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="2.4.1-dev-00061" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1-dev-00757" />
@@ -61,5 +82,11 @@
     <PackageReference Include="Serilog.Sinks.ElasticSearch" Version="5.3.0" />
     <PackageReference Include="Serilog.Sinks.RabbitMQ" Version="2.0.1" />
   </ItemGroup>
-
+  <ItemGroup>
+    <EmbeddedResource Include="Views\**\*.cshtml" /> 
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Views\_ViewImports.cshtml" />
+    <EmbeddedResource Remove="Views\_ViewStart.cshtml" />
+  </ItemGroup> 
 </Project>

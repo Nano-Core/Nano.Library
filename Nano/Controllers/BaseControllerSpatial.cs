@@ -16,8 +16,8 @@ namespace Nano.Controllers
         where TEntity : class, IEntitySpatial, IEntityWritable
     {
         /// <inheritdoc />
-        protected BaseControllerSpatial(ILoggerFactory loggerFactory, TService service)
-            : base(loggerFactory, service)
+        protected BaseControllerSpatial(ILogger<Controller> logger, TService service)
+            : base(logger, service)
         {
 
         }

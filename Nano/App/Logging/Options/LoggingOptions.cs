@@ -16,14 +16,14 @@ namespace Nano.App.Logging.Options
         public virtual bool IncludeScopes { get; set; } = true;
 
         /// <summary>
-        /// Include Log Context.
-        /// </summary>
-        public virtual bool IncludeLogContext { get; set; } = true;
-
-        /// <summary>
         /// Include Http Context.
         /// </summary>
         public virtual bool IncludeHttpContext { get; set; } = true;
+
+        /// <summary>
+        /// Include Request Identifier
+        /// </summary>
+        public virtual bool IncludeHttpRequestIdentifier { get; set; } = true;
 
         /// <summary>
         /// Log Level.

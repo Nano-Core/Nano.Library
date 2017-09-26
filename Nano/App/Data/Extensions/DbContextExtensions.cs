@@ -31,7 +31,7 @@ namespace Nano.App.Data.Extensions
                 .OpenConnectionAsync()
                 .ContinueWith(x =>
                 {
-                    // TODO: Fix MySql permission issue for set global isolation level.
+                    // BUG: MySql permission issue for set global isolation level.
 
                     //var sql = $"SET GLOBAL TRANSACTION ISOLATION LEVEL {isolationLevel};";
 

@@ -1,0 +1,6 @@
+version: '3'
+
+services:
+  nano.services.example:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
