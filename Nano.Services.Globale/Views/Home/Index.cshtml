@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<h2>Home</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <p class="alert alert-success" id="successMessage">@(Html.Raw(TempData["SuccessMessage"]))</p>
+}

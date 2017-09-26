@@ -1,0 +1,44 @@
+@using TimeZone = Nano.Services.Globale.Models.TimeZone
+@model Nano.Services.Globale.Models.TimeZone
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<form asp-action="Edit">
+    <div class="form-horizontal">
+        <h4>Time Zone</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+        <div class="form-group">
+            <label asp-for="OlsonName" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="OlsonName" class="form-control" />
+                <span asp-validation-for="OlsonName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="MicrosoftName" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="MicrosoftName" class="form-control" />
+                <span asp-validation-for="MicrosoftName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

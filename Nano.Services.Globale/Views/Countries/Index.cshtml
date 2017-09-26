@@ -1,0 +1,14 @@
+@using Nano.Services.Globale.Models
+@model IEnumerable<Nano.Services.Globale.Models.Country>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>List Countries</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <p class="alert alert-success" id="successMessage">@(Html.Raw(TempData["SuccessMessage"]))</p>
+}
+

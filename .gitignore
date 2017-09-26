@@ -1,0 +1,12 @@
+**/*.user
+**/*.userprefs
+*.user
+*.userprefs
+*.suo
+*.tss
+*.vs
+_ReSharper*
+**/bin
+**/obj
+*.DotSettings
+**/wwwroot/lib
