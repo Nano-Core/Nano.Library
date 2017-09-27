@@ -22,7 +22,7 @@ public class MyController : BaseController<IService, MyEntity> { } // Controller
 public class MyApplication : DefaultApplication { } // Application Implementation.
 ```
  
-### Nano-Service Configuration
+### Configuration
 ```json
 {
   "Hosting": {
