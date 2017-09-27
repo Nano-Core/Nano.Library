@@ -5,9 +5,18 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>0.1.6-pre</Version>
     <ApplicationIcon>..\icon.ico</ApplicationIcon>
-    <AssemblyVersion>0.1.0.0</AssemblyVersion>
-    <FileVersion>0.1.0.0</FileVersion>
+    <AssemblyVersion>0.1.6.0</AssemblyVersion>
+    <FileVersion>0.1.6.0</FileVersion>
     <PackageId>NanoCore</PackageId>
+    <Authors>Michael Vivet</Authors>
+    <Company />
+    <Product>Nano Core</Product>
+    <Description>Seamlessly launch services, derived from complex business models and operations.</Description>
+    <PackageProjectUrl>https://github.com/vivet/Nano</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/vivet/Nano/master/icon.ico</PackageIconUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/vivet/Nano/master/LICENSE</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>nano service web api rest</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -23,21 +32,6 @@
     <NoWarn />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Include="Views\Shared\_Layout.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Views\Shared\_ValidationScriptsPartial.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Views\_ViewImports.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Views\_ViewStart.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="GeoAPI" Version="1.7.5-pre4" />

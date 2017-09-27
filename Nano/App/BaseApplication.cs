@@ -16,6 +16,7 @@ using Nano.App.Logging.Extensions;
 
 namespace Nano.App
 {
+    // TODO: Figure out if i can embed views, and not include in package.
     // TODO: FIX spatial controller methods.
     // TODO: Remove scope from controllers if not needed??
     // TODO: Include Startup from different assembly? 
