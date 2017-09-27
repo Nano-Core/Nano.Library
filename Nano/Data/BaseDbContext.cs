@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Nano.App.Data
+namespace Nano.Data
 {
     /// <summary>
     /// Base Db Context (abstract).

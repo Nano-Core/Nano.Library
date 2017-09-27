@@ -3,10 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.2-pre</Version>
+    <Version>0.1.6-pre</Version>
     <ApplicationIcon>..\icon.ico</ApplicationIcon>
     <AssemblyVersion>0.1.0.0</AssemblyVersion>
     <FileVersion>0.1.0.0</FileVersion>
+    <PackageId>NanoCore</PackageId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -82,11 +83,4 @@
     <PackageReference Include="Serilog.Sinks.ElasticSearch" Version="5.3.0" />
     <PackageReference Include="Serilog.Sinks.RabbitMQ" Version="2.0.1" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Views\**\*.cshtml" /> 
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="Views\_ViewImports.cshtml" />
-    <EmbeddedResource Remove="Views\_ViewStart.cshtml" />
-  </ItemGroup> 
 </Project>

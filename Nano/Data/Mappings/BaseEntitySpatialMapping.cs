@@ -2,7 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Models.Interfaces;
 
-namespace Nano.App.Data.Mappings
+namespace Nano.Data.Mappings
 {
     /// <inheritdoc />
     public abstract class BaseEntitySpatialMapping<TEntity, TIdentity> : BaseEntityIdentityMapping<TEntity, TIdentity>

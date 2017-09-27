@@ -1,6 +1,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
-using Nano.App.Data.Mappings;
+using Nano.Data.Mappings;
 using Nano.Models.Interfaces;
 
 namespace Nano.App.Data.Extensions

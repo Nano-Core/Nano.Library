@@ -16,9 +16,9 @@ using Nano.App.Logging.Extensions;
 
 namespace Nano.App
 {
+    // TODO: FIX spatial controller methods.
     // TODO: Remove scope from controllers if not needed??
     // TODO: Include Startup from different assembly? 
-    
     // TODO: Add ServiceOptions (IOtions<T>) store in DbContext so settings for the service can be set. yes / no? 
     // TODO: Globalization and localization (https://docs.microsoft.com/en-us/aspnet/core/fundamentals/localization) 
     // TODO: Versioning / api-explorer (https://dotnetcoretutorials.com/2017/01/17/api-versioning-asp-net-core/)
@@ -30,7 +30,7 @@ namespace Nano.App
     // TODO: DOCKER: Fix dry-run mysql not ready (delay app start)
     // TODO: Implement generic views, using reflection to show view model for 'Index', 'Create', 'Edit' and 'Delete'
     // TODO: For xml request / response the querystring parameter "Format=xml" is required, should look at contenttype.
-	
+
     /// <summary>
     /// Base Application (abstract).
     /// </summary>
