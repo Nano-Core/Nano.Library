@@ -6,27 +6,23 @@ Seamlessly launch services without...
 // program.cs
 WebApplication
 	.GetWebHostBuilder<MyApplication>()
-	.ConfigureProviders(x =>
-	{
-		x.AddLoggingConsole();
-        x.AddDataContext<MyDbContext>();
-		// ...
-	})
 	.ConfigureServices(x =>
 	{
-		x.AddTransient<IMyService, MyService>();
-		// ...
+		// Add additional services ...
 	})
+	.AddLogging<MyLogging>();
+	.AddEventing<MyEventing>();
+        .AddDataContext<MyDataContext>();
 	.Build()
 	.Run();
 
 public class MyEntity : BaseEntity { } // Entity (Model) Implementation.
 public class MyDbContext : DbContext { } // Entity Framework DbContext Implementation.
-public interface IAddressService : IService { } // Service Interface.
 public class MyController : BaseController<IService, MyEntity> { } // Controller Implementation.
+public class MyApplication : DefaultApplication { } // Application Implementation.
 ```
  
-### Nano-Service Configuration
+### Configuration
 ```json
 {
   "Hosting": {
@@ -44,18 +40,11 @@ public class MyController : BaseController<IService, MyEntity> { } // Controller
   "Logging": {
     "IncludeScopes": true,
     "IncludeLogContext": true,
+    "IncludeHttpRequestIdentifier": true,
     "LogLevel": "Information",
     "LogLevelOverrides": [
       {
         "Namespace": "System",
-        "LogLevel": "Warning"
-      },
-      {
-        "Namespace": "Microsoft",
-        "LogLevel": "Information"
-      },
-      {
-        "Namespace": "Microsoft.EntityFrameworkCore",
         "LogLevel": "Warning"
       }
     ]
@@ -68,21 +57,6 @@ public class MyController : BaseController<IService, MyEntity> { } // Controller
     "SslPort": 5671,
     "Username": "myUser",
     "Password": "myPassword"
-  },
-  "Security": {
-    "Password": {
-      "RequireDigit": true,
-      "RequiredLength": "8",
-      "RequireNonAlphanumeric": true,
-      "RequireUppercase": true,
-      "RequireLowercase": true,
-      "RequiredUniqueChars": "0"
-    },
-    "Lockout": {
-      "AllowedForNewUsers": true,
-      "MaxFailedAccessAttempts": 10,
-      "DefaultLockoutTimeSpanInMinutes": 30
-    }
   }
 }
 ```
