@@ -12,7 +12,7 @@ WebApplication
 	})
 	.AddLogging<MyLogging>();
 	.AddEventing<MyEventing>();
-        .AddDataContext<MyDataContext>();
+	.AddDataContext<MyDataContext>();
 	.Build()
 	.Run();
 
