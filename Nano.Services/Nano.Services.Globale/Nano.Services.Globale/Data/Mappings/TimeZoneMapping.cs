@@ -1,12 +1,12 @@
 using System;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Nano.App.Data.Mappings;
+using Nano.Data.Mappings;
 using TimeZone = Nano.Services.Globale.Models.TimeZone;
 
 namespace Nano.Services.Globale.Data.Mappings
 {
     /// <inheritdoc />
-    public class TimeZoneMapping : BaseEntityIdentityMapping<TimeZone, Guid>
+    public class TimeZoneMapping : DefaultEntityMapping<TimeZone>
     {
         /// <inheritdoc />
         public override void Map(EntityTypeBuilder<TimeZone> builder)

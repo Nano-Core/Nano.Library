@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Http;
 namespace Nano.App.Hosting.Middleware.Interfaces
 {
     /// <summary>
-    /// Http Context Middleware interface.
+    /// Http Request Content Type Middleware interface.
     /// </summary>
-    public interface IHttpContextMiddleware : IMiddleware
+    public interface IHttpRequestContentTypeMiddleware : IMiddleware
     {
 
     }

@@ -6,7 +6,7 @@ using Nano.Services.Interfaces;
 namespace Nano.Services.Globale.Controllers
 {
     /// <inheritdoc />
-    public class CitiesController : BaseController<IService, City>
+    public class CitiesController : DefaultController<City>
     {
         /// <inheritdoc />
         public CitiesController(ILogger<CitiesController> logger, IService service)

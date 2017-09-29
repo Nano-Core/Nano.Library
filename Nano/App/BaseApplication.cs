@@ -1,7 +1,10 @@
 using System;
+using System.Globalization;
 using System.IO;
+using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,21 +19,15 @@ using Nano.App.Logging.Extensions;
 
 namespace Nano.App
 {
-    // TODO: Figure out if i can embed views, and not include in package.
-    // TODO: FIX spatial controller methods.
-    // TODO: Remove scope from controllers if not needed??
-    // TODO: Include Startup from different assembly? 
-    // TODO: Add ServiceOptions (IOtions<T>) store in DbContext so settings for the service can be set. yes / no? 
-    // TODO: Globalization and localization (https://docs.microsoft.com/en-us/aspnet/core/fundamentals/localization) 
-    // TODO: Versioning / api-explorer (https://dotnetcoretutorials.com/2017/01/17/api-versioning-asp-net-core/)
-    // TODO: Support for more controller action (CreateMany, EditMany, DeleteMany, and also Patch possiblities for only passing update changes to the Edit endpoint.)
-    // TODO: Change tracking / onChanged events? for RabbitMQ and other triggers for calculating stats
-    // TODO: RabbitMQ setup
-    // TODO: look into using OWIN (https://docs.microsoft.com/en-us/aspnet/core/fundamentals/owin)
-    // TODO: Features / Middleware (https://docs.microsoft.com/en-us/aspnet/core/fundamentals/request-features)
-    // TODO: DOCKER: Fix dry-run mysql not ready (delay app start)
-    // TODO: Implement generic views, using reflection to show view model for 'Index', 'Create', 'Edit' and 'Delete'
-    // TODO: For xml request / response the querystring parameter "Format=xml" is required, should look at contenttype.
+    // TODO: RabbitMQ setup (Entity Change tracking events).
+
+    // COSMETIC: Add ServiceOptions (IOtions<T>).
+    // COSMETIC: Generic / Inherited Views (interating properites to display fields (editable readonly).
+    // COSMETIC: HTTP Patch method, for parsing partial models.
+    // COSMETIC: OWIN (https://docs.microsoft.com/en-us/aspnet/core/fundamentals/owin)
+
+    // BUG: OrderBy possiblity in queries (and also default to KEY somehow, EF warns)
+    // BUG: Issue with Swagger not able to generate documentation from generic operations (path/action needs to be unique, and it can't see that in generic base class controller it seems)
 
     /// <summary>
     /// Base Application (abstract).
@@ -75,7 +72,8 @@ namespace Nano.App
         /// <param name="hostingEnvironment">The <see cref="IApplicationBuilder"/>.</param>
         /// <param name="applicationLifetime">The <see cref="IApplicationBuilder"/>.</param>
         /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
-        public virtual void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime, ILoggerFactory loggerFactory)
+        public virtual void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment,
+            IApplicationLifetime applicationLifetime, ILoggerFactory loggerFactory)
         {
             if (applicationBuilder == null)
                 throw new ArgumentNullException(nameof(applicationBuilder));
@@ -100,39 +98,59 @@ namespace Nano.App
                 applicationBuilder.UseResponseCompression();
 
             if (rootOptions.Hosting.EnableRequestLocalization)
-                applicationBuilder.UseRequestLocalization();
+            {
+                var supportedCultures = new[] {new CultureInfo("en-US")};
+
+                applicationBuilder
+                    .UseRequestLocalization(new RequestLocalizationOptions
+                    {
+                        SupportedCultures = supportedCultures,
+                        SupportedUICultures = supportedCultures,
+                        DefaultRequestCulture = new RequestCulture("en-US")
+                    });
+            }
 
             if (rootOptions.Logging.IncludeHttpContext)
                 applicationBuilder.UseMiddleware<IHttpContextMiddleware>();
 
-            if (rootOptions.Logging.IncludeHttpRequestIdentifier)
+            if (rootOptions.Hosting.EnableRequestIdentifier)
                 applicationBuilder.UseMiddleware<IHttpRequestIdentifierMiddleware>();
+
+            if (rootOptions.Logging.IncludeHttpContext)
+                applicationBuilder.UseMiddleware<IHttpRequestContentTypeMiddleware>();
+
+            if (rootOptions.Hosting.EnableDocumentation)
+                applicationBuilder
+                    .UseSwagger(x =>
+                        x.RouteTemplate = "api-docs/" + rootOptions.AppName.ToLower() + "/{documentName}/swagger.json")
+                    .UseSwaggerUI(x =>
+                    {
+                        x.ShowRequestHeaders();
+                        x.SwaggerEndpoint(
+                            $"/api-docs/{rootOptions.AppName.ToLower()}/{rootOptions.AppVersion}/swagger.json",
+                            $"Api {rootOptions.AppVersion}");
+                    });
 
             applicationBuilder
                 .UseStaticFiles()
-                // TODO .UseAuthentication()
+                // TODO: SECURITY: .UseAuthentication()
                 .UseForwardedHeaders()
-                .UseMvc(x => 
+                .UseMvc(x =>
                 {
                     x.MapRoute("default", "api/" + rootOptions.AppName + "/{controller=Home}/{action=Index}/{id?}");
                 });
 
+
+            applicationBuilder
+                .UseExceptionHandler("/api/" + rootOptions.AppName + "/Home/Error")
+                .UseStatusCodePagesWithRedirects("/api/" + rootOptions.AppName + "/Home/Error/{0}");
+
             if (hostingEnvironment.IsDevelopment())
             {
-                // TODO: Error handling (Home/Error/view(html), Return statuscode error for api and also why doesnt development exception pages not work
-                applicationBuilder
-                    .UseBrowserLink()
-                    .UseDatabaseErrorPage()
-                    .UseDeveloperExceptionPage();
+                Thread.Sleep(5000); // BUG: Fix docker delay for MySQL
 
                 dbContext.Database
                     .EnsureDeleted();
-            }
-            else
-            {
-                applicationBuilder
-                    .UseExceptionHandler("/Home/Error")
-                    .UseStatusCodePagesWithRedirects("/Home/Error/{0}");
             }
 
             dbContext.Database
@@ -176,7 +194,7 @@ namespace Nano.App
                     x.AddConfig(configuration);
                     x.AddHosting(configuration);
                     x.AddLogging(configuration);
-                    // TODO x.AddSecurity(configuration);
+                    // TODO: SECURITY: x.AddSecurity(configuration);
                     x.AddEventing(configuration);
                     x.AddDataContext(configuration);
                 })

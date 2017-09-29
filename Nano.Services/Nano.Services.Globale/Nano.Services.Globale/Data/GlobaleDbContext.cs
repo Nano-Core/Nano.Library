@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
-using Nano.App.Data;
 using Nano.App.Data.Extensions;
+using Nano.Data;
 using Nano.Services.Globale.Data.Mappings;
 using Nano.Services.Globale.Models;
 using TimeZone = Nano.Services.Globale.Models.TimeZone;

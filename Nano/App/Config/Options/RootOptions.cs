@@ -19,6 +19,11 @@ namespace Nano.App.Config.Options
         public virtual string AppName { get; set; } = "App";
 
         /// <summary>
+        /// App Version.
+        /// </summary>
+        public virtual string AppVersion { get; set; } = "1.0";
+
+        /// <summary>
         /// Hosting options.
         /// </summary>
         public virtual HostingOptions Hosting { get; set; } = new HostingOptions();

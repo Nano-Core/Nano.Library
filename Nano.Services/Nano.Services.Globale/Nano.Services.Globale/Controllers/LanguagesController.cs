@@ -6,7 +6,7 @@ using Nano.Services.Interfaces;
 namespace Nano.Services.Globale.Controllers
 {
     /// <inheritdoc />
-    public class LanguagesController : BaseController<IService, Language>
+    public class LanguagesController : DefaultController<Language>
     {
         /// <inheritdoc />
         public LanguagesController(ILogger<LanguagesController> logger, IService service)

@@ -1,12 +1,12 @@
 using System;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Nano.App.Data.Mappings;
+using Nano.Data.Mappings;
 using Nano.Services.Globale.Models;
 
 namespace Nano.Services.Globale.Data.Mappings
 {
     /// <inheritdoc />
-    public class CityMapping : BaseEntityIdentityMapping<City, Guid>
+    public class CityMapping : DefaultEntityMapping<City>
     {
         /// <inheritdoc />
         public override void Map(EntityTypeBuilder<City> builder)

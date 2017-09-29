@@ -14,9 +14,19 @@ namespace Nano.App.Hosting.Options
         public virtual bool EnableSession { get; set; } = true;
 
         /// <summary>
+        /// Enable Documentation.
+        /// </summary>
+        public virtual bool EnableDocumentation { get; set; } = true;
+        
+        /// <summary>
         /// Enable Gzip Compression.
         /// </summary>
         public virtual bool EnableGzipCompression { get; set; } = true;
+
+        /// <summary>
+        /// Enable Request Identifier.
+        /// </summary>
+        public virtual bool EnableRequestIdentifier { get; set; } = true;
 
         /// <summary>
         /// Enable Request Localization.

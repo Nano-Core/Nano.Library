@@ -6,7 +6,7 @@ using Nano.Services.Interfaces;
 namespace Nano.Services.Globale.Controllers
 {
     /// <inheritdoc />
-    public class AddressController : BaseControllerSpatial<IServiceSpatial, Address>
+    public class AddressController : DefaultControllerSpatial<Address>
     {
         /// <inheritdoc />
         public AddressController(ILogger<AddressController> logger, IServiceSpatial service)

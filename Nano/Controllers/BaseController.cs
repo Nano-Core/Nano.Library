@@ -1,8 +1,15 @@
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
+using Nano.App.Hosting.Extensions;
 using Nano.Controllers.Contracts;
 using Nano.Models.Interfaces;
 using Nano.Services.Interfaces;
@@ -12,26 +19,22 @@ namespace Nano.Controllers
     /// <summary>
     /// Base abstract <see cref="Controller"/>, implementing  methods for instances of <typeparamref name="TEntity"/>.
     /// </summary>
-    /// <typeparam name="TService">The <see cref="IService"/> inheriting from <see cref="BaseController{TService,TModel}"/>.</typeparam>
+    /// <typeparam name="TService">The <see cref="IService"/> inheriting from <see cref="BaseController{TService,TEntity,TIdentity}"/>.</typeparam>
     /// <typeparam name="TEntity">The <see cref="IEntity"/> model the <see cref="IService"/> operates with.</typeparam>
-    public abstract class BaseController<TService, TEntity> : Controller
+    /// <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
+    public abstract class BaseController<TService, TEntity, TIdentity> : Controller
         where TService : IService
-        where TEntity : class, IEntityWritable
+        where TEntity : class, IEntityWritable, IEntityIdentity<TIdentity>
     {
-        /// <summary>
-        /// Service.
-        /// </summary>
-        protected virtual TService Service { get; }
-
         /// <summary>
         /// Logger.
         /// </summary>
         protected virtual ILogger Logger { get; }
 
         /// <summary>
-        /// Is Xml Content.
+        /// Service.
         /// </summary>
-        protected virtual bool IsHtmlContent => this.Request.ContentType.Contains("text/html");
+        protected virtual TService Service { get; }
 
         /// <summary>
         /// Constructor accepting an instance of <typeparamref name="TService"/> and initializing <see cref="Service"/>
@@ -50,6 +53,18 @@ namespace Nano.Controllers
             this.Logger = logger;
         }
 
+        /// <inheritdoc />
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+
+            if (context.ModelState.IsValid)
+                return;
+
+            context.Result = this.BadRequest();
+        }
+
         /// <summary>
         /// Index.
         /// Gets all instances of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
@@ -58,31 +73,15 @@ namespace Nano.Controllers
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpGet]
-        [FormatFilter]
-        public virtual async Task<IActionResult> Index([FromQuery]Pagination paging = null, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Index(Pagination paging = null, CancellationToken cancellationToken = new CancellationToken())
         {
-            using (this.Logger.BeginScope(this.HttpContext.TraceIdentifier))
-            {
-                try
-                {
-                    if (!this.ModelState.IsValid)
-                        return this.BadRequest(this.ModelState);
+            var result = await this.Service
+                .GetAll<TEntity>(paging, cancellationToken);
 
-                    var result = await this.Service
-                        .GetAll<TEntity>(paging, cancellationToken);
+            if (this.Response.IsContentTypeHtml())
+                return this.View(result);
 
-                    if (!this.IsHtmlContent)
-                        return this.Ok(result);
-
-                    return this.View(result);
-                }
-                catch (Exception ex)
-                {
-                    this.Logger.LogError(ex.Message, ex);
-
-                    return this.BadRequest(ex.Message);
-                }
-            }
+            return this.Ok(result);
         }
 
         /// <summary>
@@ -93,31 +92,18 @@ namespace Nano.Controllers
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Details' <see cref="IActionResult"/>.</returns>
         [HttpGet]
-        [FormatFilter]
-        public virtual async Task<IActionResult> Details([FromRoute][FromQuery]Guid id, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Details([FromRoute][FromQuery][Required]Guid id, CancellationToken cancellationToken = new CancellationToken())
         {
-            using (this.Logger.BeginScope(this.HttpContext.TraceIdentifier))
-            {
-                try
-                {
-                    if (!this.ModelState.IsValid)
-                        return BadRequest(this.ModelState);
+            var result = await this.Service
+                .Get<TEntity>(id, cancellationToken);
 
-                    var result = await this.Service
-                        .Get<TEntity>(id, cancellationToken);
+            if (result == null)
+                return this.NotFound();
 
-                    if (!this.IsHtmlContent)
-                        return this.Ok(result);
+            if (this.Request.IsContentTypeHtml())
+                return this.View(result);
 
-                    return this.View(result);
-                }
-                catch (Exception ex)
-                {
-                    this.Logger.LogError(ex.Message, ex);
-
-                    return this.BadRequest(ex.Message);
-                }
-            }
+            return this.Ok(result);
         }
 
         /// <summary>
@@ -129,61 +115,37 @@ namespace Nano.Controllers
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpGet]
-        [FormatFilter]
-        public virtual async Task<IActionResult> Query([FromBody][FromForm]Criteria criteria, [FromQuery]Pagination paging = null, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Query([FromBody][FromForm][FromQuery][Required]Criteria criteria, [FromBody][FromForm][FromQuery]Pagination paging = null, CancellationToken cancellationToken = new CancellationToken())
         {
-            using (this.Logger.BeginScope(this.HttpContext.TraceIdentifier))
-            {
-                try
-                {
-                    if (!this.ModelState.IsValid)
-                        return this.BadRequest(this.ModelState);
+            var result = await this.Service
+                .GetMany<TEntity>(criteria, paging, cancellationToken);
 
-                    var result = await this.Service
-                        .GetMany<TEntity>(criteria, paging, cancellationToken);
+            if (result == null)
+                return this.NotFound();
 
-                    if (!this.IsHtmlContent)
-                        return this.Ok(result);
+            if (this.Request.IsContentTypeHtml())
+                return this.View("Index", result);
 
-                    return this.View("Index", result);
-                }
-                catch (Exception ex)
-                {
-                    this.Logger.LogError(ex.Message, ex);
-
-                    return this.BadRequest(ex.Message);
-                }
-            }
+            return this.Ok(result);
         }
 
         /// <summary>
         /// Create.
         /// Returns 'Create' view for the model of type <typeparamref name="TEntity"/>.
         /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Create' <see cref="IActionResult"/></returns>
         [HttpGet]
-        [FormatFilter]
         public virtual async Task<IActionResult> Create(CancellationToken cancellationToken = new CancellationToken())
         {
-            return await Task.Factory.StartNew<IActionResult>(x =>
-            {
-                using (this.Logger.BeginScope(this.HttpContext.Session.Id))
+            return await Task.Factory
+                .StartNew<IActionResult>(x =>
                 {
-                    try
-                    {
-                        if (!this.ModelState.IsValid)
-                            return this.BadRequest(this.ModelState);
-
+                    if (this.Request.IsContentTypeHtml())
                         return this.View();
-                    }
-                    catch (Exception ex)
-                    {
-                        this.Logger.LogError(ex.Message, ex);
 
-                        return this.BadRequest(ex.Message);
-                    }
-                }
-            }, null, cancellationToken);
+                    return this.NoContent();
+                }, null, cancellationToken);
         }
 
         /// <summary>
@@ -194,97 +156,97 @@ namespace Nano.Controllers
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpPost]
-        [FormatFilter]
-        public virtual async Task<IActionResult> Create([FromBody][FromForm]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Create([FromBody][FromForm][Required]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
         {
-            using (this.Logger.BeginScope(this.HttpContext.Session.Id))
-            {
-                try
-                {
-                    if (!this.ModelState.IsValid)
-                        return this.BadRequest(this.ModelState);
+            await this.Service
+                .Add(entity, cancellationToken);
 
-                    await this.Service
-                        .Add(entity, cancellationToken);
+            if (this.Request.IsContentTypeHtml())
+                return this.RedirectToAction("Index");
 
-                    if (!this.IsHtmlContent)
-                        return this.Ok(entity);
+            return this.CreatedAtAction("Create", entity);
+        }
 
-                    return this.RedirectToAction("Index");
-                }
-                catch (Exception ex)
-                {
-                    this.Logger.LogError(ex.Message, ex);
+        /// <summary>
+        /// Creates.
+        /// Creates instances of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="entities">The <see cref="IEntity"/>'s.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
+        [HttpPost]
+        public virtual async Task<IActionResult> Creates([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = new CancellationToken())
+        {
+            await this.Service
+                .AddMany(entities, cancellationToken);
 
-                    return this.BadRequest(ex.Message);
-                }
-            }
+            if (this.Request.IsContentTypeHtml())
+                return this.RedirectToAction("Index");
+
+            return this.CreatedAtAction("Creates", entities);
         }
 
         /// <summary>
         /// Edit.
         /// Returns 'Edit' view for the model of type <typeparamref name="TEntity"/>.
         /// </summary>
+        /// <param name="id">The Id.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Edit' <see cref="IActionResult"/></returns>
         [HttpGet]
-        [FormatFilter]
-        public virtual IActionResult Edit(Guid id, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Edit([FromRoute][FromQuery][Required]Guid id, CancellationToken cancellationToken = new CancellationToken())
         {
-            using (this.Logger.BeginScope(this.HttpContext.Session.Id))
-            {
-                try
-                {
-                    if (!this.ModelState.IsValid)
-                        return this.BadRequest(this.ModelState);
+            var result = await this.Service
+                .Get<TEntity>(id, cancellationToken);
 
-                    var entity = this.Service
-                        .Get<TEntity>(id, cancellationToken);
+            if (result == null)
+                return this.NotFound();
 
-                    return this.View(entity);
-                }
-                catch (Exception ex)
-                {
-                    this.Logger.LogError(ex.Message, ex);
+            if (this.Request.IsContentTypeHtml())
+                return this.View(result);
 
-                    return this.BadRequest(ex.Message);
-                }
-            }
+            return this.NoContent();
         }
 
         /// <summary>
         /// Edit.
-        /// Creates the instance of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
+        /// Edit an instance of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="id">The Id.</param>
         /// <param name="entity">The <see cref="IEntity"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpPut]
-        [FormatFilter]
-        public virtual async Task<IActionResult> Edit([FromRoute][FromQuery]Guid id, [FromBody][FromForm]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
+        [HttpPost]
+        public virtual async Task<IActionResult> Edit([FromRoute][FromQuery][Required]Guid id, [FromBody][FromForm][Required]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
         {
-            using (this.Logger.BeginScope(this.HttpContext.Session.Id))
-            {
-                try
-                {
-                    if (!this.ModelState.IsValid)
-                        return this.BadRequest(this.ModelState);
+            await this.Service
+                .Update(entity, cancellationToken);
 
-                    await this.Service
-                        .Update(entity, cancellationToken);
+            if (this.Request.IsContentTypeHtml())
+                return this.RedirectToAction("Index");
 
-                    if (!this.IsHtmlContent)
-                        return this.Ok(entity);
+            return this.Ok(entity);
+        }
 
-                    return this.RedirectToAction("Index");
-                }
-                catch (Exception ex)
-                {
-                    this.Logger.LogError(ex.Message, ex);
+        /// <summary>
+        /// Edits.
+        /// Edits instances of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="entities">The <see cref="IEntity"/>'s.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
+        [HttpPut]
+        [HttpPost]
+        public virtual async Task<IActionResult> Edits([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = new CancellationToken())
+        {
+            await this.Service
+                .UpdateMany(entities, cancellationToken);
 
-                    return this.BadRequest(ex.Message);
-                }
-            }
+            if (this.Request.IsContentTypeHtml())
+                return this.RedirectToAction("Index");
+
+            return this.Ok(entities);
         }
 
         /// <summary>
@@ -294,32 +256,19 @@ namespace Nano.Controllers
         /// <param name="id">The Id.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Delete' <see cref="IActionResult"/>.</returns>
-        [HttpDelete]
-        [FormatFilter]
-        public virtual async Task<IActionResult> Delete([FromRoute][FromQuery]Guid id, CancellationToken cancellationToken = new CancellationToken())
+        [HttpGet]
+        public virtual async Task<IActionResult> Delete([FromRoute][FromQuery][Required]Guid id, CancellationToken cancellationToken = new CancellationToken())
         {
-            using (this.Logger.BeginScope(this.HttpContext.Session.Id))
-            {
-                try
-                {
-                    if (!this.ModelState.IsValid)
-                        return this.BadRequest(this.ModelState);
+            var entity = await this.Service
+                .Get<TEntity>(id, cancellationToken);
 
-                    var entity = await this.Service
-                        .Get<TEntity>(id, cancellationToken);
+            if (entity == null)
+                return this.NotFound(id);
 
-                    if (entity == null)
-                        return this.NotFound(id);
+            if (this.Request.IsContentTypeHtml())
+                return this.View(entity);
 
-                    return this.View(entity);
-                }
-                catch (Exception ex)
-                {
-                    this.Logger.LogError(ex.Message, ex);
-
-                    return this.BadRequest(ex.Message);
-                }
-            }
+            return this.NoContent();
         }
 
         /// <summary>
@@ -330,35 +279,84 @@ namespace Nano.Controllers
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Delete' <see cref="IActionResult"/>.</returns>
         [HttpPost]
+        [HttpDelete]
         [ActionName("Delete")]
-        [FormatFilter]
-        public virtual async Task<IActionResult> DeleteConfirmed([FromRoute][FromQuery]Guid id, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> DeleteConfirm([FromRoute][FromQuery][Required]Guid id, CancellationToken cancellationToken = new CancellationToken())
         {
-            using (this.Logger.BeginScope(this.HttpContext.Session.Id))
-            {
-                try
+            var entity = await this
+                .Service.Get<TEntity>(id, cancellationToken);
+
+            if (entity == null)
+                return this.NotFound(id);
+
+            await this.Service
+                .Delete(entity, cancellationToken);
+
+            if (this.Request.IsContentTypeHtml())
+                return this.RedirectToAction("Index");
+
+            return this.AcceptedAtAction("Delete", entity);
+        }
+
+        /// <summary>
+        /// Deletes.
+        /// Deletes instances of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="ids">The Id's.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
+        [HttpPost]
+        [HttpDelete]
+        [ActionName("Deletes")]
+        public virtual async Task<IActionResult> DeleteConfirms([FromBody][Required]IEnumerable<TIdentity> ids, CancellationToken cancellationToken = new CancellationToken())
+        {
+            var entities = await this
+                .Service.GetMany<TEntity>(x => ids.Contains(x.Id), null, cancellationToken);
+
+            await this.Service
+                .DeleteMany(entities, cancellationToken);
+
+            if (this.Request.IsContentTypeHtml())
+                return this.RedirectToAction("Index");
+
+            return this.AcceptedAtAction("Deletes", entities);
+        }
+
+        /// <summary>
+        /// Sets the language of the consumer.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="returnUrl">The return url.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="IActionResult"/>.</returns>
+        [HttpPost]
+        public virtual async Task<IActionResult> SetLanguage(string culture, string returnUrl, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return await Task.Factory
+                .StartNew<IActionResult>(x =>
                 {
-                    if (!this.ModelState.IsValid)
-                        return this.BadRequest(this.ModelState);
+                    this.Response.Cookies.Append(
+                        CookieRequestCultureProvider.DefaultCookieName,
+                        CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                        new CookieOptions
+                        {
+                            Expires = DateTimeOffset.UtcNow.AddYears(1)
+                        }
+                    );
 
-                    await this.Service
-                        .Get<TEntity>(id, cancellationToken)
-                        .ContinueWith(async x => await this.Service.Delete(x.Result, cancellationToken), cancellationToken);
+                    return LocalRedirect(returnUrl);
+                }, null, cancellationToken);
+        }
 
-                    if (!this.IsHtmlContent)
-                        return this.Ok(id);
+        /// <summary>
+        /// Returns the Api version requested.
+        /// </summary>
+        /// <returns>The <see cref="IActionResult"/>.</returns>
+        [HttpGet("Version")]
+        public virtual IActionResult GetVersion()
+        {
+            return this.Ok(this.HttpContext.GetRequestedApiVersion());
 
-                    this.TempData["SuccessMessage"] = "Deleted Sucessfully";
-
-                    return this.RedirectToAction("Index");
-                }
-                catch (Exception ex)
-                {
-                    this.Logger.LogError(ex.Message, ex);
-
-                    return this.BadRequest(ex.Message);
-                }
-            }
         }
     }
 }

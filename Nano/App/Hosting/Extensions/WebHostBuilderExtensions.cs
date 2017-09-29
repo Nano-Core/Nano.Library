@@ -6,7 +6,7 @@ using Nano.App.Logging.Extensions;
 using Nano.App.Logging.Providers.Interfaces;
 using Serilog;
 
-namespace Nano.App
+namespace Nano.App.Hosting.Extensions
 {
     /// <summary>
     /// Web Host Builder Extensions.

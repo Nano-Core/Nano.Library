@@ -176,8 +176,8 @@ namespace Nano.Services
 
             await this.Context
                 .RemoveRangeAsync(entities, cancellationToken);
-
-            await this.Context
+          
+                await this.Context
                 .SaveChangesAsync(cancellationToken);
         }
 

@@ -35,9 +35,6 @@ namespace Nano.App.Logging.Extensions
             if (options.IncludeHttpContext)
                 services.AddHttpContext();
 
-            if (options.IncludeHttpRequestIdentifier)
-                services.AddHttpContextRequestIdentifier();
-
             return services;
         }
 

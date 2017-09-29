@@ -10,10 +10,10 @@ namespace Nano.Models
         public virtual bool IsActive { get; set; } = true;
 
         /// <inheritdoc />
-        public virtual DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public virtual DateTimeOffset CreatedAt { get; protected set; } = DateTimeOffset.UtcNow;
 
         /// <inheritdoc />
-        public virtual DateTimeOffset? UpdatedAt { get; set; }
+        public virtual DateTimeOffset? UpdatedAt { get; protected set; }
 
         /// <inheritdoc />
         public virtual DateTimeOffset? ExpireAt { get; set; }

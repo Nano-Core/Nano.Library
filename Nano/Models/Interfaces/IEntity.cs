@@ -15,12 +15,12 @@ namespace Nano.Models.Interfaces
         /// <summary>
         /// Created At.
         /// </summary>
-        DateTimeOffset CreatedAt { get; set; }
+        DateTimeOffset CreatedAt { get; }
 
         /// <summary>
         /// Updated At.
         /// </summary>
-        DateTimeOffset? UpdatedAt { get; set; }
+        DateTimeOffset? UpdatedAt { get; }
 
         /// <summary>
         /// Expire At.

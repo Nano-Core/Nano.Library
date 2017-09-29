@@ -14,7 +14,7 @@ namespace Nano.App.Logging.Providers
         /// Constructor.
         /// </summary>
         public RabbitMqLogging()
-            : base(new RabbitMQConfiguration(), new JsonFormatter(), null)  // BUG: FIX: RabbitMq Logging configuratuon
+            : base(new RabbitMQConfiguration(), new JsonFormatter(), null)  // TODO: LOGGING: RabbitMq Logging configuratuon
         {
 
         }

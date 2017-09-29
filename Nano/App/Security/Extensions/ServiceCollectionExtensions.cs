@@ -53,7 +53,7 @@ namespace Nano.App.Security.Extensions
                     y.Lockout.MaxFailedAccessAttempts = options.Lockout.MaxFailedAccessAttempts;
                 })
                 .AddDefaultTokenProviders()
-                ;// BUG Security: .AddEntityFrameworkStores<SecurityDbContext>();
+                ;// TODO: SECURITY: .AddEntityFrameworkStores<SecurityDbContext>();
 
             return services;
         }

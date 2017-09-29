@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.6-pre</Version>
+    <Version>0.1.7-pre</Version>
     <ApplicationIcon>..\icon.ico</ApplicationIcon>
     <AssemblyVersion>0.1.6.0</AssemblyVersion>
     <FileVersion>0.1.6.0</FileVersion>
@@ -76,5 +76,24 @@
     <PackageReference Include="Serilog.Sinks.Debug" Version="1.0.0" />
     <PackageReference Include="Serilog.Sinks.ElasticSearch" Version="5.3.0" />
     <PackageReference Include="Serilog.Sinks.RabbitMQ" Version="2.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="1.0.0" />
   </ItemGroup>
-</Project>
+  
+  <ItemGroup>
+    <EmbeddedResource Include="Views/**/*.cshtml" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Remove="Views\Home\Error.cshtml" />
+    <EmbeddedResource Remove="Views\Home\Index.cshtml" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="Views\Home\Error.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\Home\Index.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  </Project>

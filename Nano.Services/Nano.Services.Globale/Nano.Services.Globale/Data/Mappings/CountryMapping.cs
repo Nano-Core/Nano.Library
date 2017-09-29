@@ -1,12 +1,12 @@
 using System;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Nano.App.Data.Mappings;
+using Nano.Data.Mappings;
 using Nano.Services.Globale.Models;
 
 namespace Nano.Services.Globale.Data.Mappings
 {
     /// <inheritdoc />
-    public class CountryMapping : BaseEntityIdentityMapping<Country, Guid>
+    public class CountryMapping : DefaultEntityMapping<Country>
     {
         /// <inheritdoc />
         public override void Map(EntityTypeBuilder<Country> builder)

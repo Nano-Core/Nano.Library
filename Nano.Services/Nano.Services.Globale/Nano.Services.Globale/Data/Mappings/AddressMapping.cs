@@ -1,12 +1,12 @@
 using System;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Nano.App.Data.Mappings;
+using Nano.Data.Mappings;
 using Nano.Services.Globale.Models;
 
 namespace Nano.Services.Globale.Data.Mappings
 {
     /// <inheritdoc />
-    public class AddressMapping : BaseEntitySpatialMapping<Address, Guid>
+    public class AddressMapping : DefaultEntitySpatialMapping<Address>
     {
         /// <inheritdoc />
         public override void Map(EntityTypeBuilder<Address> builder)

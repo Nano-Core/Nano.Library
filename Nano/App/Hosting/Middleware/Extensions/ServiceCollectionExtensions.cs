@@ -28,13 +28,27 @@ namespace Nano.App.Hosting.Middleware.Extensions
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddHttpContextRequestIdentifier(this IServiceCollection services)
+        public static IServiceCollection AddHttpRequestIdentifier(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
             return services
                 .AddScoped<IHttpRequestIdentifierMiddleware, HttpRequestIdentifierMiddleware>();
+        }
+
+        /// <summary>
+        /// Adds <see cref="IHttpRequestContentTypeMiddleware"/> to the <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        public static IServiceCollection AddHttpRequestContentType(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            return services
+                .AddScoped<IHttpRequestContentTypeMiddleware, HttpRequestContentTypeMiddleware>();
         }
     }
 }

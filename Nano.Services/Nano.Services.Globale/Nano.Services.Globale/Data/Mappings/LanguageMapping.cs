@@ -1,12 +1,12 @@
 using System;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Nano.App.Data.Mappings;
+using Nano.Data.Mappings;
 using Nano.Services.Globale.Models;
 
 namespace Nano.Services.Globale.Data.Mappings
 {
     /// <inheritdoc />
-    public class LanguageMapping : BaseEntityIdentityMapping<Language, Guid>
+    public class LanguageMapping : DefaultEntityMapping<Language>
     {
         /// <inheritdoc />
         public override void Map(EntityTypeBuilder<Language> builder)

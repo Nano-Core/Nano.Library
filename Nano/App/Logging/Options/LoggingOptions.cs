@@ -21,11 +21,6 @@ namespace Nano.App.Logging.Options
         public virtual bool IncludeHttpContext { get; set; } = true;
 
         /// <summary>
-        /// Include Request Identifier
-        /// </summary>
-        public virtual bool IncludeHttpRequestIdentifier { get; set; } = true;
-
-        /// <summary>
         /// Log Level.
         /// </summary>
         public virtual LogEventLevel LogLevel { get; set; } = LogEventLevel.Information;

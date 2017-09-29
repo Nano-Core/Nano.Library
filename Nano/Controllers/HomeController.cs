@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Nano.Services.Globale.Controllers
+namespace Nano.Controllers
 {
     /// <summary>
     /// Home Controller.

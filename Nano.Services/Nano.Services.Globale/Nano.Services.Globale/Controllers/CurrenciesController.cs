@@ -6,7 +6,7 @@ using Nano.Services.Interfaces;
 namespace Nano.Services.Globale.Controllers
 {
     /// <inheritdoc />
-    public class CurrenciesController : BaseController<IService, Currency>
+    public class CurrenciesController : DefaultController<Currency>
     {
         /// <inheritdoc />
         public CurrenciesController(ILogger<CurrenciesController> logger, IService service)

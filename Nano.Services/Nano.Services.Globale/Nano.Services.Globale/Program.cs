@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Nano.App;
+using Nano.App.Hosting.Extensions;
 using Nano.App.Logging.Providers;
 using Nano.Services.Globale.Data;
 
