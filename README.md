@@ -9,11 +9,12 @@ WebApplication
 	.GetWebHostBuilder<MyApplication>()
 	.ConfigureServices(x =>
 	{
+		x.AddLogging<ConsoleLogging>();
+		x.AddEventing<RabbitMqEventing>();
+		x.AddDataContext<SqlServerDataProvider, MyDbContext>();
+		
 		// Add additional services ...
 	})
-	.AddLogging<MyLogging>();
-	.AddEventing<MyEventing>();
-	.AddDataContext<MyDataContext>();
 	.Build()
 	.Run();
 
