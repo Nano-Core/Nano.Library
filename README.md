@@ -1,5 +1,6 @@
-﻿## .NET Core Nano-Services
-Seamlessly launch services without...
+﻿## .NET Core Nano-Services 0.1.10
+Work in progress...
+
 
 ### Implementating
 ```csharp
