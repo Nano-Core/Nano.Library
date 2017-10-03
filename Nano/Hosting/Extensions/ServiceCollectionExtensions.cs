@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.PlatformAbstractions;
 using Nano.App.Config;
 using Nano.App.Config.Extensions;
 using Nano.Hosting.Middleware.Extensions;
@@ -96,12 +94,10 @@ namespace Nano.Hosting.Extensions
                 throw new ArgumentNullException(nameof(services));
 
             var options = configuration.GetSection("App").Get<AppOptions>();
-            var filePath = Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "Nano.xml");
 
             return services
                 .AddSwaggerGen(x =>
                 {
-                    x.IncludeXmlComments(filePath);
                     x.SwaggerDoc(options.Version, new Info
                     {
                         Title = options.Name,
