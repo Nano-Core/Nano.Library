@@ -27,32 +27,44 @@ public class MyApplication : DefaultApplication { } // Application Implementatio
 ### Configuration
 ```json
 {
+  "App": {
+    "Name": "Globale",
+    "Version": "1.0",
+    "Description": null,
+    "TermsUrl": null,
+    "LicenseUrl": null
+  },
   "Hosting": {
     "EnableSession": true,
+    "EnableDocumentation": true,
     "EnableGzipCompression": true,
-    "EnableRequestLocalization": true
+    "EnableHttpContextExtension": true,
+    "EnableHttpRequestIdentifier": true,
+    "EnableHttpRequestLocalization": true
   },
   "Data": {
-    "Provider": "MySql",
     "BatchSize": "25",
-    "IsolationLevel": "READ UNCOMMITTED",
     "UseMemoryCache": true,
     "ConnectionString": "Server=mysql;Database=myDb;Uid=myUser;Pwd=myPassword"
   },
   "Logging": {
-    "IncludeScopes": true,
-    "IncludeLogContext": true,
-    "IncludeHttpRequestIdentifier": true,
     "LogLevel": "Information",
     "LogLevelOverrides": [
       {
         "Namespace": "System",
         "LogLevel": "Warning"
+      },
+      {
+        "Namespace": "Microsoft",
+        "LogLevel": "Warning"
+      },
+      {
+        "Namespace": "Microsoft.EntityFrameworkCore",
+        "LogLevel": "Warning"
       }
     ]
   },
   "Eventing": {
-    "Provider": "RabbitMQ",
     "Host": "rabbitmq",
     "VHost": "/",
     "Port": 5672,
