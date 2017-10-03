@@ -63,17 +63,17 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.0.0" />
-    <PackageReference Include="NetTopologySuite" Version="1.15.0-pre017" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.0" />
+    <PackageReference Include="NetTopologySuite" Version="1.15.0-pre019" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.1-preview-10066" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql.Design" Version="1.1.2" />
-    <PackageReference Include="RabbitMQ.Client" Version="5.0.1" />
+    <PackageReference Include="RabbitMQ.Client" Version="5.1.0-pre1" />
     <PackageReference Include="Serilog" Version="2.6.0-dev-00894" />
     <PackageReference Include="Serilog.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="2.4.1-dev-00061" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1-dev-00757" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="1.0.0" />
-    <PackageReference Include="Serilog.Sinks.ElasticSearch" Version="5.3.0" />
+    <PackageReference Include="Serilog.Sinks.ElasticSearch" Version="5.4.0" />
     <PackageReference Include="Serilog.Sinks.RabbitMQ" Version="2.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="1.0.0" />
   </ItemGroup>
