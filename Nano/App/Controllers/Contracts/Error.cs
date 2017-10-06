@@ -46,8 +46,8 @@ namespace Nano.App.Controllers.Contracts
             var httpStatusCode = HttpStatusCode.Get(statusCode);
 
             this.StatusCode = statusCode;
-            this.Summary = httpStatusCode.Summary;
-            this.Description = httpStatusCode.Description;
+            this.Summary = httpStatusCode?.Summary;
+            this.Description = httpStatusCode?.Description;
         }
 
         /// <inheritdoc />

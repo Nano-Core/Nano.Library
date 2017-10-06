@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Nano.App.Controllers.Contracts;
+using Nano.App.Controllers.Contracts.Interfaces;
 using Nano.App.Models.Interfaces;
 using Nano.App.Services.Interfaces;
 using Nano.Hosting.Middleware.Extensions;
@@ -19,12 +20,14 @@ namespace Nano.App.Controllers
     /// <summary>
     /// Base abstract <see cref="Controller"/>, implementing  methods for instances of <typeparamref name="TEntity"/>.
     /// </summary>
-    /// <typeparam name="TService">The <see cref="IService"/> inheriting from <see cref="BaseController{TService,TEntity,TIdentity}"/>.</typeparam>
+    /// <typeparam name="TService">The <see cref="IService"/> inheriting from <see cref="BaseController{TService,TEntity,TIdentity, TCriteria}"/>.</typeparam>
     /// <typeparam name="TEntity">The <see cref="IEntity"/> model the <see cref="IService"/> operates with.</typeparam>
     /// <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
-    public abstract class BaseController<TService, TEntity, TIdentity> : Controller
+    /// <typeparam name="TCriteria"></typeparam>
+    public abstract class BaseController<TService, TEntity, TIdentity, TCriteria> : Controller
         where TService : IService
         where TEntity : class, IEntityWritable, IEntityIdentity<TIdentity>
+        where TCriteria : class, ICriteria, new()
     {
         /// <summary>
         /// Logger.
@@ -69,14 +72,15 @@ namespace Nano.App.Controllers
         /// Index.
         /// Gets all instances of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
         /// </summary>
-        /// <param name="paging">The <see cref="Pagination"/>.</param>
+        /// <param name="query">The <see cref="Query"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpGet]
-        public virtual async Task<IActionResult> Index(Pagination paging = null, CancellationToken cancellationToken = new CancellationToken())
+        [HttpPost]
+        public virtual async Task<IActionResult> Index([FromForm][FromBody][FromQuery]Query query, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
-                .GetAll<TEntity>(paging, cancellationToken);
+                .GetAll<TEntity>(query ?? new Query(), cancellationToken);
 
             if (this.Response.IsContentTypeHtml())
                 return this.View(result);
@@ -110,15 +114,15 @@ namespace Nano.App.Controllers
         /// Query.
         /// Queries instances of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
         /// </summary>
-        /// <param name="criteria">The <see cref="Criteria"/>.</param>
-        /// <param name="paging">The <see cref="Pagination"/>.</param>
+        /// <param name="query">The <see cref="Query{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpGet]
-        public virtual async Task<IActionResult> Query([FromBody][FromForm][FromQuery][Required]Criteria criteria, [FromBody][FromForm][FromQuery]Pagination paging = null, CancellationToken cancellationToken = new CancellationToken())
+        [HttpPost]
+        public virtual async Task<IActionResult> Query([FromForm][FromBody][FromQuery][Required]Query<TCriteria> query, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
-                .GetMany<TEntity>(criteria, paging, cancellationToken);
+                .GetMany<TEntity, TCriteria>(query, cancellationToken);
 
             if (result == null)
                 return this.NotFound();
@@ -311,7 +315,7 @@ namespace Nano.App.Controllers
         public virtual async Task<IActionResult> DeleteConfirms([FromBody][Required]IEnumerable<TIdentity> ids, CancellationToken cancellationToken = new CancellationToken())
         {
             var entities = await this
-                .Service.GetMany<TEntity>(x => ids.Contains(x.Id), null, cancellationToken);
+                .Service.GetMany<TEntity>(x => ids.Contains(x.Id), cancellationToken);
 
             await this.Service
                 .DeleteMany(entities, cancellationToken);
@@ -352,7 +356,8 @@ namespace Nano.App.Controllers
         /// Returns the Api version requested.
         /// </summary>
         /// <returns>The <see cref="IActionResult"/>.</returns>
-        [HttpGet("Version")]
+        [HttpGet]
+        [ActionName("Version")]
         public virtual IActionResult GetVersion()
         {
             return this.Ok(this.HttpContext.GetRequestedApiVersion());

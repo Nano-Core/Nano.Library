@@ -1,9 +1,8 @@
 using System;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.App.Models.Mappings;
-using Nano.Example.Models;
 
-namespace Nano.Example.Data.Mappings
+namespace Nano.Example.Models.Mappings
 {
     /// <inheritdoc />
     public class ExampleEntityMapping : DefaultEntityMapping<ExampleEntity>
@@ -23,10 +22,6 @@ namespace Nano.Example.Data.Mappings
             builder
                 .Property(x => x.PropertyTwo)
                 .IsRequired();
-
-            builder
-                .HasIndex(x => x.PropertyOne)
-                .IsUnique();
 
             builder
                 .HasIndex(x => x.PropertyTwo)

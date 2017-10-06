@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Nano.Data;
 using Nano.Data.Extensions;
-using Nano.Example.Data.Mappings;
 using Nano.Example.Models;
+using Nano.Example.Models.Mappings;
 
 namespace Nano.Example.Data
 {

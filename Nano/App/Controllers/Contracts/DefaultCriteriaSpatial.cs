@@ -1,3 +1,4 @@
+using Nano.App.Controllers.Contracts.Interfaces;
 using NetTopologySuite.Geometries;
 
 namespace Nano.App.Controllers.Contracts
@@ -5,7 +6,7 @@ namespace Nano.App.Controllers.Contracts
     /// <summary>
     /// Criteria Spatial.
     /// </summary>
-    public class CriteriaSpatial : Criteria
+    public class DefaultCriteriaSpatial : DefaultCriteria, ICriteriaSpatial
     {
         /// <summary>
         /// Geometry.

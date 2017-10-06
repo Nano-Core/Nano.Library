@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.App.Config;
 using Nano.App.Config.Extensions;
+using Nano.App.Controllers.Contracts.Binders.Providers;
 using Nano.Hosting.Middleware.Extensions;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -36,10 +37,15 @@ namespace Nano.Hosting.Extensions
                 .AddVersioning()
                 .AddHttpRequestContentTypes()
                 .AddConfigOptions<HostingOptions>(configuration, "Hosting", out var options)
-                .AddMvc()
-                    .AddControllersAsServices()
-                    .AddViewComponentsAsServices()
-                    .AddApplicationPart(Assembly.GetExecutingAssembly());
+                .AddMvc(x =>
+                {
+                    x.ModelBinderProviders.Insert(0, new QueryModelBinderProvider());
+                    x.ModelBinderProviders.Insert(1, new OrderingModelBinderProvider());
+                    x.ModelBinderProviders.Insert(2, new PaginationModelBinderProvider());
+                })
+                .AddControllersAsServices()
+                .AddViewComponentsAsServices()
+                .AddApplicationPart(Assembly.GetExecutingAssembly());
 
             if (options.EnableSession)
                 services.AddSession();

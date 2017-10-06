@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.Controllers.Contracts;
+using Nano.App.Controllers.Contracts.Interfaces;
 using Nano.App.Models.Interfaces;
 
 namespace Nano.App.Services.Interfaces
@@ -18,7 +19,7 @@ namespace Nano.App.Services.Interfaces
         /// <summary>
         /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
         /// </summary>
-        /// <typeparam name="TEntity">A type implementing <see cref="IEntity"/>.</typeparam>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
         /// <param name="key"><see cref="object"/> to uniquely identify the <see cref="IEntity"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
@@ -28,33 +29,33 @@ namespace Nano.App.Services.Interfaces
         /// <summary>
         /// Get all instances of <typeparamref name="TEntity"/>.
         /// </summary>
-        /// <typeparam name="TEntity">A <see cref="Type"/> implementing <see cref="IEntity"/>.</typeparam>
-        /// <param name="paging">The <see cref="Pagination"/>.</param>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="query">The <see cref="Query"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
-        Task<IEnumerable<TEntity>> GetAll<TEntity>(Pagination paging = default, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> GetAll<TEntity>(Query query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity;
 
         /// <summary>
-        /// Get all instances of <typeparamref name="TEntity"/>, matching the passed <paramref name="criteria"/>.
+        /// Get all instances of <typeparamref name="TEntity"/>, matching the criterias of the passed <paramref name="query"/>.
         /// </summary>
-        /// <typeparam name="TEntity">A <see cref="Type"/> implementing <see cref="IEntity"/>.</typeparam>
-        /// <param name="criteria">The <see cref="Criteria"/> to evaulate entities to be returned.</param>
-        /// <param name="paging">The <see cref="Pagination"/>.</param>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <typeparam name="TCriteria">The <see cref="ICriteria"/> type.</typeparam>
+        /// <param name="query">The <see cref="Query{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
-        Task<IEnumerable<TEntity>> GetMany<TEntity>(Criteria criteria, Pagination paging = null, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntity;
+        Task<IEnumerable<TEntity>> GetMany<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+            where TCriteria : class, ICriteria, new();
 
         /// <summary>
         /// Get all instances of <typeparamref name="TEntity"/>, matching the passed <paramref name="expression"/>.
         /// </summary>
-        /// <typeparam name="TEntity">A <see cref="Type"/> implementing <see cref="IEntity"/>.</typeparam>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
         /// <param name="expression">The <see cref="Expression"/> to evaulate entities to be returned.</param>
-        /// <param name="paging">The <see cref="Pagination"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
-        Task<IEnumerable<TEntity>> GetMany<TEntity>(Expression<Func<TEntity, bool>> expression, Pagination paging = default, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> GetMany<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity;
 
         /// <summary>

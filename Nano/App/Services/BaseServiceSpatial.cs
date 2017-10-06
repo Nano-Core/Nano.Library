@@ -5,10 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Nano.App.Controllers.Contracts;
+using Nano.App.Controllers.Contracts.Extensions;
+using Nano.App.Controllers.Contracts.Interfaces;
 using Nano.App.Models.Interfaces;
 using Nano.App.Services.Interfaces;
 using Nano.Data.Interfaces;
-using Nano.Data.Extensions;
 
 namespace Nano.App.Services
 {
@@ -24,146 +25,137 @@ namespace Nano.App.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<T>> Covers<T>(CriteriaSpatial criteria, Pagination paging = default, CancellationToken cancellationToken = default)
-            where T : class, IEntitySpatial
+        public virtual async Task<IEnumerable<TEntity>> Covers<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntitySpatial
+            where TCriteria : class, ICriteriaSpatial, new()
         {
-            if (criteria == null)
-                throw new ArgumentNullException(nameof(criteria));
-
-            paging = paging ?? new Pagination();
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
 
             return await this.Context
-                .Set<T>()
-                .Where(criteria)
-                .Where(x => x.Geometry.Covers(criteria.Geometry))
-                .Skip(paging.Skip)
-                .Take(paging.Count)
+                .Set<TEntity>()
+                .Where(query.Criteria)
+                .Where(x => x.Geometry.Covers(query.Criteria.Geometry))
+                .Order(query.Order)
+                .Limit(query.Paging)
                 .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<T>> Crosses<T>(CriteriaSpatial criteria, Pagination paging = default, CancellationToken cancellationToken = default)
-            where T : class, IEntitySpatial
+        public virtual async Task<IEnumerable<TEntity>> Crosses<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntitySpatial
+            where TCriteria : class, ICriteriaSpatial, new()
         {
-            if (criteria == null)
-                throw new ArgumentNullException(nameof(criteria));
-
-            paging = paging ?? new Pagination();
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
 
             return await this.Context
-                .Set<T>()
-                .Where(criteria)
-                .Where(x => x.Geometry.Crosses(criteria.Geometry))
-                .Skip(paging.Skip)
-                .Take(paging.Count)
+                .Set<TEntity>()
+                .Where(query.Criteria)
+                .Where(x => x.Geometry.Crosses(query.Criteria.Geometry))
+                .Order(query.Order)
+                .Limit(query.Paging)
                 .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<T>> Touches<T>(CriteriaSpatial criteria, Pagination paging = default, CancellationToken cancellationToken = default)
-            where T : class, IEntitySpatial
+        public virtual async Task<IEnumerable<TEntity>> Touches<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntitySpatial
+            where TCriteria : class, ICriteriaSpatial, new()
         {
-            if (criteria == null)
-                throw new ArgumentNullException(nameof(criteria));
-
-            paging = paging ?? new Pagination();
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
 
             return await this.Context
-                .Set<T>()
-                .Where(criteria)
-                .Where(x => x.Geometry.Touches(criteria.Geometry))
-                .Skip(paging.Skip)
-                .Take(paging.Count)
+                .Set<TEntity>()
+                .Where(query.Criteria)
+                .Where(x => x.Geometry.Touches(query.Criteria.Geometry))
+                .Order(query.Order)
+                .Limit(query.Paging)
                 .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<T>> Overlaps<T>(CriteriaSpatial criteria, Pagination paging = default, CancellationToken cancellationToken = default)
-            where T : class, IEntitySpatial
+        public virtual async Task<IEnumerable<TEntity>> Overlaps<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntitySpatial
+            where TCriteria : class, ICriteriaSpatial, new()
         {
-            if (criteria == null)
-                throw new ArgumentNullException(nameof(criteria));
-
-            paging = paging ?? new Pagination();
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
 
             return await this.Context
-                .Set<T>()
-                .Where(criteria)
-                .Where(x => x.Geometry.Overlaps(criteria.Geometry))
-                .Skip(paging.Skip)
-                .Take(paging.Count)
+                .Set<TEntity>()
+                .Where(query.Criteria)
+                .Where(x => x.Geometry.Overlaps(query.Criteria.Geometry))
+                .Order(query.Order)
+                .Limit(query.Paging)
                 .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<T>> CoveredBy<T>(CriteriaSpatial criteria, Pagination paging = default, CancellationToken cancellationToken = default)
-            where T : class, IEntitySpatial
+        public virtual async Task<IEnumerable<TEntity>> CoveredBy<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntitySpatial
+            where TCriteria : class, ICriteriaSpatial, new()
         {
-            if (criteria == null)
-                throw new ArgumentNullException(nameof(criteria));
-
-            paging = paging ?? new Pagination();
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
 
             return await this.Context
-                .Set<T>()
-                .Where(criteria)
-                .Where(x => x.Geometry.CoveredBy(criteria.Geometry))
-                .Skip(paging.Skip)
-                .Take(paging.Count)
+                .Set<TEntity>()
+                .Where(query.Criteria)
+                .Where(x => x.Geometry.CoveredBy(query.Criteria.Geometry))
+                .Order(query.Order)
+                .Limit(query.Paging)
                 .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<T>> Disjoints<T>(CriteriaSpatial criteria, Pagination paging = default, CancellationToken cancellationToken = default)
-            where T : class, IEntitySpatial
+        public virtual async Task<IEnumerable<TEntity>> Disjoints<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntitySpatial
+            where TCriteria : class, ICriteriaSpatial, new()
         {
-            if (criteria == null)
-                throw new ArgumentNullException(nameof(criteria));
-
-            paging = paging ?? new Pagination();
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
 
             return await this.Context
-                .Set<T>()
-                .Where(criteria)
-                .Where(x => x.Geometry.Disjoint(criteria.Geometry))
-                .Skip(paging.Skip)
-                .Take(paging.Count)
+                .Set<TEntity>()
+                .Where(query.Criteria)
+                .Where(x => x.Geometry.Disjoint(query.Criteria.Geometry))
+                .Order(query.Order)
+                .Limit(query.Paging)
                 .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<T>> Intersects<T>(CriteriaSpatial criteria, Pagination paging = default, CancellationToken cancellationToken = default)
-            where T : class, IEntitySpatial
+        public virtual async Task<IEnumerable<TEntity>> Intersects<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntitySpatial
+            where TCriteria : class, ICriteriaSpatial, new()
         {
-            if (criteria == null)
-                throw new ArgumentNullException(nameof(criteria));
-
-            paging = paging ?? new Pagination();
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
 
             return await this.Context
-                .Set<T>()
-                .Where(criteria)
-                .Where(x => x.Geometry.Intersects(criteria.Geometry))
-                .Skip(paging.Skip)
-                .Take(paging.Count)
+                .Set<TEntity>()
+                .Where(query.Criteria)
+                .Where(x => x.Geometry.Intersects(query.Criteria.Geometry))
+                .Order(query.Order)
+                .Limit(query.Paging)
                 .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<T>> Within<T>(CriteriaSpatialWithin criteria, Pagination paging = default, CancellationToken cancellationToken = default)
-            where T : class, IEntitySpatial
+        public virtual async Task<IEnumerable<TEntity>> Within<TEntity, TCriteria>(Query<TCriteria> query, double distance = 10000D, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntitySpatial
+            where TCriteria : class, ICriteriaSpatial, new()
         {
-            if (criteria == null)
-                throw new ArgumentNullException(nameof(criteria));
-
-            paging = paging ?? new Pagination();
-
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
             return await this.Context
-                .Set<T>()
-                .Where(criteria)
-                .Where(x => x.Geometry.IsWithinDistance(criteria.Geometry, criteria.Radius))
-                .Skip(paging.Skip)
-                .Take(paging.Count)
+                .Set<TEntity>()
+                .Where(query.Criteria)
+                .Where(x => x.Geometry.IsWithinDistance(query.Criteria.Geometry, distance))
+                .Order(query.Order)
+                .Limit(query.Paging)
                 .ToArrayAsync(cancellationToken);
         }
     }
