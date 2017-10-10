@@ -25,5 +25,15 @@ namespace Nano.App.Controllers
         {
             return View(code);
         }
+
+        /// <summary>
+        /// Ping.
+        /// </summary>
+        /// <returns>Returns Ok (200) response, containing "Success" text.</returns>
+        [HttpGet]
+        public virtual IActionResult Ping()
+        {
+            return Ok("Success");
+        }
     }
 }

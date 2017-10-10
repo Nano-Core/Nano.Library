@@ -15,8 +15,6 @@ namespace Nano.App.Models.Mappings
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            base.Map(builder);
-
             builder
                 .HasKey(y => y.Id);
 
