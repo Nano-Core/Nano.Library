@@ -35,5 +35,15 @@ namespace Nano.App.Controllers
         {
             return Ok("Success");
         }
+
+        /// <summary>
+        /// Options.
+        /// </summary>
+        /// <returns>Returns Ok (200) response.</returns>
+        [HttpOptions]
+        public virtual IActionResult Options()
+        {
+            return Ok();
+        }
     }
 }

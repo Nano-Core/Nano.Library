@@ -147,6 +147,20 @@ namespace Nano.App.Services
         }
 
         /// <inheritdoc />
+        public virtual async Task AddOrUpdate<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityCreatable, IEntityUpdatable
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            await this.Context
+                .AddOrUpdateAsync(entity, cancellationToken);
+
+            await this.Context
+                .SaveChangesAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
         public virtual async Task Delete<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable
         {

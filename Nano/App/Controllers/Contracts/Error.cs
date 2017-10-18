@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Nano.Hosting.Entities;
 
 namespace Nano.App.Controllers.Contracts
@@ -26,7 +25,7 @@ namespace Nano.App.Controllers.Contracts
         /// <summary>
         /// Errors.
         /// </summary>
-        public virtual List<string> Errors { get; set; }
+        public virtual string[] Errors { get; set; }
 
         /// <summary>
         /// Constructor.
@@ -43,7 +42,7 @@ namespace Nano.App.Controllers.Contracts
         /// <param name="statusCode">The status code.</param>
         public Error(int statusCode)
         {
-            var httpStatusCode = HttpStatusCode.Get(statusCode);
+            var httpStatusCode = HttpStatus.Get(statusCode);
 
             this.StatusCode = statusCode;
             this.Summary = httpStatusCode?.Summary;

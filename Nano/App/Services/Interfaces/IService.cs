@@ -99,6 +99,16 @@ namespace Nano.App.Services.Interfaces
             where TEntity : class, IEntityUpdatable;
 
         /// <summary>
+        /// Adds or Updates the instance of the passed <see cref="IEntityCreatable"/> / <see cref="IEntityUpdatable"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityUpdatable"/> type.</typeparam>
+        /// <param name="entity">The instance of <see cref="IEntityUpdatable"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The <see cref="Task"/> (void).</returns>
+        Task AddOrUpdate<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityCreatable, IEntityUpdatable;
+
+        /// <summary>
         /// Deletes the instance of the passed <see cref="IEntityDeletable"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>

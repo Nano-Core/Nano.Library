@@ -25,6 +25,6 @@ namespace Nano.App.Models.Mappings
                     typeof(TIdentity) == typeof(Guid)
                         ? typeof(GuidValueGenerator)
                         : typeof(ValueGenerator<TIdentity>));
-            }
+        }
     }
 }

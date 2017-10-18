@@ -8,6 +8,6 @@ namespace Nano.Hosting.Middleware.Interfaces
     /// </summary>
     public interface IHttpRequestIdentifierMiddleware : IMiddleware
     {
-        
+
     }
 }

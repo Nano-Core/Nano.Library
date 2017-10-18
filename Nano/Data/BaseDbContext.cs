@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ namespace Nano.Data
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="options">The <see cref="Microsoft.EntityFrameworkCore.DbContextOptions"/>.</param>
+        /// <param name="options">The <see cref="DbContextOptions"/>.</param>
         protected BaseDbContext(DbContextOptions options)
             : base(options)
         {
@@ -22,7 +23,25 @@ namespace Nano.Data
         }
 
         /// <inheritdoc />
-        public Task<EntityEntry<TEntity>> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) 
+        public virtual TEntity GetOrAdd<TEntity>(TEntity entity)
+            where TEntity : class
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            var tracked = this.Set<TEntity>().SingleOrDefault(x => x == entity);
+            if (tracked != null)
+            {
+                return tracked;
+            }
+
+            this.Set<TEntity>().Add(entity);
+
+            return entity;
+        }
+
+        /// <inheritdoc />
+        public virtual Task<EntityEntry<TEntity>> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) 
             where TEntity : class
         {
             if (entity == null)
@@ -33,7 +52,7 @@ namespace Nano.Data
         }
 
         /// <inheritdoc />
-        public Task UpdateRangeAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
+        public virtual Task UpdateRangeAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
         {
             if (entities == null)
                 throw new ArgumentNullException(nameof(entities));
@@ -49,7 +68,7 @@ namespace Nano.Data
         }
 
         /// <inheritdoc />
-        public Task<EntityEntry<TEntity>> RemoveAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) where TEntity : class
+        public virtual Task<EntityEntry<TEntity>> RemoveAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) where TEntity : class
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
@@ -59,7 +78,7 @@ namespace Nano.Data
         }
 
         /// <inheritdoc />
-        public Task RemoveRangeAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
+        public virtual Task RemoveRangeAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
         {
             if (entities == null)
                 throw new ArgumentNullException(nameof(entities));
@@ -70,6 +89,52 @@ namespace Nano.Data
                     foreach (var entity in entities)
                     {
                         this.Remove(entity);
+                    }
+                }, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual EntityEntry<TEntity> AddOrUpdate<TEntity>(TEntity entity) 
+            where TEntity : class
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            var dbSet = this.Set<TEntity>();
+
+            var tracked = dbSet.SingleOrDefault(x => x == entity);
+            if (tracked != null)
+            {
+                this.Entry(tracked).CurrentValues.SetValues(entity);
+                return this.Entry(tracked);
+            }
+
+            return dbSet.Add(entity);
+        }
+
+        /// <inheritdoc />
+        public virtual Task<EntityEntry<TEntity>> AddOrUpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+            where TEntity : class
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            return Task.Factory
+                .StartNew(() => this.AddOrUpdate(entity), cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual Task AddOrUpdateManyAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
+        {
+            if (entities == null)
+                throw new ArgumentNullException(nameof(entities));
+
+            return Task.Factory
+                .StartNew(() =>
+                {
+                    foreach (var entity in entities)
+                    {
+                        this.AddOrUpdate(entity);
                     }
                 }, cancellationToken);
         }

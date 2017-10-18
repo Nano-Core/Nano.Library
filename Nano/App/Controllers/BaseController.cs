@@ -65,7 +65,13 @@ namespace Nano.App.Controllers
             if (context.ModelState.IsValid)
                 return;
 
-            context.Result = this.BadRequest();
+            var result = new Error(400)
+            {
+                Summary = "ModelState validation failed",
+                Errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage)).ToArray()
+            };
+
+            context.Result = this.BadRequest(result);
         }
 
         /// <summary>

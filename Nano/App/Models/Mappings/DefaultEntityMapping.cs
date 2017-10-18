@@ -14,6 +14,8 @@ namespace Nano.App.Models.Mappings
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
+            base.Map(builder);
+
             builder
                 .Property(y => y.IsActive)
                 .IsRequired();

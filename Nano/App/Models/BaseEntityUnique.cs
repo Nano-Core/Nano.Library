@@ -2,7 +2,7 @@ using System;
 
 namespace Nano.App.Models
 {
-    /// <inheritdoc cref="BaseEntityIdentity{T}"/>
+    /// <inheritdoc />
     public abstract class BaseEntityUnique : BaseEntityIdentity<Guid>
     {
 

@@ -6,7 +6,7 @@ namespace Nano.Hosting.Entities
     /// <summary>
     /// Status Code.
     /// </summary>
-    public class HttpStatusCode
+    public class HttpStatus
     {
         /// <summary>
         /// Code.
@@ -24,13 +24,13 @@ namespace Nano.Hosting.Entities
         public virtual string Description { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="HttpStatusCode" /> mathcing the passed <paramref name="statusCode"/>.
+        /// Gets the <see cref="HttpStatus" /> mathcing the passed <paramref name="statusCode"/>.
         /// </summary>
         /// <param name="statusCode">The status code.</param>
-        /// <returns>The <see cref="HttpStatusCode"/>.</returns>
-        public static HttpStatusCode Get(int statusCode)
+        /// <returns>The <see cref="HttpStatus"/>.</returns>
+        public static HttpStatus Get(int statusCode)
         {
-            return HttpStatusCodes.List.FirstOrDefault(x => x.Code == statusCode);
+            return HttpStatuses.List.FirstOrDefault(x => x.Code == statusCode);
         }
     }
 }
