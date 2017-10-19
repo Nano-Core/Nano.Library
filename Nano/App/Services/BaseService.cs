@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using EasyNetQ;
 using Microsoft.EntityFrameworkCore;
 using Nano.App.Controllers.Contracts;
 using Nano.App.Controllers.Contracts.Extensions;
@@ -11,12 +12,15 @@ using Nano.App.Controllers.Contracts.Interfaces;
 using Nano.App.Models.Interfaces;
 using Nano.App.Services.Interfaces;
 using Nano.Data.Interfaces;
+using Nano.Eventing.Attributes;
+using Nano.Eventing.Providers.Interfaces;
 
 namespace Nano.App.Services
 {
     /// <inheritdoc />
-    public abstract class BaseService<TContext> : IService
+    public abstract class BaseService<TContext, TEventing> : IService
         where TContext : IDbContext
+        where TEventing : IEventingProvider
     {
         /// <summary>
         /// Data Context of type <typeparamref name="TContext"/>.
@@ -24,15 +28,25 @@ namespace Nano.App.Services
         protected virtual TContext Context { get; }
 
         /// <summary>
+        /// Eventing.
+        /// </summary>
+        protected virtual TEventing Eventing { get; }
+
+        /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="context">The <see cref="IDbContext"/>.</param>
-        protected BaseService(TContext context)
+        /// <param name="eventing">The <see cref="IEventingProvider"/>.</param>
+        protected BaseService(TContext context, TEventing eventing)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
+            if (eventing == null)
+                throw new ArgumentNullException(nameof(eventing));
+
             this.Context = context;
+            this.Eventing = eventing;
         }
 
         /// <inheritdoc />
@@ -102,6 +116,8 @@ namespace Nano.App.Services
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
+
+            this.Publish(entity);
         }
 
         /// <inheritdoc />
@@ -116,6 +132,11 @@ namespace Nano.App.Services
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
+
+            foreach (var entity in entities)
+            {
+                this.Publish(entity);
+            }
         }
 
         /// <inheritdoc />
@@ -130,6 +151,8 @@ namespace Nano.App.Services
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
+
+            this.Publish(entity);
         }
 
         /// <inheritdoc />
@@ -144,6 +167,11 @@ namespace Nano.App.Services
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
+
+            foreach (var entity in entities)
+            {
+                this.Publish(entity);
+            }
         }
 
         /// <inheritdoc />
@@ -158,6 +186,8 @@ namespace Nano.App.Services
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
+
+            this.Publish(entity);
         }
 
         /// <inheritdoc />
@@ -172,6 +202,8 @@ namespace Nano.App.Services
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
+
+            this.Publish(entity);
         }
 
         /// <inheritdoc />
@@ -184,8 +216,13 @@ namespace Nano.App.Services
             await this.Context
                 .RemoveRangeAsync(entities, cancellationToken);
           
-                await this.Context
+            await this.Context
                 .SaveChangesAsync(cancellationToken);
+
+            foreach (var entity in entities)
+            {
+                this.Publish(entity);
+            }
         }
 
         /// <summary>
@@ -208,6 +245,18 @@ namespace Nano.App.Services
                 return;
 
             this.Context?.Dispose();
+        }
+
+        private void Publish<TEntity>(TEntity entity)
+            where TEntity : class
+        {
+            var type = typeof(TEntity);
+            var attributes = type.GetAttributes<EventingAttribute>();
+
+            if (!attributes.Any())
+                return;
+
+            this.Eventing.Fanout(entity);
         }
     }
 }

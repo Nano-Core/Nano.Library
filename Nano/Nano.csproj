@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.22-pre</Version>
+    <Version>0.1.33-pre</Version>
     <ApplicationIcon>..\icon.ico</ApplicationIcon>
     <AssemblyVersion>0.1.10.0</AssemblyVersion>
     <FileVersion>0.1.6.0</FileVersion>
@@ -33,6 +33,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EasyNetQ" Version="2.3.0-alpha0002" />
     <PackageReference Include="GeoAPI" Version="1.7.5-pre4" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.0" />

@@ -10,16 +10,18 @@ using Nano.App.Controllers.Contracts.Interfaces;
 using Nano.App.Models.Interfaces;
 using Nano.App.Services.Interfaces;
 using Nano.Data.Interfaces;
+using Nano.Eventing.Providers.Interfaces;
 
 namespace Nano.App.Services
 {
-    /// <inheritdoc cref="BaseService{TContext}"/>
-    public abstract class BaseServiceSpatial<TContext> : BaseService<TContext>, IServiceSpatial
+    /// <inheritdoc cref="BaseService{TContext, TEventing}"/>
+    public abstract class BaseServiceSpatial<TContext, TEventing> : BaseService<TContext, TEventing>, IServiceSpatial
         where TContext : IDbContext
+        where TEventing : IEventingProvider
     {
         /// <inheritdoc />
-        protected BaseServiceSpatial(TContext context)
-            : base(context)
+        protected BaseServiceSpatial(TContext context, TEventing eventing)
+            : base(context, eventing)
         {
 
         }

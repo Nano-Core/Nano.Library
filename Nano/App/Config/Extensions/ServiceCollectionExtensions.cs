@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using EasyNetQ;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +10,7 @@ using Nano.Data;
 using Nano.Data.Interfaces;
 using Nano.Data.Providers;
 using Nano.Data.Providers.Interfaces;
+using Nano.Eventing;
 using Nano.Eventing.Providers.Interfaces;
 using Nano.Logging;
 using Nano.Logging.Providers.Interfaces;
@@ -31,7 +34,7 @@ namespace Nano.App.Config.Extensions
         {
             var options = services
                 .BuildServiceProvider()
-                .GetService<LoggingOptions>();
+                .GetRequiredService<LoggingOptions>();
 
             var loggerConfiguration = new LoggerConfiguration()
                 .WriteTo.Sink<TProvider>()
@@ -55,10 +58,39 @@ namespace Nano.App.Config.Extensions
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
         public static IServiceCollection AddEventing<TProvider>(this IServiceCollection services)
-            where TProvider : class, IEventingProvider, new()
+            where TProvider : class, IEventingProvider
         {
-            return services
-                .AddSingleton<IEventingProvider, TProvider>();
+            services
+                .AddSingleton<IEventingProvider, TProvider>()
+                .AddSingleton(provider =>
+                {
+                    var options = provider.GetRequiredService<EventingOptions>();
+
+                    var configuration = new ConnectionConfiguration
+                    {
+                        Port = options.Port,
+                        Hosts = new List<HostConfiguration>
+                        {
+                            new HostConfiguration
+                            {
+                                Host = options.Host,
+                                Port = options.Port
+                            }
+                        },
+                        Timeout = options.Timeout,
+                        RequestedHeartbeat = options.Heartbeat,
+                        VirtualHost = options.VHost,
+                        UserName = options.AuthenticationCredential.Username,
+                        Password = options.AuthenticationCredential.Password
+                    };
+
+                    configuration.Validate();
+
+                    return RabbitHutch.CreateBus($"amqp://{options.AuthenticationCredential.Username}:{options.AuthenticationCredential.Password}@{options.Host}:{options.Port}");
+                    // TODO: FIX ConnectionConfiguration:  return RabbitHutch.CreateBus(configuration, register => { });
+                });
+
+            return services;
         }
 
         /// <summary>
@@ -69,7 +101,7 @@ namespace Nano.App.Config.Extensions
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
         public static IServiceCollection AddDataContext<TProvider, TContext>(this IServiceCollection services)
-            where TProvider : class, IDataProvider, new()
+            where TProvider : class, IDataProvider
             where TContext : DbContext, IDbContext
         {
             if (services == null)
@@ -115,7 +147,10 @@ namespace Nano.App.Config.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             services
-                .AddConfigOptions<AppOptions>(configuration, "App", out _);
+                .AddConfigOptions<AppOptions>(configuration, "App", out var options);
+
+            BaseApplication.Name = options.Name;
+            BaseApplication.Version = new Version(options.Version);
 
             return services;
         }
@@ -172,14 +207,7 @@ namespace Nano.App.Config.Extensions
                 throw new ArgumentNullException(nameof(name));
 
             var section = configuration.GetSection(name);
-
-            if (section == null)
-                throw new NullReferenceException("section");
-
-            options = section.Get<TOption>();
-
-            if (options == null)
-                throw new NullReferenceException("options");
+            options = section?.Get<TOption>();
 
             services
                 .AddSingleton(options)

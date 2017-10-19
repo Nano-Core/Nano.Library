@@ -1,7 +1,7 @@
 namespace Nano.App.Models.Interfaces
 {
     /// <summary>
-    /// Entity.
+    /// Relation.
     /// </summary>
     public interface IEntity
     {

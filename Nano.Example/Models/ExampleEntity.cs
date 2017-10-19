@@ -3,7 +3,7 @@ using Nano.App.Models;
 namespace Nano.Example.Models
 {
     /// <summary>
-    /// Example Entity.
+    /// Example Relation.
     /// </summary>
     public class ExampleEntity : DefaultEntity
     {

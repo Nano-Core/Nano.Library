@@ -16,10 +16,26 @@ using Serilog;
 namespace Nano.App
 {
     /// <summary>
+    /// 
+    /// </summary>
+    public abstract class BaseApplication
+    {
+        /// <summary>
+        /// Name.
+        /// </summary>
+        public static string Name { get; internal set; }
+
+        /// <summary>
+        /// Version.
+        /// </summary>
+        public static Version Version { get; internal set; }
+    }
+
+    /// <summary>
     /// Base Application (abstract).
     /// </summary>
     /// <typeparam name="TConfig">The type of <see cref="IConfiguration"/>.</typeparam>
-    public abstract class BaseApplication<TConfig>
+    public abstract class BaseApplication<TConfig> : BaseApplication
         where TConfig : IConfiguration
     {
         /// <summary>

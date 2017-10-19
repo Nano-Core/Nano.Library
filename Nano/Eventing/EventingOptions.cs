@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using Nano.App.Models.Types;
 
 namespace Nano.Eventing
 {
@@ -21,21 +22,27 @@ namespace Nano.Eventing
         /// <summary>
         /// Port.
         /// </summary>
-        public virtual int Port { get; set; }
+        public virtual ushort Port { get; set; }
 
         /// <summary>
-        /// Ssl Port.
+        /// Authentication Credential.
         /// </summary>
-        public virtual int SslPort { get; set; }
+        public virtual AuthenticationCredential AuthenticationCredential { get; set; }
 
         /// <summary>
-        /// Username.
+        /// Use Ssl.
         /// </summary>
-        public virtual string Username { get; set; }
+        public virtual bool UseSsl { get; set; } = false;
 
         /// <summary>
-        /// Password.
+        /// Timeout, in seconds.
         /// </summary>
-        public virtual string Password { get; set; }
+        public virtual ushort Timeout { get; set; } = 30;
+
+        /// <summary>
+        /// Heartbeat, in seconds.
+        /// Zero means no hearbeat requests.
+        /// </summary>
+        public virtual ushort Heartbeat { get; set; } = 0;
     }
 }
