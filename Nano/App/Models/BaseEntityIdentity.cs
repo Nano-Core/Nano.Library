@@ -3,10 +3,10 @@ using Nano.App.Models.Interfaces;
 namespace Nano.App.Models
 {
     /// <inheritdoc cref="BaseEntity"/>
-    public abstract class BaseEntityIdentity<T> : BaseEntity, IEntityIdentity<T>
+    public abstract class BaseEntityIdentity<TIdentity> : BaseEntity, IEntityIdentity<TIdentity>
     {
         /// <inheritdoc />
-        public virtual T Id { get; protected set; } = default;
+        public virtual TIdentity Id { get; protected set; }
 
         /// <inheritdoc />
         public override int GetHashCode()
@@ -19,7 +19,7 @@ namespace Nano.App.Models
         /// <inheritdoc />
         public override bool Equals(object entity)
         {
-            if (entity is IEntityIdentity<T> entityIdentity)
+            if (entity is IEntityIdentity<TIdentity> entityIdentity)
                 return this.Id.ToString() == entityIdentity.Id.ToString();
 
             return object.ReferenceEquals(this, entity);

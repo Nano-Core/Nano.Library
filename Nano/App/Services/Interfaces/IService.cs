@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.App.Controllers.Contracts;
-using Nano.App.Controllers.Contracts.Interfaces;
+using Nano.App.Controllers.Criteria;
+using Nano.App.Controllers.Criteria.Interfaces;
 using Nano.App.Models.Interfaces;
 
 namespace Nano.App.Services.Interfaces
 {
     /// <summary>
     /// (Base) Interface for a service.
-    /// Defines methods for the most rudamentory operations (get, query, add, update, delete) on instances of <see cref="IEntity"/>.
+    /// Defines methods for the most rudamentory operations (get, criteria, add, update, delete) on instances of <see cref="IEntity"/>.
     /// <see cref="IEntityCreatable"/>, <see cref="IEntityUpdatable"/> and <see cref="IEntityDeletable"/>). 
     /// </summary>
     public interface IService : IDisposable
@@ -30,23 +30,23 @@ namespace Nano.App.Services.Interfaces
         /// Get all instances of <typeparamref name="TEntity"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
-        /// <param name="query">The <see cref="Query"/>.</param>
+        /// <param name="query">The <see cref="Criteria"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
-        Task<IEnumerable<TEntity>> GetAll<TEntity>(Query query, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> GetAll<TEntity>(Criteria query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity;
 
         /// <summary>
-        /// Get all instances of <typeparamref name="TEntity"/>, matching the criterias of the passed <paramref name="query"/>.
+        /// Get all instances of <typeparamref name="TEntity"/>, matching the criterias of the passed <paramref name="criteria"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
-        /// <typeparam name="TCriteria">The <see cref="ICriteria"/> type.</typeparam>
-        /// <param name="query">The <see cref="Query{TCriteria}"/>.</param>
+        /// <typeparam name="TQuery">The <see cref="IQuery"/> type.</typeparam>
+        /// <param name="criteria">The <see cref="Criteria{TQuery}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
-        Task<IEnumerable<TEntity>> GetMany<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> GetMany<TEntity, TQuery>(Criteria<TQuery> criteria, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
-            where TCriteria : class, ICriteria, new();
+            where TQuery : class, IQuery;
 
         /// <summary>
         /// Get all instances of <typeparamref name="TEntity"/>, matching the passed <paramref name="expression"/>.

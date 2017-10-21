@@ -52,8 +52,7 @@ namespace Nano._Security.Extensions
                     y.Lockout.DefaultLockoutTimeSpan = options.Lockout.DefaultLockoutTimeSpan;
                     y.Lockout.MaxFailedAccessAttempts = options.Lockout.MaxFailedAccessAttempts;
                 })
-                .AddDefaultTokenProviders()
-                ;// TODO: SECURITY: .AddEntityFrameworkStores<SecurityDbContext>();
+                .AddDefaultTokenProviders();
 
             return services;
         }

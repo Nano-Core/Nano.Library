@@ -2,12 +2,11 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Nano.Hosting.Middleware.Interfaces;
 
 namespace Nano.Hosting.Middleware
 {
     /// <inheritdoc />
-    public class HttpRequestIdentifierMiddleware : IHttpRequestIdentifierMiddleware
+    public class HttpRequestIdentifierMiddleware : IMiddleware
     {
         /// <inheritdoc />
         public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)

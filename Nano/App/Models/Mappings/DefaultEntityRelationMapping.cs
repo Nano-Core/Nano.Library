@@ -1,11 +1,12 @@
 using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.App.Models.Interfaces;
 
 namespace Nano.App.Models.Mappings
 {
     /// <inheritdoc />
-    public abstract class DefaultEntityRelationMapping<TEntity, TRelation> : DefaultEntityMapping<TEntity>
+    public class DefaultEntityRelationMapping<TEntity, TRelation> : DefaultEntityMapping<TEntity>
         where TEntity : DefaultEntityRelation<TRelation>
         where TRelation : class, IEntityIdentity<Guid>
     {
@@ -17,10 +18,9 @@ namespace Nano.App.Models.Mappings
 
             base.Map(builder);
 
-            // TODO: Make generic column name
-            //builder
-            //    .Property("RelationId")
-            //    .HasColumnName($"{typeof(TRelation).Name}Id");
+            builder
+                .Property("RelationId")
+                .HasColumnName($"{typeof(TRelation).Name}Id");
 
             builder
                 .Property(y => y.Summary)

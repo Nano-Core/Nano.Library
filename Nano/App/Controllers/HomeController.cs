@@ -1,4 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Nano.App.Controllers
 {
@@ -10,8 +16,9 @@ namespace Nano.App.Controllers
         /// <summary>
         /// Index.
         /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>An <see cref="IActionResult"/>.</returns>
-        public virtual IActionResult Index()
+        public virtual IActionResult Index(CancellationToken cancellationToken = new CancellationToken())
         {
             return View();
         }
@@ -29,20 +36,67 @@ namespace Nano.App.Controllers
         /// <summary>
         /// Ping.
         /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Returns Ok (200) response, containing "Success" text.</returns>
         [HttpGet]
-        public virtual IActionResult Ping()
+        [ActionName("Ping")]
+        public virtual IActionResult GetPing(CancellationToken cancellationToken = new CancellationToken())
         {
-            return Ok("Success");
+            return Ok();
         }
 
         /// <summary>
         /// Options.
         /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Returns Ok (200) response.</returns>
         [HttpOptions]
-        public virtual IActionResult Options()
+        [ActionName("Options")]
+        public virtual IActionResult GetOptions(CancellationToken cancellationToken = new CancellationToken())
         {
+            return Ok();
+        }
+
+        /// <summary>
+        /// Returns the Api version requested.
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="IActionResult"/>.</returns>
+        [HttpGet]
+        [ActionName("Version")]
+        public virtual IActionResult GetVersion(CancellationToken cancellationToken = new CancellationToken())
+        {
+            return this.Ok(this.HttpContext.GetRequestedApiVersion());
+        }
+
+        /// <summary>
+        /// Sets the language of the consumer.
+        /// </summary>
+        /// <param name="code">The culture.</param>
+        /// <param name="returnUrl">The return url.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="IActionResult"/>.</returns>
+        [HttpGet]
+        [HttpPost]
+        public virtual async Task<IActionResult> SetLanguage([FromRoute][FromQuery][FromHeader(Name = "Accept-Language")][Required]string code, string returnUrl, CancellationToken cancellationToken = new CancellationToken())
+        {
+            await Task.Factory
+                .StartNew(x =>
+                {
+                    this.Response.Cookies.Append(
+                        CookieRequestCultureProvider.DefaultCookieName,
+                        CookieRequestCultureProvider.MakeCookieValue(
+                            new RequestCulture(code)), 
+                            new CookieOptions
+                            {
+                                Expires = DateTimeOffset.UtcNow.AddYears(1)
+                            }
+                    );
+                }, null, cancellationToken);
+
+            if (returnUrl != null)
+                return LocalRedirect(returnUrl);
+
             return Ok();
         }
     }

@@ -4,10 +4,15 @@ namespace Nano.Hosting
 {
     /// <summary>
     /// Hosting Options.
-    /// Populatd from "Hosting" <see cref="IConfigurationSection"/>.
+    /// Populated from "Hosting" <see cref="IConfigurationSection"/>.
     /// </summary>
     public class HostingOptions
     {
+        /// <summary>
+        /// Section Name.
+        /// </summary>
+        public static string SectionName => "Hosting";
+
         /// <summary>
         /// Enable Session.
         /// </summary>

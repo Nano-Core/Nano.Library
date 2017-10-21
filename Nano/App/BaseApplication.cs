@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Nano.App.Config;
-using Nano.App.Config.Extensions;
+using Nano.Config.Extensions;
 using Nano.Data.Extensions;
 using Nano.Eventing.Extensions;
 using Nano.Hosting.Extensions;
@@ -16,26 +14,10 @@ using Serilog;
 namespace Nano.App
 {
     /// <summary>
-    /// 
-    /// </summary>
-    public abstract class BaseApplication
-    {
-        /// <summary>
-        /// Name.
-        /// </summary>
-        public static string Name { get; internal set; }
-
-        /// <summary>
-        /// Version.
-        /// </summary>
-        public static Version Version { get; internal set; }
-    }
-
-    /// <summary>
     /// Base Application (abstract).
     /// </summary>
     /// <typeparam name="TConfig">The type of <see cref="IConfiguration"/>.</typeparam>
-    public abstract class BaseApplication<TConfig> : BaseApplication
+    public abstract class BaseApplication<TConfig>
         where TConfig : IConfiguration
     {
         /// <summary>
@@ -73,8 +55,7 @@ namespace Nano.App
         /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
         /// <param name="hostingEnvironment">The <see cref="IApplicationBuilder"/>.</param>
         /// <param name="applicationLifetime">The <see cref="IApplicationBuilder"/>.</param>
-        /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
-        public virtual void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime, ILoggerFactory loggerFactory)
+        public virtual void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime)
         {
             if (applicationBuilder == null)
                 throw new ArgumentNullException(nameof(applicationBuilder));
@@ -85,24 +66,9 @@ namespace Nano.App
             if (applicationLifetime == null)
                 throw new ArgumentNullException(nameof(applicationLifetime));
 
-            if (loggerFactory == null)
-                throw new ArgumentNullException(nameof(loggerFactory));
-
-            var services = applicationBuilder.ApplicationServices;
-            var appOptions = services.GetRequiredService<AppOptions>();
-
             applicationBuilder
                 .UseHosting()
-                .UseDataContext()
-                .UseStaticFiles()
-                .UseAuthentication()
-                .UseForwardedHeaders()
-                .UseMvc(x =>
-                {
-                    x.MapRoute("default", "api/" + appOptions.Name + "/{controller=Home}/{action=Index}/{id?}");
-                })
-                .UseExceptionHandler("/api/" + appOptions.Name + "/Home/Error")
-                .UseStatusCodePagesWithRedirects("/api/" + appOptions.Name + "/Home/Error/{0}");
+                .UseDataContext();
         }
 
         /// <summary>
@@ -130,13 +96,11 @@ namespace Nano.App
                 {
                     x.AddConfig(out var configuration);
 
-                    x.AddApp(configuration);
                     x.AddLogging(configuration);
                     x.AddHosting(configuration);
                     x.AddEventing(configuration);
+                    x.AddAppContext(configuration);
                     x.AddDataContext(configuration);
-
-                    // TODO: SECURITY: x.AddSecurity(configuration);
                 })
                 .UseSerilog()
                 .UseStartup<TApplication>()

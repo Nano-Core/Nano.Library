@@ -9,12 +9,6 @@ namespace Nano.App.Models
         where TRelation : IEntityIdentity<Guid>
     {
         /// <summary>
-        /// Relation.
-        /// </summary>
-        [Required]
-        public virtual TRelation Relation { get; set; }
-
-        /// <summary>
         /// Summary.
         /// </summary>
         [Required]
@@ -25,5 +19,11 @@ namespace Nano.App.Models
         /// Description.
         /// </summary>
         public virtual string Description { get; set; }
+
+        /// <summary>
+        /// Relation.
+        /// </summary>
+        [Required]
+        public virtual TRelation Relation { get; set; }
     }
 }

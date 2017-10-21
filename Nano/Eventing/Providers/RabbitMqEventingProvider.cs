@@ -1,9 +1,10 @@
 using System;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using EasyNetQ;
 using EasyNetQ.Topology;
 using Microsoft.Extensions.Logging;
-using Nano.App;
+using Nano.Api.Entities.Interfaces;
 using Nano.Eventing.Providers.Interfaces;
 using Newtonsoft.Json;
 
@@ -22,7 +23,7 @@ namespace Nano.Eventing.Providers
         /// <summary>
         /// Logger.
         /// </summary>
-        protected ILogger<IEventingProvider> Logger { get; }
+        protected virtual ILogger<IEventingProvider> Logger { get; }
 
         /// <summary>
         /// Constructor.
@@ -42,7 +43,7 @@ namespace Nano.Eventing.Providers
         }
 
         /// <inheritdoc />
-        public virtual void Fanout<TBody>(TBody body, bool persist = true)
+        public virtual async Task PublishAsync<TBody>(TBody body, bool persist = true, CancellationToken cancellationToken = default)
             where TBody : class
         {
             if (body == null)
@@ -52,26 +53,50 @@ namespace Nano.Eventing.Providers
             {
                 var name = typeof(TBody).FullName;
                 var exchange = this.Bus.Advanced.ExchangeDeclare(name, ExchangeType.Fanout);
+                var deliverymode = persist ? MessageDeliveryMode.Persistent : MessageDeliveryMode.NonPersistent;
+
                 var message = new Message<TBody>(body)
                 {
                     Properties =
                     {
-                        AppId = BaseApplication.Name,
-                        DeliveryMode = persist ? MessageDeliveryMode.Persistent : MessageDeliveryMode.NonPersistent,
-                        CorrelationId = Guid.NewGuid().ToString("N")
+                        AppId = "",
+                        DeliveryMode = deliverymode,
+                        CorrelationId = $"{Guid.NewGuid():N}"
                     }
                 };
 
-                this.Bus.Advanced
-                    .Publish(exchange, string.Empty, true, message);
+                await this.Bus.Advanced
+                    .PublishAsync(exchange, string.Empty, true, message);
 
-                this.Logger.LogInformation($"Executed Eventing, Message published{Environment.NewLine}Message: {JsonConvert.SerializeObject(message)}");
+                this.Logger.LogInformation($"Executed Eventing, Message Publish Succeeded{Environment.NewLine}Message: {JsonConvert.SerializeObject(message)}");
             }
             catch (Exception ex)
             {
-                this.Logger.LogWarning(ex, ex.Message);
-                this.Logger.LogInformation($"Executed Eventing, Message published failed{Environment.NewLine}Entity: {body}");
+                this.Logger.LogInformation($"Executed Eventing, Message Publish Failed{Environment.NewLine}Exception: {ex.Message}");
+                throw;
+            }
+        }
 
+        /// <inheritdoc />
+        public virtual async Task<TResponse> SendRequestAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : class, IRequest
+            where TResponse : class, IResponse
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            try
+            {
+                var response = await this.Bus
+                    .RequestAsync<TRequest, TResponse>(request);
+
+                this.Logger.LogInformation($"Executed Eventing, Message Request Succeeded{Environment.NewLine}Request: {JsonConvert.SerializeObject(request)}");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogInformation($"Executed Eventing, Message Request Failed{Environment.NewLine}Exception: {ex.Message}");
                 throw;
             }
         }
@@ -83,104 +108,27 @@ namespace Nano.Eventing.Providers
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));
 
-            try
-            {
-                var name = typeof(TBody).FullName;
-                var queue = this.Bus.Advanced.QueueDeclare(name);
+            var name = typeof(TBody).FullName;
+            var queue = this.Bus.Advanced.QueueDeclare(name);
 
-                this.Bus.Advanced
-                    .Consume(queue, (bytes, properties, info) =>
-                    {
-                        try
-                        {
-                            var message = Encoding.UTF8.GetString(bytes);
-
-                            callback(bytes);
-                            this.Logger.LogInformation($"Executed Eventing, Message consume successfully{Environment.NewLine}Message: {message}");
-                        }
-                        catch (Exception ex)
-                        {
-                            this.Logger.LogWarning(ex, ex.Message);
-                            this.Logger.LogWarning(ex, $"Executed Eventing, Message consume failed{Environment.NewLine}Message: {ex.Message}");
-                        }
-                    });
-            }
-            catch (Exception ex)
-            {
-                this.Logger.LogWarning(ex, ex.Message);
-                this.Logger.LogWarning(ex, $"Executed Eventing, Message consume failed{Environment.NewLine}Message: {ex.Message}");
-
-                throw;
-            }
+            this.Bus.Advanced.Consume(queue, (bytes, properties, info) => callback(bytes));
         }
 
         /// <inheritdoc />
-        public virtual void Consume<TBody>(Action<TBody> callback, string routingKey = "", bool isTemporary = false)
+        public virtual void Consume<TBody>(Action<TBody> callback, bool isTemporary = false)
             where TBody : class
         {
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));
 
-            try
-            {
-                var queue = isTemporary
-                    ? this.Bus.Advanced.QueueDeclare($"{BaseApplication.Name}:{Guid.NewGuid():D}", false, false, false, false, null, 300000)
-                    : this.Bus.Advanced.QueueDeclare($"{typeof(TBody).FullName}:{BaseApplication.Name}");
+            var name = typeof(TBody).FullName;
+            var exchange = this.Bus.Advanced.ExchangeDeclare(name, ExchangeType.Fanout);
+            var queue = !isTemporary
+                ? this.Bus.Advanced.QueueDeclare($"{typeof(TBody).FullName}")
+                : this.Bus.Advanced.QueueDeclare($"{Guid.NewGuid():N}", false, false, false, false, null, 300000);
 
-                this.Bus.Advanced
-                    .Consume<TBody>(queue, (message, info) =>
-                    {
-                        try
-                        {
-                            callback(message.Body);
-                            this.Logger.LogInformation($"Executed Eventing, Message consume successfully{Environment.NewLine}Message: {message}");
-                        }
-                        catch (Exception ex)
-                        {
-                            this.Logger.LogWarning(ex, ex.Message);
-                            this.Logger.LogWarning(ex, $"Executed Eventing, Message consume failed{Environment.NewLine}Message: {ex.Message}");
-                        }
-                    });
-
-                var name = typeof(TBody).FullName;
-                var exchange = this.Bus.Advanced
-                    .ExchangeDeclare(name, ExchangeType.Fanout);
-
-                this.Bus.Advanced
-                    .Bind(exchange, queue, routingKey);
-
-            }
-            catch (Exception ex)
-            {
-                this.Logger.LogWarning(ex, ex.Message);
-                this.Logger.LogWarning(ex, $"Executed Eventing, Message consume failed{Environment.NewLine}Message: {ex.Message}");
-
-                throw;
-            }
-        }
-
-        /// <inheritdoc />
-        public virtual void Respond<TRequest, TResponse>(Func<TRequest, TResponse> callback)
-            where TRequest : class
-            where TResponse : class
-        {
-            if (callback == null)
-                throw new ArgumentNullException(nameof(callback));
-
-            this.Bus
-                .Respond(callback);
-        }
-
-        /// <inheritdoc />
-        public virtual TResponse Request<TRequest, TResponse>(TRequest request)
-            where TRequest : class
-            where TResponse : class
-        {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-
-            return this.Bus
-                .Request<TRequest, TResponse>(request);
+            this.Bus.Advanced.Consume<TBody>(queue, (message, info) => callback(message.Body));
+            this.Bus.Advanced.Bind(exchange, queue, "");
         }
 
         /// <inheritdoc />
@@ -190,24 +138,22 @@ namespace Nano.Eventing.Providers
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));
 
-            this.Bus
-                .Receive(typeof(TBody).FullName, (TBody message) =>
-                {
-                    try
-                    {
-                        callback(message);
-                        this.Logger.LogInformation($"Message consume successfully{Environment.NewLine}Message: {message}");
-                    }
-                    catch (Exception exception)
-                    {
-                        this.Logger.LogWarning(exception, $"Message consume failed{Environment.NewLine}Message: {exception.Message}");
-                    }
-                });
+            var name = typeof(TBody).FullName;
+            this.Bus.Receive(name, callback);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc />
+        public virtual void Respond<TRequest, TResponse>(Func<TRequest, TResponse> callback)
+            where TRequest : class, IRequest
+            where TResponse : class, IResponse
+        {
+            if (callback == null)
+                throw new ArgumentNullException(nameof(callback));
+
+            this.Bus.Respond(callback);
+        }
+
+        /// <inheritdoc />
         public void Dispose()
         {
             this.Dispose(true);
@@ -215,9 +161,10 @@ namespace Nano.Eventing.Providers
         }
 
         /// <summary>
-        /// 
+        /// Dispose.
+        /// Only disposes if passed <paramref name="disposing"/> is true.
         /// </summary>
-        /// <param name="disposing"></param>
+        /// <param name="disposing">The <see cref="bool"/> indicating if disposing.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

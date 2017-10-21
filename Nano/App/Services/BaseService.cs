@@ -4,23 +4,19 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using EasyNetQ;
 using Microsoft.EntityFrameworkCore;
-using Nano.App.Controllers.Contracts;
-using Nano.App.Controllers.Contracts.Extensions;
-using Nano.App.Controllers.Contracts.Interfaces;
+using Nano.App.Controllers.Criteria;
+using Nano.App.Controllers.Criteria.Extensions;
+using Nano.App.Controllers.Criteria.Interfaces;
 using Nano.App.Models.Interfaces;
 using Nano.App.Services.Interfaces;
 using Nano.Data.Interfaces;
-using Nano.Eventing.Attributes;
-using Nano.Eventing.Providers.Interfaces;
 
 namespace Nano.App.Services
 {
     /// <inheritdoc />
-    public abstract class BaseService<TContext, TEventing> : IService
+    public abstract class BaseService<TContext> : IService
         where TContext : IDbContext
-        where TEventing : IEventingProvider
     {
         /// <summary>
         /// Data Context of type <typeparamref name="TContext"/>.
@@ -28,25 +24,15 @@ namespace Nano.App.Services
         protected virtual TContext Context { get; }
 
         /// <summary>
-        /// Eventing.
-        /// </summary>
-        protected virtual TEventing Eventing { get; }
-
-        /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="context">The <see cref="IDbContext"/>.</param>
-        /// <param name="eventing">The <see cref="IEventingProvider"/>.</param>
-        protected BaseService(TContext context, TEventing eventing)
+        protected BaseService(TContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
-            if (eventing == null)
-                throw new ArgumentNullException(nameof(eventing));
-
             this.Context = context;
-            this.Eventing = eventing;
         }
 
         /// <inheritdoc />
@@ -62,7 +48,7 @@ namespace Nano.App.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetAll<TEntity>(Query query, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetAll<TEntity>(Criteria query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
         {
             if (query == null)
@@ -76,18 +62,18 @@ namespace Nano.App.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetMany<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetMany<TEntity, TQuery>(Criteria<TQuery> criteria, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
-            where TCriteria : class, ICriteria, new()
+            where TQuery : class, IQuery
         {
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
+            if (criteria == null)
+                throw new ArgumentNullException(nameof(criteria));
 
             return await this.Context
                 .Set<TEntity>()
-                .Where(query.Criteria)
-                .Order(query.Order)
-                .Limit(query.Paging)
+                .Where(criteria.Query)
+                .Order(criteria.Order)
+                .Limit(criteria.Paging)
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -116,8 +102,6 @@ namespace Nano.App.Services
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
-
-            this.Publish(entity);
         }
 
         /// <inheritdoc />
@@ -132,11 +116,6 @@ namespace Nano.App.Services
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
-
-            foreach (var entity in entities)
-            {
-                this.Publish(entity);
-            }
         }
 
         /// <inheritdoc />
@@ -151,8 +130,6 @@ namespace Nano.App.Services
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
-
-            this.Publish(entity);
         }
 
         /// <inheritdoc />
@@ -167,11 +144,6 @@ namespace Nano.App.Services
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
-
-            foreach (var entity in entities)
-            {
-                this.Publish(entity);
-            }
         }
 
         /// <inheritdoc />
@@ -186,8 +158,6 @@ namespace Nano.App.Services
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
-
-            this.Publish(entity);
         }
 
         /// <inheritdoc />
@@ -202,8 +172,6 @@ namespace Nano.App.Services
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
-
-            this.Publish(entity);
         }
 
         /// <inheritdoc />
@@ -218,11 +186,6 @@ namespace Nano.App.Services
           
             await this.Context
                 .SaveChangesAsync(cancellationToken);
-
-            foreach (var entity in entities)
-            {
-                this.Publish(entity);
-            }
         }
 
         /// <summary>
@@ -245,18 +208,6 @@ namespace Nano.App.Services
                 return;
 
             this.Context?.Dispose();
-        }
-
-        private void Publish<TEntity>(TEntity entity)
-            where TEntity : class
-        {
-            var type = typeof(TEntity);
-            var attributes = type.GetAttributes<EventingAttribute>();
-
-            if (!attributes.Any())
-                return;
-
-            this.Eventing.Fanout(entity);
         }
     }
 }

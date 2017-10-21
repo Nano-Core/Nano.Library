@@ -11,15 +11,6 @@ namespace Nano.Data.Interfaces
     public interface IDbContextExtension
     {
         /// <summary>
-        /// Gets (if exists) or Adds the entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
-        /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
-        /// <returns>The entity.</returns>
-        TEntity GetOrAdd<TEntity>(TEntity entity)
-            where TEntity : class;
-
-        /// <summary>
         /// Updates the entity.
         /// </summary>
         /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
@@ -60,7 +51,7 @@ namespace Nano.Data.Interfaces
         /// </summary>
         /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
         /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
-        /// <returns>A <see cref="Task"/>.</returns>
+        /// <returns>A <see cref="EntityEntry{TEntity}"/>.</returns>
         EntityEntry<TEntity> AddOrUpdate<TEntity>(TEntity entity)
             where TEntity : class;
 
@@ -73,6 +64,12 @@ namespace Nano.Data.Interfaces
         /// <returns>A <see cref="Task"/>.</returns>
         Task<EntityEntry<TEntity>> AddOrUpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class;
+
+        /// <summary>
+        /// Adds or updates (if exists) a range of entities.
+        /// </summary>
+        /// <param name="entities">The <see cref="object"/>'s.</param>
+        void AddOrUpdateMany(IEnumerable<object> entities);
 
         /// <summary>
         /// Adds or updates (if exists) a range of entities.

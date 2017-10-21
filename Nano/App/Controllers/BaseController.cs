@@ -5,15 +5,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
-using Nano.App.Controllers.Contracts;
-using Nano.App.Controllers.Contracts.Interfaces;
+using Nano.App.Controllers.Criteria;
+using Nano.App.Controllers.Criteria.Entities;
+using Nano.App.Controllers.Criteria.Interfaces;
 using Nano.App.Models.Interfaces;
 using Nano.App.Services.Interfaces;
-using Nano.Hosting.Middleware.Extensions;
+using Nano.Hosting.Extensions;
 
 namespace Nano.App.Controllers
 {
@@ -26,8 +26,8 @@ namespace Nano.App.Controllers
     /// <typeparam name="TCriteria"></typeparam>
     public abstract class BaseController<TService, TEntity, TIdentity, TCriteria> : Controller
         where TService : IService
-        where TEntity : class, IEntityWritable, IEntityIdentity<TIdentity>
-        where TCriteria : class, ICriteria, new()
+        where TEntity : class, IEntity, IEntityIdentity<TIdentity>, IEntityWritable
+        where TCriteria : class, IQuery
     {
         /// <summary>
         /// Logger.
@@ -65,9 +65,11 @@ namespace Nano.App.Controllers
             if (context.ModelState.IsValid)
                 return;
 
-            var result = new Error(400)
+            context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var result = new Error(StatusCodes.Status400BadRequest)
             {
-                Summary = "ModelState validation failed",
+                Summary = "Invalid ModelState",
                 Errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage)).ToArray()
             };
 
@@ -83,10 +85,10 @@ namespace Nano.App.Controllers
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpGet]
         [HttpPost]
-        public virtual async Task<IActionResult> Index([FromForm][FromBody][FromQuery]Query query, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Index([FromQuery][FromBody][FromForm][Required]Criteria.Criteria query, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
-                .GetAll<TEntity>(query ?? new Query(), cancellationToken);
+                .GetAll<TEntity>(query ?? new Criteria.Criteria(), cancellationToken);
 
             if (this.Response.IsContentTypeHtml())
                 return this.View(result);
@@ -102,7 +104,7 @@ namespace Nano.App.Controllers
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Details' <see cref="IActionResult"/>.</returns>
         [HttpGet]
-        public virtual async Task<IActionResult> Details([FromRoute][FromQuery][Required]Guid id, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Details([FromRoute][FromQuery][FromBody][FromForm][Required]Guid id, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
                 .Get<TEntity>(id, cancellationToken);
@@ -117,18 +119,18 @@ namespace Nano.App.Controllers
         }
 
         /// <summary>
-        /// Query.
+        /// Criteria.
         /// Queries instances of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
         /// </summary>
-        /// <param name="query">The <see cref="Query{TCriteria}"/>.</param>
+        /// <param name="criteria">The <see cref="Criteria{TQuery}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpGet]
         [HttpPost]
-        public virtual async Task<IActionResult> Query([FromForm][FromBody][FromQuery][Required]Query<TCriteria> query, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Query([FromQuery][FromBody][FromForm][Required]Criteria<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
-                .GetMany<TEntity, TCriteria>(query, cancellationToken);
+                .GetMany<TEntity, TCriteria>(criteria, cancellationToken);
 
             if (result == null)
                 return this.NotFound();
@@ -185,7 +187,7 @@ namespace Nano.App.Controllers
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpPost]
-        public virtual async Task<IActionResult> Creates([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Creates([FromBody][FromForm][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = new CancellationToken())
         {
             await this.Service
                 .AddMany(entities, cancellationToken);
@@ -248,7 +250,7 @@ namespace Nano.App.Controllers
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpPut]
         [HttpPost]
-        public virtual async Task<IActionResult> Edits([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Edits([FromBody][FromForm][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = new CancellationToken())
         {
             await this.Service
                 .UpdateMany(entities, cancellationToken);
@@ -291,7 +293,7 @@ namespace Nano.App.Controllers
         [HttpPost]
         [HttpDelete]
         [ActionName("Delete")]
-        public virtual async Task<IActionResult> DeleteConfirm([FromRoute][FromQuery][Required]Guid id, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> DeleteConfirm([FromRoute][FromQuery][FromBody][FromForm][Required]Guid id, CancellationToken cancellationToken = new CancellationToken())
         {
             var entity = await this
                 .Service.Get<TEntity>(id, cancellationToken);
@@ -318,7 +320,7 @@ namespace Nano.App.Controllers
         [HttpPost]
         [HttpDelete]
         [ActionName("Deletes")]
-        public virtual async Task<IActionResult> DeleteConfirms([FromBody][Required]IEnumerable<TIdentity> ids, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> DeleteConfirms([FromBody][FromForm][Required]IEnumerable<TIdentity> ids, CancellationToken cancellationToken = new CancellationToken())
         {
             var entities = await this
                 .Service.GetMany<TEntity>(x => ids.Contains(x.Id), cancellationToken);
@@ -330,44 +332,6 @@ namespace Nano.App.Controllers
                 return this.RedirectToAction("Index");
 
             return this.AcceptedAtAction("Deletes", entities);
-        }
-
-        /// <summary>
-        /// Sets the language of the consumer.
-        /// </summary>
-        /// <param name="culture">The culture.</param>
-        /// <param name="returnUrl">The return url.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The <see cref="IActionResult"/>.</returns>
-        [HttpPost]
-        public virtual async Task<IActionResult> SetLanguage(string culture, string returnUrl, CancellationToken cancellationToken = new CancellationToken())
-        {
-            return await Task.Factory
-                .StartNew<IActionResult>(x =>
-                {
-                    this.Response.Cookies.Append(
-                        CookieRequestCultureProvider.DefaultCookieName,
-                        CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
-                        new CookieOptions
-                        {
-                            Expires = DateTimeOffset.UtcNow.AddYears(1)
-                        }
-                    );
-
-                    return LocalRedirect(returnUrl);
-                }, null, cancellationToken);
-        }
-
-        /// <summary>
-        /// Returns the Api version requested.
-        /// </summary>
-        /// <returns>The <see cref="IActionResult"/>.</returns>
-        [HttpGet]
-        [ActionName("Version")]
-        public virtual IActionResult GetVersion()
-        {
-            return this.Ok(this.HttpContext.GetRequestedApiVersion());
-
         }
     }
 }

@@ -1,14 +1,13 @@
 using Nano.Data.Interfaces;
-using Nano.Eventing.Providers.Interfaces;
 
 namespace Nano.App.Services
 {
     /// <inheritdoc />
-    public class DefaultService : BaseService<IDbContext, IEventingProvider>
+    public class DefaultService : BaseService<IDbContext>
     {
         /// <inheritdoc />
-        public DefaultService(IDbContext context, IEventingProvider eventing)
-            : base(context, eventing)
+        public DefaultService(IDbContext context)
+            : base(context)
         {
 
         }

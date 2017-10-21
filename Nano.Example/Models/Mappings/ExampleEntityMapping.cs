@@ -20,11 +20,10 @@ namespace Nano.Example.Models.Mappings
                 .IsRequired();
 
             builder
-                .Property(x => x.PropertyTwo)
-                .IsRequired();
+                .Property(x => x.PropertyTwo);
 
             builder
-                .HasIndex(x => x.PropertyTwo)
+                .HasIndex(x => x.PropertyOne)
                 .IsUnique();
         }
     }

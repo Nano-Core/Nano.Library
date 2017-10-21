@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.App.Config.Extensions;
+using Nano.Config.Extensions;
 
 namespace Nano.Logging.Extensions
 {
@@ -25,7 +25,7 @@ namespace Nano.Logging.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             services
-                .AddConfigOptions<LoggingOptions>(configuration, "Logging", out _);
+                .AddConfigOptions<LoggingOptions>(configuration, LoggingOptions.SectionName, out _);
 
             return services;
         }

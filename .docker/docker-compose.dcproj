@@ -6,7 +6,7 @@
     <ProjectGuid>05811249-cb4e-44ec-91c1-bdb5664a3377</ProjectGuid>
     <DockerLaunchBrowser>false</DockerLaunchBrowser>
     <DockerServiceUrl>http://localhost:5000/api/home</DockerServiceUrl>
-    <DockerServiceName>Nano.Services.Example</DockerServiceName>
+    <DockerServiceName>Nano.Example</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.ci.build.yml" />

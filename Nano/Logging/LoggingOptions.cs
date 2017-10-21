@@ -6,10 +6,15 @@ namespace Nano.Logging
 {
     /// <summary>
     /// Logging Options.
-    /// Populatd from "Logging" <see cref="IConfigurationSection"/>.
+    /// Populated from "Logging" <see cref="IConfigurationSection"/>.
     /// </summary>
     public class LoggingOptions
     {
+        /// <summary>
+        /// Section Name.
+        /// </summary>
+        public static string SectionName => "Logging";
+
         /// <summary>
         /// Log Level.
         /// </summary>

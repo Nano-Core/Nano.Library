@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.App.Config;
-using Nano.App.Config.Extensions;
-using Nano.App.Controllers.Contracts.Binders.Providers;
-using Nano.Hosting.Middleware.Extensions;
+using Nano.App;
+using Nano.App.Controllers.Criteria.Binders.Providers;
+using Nano.Config.Extensions;
+using Nano.Hosting.Constants;
+using Nano.Hosting.Middleware;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Nano.Hosting.Extensions
@@ -36,12 +37,10 @@ namespace Nano.Hosting.Extensions
             services
                 .AddVersioning()
                 .AddHttpRequestContentTypes()
-                .AddConfigOptions<HostingOptions>(configuration, "Hosting", out var options)
+                .AddConfigOptions<HostingOptions>(configuration, HostingOptions.SectionName, out var options)
                 .AddMvc(x =>
                 {
-                    x.ModelBinderProviders.Insert(0, new QueryModelBinderProvider());
-                    x.ModelBinderProviders.Insert(1, new OrderingModelBinderProvider());
-                    x.ModelBinderProviders.Insert(2, new PaginationModelBinderProvider());
+                    x.ModelBinderProviders.Insert(0, new CriteriaModelBinderProvider());
                 })
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()
@@ -56,14 +55,14 @@ namespace Nano.Hosting.Extensions
             if (options.EnableGzipCompression)
                 services.AddGzipCompression();
 
-            if (options.EnableHttpRequestLocalization)
-                services.AddLocalizations();
+            if (options.EnableHttpContextExtension)
+                services.AddHttpContextExtensions();
 
             if (options.EnableHttpRequestIdentifier)
                 services.AddHttpRequestIdentifier();
 
-            if (options.EnableHttpContextExtension)
-                services.AddHttpContextExtensions();
+            if (options.EnableHttpRequestLocalization)
+                services.AddHttpRequestLocalization();
 
             return services;
         }
@@ -104,33 +103,13 @@ namespace Nano.Hosting.Extensions
             return services
                 .AddSwaggerGen(x =>
                 {
-                    x.SwaggerDoc(options.Version, new Info
+                    x.SwaggerDoc(options.Version.ToString(), new Info
                     {
                         Title = options.Name,
-                        Version = options.Version,
+                        Version = options.Version.ToString(),
                         Description = options.Description
                     });
                 });
-        }
-
-        /// <summary>
-        /// Adds Request and View localiztion to the <see cref="IMvcBuilder"/> and <see cref="IServiceCollection"/>.
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        internal static IServiceCollection AddLocalizations(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            // TODO: LOCALIZATION: Implement ressource storage (file, text translations?).
-            services
-                .AddLocalization()
-                .AddMvc()
-                    .AddViewLocalization()
-                    .AddDataAnnotationsLocalization();
-
-            return services;
         }
 
         /// <summary>
@@ -145,6 +124,80 @@ namespace Nano.Hosting.Extensions
 
             services
                 .AddResponseCompression(y => y.Providers.Add<GzipCompressionProvider>());
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds <see cref="HttpContextLoggingMiddleware"/> to the <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        internal static IServiceCollection AddHttpContextExtensions(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            return services
+                .AddScoped<HttpContextLoggingMiddleware>();
+        }
+
+        /// <summary>
+        /// Adds Request and View localiztion to the <see cref="IMvcBuilder"/> and <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        internal static IServiceCollection AddHttpRequestLocalization(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services
+                .AddLocalization()
+                .AddMvc()
+                .AddViewLocalization()
+                .AddDataAnnotationsLocalization();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds <see cref="HttpRequestIdentifierMiddleware"/> to the <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        internal static IServiceCollection AddHttpRequestIdentifier(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            return services
+                .AddScoped<HttpRequestIdentifierMiddleware>();
+        }
+
+        /// <summary>
+        /// Adds <see cref="HttpRequestContentTypeMiddleware"/> to the <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        internal static IServiceCollection AddHttpRequestContentTypes(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services
+                .AddScoped<HttpRequestContentTypeMiddleware>()
+                .AddMvc(x =>
+                {
+                    x.ReturnHttpNotAcceptable = true;
+                    x.RespectBrowserAcceptHeader = true;
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("xml", HttpContentType.Xml);
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.Json);
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JavaScript);
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("html", HttpContentType.Html);
+                })
+                .AddXmlSerializerFormatters()
+                .AddXmlDataContractSerializerFormatters();
 
             return services;
         }

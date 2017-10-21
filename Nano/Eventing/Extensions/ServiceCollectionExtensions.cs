@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.App.Config.Extensions;
+using Nano.Config.Extensions;
 
 namespace Nano.Eventing.Extensions
 {
@@ -25,7 +25,7 @@ namespace Nano.Eventing.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             services
-                .AddConfigOptions<EventingOptions>(configuration, "Eventing", out _); 
+                .AddConfigOptions<EventingOptions>(configuration, EventingOptions.SectionName, out _); 
 
             return services;
         }

@@ -26,7 +26,8 @@ namespace Nano.Example.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder
-                .AddMapping<ExampleEntity, ExampleEntityMapping>();
+                .AddMapping<ExampleEntity, ExampleEntityMapping>()
+                .AddMapping<ExampleEntityRelation, ExampleEntityRelationMapping>();
         }
     }
 }

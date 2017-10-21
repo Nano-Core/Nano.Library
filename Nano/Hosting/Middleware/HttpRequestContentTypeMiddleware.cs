@@ -1,13 +1,16 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Nano.Hosting.Middleware.Extensions;
-using Nano.Hosting.Middleware.Interfaces;
+using Nano.App.Controllers.Criteria.Entities;
+using Nano.Common.Serialization;
+using Nano.Hosting.Constants;
+using Nano.Hosting.Extensions;
+using Newtonsoft.Json;
 
 namespace Nano.Hosting.Middleware
 {
     /// <inheritdoc />
-    public class HttpRequestContentTypeMiddleware : IHttpRequestContentTypeMiddleware
+    public class HttpRequestContentTypeMiddleware : IMiddleware
     {
         /// <inheritdoc />
         public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
@@ -18,9 +21,41 @@ namespace Nano.Hosting.Middleware
             if (next == null)
                 throw new ArgumentNullException(nameof(next));
 
-            httpContext.Response.ContentType = httpContext.Request.GetContentType();
+            var response = httpContext.Response;
 
-            await next(httpContext);
+            try
+            {
+                httpContext.Response.ContentType = httpContext.Request.IsContentTypeHtml()
+                    ? HttpContentType.Html
+                    : httpContext.Request.IsContentTypeXml()
+                        ? HttpContentType.Xml
+                        : httpContext.Request.IsContentTypeJson()
+                            ? HttpContentType.Json
+                            : HttpContentType.Text;
+
+                await next(httpContext);
+            }
+            catch
+            {
+                response.StatusCode = 500;
+            }
+            finally
+            {
+                if (!response.HasStarted)
+                {
+                    var result = new Error(response.StatusCode);
+                    var textResult = response.IsContentTypeJson()
+                        ? JsonConvert.SerializeObject(result)
+                        : response.IsContentTypeXml()
+                            ? XmlConvert.SerializeObject(result)
+                            : response.IsContentTypeHtml()
+                                ? default
+                                : result.ToString();
+
+                    await response
+                        .WriteAsync(textResult);
+                }
+            }
         }
     }
 }

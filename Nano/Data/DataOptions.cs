@@ -4,10 +4,15 @@ namespace Nano.Data
 { 
     /// <summary>
     /// Data Options.
-    /// Populatd from "Data" <see cref="IConfigurationSection"/>.
+    /// Populated from "Data" <see cref="IConfigurationSection"/>.
     /// </summary>
     public class DataOptions
     {
+        /// <summary>
+        /// Section Name.
+        /// </summary>
+        public static string SectionName => "Data";
+
         /// <summary>
         /// Batch Size.
         /// </summary>

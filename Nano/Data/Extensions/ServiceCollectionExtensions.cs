@@ -1,9 +1,9 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.App.Config.Extensions;
 using Nano.App.Services;
 using Nano.App.Services.Interfaces;
+using Nano.Config.Extensions;
 
 namespace Nano.Data.Extensions
 {
@@ -29,7 +29,7 @@ namespace Nano.Data.Extensions
             services
                 .AddScoped<IService, DefaultService>()
                 .AddScoped<IServiceSpatial, DefaultServiceSpatial>()
-                .AddConfigOptions<DataOptions>(configuration, "Data", out var options);
+                .AddConfigOptions<DataOptions>(configuration, DataOptions.SectionName, out var options);
 
             if (options.UseMemoryCache)
                 services.AddDistributedMemoryCache();
