@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using EasyNetQ;
 using EasyNetQ.Topology;
 using Microsoft.Extensions.Logging;
-using Nano.Api.Entities.Interfaces;
+using Nano.Api.Requests.Interfaces;
+using Nano.Api.Responses.Interfaces;
 using Nano.Eventing.Providers.Interfaces;
 using Newtonsoft.Json;
 

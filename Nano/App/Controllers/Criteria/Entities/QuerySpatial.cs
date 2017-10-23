@@ -5,7 +5,7 @@ namespace Nano.App.Controllers.Criteria.Entities
     /// <summary>
     /// Query Spatial.
     /// </summary>
-    public class QuerySpatial : Query
+    public class CriteriaSpatial : Criteria
     {
         /// <summary>
         /// Geometry.

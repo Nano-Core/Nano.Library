@@ -4,7 +4,7 @@ using Nano.App.Controllers.Criteria.Interfaces;
 namespace Nano.App.Controllers.Criteria
 {
     /// <inheritdoc />
-    public class Criteria : ICriteria
+    public class Query : IQuery
     {
         /// <inheritdoc />
         public virtual Ordering Order { get; set; } = new Ordering();
@@ -13,11 +13,11 @@ namespace Nano.App.Controllers.Criteria
         public virtual Pagination Paging { get; set; } = new Pagination();
     }
 
-    /// <inheritdoc cref="ICriteria{TQuery}"/>
-    public class Criteria<TQuery> : Criteria, ICriteria<TQuery>
-        where TQuery : IQuery
+    /// <inheritdoc cref="IQuery{TCriteria}"/>
+    public class Query<TCriteria> : Query, IQuery<TCriteria>
+        where TCriteria : ICriteria
     {
         /// <inheritdoc />
-        public virtual TQuery Query { get; set; } 
+        public virtual TCriteria Criteria { get; set; } 
     }
 }

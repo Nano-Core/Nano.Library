@@ -10,8 +10,8 @@ using Nano.App.Controllers.Criteria.Interfaces;
 namespace Nano.App.Controllers.Criteria.Binders
 {
     /// <inheritdoc />
-    public class CriteriaModelBinder<TQuery> : IModelBinder
-        where TQuery : IQuery, new()
+    public class QueryModelBinder<TCriteria> : IModelBinder
+        where TCriteria : ICriteria, new()
     {
         /// <inheritdoc />
         public Task BindModelAsync(ModelBindingContext bindingContext)
@@ -37,7 +37,7 @@ namespace Nano.App.Controllers.Criteria.Binders
             if (!success)
                 direction = Direction.Asc;
 
-            var model = new Criteria<TQuery>
+            var model = new Query<TCriteria>
             {
                 Paging = new Pagination
                 {
@@ -49,14 +49,14 @@ namespace Nano.App.Controllers.Criteria.Binders
                     By = orderBy,
                     Direction = direction
                 },
-                Query = new TQuery()
+                Criteria = new TCriteria()
             };
 
             var exclude = new[] { "by", "count", "number", "direction" };
 
             foreach (var parameter in query.Where(x => !exclude.Contains(x.Key)))
             {
-                var type = typeof(TQuery);
+                var type = typeof(TCriteria);
                 var property = type.GetProperty(parameter.Key, BindingFlags.IgnoreCase | BindingFlags.GetProperty | BindingFlags.Public | BindingFlags.Instance);
 
                 if (property == null)
@@ -66,11 +66,11 @@ namespace Nano.App.Controllers.Criteria.Binders
 
                 if (property.PropertyType == typeof(DateTimeOffset) || property.PropertyType == typeof(DateTimeOffset?))
                 {
-                    property.SetValue(model.Query, DateTimeOffset.Parse(value));
+                    property.SetValue(model.Criteria, DateTimeOffset.Parse(value));
                 }
                 else
                 {
-                    property.SetValue(model.Query, value);
+                    property.SetValue(model.Criteria, value);
                 }
             }
 

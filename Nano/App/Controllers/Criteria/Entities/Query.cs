@@ -8,7 +8,7 @@ namespace Nano.App.Controllers.Criteria.Entities
     /// <summary>
     /// Default Query.
     /// </summary>
-    public class Query : IQuery
+    public class Criteria : ICriteria
     {
         /// <summary>
         /// Is Active (read-only).

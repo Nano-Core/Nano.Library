@@ -30,23 +30,23 @@ namespace Nano.App.Services.Interfaces
         /// Get all instances of <typeparamref name="TEntity"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
-        /// <param name="query">The <see cref="Criteria"/>.</param>
+        /// <param name="query">The <see cref="Query"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
-        Task<IEnumerable<TEntity>> GetAll<TEntity>(Criteria query, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> GetAll<TEntity>(Query query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity;
 
         /// <summary>
-        /// Get all instances of <typeparamref name="TEntity"/>, matching the criterias of the passed <paramref name="criteria"/>.
+        /// Get all instances of <typeparamref name="TEntity"/>, matching the criterias of the passed <paramref name="query"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
-        /// <typeparam name="TQuery">The <see cref="IQuery"/> type.</typeparam>
-        /// <param name="criteria">The <see cref="Criteria{TQuery}"/>.</param>
+        /// <typeparam name="TCriteria">The <see cref="IQuery"/> type.</typeparam>
+        /// <param name="query">The <see cref="Query{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
-        Task<IEnumerable<TEntity>> GetMany<TEntity, TQuery>(Criteria<TQuery> criteria, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> GetMany<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
-            where TQuery : class, IQuery;
+            where TCriteria : class, ICriteria;
 
         /// <summary>
         /// Get all instances of <typeparamref name="TEntity"/>, matching the passed <paramref name="expression"/>.

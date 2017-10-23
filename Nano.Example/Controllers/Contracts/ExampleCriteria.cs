@@ -3,7 +3,7 @@
 namespace Nano.Example.Controllers.Contracts
 {
     /// <inheritdoc />
-    public class ExampleQuery : Query
+    public class ExampleCriteria : Criteria
     {
 
     }

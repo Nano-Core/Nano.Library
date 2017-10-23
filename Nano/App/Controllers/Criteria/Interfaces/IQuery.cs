@@ -7,7 +7,7 @@ namespace Nano.App.Controllers.Criteria.Interfaces
     /// <summary>
     /// Query interface.
     /// </summary>
-    public interface IQuery
+    public interface ICriteria
     {
         /// <summary>
         /// Gets the <see cref="Expression{T}"/>.

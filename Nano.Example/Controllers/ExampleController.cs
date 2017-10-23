@@ -7,7 +7,7 @@ using Nano.Example.Models;
 namespace Nano.Example.Controllers
 {
     /// <inheritdoc />
-    public class ExampleController : DefaultController<ExampleEntity, ExampleQuery>
+    public class ExampleController : DefaultController<ExampleEntity, ExampleCriteria>
     {
         /// <inheritdoc />
         public ExampleController(ILogger<ExampleController> logger, IService service)

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 namespace Nano.App.Controllers.Criteria.Binders.Providers
 {
     /// <inheritdoc />
-    public class CriteriaModelBinderProvider : IModelBinderProvider
+    public class QueryModelBinderProvider : IModelBinderProvider
     {
         /// <inheritdoc />
         public IModelBinder GetBinder(ModelBinderProviderContext context)
@@ -15,10 +15,10 @@ namespace Nano.App.Controllers.Criteria.Binders.Providers
 
             var modelType = context.Metadata.ModelType;
 
-            if (modelType.GetTypeInfo().IsGenericType && modelType.GetGenericTypeDefinition() == typeof(Criteria<>))
+            if (modelType.GetTypeInfo().IsGenericType && modelType.GetGenericTypeDefinition() == typeof(Query<>))
             {
                 var types = context.Metadata.ModelType.GetGenericArguments();
-                var genericType = typeof(CriteriaModelBinder<>).MakeGenericType(types);
+                var genericType = typeof(QueryModelBinder<>).MakeGenericType(types);
 
                 return (IModelBinder)Activator.CreateInstance(genericType);
             }

@@ -3,9 +3,9 @@ using NetTopologySuite.Geometries;
 namespace Nano.App.Controllers.Criteria.Interfaces
 {
     /// <summary>
-    /// Query Spatial interface.
+    /// Criteria Spatial interface.
     /// </summary>
-    public interface IQuerySpatial : IQuery
+    public interface ICriteriaSpatial : ICriteria
     {
         /// <summary>
         /// Geometry.

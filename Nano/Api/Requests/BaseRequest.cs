@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nano.Api.Entities.Interfaces;
+using Nano.Api.Requests.Interfaces;
 using Newtonsoft.Json;
 
-namespace Nano.Api.Entities
+namespace Nano.Api.Requests
 {
     /// <inheritdoc />
     public abstract class BaseRequest : IRequest
@@ -26,7 +26,7 @@ namespace Nano.Api.Entities
         {
             var scheme = this.IsSsl ? "https://" : "http://";
             var queryString = string.Join("&", this.GetQueryStringParameters().Select(x => Uri.EscapeDataString(x.Key) + "=" + Uri.EscapeDataString(x.Value)));
-            var uri = new Uri($"{scheme}{this.Host}:{this.Port}/jsonrpc?{queryString}");
+            var uri = new Uri($"{scheme}{this.Host}:{this.Port}?{queryString}");
 
             return uri;
         }

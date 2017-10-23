@@ -1,4 +1,6 @@
-namespace Nano.Api.Entities.Interfaces
+using Nano.Api.Requests.Interfaces;
+
+namespace Nano.Api.Responses.Interfaces
 {
     /// <summary>
     /// Base interface for responses.

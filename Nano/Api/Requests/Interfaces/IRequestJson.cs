@@ -1,4 +1,4 @@
-namespace Nano.Api.Entities.Interfaces
+namespace Nano.Api.Requests.Interfaces
 {
     /// <summary>
     /// Indicates the Request is a Json payload request, using http post method.

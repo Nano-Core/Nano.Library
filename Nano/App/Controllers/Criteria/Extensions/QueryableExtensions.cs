@@ -14,22 +14,22 @@ namespace Nano.App.Controllers.Criteria.Extensions
     public static class QueryableExtensions
     {
         /// <summary>
-        /// Adds where clause to the <see cref="IQueryable{T}"/> based on the passed <paramref name="query"/>.
+        /// Adds where clause to the <see cref="IQueryable{T}"/> based on the passed <paramref name="criteria"/>.
         /// </summary>
         /// <typeparam name="TEntity">The type used in the <see cref="IQueryable{T}"/>.</typeparam>
         /// <param name="source">The <see cref="IQueryable{T}"/>.</param>
-        /// <param name="query">The <see cref="IQuery"/>.</param>
+        /// <param name="criteria">The <see cref="ICriteria"/>.</param>
         /// <returns>The <see cref="IQueryable{T}"/>.</returns>
-        public static IQueryable<TEntity> Where<TEntity>(this IQueryable<TEntity> source, IQuery query)
+        public static IQueryable<TEntity> Where<TEntity>(this IQueryable<TEntity> source, ICriteria criteria)
             where TEntity : IEntity
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
+            if (criteria == null)
+                throw new ArgumentNullException(nameof(criteria));
 
-            var expression = query.GetExpression<TEntity>();
+            var expression = criteria.GetExpression<TEntity>();
             return source.Where(expression);
         }
 

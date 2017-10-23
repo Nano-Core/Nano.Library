@@ -1,6 +1,6 @@
-using Nano.Api.Entities.Interfaces;
+using Nano.Api.Responses.Interfaces;
 
-namespace Nano.Api.Entities
+namespace Nano.Api.Responses
 {
     /// <inheritdoc />
     public abstract class BaseResponse : IResponse

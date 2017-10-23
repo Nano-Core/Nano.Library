@@ -27,7 +27,7 @@ namespace Nano.App.Controllers
     public abstract class BaseController<TService, TEntity, TIdentity, TCriteria> : Controller
         where TService : IService
         where TEntity : class, IEntity, IEntityIdentity<TIdentity>, IEntityWritable
-        where TCriteria : class, IQuery
+        where TCriteria : class, ICriteria
     {
         /// <summary>
         /// Logger.
@@ -67,7 +67,7 @@ namespace Nano.App.Controllers
 
             context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 
-            var result = new Error(StatusCodes.Status400BadRequest)
+            var result = new Error(context.HttpContext.Response.StatusCode)
             {
                 Summary = "Invalid ModelState",
                 Errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage)).ToArray()
@@ -85,10 +85,10 @@ namespace Nano.App.Controllers
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpGet]
         [HttpPost]
-        public virtual async Task<IActionResult> Index([FromQuery][FromBody][FromForm][Required]Criteria.Criteria query, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Index([FromQuery][FromBody][FromForm][Required]Query query, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
-                .GetAll<TEntity>(query ?? new Criteria.Criteria(), cancellationToken);
+                .GetAll<TEntity>(query ?? new Query(), cancellationToken);
 
             if (this.Response.IsContentTypeHtml())
                 return this.View(result);
@@ -122,12 +122,12 @@ namespace Nano.App.Controllers
         /// Criteria.
         /// Queries instances of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
         /// </summary>
-        /// <param name="criteria">The <see cref="Criteria{TQuery}"/>.</param>
+        /// <param name="criteria">The <see cref="Query{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpGet]
         [HttpPost]
-        public virtual async Task<IActionResult> Query([FromQuery][FromBody][FromForm][Required]Criteria<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Query([FromQuery][FromBody][FromForm][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
                 .GetMany<TEntity, TCriteria>(criteria, cancellationToken);

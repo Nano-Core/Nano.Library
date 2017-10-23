@@ -1,7 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Api.Entities.Interfaces;
+using Nano.Api.Requests.Interfaces;
+using Nano.Api.Responses.Interfaces;
 
 namespace Nano.Eventing.Providers.Interfaces
 {

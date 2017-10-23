@@ -13,100 +13,100 @@ namespace Nano.App.Services.Interfaces
     public interface IServiceSpatial : IService
     {
         /// <summary>
-        /// Gets <see cref="IEntitySpatial"/>'s that covers the <paramref name="criteria"/>.
+        /// Gets <see cref="IEntitySpatial"/>'s that covers the <paramref name="query"/>.
         /// </summary>
         /// <typeparam name="TEntity">The type of <see cref="IEntitySpatial"/>.</typeparam>
-        /// <typeparam name="TQuery">The type of <see cref="IQuerySpatial"/>.</typeparam>
-        /// <param name="criteria">The <see cref="Criteria{TQuery}"/>.</param>
+        /// <typeparam name="TCriteria">The type of <see cref="ICriteriaSpatial"/>.</typeparam>
+        /// <param name="query">The <see cref="Query{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{T}"/> of matching results.</returns>
-        Task<IEnumerable<TEntity>> Covers<TEntity, TQuery>(Criteria<TQuery> criteria, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> Covers<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntitySpatial
-            where TQuery : class, IQuerySpatial;
+            where TCriteria : class, ICriteriaSpatial;
 
         /// <summary>
-        /// Gets <see cref="IEntitySpatial"/>'s that crosses the <paramref name="criteria"/>.
+        /// Gets <see cref="IEntitySpatial"/>'s that crosses the <paramref name="query"/>.
         /// </summary>
         /// <typeparam name="TEntity">The type of <see cref="IEntitySpatial"/>.</typeparam>
-        /// <typeparam name="TQuery">The type of <see cref="IQuerySpatial"/>.</typeparam>
-        /// <param name="criteria">The <see cref="Criteria{TQuery}"/>.</param>
+        /// <typeparam name="TCriteria">The type of <see cref="ICriteriaSpatial"/>.</typeparam>
+        /// <param name="query">The <see cref="Query{TQuery}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{T}"/> of matching results.</returns>
-        Task<IEnumerable<TEntity>> Crosses<TEntity, TQuery>(Criteria<TQuery> criteria, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> Crosses<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntitySpatial
-            where TQuery : class, IQuerySpatial;
+            where TCriteria : class, ICriteriaSpatial;
 
         /// <summary>
-        /// Gets <see cref="IEntitySpatial"/>'s that touches the <paramref name="criteria"/>.
+        /// Gets <see cref="IEntitySpatial"/>'s that touches the <paramref name="query"/>.
         /// </summary>
         /// <typeparam name="TEntity">The type of <see cref="IEntitySpatial"/>.</typeparam>
-        /// <typeparam name="TQuery">The type of <see cref="IQuerySpatial"/>.</typeparam>
-        /// <param name="criteria">The <see cref="Criteria{TQuery}"/>.</param>
+        /// <typeparam name="TCriteria">The type of <see cref="ICriteriaSpatial"/>.</typeparam>
+        /// <param name="query">The <see cref="Query{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{T}"/> of matching results.</returns>
-        Task<IEnumerable<TEntity>> Touches<TEntity, TQuery>(Criteria<TQuery> criteria, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> Touches<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntitySpatial
-            where TQuery : class, IQuerySpatial;
+            where TCriteria : class, ICriteriaSpatial;
 
         /// <summary>
-        /// Gets <see cref="IEntitySpatial"/>'s that overlaps the <paramref name="criteria"/>.
+        /// Gets <see cref="IEntitySpatial"/>'s that overlaps the <paramref name="query"/>.
         /// </summary>
         /// <typeparam name="TEntity">The type of <see cref="IEntitySpatial"/>.</typeparam>
-        /// <typeparam name="TQuery">The type of <see cref="IQuerySpatial"/>.</typeparam>
-        /// <param name="criteria">The <see cref="Criteria{TQuery}"/>.</param>
+        /// <typeparam name="TCriteria">The type of <see cref="ICriteriaSpatial"/>.</typeparam>
+        /// <param name="query">The <see cref="Query{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{T}"/> of matching results.</returns>
-        Task<IEnumerable<TEntity>> Overlaps<TEntity, TQuery>(Criteria<TQuery> criteria, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> Overlaps<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntitySpatial
-            where TQuery : class, IQuerySpatial;
+            where TCriteria : class, ICriteriaSpatial;
 
         /// <summary>
-        /// Gets <see cref="IEntitySpatial"/>'s that is covered by the <paramref name="criteria"/>.
+        /// Gets <see cref="IEntitySpatial"/>'s that is covered by the <paramref name="query"/>.
         /// </summary>
         /// <typeparam name="TEntity">The type of <see cref="IEntitySpatial"/>.</typeparam>
-        /// <typeparam name="TQuery">The type of <see cref="IQuerySpatial"/>.</typeparam>
-        /// <param name="criteria">The <see cref="Criteria{TQuery}"/>.</param>
+        /// <typeparam name="TCriteria">The type of <see cref="ICriteriaSpatial"/>.</typeparam>
+        /// <param name="query">The <see cref="Query{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{T}"/> of matching results.</returns>
-        Task<IEnumerable<TEntity>> CoveredBy<TEntity, TQuery>(Criteria<TQuery> criteria, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> CoveredBy<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntitySpatial
-            where TQuery : class, IQuerySpatial;
+            where TCriteria : class, ICriteriaSpatial;
 
         /// <summary>
-        /// Gets <see cref="IEntitySpatial"/>'s that are disjointing of the <paramref name="criteria"/>.
+        /// Gets <see cref="IEntitySpatial"/>'s that are disjointing of the <paramref name="query"/>.
         /// </summary>
         /// <typeparam name="TEntity">The type of <see cref="IEntitySpatial"/>.</typeparam>
-        /// <typeparam name="TQuery">The type of <see cref="IQuerySpatial"/>.</typeparam>
-        /// <param name="criteria">The <see cref="Criteria{TQuery}"/>.</param>
+        /// <typeparam name="TCriteria">The type of <see cref="ICriteriaSpatial"/>.</typeparam>
+        /// <param name="query">The <see cref="Query{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{T}"/> of matching results.</returns>
-        Task<IEnumerable<TEntity>> Disjoints<TEntity, TQuery>(Criteria<TQuery> criteria, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> Disjoints<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntitySpatial
-            where TQuery : class, IQuerySpatial;
+            where TCriteria : class, ICriteriaSpatial;
 
         /// <summary>
-        /// Gets <see cref="IEntitySpatial"/>'s that intersects the <paramref name="criteria"/>.
+        /// Gets <see cref="IEntitySpatial"/>'s that intersects the <paramref name="query"/>.
         /// </summary>
         /// <typeparam name="TEntity">The type of <see cref="IEntitySpatial"/>.</typeparam>
-        /// <typeparam name="TQuery">The type of <see cref="IQuerySpatial"/>.</typeparam>
-        /// <param name="criteria">The <see cref="Criteria{TQuery}"/>.</param>
+        /// <typeparam name="TCriteria">The type of <see cref="ICriteriaSpatial"/>.</typeparam>
+        /// <param name="query">The <see cref="Query{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{T}"/> of matching results.</returns>
-        Task<IEnumerable<TEntity>> Intersects<TEntity, TQuery>(Criteria<TQuery> criteria, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> Intersects<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntitySpatial
-            where TQuery : class, IQuerySpatial;
+            where TCriteria : class, ICriteriaSpatial;
 
         /// <summary>
-        /// Gets <see cref="IEntitySpatial"/>'s that are within the radius of the <paramref name="criteria"/>.
+        /// Gets <see cref="IEntitySpatial"/>'s that are within the radius of the <paramref name="query"/>.
         /// </summary>
         /// <typeparam name="TEntity">The type of <see cref="IEntitySpatial"/>.</typeparam>
-        /// <typeparam name="TQuery">The type of <see cref="IQuerySpatial"/>.</typeparam>
-        /// <param name="criteria">The <see cref="Criteria{TQuery}"/>.</param>
+        /// <typeparam name="TCriteria">The type of <see cref="ICriteriaSpatial"/>.</typeparam>
+        /// <param name="query">The <see cref="Query{TCriteria}"/>.</param>
         /// <param name="distance">The distance in meters.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{T}"/> of matching results.</returns>
-        Task<IEnumerable<TEntity>> Within<TEntity, TQuery>(Criteria<TQuery> criteria, double distance = 10000D, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> Within<TEntity, TCriteria>(Query<TCriteria> query, double distance = 10000D, CancellationToken cancellationToken = default)
             where TEntity : class, IEntitySpatial
-            where TQuery : class, IQuerySpatial;
+            where TCriteria : class, ICriteriaSpatial;
     }
 }

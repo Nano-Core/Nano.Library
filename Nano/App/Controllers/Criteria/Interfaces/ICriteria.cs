@@ -3,9 +3,9 @@ using Nano.App.Controllers.Criteria.Entities;
 namespace Nano.App.Controllers.Criteria.Interfaces
 {
     /// <summary>
-    /// Criteria interface.
+    /// Query interface.
     /// </summary>
-    public interface ICriteria
+    public interface IQuery
     {
         /// <summary>
         /// Order.
@@ -19,15 +19,15 @@ namespace Nano.App.Controllers.Criteria.Interfaces
     }
 
     /// <summary>
-    /// Criteria interface.
+    /// Query interface.
     /// </summary>
-    /// <typeparam name="TQuery">The type of <see cref="IQuery"/>.</typeparam>
-    public interface ICriteria<TQuery>
-        where TQuery : IQuery
+    /// <typeparam name="TCriteria">The type of <see cref="IQuery"/>.</typeparam>
+    public interface IQuery<TCriteria>
+        where TCriteria : ICriteria
     {
         /// <summary>
         /// Query.
         /// </summary>
-        TQuery Query { get; set; }
+        TCriteria Criteria { get; set; }
     }
 }

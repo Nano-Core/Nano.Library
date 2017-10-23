@@ -1,5 +1,5 @@
 using System;
-using Nano.Api.Entities.Interfaces;
+using Nano.Api.Responses.Interfaces;
 
 namespace Nano.Api.Exceptions
 {

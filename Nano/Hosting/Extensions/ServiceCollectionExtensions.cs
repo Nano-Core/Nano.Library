@@ -40,7 +40,7 @@ namespace Nano.Hosting.Extensions
                 .AddConfigOptions<HostingOptions>(configuration, HostingOptions.SectionName, out var options)
                 .AddMvc(x =>
                 {
-                    x.ModelBinderProviders.Insert(0, new CriteriaModelBinderProvider());
+                    x.ModelBinderProviders.Insert(0, new QueryModelBinderProvider());
                 })
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()

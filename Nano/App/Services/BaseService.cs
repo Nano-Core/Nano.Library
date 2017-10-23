@@ -48,7 +48,7 @@ namespace Nano.App.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetAll<TEntity>(Criteria query, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetAll<TEntity>(Query query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
         {
             if (query == null)
@@ -62,18 +62,18 @@ namespace Nano.App.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetMany<TEntity, TQuery>(Criteria<TQuery> criteria, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetMany<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
-            where TQuery : class, IQuery
+            where TCriteria : class, ICriteria
         {
-            if (criteria == null)
-                throw new ArgumentNullException(nameof(criteria));
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
 
             return await this.Context
                 .Set<TEntity>()
-                .Where(criteria.Query)
-                .Order(criteria.Order)
-                .Limit(criteria.Paging)
+                .Where(query.Criteria)
+                .Order(query.Order)
+                .Limit(query.Paging)
                 .ToArrayAsync(cancellationToken);
         }
 

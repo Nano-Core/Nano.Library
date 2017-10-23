@@ -5,8 +5,9 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Api.Entities.Interfaces;
 using Nano.Api.Exceptions;
+using Nano.Api.Requests.Interfaces;
+using Nano.Api.Responses.Interfaces;
 using Newtonsoft.Json;
 
 namespace Nano.Api
@@ -140,7 +141,7 @@ namespace Nano.Api
             {
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var jsonSerializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+                var jsonSerializerSettings = new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore};
                 var serializeObject = JsonConvert.SerializeObject(request, jsonSerializerSettings);
 
                 using (var json = new StringContent(serializeObject, Encoding.UTF8))
@@ -206,7 +207,7 @@ namespace Nano.Api
                 }
                 catch (Exception ex)
                 {
-                    var exception = ex is HttpException ? ex : new HttpException(ex.Message, ex) { Response = response };
+                    var exception = ex is HttpException ? ex : new HttpException(ex.Message, ex) {Response = response};
 
                     taskCompletionSource.SetException(exception);
                 }
