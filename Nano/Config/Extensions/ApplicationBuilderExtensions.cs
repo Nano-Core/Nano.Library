@@ -5,10 +5,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.App;
+using Nano.Config.Providers.Hosting;
 using Nano.Data.Interfaces;
-using Nano.Hosting;
-using Nano.Hosting.Middleware;
 
 namespace Nano.Config.Extensions
 {
@@ -39,7 +37,7 @@ namespace Nano.Config.Extensions
                     x.MapRoute("default", "api/" + appOptions.Name + "/{controller=Home}/{action=Index}/{id?}");
                 })
                 .UseExceptionHandler("/api/" + appOptions.Name + "/Home/Error")
-                .UseStatusCodePagesWithRedirects("/api/" + appOptions.Name + "/Home/Error/{0}");
+                .UseStatusCodePagesWithRedirects("api/" + appOptions.Name + "/Home/Error/{0}");
 
 
             if (hostingOptions.EnableSession)
@@ -55,7 +53,7 @@ namespace Nano.Config.Extensions
                     .UseSwaggerUI(x =>
                     {
                         x.ShowRequestHeaders();
-                        x.SwaggerEndpoint($"/api-docs/{appOptions.Name}/{appOptions.Version}/swagger.json", $"Api {appOptions.Version}");
+                        x.SwaggerEndpoint($"api-docs/{appOptions.Name}/{appOptions.Version}/swagger.json", $"Api {appOptions.Version}");
                     });
             }
 
@@ -83,7 +81,8 @@ namespace Nano.Config.Extensions
                 builder.UseMiddleware<HttpRequestIdentifierMiddleware>();
 
             builder
-                .UseMiddleware<HttpRequestContentTypeMiddleware>();
+                .UseMiddleware<HttpContextContentTypeMiddleware>()
+                .UseMiddleware<HttpContextExceptionMiddleware>();
 
             return builder;
         }
@@ -99,9 +98,9 @@ namespace Nano.Config.Extensions
                 throw new ArgumentNullException(nameof(builder));
 
             var services = builder.ApplicationServices;
-            var dbContext = services.GetRequiredService<IDbContext>();
+            var dbContext = services.GetService<IDbContext>();
 
-            dbContext.Database
+            dbContext?.Database
                 .EnsureCreatedAsync()
                 .ContinueWith(x => dbContext.Database.MigrateAsync())
                 .Wait();

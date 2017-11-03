@@ -11,20 +11,20 @@ namespace Nano.Api.Requests
     {
         /// <inheritdoc />
         [JsonIgnore]
-        public virtual string Host { get; set; }
+        public virtual string Host { get; set; } // TODO: API: Request.Host convention
 
         /// <inheritdoc />
         [JsonIgnore]
-        public virtual ushort Port { get; set; }
+        public virtual ushort Port { get; set; }// TODO: API: Request.Port convention
 
         /// <inheritdoc />
         [JsonIgnore]
-        public virtual bool IsSsl { get; set; }
+        public virtual bool UseSsl { get; set; } = true; // TODO: API: Request.IsSsl convention
 
         /// <inheritdoc />
         public virtual Uri GetUri()
         {
-            var scheme = this.IsSsl ? "https://" : "http://";
+            var scheme = this.UseSsl ? "https://" : "http://";
             var queryString = string.Join("&", this.GetQueryStringParameters().Select(x => Uri.EscapeDataString(x.Key) + "=" + Uri.EscapeDataString(x.Value)));
             var uri = new Uri($"{scheme}{this.Host}:{this.Port}?{queryString}");
 

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using Nano.App.Controllers;
-using Nano.App.Services.Interfaces;
+using Nano.Controllers;
 using Nano.Example.Controllers.Contracts;
 using Nano.Example.Models;
+using Nano.Services.Interfaces;
 
 namespace Nano.Example.Controllers
 {

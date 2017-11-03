@@ -1,4 +1,4 @@
-﻿using Nano.App.Controllers.Criteria.Entities;
+﻿using Nano.Controllers.Criterias.Entities;
 
 namespace Nano.Example.Controllers.Contracts
 {

@@ -13,10 +13,10 @@ using Newtonsoft.Json;
 namespace Nano.Api
 {
     /// <summary>
-    /// A public-surface API that exposes the Google Maps API functionality.
+    /// http Facade.
     /// </summary>
-    /// <typeparam name="TRequest"></typeparam>
-    /// <typeparam name="TResponse"></typeparam>
+    /// <typeparam name="TRequest">The type of <see cref="IRequest"/>.</typeparam>
+    /// <typeparam name="TResponse">The type of <see cref="IResponse"/>.</typeparam>
     public sealed class HttpFacade<TRequest, TResponse>
         where TRequest : IRequest, new()
         where TResponse : IResponse, new()
@@ -25,12 +25,10 @@ namespace Nano.Api
         internal static readonly HttpFacade<TRequest, TResponse> instance = new HttpFacade<TRequest, TResponse>();
 
         /// <summary>
-        /// Criteria the Google Maps API using the provided request with the default timeout of 30 seconds.
+        /// Query.
         /// </summary>
-        /// <param name="request">The request that will be sent.</param>
-        /// <returns>The response that was received.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when a null value is passed to the request parameter.</exception>
-        /// <exception cref="TaskCanceledException">Thrown when the provided Google client ID or signing key are invalid.</exception>
+        /// <param name="request">The <see cref="IRequest"/>.</param>
+        /// <returns>The <see cref="IResponse"/>.</returns>
         public TResponse Query(TRequest request)
         {
             if (request == null)
@@ -40,15 +38,11 @@ namespace Nano.Api
         }
 
         /// <summary>
-        /// Criteria the Google Maps API using the provided request and timeout period.
+        /// Query.
         /// </summary>
-        /// <param name="request">The request that will be sent.</param>
-        /// <param name="timeout">A TimeSpan specifying the amount of time to wait for a response before aborting the request.
-        /// The specify an infinite timeout, pass a TimeSpan with a TotalMillisecond value of Timeout.Infinite.
-        /// When a request is aborted due to a timeout an AggregateException will be thrown with an InnerException of type TimeoutException.</param>
-        /// <returns>The response that was received.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when a null value is passed to the request parameter.</exception>
-        /// <exception cref="TaskCanceledException">Thrown when the provided Google client ID or signing key are invalid.</exception>
+        /// <param name="request">The <see cref="IRequest"/>.</param>
+        /// <param name="timeout">The timeout.</param>
+        /// <returns>The <see cref="IResponse"/>.</returns>
         public TResponse Query(TRequest request, TimeSpan timeout)
         {
             if (request == null)
@@ -58,11 +52,10 @@ namespace Nano.Api
         }
 
         /// <summary>
-        /// Asynchronously query the Google Maps API using the provided request.
+        /// Query Async.
         /// </summary>
-        /// <param name="request">The request that will be sent.</param>
-        /// <returns>A Task with the future value of the response.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when a null value is passed to the request parameter.</exception>
+        /// <param name="request">The <see cref="IRequest"/>.</param>
+        /// <returns>The <see cref="Task{TResponse}"/>.</returns>
         public Task<TResponse> QueryAsync(TRequest request)
         {
             if (request == null)
@@ -72,15 +65,11 @@ namespace Nano.Api
         }
 
         /// <summary>
-        /// Asynchronously query the Google Maps API using the provided request.
+        /// Query Async.
         /// </summary>
-        /// <param name="request">The request that will be sent.</param>
-        /// <param name="timeout">A TimeSpan specifying the amount of time to wait for a response before aborting the request.
-        /// The specify an infinite timeout, pass a TimeSpan with a TotalMillisecond value of Timeout.Infinite.
-        /// When a request is aborted due to a timeout the returned task will transition to the Faulted state with a TimeoutException.</param>
-        /// <returns>A Task with the future value of the response.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when a null value is passed to the request parameter.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the value of timeout is neither a positive value or infinite.</exception>
+        /// <param name="request">The <see cref="IRequest"/>.</param>
+        /// <param name="timeout">The timeout.</param>
+        /// <returns>The <see cref="Task{TResponse}"/>.</returns>
         public Task<TResponse> QueryAsync(TRequest request, TimeSpan timeout)
         {
             if (request == null)
@@ -93,12 +82,11 @@ namespace Nano.Api
         }
 
         /// <summary>
-        /// Asynchronously query the Google Maps API using the provided request.
+        /// Query Async.
         /// </summary>
-        /// <param name="request">The request that will be sent.</param>
-        /// <param name="cancellationToken">A cancellation cancellationToken that can be used to cancel the pending asynchronous task.</param>
-        /// <returns>A Task with the future value of the response.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when a null value is passed to the request parameter.</exception>
+        /// <param name="request">The <see cref="IRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="Task{TResponse}"/>.</returns>
         public Task<TResponse> QueryAsync(TRequest request, CancellationToken cancellationToken)
         {
             if (request == null)
@@ -111,16 +99,12 @@ namespace Nano.Api
         }
 
         /// <summary>
-        /// Asynchronously query the Google Maps API using the provided request.
+        /// Query Async.
         /// </summary>
-        /// <param name="request">The request that will be sent.</param>
-        /// <param name="timeout">A TimeSpan specifying the amount of time to wait for a response before aborting the request.
-        /// The specify an infinite timeout, pass a TimeSpan with a TotalMillisecond value of Timeout.Infinite.
-        /// When a request is aborted due to a timeout the returned task will transition to the Faulted state with a TimeoutException.</param>
-        /// <param name="cancellationToken">A cancellation cancellationToken that can be used to cancel the pending asynchronous task.</param>
-        /// <returns>A Task with the future value of the response.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when a null value is passed to the request parameter.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the value of timeout is neither a positive value or infinite.</exception>
+        /// <param name="request">The <see cref="IRequest"/>.</param>
+        /// <param name="timeout">The timeout.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="Task{TResponse}"/>.</returns>
         public Task<TResponse> QueryAsync(TRequest request, TimeSpan timeout, CancellationToken cancellationToken)
         {
             if (request == null)
@@ -141,7 +125,7 @@ namespace Nano.Api
             {
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var jsonSerializerSettings = new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore};
+                var jsonSerializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
                 var serializeObject = JsonConvert.SerializeObject(request, jsonSerializerSettings);
 
                 using (var json = new StringContent(serializeObject, Encoding.UTF8))
@@ -179,16 +163,16 @@ namespace Nano.Api
                         var rawJson = content.ReadAsStringAsync().Result;
                         var rawBuffer = content.ReadAsByteArrayAsync().Result;
 
-                        using (var memoryStream = new MemoryStream(rawBuffer))
+                        using (var stream = new MemoryStream(rawBuffer))
                         {
-                            using (var streamReader = new StreamReader(memoryStream))
+                            using (var streamReader = new StreamReader(stream))
                             {
-                                var jsonSerializer = new JsonSerializer();
-                                var jsonTextReader = new JsonTextReader(streamReader);
+                                var serializer = new JsonSerializer();
+                                var reader = new JsonTextReader(streamReader);
 
                                 try
                                 {
-                                    response = jsonSerializer.Deserialize<TResponse>(jsonTextReader);
+                                    response = serializer.Deserialize<TResponse>(reader);
                                 }
                                 catch
                                 {
@@ -207,7 +191,7 @@ namespace Nano.Api
                 }
                 catch (Exception ex)
                 {
-                    var exception = ex is HttpException ? ex : new HttpException(ex.Message, ex) {Response = response};
+                    var exception = ex is ApiException ? ex : new ApiException(ex.Message, ex) { Response = response };
 
                     taskCompletionSource.SetException(exception);
                 }

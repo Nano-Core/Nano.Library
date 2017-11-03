@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Nano.App;
 using Nano.Config.Extensions;
-using Nano.Data.Providers;
-using Nano.Eventing.Providers;
+using Nano.Config.Providers.Data;
+using Nano.Config.Providers.Eventing;
+using Nano.Config.Providers.Logging;
 using Nano.Example.Data;
-using Nano.Logging.Providers;
 
 namespace Nano.Example
 {
@@ -22,8 +21,8 @@ namespace Nano.Example
                 .ConfigureApp<Application>()
                 .ConfigureServices(x =>
                 {
-                    x.AddLogging<ConsoleLogging>();
-                    x.AddEventing<RabbitMqEventingProvider>();
+                    x.AddLogging<ConsoleProvider>();
+                    x.AddEventing<EasyNetQProvider>();
                     x.AddDataContext<MySqlDataProvider, ExampleDbContext>();
                 })
                 .Build()

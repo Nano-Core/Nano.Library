@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Nano.App.Models.Interfaces;
+using Nano.Models.Interfaces;
 
 namespace Nano.Api.Responses
 {

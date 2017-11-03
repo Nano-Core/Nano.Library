@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Nano.App;
 
 namespace Nano.Example
 {

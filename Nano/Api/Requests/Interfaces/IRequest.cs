@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Nano.Api.Requests.Interfaces
 {
     /// <summary>
-    /// Base interface for requests.
+    /// Request interface.
     /// </summary>
     public interface IRequest
     {
@@ -22,7 +22,7 @@ namespace Nano.Api.Requests.Interfaces
         /// Is Ssl.
         /// Determines if http or https is used when submitting the request.
         /// </summary>
-        bool IsSsl { get; set; }
+        bool UseSsl { get; set; }
 
         /// <summary>
         /// Get the query string collection of aggregated from all parameters added to the request.

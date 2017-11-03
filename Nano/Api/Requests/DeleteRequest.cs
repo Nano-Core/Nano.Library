@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using Nano.App.Models.Interfaces;
+using Nano.Api.Requests.Interfaces;
+using Nano.Models.Interfaces;
 
 namespace Nano.Api.Requests
 {
@@ -14,10 +15,7 @@ namespace Nano.Api.Requests
         /// </summary>
         public virtual TEntity Entity { get; set; }
 
-        /// <summary>
-        /// Get Query String Parameters.
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc cref="IRequest.GetQueryStringParameters()"/>
         public override IList<KeyValuePair<string, string>> GetQueryStringParameters()
         {
             return new List<KeyValuePair<string, string>>();

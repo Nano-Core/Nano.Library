@@ -6,22 +6,16 @@ using System.Threading.Tasks;
 using EasyNetQ;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Nano.App.Models;
+using Nano.Config.Attributes;
 using Nano.Data.Interfaces;
-using Nano.Eventing;
-using Nano.Eventing.Attributes;
-using Nano.Eventing.Providers.Interfaces;
 
 namespace Nano.Data
 {
     /// <inheritdoc cref="IDbContext"/>
     public abstract class BaseDbContext : DbContext, IDbContext
     {
-        /// <summary>
-        /// Eventing.
-        /// </summary>
-        protected virtual IEventingProvider Eventing => this.GetService<IEventingProvider>();
+        /// <inheritdoc />
+        public virtual List<EntityEntry> ChangedEntries { get; set; }
 
         /// <summary>
         /// Constructor.
@@ -147,12 +141,7 @@ namespace Nano.Data
         /// <inheritdoc cref="DbContext.SaveChanges(bool)" />
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
-            var entries = this.GetChanges();
-            var result = base.SaveChanges(acceptAllChangesOnSuccess);
-
-            this.PublishChanges(entries);
-
-            return result;
+            return this.SaveChangesAsync(acceptAllChangesOnSuccess).Result;
         }
 
         /// <inheritdoc cref="DbContext.SaveChangesAsync(CancellationToken)" />
@@ -164,46 +153,12 @@ namespace Nano.Data
         /// <inheritdoc cref="DbContext.SaveChangesAsync(bool,CancellationToken)" />
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
-            var entries = this.GetChanges();
+            this.ChangedEntries = this.ChangeTracker
+                .Entries()
+                .Where(x => x.Entity.GetType().GetAttributes<PublishAttribute>().Any(y => y.States.Contains(x.State)))
+                .ToList();
 
-            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken)
-                .ContinueWith(x =>
-                {
-                    this.PublishChanges(entries);
-
-                    return x.Result;
-                }, cancellationToken);
-        }
-
-        // TODO: Refactor, dont use DefaultEntity!
-        private EntityEntry<DefaultEntity>[] GetChanges()
-        {
-            return this.ChangeTracker
-                .Entries<DefaultEntity>()
-                .Where(y => y.State == EntityState.Added || y.State == EntityState.Modified || y.State == EntityState.Deleted)
-                .ToArray();
-        }
-        private void PublishChanges(IEnumerable<EntityEntry<DefaultEntity>> entries)
-        {
-            if (entries == null)
-                throw new ArgumentNullException(nameof(entries));
-
-            foreach (var entry in entries)
-            {
-                var entity = entry.Entity;
-                var type = entry.Entity.GetType();
-                var attributes = type.GetAttributes<EventingAttribute>().ToArray();
-
-                if (attributes.Any())
-                {
-                    this.Eventing.PublishAsync(new EventEntry
-                    {
-                        Id = entity.Id,
-                        Type = type.FullName,
-                        State = entry.State
-                    });
-                }
-            }
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
     }
 }

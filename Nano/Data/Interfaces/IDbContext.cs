@@ -22,6 +22,11 @@ namespace Nano.Data.Interfaces
         IDbContextExtension
     {
         /// <summary>
+        /// Changed Entries.
+        /// </summary>
+        List<EntityEntry> ChangedEntries { get; set; }
+
+        /// <summary>
         /// Provides access to database related information and operations for this context.
         /// </summary>
         DatabaseFacade Database { get; }

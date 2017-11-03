@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Nano.Common.Extensions;
+using Nano.Api.Extensions;
+using Nano.Api.Requests.Interfaces;
 
 namespace Nano.Api.Requests
 {
     /// <summary>
-    /// 
+    /// Get Request.
     /// </summary>
     public class GetRequest : BaseRequest
     {
@@ -14,15 +15,12 @@ namespace Nano.Api.Requests
         /// </summary>
         public virtual Guid Id { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc cref="IRequest.GetQueryStringParameters()"/>
         public override IList<KeyValuePair<string, string>> GetQueryStringParameters()
         {
             var list = new List<KeyValuePair<string, string>>
             {
-                {"id", this.Id.ToString()}
+                { "Id", this.Id.ToString() }
             };
 
             return list;

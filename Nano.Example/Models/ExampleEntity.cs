@@ -1,12 +1,12 @@
-using Nano.App.Models;
-using Nano.Eventing.Attributes;
+using Nano.Config.Attributes;
+using Nano.Models;
 
 namespace Nano.Example.Models
 {
     /// <summary>
     /// Example Entity.
     /// </summary>
-    [Eventing]
+    [Publish]
     public class ExampleEntity : DefaultEntity
     {
         /// <summary>

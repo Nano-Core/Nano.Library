@@ -5,5 +5,6 @@ namespace Nano.Api.Responses
     /// </summary>
     public class DeleteResponse : BaseResponse
     {
+
     }
 }

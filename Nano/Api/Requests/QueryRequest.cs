@@ -8,10 +8,7 @@ namespace Nano.Api.Requests
     /// </summary>
     public class QueryRequest : BaseRequest, IRequestJson
     {
-        /// <summary>
-        /// Get Query String Parameters.
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc cref="IRequest.GetQueryStringParameters()"/>
         public override IList<KeyValuePair<string, string>> GetQueryStringParameters()
         {
             return new List<KeyValuePair<string, string>>();

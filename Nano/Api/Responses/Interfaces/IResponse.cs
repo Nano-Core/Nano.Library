@@ -1,19 +1,17 @@
-using Nano.Api.Requests.Interfaces;
-
 namespace Nano.Api.Responses.Interfaces
 {
     /// <summary>
-    /// Base interface for responses.
+    /// Responses interface.
     /// </summary>
     public interface IResponse
     {
         /// <summary>
-        /// Raw json of the response.
+        /// Raw Json.
         /// </summary>
         string RawJson { get; set; }
 
         /// <summary>
-        /// Raw querystring of the <see cref="IRequest"/>.
+        /// Raw Querystring.
         /// </summary>
         string RawQueryString { get; set; }
 

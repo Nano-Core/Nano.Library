@@ -1,7 +1,7 @@
 namespace Nano.Api.Requests.Interfaces
 {
     /// <summary>
-    /// Indicates the Request is a Json payload request, using http post method.
+    /// Request Json inteface.
     /// </summary>
     public interface IRequestJson : IRequest
     {
