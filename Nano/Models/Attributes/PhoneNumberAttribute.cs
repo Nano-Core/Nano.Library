@@ -36,7 +36,7 @@ namespace Nano.Models.Attributes
         {
             try
             {
-                // TODO: MODEL: IsValid. Improve PhoneNumber validation.
+                // COSMETIC: MODEL: IsValid. Improve PhoneNumber validation.
                 var e164 = value.ToString();
                 var prefix = PhoneNumberPrefixes.Find(e164).Value;
                 var number = e164.Replace(prefix, string.Empty).Trim();

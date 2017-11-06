@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using Nano.Config.Providers.Hosting.Extensions;
 using Nano.Controllers.Criterias.Entities;
 using Nano.Controllers.Criterias.Interfaces;
-using Nano.Models;
 using Nano.Models.Interfaces;
 using Nano.Models.Types;
 using Nano.Services.Interfaces;

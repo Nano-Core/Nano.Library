@@ -18,7 +18,7 @@ namespace Nano.Config
         /// <summary>
         /// Name.
         /// </summary>
-        public virtual string Name { get; set; } = "Application";
+        public virtual string Name { get; set; } = "";
 
         /// <summary>
         /// Version.

@@ -9,6 +9,13 @@ using Serilog;
 
 namespace Nano
 {
+    // COSMETIC: add somehow of shared stringLocalizer to controllers / services. 
+    // COSMETIC: Add ServiceOptions (IOtions<T>). 
+    // COSMETIC: Generic / Inherited Views (interating properites to display fields (editable readonly). 
+    // COSMETIC: HTTP Patch method, for parsing partial models. 
+    // COSMETIC: OWIN (https://docs.microsoft.com/en-us/aspnet/core/fundamentals/owin) 
+    // COSMETIC: Issue with Swagger not able to generate documentation from generic operations (path/action needs to be unique, and it can't see that in generic base class controller it seems) 
+
     /// <summary>
     /// Base Application (abstract).
     /// </summary>
