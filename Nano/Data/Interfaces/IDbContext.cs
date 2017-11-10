@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Internal;
+using Nano.Models.Events;
 
 namespace Nano.Data.Interfaces
 {
@@ -22,11 +23,6 @@ namespace Nano.Data.Interfaces
         IDbContextExtension
     {
         /// <summary>
-        /// Changed Entries.
-        /// </summary>
-        List<EntityEntry> ChangedEntries { get; set; }
-
-        /// <summary>
         /// Provides access to database related information and operations for this context.
         /// </summary>
         DatabaseFacade Database { get; }
@@ -35,6 +31,11 @@ namespace Nano.Data.Interfaces
         /// Provides access to information and operations for entity instances this context is tracking.
         /// </summary>
         ChangeTracker ChangeTracker { get; }
+
+        /// <summary>
+        /// Entity Events.
+        /// </summary>
+        List<EntityEvent> EntityEvents { get; set; }
 
         /// <summary>
         /// Saves all changes made in this context to the database.

@@ -2,7 +2,6 @@
 
 namespace Nano.Models.Types
 {
-    // TODO: Add Map extensions method. Add data annotations for validation.
     /// <summary>
     /// Authentication Credential.
     /// </summary>

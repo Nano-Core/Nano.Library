@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Nano.Config.Extensions;
-using Nano.Config.Providers.Data;
-using Nano.Config.Providers.Eventing;
-using Nano.Config.Providers.Logging;
+using Nano.App;
+using Nano.App.Extensions;
+using Nano.Data.Providers;
+using Nano.Eventing.Providers;
 using Nano.Example.Data;
 
 namespace Nano.Example
@@ -21,9 +21,8 @@ namespace Nano.Example
                 .ConfigureApp<Application>()
                 .ConfigureServices(x =>
                 {
-                    x.AddLogging<ConsoleProvider>();
-                    x.AddEventing<EasyNetQProvider>();
-                    x.AddDataContext<MySqlDataProvider, ExampleDbContext>();
+                    x.AddDataContext<MySqlDataProvider, ExampleDbContext>(); 
+                    x.AddEventing<EasyNetQProvider>(); 
                 })
                 .Build()
                 .Run();

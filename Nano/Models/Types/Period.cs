@@ -1,9 +1,8 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Models.Types
 {
-    // TODO: Add Map extensions method. Add data annotations for validation.
-
     /// <summary>
     /// Period.
     /// </summary>
@@ -12,11 +11,13 @@ namespace Nano.Models.Types
         /// <summary>
         /// Start.
         /// </summary>
+        [Required]
         public virtual TimeSpan Start { get; set; }
 
         /// <summary>
         /// Finish.
         /// </summary>
+        [Required]
         public virtual TimeSpan Finish { get; set; }
 
         /// <summary>

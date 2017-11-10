@@ -4,13 +4,13 @@ namespace Nano.Models.Interfaces
     /// Entity identity inteface.
     /// Implementing <see cref="IEntity"/>'s having identity property.
     /// </summary>
-    /// <typeparam name="T">The type of <see cref="IEntityIdentity{T}.Id"/>.</typeparam>
-    public interface IEntityIdentity<out T> : IEntity
+    /// <typeparam name="TIdentity">The type of <see cref="IEntityIdentity{T}.Id"/>.</typeparam>
+    public interface IEntityIdentity<out TIdentity> : IEntity
     {
         /// <summary>
         /// Id. 
         /// Uniquely identifies the <see cref="IEntity"/>.
         /// </summary>
-        T Id { get; }
+        TIdentity Id { get; }
     }
 }

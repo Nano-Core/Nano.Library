@@ -5,6 +5,6 @@ namespace Nano.Models.Interfaces
     /// </summary>
     public interface IEntity
     {
-
+        
     }
 }

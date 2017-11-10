@@ -2,8 +2,6 @@ using System;
 
 namespace Nano.Models.Types
 {
-    // TODO: Add Map extensions method. Add data annotations for validation.
-
     /// <summary>
     /// Angle.
     /// </summary>

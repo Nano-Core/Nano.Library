@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.51-pre</Version>
+    <Version>0.1.60-pre</Version>
     <ApplicationIcon>..\icon.ico</ApplicationIcon>
     <AssemblyVersion>0.1.10.0</AssemblyVersion>
     <FileVersion>0.1.6.0</FileVersion>
@@ -34,8 +34,6 @@
 
   <ItemGroup>
     <PackageReference Include="EasyNetQ" Version="2.3.0-alpha0002" />
-    <PackageReference Include="GeoAPI" Version="1.7.5-pre4" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="2.0.0" />
@@ -56,6 +54,7 @@
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational.Design" Version="2.0.0-preview1-final" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />
@@ -64,15 +63,15 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.0.0" />
-    <PackageReference Include="NetTopologySuite" Version="1.15.0-pre019" />
+    <PackageReference Include="NetTopologySuite" Version="1.15.0-pre032" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.1-preview-10066" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql.Design" Version="1.1.2" />
     <PackageReference Include="RabbitMQ.Client" Version="5.1.0-pre1" />
-    <PackageReference Include="Serilog" Version="2.6.0-dev-00894" />
-    <PackageReference Include="Serilog.AspNetCore" Version="2.0.0" />
+    <PackageReference Include="Serilog" Version="2.6.0-dev-00922" />
+    <PackageReference Include="Serilog.AspNetCore" Version="2.1.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="2.4.1-dev-00061" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1-dev-00757" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="2.4.1-dev-00063" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="1.0.0" />
     <PackageReference Include="Serilog.Sinks.ElasticSearch" Version="5.4.0" />
     <PackageReference Include="Serilog.Sinks.RabbitMQ" Version="2.0.1" />

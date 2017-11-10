@@ -3,9 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Nano.Config.Providers.Hosting.Extensions;
 using Nano.Controllers.Criterias.Entities;
 using Nano.Controllers.Criterias.Interfaces;
+using Nano.Eventing.Interfaces;
+using Nano.Hosting.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Services.Interfaces;
 
@@ -18,8 +19,8 @@ namespace Nano.Controllers
         where TCriteria : class, ICriteriaSpatial
     {
         /// <inheritdoc />
-        protected BaseControllerSpatial(ILogger<Controller> logger, TService service)
-            : base(logger, service)
+        protected BaseControllerSpatial(ILogger logger, TService service, IEventing eventing)
+            : base(logger, service, eventing)
         {
 
         }

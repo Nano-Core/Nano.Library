@@ -1,4 +1,4 @@
-﻿## .NET Core Nano-Services 0.1.10
+﻿## .NET Core Nano-Services 0.1.60-pre-alpha
 Work in progress...
 
 
@@ -6,41 +6,49 @@ Work in progress...
 ```csharp
 // program.cs
 WebApplication
-	.GetWebHostBuilder<MyApplication>()
+	.ConfgureApp<MyApplication>()
 	.ConfigureServices(x =>
 	{
-		x.AddLogging<ConsoleLogging>();
-		x.AddEventing<RabbitMqEventing>();
 		x.AddDataContext<SqlServerDataProvider, MyDbContext>();
+		x.AddEventing<RabbitMqEventing>();
 		
 		// Add additional services ...
 	})
 	.Build()
 	.Run();
 
-public class MyEntity : BaseEntity { } // Entity (Model) Implementation.
-public class MyDbContext : DbContext { } // Entity Framework DbContext Implementation.
-public class MyController : BaseController<IService, MyEntity> { } // Controller Implementation.
-public class MyApplication : DefaultApplication { } // Application Implementation.
+public class MyEntity : BaseEntity { } // Model Implementation.
+public class MyCriteria : Criteria { } // Query Criteria Implementation.
+public class MyDbContext : BaseDbContext { } // IDbContext Implementation.
+public class MyController : DefaultController<IService, MyEntity> { } // Controller Implementation.
+public class MyApplication : DefaultApplication { } // IApplication Implementation.
 ```
  
 ### Configuration
 ```json
 {
-  "App": {
-    "Name": "Globale",
-    "Version": "1.0",
+   "App": {
+    "Name": "Examples",
+    "Version": "1.0.0",
     "Description": null,
     "TermsUrl": null,
-    "LicenseUrl": null
+    "LicenseUrl": null,
+    "Cultures": {
+      "Default": "en-US",
+      "Supported": [
+        "da-DK",
+        "en-US"
+      ]
+    }
   },
   "Hosting": {
+    "Path": "app",
     "EnableSession": true,
     "EnableDocumentation": true,
     "EnableGzipCompression": true,
-    "EnableHttpContextExtension": true,
-    "EnableHttpRequestIdentifier": true,
-    "EnableHttpRequestLocalization": true
+    "EnableHttpContextLogging": true,
+    "EnableHttpContextIdentifier": true,
+    "EnableHttpContextLocalization": true
   },
   "Data": {
     "BatchSize": "25",
@@ -48,29 +56,30 @@ public class MyApplication : DefaultApplication { } // Application Implementatio
     "ConnectionString": "Server=mysql;Database=myDb;Uid=myUser;Pwd=myPassword"
   },
   "Logging": {
-    "LogLevel": "Information",
-    "LogLevelOverrides": [
-      {
-        "Namespace": "System",
-        "LogLevel": "Warning"
-      },
-      {
-        "Namespace": "Microsoft",
-        "LogLevel": "Warning"
-      },
-      {
-        "Namespace": "Microsoft.EntityFrameworkCore",
-        "LogLevel": "Warning"
-      }
-    ]
+    "LogLevel": "Debug",
+    "Sinks": [
+      "Console"
+    ],
+    "LogLevelOverrides": 
+    [
+        {
+          "Namespace": "System",
+          "LogLevel": "Debug"
+        }
+      ]
   },
   "Eventing": {
     "Host": "rabbitmq",
     "VHost": "/",
     "Port": 5672,
-    "SslPort": 5671,
-    "Username": "myUser",
-    "Password": "myPassword"
+    "AuthenticationCredential": {
+      "Username": "myUser",
+      "Password": "myPassword",
+      "Token": null
+    },
+    "UseSsl": false,
+    "Timeout": 30,
+    "Heartbeat": 10
   }
 }
 ```

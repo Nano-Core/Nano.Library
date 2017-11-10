@@ -10,6 +10,6 @@ namespace Nano.Controllers.Criterias.Entities
         /// <summary>
         /// Geometry.
         /// </summary>
-        public virtual Geometry Geometry { get; set; } // TODO: SPATIAL: Geometry is abstract.
+        public virtual Geometry Geometry { get; set; }
     }
 }

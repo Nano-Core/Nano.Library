@@ -17,7 +17,7 @@ namespace Nano.Api
     /// </summary>
     /// <typeparam name="TRequest">The type of <see cref="IRequest"/>.</typeparam>
     /// <typeparam name="TResponse">The type of <see cref="IResponse"/>.</typeparam>
-    public sealed class HttpFacade<TRequest, TResponse>
+    internal sealed class HttpFacade<TRequest, TResponse>
         where TRequest : IRequest, new()
         where TResponse : IResponse, new()
     {

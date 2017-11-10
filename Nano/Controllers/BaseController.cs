@@ -8,9 +8,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
-using Nano.Config.Providers.Hosting.Extensions;
 using Nano.Controllers.Criterias.Entities;
 using Nano.Controllers.Criterias.Interfaces;
+using Nano.Eventing.Interfaces;
+using Nano.Hosting.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Models.Types;
 using Nano.Services.Interfaces;
@@ -38,13 +39,19 @@ namespace Nano.Controllers
         /// Service.
         /// </summary>
         protected virtual TService Service { get; }
-
+        
+        /// <summary>
+        /// Eventing.
+        /// </summary>
+        protected virtual IEventing Eventing { get; }
+        
         /// <summary>
         /// Constructor accepting an instance of <typeparamref name="TService"/> and initializing <see cref="Service"/>
         /// </summary>
-        /// <param name="logger">The <see cref="ILoggerFactory"/>.</param>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
         /// <param name="service">The <see cref="IService"/>.</param>
-        protected BaseController(ILogger<Controller> logger, TService service)
+        /// <param name="eventing">The <see cref="IEventingProvider"/>.</param>
+        protected BaseController(ILogger logger, TService service, IEventing eventing)
         {
             if (logger == null)
                 throw new ArgumentNullException(nameof(logger));
@@ -52,8 +59,12 @@ namespace Nano.Controllers
             if (service == null)
                 throw new ArgumentNullException(nameof(service));
 
-            this.Service = service;
+            if (eventing == null)
+                throw new ArgumentNullException(nameof(eventing));
+
             this.Logger = logger;
+            this.Service = service;
+            this.Eventing = eventing;
         }
 
         /// <inheritdoc />
@@ -100,11 +111,11 @@ namespace Nano.Controllers
         /// Details.
         /// Gets details about an instance of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
         /// </summary>
-        /// <param name="id">The <see cref="Guid"/> identifier of the <typeparamref name="TEntity"/> instance to det details about.</param>
+        /// <param name="id">The <typeparamref name="TIdentity"/> identifier of the <typeparamref name="TEntity"/> instance to det details about.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Details' <see cref="IActionResult"/>.</returns>
         [HttpGet]
-        public virtual async Task<IActionResult> Details([FromRoute][FromQuery][FromBody][FromForm][Required]Guid id, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Details([FromRoute][FromQuery][FromBody][FromForm][Required]TIdentity id, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
                 .Get<TEntity>(id, cancellationToken);

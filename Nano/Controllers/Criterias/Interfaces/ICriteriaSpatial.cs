@@ -10,6 +10,6 @@ namespace Nano.Controllers.Criterias.Interfaces
         /// <summary>
         /// Geometry.
         /// </summary>
-        Geometry Geometry { get; set; } // TODO: Spatial abstract Geometry
+        Geometry Geometry { get; set; } // BUG: SPATIAL: Geometry is abstract.
     }
 }

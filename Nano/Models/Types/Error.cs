@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Http;
-using Nano.Config.Providers.Hosting;
+using Nano.Hosting;
 
 namespace Nano.Models.Types
 {

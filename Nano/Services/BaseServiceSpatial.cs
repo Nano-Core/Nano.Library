@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Nano.Config.Providers.Eventing.Interfaces;
 using Nano.Controllers.Criterias.Entities;
 using Nano.Controllers.Criterias.Extensions;
 using Nano.Controllers.Criterias.Interfaces;
 using Nano.Data.Interfaces;
+using Nano.Eventing.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Services.Interfaces;
 
@@ -17,7 +17,7 @@ namespace Nano.Services
     /// <inheritdoc cref="BaseService{TContext,TEventing}"/>
     public abstract class BaseServiceSpatial<TContext, TEventing> : BaseService<TContext, TEventing>, IServiceSpatial
         where TContext : IDbContext
-        where TEventing : IEventingProvider
+        where TEventing : IEventing
     {
         /// <inheritdoc />
         protected BaseServiceSpatial(TContext context, TEventing eventing)

@@ -16,9 +16,14 @@ namespace Nano.Controllers.Criterias.Binders.Providers
 
             var modelType = context.Metadata.ModelType;
 
+            if (modelType == typeof(Query))
+            {
+                return (IModelBinder)Activator.CreateInstance(typeof(QueryModelBinder<Criteria>));
+            }
+
             if (modelType.GetTypeInfo().IsGenericType && modelType.GetGenericTypeDefinition() == typeof(Query<>))
             {
-                var types = context.Metadata.ModelType.GetGenericArguments();
+                var types = modelType.GetGenericArguments();
                 var genericType = typeof(QueryModelBinder<>).MakeGenericType(types);
 
                 return (IModelBinder)Activator.CreateInstance(genericType);

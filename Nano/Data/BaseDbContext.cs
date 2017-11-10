@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using EasyNetQ;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Nano.Config.Attributes;
 using Nano.Data.Interfaces;
+using Nano.Eventing.Attributes;
+using Nano.Models.Events;
+using Nano.Models.Interfaces;
 
 namespace Nano.Data
 {
@@ -15,7 +17,7 @@ namespace Nano.Data
     public abstract class BaseDbContext : DbContext, IDbContext
     {
         /// <inheritdoc />
-        public virtual List<EntityEntry> ChangedEntries { get; set; }
+        public virtual List<EntityEvent> EntityEvents { get; set; }
 
         /// <summary>
         /// Constructor.
@@ -153,9 +155,15 @@ namespace Nano.Data
         /// <inheritdoc cref="DbContext.SaveChangesAsync(bool,CancellationToken)" />
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
-            this.ChangedEntries = this.ChangeTracker
-                .Entries()
+            this.EntityEvents = this.ChangeTracker
+                .Entries<IEntityIdentity<Guid>>()
                 .Where(x => x.Entity.GetType().GetAttributes<PublishAttribute>().Any(y => y.States.Contains(x.State)))
+                .Select(x => new EntityEvent
+                {
+                    Id = x.Entity.Id.ToString(),
+                    State = x.State.ToString(),
+                    Name = x.Entity.GetType().FullName
+                })
                 .ToList();
 
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);

@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Nano.Models.Enums.Extensions;
+using Nano.Models.Attributes.Helpers;
 
 namespace Nano.Models.Attributes
 {
@@ -36,7 +36,7 @@ namespace Nano.Models.Attributes
         {
             try
             {
-                // COSMETIC: MODEL: IsValid. Improve PhoneNumber validation.
+                // BUG: MODEL: IsValid. Improve PhoneNumber validation. for each prefix have the number of digits and also regex for formatting
                 var e164 = value.ToString();
                 var prefix = PhoneNumberPrefixes.Find(e164).Value;
                 var number = e164.Replace(prefix, string.Empty).Trim();

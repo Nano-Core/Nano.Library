@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Nano.Api.Requests.Interfaces
 {
@@ -9,20 +10,10 @@ namespace Nano.Api.Requests.Interfaces
     public interface IRequest
     {
         /// <summary>
-        /// Host
+        /// Context.
         /// </summary>
-        string Host { get; set; }
-
-        /// <summary>
-        /// Port.
-        /// </summary>
-        ushort Port { get; set; }
-
-        /// <summary>
-        /// Is Ssl.
-        /// Determines if http or https is used when submitting the request.
-        /// </summary>
-        bool UseSsl { get; set; }
+        [JsonIgnore]
+        ApiConnect Connect { get; set; }
 
         /// <summary>
         /// Get the query string collection of aggregated from all parameters added to the request.

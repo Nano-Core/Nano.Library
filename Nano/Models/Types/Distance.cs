@@ -1,7 +1,7 @@
-﻿namespace Nano.Models.Types
-{
-    // TODO: Add Map extensions method. Add data annotations for validation.
+﻿using System.ComponentModel.DataAnnotations;
 
+namespace Nano.Models.Types
+{
     /// <summary>
     /// Distance.
     /// </summary>
@@ -12,11 +12,16 @@
         /// <summary>
         /// Meters.
         /// </summary>
+        [Required]
         public virtual double? Meters { get; set; }
 
         /// <summary>
         /// Miles.
         /// </summary>
-        public virtual double? Miles => this.Meters / Distance.RATIO_METER_TO_MILE;
+        public virtual double? Miles
+        {
+            get => this.Meters / Distance.RATIO_METER_TO_MILE;
+            protected set { }
+        }
     }
 }

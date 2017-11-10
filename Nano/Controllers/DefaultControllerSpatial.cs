@@ -1,7 +1,7 @@
 using System;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Controllers.Criterias.Interfaces;
+using Nano.Eventing.Interfaces;
 using Nano.Models;
 using Nano.Services.Interfaces;
 
@@ -13,8 +13,8 @@ namespace Nano.Controllers
         where TCriteria : class, ICriteriaSpatial
     {
         /// <inheritdoc />
-        protected DefaultControllerSpatial(ILogger<Controller> logger, IServiceSpatial service)
-            : base(logger, service)
+        protected DefaultControllerSpatial(ILogger logger, IServiceSpatial service, IEventing eventing)
+            : base(logger, service, eventing)
         {
 
         }

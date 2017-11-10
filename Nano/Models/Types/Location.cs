@@ -5,53 +5,29 @@ using System.Linq;
 
 namespace Nano.Models.Types
 {
-    // TODO: Spatial: Implement Polygon, LineString. Inherit from som interface, so spatial services and controllers can treat them alike.
-    // TODO: Add Map extensions method. Add data annotations for validation.
-
     /// <summary>
     /// Location.
     /// </summary>
     public class Location
     {
-        private double latitude;
-        private double longitude;
-
         /// <summary>
         /// Latitude.
         /// </summary>
         [Required]
-        public virtual double Latitude
-        {
-            get => this.latitude;
-            set
-            {
-                if (value > 90 || value < -90)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                this.latitude = value;
-            }
-        }
+        [Range(-90.00, 90.00)]
+        public virtual double Latitude { get; set; }
 
         /// <summary>
         /// Longitude.
         /// </summary>
         [Required]
-        public virtual double Longitude
-        {
-            get => this.longitude;
-            set
-            {
-                if (value > 180 || value < -180)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                this.longitude = value;
-            }
-        }
+        [Range(-180.00, 180.00)]
+        public virtual double Longitude { get; set; }
 
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{this.latitude},{this.longitude}";
+            return $"{this.Latitude},{this.Longitude}";
         }
 
         /// <summary>
@@ -71,8 +47,8 @@ namespace Nano.Models.Types
 
             return new Location
             {
-                latitude = doubles[0],
-                longitude = doubles[1]
+                Latitude = doubles[0],
+                Longitude = doubles[1]
             };
         }
     }

@@ -6,10 +6,10 @@ namespace Nano.Controllers.Criterias.Entities
     public class Query : IQuery
     {
         /// <inheritdoc />
-        public virtual Ordering Order { get; set; } = new Ordering();
+        public virtual Ordering Order { get; set; }
 
         /// <inheritdoc />
-        public virtual Pagination Paging { get; set; } = new Pagination();
+        public virtual Pagination Paging { get; set; }
     }
 
     /// <inheritdoc cref="IQuery{TCriteria}"/>

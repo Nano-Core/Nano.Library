@@ -36,11 +36,10 @@ namespace Nano.Controllers
         /// <summary>
         /// Ping.
         /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>Returns Ok (200) response, containing "Success" text.</returns>
+        /// <returns>The <see cref="IActionResult"/>.</returns>
         [HttpGet]
         [ActionName("Ping")]
-        public virtual IActionResult GetPing(CancellationToken cancellationToken = new CancellationToken())
+        public virtual IActionResult GetPing()
         {
             return Ok();
         }
@@ -48,11 +47,10 @@ namespace Nano.Controllers
         /// <summary>
         /// Options.
         /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>Returns Ok (200) response.</returns>
+        /// <returns>The <see cref="IActionResult"/>.</returns>
         [HttpOptions]
         [ActionName("Options")]
-        public virtual IActionResult GetOptions(CancellationToken cancellationToken = new CancellationToken())
+        public virtual IActionResult GetOptions()
         {
             return Ok();
         }
@@ -60,11 +58,10 @@ namespace Nano.Controllers
         /// <summary>
         /// Returns the Api version requested.
         /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="IActionResult"/>.</returns>
         [HttpGet]
         [ActionName("Version")]
-        public virtual IActionResult GetVersion(CancellationToken cancellationToken = new CancellationToken())
+        public virtual IActionResult GetVersion()
         {
             return this.Ok(this.HttpContext.GetRequestedApiVersion());
         }

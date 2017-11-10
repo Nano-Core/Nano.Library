@@ -1,23 +1,31 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Models.Types
 {
-    // TODO: Add Map extensions method. Add data annotations for validation.
-
     /// <summary>
     /// Percentage.
     /// </summary>
     public class Percentage
     {
         /// <summary>
-        /// Gets the percentage value as an <see cref="System.Int32"/>.
-        /// </summary>
-        public int AsInteger => (int)(this.AsDecimal * 100.00M);
-
-        /// <summary>
         /// Gets the percentage value as an <see cref="decimal"/>.
         /// </summary>
-        public decimal AsDecimal { get; }
+        [Required]
+        public virtual decimal AsDecimal { get; protected set; }
+
+        /// <summary>
+        /// Gets the percentage value as an <see cref="System.Int32"/>.
+        /// </summary>
+        public virtual int AsInteger => (int)(this.AsDecimal * 100.00M);
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public Percentage()
+        {
+
+        }
 
         /// <summary>
         /// Constructor that accepts an <see cref="Int32"/>.
@@ -77,7 +85,9 @@ namespace Nano.Models.Types
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return AsDecimal.GetHashCode();
+            // ReSharper disable NonReadonlyMemberInGetHashCode
+            return this.AsDecimal.GetHashCode();
+            // ReSharper restore NonReadonlyMemberInGetHashCode
         }
 
         /// <summary>

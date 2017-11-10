@@ -7,6 +7,6 @@ namespace Nano.Models
     public abstract class DefaultEntitySpatial : DefaultEntity, IEntitySpatial
     {
         /// <inheritdoc />
-        public virtual Geometry Geometry { get; set; } // TODO: SPATIAL: Geometry is abstract.
+        public virtual Geometry Geometry { get; set; }
     }
 }

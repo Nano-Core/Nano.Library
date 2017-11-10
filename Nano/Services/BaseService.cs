@@ -5,11 +5,11 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Nano.Config.Providers.Eventing.Interfaces;
 using Nano.Controllers.Criterias.Entities;
 using Nano.Controllers.Criterias.Extensions;
 using Nano.Controllers.Criterias.Interfaces;
 using Nano.Data.Interfaces;
+using Nano.Eventing.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Services.Interfaces;
 
@@ -18,7 +18,7 @@ namespace Nano.Services
     /// <inheritdoc />
     public abstract class BaseService<TContext, TEventing> : IService
         where TContext : IDbContext
-        where TEventing : IEventingProvider
+        where TEventing : IEventing
     {
         /// <summary>
         /// Context.
@@ -34,7 +34,7 @@ namespace Nano.Services
         /// Constructor.
         /// </summary>
         /// <param name="context">The <see cref="IDbContext"/>.</param>
-        /// <param name="eventing">The <see cref="IEventingProvider"/>.</param>
+        /// <param name="eventing">The <see cref="IEventing"/>.</param>
         protected BaseService(TContext context, TEventing eventing)
         {
             if (context == null)
@@ -115,8 +115,8 @@ namespace Nano.Services
             await this.Context
                 .SaveChangesAsync(cancellationToken);
 
-            this.Context.ChangedEntries
-                .ForEach(y => this.Eventing.PublishAsync(y.Entity, true, cancellationToken));
+            this.Context.EntityEvents
+                .ForEach(y => this.Eventing.Publish(y, true, cancellationToken));
         }
 
         /// <inheritdoc />
@@ -132,8 +132,8 @@ namespace Nano.Services
             await this.Context
                 .SaveChangesAsync(cancellationToken);
 
-            this.Context.ChangedEntries
-                .ForEach(y => this.Eventing.PublishAsync(y.Entity, true, cancellationToken));
+            this.Context.EntityEvents
+                .ForEach(y => this.Eventing.Publish(y, true, cancellationToken));
         }
 
         /// <inheritdoc />
@@ -149,8 +149,8 @@ namespace Nano.Services
             await this.Context
                 .SaveChangesAsync(cancellationToken);
 
-            this.Context.ChangedEntries
-                .ForEach(y => this.Eventing.PublishAsync(y.Entity, true, cancellationToken));
+            this.Context.EntityEvents
+                .ForEach(y => this.Eventing.Publish(y, true, cancellationToken));
         }
 
         /// <inheritdoc />
@@ -166,8 +166,8 @@ namespace Nano.Services
             await this.Context
                 .SaveChangesAsync(cancellationToken);
 
-            this.Context.ChangedEntries
-                .ForEach(y => this.Eventing.PublishAsync(y.Entity, true, cancellationToken));
+            this.Context.EntityEvents
+                .ForEach(y => this.Eventing.Publish(y, true, cancellationToken));
         }
 
         /// <inheritdoc />
@@ -183,8 +183,8 @@ namespace Nano.Services
             await this.Context
                 .SaveChangesAsync(cancellationToken);
 
-            this.Context.ChangedEntries
-                .ForEach(y => this.Eventing.PublishAsync(y.Entity, true, cancellationToken));
+            this.Context.EntityEvents
+                .ForEach(y => this.Eventing.Publish(y, true, cancellationToken));
         }
 
         /// <inheritdoc />
@@ -200,8 +200,8 @@ namespace Nano.Services
             await this.Context
                 .SaveChangesAsync(cancellationToken);
 
-            this.Context.ChangedEntries
-                .ForEach(y => this.Eventing.PublishAsync(y.Entity, true, cancellationToken));
+            this.Context.EntityEvents
+                .ForEach(y => this.Eventing.Publish(y, true, cancellationToken));
         }
 
         /// <inheritdoc />
@@ -217,8 +217,8 @@ namespace Nano.Services
             await this.Context
                 .SaveChangesAsync(cancellationToken);
 
-            this.Context.ChangedEntries
-                .ForEach(y => this.Eventing.PublishAsync(y.Entity, true, cancellationToken));
+            this.Context.EntityEvents
+                .ForEach(y => this.Eventing.Publish(y, true, cancellationToken));
         }
 
         /// <summary>

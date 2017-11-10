@@ -9,7 +9,6 @@ services:
     ports:
       - 5000:80
     depends_on:
-      - mysql
       - rabbitmq
       - elasticsearch
       - kibana
