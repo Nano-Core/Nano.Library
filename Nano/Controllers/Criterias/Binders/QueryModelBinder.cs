@@ -32,7 +32,7 @@ namespace Nano.Controllers.Criterias.Binders
 
             model.Order = model.Order ?? Ordering.Parse(request);
             model.Paging = model.Paging ?? Pagination.Parse(request);
-            model.Criteria = model.Criteria ?? Criteria.Parse<TCriteria>(request);
+            model.Criteria = model.Criteria ?? DefaultCriteria.Parse<TCriteria>(request);
 
             bindingContext.Result = ModelBindingResult.Success(model);
 

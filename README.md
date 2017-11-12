@@ -17,9 +17,9 @@ WebApplication
 	.Build()
 	.Run();
 
-public class MyEntity : BaseEntity { } // Model Implementation.
-public class MyCriteria : Criteria { } // Query Criteria Implementation.
-public class MyDbContext : BaseDbContext { } // IDbContext Implementation.
+public class MyEntity : DefaultEntity { } // Entity Implementation.
+public class MyCriteria : DefaultCriteria { } // Criteria Implementation.
+public class MyDbContext : DefaultDbContext { } // IDbContext Implementation.
 public class MyController : DefaultController<IService, MyEntity> { } // Controller Implementation.
 public class MyApplication : DefaultApplication { } // IApplication Implementation.
 ```

@@ -18,7 +18,7 @@ namespace Nano.Controllers.Criterias.Binders.Providers
 
             if (modelType == typeof(Query))
             {
-                return (IModelBinder)Activator.CreateInstance(typeof(QueryModelBinder<Criteria>));
+                return (IModelBinder)Activator.CreateInstance(typeof(QueryModelBinder<DefaultCriteria>));
             }
 
             if (modelType.GetTypeInfo().IsGenericType && modelType.GetGenericTypeDefinition() == typeof(Query<>))

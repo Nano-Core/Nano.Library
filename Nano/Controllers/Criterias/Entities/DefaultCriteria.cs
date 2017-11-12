@@ -8,9 +8,9 @@ using Nano.Models.Interfaces;
 namespace Nano.Controllers.Criterias.Entities
 {
     /// <summary>
-    /// Default Query.
+    /// Default Criteria.
     /// </summary>
-    public class Criteria : ICriteria
+    public class DefaultCriteria : ICriteria
     {
         /// <summary>
         /// Is Active (read-only).

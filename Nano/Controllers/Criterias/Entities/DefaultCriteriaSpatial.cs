@@ -3,9 +3,9 @@ using NetTopologySuite.Geometries;
 namespace Nano.Controllers.Criterias.Entities
 {
     /// <summary>
-    /// Query Spatial.
+    /// Default Criteria Spatial.
     /// </summary>
-    public class CriteriaSpatial : Criteria
+    public class DefaultCriteriaSpatial : DefaultCriteria
     {
         /// <summary>
         /// Geometry.

@@ -130,7 +130,7 @@ namespace Nano.Controllers
         }
 
         /// <summary>
-        /// Criteria.
+        /// Query.
         /// Queries instances of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="criteria">The <see cref="Query{TCriteria}"/>.</param>

@@ -4,7 +4,7 @@ using Nano.Controllers.Criterias.Entities;
 namespace Nano.Example.Controllers.Criterias
 {
     /// <inheritdoc />
-    public class ExampleCriteria : Criteria
+    public class ExampleCriteria : DefaultCriteria
     {
         /// <summary>
         /// Required.
