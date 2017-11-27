@@ -82,9 +82,9 @@ namespace Nano.App
             var shutdownTimeout = TimeSpan.FromSeconds(10);
             var configuration =  new ConfigurationBuilder()
                 .SetBasePath(path)
-                .AddEnvironmentVariables()
                 .AddJsonFile($"{NAME}.json", false, true)
                 .AddJsonFile($"{NAME}.{environment}.json", true)
+                .AddEnvironmentVariables()
                 .Build();
 
             return new WebHostBuilder()
