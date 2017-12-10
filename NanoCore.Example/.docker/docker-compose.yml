@@ -1,0 +1,42 @@
+version: '3.0'
+
+services:
+  nanocore.example:
+    image: nanocore.example
+    build:
+      context: ./../NanoCore.Example
+      dockerfile: Dockerfile
+    ports:
+      - 5000:80
+    depends_on:
+      - rabbitmq
+      - elasticsearch
+      - kibana
+
+  mysql:
+    image: mysql/mysql-server
+    ports:
+      - 3306:3306
+    environment:
+        MYSQL_USER: "myUser"
+        MYSQL_PASSWORD: "myPassword"
+        MYSQL_ROOT_PASSWORD: "myPassword"
+        MYSQL_DATABASE: "examplesDb"
+
+  rabbitmq: 
+    image: rabbitmq:alpine
+    ports:
+      - 5671:5671
+      - 5672:5672
+    environment: 
+      RABBITMQ_DEFAULT_USER: "myUser"
+      RABBITMQ_DEFAULT_PASS: "myPassword"
+      RABBITMQ_DEFAULT_VHOST: "/"
+  
+  elasticsearch:
+    image: elasticsearch:alpine
+
+  kibana:
+    image: kibana
+    ports:
+      - 5601:5601

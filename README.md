@@ -1,4 +1,4 @@
-﻿## .NET Core Nano-Services 0.1.60-pre-alpha
+﻿## .NET Core Nano-Services 1.0.0-alpha
 Work in progress...
 
 
@@ -19,9 +19,9 @@ WebApplication
 
 public class MyEntity : DefaultEntity { } // Entity Implementation.
 public class MyCriteria : DefaultCriteria { } // Criteria Implementation.
-public class MyDbContext : DefaultDbContext { } // IDbContext Implementation.
+public class MyDbContext : DefaultDbContext { } // DbContext Implementation.
 public class MyController : DefaultController<IService, MyEntity> { } // Controller Implementation.
-public class MyApplication : DefaultApplication { } // IApplication Implementation.
+public class MyApplication : DefaultApplication { } // Application Implementation.
 ```
  
 ### Configuration
@@ -39,16 +39,19 @@ public class MyApplication : DefaultApplication { } // IApplication Implementati
         "da-DK",
         "en-US"
       ]
-    }
-  },
-  "Hosting": {
-    "Path": "app",
-    "EnableSession": true,
-    "EnableDocumentation": true,
-    "EnableGzipCompression": true,
-    "EnableHttpContextLogging": true,
-    "EnableHttpContextIdentifier": true,
-    "EnableHttpContextLocalization": true
+    },
+	"Hosting": {
+	  "Port": 5000
+      "Path": "app",
+    },
+	"Switches": {
+      "EnableSession": true,
+      "EnableDocumentation": true,
+      "EnableGzipCompression": true,
+      "EnableHttpContextLogging": true,
+      "EnableHttpContextIdentifier": true,
+      "EnableHttpContextLocalization": true
+    },
   },
   "Data": {
     "BatchSize": "25",

@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ApplicationIcon>..\..\icon.ico</ApplicationIcon>
+    <Configurations>Debug;Release;Launch</Configurations>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\Nano.Eventing.xml</DocumentationFile>
+    <WarningsAsErrors />
+    <NoWarn />
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard2.0\Nano.Eventing.xml</DocumentationFile>
+    <WarningsAsErrors />
+    <NoWarn />
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Launch|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard2.0\Nano.Eventing.xml</DocumentationFile>
+    <WarningsAsErrors />
+    <NoWarn />
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EasyNetQ" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nano.Logging\Nano.Logging.csproj" />
+    <ProjectReference Include="..\Nano.Models\Nano.Models.csproj" />
+  </ItemGroup>
+
+</Project>

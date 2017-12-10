@@ -1,0 +1,81 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ApplicationIcon>..\icon.ico</ApplicationIcon>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.2.0-alpha</Version>
+    <Authors>Michael Vivet</Authors>
+    <Company></Company>
+    <Product>Nano Core</Product>
+    <Description>Library for building rich and reliable nano-services.</Description>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/vivet/Nano/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Nano-Services</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/Nano-Services/Nano/master/icon.ico</PackageIconUrl>
+    <RepositoryUrl></RepositoryUrl>
+    <AssemblyVersion>0.2.0.0</AssemblyVersion>
+    <FileVersion>0.2.0.0</FileVersion>
+    <Configurations>Debug;Release;Launch</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\Release\netstandard2.0\NanoCore.xml</DocumentationFile>
+    <WarningsAsErrors />
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\Debug\netstandard2.0\NanoCore.xml</DocumentationFile>
+    <WarningsAsErrors />
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Launch|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\Debug\netstandard2.0\NanoCore.xml</DocumentationFile>
+    <WarningsAsErrors />
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DynamicExpression" Version="1.0.1" />
+    <PackageReference Include="EasyNetQ" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Xml" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
+    <PackageReference Include="NetTopologySuite" Version="1.15.0-pre032" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.1" />
+    <PackageReference Include="Serilog" Version="2.6.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="5.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="1.1.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\.libraries\Nano.App\Nano.App.csproj" />
+    <ProjectReference Include="..\.libraries\Nano.Data\Nano.Data.csproj" />
+    <ProjectReference Include="..\.libraries\Nano.Eventing\Nano.Eventing.csproj" />
+    <ProjectReference Include="..\.libraries\Nano.Logging\Nano.Logging.csproj" />
+    <ProjectReference Include="..\.libraries\Nano.Models\Nano.Models.csproj" />
+    <ProjectReference Include="..\.libraries\Nano.Services\Nano.Services.csproj" />
+    <ProjectReference Include="..\.libraries\Nano.Web\Nano.Web.csproj" />
+  </ItemGroup>
+
+</Project>
