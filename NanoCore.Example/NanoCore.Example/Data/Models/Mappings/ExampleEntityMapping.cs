@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Data.Models.Mappings;
 using NanoCore.Example.Models;
 
-namespace NanoCore.Example.Data.Mappings
+namespace NanoCore.Example.Data.Models.Mappings
 {
     /// <inheritdoc />
     public class ExampleEntityMapping : DefaultEntityMapping<ExampleEntity>

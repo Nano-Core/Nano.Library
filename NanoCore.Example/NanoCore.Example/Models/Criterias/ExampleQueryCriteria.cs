@@ -4,7 +4,7 @@ using Nano.Models.Criterias;
 namespace NanoCore.Example.Models.Criterias
 {
     /// <inheritdoc />
-    public class ExampleCriteria : DefaultQueryCriteria
+    public class ExampleQueryCriteria : DefaultQueryCriteria
     {
         /// <summary>
         /// Required.

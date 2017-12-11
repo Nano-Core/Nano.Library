@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Nano.Data.Models.Mappings.Extensions;
 using Nano.Services.Data;
-using NanoCore.Example.Data.Mappings;
+using NanoCore.Example.Data.Models.Mappings;
 using NanoCore.Example.Models;
 
 namespace NanoCore.Example.Data
@@ -26,7 +26,8 @@ namespace NanoCore.Example.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder
-                .AddMapping<ExampleEntity, ExampleEntityMapping>();
+                .AddMapping<ExampleEntity, ExampleEntityMapping>()
+                .AddMapping<ExampleEntitySpatial, ExampleEntitySpatialMapping>();
         }
     }
 }
