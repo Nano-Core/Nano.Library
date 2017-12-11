@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Nano.Web.Controllers.Extensions;
@@ -30,35 +29,19 @@ namespace Nano.Web.Middleware
 
                 if (!response.HasStarted)
                 {
-                    // TODO: TEST: ModeState Validation
-                    var a = ex as ValidationException;
-
-                    Error error;
-                    if (a != null)
+                    var error = new
                     {
-                        error = new Error
-                        {
-                            Errors = (string[])a.Value
-                        };
-                    }
-                    else
-                    {
-                        error = new Error
-                        {
-                            Errors = new[]
-                            {
-                                ex.Message
-                            }
-                        };
-                    }
-
+                        Summary = "Internal Server Error",
+                        Errors = new[] { ex.GetBaseException().Message }
+                    };
+                    
                     var textResult = response.IsContentTypeJson()
                         ? JsonConvert.SerializeObject(error)
                         : response.IsContentTypeXml()
                             ? XmlConvert.SerializeObject(error)
                             : response.IsContentTypeHtml()
                                 ? default
-                                : error.ToString();
+                                : ex.Message;
 
                     await response
                         .WriteAsync(textResult);

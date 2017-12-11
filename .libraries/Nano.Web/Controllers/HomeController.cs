@@ -20,7 +20,7 @@ namespace Nano.Web.Controllers
         /// <returns>An <see cref="IActionResult"/>.</returns>
         public virtual IActionResult Index(CancellationToken cancellationToken = new CancellationToken())
         {
-            return View();
+            return this.Ok();
         }
 
         /// <summary>

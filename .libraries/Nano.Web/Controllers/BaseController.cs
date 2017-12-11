@@ -74,8 +74,11 @@ namespace Nano.Web.Controllers
             if (context.ModelState.IsValid)
                 return;
 
-            // TODO: TEST: ModeState Validation
-            throw new ValidationException("Invalid ModelState", null, context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage)));
+            context.Result = this.BadRequest(new
+            {
+                Summary = "Invalid ModelState",
+                Errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage)).ToArray()
+            });
         }
 
         /// <summary>

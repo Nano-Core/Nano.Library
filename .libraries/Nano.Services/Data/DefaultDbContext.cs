@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -67,38 +66,32 @@ namespace Nano.Services.Data
                 .Where(x => x.Entity.GetType().GetAttributes<PublishAttribute>().Any())
                 .Select(x => x.Entity);
 
-            return base
-                .SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken)
-                .ContinueWith(x =>
-                {
-                    var eventing = this.GetService<IEventing>();
-
-                    if (eventing != null)
-                        PublishEntityEvent(eventing, entities);
-
-                    return x.Result;
-                }, cancellationToken);
-        }
-
-        private static void PublishEntityEvent(IEventing eventing, IEnumerable<IEntityIdentity<Guid>> entities)
-        {
-            if (eventing == null)
-                throw new ArgumentNullException(nameof(eventing));
-
-            if (entities == null)
-                throw new ArgumentNullException(nameof(entities));
-
-            foreach (var entity in entities)
+            var task = base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+                
+            task.ContinueWith(x =>
             {
-                var entityEvent = new EntityEvent
-                {
-                    Id = entity.Id.ToString(),
-                    Name = entity.GetType().Name
-                };
+                if (x.IsFaulted || x.IsCanceled)
+                    return;
 
-                eventing
-                    .Publish(entityEvent, Topology.Direct, entity.GetType().Name);
-            }
+                var eventing = this.GetService<IEventing>();
+
+                if (eventing != null)
+                {
+                    foreach (var entity in entities)
+                    {
+                        var entityEvent = new EntityEvent
+                        {
+                            Id = entity.Id.ToString(),
+                            Name = entity.GetType().Name
+                        };
+
+                        eventing
+                            .Publish(entityEvent, Topology.Direct, entity.GetType().Name);
+                    }
+                }
+            }, cancellationToken);
+
+            return task;
         }
     }
 }

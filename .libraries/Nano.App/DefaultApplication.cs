@@ -50,6 +50,7 @@ namespace Nano.App
                 .Wait();
 
             var appOptions = services.GetRequiredService<AppOptions>();
+            var version = appOptions.Version;
             var basePath = $"{appOptions.Hosting.Path}/{appOptions.Name}";
 
             applicationBuilder
@@ -75,7 +76,7 @@ namespace Nano.App
                     .UseSwaggerUI(x =>
                     {
                         x.ShowRequestHeaders();
-                        x.SwaggerEndpoint($"{basePath}/docs/{appOptions.Version}/swagger.json", $"Api {appOptions.Version}");
+                        x.SwaggerEndpoint($"{basePath}/docs/{version}/swagger.json", $"Api {version}");
                     });
             }
 

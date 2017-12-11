@@ -72,12 +72,17 @@ namespace Nano.App.Extensions
                 .GetSection(AppOptions.SectionName)
                 .Get<AppOptions>();
 
+            var urls = options.Hosting.Ports
+                .Select(x => $"http://*:{x}")
+                .Distinct()
+                .ToArray();
+
             return builder
                 .ConfigureServices(x =>
                 {
                     x.AddSingleton<IApplication, TApplication>();
                 })
-                .UseUrls($"http://*:{options.Hosting.Port}")
+                .UseUrls(urls)
                 .UseStartup<TApplication>();
         }
     }

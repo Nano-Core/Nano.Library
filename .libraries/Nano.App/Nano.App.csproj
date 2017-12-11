@@ -5,6 +5,7 @@
     <ApplicationIcon>..\..\icon.ico</ApplicationIcon>
     <Configurations>Debug;Release;Launch</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.0-pre</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

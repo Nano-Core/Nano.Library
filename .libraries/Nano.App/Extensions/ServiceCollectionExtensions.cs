@@ -93,7 +93,7 @@ namespace Nano.App.Extensions
         /// <param name="name">The name of the <see cref="IConfigurationSection"/>.</param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
         public static IServiceCollection AddConfigOptions<TOption>(this IServiceCollection services, string name)
-            where TOption : class
+            where TOption : class, new()
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
@@ -104,13 +104,11 @@ namespace Nano.App.Extensions
             var configuration = services
                 .BuildServiceProvider()
                 .GetRequiredService<IConfiguration>();
-            
-            var section = configuration.GetSection(name);
-            var options = section?.Get<TOption>();
 
-            return services
-                .AddSingleton(options)
-                .Configure<TOption>(section);
+            services
+                .AddConfigOptions(configuration, name, out TOption _);
+
+            return services;
         }
 
         /// <summary>
@@ -128,7 +126,9 @@ namespace Nano.App.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             services
-                .AddConfigOptions<AppOptions>(configuration, AppOptions.SectionName, out var options)
+                .AddConfigOptions<AppOptions>(configuration, AppOptions.SectionName, out var options);
+
+            services
                 .AddApi()
                 .AddVersioning()
                 .AddHttpContextException()

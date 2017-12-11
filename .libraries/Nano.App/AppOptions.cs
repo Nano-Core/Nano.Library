@@ -8,7 +8,7 @@ namespace Nano.App
         /// <summary>
         /// Section Name.
         /// </summary>
-        internal static string SectionName => "App";
+        public static string SectionName => "App";
 
         /// <summary>
         /// Name.
@@ -72,9 +72,9 @@ namespace Nano.App
         public class HostingOptions
         {
             /// <summary>
-            /// Port.
+            /// Ports.
             /// </summary>
-            public virtual int Port { get; set; } = 5000;
+            public virtual int[] Ports { get; set; }
 
             /// <summary>
             /// Path.
