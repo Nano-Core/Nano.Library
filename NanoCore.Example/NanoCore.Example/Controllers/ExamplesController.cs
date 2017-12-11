@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Nano.Eventing.Enums;
 using Nano.Eventing.Interfaces;
 using Nano.Services.Interfaces;
 using Nano.Web.Controllers;
@@ -41,7 +40,7 @@ namespace NanoCore.Example.Controllers
                     PropertyTwo = entity.PropertyTwo
                 };
 
-                this.Eventing.Publish(@event, Topology.Direct);
+                this.Eventing.Publish(@event);
             }, cancellationToken);
 
             return await task;

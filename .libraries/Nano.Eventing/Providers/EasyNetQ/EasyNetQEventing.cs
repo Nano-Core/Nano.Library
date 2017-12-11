@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using EasyNetQ;
-using Nano.Eventing.Enums;
+using EasyNetQ.Topology;
 using Nano.Eventing.Interfaces;
 
 namespace Nano.Eventing.Providers.EasyNetQ
@@ -27,29 +27,7 @@ namespace Nano.Eventing.Providers.EasyNetQ
         }
 
         /// <inheritdoc />
-        public virtual void Consume<TMessage>(Action<TMessage> callback, Topology topology = Topology.Fanout, string routing = "")
-            where TMessage : class
-        {
-            if (callback == null)
-                throw new ArgumentNullException(nameof(callback));
-
-            var name = typeof(TMessage).FullName;
-
-            var exchange = this.Bus.Advanced
-                .ExchangeDeclare(name, topology.ToString().ToLower());
-
-            var queue = this.Bus.Advanced
-                .QueueDeclare($"{name}");
-
-            this.Bus.Advanced
-                .Consume<TMessage>(queue, (message, info) => callback(message.Body));
-
-            this.Bus.Advanced
-                .Bind(exchange, queue, routing);
-        }
-
-        /// <inheritdoc />
-        public virtual async Task Publish<TMessage>(TMessage body, Topology topology = Topology.Fanout, string routing = "")
+        public virtual async Task Publish<TMessage>(TMessage body, string routing = "")
             where TMessage : class
         {
             if (body == null)
@@ -59,10 +37,35 @@ namespace Nano.Eventing.Providers.EasyNetQ
             var message = new Message<TMessage>(body);
 
             var exchange = this.Bus.Advanced
-                .ExchangeDeclare(name, topology.ToString().ToLower());
+                .ExchangeDeclare(name, ExchangeType.Fanout);
 
             await this.Bus.Advanced
                 .PublishAsync(exchange, routing, true, message);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task Subscribe<TMessage>(Action<TMessage> callback, string routing = "")
+            where TMessage : class
+        {
+            if (callback == null)
+                throw new ArgumentNullException(nameof(callback));
+
+            await Task.Run(() =>
+            {
+                var name = typeof(TMessage).FullName;
+
+                var queue = this.Bus.Advanced
+                    .QueueDeclare($"{name}");
+
+                this.Bus.Advanced
+                    .Consume<TMessage>(queue, (message, info) => callback(message.Body));
+
+                var exchange = this.Bus.Advanced
+                    .ExchangeDeclare(name, ExchangeType.Fanout);
+
+                this.Bus.Advanced
+                    .Bind(exchange, queue, routing);
+            });
         }
 
         /// <inheritdoc />

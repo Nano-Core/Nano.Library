@@ -21,8 +21,8 @@ namespace NanoCore.Example
                 .ConfigureApp<Application>()
                 .ConfigureServices(x =>
                 {
-                    x.AddDataContext<MySqlDataProvider, ExampleDbContext>(); 
-                    x.AddEventing<EasyNetQProvider>(); 
+                    x.AddDataContext<MySqlDataProvider, ExampleDbContext>();
+                    x.AddEventing<EasyNetQProvider>();
                 })
                 .Build()
                 .Run();

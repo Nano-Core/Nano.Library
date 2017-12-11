@@ -15,8 +15,8 @@ using Microsoft.Extensions.Options;
 using Nano.Data;
 using Nano.Data.Interfaces;
 using Nano.Eventing.Attributes;
-using Nano.Eventing.Enums;
 using Nano.Eventing.Interfaces;
+using Nano.Eventing.Providers;
 using Nano.Services;
 using Nano.Services.Data;
 using Nano.Services.Eventing;
@@ -73,10 +73,10 @@ namespace Nano.App.Extensions
                 throw new ArgumentNullException(nameof(services));
 
             return services
+                .AddSingleton<IDataProvider, TProvider>()
                 .AddScoped<DbContext, TContext>()
                 .AddScoped<BaseDbContext, TContext>()
                 .AddScoped<DefaultDbContext, TContext>()
-                .AddSingleton<IDataProvider, TProvider>()
                 .AddDbContext<TContext>((provider, builder) =>
                 {
                     provider
@@ -177,6 +177,7 @@ namespace Nano.App.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             services
+                .AddScoped<BaseDbContext, DefaultDbContext>()
                 .AddScoped<IService, DefaultService>()
                 .AddScoped<IServiceSpatial, DefaultServiceSpatial>()
                 .AddConfigOptions<DataOptions>(configuration, DataOptions.SectionName, out var options);
@@ -252,6 +253,7 @@ namespace Nano.App.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             return services
+                .AddSingleton<IEventing, NullEventing>()
                 .AddConfigOptions<EventingOptions>(configuration, EventingOptions.SectionName, out _);
         }
 
@@ -348,11 +350,12 @@ namespace Nano.App.Extensions
 
                     eventing
                         .GetType()
-                        .GetMethod("Consume")
+                        .GetMethod("Subscribe")
                         .MakeGenericMethod(eventType)
-                        .Invoke(eventing, new object[] { @delegate, Topology.Direct, string.Empty }); // TODO: EVENTING: TOPOPLY: How to specify Direct / Fanout for EventHandler's
+                        .Invoke(eventing, new object[] { @delegate, string.Empty }); 
                 });
 
+            // TODO: EVENTING: Event Handler Subscribe setup
             AppDomain.CurrentDomain
                 .GetAssemblies()
                 .SelectMany(x => x.GetTypes())
@@ -374,9 +377,9 @@ namespace Nano.App.Extensions
 
                     eventing
                         .GetType()
-                        .GetMethod("Consume")
+                        .GetMethod("Subscribe")
                         .MakeGenericMethod(eventType)
-                        .Invoke(eventing, new object[] { @delegate, Topology.Direct, x.Name });
+                        .Invoke(eventing, new object[] { @delegate, x.Name });
                 });
 
             return services;

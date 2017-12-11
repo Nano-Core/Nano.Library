@@ -20,7 +20,7 @@ namespace Nano.Logging
         /// <summary>
         /// Sinks.
         /// </summary>
-        public virtual string[] Sinks { get; set; }
+        public virtual string[] Sinks { get; set; } = new string[0];
 
         /// <summary>
         /// Log Level Overrides.

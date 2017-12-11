@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Nano.Data;
 using Nano.Eventing.Attributes;
-using Nano.Eventing.Enums;
 using Nano.Eventing.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Services.Eventing;
@@ -86,7 +85,7 @@ namespace Nano.Services.Data
                         };
 
                         eventing
-                            .Publish(entityEvent, Topology.Direct, entity.GetType().Name);
+                            .Publish(entityEvent, entity.GetType().Name); // TODO: Eventing: Routing key for EntityEVent.
                     }
                 }
             }, cancellationToken);

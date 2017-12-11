@@ -13,6 +13,7 @@ services:
       - rabbitmq
       - elasticsearch
       - kibana
+      - google
 
   mysql:
     image: mysql/mysql-server
@@ -41,3 +42,11 @@ services:
     image: kibana
     ports:
       - 5601:5601
+
+  google:
+    image: niallmccullagh/docker-google-cloud-emulators:latest
+    container_name: gcp-pubsub-emulator
+    ports:
+      - 8538:8538
+    command: /bin/bash -c "gcloud config set project emulator && gcloud beta emulators pubsub start --data-dir /mnt/data/pubsub --host-port 0.0.0.0:8538"
+

@@ -25,16 +25,16 @@ namespace Nano.Eventing.Providers.EasyNetQ
         /// </summary>
         /// <param name="logger">The <see cref="ILogger"/>.</param>
         /// <param name="options">The <see cref="EventingOptions"/>.</param>
-        public EasyNetQProvider(ILogger logger, EventingOptions options)
+        public EasyNetQProvider(EventingOptions options, ILogger logger)
         {
-            if (logger == null)
-                throw new ArgumentNullException(nameof(logger));
-
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
 
-            this.Logger = logger;
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
+
             this.Options = options;
+            this.Logger = logger;
         }
 
         /// <inheritdoc />

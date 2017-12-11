@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Nano.Eventing.Enums;
 
 namespace Nano.Eventing.Interfaces
 {
@@ -14,10 +13,9 @@ namespace Nano.Eventing.Interfaces
         /// </summary>
         /// <typeparam name="TMessage">The type of the message body.</typeparam>
         /// <param name="body">The message body.</param>
-        /// <param name="topology"></param>
         /// <param name="routing">The routing key (if any).</param>
         /// <returns>A <see cref="Task"/> (void).</returns>
-        Task Publish<TMessage>(TMessage body, Topology topology = Topology.Fanout, string routing = "")
+        Task Publish<TMessage>(TMessage body, string routing = "")
             where TMessage : class;
 
         /// <summary>
@@ -25,9 +23,9 @@ namespace Nano.Eventing.Interfaces
         /// </summary>
         /// <typeparam name="TMessage">The type of response body.</typeparam>
         /// <param name="callback">The callback to invoke.</param>
-        /// <param name="topology"></param>
         /// <param name="routing">The routing key (if any).</param>
-        void Consume<TMessage>(Action<TMessage> callback, Topology topology = Topology.Fanout, string routing = "")
+        /// <returns>A <see cref="Task"/> (void).</returns>
+        Task Subscribe<TMessage>(Action<TMessage> callback, string routing = "")
             where TMessage : class;
     }
 }
