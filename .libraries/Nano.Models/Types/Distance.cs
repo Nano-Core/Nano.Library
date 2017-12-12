@@ -7,8 +7,15 @@ namespace Nano.Models.Types
     /// </summary>
     public class Distance
     {
-        private const double RATIO_METER_TO_MILE = 1609.34;
-        private const double RATIO_METER_TO_KILOMETER = 1000.00;
+        /// <summary>
+        /// Ratio meter to mile.
+        /// </summary>
+        public const double RATIO_METER_TO_MILE = 1609.34;
+
+        /// <summary>
+        /// Ratio meter to kilometer.
+        /// </summary>
+        public const double RATIO_METER_TO_KILOMETER = 1000.00;
 
         /// <summary>
         /// Meters.

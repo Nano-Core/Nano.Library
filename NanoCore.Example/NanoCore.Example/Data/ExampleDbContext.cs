@@ -27,7 +27,8 @@ namespace NanoCore.Example.Data
 
             modelBuilder
                 .AddMapping<ExampleEntity, ExampleEntityMapping>()
-                .AddMapping<ExampleEntitySpatial, ExampleEntitySpatialMapping>();
+                .AddMapping<ExampleEntitySpatial, ExampleEntitySpatialMapping>()
+                .AddMapping<ExampleEntityTypes, ExampleEntityTypesMapping>();
         }
     }
 }

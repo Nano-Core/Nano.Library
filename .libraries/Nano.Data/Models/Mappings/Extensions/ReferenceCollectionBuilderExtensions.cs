@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Models.Types;
 
@@ -112,13 +113,11 @@ namespace Nano.Data.Models.Mappings.Extensions
 
             builder
                 .OwnsOne(expression)
-                .Property(x => x.Miles)
-                .IsRequired();
+                .Property(x => x.Miles);
 
             builder
                 .OwnsOne(expression)
-                .Property(x => x.Kilometers)
-                .IsRequired();
+                .Property(x => x.Kilometers);
         }
 
         /// <summary>
@@ -145,12 +144,16 @@ namespace Nano.Data.Models.Mappings.Extensions
 
             builder
                 .OwnsOne(expression)
-                .Property(x => x.Adjustment);
+                .HasIndex(x => x.Time);
 
             builder
                 .OwnsOne(expression)
-                .Property(x => x.Total)
-                .IsRequired();
+                .Property(x => x.Adjustment)
+                .HasDefaultValue(TimeSpan.Zero);
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.Total);
 
             builder
                 .OwnsOne(expression)
