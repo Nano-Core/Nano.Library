@@ -12,7 +12,7 @@ namespace Nano.Models.Types
         /// Gets the percentage value as an <see cref="decimal"/>.
         /// </summary>
         [Required]
-        public virtual decimal AsDecimal { get; protected set; }
+        public virtual decimal AsDecimal { get; set; }
 
         /// <summary>
         /// Gets the percentage value as an <see cref="System.Int32"/>.
@@ -61,7 +61,7 @@ namespace Nano.Models.Types
         /// </summary>
         /// <param name="other">The <see cref="Percentage"/> to compare for equality with the instance.</param>
         /// <returns>A <see cref="Boolean"/> indicating whether the instance was equal to <paramref name="other"/>.</returns>
-        public bool Equals(Percentage other)
+        public virtual bool Equals(Percentage other)
         {
             return this.AsDecimal == other.AsDecimal;
         }
@@ -73,10 +73,7 @@ namespace Nano.Models.Types
         /// <returns>A <see cref="Boolean"/> indicating whether the instance was equal to <paramref name="object"/>.</returns>
         public override bool Equals(object @object)
         {
-            if (@object == null)
-                return false;
-
-            return @object is Percentage && this.Equals(@object);
+            return @object is Percentage && this.Equals((Percentage)@object);
         }
 
         /// <summary>

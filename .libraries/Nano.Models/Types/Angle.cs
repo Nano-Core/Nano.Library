@@ -7,34 +7,36 @@ namespace Nano.Models.Types
     /// </summary>
     public class Angle
     {
-        private double radians;
-        private double degrees;
+        private decimal radians;
+        private decimal degrees;
 
         /// <summary>
         /// The <see cref="Angle"/> represented in radians.
         /// </summary>
-        public virtual double Radians
+        public virtual decimal Radians
         {
             get => radians;
             set
             {
                 this.radians = value;
-                this.degrees = value * (180.00D / Math.PI);
+                this.degrees = value * (180.00M / (decimal)Math.PI);
             }
         }
 
         /// <summary>
         /// The <see cref="Angle"/> represented in radians, between 0 and 2 Pi. 
         /// </summary>
-        public virtual double Radians2Pi
+        public virtual decimal Radians2Pi
         {
             get
             {
-                if (this.radians < 0)
-                    return 2 * Math.PI - Math.Abs(this.radians) % (2 * Math.PI);
+                var pi = (decimal)Math.PI;
 
-                if (this.radians > 2 * Math.PI)
-                    return this.radians % (2 * Math.PI);
+                if (this.radians < 0)
+                    return 2 * pi - Math.Abs(this.radians) % (2 * pi);
+
+                if (this.radians > 2 * pi)
+                    return this.radians % (2 * pi);
 
                 return this.radians;
             }
@@ -43,20 +45,20 @@ namespace Nano.Models.Types
         /// <summary>
         /// The <see cref="Angle"/> represented in degrees.
         /// </summary>
-        public virtual double Degrees
+        public virtual decimal Degrees
         {
             get => this.degrees;
             set
             {
                 this.degrees = value;
-                this.radians = Math.PI / 180.00D * value;
+                this.radians = (decimal)Math.PI / 180.00M * value;
             }
         }
 
         /// <summary>
         /// The <see cref="Angle"/> represented in degrees, between 0 and 360. 
         /// </summary>
-        public virtual double Degrees360
+        public virtual decimal Degrees360
         {
             get
             {
@@ -68,6 +70,37 @@ namespace Nano.Models.Types
 
                 return this.degrees;
             }
+        }
+
+        /// <summary>
+        /// Compare the instance for equality with the passed <paramref name="other"/>.
+        /// </summary>
+        /// <param name="other">The <see cref="Angle"/> to compare for equality with the instance.</param>
+        /// <returns>A <see cref="Boolean"/> indicating whether the instance was equal to <paramref name="other"/>.</returns>
+        public virtual bool Equals(Angle other)
+        {
+            return radians == other.radians && degrees == other.degrees;
+        }
+
+        /// <summary>
+        /// Override of <see cref="System.Object.Equals(object)"/> for use with operator overlods.
+        /// </summary>
+        /// <param name="object">The <see cref="System.Object"/> to compare for equality with the instance.</param>
+        /// <returns>A <see cref="Boolean"/> indicating whether the instance was equal to <paramref name="object"/>.</returns>
+        public override bool Equals(object @object)
+        {
+            return @object is Angle && this.Equals((Angle)@object);
+        }
+
+        /// <summary>
+        /// Override of <see cref="Object.GetHashCode()"/> to compare the <see cref="Angle.Radians"/> and not the instance itself.
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            // ReSharper disable NonReadonlyMemberInGetHashCode
+            return this.radians.GetHashCode();
+            // ReSharper restore NonReadonlyMemberInGetHashCode
         }
 
         /// <summary>
@@ -133,7 +166,7 @@ namespace Nano.Models.Types
         /// <param name="lhs">Left-hand-side.</param>
         /// <param name="rhs">Right-hand-side</param>
         /// <returns>A new instance of <see cref="Angle"/>.</returns>
-        public static Angle operator *(Angle lhs, double rhs)
+        public static Angle operator *(Angle lhs, decimal rhs)
         {
             if (lhs == null)
                 throw new ArgumentNullException(nameof(lhs));
@@ -147,7 +180,7 @@ namespace Nano.Models.Types
         /// <param name="lhs">Left-hand-side.</param>
         /// <param name="rhs">Right-hand-side</param>
         /// <returns>A new instance of <see cref="Angle"/>.</returns>
-        public static Angle operator *(double lhs, Angle rhs)
+        public static Angle operator *(decimal lhs, Angle rhs)
         {
             return rhs == null
                 ? null 
@@ -176,7 +209,7 @@ namespace Nano.Models.Types
         /// <param name="lhs">Left-hand-side.</param>
         /// <param name="rhs">Right-hand-side</param>
         /// <returns>A new instance of <see cref="Angle"/>.</returns>
-        public static Angle operator /(Angle lhs, double rhs)
+        public static Angle operator /(Angle lhs, decimal rhs)
         {
             if (lhs == null)
                 throw new ArgumentNullException(nameof(lhs));
@@ -190,7 +223,7 @@ namespace Nano.Models.Types
         /// <param name="lhs">Left-hand-side.</param>
         /// <param name="rhs">Right-hand-side</param>
         /// <returns>A new instance of <see cref="Angle"/>.</returns>
-        public static Angle operator /(double lhs, Angle rhs)
+        public static Angle operator /(decimal lhs, Angle rhs)
         {
             return rhs == null
                 ? null
@@ -254,10 +287,56 @@ namespace Nano.Models.Types
         }
 
         /// <summary>
+        /// Checking if the <paramref name="lhs"/> is not equal to the <paramref name="lhs"/>.
+        /// </summary>
+        /// <param name="lhs">Instance to devide from.</param>
+        /// <param name="rhs">Value to divide from the instance.</param>
+        /// <returns>A <see cref="bool"/> indicating if the <see cref="Angle.Radians"/> of the <paramref name="lhs"/> is not equal to the <paramref name="lhs"/>.</returns>
+        public static bool operator !=(Angle lhs, Angle rhs)
+        {
+            if (lhs == null)
+                throw new ArgumentNullException(nameof(lhs));
+
+            if (rhs == null)
+                throw new ArgumentNullException(nameof(rhs));
+
+            return lhs.radians != rhs.radians;
+        }
+
+        /// <summary>
+        /// Checking if the <paramref name="lhs"/> is equal to the <paramref name="lhs"/>.
+        /// </summary>
+        /// <param name="lhs">Instance to devide from.</param>
+        /// <param name="rhs">Value to divide from the instance.</param>
+        /// <returns>A <see cref="bool"/> indicating if the <see cref="Angle.Radians"/> of the <paramref name="lhs"/> is equal to the <paramref name="lhs"/>.</returns>
+        public static bool operator ==(Angle lhs, Angle rhs)
+        {
+            if (lhs == null)
+                throw new ArgumentNullException(nameof(lhs));
+
+            if (rhs == null)
+                throw new ArgumentNullException(nameof(rhs));
+
+            return lhs.radians == rhs.radians;
+        }
+
+        /// <summary>
         /// Double operator override.
         /// </summary>
         /// <param name="angle">The <see cref="Angle"/>.</param>
         public static implicit operator double(Angle angle)
+        {
+            if (angle == null)
+                throw new ArgumentNullException(nameof(angle));
+
+            return (double)angle.Radians;
+        }
+
+        /// <summary>
+        /// Double operator override.
+        /// </summary>
+        /// <param name="angle">The <see cref="Angle"/>.</param>
+        public static implicit operator decimal(Angle angle)
         {
             if (angle == null)
                 throw new ArgumentNullException(nameof(angle));
