@@ -56,7 +56,7 @@ namespace Nano.Services.Interfaces
         /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
         Task<IEnumerable<TEntity>> GetMany<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
-            where TCriteria : class, IQueryCriteria;
+            where TCriteria : class, IQueryCriteria, new();
 
         /// <summary>
         /// Get all instances of <typeparamref name="TEntity"/>, matching the passed <paramref name="expression"/>.

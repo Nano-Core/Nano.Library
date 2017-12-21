@@ -77,7 +77,7 @@ namespace Nano.Services
         /// <inheritdoc />
         public virtual async Task<IEnumerable<TEntity>> GetMany<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
-            where TCriteria : class, IQueryCriteria
+            where TCriteria : class, IQueryCriteria, new()
         {
             if (query == null)
                 throw new ArgumentNullException(nameof(query));

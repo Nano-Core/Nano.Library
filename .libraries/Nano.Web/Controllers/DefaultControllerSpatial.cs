@@ -10,7 +10,7 @@ namespace Nano.Web.Controllers
     /// <inheritdoc />
     public class DefaultControllerSpatial<TEntity, TCriteria> : BaseControllerSpatial<IServiceSpatial, TEntity, Guid, TCriteria>
         where TEntity : DefaultEntitySpatial
-        where TCriteria : class, IQueryCriteriaSpatial
+        where TCriteria : class, IQueryCriteriaSpatial, new()
     {
         /// <inheritdoc />
         protected DefaultControllerSpatial(ILogger logger, IServiceSpatial service, IEventing eventing)

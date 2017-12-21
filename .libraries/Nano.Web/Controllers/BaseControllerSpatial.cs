@@ -16,7 +16,7 @@ namespace Nano.Web.Controllers
     public abstract class BaseControllerSpatial<TService, TEntity, TIdentity, TCriteria> : BaseController<TService, TEntity, TIdentity, TCriteria>
         where TService : IServiceSpatial
         where TEntity : class, IEntitySpatial, IEntityIdentity<TIdentity>, IEntityWritable
-        where TCriteria : class, IQueryCriteriaSpatial
+        where TCriteria : class, IQueryCriteriaSpatial, new()
     {
         /// <inheritdoc />
         protected BaseControllerSpatial(ILogger logger, TService service, IEventing eventing)

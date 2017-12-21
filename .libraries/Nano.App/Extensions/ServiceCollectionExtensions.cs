@@ -27,6 +27,7 @@ using Nano.Web.Controllers.Binders.Providers;
 using Nano.Web.Controllers.Extensions.Const;
 using Nano.Web.Middleware;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Serilog;
 using Serilog.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
@@ -140,7 +141,10 @@ namespace Nano.App.Extensions
                 })
                 .AddJsonOptions(y =>
                 {
+                    y.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     y.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    y.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
+                    y.SerializerSettings.ContractResolver = new DefaultContractResolver(); // TODO: Custom contract resolver?
                 })
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()

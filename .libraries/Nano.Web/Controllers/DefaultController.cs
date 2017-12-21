@@ -10,7 +10,7 @@ namespace Nano.Web.Controllers
     /// <inheritdoc />
     public class DefaultController<TEntity, TCriteria> : BaseController<IService, TEntity, Guid, TCriteria>
         where TEntity : DefaultEntity
-        where TCriteria : class, IQueryCriteria
+        where TCriteria : class, IQueryCriteria, new()
     {
         /// <inheritdoc />
         protected DefaultController(ILogger logger, IService service, IEventing eventing)

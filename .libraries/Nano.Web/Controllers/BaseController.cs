@@ -26,7 +26,7 @@ namespace Nano.Web.Controllers
     public abstract class BaseController<TService, TEntity, TIdentity, TCriteria> : Controller
         where TService : IService
         where TEntity : class, IEntity, IEntityIdentity<TIdentity>, IEntityWritable
-        where TCriteria : class, IQueryCriteria
+        where TCriteria : class, IQueryCriteria, new()
     {
         /// <summary>
         /// Logger.
