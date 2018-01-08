@@ -6,7 +6,7 @@ namespace Nano.Models
     public abstract class BaseEntityIdentity<TIdentity> : BaseEntity, IEntityIdentity<TIdentity>
     {
         /// <inheritdoc />
-        public virtual TIdentity Id { get; protected set; }
+        public virtual TIdentity Id { get; set; }
 
         /// <inheritdoc />
         public override int GetHashCode()
@@ -20,7 +20,7 @@ namespace Nano.Models
         public override bool Equals(object entity)
         {
             if (entity is IEntityIdentity<TIdentity> entityIdentity)
-                return this.Id.ToString() == entityIdentity.Id.ToString();
+                return this.Id.Equals(entityIdentity.Id);
 
             return object.ReferenceEquals(this, entity);
         }

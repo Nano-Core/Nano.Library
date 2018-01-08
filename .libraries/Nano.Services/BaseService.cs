@@ -138,8 +138,7 @@ namespace Nano.Services
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            await this.Context
-                .UpdateAsync(entity, cancellationToken);
+            this.Context.Update(entity);
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
@@ -152,8 +151,8 @@ namespace Nano.Services
             if (entities == null)
                 throw new ArgumentNullException(nameof(entities));
 
-            await this.Context
-                .UpdateRangeAsync(entities, cancellationToken);
+            this.Context
+                .UpdateRange(entities);
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
@@ -166,8 +165,7 @@ namespace Nano.Services
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            await this.Context
-                .AddOrUpdateAsync(entity, cancellationToken);
+            this.Context.AddOrUpdate(entity);
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
@@ -180,8 +178,8 @@ namespace Nano.Services
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            await this.Context
-                .RemoveAsync(entity, cancellationToken);
+            this.Context
+                .Remove(entity);
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
@@ -194,8 +192,8 @@ namespace Nano.Services
             if (entities == null)
                 throw new ArgumentNullException(nameof(entities));
 
-            await this.Context
-                .RemoveRangeAsync(entities, cancellationToken);
+            this.Context
+                .RemoveRange(entities, cancellationToken);
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);

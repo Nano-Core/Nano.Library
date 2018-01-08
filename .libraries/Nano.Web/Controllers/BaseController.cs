@@ -77,7 +77,7 @@ namespace Nano.Web.Controllers
             context.Result = this.BadRequest(new
             {
                 Summary = "Invalid ModelState",
-                Errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage)).ToArray()
+                Errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage))
             });
         }
 
@@ -130,7 +130,7 @@ namespace Nano.Web.Controllers
         /// <param name="ids">The <typeparamref name="TIdentity"/> identifiers of the <typeparamref name="TEntity"/> instances to get details about.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The 'Details' <see cref="IActionResult"/>.</returns>
-        [HttpGet]
+        [HttpPost]
         public virtual async Task<IActionResult> Details([FromRoute][FromQuery][FromBody][FromForm][Required]TIdentity[] ids, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service

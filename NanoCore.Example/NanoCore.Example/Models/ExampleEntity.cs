@@ -12,7 +12,6 @@ namespace NanoCore.Example.Models
     public class ExampleEntity : DefaultEntity
     {
         /// <summary>
-        /// Required.
         /// Property One.
         /// </summary>
         [Required]
@@ -22,5 +21,10 @@ namespace NanoCore.Example.Models
         /// Property Two.
         /// </summary>
         public virtual string PropertyTwo { get; set; }
+
+        /// <summary>
+        /// Nested Example Entity.
+        /// </summary>
+        public virtual ExampleEntity NestedExampleEntity { get; set; }
     }
 }

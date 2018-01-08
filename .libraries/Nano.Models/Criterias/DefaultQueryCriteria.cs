@@ -1,11 +1,10 @@
 using System;
 using DynamicExpression;
-using DynamicExpression.Interfaces;
 
 namespace Nano.Models.Criterias
 {
     /// <inheritdoc />
-    public class DefaultQueryCriteria : IQueryCriteria
+    public class DefaultQueryCriteria : BaseQueryCriteria
     {
         /// <summary>
         /// Is Active (read-only).
@@ -24,10 +23,9 @@ namespace Nano.Models.Criterias
         public virtual DateTimeOffset? BeforeAt { get; set; }
 
         /// <inheritdoc />
-        public virtual CriteriaExpression GetExpression<TEntity>() 
-            where TEntity : class
+        public override CriteriaExpression GetExpression<TEntity>() 
         {
-            var expression = new CriteriaExpression();
+            var expression = base.GetExpression<TEntity>();
 
             expression.Equal("IsActive", this.IsActive);
 

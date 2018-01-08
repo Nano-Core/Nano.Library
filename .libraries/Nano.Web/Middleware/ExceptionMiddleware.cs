@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Nano.Web.Middleware
 {
     /// <inheritdoc />
-    public class HttpContextExceptionMiddleware : IMiddleware
+    public class ExceptionMiddleware : IMiddleware
     {
         /// <inheritdoc />
         public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)

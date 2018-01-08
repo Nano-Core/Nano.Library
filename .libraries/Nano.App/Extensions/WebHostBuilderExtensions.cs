@@ -30,16 +30,13 @@ namespace Nano.App.Extensions
 
             var options = configuration
                 .GetSection(LoggingOptions.SectionName)
-                .Get<LoggingOptions>();
+                .Get<LoggingOptions>() ?? new LoggingOptions();
 
             var loggerConfiguration = new LoggerConfiguration()
                 .MinimumLevel.Is(options.LogLevel);
 
             if (options.Sinks.Any(x => x == "Console"))
                 loggerConfiguration.WriteTo.Console();
-
-            if (options.Sinks.Any(x => x == "ElasticSearch"))
-                loggerConfiguration.WriteTo.Elasticsearch();
 
             foreach (var @override in options.LogLevelOverrides)
             {
@@ -70,7 +67,7 @@ namespace Nano.App.Extensions
 
             var options = configuration
                 .GetSection(AppOptions.SectionName)
-                .Get<AppOptions>();
+                .Get<AppOptions>() ?? new AppOptions();
 
             var urls = options.Hosting.Ports
                 .Select(x => $"http://*:{x}")

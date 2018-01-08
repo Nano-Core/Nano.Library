@@ -20,7 +20,6 @@ using Nano.Eventing.Providers;
 using Nano.Services;
 using Nano.Services.Data;
 using Nano.Services.Eventing;
-using Nano.Services.Eventing.Handlers;
 using Nano.Services.Interfaces;
 using Nano.Web.Api;
 using Nano.Web.Controllers.Binders.Providers;
@@ -133,8 +132,8 @@ namespace Nano.App.Extensions
             services
                 .AddApi()
                 .AddVersioning()
-                .AddHttpContextException()
-                .AddHttpContextContentTypes()
+                .AddExceptionMiddleware()
+                .AddContentTypeMiddleware()
                 .AddMvc(x =>
                 {
                     x.ModelBinderProviders.Insert(0, new QueryModelBinderProvider());
@@ -144,7 +143,7 @@ namespace Nano.App.Extensions
                     y.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     y.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     y.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
-                    y.SerializerSettings.ContractResolver = new DefaultContractResolver(); // TODO: Custom contract resolver?
+                    y.SerializerSettings.ContractResolver = new DefaultContractResolver(); // TODO: Custom contract resolver from appsettings?
                 })
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()
@@ -160,13 +159,13 @@ namespace Nano.App.Extensions
                 services.AddGzipCompression();
 
             if (options.Switches.EnableHttpContextLogging)
-                services.AddHttpContextLogging();
+                services.AddLoggingMiddleware();
 
             if (options.Switches.EnableHttpContextIdentifier)
-                services.AddHttpContextIdentifier();
+                services.AddTraceIdentifierMiddleware();
 
             if (options.Switches.EnableHttpContextLocalization)
-                services.AddHttpContextLocalization();
+                services.AddLocalizations();
 
             return services;
         }
@@ -393,57 +392,57 @@ namespace Nano.App.Extensions
 
             return services;
         }
-        private static IServiceCollection AddHttpContextLogging(this IServiceCollection services)
+        private static IServiceCollection AddLoggingMiddleware(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
             return services
-                .AddScoped<HttpContextLoggingMiddleware>();
+                .AddScoped<LoggingMiddleware>();
         }
-        private static IServiceCollection AddHttpContextException(this IServiceCollection services)
+        private static IServiceCollection AddExceptionMiddleware(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
             services
-                .AddScoped<HttpContextExceptionMiddleware>();
+                .AddScoped<ExceptionMiddleware>();
 
             return services;
         }
-        private static IServiceCollection AddHttpContextIdentifier(this IServiceCollection services)
+        private static IServiceCollection AddContentTypeMiddleware(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
             services
-                .AddScoped<HttpContextIdentifierMiddleware>();
-
-            return services;
-        }
-        private static IServiceCollection AddHttpContextContentTypes(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services
-                .AddScoped<HttpContextExceptionMiddleware>()
-                .AddScoped<HttpContextContentTypeMiddleware>()
+                .AddScoped<ExceptionMiddleware>()
+                .AddScoped<ContentTypeMiddleware>()
                 .AddMvc(x =>
-                {
-                    x.ReturnHttpNotAcceptable = true;
-                    x.RespectBrowserAcceptHeader = true;
-                    x.FormatterMappings.SetMediaTypeMappingForFormat("xml", HttpContentType.Xml);
-                    x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.Json);
-                    x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JavaScript);
-                    x.FormatterMappings.SetMediaTypeMappingForFormat("html", HttpContentType.Html);
-                })
-                .AddXmlSerializerFormatters()
-                .AddXmlDataContractSerializerFormatters();
+                    {
+                        x.ReturnHttpNotAcceptable = true;
+                        x.RespectBrowserAcceptHeader = true;
+                        x.FormatterMappings.SetMediaTypeMappingForFormat("xml", HttpContentType.Xml);
+                        x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.Json);
+                        x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JavaScript);
+                        x.FormatterMappings.SetMediaTypeMappingForFormat("html", HttpContentType.Html);
+                    })
+                    .AddXmlSerializerFormatters()
+                    .AddXmlDataContractSerializerFormatters();
 
             return services;
         }
-        private static IServiceCollection AddHttpContextLocalization(this IServiceCollection services)
+        private static IServiceCollection AddTraceIdentifierMiddleware(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services
+                .AddScoped<TraceIdentifierMiddleware>();
+
+            return services;
+        }
+        private static IServiceCollection AddLocalizations(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
@@ -451,8 +450,8 @@ namespace Nano.App.Extensions
             services
                 .AddLocalization()
                 .AddMvc()
-                .AddViewLocalization()
-                .AddDataAnnotationsLocalization();
+                    .AddViewLocalization()
+                    .AddDataAnnotationsLocalization();
 
             return services;
         }

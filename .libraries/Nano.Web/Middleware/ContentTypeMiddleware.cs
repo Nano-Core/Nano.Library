@@ -7,7 +7,7 @@ using Nano.Web.Controllers.Extensions.Const;
 namespace Nano.Web.Middleware
 {
     /// <inheritdoc />
-    public class HttpContextContentTypeMiddleware : IMiddleware
+    public class ContentTypeMiddleware : IMiddleware
     {
         /// <inheritdoc />
         public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)

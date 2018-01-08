@@ -6,7 +6,7 @@ using Nano.Models.Interfaces;
 namespace Nano.Data.Models.Mappings
 {
     /// <inheritdoc />
-    public class DefaultEntityMapping<TEntity> : DefaultEntityIdentityMapping<TEntity>
+    public class DefaultEntityMapping<TEntity> : BaseEntityIdentityMapping<TEntity, Guid>
         where TEntity : DefaultEntity, IEntityIdentity<Guid>
     {
         /// <inheritdoc />
