@@ -8,12 +8,12 @@ namespace Nano.App
         /// <summary>
         /// Section Name.
         /// </summary>
-        public static string SectionName => "App";
+        public static string SectionName => "app";
 
         /// <summary>
         /// Name.
         /// </summary>
-        public virtual string Name { get; set; } = "";
+        public virtual string Name { get; set; }
 
         /// <summary>
         /// Version.
@@ -36,11 +36,6 @@ namespace Nano.App
         public virtual string LicenseUrl { get; set; }
 
         /// <summary>
-        /// Cultures.
-        /// </summary>
-        public virtual Culture Cultures { get; set; } = new Culture();
-
-        /// <summary>
         /// Switches.
         /// </summary>
         public virtual SwitchOptions Switches { get; set; } = new SwitchOptions();
@@ -51,9 +46,14 @@ namespace Nano.App
         public virtual HostingOptions Hosting { get; set; } = new HostingOptions();
 
         /// <summary>
-        /// Culture (nested class).
+        /// Cultures.
         /// </summary>
-        public class Culture
+        public virtual CultureOptions Cultures { get; set; } = new CultureOptions();
+
+        /// <summary>
+        /// Culture Options (nested class).
+        /// </summary>
+        public class CultureOptions
         {
             /// <summary>
             /// Default.
@@ -63,7 +63,7 @@ namespace Nano.App
             /// <summary>
             /// Supported.
             /// </summary>
-            public virtual string[] Supported { get; set; }
+            public virtual string[] Supported { get; set; } = new string[0];
         }
 
         /// <summary>
@@ -72,14 +72,14 @@ namespace Nano.App
         public class HostingOptions
         {
             /// <summary>
-            /// Ports.
-            /// </summary>
-            public virtual int[] Ports { get; set; }
-
-            /// <summary>
             /// Path.
             /// </summary>
             public virtual string Path { get; set; } = "app";
+
+            /// <summary>
+            /// Ports.
+            /// </summary>
+            public virtual int[] Ports { get; set; } = new int[0];
         }
 
         /// <summary>

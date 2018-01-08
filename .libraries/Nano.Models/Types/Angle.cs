@@ -30,13 +30,13 @@ namespace Nano.Models.Types
         {
             get
             {
-                var pi = (decimal)Math.PI;
+                const decimal PI = (decimal)Math.PI;
 
                 if (this.radians < 0)
-                    return 2 * pi - Math.Abs(this.radians) % (2 * pi);
+                    return 2 * PI - Math.Abs(this.radians) % (2 * PI);
 
-                if (this.radians > 2 * pi)
-                    return this.radians % (2 * pi);
+                if (this.radians > 2 * PI)
+                    return this.radians % (2 * PI);
 
                 return this.radians;
             }

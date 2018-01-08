@@ -25,7 +25,7 @@ namespace Nano.Logging
         /// <summary>
         /// Log Level Overrides.
         /// </summary>
-        public virtual LogLevelOverride[] LogLevelOverrides { get; set; }
+        public virtual LogLevelOverride[] LogLevelOverrides { get; set; } = new LogLevelOverride[0];
 
         /// <summary>
         /// Log Level Override (nested class).

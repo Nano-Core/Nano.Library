@@ -2,7 +2,7 @@ using System;
 using Nano.Eventing.Interfaces;
 using Nano.Services.Interfaces;
 
-namespace Nano.Services.Eventing.Handlers
+namespace Nano.Services.Eventing
 {
     /// <summary>
     /// Entity Event Handler.
@@ -32,26 +32,23 @@ namespace Nano.Services.Eventing.Handlers
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));
 
-        // TODO: EVENTING : Callback method
-        //switch (@event.State)
-        //{
-        //    case "added":
-        //        var type = Type.GetType(@event.Name);
-        //        var instance = Activator.CreateInstance(type);
+            // TODO: EVENTING : Callback method
+            //switch (@event.State)
+            //{
+            //    case "added":
+            //        var type = Type.GetType(@event.Name);
+            //        var instance = Activator.CreateInstance(type);
+            //        //this.Service.Add(entity);
+            //        break;
 
+            //    case "updated":
+            //        break;
 
-
-        //        //this.Service.Add(entity);
-        //        break;
-
-        //    case "updated":
-        //        break;
-
-        //    case "delete":
-        //        //var a = this.Service.Get<T>(@event.Id).Result;
-        //        //this.Service.Delete(a);
-        //        break;
-        //}
+            //    case "delete":
+            //        //var a = this.Service.Get<T>(@event.Id).Result;
+            //        //this.Service.Delete(a);
+            //        break;
+            //}
+        }
     }
-}
 }

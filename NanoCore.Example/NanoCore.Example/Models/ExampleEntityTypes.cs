@@ -1,25 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using Nano.Models;
 using Nano.Models.Types;
+using NanoCore.Example.Models.Types;
 
 namespace NanoCore.Example.Models
 {
-    /// <summary>
-    /// Nested Type.
-    /// </summary>
-    public class NestedType
-    {
-        /// <summary>
-        /// Duration.
-        /// </summary>
-        public virtual Duration Duration { get; set; }
-
-        /// <summary>
-        /// Distance.
-        /// </summary>
-        public virtual Distance Distance { get; set; }
-    }
-
     /// <summary>
     /// Example Entity Types.
     /// </summary>

@@ -18,6 +18,7 @@ namespace Nano.Data
         protected BaseDbContext(DbContextOptions options)
             : base(options)
         {
+
         }
 
         /// <summary>
@@ -27,14 +28,19 @@ namespace Nano.Data
         /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>A <see cref="Task"/> (void).</returns>
-        public virtual Task<EntityEntry<TEntity>> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<EntityEntry<TEntity>> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            return Task.Factory
-                .StartNew(() => this.Update(entity), cancellationToken);
+            return await Task.Factory
+                .StartNew(() =>
+                {
+                    var entry = this.Update(entity);
+
+                    return entry;
+                }, cancellationToken);
         }
 
         /// <summary>
@@ -43,19 +49,15 @@ namespace Nano.Data
         /// <param name="entities">The <see cref="object"/>'s.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>A <see cref="Task"/> (void).</returns>
-        public virtual Task UpdateRangeAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
+        public virtual async Task UpdateRangeAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
         {
             if (entities == null)
                 throw new ArgumentNullException(nameof(entities));
 
-            return Task.Factory
-                .StartNew(() =>
-                {
-                    foreach (var entity in entities)
-                    {
-                        this.Update(entity);
-                    }
-                }, cancellationToken);
+            foreach (var entity in entities)
+            {
+                await this.UpdateAsync(entity, cancellationToken);
+            }
         }
 
         /// <summary>
@@ -65,14 +67,19 @@ namespace Nano.Data
         /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>A <see cref="Task"/> (void).</returns>
-        public virtual Task<EntityEntry<TEntity>> RemoveAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<EntityEntry<TEntity>> RemoveAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            return Task.Factory
-                .StartNew(() => this.Remove(entity), cancellationToken);
+            return await Task.Factory
+                .StartNew(() =>
+                {
+                    var entry = this.Remove(entity);
+
+                    return entry;
+                }, cancellationToken);
         }
 
         /// <summary>
@@ -81,19 +88,15 @@ namespace Nano.Data
         /// <param name="entities">The <see cref="object"/>'s.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>A <see cref="Task"/> (void).</returns>
-        public virtual Task RemoveRangeAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
+        public virtual async Task RemoveRangeAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
         {
             if (entities == null)
                 throw new ArgumentNullException(nameof(entities));
 
-            return Task.Factory
-                .StartNew(() =>
-                {
-                    foreach (var entity in entities)
-                    {
-                        this.Remove(entity);
-                    }
-                }, cancellationToken);
+            foreach (var entity in entities)
+            {
+                await this.RemoveAsync(entity, cancellationToken);
+            }
         }
 
         /// <summary>
@@ -121,23 +124,6 @@ namespace Nano.Data
         }
 
         /// <summary>
-        /// Adds or updates (if exists) the entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
-        /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>A <see cref="Task"/>.</returns>
-        public virtual Task<EntityEntry<TEntity>> AddOrUpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
-            where TEntity : class
-        {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-
-            return Task.Factory
-                .StartNew(() => this.AddOrUpdate(entity), cancellationToken);
-        }
-
-        /// <summary>
         /// Adds or updates (if exists) a range of entities.
         /// </summary>
         /// <param name="entities">The <see cref="object"/>'s.</param>
@@ -153,18 +139,43 @@ namespace Nano.Data
         }
 
         /// <summary>
+        /// Adds or updates (if exists) the entity.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
+        /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>A <see cref="Task"/>.</returns>
+        public virtual async Task<EntityEntry<TEntity>> AddOrUpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+            where TEntity : class
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            return await Task.Factory
+                .StartNew(() =>
+                {
+                    var entry = this.AddOrUpdate(entity);
+
+                    return entry;
+                }, cancellationToken);
+        }
+
+        /// <summary>
         /// Adds or updates (if exists) a range of entities.
         /// </summary>
         /// <param name="entities">The <see cref="object"/>'s.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>A <see cref="Task"/> (void).</returns>
-        public virtual Task AddOrUpdateManyAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
+        public virtual async Task AddOrUpdateManyAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
         {
             if (entities == null)
                 throw new ArgumentNullException(nameof(entities));
 
-            return Task.Factory
-                .StartNew(() => { this.AddOrUpdateMany(entities); }, cancellationToken);
+            await Task.Factory
+                .StartNew(() =>
+                {
+                    this.AddOrUpdateMany(entities);
+                }, cancellationToken);
         }
     }
 }

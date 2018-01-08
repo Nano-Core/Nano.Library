@@ -72,10 +72,10 @@ namespace Nano.App
                 .ConfigureServices(x =>
                 {
                     x.AddApp(configuration);
+                    x.AddData(configuration);
                     x.AddConfig(configuration);
                     x.AddLogging(configuration);
                     x.AddEventing(configuration);
-                    x.AddData(configuration);
                 })
                 .UseApplication<TApplication>(configuration);
         }

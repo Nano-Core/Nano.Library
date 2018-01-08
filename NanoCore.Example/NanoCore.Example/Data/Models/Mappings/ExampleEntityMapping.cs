@@ -21,11 +21,15 @@ namespace NanoCore.Example.Data.Models.Mappings
                 .IsRequired();
 
             builder
+                .HasIndex(x => x.PropertyOne)
+                .IsUnique();
+
+            builder
                 .Property(x => x.PropertyTwo);
 
             builder
-                .HasIndex(x => x.PropertyOne)
-                .IsUnique();
+                .HasOne(x => x.NestedExampleEntity)
+                .WithMany();
         }
     }
 }

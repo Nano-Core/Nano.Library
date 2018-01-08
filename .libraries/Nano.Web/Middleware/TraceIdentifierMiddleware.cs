@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http.Features;
 namespace Nano.Web.Middleware
 {
     /// <inheritdoc />
-    public class HttpContextIdentifierMiddleware : IMiddleware
+    public class TraceIdentifierMiddleware : IMiddleware
     {
         /// <inheritdoc />
         public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)

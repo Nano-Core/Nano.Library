@@ -53,6 +53,9 @@ namespace Nano.App
             var version = appOptions.Version;
             var basePath = $"{appOptions.Hosting.Path}/{appOptions.Name}";
 
+            if (basePath.EndsWith("/"))
+                basePath = basePath.Substring(0, basePath.Length - 1);
+
             applicationBuilder
                 .UseStaticFiles()
                 .UseForwardedHeaders()
@@ -98,14 +101,14 @@ namespace Nano.App
             }
 
             if (appOptions.Switches.EnableHttpContextIdentifier)
-                applicationBuilder.UseMiddleware<HttpContextIdentifierMiddleware>();
+                applicationBuilder.UseMiddleware<TraceIdentifierMiddleware>();
 
             applicationBuilder
-                .UseMiddleware<HttpContextContentTypeMiddleware>()
-                .UseMiddleware<HttpContextExceptionMiddleware>();
+                .UseMiddleware<ContentTypeMiddleware>()
+                .UseMiddleware<ExceptionMiddleware>();
 
             if (appOptions.Switches.EnableHttpContextLogging)
-                applicationBuilder.UseMiddleware<HttpContextLoggingMiddleware>();
+                applicationBuilder.UseMiddleware<LoggingMiddleware>();
         }
     }
 }
