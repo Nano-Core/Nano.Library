@@ -398,7 +398,7 @@ namespace Nano.App.Extensions
                 throw new ArgumentNullException(nameof(services));
 
             return services
-                .AddScoped<LoggingMiddleware>();
+                .AddScoped<LoggingExtensionMiddleware>();
         }
         private static IServiceCollection AddExceptionMiddleware(this IServiceCollection services)
         {
@@ -406,7 +406,7 @@ namespace Nano.App.Extensions
                 throw new ArgumentNullException(nameof(services));
 
             services
-                .AddScoped<ExceptionMiddleware>();
+                .AddScoped<ExceptionHandlingMiddleware>();
 
             return services;
         }
@@ -416,7 +416,7 @@ namespace Nano.App.Extensions
                 throw new ArgumentNullException(nameof(services));
 
             services
-                .AddScoped<ExceptionMiddleware>()
+                .AddScoped<ExceptionHandlingMiddleware>()
                 .AddScoped<ContentTypeMiddleware>()
                 .AddMvc(x =>
                     {

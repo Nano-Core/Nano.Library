@@ -11,7 +11,7 @@ using Serilog.Events;
 namespace Nano.Web.Middleware
 {
     /// <inheritdoc />
-    public class LoggingMiddleware : IMiddleware
+    public class LoggingExtensionMiddleware : IMiddleware
     {
         /// <inheritdoc />
         public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)

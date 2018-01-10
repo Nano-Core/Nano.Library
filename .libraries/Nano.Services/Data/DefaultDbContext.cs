@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Nano.Data;
 using Nano.Eventing.Attributes;
 using Nano.Eventing.Interfaces;
-using Nano.Models.Interfaces;
 using Nano.Services.Eventing;
 
 namespace Nano.Services.Data
@@ -45,7 +43,7 @@ namespace Nano.Services.Data
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
             var entities = this.ChangeTracker
-                .Entries<IEntityIdentity<Guid>>() // TODO: Shouldn't always be GUID
+                .Entries()
                 .Where(x => x.Entity.GetType().GetAttributes<PublishAttribute>().Any())
                 .Select(x => x.Entity);
 
@@ -63,14 +61,11 @@ namespace Nano.Services.Data
 
                     foreach (var entity in entities)
                     {
-                        var entityEvent = new EntityEvent
-                        {
-                            Id = entity.Id.ToString(),
-                            Name = entity.GetType().Name
-                        };
+                        var key = entity.GetType().Name;
+                        var entityEvent = new EntityEvent(entity);
 
                         eventing
-                            .Publish(entityEvent, entity.GetType().Name); // TODO: Eventing: Routing key for EntityEVent.
+                            .Publish(entityEvent, key); 
                     }
 
                     return x;

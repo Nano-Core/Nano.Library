@@ -105,10 +105,10 @@ namespace Nano.App
 
             applicationBuilder
                 .UseMiddleware<ContentTypeMiddleware>()
-                .UseMiddleware<ExceptionMiddleware>();
+                .UseMiddleware<ExceptionHandlingMiddleware>();
 
             if (appOptions.Switches.EnableHttpContextLogging)
-                applicationBuilder.UseMiddleware<LoggingMiddleware>();
+                applicationBuilder.UseMiddleware<LoggingExtensionMiddleware>();
         }
     }
 }

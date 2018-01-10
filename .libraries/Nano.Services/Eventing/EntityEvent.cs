@@ -1,3 +1,5 @@
+using System;
+
 namespace Nano.Services.Eventing
 {
     /// <summary>
@@ -6,18 +8,29 @@ namespace Nano.Services.Eventing
     public class EntityEvent
     {
         /// <summary>
-        /// Id.
+        /// Data.
         /// </summary>
-        public virtual string Id { get; set; }
+        public virtual object Data { get; set; }
 
         /// <summary>
-        /// Name.
+        /// Default Constructor.
         /// </summary>
-        public virtual string Name { get; set; }
+        public EntityEvent()
+            : this(new object())
+        {
+            
+        }   
 
         /// <summary>
-        /// State.
+        /// Constructor.
         /// </summary>
-        public virtual string State { get; set; }
+        /// <param name="data">The <see cref="object"/> data.</param>
+        public EntityEvent(object data)
+        {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+
+            this.Data = data;
+        }
     }
 }
