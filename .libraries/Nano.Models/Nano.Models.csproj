@@ -33,7 +33,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DynamicExpression" Version="1.0.3" />
+    <PackageReference Include="DynamicExpression" Version="1.0.4" />
     <PackageReference Include="NetTopologySuite" Version="1.15.0-pre032" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
   </ItemGroup>
