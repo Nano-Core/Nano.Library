@@ -13,22 +13,19 @@ namespace Nano.App
     /// <summary>
     /// Base Application (abstract).
     /// </summary>
-    /// <typeparam name="TConfig">The type of <see cref="IConfiguration"/>.</typeparam>
-    public abstract class BaseApplication<TConfig> : IApplication
-        where TConfig : IConfiguration
+    public abstract class BaseApplication : IApplication
     {
         /// <summary>
         /// Configuration.
-        /// The <see cref="IConfiguration"/> instance of type <typeparamref name="TConfig"/>.
         /// </summary>
-        protected virtual TConfig Configuration { get; set; }
+        protected virtual IConfiguration Configuration { get; set; }
 
         /// <summary>
         /// Constructor. 
-        /// Accepting a <typeparamref name="TConfig"/> instance, initializing <see cref="Configuration"/>.
+        /// Accepting an instance of <see cref="IConfiguration"/>.
         /// </summary>
-        /// <param name="configuration">The instance of <typeparamref name="TConfig"/>.</param>
-        protected BaseApplication(TConfig configuration)
+        /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
+        protected BaseApplication(IConfiguration configuration)
         {
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));

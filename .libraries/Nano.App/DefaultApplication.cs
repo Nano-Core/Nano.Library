@@ -12,7 +12,7 @@ using Nano.Web.Middleware;
 namespace Nano.App
 {
     /// <inheritdoc />
-    public class DefaultApplication : BaseApplication<IConfiguration>
+    public class DefaultApplication : BaseApplication
     {
         /// <inheritdoc />
         public DefaultApplication(IConfiguration configuration)
