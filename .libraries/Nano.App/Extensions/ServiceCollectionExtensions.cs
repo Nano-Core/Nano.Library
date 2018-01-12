@@ -266,10 +266,8 @@ namespace Nano.App.Extensions
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
 
-            services
+            return services
                 .AddConfigOptions<LoggingOptions>(configuration, LoggingOptions.SectionName, out var _);
-
-            return services;
         }
 
         /// <summary>
@@ -304,7 +302,7 @@ namespace Nano.App.Extensions
                 .ForEach(x =>
                 {
                     services
-                        .AddSingleton(x);
+                        .AddScoped(x);
                 });
 
             return services;
@@ -322,6 +320,19 @@ namespace Nano.App.Extensions
                     x.AssumeDefaultVersionWhenUnspecified = true;
                     x.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
                 });
+        }
+        private static IServiceCollection AddLocalizations(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services
+                .AddLocalization()
+                .AddMvc()
+                .AddViewLocalization()
+                .AddDataAnnotationsLocalization();
+
+            return services;
         }
         private static IServiceCollection AddDocumentation(this IServiceCollection services)
         {
@@ -465,19 +476,6 @@ namespace Nano.App.Extensions
 
             services
                 .AddScoped<TraceIdentifierMiddleware>();
-
-            return services;
-        }
-        private static IServiceCollection AddLocalizations(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services
-                .AddLocalization()
-                .AddMvc()
-                    .AddViewLocalization()
-                    .AddDataAnnotationsLocalization();
 
             return services;
         }

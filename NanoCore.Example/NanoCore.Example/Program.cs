@@ -18,7 +18,7 @@ namespace NanoCore.Example
         /// </summary>
         public static void Main()
         {
-            DefaultApplication
+            BaseApplication
                 .ConfigureApp<Application>()
                 .ConfigureServices(x =>
                 {

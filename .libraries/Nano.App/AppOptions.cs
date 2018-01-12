@@ -8,7 +8,7 @@ namespace Nano.App
         /// <summary>
         /// Section Name.
         /// </summary>
-        public static string SectionName => "app";
+        public static string SectionName => "api";
 
         /// <summary>
         /// Name.
