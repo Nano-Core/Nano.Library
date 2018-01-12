@@ -19,7 +19,7 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectGuid>05811249-cb4e-44ec-91c1-bdb5664a3377</ProjectGuid>
     <DockerLaunchBrowser>false</DockerLaunchBrowser>
-    <DockerServiceUrl>http://localhost:5000/app/Examples/home</DockerServiceUrl>
+    <DockerServiceUrl>http://localhost:5000/api/Examples/home</DockerServiceUrl>
     <DockerServiceName>NanoCore.Example</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>

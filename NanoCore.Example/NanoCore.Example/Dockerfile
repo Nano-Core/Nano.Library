@@ -1,7 +1,6 @@
-FROM microsoft/aspnetcore:2.0
+FROM microsoft/aspnetcore:latest
 ARG source
 WORKDIR /app
-EXPOSE 80
 EXPOSE 5000
 COPY ${source:-obj/Docker/publish} .
 ENTRYPOINT ["dotnet", "NanoCore.Example.dll"]
