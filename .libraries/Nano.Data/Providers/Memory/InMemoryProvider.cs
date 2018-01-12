@@ -7,7 +7,7 @@ namespace Nano.Data.Providers.Memory
     /// <summary>
     /// In Memory Data Provider.
     /// </summary>
-    public class InMemoryDataProvider : IDataProvider
+    public class InMemoryProvider : IDataProvider
     {
         /// <summary>
         /// Options.
@@ -18,7 +18,7 @@ namespace Nano.Data.Providers.Memory
         /// Constructor.
         /// </summary>
         /// <param name="options">The <see cref="DataOptions"/>.</param>
-        public InMemoryDataProvider(DataOptions options)
+        public InMemoryProvider(DataOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));

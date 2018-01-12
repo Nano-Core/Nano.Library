@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Nano.Eventing.Interfaces;
 
-namespace Nano.Eventing.Providers
+namespace Nano.Eventing
 {
     /// <summary>
     /// Null Eventing.

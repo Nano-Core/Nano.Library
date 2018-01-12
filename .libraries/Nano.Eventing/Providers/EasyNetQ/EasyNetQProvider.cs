@@ -1,7 +1,7 @@
 using System;
 using EasyNetQ;
+using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
-using Serilog;
 
 namespace Nano.Eventing.Providers.EasyNetQ
 {

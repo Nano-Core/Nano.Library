@@ -1,6 +1,6 @@
 using System;
 using EasyNetQ;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace Nano.Eventing.Providers.EasyNetQ
 {
@@ -32,7 +32,7 @@ namespace Nano.Eventing.Providers.EasyNetQ
             if (format == null)
                 throw new ArgumentNullException(nameof(format));
 
-            this.Logger.Debug(format, args);
+            this.Logger.LogDebug(format, args);
         }
 
         /// <inheritdoc />
@@ -41,7 +41,7 @@ namespace Nano.Eventing.Providers.EasyNetQ
             if (format == null)
                 throw new ArgumentNullException(nameof(format));
 
-            this.Logger.Information(format, args);
+            this.Logger.LogInformation(format, args);
         }
 
         /// <inheritdoc />
@@ -50,7 +50,7 @@ namespace Nano.Eventing.Providers.EasyNetQ
             if (format == null)
                 throw new ArgumentNullException(nameof(format));
 
-            this.Logger.Error(format, args);
+            this.Logger.LogError(format, args);
         }
 
         /// <inheritdoc />

@@ -7,7 +7,7 @@ namespace Nano.Data.Providers.SqlServer
     /// <summary>
     /// Sql Server Data Provider.
     /// </summary>
-    public class SqlServerDataProvider : IDataProvider
+    public class SqlServerProvider : IDataProvider
     {
         /// <summary>
         /// Options.
@@ -18,7 +18,7 @@ namespace Nano.Data.Providers.SqlServer
         /// Constructor.
         /// </summary>
         /// <param name="options">The <see cref="DataOptions"/>.</param>
-        public SqlServerDataProvider(DataOptions options)
+        public SqlServerProvider(DataOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));

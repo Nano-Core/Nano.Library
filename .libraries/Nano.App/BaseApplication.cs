@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -40,7 +41,7 @@ namespace Nano.App
 
         /// <inheritdoc />
         public abstract void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime);
-
+      
         /// <summary>
         /// Creates a <see cref="IWebHostBuilder"/>, ready to <see cref="IWebHostBuilder.Build()"/> and <see cref="WebHostExtensions.Run(IWebHost)"/>.
         /// </summary>
@@ -53,22 +54,25 @@ namespace Nano.App
 
             var path = Directory.GetCurrentDirectory();
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var shutdownTimeout = TimeSpan.FromSeconds(10);
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(path)
                 .AddJsonFile($"{NAME}.json", false, true)
                 .AddJsonFile($"{NAME}.{environment}.json", true)
                 .AddEnvironmentVariables()
                 .Build();
+            var shutdownTimeout = TimeSpan.FromSeconds(10);
+
+            var options = configuration.GetSection(AppOptions.SectionName).Get<AppOptions>() ?? new AppOptions();
+            var urls = options.Hosting.Ports.Select(x => $"http://*:{x}").Distinct().ToArray();
 
             return new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(path)
-                .UseLogging(configuration)
                 .UseEnvironment(environment)
                 .UseConfiguration(configuration)
-                .CaptureStartupErrors(true)
                 .UseShutdownTimeout(shutdownTimeout)
+                .UseUrls(urls)
+                .CaptureStartupErrors(true)
                 .ConfigureServices(x =>
                 {
                     x.AddApp(configuration);
@@ -76,8 +80,10 @@ namespace Nano.App
                     x.AddConfig(configuration);
                     x.AddLogging(configuration);
                     x.AddEventing(configuration);
+
+                    x.AddSingleton<IApplication, TApplication>();
                 })
-                .UseApplication<TApplication>(configuration);
+                .UseStartup<TApplication>();
         }
     }
 }

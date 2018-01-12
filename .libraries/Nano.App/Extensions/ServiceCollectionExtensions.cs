@@ -16,7 +16,9 @@ using Nano.Data;
 using Nano.Data.Interfaces;
 using Nano.Eventing.Attributes;
 using Nano.Eventing.Interfaces;
-using Nano.Eventing.Providers;
+using Nano.Logging;
+using Nano.Logging.Interfaces;
+using Nano.Logging.Providers.Serilog;
 using Nano.Services;
 using Nano.Services.Data;
 using Nano.Services.Eventing;
@@ -28,9 +30,7 @@ using Nano.Web.Middleware;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Serilog;
-using Serilog.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
-using LoggingOptions = Nano.Logging.LoggingOptions;
 
 namespace Nano.App.Extensions
 {
@@ -39,6 +39,32 @@ namespace Nano.App.Extensions
     /// </summary>
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds a options <see cref="IConfigurationSection"/> as <see cref="IOptions{TOptions}"/> to the <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <typeparam name="TOption">The option implementation type.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="section">The name of the <see cref="IConfigurationSection"/>.</param>
+        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        public static IServiceCollection AddOptions<TOption>(this IServiceCollection services, string section)
+            where TOption : class, new()
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            if (section == null)
+                throw new ArgumentNullException(nameof(section));
+
+            var configuration = services
+                .BuildServiceProvider()
+                .GetRequiredService<IConfiguration>();
+
+            services
+                .AddConfigOptions(configuration, section, out TOption _);
+
+            return services;
+        }
+
         /// <summary>
         /// Adds eventing provider of type <typeparamref name="TProvider"/> to the <see cref="IServiceCollection"/>.
         /// </summary>
@@ -53,10 +79,49 @@ namespace Nano.App.Extensions
 
             return services
                 .AddSingleton<IEventingProvider, TProvider>()
-                .AddSingleton(provider => provider
+                .AddSingleton(x => x
                     .GetRequiredService<IEventingProvider>()
                     .Configure())
                 .AddEventingHandlers();
+        }
+
+        /// <summary>
+        /// Adds logging provider of type <typeparamref name="TProvider"/> to the <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <typeparam name="TProvider">The <typeparamref name="TProvider"/> type.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        public static IServiceCollection AddLogging<TProvider>(this IServiceCollection services)
+            where TProvider : class, ILoggingProvider
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services
+                .AddSingleton<ILoggingProvider, TProvider>()
+                .AddSingleton(x => x
+                    .GetRequiredService<ILoggingProvider>()
+                    .Configure())
+                .AddSingleton(x =>
+                {
+                    var loggerProvider = x.GetRequiredService<ILoggerProvider>();
+
+                    return loggerProvider.CreateLogger(null);
+                })
+                .AddSingleton<ILoggerFactory>(x =>
+                {
+                    var loggerProvider = x.GetRequiredService<ILoggerProvider>();
+
+                    return new LoggerFactory(new[] { loggerProvider });
+                });
+
+            if (typeof(TProvider) == typeof(SerilogProvider))
+            {
+                services
+                    .AddSingleton(Log.Logger);
+            }
+
+            return services;
         }
 
         /// <summary>
@@ -74,10 +139,10 @@ namespace Nano.App.Extensions
                 throw new ArgumentNullException(nameof(services));
 
             return services
-                .AddSingleton<IDataProvider, TProvider>()
                 .AddScoped<DbContext, TContext>()
                 .AddScoped<BaseDbContext, TContext>()
                 .AddScoped<DefaultDbContext, TContext>()
+                .AddSingleton<IDataProvider, TProvider>()
                 .AddDbContext<TContext>((provider, builder) =>
                 {
                     provider
@@ -87,38 +152,12 @@ namespace Nano.App.Extensions
         }
 
         /// <summary>
-        /// Adds a options <see cref="IConfigurationSection"/> as <see cref="IOptions{TOptions}"/> to the <see cref="IServiceCollection"/>.
-        /// </summary>
-        /// <typeparam name="TOption">The option implementation type.</typeparam>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <param name="name">The name of the <see cref="IConfigurationSection"/>.</param>
-        /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddConfigOptions<TOption>(this IServiceCollection services, string name)
-            where TOption : class, new()
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
-
-            var configuration = services
-                .BuildServiceProvider()
-                .GetRequiredService<IConfiguration>();
-
-            services
-                .AddConfigOptions(configuration, name, out TOption _);
-
-            return services;
-        }
-
-        /// <summary>
         /// Adds <see cref="AppOptions"/> to the <see cref="IServiceCollection"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddApp(this IServiceCollection services, IConfiguration configuration)
+        internal static IServiceCollection AddApp(this IServiceCollection services, IConfiguration configuration)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
@@ -143,7 +182,8 @@ namespace Nano.App.Extensions
                     y.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     y.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     y.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
-                    y.SerializerSettings.ContractResolver = new DefaultContractResolver(); // TODO: Custom contract resolver from appsettings?
+                    y.SerializerSettings.MaxDepth = 1; // TODO: TEST: What about settings maxDepths of JsonSerializer to 1 so that no references are serialized for requests / Responses? But then shadow properties must be serialized 
+                    y.SerializerSettings.ContractResolver = new DefaultContractResolver(); 
                 })
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()
@@ -176,7 +216,7 @@ namespace Nano.App.Extensions
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddData(this IServiceCollection services, IConfiguration configuration)
+        internal static IServiceCollection AddData(this IServiceCollection services, IConfiguration configuration)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
@@ -202,7 +242,7 @@ namespace Nano.App.Extensions
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddConfig(this IServiceCollection services, IConfiguration configuration)
+        internal static IServiceCollection AddConfig(this IServiceCollection services, IConfiguration configuration)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
@@ -218,7 +258,7 @@ namespace Nano.App.Extensions
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddLogging(this IServiceCollection services, IConfiguration configuration)
+        internal static IServiceCollection AddLogging(this IServiceCollection services, IConfiguration configuration)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
@@ -227,23 +267,9 @@ namespace Nano.App.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             services
-                .AddConfigOptions<LoggingOptions>(configuration, LoggingOptions.SectionName, out _);
+                .AddConfigOptions<LoggingOptions>(configuration, LoggingOptions.SectionName, out var _);
 
-            return services
-                .AddSingleton(Log.Logger)
-                .AddSingleton<ILoggerProvider>(x => new SerilogLoggerProvider(Log.Logger, true))
-                .AddSingleton(x =>
-                {
-                    var loggerProvider = x.GetRequiredService<ILoggerProvider>();
-
-                    return loggerProvider.CreateLogger(null);
-                })
-                .AddSingleton<ILoggerFactory>(x =>
-                {
-                    var loggerProvider = x.GetRequiredService<ILoggerProvider>();
-
-                    return new LoggerFactory(new[] { loggerProvider });
-                });
+            return services;
         }
 
         /// <summary>
@@ -252,7 +278,7 @@ namespace Nano.App.Extensions
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddEventing(this IServiceCollection services, IConfiguration configuration)
+        internal static IServiceCollection AddEventing(this IServiceCollection services, IConfiguration configuration)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));

@@ -7,7 +7,7 @@ namespace Nano.Data.Providers.MySql
     /// <summary>
     /// MySql Data Provider.
     /// </summary>
-    public class MySqlDataProvider : IDataProvider
+    public class MySqlProvider : IDataProvider
     {
         /// <summary>
         /// Options.
@@ -18,7 +18,7 @@ namespace Nano.Data.Providers.MySql
         /// Constructor.
         /// </summary>
         /// <param name="options">The <see cref="DataOptions"/>.</param>
-        public MySqlDataProvider(DataOptions options)
+        public MySqlProvider(DataOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));

@@ -3,6 +3,7 @@ using Nano.App;
 using Nano.App.Extensions;
 using Nano.Data.Providers.MySql;
 using Nano.Eventing.Providers.EasyNetQ;
+using Nano.Logging.Providers.Serilog;
 using NanoCore.Example.Data;
 
 namespace NanoCore.Example
@@ -21,7 +22,8 @@ namespace NanoCore.Example
                 .ConfigureApp<Application>()
                 .ConfigureServices(x =>
                 {
-                    x.AddDataContext<MySqlDataProvider, ExampleDbContext>();
+                    x.AddLogging<SerilogProvider>();
+                    x.AddDataContext<MySqlProvider, ExampleDbContext>();
                     x.AddEventing<EasyNetQProvider>();
                 })
                 .Build()
