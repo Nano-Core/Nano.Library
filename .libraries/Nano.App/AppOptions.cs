@@ -36,11 +36,6 @@ namespace Nano.App
         public virtual string LicenseUrl { get; set; }
 
         /// <summary>
-        /// Switches.
-        /// </summary>
-        public virtual SwitchOptions Switches { get; set; } = new SwitchOptions();
-
-        /// <summary>
         /// Hosting.
         /// </summary>
         public virtual HostingOptions Hosting { get; set; } = new HostingOptions();
@@ -80,42 +75,6 @@ namespace Nano.App
             /// Ports.
             /// </summary>
             public virtual int[] Ports { get; set; } = new int[0];
-        }
-
-        /// <summary>
-        /// Options.
-        /// </summary>
-        public class SwitchOptions
-        {
-            /// <summary>
-            /// Enable Session.
-            /// </summary>
-            public virtual bool EnableSession { get; set; } = true;
-
-            /// <summary>
-            /// Enable Documentation.
-            /// </summary>
-            public virtual bool EnableDocumentation { get; set; } = true;
-
-            /// <summary>
-            /// Enable Gzip Compression.
-            /// </summary>
-            public virtual bool EnableGzipCompression { get; set; } = true;
-
-            /// <summary>
-            /// Enable Http Context Extension.
-            /// </summary>
-            public virtual bool EnableHttpContextLogging { get; set; } = true;
-
-            /// <summary>
-            /// Enable Http Request Identifier.
-            /// </summary>
-            public virtual bool EnableHttpContextIdentifier { get; set; } = true;
-
-            /// <summary>
-            /// Enable Http Request Localization.
-            /// </summary>
-            public virtual bool EnableHttpContextLocalization { get; set; } = true;
         }
     }
 }

@@ -11,7 +11,7 @@ using Serilog.Events;
 namespace Nano.Web.Middleware
 {
     /// <inheritdoc />
-    public class LoggingExtensionMiddleware : IMiddleware
+    public class HttpLoggingContextMiddleware : IMiddleware
     {
         /// <inheritdoc />
         public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
@@ -53,6 +53,7 @@ namespace Nano.Web.Middleware
                 var statusCode = response.StatusCode;
                 var logeLevel = statusCode >= 500 && statusCode <= 599 ? LogEventLevel.Error : LogEventLevel.Information;
 
+                // TODO: LOGGING: Should have Serilog dependency here. It will prevent other providers, unless we only register this middleware for Serilog
                 Log.Logger
                     .ForContext("Request", new
                     {

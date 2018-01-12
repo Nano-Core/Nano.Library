@@ -1,8 +1,8 @@
 using System;
+using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
 using Nano.Services.Interfaces;
 using NanoCore.Example.Models.Events;
-using Serilog;
 
 namespace NanoCore.Example.Controllers.Eventing.Handlers
 {
@@ -44,7 +44,7 @@ namespace NanoCore.Example.Controllers.Eventing.Handlers
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));
 
-            this.Logger.Information("Callback Invoked.");
+            this.Logger.LogInformation("Callback Invoked.");
         }
     }
 }

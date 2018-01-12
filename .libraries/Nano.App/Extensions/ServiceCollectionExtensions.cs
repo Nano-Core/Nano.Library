@@ -18,7 +18,6 @@ using Nano.Eventing.Attributes;
 using Nano.Eventing.Interfaces;
 using Nano.Logging;
 using Nano.Logging.Interfaces;
-using Nano.Logging.Providers.Serilog;
 using Nano.Services;
 using Nano.Services.Data;
 using Nano.Services.Eventing;
@@ -29,7 +28,6 @@ using Nano.Web.Controllers.Extensions.Const;
 using Nano.Web.Middleware;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Serilog;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Nano.App.Extensions
@@ -115,11 +113,12 @@ namespace Nano.App.Extensions
                     return new LoggerFactory(new[] { loggerProvider });
                 });
 
-            if (typeof(TProvider) == typeof(SerilogProvider))
-            {
-                services
-                    .AddSingleton(Log.Logger);
-            }
+            // TODO: can be removed? Logging seems to work. We need to get rid og Log.Logger everywhere.
+            //if (typeof(TProvider) == typeof(SerilogProvider))
+            //{
+            //    services
+            //        .AddSingleton(Log.Logger);
+            //}
 
             return services;
         }
@@ -166,13 +165,19 @@ namespace Nano.App.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             services
-                .AddConfigOptions<AppOptions>(configuration, AppOptions.SectionName, out var options);
+                .AddConfigOptions<AppOptions>(configuration, AppOptions.SectionName, out _);
 
             services
                 .AddApi()
+                .AddSession()
                 .AddVersioning()
-                .AddExceptionMiddleware()
-                .AddContentTypeMiddleware()
+                .AddDocumentation()
+                .AddGzipCompression()
+                .AddhttpLocalizations()
+                .AddHttpContentTypeMiddleware()
+                .AddHttpContextLoggingMiddleware()
+                .AddHttpExceptionHandlingMiddleware()
+                .AddHttpRequestIdentifierMiddleware()
                 .AddMvc(x =>
                 {
                     x.ModelBinderProviders.Insert(0, new QueryModelBinderProvider());
@@ -188,24 +193,6 @@ namespace Nano.App.Extensions
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()
                 .AddApplicationPart(Assembly.GetExecutingAssembly());
-
-            if (options.Switches.EnableSession)
-                services.AddSession();
-
-            if (options.Switches.EnableDocumentation)
-                services.AddDocumentation();
-
-            if (options.Switches.EnableGzipCompression)
-                services.AddGzipCompression();
-
-            if (options.Switches.EnableHttpContextLogging)
-                services.AddLoggingMiddleware();
-
-            if (options.Switches.EnableHttpContextIdentifier)
-                services.AddTraceIdentifierMiddleware();
-
-            if (options.Switches.EnableHttpContextLocalization)
-                services.AddLocalizations();
 
             return services;
         }
@@ -321,19 +308,6 @@ namespace Nano.App.Extensions
                     x.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
                 });
         }
-        private static IServiceCollection AddLocalizations(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services
-                .AddLocalization()
-                .AddMvc()
-                .AddViewLocalization()
-                .AddDataAnnotationsLocalization();
-
-            return services;
-        }
         private static IServiceCollection AddDocumentation(this IServiceCollection services)
         {
             if (services == null)
@@ -351,16 +325,6 @@ namespace Nano.App.Extensions
                         Description = options.Description
                     });
                 });
-        }
-        private static IServiceCollection AddGzipCompression(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services
-                .AddResponseCompression(y => y.Providers.Add<GzipCompressionProvider>());
-
-            return services;
         }
         private static IServiceCollection AddEventingHandlers(this IServiceCollection services)
         {
@@ -397,7 +361,7 @@ namespace Nano.App.Extensions
                         .GetType()
                         .GetMethod("Subscribe")
                         .MakeGenericMethod(eventType)
-                        .Invoke(eventing, new object[] { @delegate, string.Empty }); 
+                        .Invoke(eventing, new object[] { @delegate, string.Empty });
                 });
 
             // TODO: EVENTING: Event Handler Subscribe setup
@@ -429,53 +393,75 @@ namespace Nano.App.Extensions
 
             return services;
         }
-        private static IServiceCollection AddLoggingMiddleware(this IServiceCollection services)
+        private static IServiceCollection AddGzipCompression(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services
+                .AddResponseCompression(y => y.Providers.Add<GzipCompressionProvider>());
+
+            return services;
+        }
+        private static IServiceCollection AddhttpLocalizations(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services
+                .AddLocalization()
+                .AddMvc()
+                    .AddViewLocalization()
+                    .AddDataAnnotationsLocalization();
+
+            return services;
+        }
+        private static IServiceCollection AddHttpContentTypeMiddleware(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services
+                .AddSingleton<HttpContentTypeMiddleware>()
+                .AddMvc(x =>
+                {
+                    x.ReturnHttpNotAcceptable = true;
+                    x.RespectBrowserAcceptHeader = true;
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("xml", HttpContentType.Xml);
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.Json);
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JavaScript);
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("html", HttpContentType.Html);
+                })
+                .AddXmlSerializerFormatters()
+                .AddXmlDataContractSerializerFormatters();
+
+            return services;
+        }
+        private static IServiceCollection AddHttpContextLoggingMiddleware(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
             return services
-                .AddScoped<LoggingExtensionMiddleware>();
+                .AddScoped<HttpLoggingContextMiddleware>();
         }
-        private static IServiceCollection AddExceptionMiddleware(this IServiceCollection services)
+        private static IServiceCollection AddHttpExceptionHandlingMiddleware(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
             services
-                .AddScoped<ExceptionHandlingMiddleware>();
+                .AddScoped<HttpExceptionHandlingMiddleware>();
 
             return services;
         }
-        private static IServiceCollection AddContentTypeMiddleware(this IServiceCollection services)
+        private static IServiceCollection AddHttpRequestIdentifierMiddleware(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
             services
-                .AddScoped<ExceptionHandlingMiddleware>()
-                .AddScoped<ContentTypeMiddleware>()
-                .AddMvc(x =>
-                    {
-                        x.ReturnHttpNotAcceptable = true;
-                        x.RespectBrowserAcceptHeader = true;
-                        x.FormatterMappings.SetMediaTypeMappingForFormat("xml", HttpContentType.Xml);
-                        x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.Json);
-                        x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JavaScript);
-                        x.FormatterMappings.SetMediaTypeMappingForFormat("html", HttpContentType.Html);
-                    })
-                    .AddXmlSerializerFormatters()
-                    .AddXmlDataContractSerializerFormatters();
-
-            return services;
-        }
-        private static IServiceCollection AddTraceIdentifierMiddleware(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services
-                .AddScoped<TraceIdentifierMiddleware>();
+                .AddScoped<HttpRequestIdentifierMiddleware>();
 
             return services;
         }

@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Nano.App.Extensions;
 using Nano.App.Interfaces;
 using Nano.Web.Middleware;
+using Newtonsoft.Json;
 
 namespace Nano.App
 {
@@ -43,6 +45,17 @@ namespace Nano.App
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
+            var logger = services.BuildServiceProvider().GetRequiredService<ILogger>();
+            var dependencies = services
+                .Select(x => new
+                {
+                    Service = x.ServiceType.FullName,
+                    Implementation = x.ImplementationType?.FullName,
+                    LifeCycle = x.Lifetime.ToString()
+                })
+                .Distinct();
+
+            logger.LogDebug(JsonConvert.SerializeObject(dependencies));
         }
 
         /// <inheritdoc />
@@ -72,59 +85,39 @@ namespace Nano.App
             if (basePath.EndsWith("/"))
                 basePath = basePath.Substring(0, basePath.Length - 1);
 
+            var defaultCulture = new RequestCulture(appOptions.Cultures.Default);
+            var supportedCultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray();
+
             applicationBuilder
+                .UseSession()
                 .UseStaticFiles()
                 .UseForwardedHeaders()
+                .UseResponseCompression()
+                .UseMiddleware<HttpRequestIdentifierMiddleware>()
+                .UseMiddleware<HttpLoggingContextMiddleware>()
+                .UseMiddleware<HttpContentTypeMiddleware>()
+                .UseMiddleware<HttpExceptionHandlingMiddleware>()
+                .UseSwagger(x =>
+                {
+                    x.RouteTemplate = basePath + "/docs/{documentName}/swagger.json";
+                })
+                .UseSwaggerUI(x =>
+                {
+                    x.ShowRequestHeaders();
+                    x.SwaggerEndpoint($"{basePath}/docs/{version}/swagger.json", $"Api {version}");
+                })
+                .UseRequestLocalization(new RequestLocalizationOptions
+                {
+                    SupportedCultures = supportedCultures,
+                    SupportedUICultures = supportedCultures,
+                    DefaultRequestCulture = defaultCulture
+                })
                 .UseMvc(x =>
                 {
                     x.MapRoute("default", basePath + "/{controller=Home}/{action=Index}/{id?}");
                 })
                 .UseExceptionHandler($"/{basePath}/Home/Error")
                 .UseStatusCodePagesWithRedirects(basePath + "/Home/Error/{0}");
-
-            if (appOptions.Switches.EnableSession)
-                applicationBuilder.UseSession();
-
-            if (appOptions.Switches.EnableDocumentation)
-            {
-                applicationBuilder
-                    .UseSwagger(x =>
-                    {
-                        x.RouteTemplate = basePath + "/docs/{documentName}/swagger.json";
-                    })
-                    .UseSwaggerUI(x =>
-                    {
-                        x.ShowRequestHeaders();
-                        x.SwaggerEndpoint($"{basePath}/docs/{version}/swagger.json", $"Api {version}");
-                    });
-            }
-
-            if (appOptions.Switches.EnableGzipCompression)
-                applicationBuilder.UseResponseCompression();
-
-            if (appOptions.Switches.EnableHttpContextLocalization)
-            {
-                var defaultCulture = new RequestCulture(appOptions.Cultures.Default);
-                var supportedCultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray();
-
-                applicationBuilder
-                    .UseRequestLocalization(new RequestLocalizationOptions
-                    {
-                        SupportedCultures = supportedCultures,
-                        SupportedUICultures = supportedCultures,
-                        DefaultRequestCulture = defaultCulture
-                    });
-            }
-
-            if (appOptions.Switches.EnableHttpContextIdentifier)
-                applicationBuilder.UseMiddleware<TraceIdentifierMiddleware>();
-
-            applicationBuilder
-                .UseMiddleware<ContentTypeMiddleware>()
-                .UseMiddleware<ExceptionHandlingMiddleware>();
-
-            if (appOptions.Switches.EnableHttpContextLogging)
-                applicationBuilder.UseMiddleware<LoggingExtensionMiddleware>();
         }
 
         /// <summary>
