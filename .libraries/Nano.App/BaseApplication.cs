@@ -8,11 +8,10 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Nano.App.Extensions;
+using Nano.App.Extensions.Middleware;
 using Nano.App.Interfaces;
-using Nano.Web.Middleware;
-using Newtonsoft.Json;
+using Nano.Data;
 
 namespace Nano.App
 {
@@ -44,18 +43,6 @@ namespace Nano.App
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
-
-            var logger = services.BuildServiceProvider().GetRequiredService<ILogger>();
-            var dependencies = services
-                .Select(x => new
-                {
-                    Service = x.ServiceType.FullName,
-                    Implementation = x.ImplementationType?.FullName,
-                    LifeCycle = x.Lifetime.ToString()
-                })
-                .Distinct();
-
-            logger.LogDebug(JsonConvert.SerializeObject(dependencies));
         }
 
         /// <inheritdoc />
@@ -70,54 +57,51 @@ namespace Nano.App
             if (applicationLifetime == null)
                 throw new ArgumentNullException(nameof(applicationLifetime));
 
-            var services = applicationBuilder.ApplicationServices;
-            var dbContext = services.GetService<DbContext>();
-
-            dbContext?.Database
-                .EnsureCreatedAsync()
-                .ContinueWith(x => dbContext.Database.MigrateAsync())
-                .Wait();
-
-            var appOptions = services.GetRequiredService<AppOptions>();
-            var version = appOptions.Version;
-            var basePath = $"{appOptions.Hosting.Path}/{appOptions.Name}";
-
-            if (basePath.EndsWith("/"))
-                basePath = basePath.Substring(0, basePath.Length - 1);
-
-            var defaultCulture = new RequestCulture(appOptions.Cultures.Default);
-            var supportedCultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray();
-
+            var options = applicationBuilder.ApplicationServices.GetRequiredService<AppOptions>();
+            var dbContext = applicationBuilder.ApplicationServices.GetRequiredService<BaseDbContext>();
+            
             applicationBuilder
                 .UseSession()
                 .UseStaticFiles()
                 .UseForwardedHeaders()
                 .UseResponseCompression()
-                .UseMiddleware<HttpRequestIdentifierMiddleware>()
-                .UseMiddleware<HttpLoggingContextMiddleware>()
                 .UseMiddleware<HttpContentTypeMiddleware>()
+                .UseMiddleware<HttpRequestIdentifierMiddleware>()
                 .UseMiddleware<HttpExceptionHandlingMiddleware>()
+                .UseCors(x =>
+                {
+                    x.AllowAnyOrigin();
+                    x.AllowAnyHeader();
+                    x.AllowAnyMethod();
+                })
+                .UseMvc(x =>
+                {
+                    x.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                })
                 .UseSwagger(x =>
                 {
-                    x.RouteTemplate = basePath + "/docs/{documentName}/swagger.json";
+                    x.RouteTemplate = "docs/{documentName}/swagger.json";
                 })
                 .UseSwaggerUI(x =>
                 {
                     x.ShowRequestHeaders();
-                    x.SwaggerEndpoint($"{basePath}/docs/{version}/swagger.json", $"Api {version}");
+                    x.DocumentTitle($"{options.Name} Docs v{options.Version}");
+
+                    x.RoutePrefix = "docs";
+                    x.SwaggerEndpoint($"/docs/{options.Version}/swagger.json", $"{options.Name} v{options.Version}");
                 })
                 .UseRequestLocalization(new RequestLocalizationOptions
                 {
-                    SupportedCultures = supportedCultures,
-                    SupportedUICultures = supportedCultures,
-                    DefaultRequestCulture = defaultCulture
+                    DefaultRequestCulture = new RequestCulture(options.Cultures.Default),
+                    SupportedCultures = options.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray(),
+                    SupportedUICultures = options.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray()
                 })
-                .UseMvc(x =>
-                {
-                    x.MapRoute("default", basePath + "/{controller=Home}/{action=Index}/{id?}");
-                })
-                .UseExceptionHandler($"/{basePath}/Home/Error")
-                .UseStatusCodePagesWithRedirects(basePath + "/Home/Error/{0}");
+               .UseExceptionHandler("/Home/Error");
+
+            dbContext.Database
+                .EnsureCreatedAsync()
+                .ContinueWith(x => dbContext.Database.MigrateAsync())
+                .Wait();
         }
 
         /// <summary>
@@ -125,7 +109,7 @@ namespace Nano.App
         /// </summary>
         /// <typeparam name="TApplication">The type containing method for application start-up.</typeparam>
         /// <returns>The <see cref="IWebHostBuilder"/>.</returns>
-        public static IWebHostBuilder ConfigureApp<TApplication>()
+        public static IWebHostBuilder ConfigureApp<TApplication>(params string[] args)
             where TApplication : class, IApplication
         {
             const string NAME = "appsettings";
@@ -137,6 +121,7 @@ namespace Nano.App
                 .SetBasePath(path)
                 .AddJsonFile($"{NAME}.json", false, true)
                 .AddJsonFile($"{NAME}.{environment}.json", true)
+                .AddCommandLine(args)
                 .AddEnvironmentVariables()
                 .Build();
 
@@ -145,11 +130,11 @@ namespace Nano.App
 
             return new WebHostBuilder()
                 .UseKestrel()
+                .UseUrls(urls)
                 .UseContentRoot(path)
                 .UseEnvironment(environment)
                 .UseConfiguration(configuration)
                 .UseShutdownTimeout(shutdownTimeout)
-                .UseUrls(urls)
                 .CaptureStartupErrors(true)
                 .ConfigureServices(x =>
                 {

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 
-namespace Nano.Web.Controllers.Binders
+namespace Nano.App.Extensions.ModelBinders
 {
     /// <inheritdoc />
     public class QueryModelBinder<TCriteria> : IModelBinder

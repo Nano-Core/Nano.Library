@@ -1,7 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Internal;
-using Nano.Web.Controllers.Extensions.Const;
 
 namespace Nano.Web.Controllers.Extensions
 {

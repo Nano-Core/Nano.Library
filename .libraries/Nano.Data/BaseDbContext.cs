@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Nano.Data.Models;
+using Nano.Data.Models.Mappings;
+using Nano.Data.Models.Mappings.Extensions;
+using Z.EntityFramework.Plus;
 
 namespace Nano.Data
 {
@@ -12,91 +14,46 @@ namespace Nano.Data
     public abstract class BaseDbContext : DbContext
     {
         /// <summary>
+        /// Options.
+        /// </summary>
+        public virtual DataOptions Options { get; set; }
+
+        /// <summary>
+        /// Audit Entries.
+        /// </summary>
+        // ReSharper disable InconsistentNaming
+        public virtual DbSet<AuditEntry> __EFAudit { get; set; }
+        // ReSharper restore InconsistentNaming
+
+        /// <summary>
+        /// Audit Entry Properties.
+        /// </summary>
+        // ReSharper disable InconsistentNaming
+        public virtual DbSet<AuditEntryProperty> __EFAuditProperties { get; set; }
+        // ReSharper restore InconsistentNaming
+
+        /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="options">The <see cref="DbContextOptions"/>.</param>
-        protected BaseDbContext(DbContextOptions options)
-            : base(options)
+        /// <param name="contextOptions">The <see cref="DbContextOptions"/>.</param>
+        /// <param name="dataOptions">The <see cref="DataOptions"/>.</param>
+        protected BaseDbContext(DbContextOptions contextOptions, DataOptions dataOptions)
+            : base(contextOptions)
         {
+            if (dataOptions == null)
+                throw new ArgumentNullException(nameof(dataOptions));
 
+            this.Options = dataOptions;
         }
 
-        /// <summary>
-        /// Updates the entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
-        /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>A <see cref="Task"/> (void).</returns>
-        public virtual async Task<EntityEntry<TEntity>> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
-            where TEntity : class
+        /// <inheritdoc />
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
 
-            return await Task.Factory
-                .StartNew(() =>
-                {
-                    var entry = this.Update(entity);
-
-                    return entry;
-                }, cancellationToken);
-        }
-
-        /// <summary>
-        /// Updates a range of entities.
-        /// </summary>
-        /// <param name="entities">The <see cref="object"/>'s.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>A <see cref="Task"/> (void).</returns>
-        public virtual async Task UpdateRangeAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
-        {
-            if (entities == null)
-                throw new ArgumentNullException(nameof(entities));
-
-            foreach (var entity in entities)
-            {
-                await this.UpdateAsync(entity, cancellationToken);
-            }
-        }
-
-        /// <summary>
-        /// Removes the entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
-        /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>A <see cref="Task"/> (void).</returns>
-        public virtual async Task<EntityEntry<TEntity>> RemoveAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
-            where TEntity : class
-        {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-
-            return await Task.Factory
-                .StartNew(() =>
-                {
-                    var entry = this.Remove(entity);
-
-                    return entry;
-                }, cancellationToken);
-        }
-
-        /// <summary>
-        /// Removes a range of entities.
-        /// </summary>
-        /// <param name="entities">The <see cref="object"/>'s.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>A <see cref="Task"/> (void).</returns>
-        public virtual async Task RemoveRangeAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
-        {
-            if (entities == null)
-                throw new ArgumentNullException(nameof(entities));
-
-            foreach (var entity in entities)
-            {
-                await this.RemoveAsync(entity, cancellationToken);
-            }
+            builder
+                .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>();
         }
 
         /// <summary>
@@ -124,10 +81,13 @@ namespace Nano.Data
         }
 
         /// <summary>
-        /// Adds or updates (if exists) a range of entities.
+        /// Adds or updates (if exists) the entities.
         /// </summary>
-        /// <param name="entities">The <see cref="object"/>'s.</param>
-        public virtual void AddOrUpdateMany(IEnumerable<object> entities)
+        /// <typeparam name="TEntity">The type of <paramref name="entities"/>.</typeparam>
+        /// <param name="entities">The <see cref="object"/>'s of type <typeparamref name="TEntity"/>.</param>
+        /// <returns>A <see cref="EntityEntry{TEntity}"/>.</returns>
+        public virtual void AddOrUpdateMany<TEntity>(IEnumerable<TEntity> entities)
+            where TEntity : class
         {
             if (entities == null)
                 throw new ArgumentNullException(nameof(entities));
@@ -136,46 +96,6 @@ namespace Nano.Data
             {
                 this.AddOrUpdate(entity);
             }
-        }
-
-        /// <summary>
-        /// Adds or updates (if exists) the entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
-        /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>A <see cref="Task"/>.</returns>
-        public virtual async Task<EntityEntry<TEntity>> AddOrUpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
-            where TEntity : class
-        {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-
-            return await Task.Factory
-                .StartNew(() =>
-                {
-                    var entry = this.AddOrUpdate(entity);
-
-                    return entry;
-                }, cancellationToken);
-        }
-
-        /// <summary>
-        /// Adds or updates (if exists) a range of entities.
-        /// </summary>
-        /// <param name="entities">The <see cref="object"/>'s.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>A <see cref="Task"/> (void).</returns>
-        public virtual async Task AddOrUpdateManyAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
-        {
-            if (entities == null)
-                throw new ArgumentNullException(nameof(entities));
-
-            await Task.Factory
-                .StartNew(() =>
-                {
-                    this.AddOrUpdateMany(entities);
-                }, cancellationToken);
         }
     }
 }

@@ -42,6 +42,9 @@ namespace Nano.Logging.Providers.Serilog
                     .MinimumLevel.Override(@override.Namespace, @override.LogLevel);
             }
 
+            loggerConfiguration
+                .Enrich.FromLogContext();
+            
             Log.Logger = loggerConfiguration.CreateLogger();
 
             return new SerilogLoggerProvider(Log.Logger, true);

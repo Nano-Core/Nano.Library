@@ -8,7 +8,7 @@ namespace Nano.Data.Models.Mappings
     /// </summary>
     /// <typeparam name="TEntity">Type implementing <see cref="IEntity"/>.</typeparam>
     public abstract class BaseEntityMapping<TEntity>
-        where TEntity : class
+        where TEntity : class, IEntity
     {
         /// <summary>
         /// Abstract method for mapping a type of <typeparamref name="TEntity"/>.

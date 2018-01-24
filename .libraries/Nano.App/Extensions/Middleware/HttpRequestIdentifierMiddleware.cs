@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 
-namespace Nano.Web.Middleware
+namespace Nano.App.Extensions.Middleware
 {
     /// <inheritdoc />
     public class HttpRequestIdentifierMiddleware : IMiddleware

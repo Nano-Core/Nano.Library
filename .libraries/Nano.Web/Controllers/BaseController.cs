@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Entities;
@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
+using Nano.Models;
 using Nano.Models.Interfaces;
 using Nano.Services.Interfaces;
 using Nano.Web.Controllers.Extensions;
@@ -22,7 +23,8 @@ namespace Nano.Web.Controllers
     /// <typeparam name="TService">The <see cref="IService"/> inheriting from <see cref="BaseController{TService,TEntity,TIdentity, TCriteria}"/>.</typeparam>
     /// <typeparam name="TEntity">The <see cref="IEntity"/> model the <see cref="IService"/> operates with.</typeparam>
     /// <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
-    /// <typeparam name="TCriteria"></typeparam>
+    /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> implementation.</typeparam>
+    [Route("[controller]")]
     public abstract class BaseController<TService, TEntity, TIdentity, TCriteria> : Controller
         where TService : IService
         where TEntity : class, IEntity, IEntityIdentity<TIdentity>, IEntityWritable
@@ -74,23 +76,30 @@ namespace Nano.Web.Controllers
             if (context.ModelState.IsValid)
                 return;
 
-            context.Result = this.BadRequest(new
+            context.Result = this.BadRequest(new Error
             {
                 Summary = "Invalid ModelState",
-                Errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage))
+                Errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage)).ToArray()
             });
         }
 
         /// <summary>
-        /// Index.
-        /// Gets all instances of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
+        /// Gets all models. 
+        /// Filtered by query model parameters (pagination and ordering).
         /// </summary>
-        /// <param name="query">The <see cref="Query"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
+        /// <param name="query">The query.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>A collection of models.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="500">An error occured when processing the request.</response>
         [HttpGet]
         [HttpPost]
-        public virtual async Task<IActionResult> Index([FromQuery][FromBody][FromForm][Required]Query query, CancellationToken cancellationToken = new CancellationToken())
+        [Route("Index")]
+        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> Index([FromQuery][FromBody][FromForm]Query query, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
                 .GetAll<TEntity>(query ?? new Query(), cancellationToken);
@@ -102,17 +111,25 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Details.
-        /// Gets details about an instance of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
+        /// Gets the model, uniquely identified by the supplied identifier.
         /// </summary>
-        /// <param name="id">The <typeparamref name="TIdentity"/> identifier of the <typeparamref name="TEntity"/> instance to get details about.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The 'Details' <see cref="IActionResult"/>.</returns>
+        /// <param name="id">The identifier, that uniquely identifies the model.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>Details about the model.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="404">No results found.</response>
+        /// <response code="500">An error occured when processing the request.</response>
         [HttpGet]
+        [Route("Details")]
+        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Details([FromRoute][FromQuery][FromBody][FromForm][Required]TIdentity id, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
-                .Get<TEntity>(id, cancellationToken);
+                .Get<TEntity, TIdentity>(id, cancellationToken);
 
             if (result == null)
                 return this.NotFound();
@@ -124,20 +141,23 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Details.
-        /// Gets details about an instance of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
+        /// Gets the models, uniquely identified by the supplied array of identifiers.
         /// </summary>
-        /// <param name="ids">The <typeparamref name="TIdentity"/> identifiers of the <typeparamref name="TEntity"/> instances to get details about.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The 'Details' <see cref="IActionResult"/>.</returns>
+        /// <param name="ids">The identifier, that uniquely identifies the model.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>The models.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="500">An error occured when processing the request.</response>>
         [HttpPost]
+        [Route("Details")]
+        [ProducesResponseType(typeof(IEntity[]), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Details([FromRoute][FromQuery][FromBody][FromForm][Required]TIdentity[] ids, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
-                .Get<TEntity>(ids, cancellationToken);
-
-            if (result == null)
-                return this.NotFound();
+                .GetMany<TEntity, TIdentity>(ids, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.View(result);
@@ -146,21 +166,24 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Query.
-        /// Queries instances of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
+        /// Gets the models, matching the query criteria, pagination and ordering.
         /// </summary>
-        /// <param name="criteria">The <see cref="Query{TCriteria}"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
+        /// <param name="criteria">The criteria model, containing filters used in the query.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>The models.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="500">An error occured when processing the request.</response>>
         [HttpGet]
         [HttpPost]
+        [Route("Query")]
+        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Query([FromQuery][FromBody][FromForm][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
                 .GetMany<TEntity, TCriteria>(criteria, cancellationToken);
-
-            if (result == null)
-                return this.NotFound();
 
             if (this.Request.IsContentTypeHtml())
                 return this.View("Index", result);
@@ -169,52 +192,59 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Create.
-        /// Returns 'Create' view for the model of type <typeparamref name="TEntity"/>.
+        /// Gets the view for creating a new model.
         /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The 'Create' <see cref="IActionResult"/></returns>
+        /// <returns>The view.</returns>
+        /// <response code="200">Success.</response>
         [HttpGet]
-        public virtual async Task<IActionResult> Create(CancellationToken cancellationToken = new CancellationToken())
+        [Route("Create")]
+        [Produces("text/html")]
+        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        public virtual IActionResult Create()
         {
-            return await Task.Factory
-                .StartNew<IActionResult>(x =>
-                {
-                    if (this.Request.IsContentTypeHtml())
-                        return this.View();
-
-                    return this.NoContent();
-                }, null, cancellationToken);
+            return this.View();
         }
 
         /// <summary>
-        /// Create.
-        /// Creates an instance of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
+        /// Create the model.
         /// </summary>
-        /// <param name="entity">The <see cref="IEntity"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
+        /// <param name="entity">The model to create.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>The created model.</returns>
+        /// <response code="201">Created successfully.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="500">An error occured when processing the request.</response>
         [HttpPost]
+        [Route("Create")]
+        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Create([FromBody][FromForm][Required]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
         {
-            await this.Service
+            var result = await this.Service
                 .Add(entity, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
 
-            return this.CreatedAtAction("Create", entity);
+            return this.Created("Create", result);
         }
 
         /// <summary>
-        /// Creates.
-        /// Creates instances of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
+        /// Creates the models.
         /// </summary>
-        /// <param name="entities">The <see cref="IEntity"/>'s.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
+        /// <param name="entities">The model to create.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>Nothing (void).</returns>
+        /// <response code="201">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="500">An error occured when processing the request.</response>
         [HttpPost]
-        public virtual async Task<IActionResult> Creates([FromBody][FromForm][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = new CancellationToken())
+        [Route("Create/Many")]
+        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> Create([FromBody][FromForm][Required]TEntity[] entities, CancellationToken cancellationToken = new CancellationToken())
         {
             await this.Service
                 .AddMany(entities, cancellationToken);
@@ -222,42 +252,50 @@ namespace Nano.Web.Controllers
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
 
-            return this.CreatedAtAction("Creates", entities);
+            return this.Created("Create/Many", entities);
         }
 
         /// <summary>
-        /// Edit.
-        /// Returns 'Edit' view for the model of type <typeparamref name="TEntity"/>.
+        /// Gets the view for editing an existing model.
         /// </summary>
-        /// <param name="id">The Id.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The 'Edit' <see cref="IActionResult"/></returns>
+        /// <returns>The view.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="404">No results found, when getting the model to edit.</response>
+        /// <response code="500">An error occured when processing the request.</response>>
         [HttpGet]
-        public virtual async Task<IActionResult> Edit([FromRoute][FromQuery][Required]Guid id, CancellationToken cancellationToken = new CancellationToken())
+        [Route("Edit")]
+        [Produces("text/html")]
+        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> Edit([FromRoute][FromQuery][Required]TIdentity id, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
-                .Get<TEntity>(id, cancellationToken);
+                .Get<TEntity, TIdentity>(id, cancellationToken);
 
             if (result == null)
                 return this.NotFound();
 
-            if (this.Request.IsContentTypeHtml())
-                return this.View(result);
-
-            return this.NoContent();
+            return this.View(result);
         }
 
         /// <summary>
-        /// Edit.
-        /// Edit an instance of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
+        /// Edit the model.
         /// </summary>
-        /// <param name="id">The Id.</param>
-        /// <param name="entity">The <see cref="IEntity"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
+        /// <param name="entity">The model to edit.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>The edited model.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="500">An error occured when processing the request.</response>
         [HttpPut]
         [HttpPost]
-        public virtual async Task<IActionResult> Edit([FromRoute][FromQuery][Required]Guid id, [FromBody][FromForm][Required]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
+        [Route("Edit")]
+        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> Edit([FromBody][FromForm][Required]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
         {
             await this.Service
                 .Update(entity, cancellationToken);
@@ -269,61 +307,105 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Edits.
-        /// Edits instances of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
+        /// Edits the models.
         /// </summary>
-        /// <param name="entities">The <see cref="IEntity"/>'s.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
+        /// <param name="entities">The models to edit.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>Nothong (void).</returns>
+        /// <response code="201">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="500">An error occured when processing the request.</response>
         [HttpPut]
         [HttpPost]
-        public virtual async Task<IActionResult> Edits([FromBody][FromForm][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = new CancellationToken())
+        [Route("Edit/Many")]
+        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> Edit([FromBody][FromForm][Required]TEntity[] entities, CancellationToken cancellationToken = new CancellationToken())
         {
             await this.Service
-                .UpdateMany(entities, cancellationToken);
+                .UpdateMany(entities.AsEnumerable(), cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
 
-            return this.Ok(entities);
+            return this.Ok();
         }
 
         /// <summary>
-        /// Delete.
-        /// Returns 'Delete' view for the model of type <typeparamref name="TEntity"/>.
+        /// Edits the models returned by the select criteria.
         /// </summary>
-        /// <param name="id">The Id.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The 'Delete' <see cref="IActionResult"/>.</returns>
-        [HttpGet]
-        public virtual async Task<IActionResult> Delete([FromRoute][FromQuery][Required]Guid id, CancellationToken cancellationToken = new CancellationToken())
+        /// <param name="select">The crtieria for selecting models to edit.</param>
+        /// <param name="update">The model, of which to edit all selected entities by.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>Nothing (void).</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="500">An error occured when processing the request.</response>
+        [HttpPut]
+        [HttpPost]
+        [Route("Edit/Query")]
+        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> Edit([FromQuery][FromBody][FromForm][Required]TCriteria select, TEntity update, CancellationToken cancellationToken = new CancellationToken())
         {
-            var entity = await this.Service
-                .Get<TEntity>(id, cancellationToken);
-
-            if (entity == null)
-                return this.NotFound(id);
+            await this.Service
+                .UpdateMany(select, update, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
-                return this.View(entity);
+                return this.RedirectToAction("Index");
 
-            return this.NoContent();
+            return this.Ok();
         }
 
         /// <summary>
-        /// Delete.
-        /// Deletes the instances of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
+        /// Gets the view for deleting an existing model.
         /// </summary>
-        /// <param name="id">The Id.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The 'Delete' <see cref="IActionResult"/>.</returns>
+        /// <returns>The view.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="404">No results found, when getting the model to delete.</response>
+        /// <response code="500">An error occured when processing the request.</response>>
+        [HttpGet]
+        [Route("Delete")]
+        [Produces("text/html")]
+        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> Delete([FromRoute][FromQuery][Required]TIdentity id, CancellationToken cancellationToken = new CancellationToken())
+        {
+            var entity = await this.Service
+                .Get<TEntity, TIdentity>(id, cancellationToken);
+
+            if (entity == null)
+                return this.NotFound();
+
+            return this.View(entity);
+        }
+
+        /// <summary>
+        /// Delete the model.
+        /// </summary>
+        /// <param name="id">The identifier of the model to delete.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>Nothing (void).</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="404">No results found, when getting the model to delete.</response>
+        /// <response code="500">An error occured when processing the request.</response>
         [HttpPost]
         [HttpDelete]
-        [ActionName("Delete")]
-        public virtual async Task<IActionResult> DeleteConfirm([FromRoute][FromQuery][FromBody][FromForm][Required]Guid id, CancellationToken cancellationToken = new CancellationToken())
+        [Route("Delete")]
+        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> DeleteConfirm([FromRoute][FromQuery][FromBody][FromForm][Required]TIdentity id, CancellationToken cancellationToken = new CancellationToken())
         {
             var entity = await this
-                .Service.Get<TEntity>(id, cancellationToken);
+                .Service.Get<TEntity, TIdentity>(id, cancellationToken);
 
             if (entity == null)
                 return this.NotFound(id);
@@ -334,20 +416,25 @@ namespace Nano.Web.Controllers
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
 
-            return this.AcceptedAtAction("Delete", entity);
+            return this.Ok();
         }
 
         /// <summary>
-        /// Deletes.
-        /// Deletes instances of <see cref="IEntity"/> of type <typeparamref name="TEntity"/>.
+        /// Deletes the models.
         /// </summary>
-        /// <param name="ids">The Id's.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
+        /// <param name="ids">The models to delete.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>Nothing (void).</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="500">An error occured when processing the request.</response>
         [HttpPost]
         [HttpDelete]
-        [ActionName("Deletes")]
-        public virtual async Task<IActionResult> DeleteConfirms([FromBody][FromForm][Required]IEnumerable<TIdentity> ids, CancellationToken cancellationToken = new CancellationToken())
+        [Route("Delete/Many")]
+        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> DeleteConfirm([FromBody][FromForm][Required]TIdentity[] ids, CancellationToken cancellationToken = new CancellationToken())
         {
             var entities = await this
                 .Service.GetMany<TEntity>(x => ids.Contains(x.Id), cancellationToken);
@@ -358,7 +445,33 @@ namespace Nano.Web.Controllers
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
 
-            return this.AcceptedAtAction("Deletes", entities);
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Deletes the models matching the select criteria.
+        /// </summary>
+        /// <param name="select">The crtieria for selecting models to delete.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>Nothing (void).</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="500">An error occured when processing the request.</response>
+        [HttpPost]
+        [HttpDelete]
+        [Route("Delete/Query")]
+        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> DeleteConfirm([FromQuery][FromBody][FromForm][Required]TCriteria select, CancellationToken cancellationToken = new CancellationToken())
+        {
+            await this.Service
+                .DeleteMany<TEntity, TCriteria>(select, cancellationToken);
+
+            if (this.Request.IsContentTypeHtml())
+                return this.RedirectToAction("Index");
+
+            return this.Ok();
         }
     }
 }

@@ -11,6 +11,6 @@ namespace Nano.Models.Interfaces
         /// <summary>
         /// Geometry.
         /// </summary>
-        Geometry Geometry { get; set; } // BUG: SPATIAL: Geometry is abstract.
+        Geometry Geometry { get; set; } // FEATURE: SPATIAL: Geometry is abstract.
     }
 }

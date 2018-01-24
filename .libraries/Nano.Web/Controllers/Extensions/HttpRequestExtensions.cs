@@ -3,7 +3,7 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.EntityFrameworkCore.Internal;
-using Nano.Web.Controllers.Extensions.Const;
+using Nano.Models.Extensions;
 
 namespace Nano.Web.Controllers.Extensions
 {

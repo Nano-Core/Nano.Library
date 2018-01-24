@@ -2,9 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Nano.Web.Controllers.Extensions;
-using Nano.Web.Controllers.Extensions.Const;
 
-namespace Nano.Web.Middleware
+namespace Nano.App.Extensions.Middleware
 {
     /// <inheritdoc />
     public class HttpContentTypeMiddleware : IMiddleware
@@ -23,10 +22,10 @@ namespace Nano.Web.Middleware
 
             response.ContentType = request.IsContentTypeHtml()
                 ? HttpContentType.Html
-                : request.IsContentTypeXml()
-                    ? HttpContentType.Xml
-                    : request.IsContentTypeJson()
-                        ? HttpContentType.Json
+                : request.IsContentTypeJson()
+                    ? HttpContentType.Json
+                    : request.IsContentTypeXml()
+                        ? HttpContentType.Xml
                         : HttpContentType.Text;
 
             await next(httpContext);

@@ -23,7 +23,6 @@ namespace NanoCore.Example.Controllers
         }
 
         /// <inheritdoc />
-        [HttpPost]
         public override async Task<IActionResult> Create([FromBody][FromForm][Required]ExampleEntity entity, CancellationToken cancellationToken = new CancellationToken())
         {
             var task = base.Create(entity, cancellationToken);

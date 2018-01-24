@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ApplicationIcon>..\..\icon.ico</ApplicationIcon>
-    <Configurations>Debug;Release;Launch</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.10-pre</Version>
   </PropertyGroup>
@@ -13,6 +13,7 @@
     <WarningsAsErrors />
     <NoWarn />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Release\netstandard2.0\Nano.Services.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -20,13 +21,7 @@
     <WarningsAsErrors />
     <NoWarn />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Launch|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-    <WarningsAsErrors />
-    <NoWarn />
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Debug\netstandard2.0\Nano.Services.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

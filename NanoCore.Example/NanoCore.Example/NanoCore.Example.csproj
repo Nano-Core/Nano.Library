@@ -2,22 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <Configurations>Debug;Release;Launch</Configurations>
+    <Configurations>Debug;Release</Configurations>
+    <AssemblyName>NanoCore.Example</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningsAsErrors />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn />
-    <DocumentationFile>bin\Debug\netcoreapp2.0\Nano.Services.Example.xml</DocumentationFile>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Launch|AnyCPU'">
-    <WarningsAsErrors />
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn />
-    <DocumentationFile>bin\Debug\netcoreapp2.0\Nano.Services.Example.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netcoreapp2.0\NanoCore.Example.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -26,6 +19,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn />
     <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\Release\netcoreapp2.0\NanoCore.Example.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

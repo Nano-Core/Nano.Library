@@ -1,4 +1,4 @@
-namespace Nano.Web.Controllers.Extensions.Const
+namespace Nano.Web.Controllers.Extensions
 {
     /// <summary>
     /// Http Content Type.

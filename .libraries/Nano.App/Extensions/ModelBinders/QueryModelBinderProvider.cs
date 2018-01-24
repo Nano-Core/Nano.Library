@@ -1,10 +1,9 @@
 using System;
-using System.Reflection;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Nano.Models.Criterias;
 
-namespace Nano.Web.Controllers.Binders.Providers
+namespace Nano.App.Extensions.ModelBinders
 {
     /// <inheritdoc />
     public class QueryModelBinderProvider : IModelBinderProvider
@@ -18,11 +17,9 @@ namespace Nano.Web.Controllers.Binders.Providers
             var modelType = context.Metadata.ModelType;
 
             if (modelType == typeof(IQuery<>))
-            {
                 return (IModelBinder)Activator.CreateInstance(typeof(QueryModelBinder<DefaultQueryCriteria>));
-            }
 
-            if (modelType.GetTypeInfo().IsGenericType && modelType.GetGenericTypeDefinition() == typeof(IQuery<>))
+            if (modelType.IsGenericType && modelType.GetGenericTypeDefinition() == typeof(IQuery<>))
             {
                 var types = modelType.GetGenericArguments();
                 var genericType = typeof(QueryModelBinder<>).MakeGenericType(types);

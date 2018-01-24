@@ -1,34 +1,46 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using EasyNetQ;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Nano.Eventing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Nano.App.Extensions.Conventions;
+using Nano.App.Extensions.Documentation;
+using Nano.App.Extensions.Middleware;
+using Nano.App.Extensions.ModelBinders;
+using Nano.App.Extensions.Serialization;
 using Nano.Data;
 using Nano.Data.Interfaces;
+using Nano.Data.Models;
 using Nano.Eventing.Attributes;
 using Nano.Eventing.Interfaces;
 using Nano.Logging;
 using Nano.Logging.Interfaces;
+using Nano.Models.Extensions;
+using Nano.Models.Interfaces;
 using Nano.Services;
 using Nano.Services.Data;
 using Nano.Services.Eventing;
 using Nano.Services.Interfaces;
 using Nano.Web.Api;
-using Nano.Web.Controllers.Binders.Providers;
-using Nano.Web.Controllers.Extensions.Const;
-using Nano.Web.Middleware;
+using Nano.Web.Controllers;
+using Nano.Web.Controllers.Extensions;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
+using Z.EntityFramework.Plus;
 
 namespace Nano.App.Extensions
 {
@@ -38,7 +50,7 @@ namespace Nano.App.Extensions
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds a options <see cref="IConfigurationSection"/> as <see cref="IOptions{TOptions}"/> to the <see cref="IServiceCollection"/>.
+        /// Adds a appOptions <see cref="IConfigurationSection"/> as <see cref="IOptions{TOptions}"/> to the <see cref="IServiceCollection"/>.
         /// </summary>
         /// <typeparam name="TOption">The option implementation type.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
@@ -61,26 +73,6 @@ namespace Nano.App.Extensions
                 .AddConfigOptions(configuration, section, out TOption _);
 
             return services;
-        }
-
-        /// <summary>
-        /// Adds eventing provider of type <typeparamref name="TProvider"/> to the <see cref="IServiceCollection"/>.
-        /// </summary>
-        /// <typeparam name="TProvider">The <typeparamref name="TProvider"/> type.</typeparam>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddEventing<TProvider>(this IServiceCollection services)
-            where TProvider : class, IEventingProvider
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            return services
-                .AddSingleton<IEventingProvider, TProvider>()
-                .AddSingleton(x => x
-                    .GetRequiredService<IEventingProvider>()
-                    .Configure())
-                .AddEventingHandlers();
         }
 
         /// <summary>
@@ -113,14 +105,28 @@ namespace Nano.App.Extensions
                     return new LoggerFactory(new[] { loggerProvider });
                 });
 
-            // TODO: can be removed? Logging seems to work. We need to get rid og Log.Logger everywhere.
-            //if (typeof(TProvider) == typeof(SerilogProvider))
-            //{
-            //    services
-            //        .AddSingleton(Log.Logger);
-            //}
-
             return services;
+        }
+
+        /// <summary>
+        /// Adds eventing provider of type <typeparamref name="TProvider"/> to the <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <typeparam name="TProvider">The <typeparamref name="TProvider"/> type.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        public static IServiceCollection AddEventing<TProvider>(this IServiceCollection services)
+            where TProvider : class, IEventingProvider
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            return services
+                .AddSingleton<IEventingProvider, TProvider>()
+                .AddSingleton(x => x
+                    .GetRequiredService<IEventingProvider>()
+                    .Configure())
+                .AddEventingHandlers()
+                .AddEventingHandlerAttributes();
         }
 
         /// <summary>
@@ -165,40 +171,50 @@ namespace Nano.App.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             services
-                .AddConfigOptions<AppOptions>(configuration, AppOptions.SectionName, out _);
+                .AddConfigOptions<AppOptions>(configuration, AppOptions.SectionName, out var options);
+
+            var assembly = typeof(HomeController).GetTypeInfo().Assembly;
 
             services
                 .AddApi()
+                .AddCors()
                 .AddSession()
-                .AddVersioning()
-                .AddDocumentation()
+                // .AddAuthorization() // FEATURE: Secuirty, AddAuthorization
+                .AddLocalizations()
                 .AddGzipCompression()
-                .AddhttpLocalizations()
+                .AddApiVersioning(options)
+                .AddApiDocumentation(options)
                 .AddHttpContentTypeMiddleware()
-                .AddHttpContextLoggingMiddleware()
                 .AddHttpExceptionHandlingMiddleware()
                 .AddHttpRequestIdentifierMiddleware()
+                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddMvc(x =>
                 {
+                    x.Conventions.Insert(0, new RoutePrefixConvention(new RouteAttribute(options.Hosting.Root)));
                     x.ModelBinderProviders.Insert(0, new QueryModelBinderProvider());
                 })
-                .AddJsonOptions(y =>
+                .AddJsonOptions(x =>
                 {
-                    y.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                    y.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                    y.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
-                    y.SerializerSettings.MaxDepth = 1; // TODO: TEST: What about settings maxDepths of JsonSerializer to 1 so that no references are serialized for requests / Responses? But then shadow properties must be serialized 
-                    y.SerializerSettings.ContractResolver = new DefaultContractResolver(); 
+                    x.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    x.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
+                    x.SerializerSettings.ContractResolver = new EntityContractResolver();
                 })
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()
-                .AddApplicationPart(Assembly.GetExecutingAssembly());
+                .AddApplicationPart(assembly);
+
+            services
+                .Configure<RazorViewEngineOptions>(x =>
+                {
+                    x.FileProviders.Add(new EmbeddedFileProvider(assembly));
+                });
 
             return services;
         }
 
         /// <summary>
-        /// Adds <see cref="DataOptions"/> options to the <see cref="IServiceCollection"/>.
+        /// Adds <see cref="DataOptions"/> appOptions to the <see cref="IServiceCollection"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
@@ -212,19 +228,55 @@ namespace Nano.App.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             services
+                .AddScoped<DbContext, DefaultDbContext>()
                 .AddScoped<BaseDbContext, DefaultDbContext>()
                 .AddScoped<IService, DefaultService>()
                 .AddScoped<IServiceSpatial, DefaultServiceSpatial>()
                 .AddConfigOptions<DataOptions>(configuration, DataOptions.SectionName, out var options);
 
             if (options.UseMemoryCache)
-                services.AddDistributedMemoryCache();
+            {
+                services
+                    .AddDistributedMemoryCache();
+            }
+
+            if (options.UseAudit)
+            {
+                var httpContextAccessor = services.BuildServiceProvider().GetRequiredService<IHttpContextAccessor>();
+
+                AuditManager.DefaultConfiguration.Include<IEntity>();
+                AuditManager.DefaultConfiguration.IncludeProperty<IEntity>();
+                AuditManager.DefaultConfiguration.IncludeDataAnnotation();
+                AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
+                AuditManager.DefaultConfiguration.AutoSavePreAction = (dbContext, audit) =>
+                {
+                    var defaultDbContext = dbContext as DefaultDbContext;
+                    var defaultAuditEntries = audit.Entries.Where(x => x.AuditEntryID == 0).Cast<DefaultAuditEntry>();
+
+                    defaultDbContext?.__EFAudit.AddRange(defaultAuditEntries);
+                };
+                AuditManager.DefaultConfiguration.AuditEntryFactory = args =>
+                {
+                    var httpRequestIdentifierFeature = httpContextAccessor.HttpContext.Features.Get<IHttpRequestIdentifierFeature>();
+
+                    return new DefaultAuditEntry
+                    {
+                        RequestId = httpRequestIdentifierFeature.TraceIdentifier
+                    };
+                };
+                AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsActive);
+            }
+            else
+            {
+                AuditManager.DefaultConfiguration.Exclude(x => true);
+                AuditManager.DefaultConfiguration.AutoSavePreAction = null;
+            }
 
             return services;
         }
 
         /// <summary>
-        /// Adds <see cref="IConfiguration"/> options to the <see cref="IServiceCollection"/>.
+        /// Adds <see cref="IConfiguration"/> appOptions to the <see cref="IServiceCollection"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
@@ -294,37 +346,28 @@ namespace Nano.App.Extensions
 
             return services;
         }
-        private static IServiceCollection AddVersioning(this IServiceCollection services)
+        private static IServiceCollection AddLocalizations(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            return services
-                .AddApiVersioning(x =>
-                {
-                    x.ReportApiVersions = true;
-                    x.DefaultApiVersion = new ApiVersion(1, 0);
-                    x.AssumeDefaultVersionWhenUnspecified = true;
-                    x.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
-                });
+            services
+                .AddLocalization()
+                .AddMvc()
+                    .AddViewLocalization()
+                    .AddDataAnnotationsLocalization();
+
+            return services;
         }
-        private static IServiceCollection AddDocumentation(this IServiceCollection services)
+        private static IServiceCollection AddGzipCompression(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            var options = services.BuildServiceProvider().GetRequiredService<AppOptions>();
+            services
+                .AddResponseCompression(y => y.Providers.Add<GzipCompressionProvider>());
 
-            return services
-                .AddSwaggerGen(x =>
-                {
-                    x.SwaggerDoc(options.Version, new Info
-                    {
-                        Title = options.Name,
-                        Version = options.Version,
-                        Description = options.Description
-                    });
-                });
+            return services;
         }
         private static IServiceCollection AddEventingHandlers(this IServiceCollection services)
         {
@@ -334,17 +377,14 @@ namespace Nano.App.Extensions
             AppDomain.CurrentDomain
                 .GetAssemblies()
                 .SelectMany(x => x.GetTypes())
-                .SelectMany(x => x.GetInterfaces(), (x, y) => new { x, y })
-                .Where(x =>
-                    x.x.BaseType != null &&
-                    x.x.BaseType.IsGenericType && typeof(IEventingHandler<>).IsAssignableFrom(x.x.BaseType.GetGenericTypeDefinition()) ||
-                    x.y.IsGenericType && typeof(IEventingHandler<>).IsAssignableFrom(x.y.GetGenericTypeDefinition()))
+                .SelectMany(x => x.GetInterfaces(), (x, y) => new { Type = x, GenericType = y })
+                .Where(x => x.Type.IsTypeDef(typeof(IEventingHandler<>)) && x.Type != typeof(EntityEventHandler))
                 .ToList()
                 .ForEach(x =>
                 {
-                    var handlerType = x.x;
-                    var genericHandlerType = x.y;
-                    var eventType = x.y.GetGenericArguments()[0];
+                    var handlerType = x.Type;
+                    var genericHandlerType = x.GenericType;
+                    var eventType = x.GenericType.GetGenericArguments()[0];
 
                     services
                         .AddScoped(genericHandlerType, handlerType);
@@ -364,17 +404,26 @@ namespace Nano.App.Extensions
                         .Invoke(eventing, new object[] { @delegate, string.Empty });
                 });
 
-            // TODO: EVENTING: Event Handler Subscribe setup
+            return services;
+        }
+        private static IServiceCollection AddEventingHandlerAttributes(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
             AppDomain.CurrentDomain
                 .GetAssemblies()
                 .SelectMany(x => x.GetTypes())
-                .Where(x => x.GetAttributes<SubscribeAttribute>().Any())
+                .Where(x => x.GetAttributes<SubscribeAttribute>().Any() && x.IsTypeDef(typeof(IEntity)))
                 .ToList()
                 .ForEach(x =>
                 {
                     var handlerType = typeof(EntityEventHandler);
                     var genericHandlerType = typeof(IEventingHandler<EntityEvent>);
                     var eventType = typeof(EntityEvent);
+
+                    services
+                        .AddScoped(genericHandlerType, handlerType);
 
                     var provider = services.BuildServiceProvider();
                     var eventing = provider.GetRequiredService<IEventing>();
@@ -393,28 +442,71 @@ namespace Nano.App.Extensions
 
             return services;
         }
-        private static IServiceCollection AddGzipCompression(this IServiceCollection services)
+        private static IServiceCollection AddApiVersioning(this IServiceCollection services, AppOptions appOptions)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            services
-                .AddResponseCompression(y => y.Providers.Add<GzipCompressionProvider>());
+            if (appOptions == null)
+                throw new ArgumentNullException(nameof(appOptions));
 
-            return services;
+            var success = ApiVersion.TryParse(appOptions.Version, out var apiVersion);
+            if (!success)
+                apiVersion = new ApiVersion(1, 0);
+
+            return services
+                .AddApiVersioning(x =>
+                {
+                    x.ReportApiVersions = true;
+                    x.DefaultApiVersion = apiVersion;
+                    x.AssumeDefaultVersionWhenUnspecified = true;
+                    x.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
+                });
         }
-        private static IServiceCollection AddhttpLocalizations(this IServiceCollection services)
+        private static IServiceCollection AddApiDocumentation(this IServiceCollection services, AppOptions appOptions)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            services
-                .AddLocalization()
-                .AddMvc()
-                    .AddViewLocalization()
-                    .AddDataAnnotationsLocalization();
+            if (appOptions == null)
+                throw new ArgumentNullException(nameof(appOptions));
 
-            return services;
+            return services
+                .AddSwaggerGen(x =>
+                {
+                    x.IgnoreObsoleteActions();
+                    x.IgnoreObsoleteProperties();
+                    x.DescribeAllEnumsAsStrings();
+                    x.AddSecurityDefinition("Basic", new BasicAuthScheme()); // FEATURE: Security, Swagger doc
+
+                    x.DocumentFilter<LowercaseDocumentFilter>();
+
+                    x.SwaggerDoc(appOptions.Version, new Info
+                    {
+                        Title = appOptions.Name,
+                        Version = appOptions.Version,
+                        Contact = appOptions.Contact,
+                        Description = appOptions.Description,
+                        License = appOptions.License,
+                        TermsOfService = appOptions.TermsOfService
+                    });
+
+                    AppDomain.CurrentDomain
+                        .GetAssemblies()
+                        .SelectMany(y => y.GetTypes())
+                        .Where(y => y.IsTypeDef(typeof(Controller)))
+                        .Select(y => y.Module)
+                        .Distinct()
+                        .ToList()
+                        .ForEach(y =>
+                        {
+                            var fileName = y.Name.Replace(".dll", ".xml").Replace(".exe", ".xml");
+                            var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
+
+                            if (File.Exists(filePath))
+                                x.IncludeXmlComments(filePath);
+                        });
+                });
         }
         private static IServiceCollection AddHttpContentTypeMiddleware(this IServiceCollection services)
         {
@@ -427,23 +519,17 @@ namespace Nano.App.Extensions
                 {
                     x.ReturnHttpNotAcceptable = true;
                     x.RespectBrowserAcceptHeader = true;
-                    x.FormatterMappings.SetMediaTypeMappingForFormat("xml", HttpContentType.Xml);
+
                     x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.Json);
                     x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JavaScript);
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("xml", HttpContentType.Xml);
                     x.FormatterMappings.SetMediaTypeMappingForFormat("html", HttpContentType.Html);
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("text", HttpContentType.Text);
                 })
                 .AddXmlSerializerFormatters()
                 .AddXmlDataContractSerializerFormatters();
 
             return services;
-        }
-        private static IServiceCollection AddHttpContextLoggingMiddleware(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            return services
-                .AddScoped<HttpLoggingContextMiddleware>();
         }
         private static IServiceCollection AddHttpExceptionHandlingMiddleware(this IServiceCollection services)
         {

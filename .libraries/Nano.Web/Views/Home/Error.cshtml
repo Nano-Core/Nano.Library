@@ -1,0 +1,15 @@
+﻿@model Nano.Models.Error
+@{
+    ViewData["Title"] = "Error";
+}
+
+<h1>Error.</h1>
+<h2>An error occurred while processing your request.</h2>
+
+<p>@Model.Summary</p>
+@foreach (var error in Model.Errors)
+{
+    <p>
+        error
+    </p>
+}

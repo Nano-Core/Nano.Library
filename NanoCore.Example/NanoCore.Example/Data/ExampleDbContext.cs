@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
+using Nano.Data;
 using Nano.Data.Models.Mappings.Extensions;
 using Nano.Services.Data;
 using NanoCore.Example.Data.Models.Mappings;
@@ -11,21 +12,21 @@ namespace NanoCore.Example.Data
     public class ExampleDbContext : DefaultDbContext
     {
         /// <inheritdoc />
-        public ExampleDbContext(DbContextOptions options)
-            : base(options)
+        public ExampleDbContext(DbContextOptions contextOptions, DataOptions dataOptions)
+            : base(contextOptions, dataOptions)
         {
-            
+
         }
 
         /// <inheritdoc />
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            if (modelBuilder == null)
-                throw new ArgumentNullException(nameof(modelBuilder));
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
 
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
 
-            modelBuilder
+            builder
                 .AddMapping<ExampleEntity, ExampleEntityMapping>()
                 .AddMapping<ExampleEntitySpatial, ExampleEntitySpatialMapping>()
                 .AddMapping<ExampleEntityTypes, ExampleEntityTypesMapping>();

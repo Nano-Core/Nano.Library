@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.App.Extensions
+namespace Tests.Nano.App
 {
     [TestClass]
-    public class WebHostBuilderExtensionsTest
+    public class BaseApplicationTest
     {
         [TestMethod]
-        public void Test()
+        public void ConfigureAppTest()
         {
             Assert.Inconclusive();
         }

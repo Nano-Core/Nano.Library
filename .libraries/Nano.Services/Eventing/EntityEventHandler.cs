@@ -32,23 +32,7 @@ namespace Nano.Services.Eventing
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));
 
-            // TODO: EVENTING : Callback method
-            //switch (@event.State)
-            //{
-            //    case "added":
-            //        var type = Type.GetType(@event.Name);
-            //        var instance = Activator.CreateInstance(type);
-            //        //this.Service.Add(entity);
-            //        break;
-
-            //    case "updated":
-            //        break;
-
-            //    case "delete":
-            //        //var a = this.Service.Get<T>(@event.Id).Result;
-            //        //this.Service.Delete(a);
-            //        break;
-            //}
+            // TODO: Entity Event Handler, Callback(...) implementation
         }
     }
 }

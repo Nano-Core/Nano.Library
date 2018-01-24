@@ -5,10 +5,6 @@
       <Configuration>Debug</Configuration>
       <Platform>AnyCPU</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Launch|AnyCPU">
-      <Configuration>Launch</Configuration>
-      <Platform>AnyCPU</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|AnyCPU">
       <Configuration>Release</Configuration>
       <Platform>AnyCPU</Platform>

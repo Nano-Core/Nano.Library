@@ -1,3 +1,5 @@
+using Swashbuckle.AspNetCore.Swagger;
+
 namespace Nano.App
 {
     /// <summary>
@@ -8,17 +10,12 @@ namespace Nano.App
         /// <summary>
         /// Section Name.
         /// </summary>
-        public static string SectionName => "api";
+        public static string SectionName => "App";
 
         /// <summary>
         /// Name.
         /// </summary>
-        public virtual string Name { get; set; }
-
-        /// <summary>
-        /// Version.
-        /// </summary>
-        public virtual string Version { get; set; } = "1.0.0";
+        public virtual string Name { get; set; } = "Application";
 
         /// <summary>
         /// Description.
@@ -26,14 +23,24 @@ namespace Nano.App
         public virtual string Description { get; set; }
 
         /// <summary>
-        /// Terms Url.
+        /// Terms Of Service.
         /// </summary>
-        public virtual string TermsUrl { get; set; }
+        public virtual string TermsOfService { get; set; }
 
         /// <summary>
-        /// License Url.
+        /// Version.
         /// </summary>
-        public virtual string LicenseUrl { get; set; }
+        public virtual string Version { get; set; } = "1.0.0";
+
+        /// <summary>
+        /// Contact.
+        /// </summary>
+        public virtual Contact Contact { get; set; } = new Contact();
+
+        /// <summary>
+        /// License.
+        /// </summary>
+        public virtual License License { get; set; } = new License();
 
         /// <summary>
         /// Hosting.
@@ -67,9 +74,9 @@ namespace Nano.App
         public class HostingOptions
         {
             /// <summary>
-            /// Path.
+            /// Root.
             /// </summary>
-            public virtual string Path { get; set; } = "app";
+            public virtual string Root { get; set; } = "api";
 
             /// <summary>
             /// Ports.

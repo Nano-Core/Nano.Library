@@ -18,6 +18,9 @@ namespace Nano.Data.Models.Mappings
             base.Map(builder);
 
             builder
+                .HasQueryFilter(x => x.IsActive);
+
+            builder
                 .Property(y => y.IsActive)
                 .IsRequired();
 
@@ -25,23 +28,12 @@ namespace Nano.Data.Models.Mappings
                 .Property(x => x.CreatedAt)
                 .ValueGeneratedOnAdd()
                 .IsRequired();
+ 
+            builder
+                .HasIndex(x => x.IsActive);
 
             builder
-                .Property(x => x.UpdatedAt)
-                .ValueGeneratedOnAddOrUpdate()
-                .IsRequired();
-
-            builder
-                .HasIndex(y => new { y.IsActive });
-
-            builder
-                .HasIndex(y => new { y.CreatedAt });
-
-            builder
-                .HasIndex(y => new { y.UpdatedAt });
-
-            builder
-                .HasIndex(y => new { y.ExpireAt });
+                .HasIndex(x => x.CreatedAt);
         }
     }
 }

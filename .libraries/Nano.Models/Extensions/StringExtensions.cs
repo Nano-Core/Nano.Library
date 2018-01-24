@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.Web.Controllers.Extensions
+namespace Nano.Models.Extensions
 {
     /// <summary>
     /// String Extensions.

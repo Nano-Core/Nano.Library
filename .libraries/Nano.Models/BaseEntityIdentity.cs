@@ -2,7 +2,7 @@ using Nano.Models.Interfaces;
 
 namespace Nano.Models
 {
-    /// <inheritdoc cref="BaseEntity"/>
+    /// <inheritdoc cref="IEntityIdentity{TIdentity}"/>
     public abstract class BaseEntityIdentity<TIdentity> : BaseEntity, IEntityIdentity<TIdentity>
     {
         /// <inheritdoc />
@@ -19,8 +19,8 @@ namespace Nano.Models
         /// <inheritdoc />
         public override bool Equals(object entity)
         {
-            if (entity is IEntityIdentity<TIdentity> entityIdentity)
-                return this.Id.Equals(entityIdentity.Id);
+            if (entity is IEntityIdentity<TIdentity> identity)
+                return this.Id.Equals(identity.Id);
 
             return object.ReferenceEquals(this, entity);
         }

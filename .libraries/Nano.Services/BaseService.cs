@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Nano.Data;
 using Nano.Models.Interfaces;
 using Nano.Services.Interfaces;
+using Z.EntityFramework.Plus;
 
 namespace Nano.Services
 {
@@ -36,7 +37,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<TEntity> Get<TEntity>(object key, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity> Get<TEntity, TIdentity>(TIdentity key, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
         {
             if (key == null)
@@ -48,7 +49,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> Get<TEntity>(object[] keys, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetMany<TEntity, TIdentity>(IEnumerable<TIdentity> keys, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
         {
             if (keys == null)
@@ -56,7 +57,7 @@ namespace Nano.Services
 
             return await this.Context
                 .Set<TEntity>()
-                .Where(x => keys.Any(y => y == x))
+                .Where(x => keys.Any(y => y.Equals(x)))
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -104,17 +105,19 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task Add<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity> Add<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityCreatable
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            await this.Context
-                .AddAsync(entity, cancellationToken);
+            var entry = this.Context
+                .Add(entity);
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
+
+            return entry.Entity;
         }
 
         /// <inheritdoc />
@@ -132,16 +135,19 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task Update<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity> Update<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityUpdatable
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            this.Context.Update(entity);
+            var entry = this.Context
+                .Update(entity);
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
+
+            return entry.Entity;
         }
 
         /// <inheritdoc />
@@ -159,13 +165,69 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task AddOrUpdate<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityCreatable, IEntityUpdatable
+        public virtual async Task UpdateMany<TEntity, TCriteria>(TCriteria select, TEntity update, CancellationToken cancellationToken = default) 
+            where TEntity : class, IEntityUpdatable 
+            where TCriteria : class, IQueryCriteria, new()
+        {
+            if (select == null)
+                throw new ArgumentNullException(nameof(select));
+
+            if (update == null)
+                throw new ArgumentNullException(nameof(update));
+
+            await this.Context
+                .Set<TEntity>()
+                .Where(select)
+                .UpdateAsync(x => update, cancellationToken);
+
+            await this.Context
+                .SaveChangesAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task UpdateMany<TEntity>(Expression<Func<TEntity, bool>> select, Expression<Func<TEntity, TEntity>> update, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityUpdatable
+        {
+            if (select == null)
+                throw new ArgumentNullException(nameof(select));
+
+            if (update == null)
+                throw new ArgumentNullException(nameof(update));
+
+            await this.Context
+                .Set<TEntity>()
+                .Where(select)
+                .UpdateAsync(update, cancellationToken);
+
+            await this.Context
+                .SaveChangesAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<TEntity> AddOrUpdate<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityCreatableAndUpdatable
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            this.Context.AddOrUpdate(entity);
+            var entry = this.Context
+                .AddOrUpdate(entity);
+
+            await this.Context
+                .SaveChangesAsync(cancellationToken);
+
+            return entry.Entity;
+        }
+
+        /// <inheritdoc />
+        public virtual async Task AddOrUpdateMany<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityCreatableAndUpdatable
+        {
+            if (entities == null)
+                throw new ArgumentNullException(nameof(entities));
+
+            this.Context
+                .AddOrUpdateMany(entities);
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
@@ -177,7 +239,7 @@ namespace Nano.Services
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
-
+    
             this.Context
                 .Remove(entity);
 
@@ -195,6 +257,46 @@ namespace Nano.Services
             this.Context
                 .RemoveRange(entities, cancellationToken);
 
+            await this.Context
+                .SaveChangesAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteMany<TEntity, TCriteria>(TCriteria critiera, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable
+            where TCriteria : class, IQueryCriteria, new()
+        {
+            if (critiera == null)
+                throw new ArgumentNullException(nameof(critiera));
+
+            await this.Context
+                .Set<TEntity>()
+                .Where(critiera)
+                .DeleteAsync(x =>
+                {
+                    x.BatchSize = this.Context.Options.BulkBatchSize;
+                    x.BatchDelayInterval = this.Context.Options.BulkBatchDelay;
+                }, cancellationToken);
+
+            await this.Context
+                .SaveChangesAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteMany<TEntity>(Expression<Func<TEntity, bool>> select, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable
+        {
+            if (select == null)
+                throw new ArgumentNullException(nameof(select));
+
+            await this.Context
+                .Set<TEntity>()
+                .Where(select)
+                .DeleteAsync(x =>
+                {
+                    x.BatchSize = this.Context.Options.BulkBatchSize;
+                    x.BatchDelayInterval = this.Context.Options.BulkBatchDelay;
+                }, cancellationToken);
             await this.Context
                 .SaveChangesAsync(cancellationToken);
         }

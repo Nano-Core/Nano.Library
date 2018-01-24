@@ -18,7 +18,7 @@ namespace Nano.Data.Models.Mappings
             base.Map(builder);
 
             builder
-                .Ignore(x => x.Geometry); // BUG: SPATIAL: Geometry is abstract.
+                .Ignore(x => x.Geometry); // FEATURE: SPATIAL: Geometry is abstract.
         }
     }
 }
