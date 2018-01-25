@@ -3,8 +3,8 @@ using System;
 namespace Nano.Eventing.Attributes
 {
     /// <summary>
-    /// Eventing Attribute.
-    /// Types annotated with this <see cref="Attribute"/> will publish a message changes to the instance is saved. 
+    /// Publish Attribute.
+    /// Types with this annotation, defines that an event will be published for the entity when it changes. 
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class PublishAttribute : Attribute
@@ -17,7 +17,7 @@ namespace Nano.Eventing.Attributes
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="key">The routing key when publishing</param>
+        /// <param name="key">The routing key used when publishing.</param>
         public PublishAttribute(string key = null)
         {
             this.Key = key;

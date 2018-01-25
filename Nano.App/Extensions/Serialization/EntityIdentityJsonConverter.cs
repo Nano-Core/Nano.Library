@@ -29,7 +29,7 @@ namespace Nano.App.Extensions.Serialization
             if (serializer == null)
                 throw new ArgumentNullException(nameof(serializer));
 
-            // TODO: Entity Identity Json Converter, value is "null"
+            // BUG: Entity Identity Json Converter, value is "null"
             var token = JToken.FromObject(value);
             var propertyToken = token.SelectToken("Id");
 

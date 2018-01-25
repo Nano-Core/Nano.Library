@@ -3,8 +3,8 @@ using System;
 namespace Nano.Eventing.Attributes
 {
     /// <summary>
-    /// Eventing Attribute.
-    /// Types annotated with this <see cref="Attribute"/> will publish a message changes to the instance is saved. 
+    /// Subscribe Attribute.
+    /// Types with this annotation, subscribes to events of the declaring type. 
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class SubscribeAttribute : Attribute
@@ -17,7 +17,7 @@ namespace Nano.Eventing.Attributes
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="key">The routing key when subscribing.</param>
+        /// <param name="key">The routing key used when subscribing.</param>
         public SubscribeAttribute(string key = null)
         {
             this.Key = key;
