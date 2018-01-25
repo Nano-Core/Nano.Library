@@ -9,7 +9,7 @@ The project is inspired by years of tedious repetitions, continuously re-writing
 
 The aspects and benefits of Nano, can be summarized as follows.
 * Provides configurable implementations for non-business related aspects of an application, 
-* Such as logging, data access, message queuing, documentation, validation and many other similar features. 
+* Such as logging, data persistence, message queuing, documentation, validation and many other similar features. 
 * Combining the best practices, patterns, extensions and conventions of modern development. 
 * Inject providers and register custom dependencies.
 * Override, Extend or disable any part of Nano, not suitable for the application. 
