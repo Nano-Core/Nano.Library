@@ -3,7 +3,7 @@
 [![NuGet](https://img.shields.io/nuget/dt/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
 [![NuGet](https://img.shields.io/nuget/v/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
 
-Nano is a library for rapidly building Net Core 2.0+ applications.  
+**Nano is a library for rapidly building Net Core 2.0+ applications.**  
 
 The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain.  
 
