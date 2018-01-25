@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using EasyNetQ;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
@@ -12,6 +13,7 @@ using Nano.App.Extensions;
 using Nano.App.Extensions.Middleware;
 using Nano.App.Interfaces;
 using Nano.Data;
+using Nano.Data.Attributes;
 
 namespace Nano.App
 {
@@ -101,6 +103,21 @@ namespace Nano.App
             dbContext.Database
                 .EnsureCreatedAsync()
                 .ContinueWith(x => dbContext.Database.MigrateAsync())
+                .ContinueWith(x =>
+                {
+                    AppDomain.CurrentDomain
+                        .GetAssemblies()
+                        .SelectMany(y => y.GetTypes())
+                        .Where(y => y.GetAttributes<DataImportAttribute>().Any())
+                        .ToList()
+                        .ForEach(async y =>
+                        {
+                            var attribute = y.GetAttribute<DataImportAttribute>();
+
+                            await dbContext
+                                .AddRangeAsync(attribute.Uri, y);
+                        });
+                })
                 .Wait();
         }
 
@@ -129,13 +146,13 @@ namespace Nano.App
             var urls = options.Hosting.Ports.Select(x => $"http://*:{x}").Distinct().ToArray();
 
             return new WebHostBuilder()
+                .CaptureStartupErrors(true)
                 .UseKestrel()
                 .UseUrls(urls)
                 .UseContentRoot(path)
                 .UseEnvironment(environment)
                 .UseConfiguration(configuration)
                 .UseShutdownTimeout(shutdownTimeout)
-                .CaptureStartupErrors(true)
                 .ConfigureServices(x =>
                 {
                     x.AddApp(configuration);
