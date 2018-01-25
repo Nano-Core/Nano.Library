@@ -5,12 +5,11 @@
 
 Nano is a library for rapidly building Net Core 2.0+ applications.  
 
-The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain.  
+The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.
 
 #### Aspects and Benefits
 The aspects and benefits of Nano, can be summarized as follows.
 * Provides configurable implementations for non-business related aspects of an application, 
-* Such as logging, data persistence, message queuing, documentation, validation and many other similar features. 
 * Combining the best practices, patterns, extensions and conventions of modern development. 
 * Inject providers and register custom dependencies.
 * Override, extend or disable any part of Nano, not suitable for the application. 
