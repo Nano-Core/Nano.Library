@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <ApplicationIcon>..\..\icon.ico</ApplicationIcon>
+    <ApplicationIcon>..\icon.ico</ApplicationIcon>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.10-pre</Version>
@@ -10,18 +10,18 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <LangVersion>latest</LangVersion>
-    <WarningsAsErrors />
-    <NoWarn />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Release\netstandard2.0\Nano.Services.xml</DocumentationFile>
+    <WarningsAsErrors></WarningsAsErrors>
+    <NoWarn />
+    <DocumentationFile>bin\Release\netstandard2.0\Nano.App.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>latest</LangVersion>
-    <WarningsAsErrors />
-    <NoWarn />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Debug\netstandard2.0\Nano.Services.xml</DocumentationFile>
+    <WarningsAsErrors></WarningsAsErrors>
+    <NoWarn />
+    <DocumentationFile>bin\Debug\netstandard2.0\Nano.App.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +29,8 @@
     <ProjectReference Include="..\Nano.Eventing\Nano.Eventing.csproj" />
     <ProjectReference Include="..\Nano.Logging\Nano.Logging.csproj" />
     <ProjectReference Include="..\Nano.Models\Nano.Models.csproj" />
+    <ProjectReference Include="..\Nano.Services\Nano.Services.csproj" />
+    <ProjectReference Include="..\Nano.Web\Nano.Web.csproj" />
   </ItemGroup>
 
 </Project>

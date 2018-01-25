@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>NanoCore</id>
+        <version>0.3.0-alpha</version>
+        <title>Nano Core</title>
+        <authors>Nano Contributors</authors>
+        <owners>Michael Vivet</owners>
+        <licenseUrl>https://raw.githubusercontent.com/vivet/Nano/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/Nano-Services</projectUrl>
+        <iconUrl>https://raw.githubusercontent.com/Nano-Services/Nano/master/icon.ico</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Using Nano ensures high focus on modelling business requirements, and avoid spending resouces on rudenmentory implemenatations, related to infrastructure, logging, documentation, message quueing, data access, hosting, and son on.</description>
+        <summary>Rapidly build and deploy micro-services.</summary>
+        <dependencies>
+            <group targetFramework=".NETStandard2.0">
+                <dependency id="Microsoft.EntityFrameworkCore" version="2.0.1" exclude="Build,Analyzers" />
+                <dependency id="Microsoft.EntityFrameworkCore.InMemory" version="2.0.1" exclude="Build,Analyzers" />
+                <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="2.0.1" exclude="Build,Analyzers" />
+                <dependency id="Pomelo.EntityFrameworkCore.MySql" version="2.0.1" exclude="Build,Analyzers" />
+                <dependency id="Z.EntityFramework.Plus.EFCore" version="1.7.14" exclude="Build,Analyzers" />
+                <dependency id="EasyNetQ" version="2.4.0-alpha0002" />
+                <dependency id="Microsoft.Extensions.Logging" version="2.0.0" exclude="Build,Analyzers" />
+                <dependency id="Serilog" version="2.6.1-dev-00936" />
+                <dependency id="Serilog.Extensions.Logging" version="2.0.2" exclude="Build,Analyzers" />
+                <dependency id="Serilog.Sinks.Console" version="3.1.1" exclude="Build,Analyzers" />
+                <dependency id="DynamicExpression" version="1.0.4" />
+                <dependency id="NetTopologySuite" version="1.15.0-pre032" exclude="Build,Analyzers" />
+                <dependency id="System.ComponentModel.Annotations" version="4.4.1" />
+                <dependency id="Microsoft.AspNetCore" version="2.0.1" exclude="Build,Analyzers" />
+                <dependency id="Microsoft.AspNetCore.Mvc" version="2.0.2" />
+                <dependency id="Microsoft.AspNetCore.Mvc.Formatters.Xml" version="2.0.2" />
+                <dependency id="Microsoft.AspNetCore.Mvc.Formatters.Json" version="2.0.2" />
+                <dependency id="Microsoft.AspNetCore.Mvc.Versioning" version="2.1.0" />
+                <dependency id="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" version="2.1.0" />
+                <dependency id="Microsoft.AspNetCore.ResponseCompression" version="2.0.1" exclude="Build,Analyzers" />
+                <dependency id="Microsoft.AspNetCore.Session" version="2.0.1" exclude="Build,Analyzers" />
+                <dependency id="Microsoft.AspNetCore.StaticFiles" version="2.0.1" exclude="Build,Analyzers" />
+                <dependency id="Swashbuckle.AspNetCore" version="1.1.0" exclude="Build,Analyzers" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src=Nano.App\bin\Release\netstandard2.0\Nano.App.dll" target="lib\netstandard2.0\Nano.App.dll" />
+        <file src=Nano.App\bin\Release\netstandard2.0\Nano.App.xml" target="lib\netstandard2.0\Nano.App.xml" />
+        <file src=Nano.Data\bin\Release\netstandard2.0\Nano.Data.dll" target="lib\netstandard2.0\Nano.Data.dll" />
+        <file src=Nano.Data\bin\Release\netstandard2.0\Nano.Data.xml" target="lib\netstandard2.0\Nano.Data.xml" />
+        <file src=Nano.Eventing\bin\Release\netstandard2.0\Nano.Eventing.dll" target="lib\netstandard2.0\Nano.Eventing.dll" />
+        <file src=Nano.Eventing\bin\Release\netstandard2.0\Nano.Eventing.xml" target="lib\netstandard2.0\Nano.Eventing.xml" />
+        <file src=Nano.Logging\bin\Release\netstandard2.0\Nano.Logging.dll" target="lib\netstandard2.0\Nano.Logging.dll" />
+        <file src=Nano.Logging\bin\Release\netstandard2.0\Nano.Logging.xml" target="lib\netstandard2.0\Nano.Logging.xml" />
+        <file src=Nano.Models\bin\Release\netstandard2.0\Nano.Models.dll" target="lib\netstandard2.0\Nano.Models.dll" />
+        <file src=Nano.Models\bin\Release\netstandard2.0\Nano.Models.xml" target="lib\netstandard2.0\Nano.Models.xml" />
+        <file src=Nano.Services\bin\Release\netstandard2.0\Nano.Services.dll" target="lib\netstandard2.0\Nano.Services.dll" />
+        <file src=Nano.Services\bin\Release\netstandard2.0\Nano.Services.xml" target="lib\netstandard2.0\Nano.Services.xml" />
+        <file src=Nano.Web\bin\Release\netstandard2.0\Nano.Web.dll" target="lib\netstandard2.0\Nano.Web.dll" />
+        <file src=Nano.Web\bin\Release\netstandard2.0\Nano.Web.xml" target="lib\netstandard2.0\Nano.Web.xml" />
+    </files>
+</package>
