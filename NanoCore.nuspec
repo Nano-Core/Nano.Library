@@ -41,19 +41,19 @@
         </dependencies>
     </metadata>
     <files>
-        <file src=Nano.App\bin\Release\netstandard2.0\Nano.App.dll" target="lib\netstandard2.0\Nano.App.dll" />
-        <file src=Nano.App\bin\Release\netstandard2.0\Nano.App.xml" target="lib\netstandard2.0\Nano.App.xml" />
-        <file src=Nano.Data\bin\Release\netstandard2.0\Nano.Data.dll" target="lib\netstandard2.0\Nano.Data.dll" />
-        <file src=Nano.Data\bin\Release\netstandard2.0\Nano.Data.xml" target="lib\netstandard2.0\Nano.Data.xml" />
-        <file src=Nano.Eventing\bin\Release\netstandard2.0\Nano.Eventing.dll" target="lib\netstandard2.0\Nano.Eventing.dll" />
-        <file src=Nano.Eventing\bin\Release\netstandard2.0\Nano.Eventing.xml" target="lib\netstandard2.0\Nano.Eventing.xml" />
-        <file src=Nano.Logging\bin\Release\netstandard2.0\Nano.Logging.dll" target="lib\netstandard2.0\Nano.Logging.dll" />
-        <file src=Nano.Logging\bin\Release\netstandard2.0\Nano.Logging.xml" target="lib\netstandard2.0\Nano.Logging.xml" />
-        <file src=Nano.Models\bin\Release\netstandard2.0\Nano.Models.dll" target="lib\netstandard2.0\Nano.Models.dll" />
-        <file src=Nano.Models\bin\Release\netstandard2.0\Nano.Models.xml" target="lib\netstandard2.0\Nano.Models.xml" />
-        <file src=Nano.Services\bin\Release\netstandard2.0\Nano.Services.dll" target="lib\netstandard2.0\Nano.Services.dll" />
-        <file src=Nano.Services\bin\Release\netstandard2.0\Nano.Services.xml" target="lib\netstandard2.0\Nano.Services.xml" />
-        <file src=Nano.Web\bin\Release\netstandard2.0\Nano.Web.dll" target="lib\netstandard2.0\Nano.Web.dll" />
-        <file src=Nano.Web\bin\Release\netstandard2.0\Nano.Web.xml" target="lib\netstandard2.0\Nano.Web.xml" />
+        <file src="Nano.App\bin\Release\netstandard2.0\Nano.App.dll" target="lib\netstandard2.0\Nano.App.dll" />
+        <file src="Nano.App\bin\Release\netstandard2.0\Nano.App.xml" target="lib\netstandard2.0\Nano.App.xml" />
+        <file src="Nano.Data\bin\Release\netstandard2.0\Nano.Data.dll" target="lib\netstandard2.0\Nano.Data.dll" />
+        <file src="Nano.Data\bin\Release\netstandard2.0\Nano.Data.xml" target="lib\netstandard2.0\Nano.Data.xml" />
+        <file src="Nano.Eventing\bin\Release\netstandard2.0\Nano.Eventing.dll" target="lib\netstandard2.0\Nano.Eventing.dll" />
+        <file src="Nano.Eventing\bin\Release\netstandard2.0\Nano.Eventing.xml" target="lib\netstandard2.0\Nano.Eventing.xml" />
+        <file src="Nano.Logging\bin\Release\netstandard2.0\Nano.Logging.dll" target="lib\netstandard2.0\Nano.Logging.dll" />
+        <file src="Nano.Logging\bin\Release\netstandard2.0\Nano.Logging.xml" target="lib\netstandard2.0\Nano.Logging.xml" />
+        <file src="Nano.Models\bin\Release\netstandard2.0\Nano.Models.dll" target="lib\netstandard2.0\Nano.Models.dll" />
+        <file src="Nano.Models\bin\Release\netstandard2.0\Nano.Models.xml" target="lib\netstandard2.0\Nano.Models.xml" />
+        <file src="Nano.Services\bin\Release\netstandard2.0\Nano.Services.dll" target="lib\netstandard2.0\Nano.Services.dll" />
+        <file src="Nano.Services\bin\Release\netstandard2.0\Nano.Services.xml" target="lib\netstandard2.0\Nano.Services.xml" />
+        <file src="Nano.Web\bin\Release\netstandard2.0\Nano.Web.dll" target="lib\netstandard2.0\Nano.Web.dll" />
+        <file src="Nano.Web\bin\Release\netstandard2.0\Nano.Web.xml" target="lib\netstandard2.0\Nano.Web.xml" />
     </files>
 </package>
