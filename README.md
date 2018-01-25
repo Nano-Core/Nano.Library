@@ -1,5 +1,7 @@
-﻿## NanoCore v0.4.0-beta
-[![Build Status](https://travis-ci.org/vivet/NanoCore.svg?branch=master)](https://travis-ci.org/vivet/NanoCore) [![NuGet](https://img.shields.io/nuget/dt/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)  
+# Nano Library
+[![Build Status](https://travis-ci.org/vivet/Nano.Library.svg?branch=master)](https://travis-ci.org/vivet/Nano.Library)
+[![NuGet](https://img.shields.io/nuget/dt/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
+[![NuGet](https://img.shields.io/nuget/v/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
 
 Nano is a .NET Core 2.0+ library.  
 It combines common patterns and practices, and allows developers to build and deploy REST micro-services, rapidly.  
