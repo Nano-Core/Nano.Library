@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+
+    <Configurations>Debug;Release</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn />
+    <WarningsAsErrors />
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn />
+    <WarningsAsErrors />
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Api\**" />
+    <EmbeddedResource Remove="Api\**" />
+    <None Remove="Api\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nano.Web\Nano.Web.csproj" />
+    <ProjectReference Include="..\Tests.Nano\Tests.Nano.csproj" />
+  </ItemGroup>
+
+</Project>
