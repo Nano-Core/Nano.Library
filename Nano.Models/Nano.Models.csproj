@@ -26,8 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="DynamicExpression" Version="1.0.4" />
-    <PackageReference Include="NetTopologySuite" Version="1.15.0-pre032" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1-beta3" />
+    <PackageReference Include="NetTopologySuite" Version="1.15.0-pre036" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
   </ItemGroup>
 
