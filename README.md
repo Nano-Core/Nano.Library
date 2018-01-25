@@ -1,5 +1,5 @@
 # Nano Library
-[![Build Status](https://travis-ci.org/vivet/Nano.Library.svg?branch=master)](https://travis-ci.org/vivet/Nano.Library)
+[![Build Status](https://travis-ci.org/Nano-Core/Nano.Library.svg?branch=master)](https://travis-ci.org/Nano-Core/Nano.Library)
 [![NuGet](https://img.shields.io/nuget/dt/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
 [![NuGet](https://img.shields.io/nuget/v/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
 
