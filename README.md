@@ -3,12 +3,18 @@
 [![NuGet](https://img.shields.io/nuget/dt/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
 [![NuGet](https://img.shields.io/nuget/v/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
 
-Nano is a .NET Core 2.0+ library.  
-It combines common patterns and practices, and allows developers to build and deploy REST micro-services, rapidly.  
+Nano is a library for rapidly building Net Core 2.0+ applications.  
 
-The library is easily consumed and configured. Inject provider dependencies for logging, data context and eventing. Derive concrete class implementations for Application, Service, Controller, Model and so on, from enriched default abstractions and interfaces. Stay focused on the objective of modelling the business domain (models and operations), and prevent wasting development resources on non-business related functionality.  
+The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain.  
 
-The project is inspired by years of tedious repeatitions, contunously re-writing similar code-snippets and libraries, to handle common functionality not directly related 
-to any specific business domain, but to infrastructure, hosting, configuration, logging, data, versioning, repositories, valiation and more.  
+The aspects and benefits of Nano, can be summarized as follows.
+* Provides configurable implementations for non-business related aspects of an application, 
+* Such as logging, data access, message queuing, documentation, validation and many other similar features. 
+* Combining the best practices, patterns, extensions and conventions of modern development. 
+* Inject providers and register custom dependencies.
+* Override, Extend or disable any part of Nano, not suitable for the application. 
+* Derive concrete implementations, enriched with functionality, from base abstractions and interfaces, for all parts of the application.  
+* Avoid wasting valuable development resources, on matters not related to the business.
+* Remain focused on modelling data and operations of the business domain.
 
 Check out the [Nano Wiki](https://github.com/Nano-Services/Nano/wiki), and follow our [Quick Guide](https://github.com/Nano-Services/Nano/wiki/Quick-Guide), and have your first Nano-Service running within the hour.
