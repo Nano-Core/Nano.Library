@@ -13,7 +13,7 @@ The aspects and benefits of Nano, can be summarized as follows.
 * Such as logging, data persistence, message queuing, documentation, validation and many other similar features. 
 * Combining the best practices, patterns, extensions and conventions of modern development. 
 * Inject providers and register custom dependencies.
-* Override, Extend or disable any part of Nano, not suitable for the application. 
+* Override, extend or disable any part of Nano, not suitable for the application. 
 * Derive concrete implementations, enriched with functionality, from base abstractions and interfaces, for all parts of the application.  
 * Avoid wasting valuable development resources, on matters not related to the business.
 * Remain focused on modelling data and operations of the business domain.
