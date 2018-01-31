@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Nano.Data.Attributes;
 using Nano.Data.Models;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
@@ -145,6 +147,53 @@ namespace Nano.Data
             {
                 this.AddOrUpdate(entity);
             }
+        }
+
+        /// <summary>
+        /// Imports data for all models annotated with <see cref="DataImportAttribute"/>.
+        /// </summary>
+        /// <returns>The <see cref="BaseDbContext"/>.</returns>
+        public virtual async Task ImportDatabaseAsync()
+        {
+            await Task.Factory.StartNew(() =>
+            {
+                AppDomain.CurrentDomain
+                    .GetAssemblies()
+                    .SelectMany(y => y.GetTypes())
+                    .Where(y => y.GetCustomAttributes<DataImportAttribute>().Any())
+                    .ToList()
+                    .ForEach(async y =>
+                    {
+                        var attribute = y.GetCustomAttribute<DataImportAttribute>();
+
+                        await this
+                            .AddRangeAsync(attribute.Uri, y);
+                    });
+            });
+        }
+
+        /// <summary>
+        /// Applies any pending migrations to the database.
+        /// </summary>
+        /// <returns>The <see cref="BaseDbContext"/>.</returns>
+        public virtual async Task MigrateDatabaseAsync(CancellationToken cancellationToken = default)
+        {
+            await this.Database
+                .MigrateAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Create the initial database.
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>True when database was created, otherwise false.</returns>
+        public virtual async Task<bool> CreateDatabaseAsync(CancellationToken cancellationToken = default)
+        {
+            if (!this.Options.UseCreateDatabase)
+                return false;
+
+            return await this.Database
+                .EnsureCreatedAsync(cancellationToken);
         }
     }
 }

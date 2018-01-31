@@ -1,13 +1,17 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using EasyNetQ;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Nano.Data;
 using Nano.Eventing.Attributes;
 using Nano.Eventing.Interfaces;
+using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Services.Eventing;
 using Z.EntityFramework.Plus;
@@ -58,11 +62,40 @@ namespace Nano.Services.Data
         /// <inheritdoc />
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
+            this.SaveAudit();
+            this.SoftDelete();
+
+            // TODO: Move to BaseService
+            var entityEntries = this.ChangeTracker
+                .Entries()
+                .Where(x => 
+                    x.Entity.GetType().IsTypeDef(typeof(IEntityIdentity<>)) &&
+                    x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any())
+                .Cast<EntityEntry<IEntityIdentity<Guid>>>(); // BUG: Remove cast, but method 'PublishAsync' needs it as parameter
+
+            return await base
+                .SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken)
+                .ContinueWith(x =>
+                {
+                    if (!x.IsFaulted && !x.IsCanceled)
+                    {
+                        this.PublishAsync(entityEntries);
+                    }
+
+                    return x;
+                }, cancellationToken)
+                .Result;
+        }
+
+        private void SaveAudit()
+        {
             var audit = new Audit();
             audit.PreSaveChanges(this);
             audit.Configuration.AutoSavePreAction?.Invoke(this, audit);
             audit.PostSaveChanges();
-
+        }
+        private void SoftDelete()
+        {
             this.ChangeTracker
                 .Entries<IEntityDeletableSoft>()
                 .Where(x => x.State == EntityState.Deleted)
@@ -73,36 +106,26 @@ namespace Nano.Services.Data
                     x.State = EntityState.Modified;
                 });
 
-            var entities = this.ChangeTracker
-                .Entries<IEntity>()
-                .Where(x => x.Entity.GetType().GetAttributes<PublishAttribute>().Any())
-                .Select(x => x.Entity);
+        }
+        private void PublishAsync(IEnumerable<EntityEntry<IEntityIdentity<Guid>>> entityEntries)
+        {
+            if (entityEntries == null)
+                throw new ArgumentNullException(nameof(entityEntries));
 
-            return await base
-                .SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken)
-                .ContinueWith(x =>
-                {
-                    if (x.IsFaulted || x.IsCanceled)
-                        return x;
+            var eventing = this.GetService<IEventing>();
 
-                    var eventing = this.GetService<IEventing>();
+            if (eventing == null)
+                return;
 
-                    if (eventing == null)
-                        return x;
+            foreach (var entityEntry in entityEntries)
+            {
+                var key = entityEntry.GetType().FullName; // BUG: Eventing Annotation: Consider routing key. Add Application name?
+                var entityEvent = new EntityEvent(entityEntry);
 
-                    foreach (var entity in entities)
-                    {
-                        var key = entity.GetType().Name;
-                        var entityEvent = new EntityEvent(entity);
-
-                        eventing
-                            .Publish(entityEvent, key)
-                            .ConfigureAwait(false);
-                    }
-
-                    return x;
-                }, cancellationToken)
-                .Result;
+                eventing
+                    .PublishAsync(entityEvent, key)
+                    .ConfigureAwait(false);
+            }
         }
     }
 }
