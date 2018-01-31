@@ -15,7 +15,7 @@ namespace Nano.Eventing.Interfaces
         /// <param name="body">The message body.</param>
         /// <param name="routing">The routing key (if any).</param>
         /// <returns>A <see cref="Task"/> (void).</returns>
-        Task Publish<TMessage>(TMessage body, string routing = "")
+        Task PublishAsync<TMessage>(TMessage body, string routing = "")
             where TMessage : class;
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Nano.Eventing.Interfaces
         /// <param name="callback">The callback to invoke.</param>
         /// <param name="routing">The routing key (if any).</param>
         /// <returns>A <see cref="Task"/> (void).</returns>
-        Task Subscribe<TMessage>(Action<TMessage> callback, string routing = "")
+        Task SubscribeAsync<TMessage>(Action<TMessage> callback, string routing = "")
             where TMessage : class;
     }
 }

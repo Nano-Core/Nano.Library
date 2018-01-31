@@ -8,7 +8,7 @@ using DynamicExpression.Interfaces;
 using Nano.Models.Interfaces;
 
 namespace Nano.Services.Interfaces
-{
+{ 
     /// <summary>
     /// (Base) Interface for a service.
     /// Defines methods for the most rudamentory operations (get, criteria2, add, update, delete) on instances of <see cref="IEntity"/>.
@@ -24,7 +24,7 @@ namespace Nano.Services.Interfaces
         /// <param name="key">The <typeparamref name="TIdentity"/> type, uniquely identify the <see cref="IEntity"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
-        Task<TEntity> Get<TEntity, TIdentity>(TIdentity key, CancellationToken cancellationToken = default)
+        Task<TEntity> GetAsync<TEntity, TIdentity>(TIdentity key, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity;
 
         /// <summary>
@@ -35,39 +35,39 @@ namespace Nano.Services.Interfaces
         /// <param name="keys">The <typeparamref name="TIdentity"/> type, uniquely identifying the <see cref="IEntity"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
-        Task<IEnumerable<TEntity>> GetMany<TEntity, TIdentity>(IEnumerable<TIdentity> keys, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TIdentity>(IEnumerable<TIdentity> keys, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity;
 
         /// <summary>
-        /// Get all instances of <typeparamref name="TEntity"/>.
-        /// </summary>
-        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
-        /// <param name="query">The <see cref="Query"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
-        /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
-        Task<IEnumerable<TEntity>> GetAll<TEntity>(Query query, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntity;
-
-        /// <summary>
-        /// Get all instances of <typeparamref name="TEntity"/>, matching the criteria, pagination and ordering of the passed <paramref name="query"/>.
+        /// GetAsync all instances of <typeparamref name="TEntity"/>, matching the criteria, pagination and ordering of the passed <paramref name="query"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IQueryCriteria"/> type.</typeparam>
         /// <typeparam name="TCriteria">The <see cref="IQuery"/> type.</typeparam>
         /// <param name="query">The <see cref="IQuery{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
-        Task<IEnumerable<TEntity>> GetMany<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
             where TCriteria : class, IQueryCriteria, new();
 
         /// <summary>
-        /// Get all instances of <typeparamref name="TEntity"/>, matching the passed <paramref name="expression"/>.
+        /// GetAsync all instances of <typeparamref name="TEntity"/>, matching the passed <paramref name="expression"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
         /// <param name="expression">The <see cref="Expression"/> to evaulate entities to be returned.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
-        Task<IEnumerable<TEntity>> GetMany<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity;
+
+        /// <summary>
+        /// GetAsync all instances of <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="query">The <see cref="Query"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
+        Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(Query query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity;
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Nano.Services.Interfaces
         /// <param name="entity">The instance of <see cref="IEntityCreatable"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The <see cref="Task{TEntity}"/>.</returns>
-        Task<TEntity> Add<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        Task<TEntity> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityCreatable;
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Nano.Services.Interfaces
         /// <param name="entities">The instances of <see cref="IEntityCreatable"/>'s.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The <see cref="Task"/> (void).</returns>
-        Task AddMany<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        Task AddManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityCreatable;
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace Nano.Services.Interfaces
         /// <param name="entity">The instance of <see cref="IEntityUpdatable"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The <see cref="Task{TEntity}"/>.</returns>
-        Task<TEntity> Update<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        Task<TEntity> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityUpdatable;
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace Nano.Services.Interfaces
         /// <param name="entities">The instances of <see cref="IEntityUpdatable"/>'s.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The <see cref="Task"/> (void).</returns>
-        Task UpdateMany<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        Task UpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityUpdatable;
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace Nano.Services.Interfaces
         /// <param name="update">The <see cref="IEntityUpdatable"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="Task"/> (void).</returns>
-        Task UpdateMany<TEntity, TCriteria>(TCriteria select, TEntity update, CancellationToken cancellationToken = default)
+        Task UpdateManyAsync<TEntity, TCriteria>(TCriteria select, TEntity update, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityUpdatable
             where TCriteria : class, IQueryCriteria, new();
 
@@ -133,7 +133,7 @@ namespace Nano.Services.Interfaces
         /// <param name="update">The <see cref="Expression"/> determining which values on the selected entities to update.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The <see cref="Task"/> (void).</returns>
-        Task UpdateMany<TEntity>(Expression<Func<TEntity, bool>> select, Expression<Func<TEntity, TEntity>> update, CancellationToken cancellationToken = default)
+        Task UpdateManyAsync<TEntity>(Expression<Func<TEntity, bool>> select, Expression<Func<TEntity, TEntity>> update, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityUpdatable;
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Nano.Services.Interfaces
         /// <param name="entity">The instance of <see cref="IEntityCreatableAndUpdatable"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The <see cref="Task{TEntity}"/>.</returns>
-        Task<TEntity> AddOrUpdate<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        Task<TEntity> AddOrUpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityCreatableAndUpdatable;
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace Nano.Services.Interfaces
         /// <param name="entities">The instances of <see cref="IEntityCreatableAndUpdatable"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The <see cref="Task"/> (void).</returns>
-        Task AddOrUpdateMany<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        Task AddOrUpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityCreatableAndUpdatable;
         
         /// <summary>
@@ -163,7 +163,7 @@ namespace Nano.Services.Interfaces
         /// <param name="entity">The instance od <see cref="IEntityDeletable"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="Task"/> returning 'void'.</returns>
-        Task Delete<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        Task DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable;
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace Nano.Services.Interfaces
         /// <param name="entities">The instances of <see cref="IEntityDeletable"/>'s.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The <see cref="Task"/> (void).</returns>
-        Task DeleteMany<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        Task DeleteManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable;
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace Nano.Services.Interfaces
         /// <param name="critiera">The <see cref="IQueryCriteria"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="Task"/> (void).</returns>
-        Task DeleteMany<TEntity, TCriteria>(TCriteria critiera, CancellationToken cancellationToken = default)
+        Task DeleteManyAsync<TEntity, TCriteria>(TCriteria critiera, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable
             where TCriteria : class, IQueryCriteria, new();
 
@@ -195,7 +195,7 @@ namespace Nano.Services.Interfaces
         /// <param name="select">The <see cref="Expression"/> to evaulate entities to be deleted.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The <see cref="Task"/> (void).</returns>
-        Task DeleteMany<TEntity>(Expression<Func<TEntity, bool>> select, CancellationToken cancellationToken = default)
+        Task DeleteManyAsync<TEntity>(Expression<Func<TEntity, bool>> select, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable;
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using EasyNetQ;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -393,13 +392,13 @@ namespace Nano.App.Extensions
                     var eventing = provider.GetRequiredService<IEventing>();
                     var eventHandler = provider.GetRequiredService(genericHandlerType);
 
-                    var callback = handlerType.GetMethod("Callback");
+                    var callback = handlerType.GetMethod("CallbackAsync");
                     var action = typeof(Action<>).MakeGenericType(eventType);
                     var @delegate = Delegate.CreateDelegate(action, eventHandler, callback);
 
                     eventing
                         .GetType()
-                        .GetMethod("Subscribe")
+                        .GetMethod("SubscribeAsync")
                         .MakeGenericMethod(eventType)
                         .Invoke(eventing, new object[] { @delegate, string.Empty });
                 });
@@ -414,7 +413,7 @@ namespace Nano.App.Extensions
             AppDomain.CurrentDomain
                 .GetAssemblies()
                 .SelectMany(x => x.GetTypes())
-                .Where(x => x.GetAttributes<SubscribeAttribute>().Any() && x.IsTypeDef(typeof(IEntity)))
+                .Where(x => x.GetCustomAttributes<SubscribeAttribute>().Any() && x.IsTypeDef(typeof(IEntity)))
                 .ToList()
                 .ForEach(x =>
                 {
@@ -429,13 +428,13 @@ namespace Nano.App.Extensions
                     var eventing = provider.GetRequiredService<IEventing>();
                     var eventHandler = provider.GetRequiredService(genericHandlerType);
 
-                    var callback = handlerType.GetMethod("Callback");
+                    var callback = handlerType.GetMethod("CallbackAsync");
                     var action = typeof(Action<>).MakeGenericType(eventType);
                     var @delegate = Delegate.CreateDelegate(action, eventHandler, callback);
 
                     eventing
                         .GetType()
-                        .GetMethod("Subscribe")
+                        .GetMethod("SubscribeAsync")
                         .MakeGenericMethod(eventType)
                         .Invoke(eventing, new object[] { @delegate, x.Name });
                 });

@@ -6,7 +6,7 @@ namespace Nano.Data.Attributes
     /// Import Attribute.
     /// Types with this annotation invokes an import of data returned by the <see cref="Uri"/> during application startup.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
     public class DataImportAttribute : Attribute
     {
         /// <summary>
@@ -17,13 +17,13 @@ namespace Nano.Data.Attributes
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="uri">The <see cref="Uri"/>.</param>
-        public DataImportAttribute(Uri uri)
+        /// <param name="url">The url.</param>
+        public DataImportAttribute(string url)
         {
-            if (uri == null)
-                throw new ArgumentNullException(nameof(uri));
+            if (url == null)
+                throw new ArgumentNullException(nameof(url));
 
-            this.Uri = uri;
+            this.Uri = new Uri(url);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Nano.App.Extensions.Serialization
                 {
                     property.PropertyName += "Id";
                     property.PropertyType = genericType.GenericTypeArguments.FirstOrDefault();
-                    property.Converter = new EntityIdentityJsonConverter<Guid>();
+                    property.Converter = new EntityIdentityJsonConverter<Guid>(); // BUG: should not eb Guid directly.
                 }
             }
 

@@ -37,7 +37,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<TEntity> Get<TEntity, TIdentity>(TIdentity key, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity> GetAsync<TEntity, TIdentity>(TIdentity key, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
         {
             if (key == null)
@@ -49,7 +49,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetMany<TEntity, TIdentity>(IEnumerable<TIdentity> keys, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TIdentity>(IEnumerable<TIdentity> keys, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
         {
             if (keys == null)
@@ -62,21 +62,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetAll<TEntity>(Query query, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntity
-        {
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
-
-            return await this.Context
-                .Set<TEntity>()
-                .Order(query.Order)
-                .Limit(query.Paging)
-                .ToArrayAsync(cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetMany<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
             where TCriteria : class, IQueryCriteria, new()
         {
@@ -92,7 +78,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetMany<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
         {
             if (expression == null)
@@ -105,7 +91,21 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<TEntity> Add<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(Query query, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+        {
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
+
+            return await this.Context
+                .Set<TEntity>()
+                .Order(query.Order)
+                .Limit(query.Paging)
+                .ToArrayAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<TEntity> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityCreatable
         {
             if (entity == null)
@@ -121,7 +121,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task AddMany<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        public virtual async Task AddManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityCreatable
         {
             if (entities == null)
@@ -135,7 +135,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<TEntity> Update<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityUpdatable
         {
             if (entity == null)
@@ -151,7 +151,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task UpdateMany<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        public virtual async Task UpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityUpdatable
         {
             if (entities == null)
@@ -165,7 +165,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task UpdateMany<TEntity, TCriteria>(TCriteria select, TEntity update, CancellationToken cancellationToken = default) 
+        public virtual async Task UpdateManyAsync<TEntity, TCriteria>(TCriteria select, TEntity update, CancellationToken cancellationToken = default) 
             where TEntity : class, IEntityUpdatable 
             where TCriteria : class, IQueryCriteria, new()
         {
@@ -185,7 +185,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task UpdateMany<TEntity>(Expression<Func<TEntity, bool>> select, Expression<Func<TEntity, TEntity>> update, CancellationToken cancellationToken = default)
+        public virtual async Task UpdateManyAsync<TEntity>(Expression<Func<TEntity, bool>> select, Expression<Func<TEntity, TEntity>> update, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityUpdatable
         {
             if (select == null)
@@ -204,7 +204,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<TEntity> AddOrUpdate<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity> AddOrUpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityCreatableAndUpdatable
         {
             if (entity == null)
@@ -220,7 +220,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task AddOrUpdateMany<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        public virtual async Task AddOrUpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityCreatableAndUpdatable
         {
             if (entities == null)
@@ -234,7 +234,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task Delete<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable
         {
             if (entity == null)
@@ -248,7 +248,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task DeleteMany<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable
         {
             if (entities == null)
@@ -262,7 +262,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task DeleteMany<TEntity, TCriteria>(TCriteria critiera, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteManyAsync<TEntity, TCriteria>(TCriteria critiera, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable
             where TCriteria : class, IQueryCriteria, new()
         {
@@ -283,7 +283,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task DeleteMany<TEntity>(Expression<Func<TEntity, bool>> select, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteManyAsync<TEntity>(Expression<Func<TEntity, bool>> select, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable
         {
             if (select == null)

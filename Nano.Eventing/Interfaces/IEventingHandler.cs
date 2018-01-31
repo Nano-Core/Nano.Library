@@ -7,10 +7,10 @@ namespace Nano.Eventing.Interfaces
         where TEvent : class
     {
         /// <summary>
-        /// Callback.
+        /// CallbackAsync.
         /// Invoked when recieving a publshed message.
         /// </summary>
         /// <param name="event">The instance of type <typeparamref name="TEvent"/>.</param>
-        void Callback(TEvent @event);
+        void CallbackAsync(TEvent @event);
     }
 }

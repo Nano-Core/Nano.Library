@@ -10,14 +10,14 @@ namespace Nano.Eventing
     public class NullEventing : IEventing
     {
         /// <inheritdoc />
-        public Task Publish<TMessage>(TMessage body, string routing = "") 
+        public Task PublishAsync<TMessage>(TMessage body, string routing = "") 
             where TMessage : class
         {
             return Task.Run(() => { });
         }
 
         /// <inheritdoc />
-        public Task Subscribe<TMessage>(Action<TMessage> callback, string routing = "") 
+        public Task SubscribeAsync<TMessage>(Action<TMessage> callback, string routing = "") 
             where TMessage : class
         {
             return Task.Run(() => { });

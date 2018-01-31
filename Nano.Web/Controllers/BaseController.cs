@@ -102,7 +102,7 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> Index([FromQuery][FromBody][FromForm]Query query, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
-                .GetAll<TEntity>(query ?? new Query(), cancellationToken);
+                .GetAllAsync<TEntity>(query ?? new Query(), cancellationToken);
 
             if (this.Response.IsContentTypeHtml())
                 return this.View(result);
@@ -129,7 +129,7 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> Details([FromRoute][FromQuery][FromBody][FromForm][Required]TIdentity id, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
-                .Get<TEntity, TIdentity>(id, cancellationToken);
+                .GetAsync<TEntity, TIdentity>(id, cancellationToken);
 
             if (result == null)
                 return this.NotFound();
@@ -157,7 +157,7 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> Details([FromRoute][FromQuery][FromBody][FromForm][Required]TIdentity[] ids, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
-                .GetMany<TEntity, TIdentity>(ids, cancellationToken);
+                .GetManyAsync<TEntity, TIdentity>(ids, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.View(result);
@@ -183,7 +183,7 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> Query([FromQuery][FromBody][FromForm][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
-                .GetMany<TEntity, TCriteria>(criteria, cancellationToken);
+                .GetManyAsync<TEntity, TCriteria>(criteria, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.View("Index", result);
@@ -222,7 +222,7 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> Create([FromBody][FromForm][Required]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
-                .Add(entity, cancellationToken);
+                .AddAsync(entity, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
@@ -247,7 +247,7 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> Create([FromBody][FromForm][Required]TEntity[] entities, CancellationToken cancellationToken = new CancellationToken())
         {
             await this.Service
-                .AddMany(entities, cancellationToken);
+                .AddManyAsync(entities, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
@@ -272,7 +272,7 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> Edit([FromRoute][FromQuery][Required]TIdentity id, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
-                .Get<TEntity, TIdentity>(id, cancellationToken);
+                .GetAsync<TEntity, TIdentity>(id, cancellationToken);
 
             if (result == null)
                 return this.NotFound();
@@ -298,7 +298,7 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> Edit([FromBody][FromForm][Required]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
         {
             await this.Service
-                .Update(entity, cancellationToken);
+                .UpdateAsync(entity, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
@@ -324,7 +324,7 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> Edit([FromBody][FromForm][Required]TEntity[] entities, CancellationToken cancellationToken = new CancellationToken())
         {
             await this.Service
-                .UpdateMany(entities.AsEnumerable(), cancellationToken);
+                .UpdateManyAsync(entities.AsEnumerable(), cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
@@ -351,7 +351,7 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> Edit([FromQuery][FromBody][FromForm][Required]TCriteria select, TEntity update, CancellationToken cancellationToken = new CancellationToken())
         {
             await this.Service
-                .UpdateMany(select, update, cancellationToken);
+                .UpdateManyAsync(select, update, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
@@ -377,7 +377,7 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> Delete([FromRoute][FromQuery][Required]TIdentity id, CancellationToken cancellationToken = new CancellationToken())
         {
             var entity = await this.Service
-                .Get<TEntity, TIdentity>(id, cancellationToken);
+                .GetAsync<TEntity, TIdentity>(id, cancellationToken);
 
             if (entity == null)
                 return this.NotFound();
@@ -405,13 +405,13 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> DeleteConfirm([FromRoute][FromQuery][FromBody][FromForm][Required]TIdentity id, CancellationToken cancellationToken = new CancellationToken())
         {
             var entity = await this
-                .Service.Get<TEntity, TIdentity>(id, cancellationToken);
+                .Service.GetAsync<TEntity, TIdentity>(id, cancellationToken);
 
             if (entity == null)
                 return this.NotFound(id);
 
             await this.Service
-                .Delete(entity, cancellationToken);
+                .DeleteAsync(entity, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
@@ -437,10 +437,10 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> DeleteConfirm([FromBody][FromForm][Required]TIdentity[] ids, CancellationToken cancellationToken = new CancellationToken())
         {
             var entities = await this
-                .Service.GetMany<TEntity>(x => ids.Contains(x.Id), cancellationToken);
+                .Service.GetManyAsync<TEntity>(x => ids.Contains(x.Id), cancellationToken);
 
             await this.Service
-                .DeleteMany(entities, cancellationToken);
+                .DeleteManyAsync(entities, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
@@ -466,7 +466,7 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> DeleteConfirm([FromQuery][FromBody][FromForm][Required]TCriteria select, CancellationToken cancellationToken = new CancellationToken())
         {
             await this.Service
-                .DeleteMany<TEntity, TCriteria>(select, cancellationToken);
+                .DeleteManyAsync<TEntity, TCriteria>(select, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");

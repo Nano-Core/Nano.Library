@@ -27,7 +27,7 @@ namespace Nano.Eventing.Providers.EasyNetQ
         }
 
         /// <inheritdoc />
-        public virtual async Task Publish<TMessage>(TMessage body, string routing = "")
+        public virtual async Task PublishAsync<TMessage>(TMessage body, string routing = "")
             where TMessage : class
         {
             if (body == null)
@@ -44,7 +44,7 @@ namespace Nano.Eventing.Providers.EasyNetQ
         }
 
         /// <inheritdoc />
-        public virtual async Task Subscribe<TMessage>(Action<TMessage> callback, string routing = "")
+        public virtual async Task SubscribeAsync<TMessage>(Action<TMessage> callback, string routing = "")
             where TMessage : class
         {
             if (callback == null)
