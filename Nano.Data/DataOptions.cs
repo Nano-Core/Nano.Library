@@ -41,6 +41,11 @@ namespace Nano.Data
         public virtual bool UseSoftDeletetion { get; set; } = true;
 
         /// <summary>
+        /// Use Create Database.
+        /// </summary>
+        public virtual bool UseCreateDatabase { get; set; } = true;
+
+        /// <summary>
         /// Connection String.
         /// </summary>
         public virtual string ConnectionString { get; set; }
