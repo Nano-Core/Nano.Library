@@ -4,9 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using EasyNetQ;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Nano.Data;
 using Nano.Eventing.Attributes;
@@ -63,26 +61,21 @@ namespace Nano.Services.Data
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
             this.SaveAudit();
-            this.SoftDelete();
+            this.SaveSoftDeletion();
 
-            // TODO: Move to BaseService
-            var entityEntries = this.ChangeTracker
-                .Entries()
-                .Where(x => 
-                    x.Entity.GetType().IsTypeDef(typeof(IEntityIdentity<>)) &&
-                    x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any())
-                .Cast<EntityEntry<IEntityIdentity<Guid>>>(); // BUG: Remove cast, but method 'PublishAsync' needs it as parameter
-
+            var pendingEvents = this.GetPendingEntityEvents().ToList();
+            
             return await base
                 .SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken)
-                .ContinueWith(x =>
+                .ContinueWith(async x =>
                 {
                     if (!x.IsFaulted && !x.IsCanceled)
                     {
-                        this.PublishAsync(entityEntries);
+                        pendingEvents
+                            .ForEach(y => y.Invoke());
                     }
 
-                    return x;
+                    return await x;
                 }, cancellationToken)
                 .Result;
         }
@@ -94,7 +87,7 @@ namespace Nano.Services.Data
             audit.Configuration.AutoSavePreAction?.Invoke(this, audit);
             audit.PostSaveChanges();
         }
-        private void SoftDelete()
+        private void SaveSoftDeletion()
         {
             this.ChangeTracker
                 .Entries<IEntityDeletableSoft>()
@@ -107,25 +100,48 @@ namespace Nano.Services.Data
                 });
 
         }
-        private void PublishAsync(IEnumerable<EntityEntry<IEntityIdentity<Guid>>> entityEntries)
+        private IEnumerable<Action> GetPendingEntityEvents()
         {
-            if (entityEntries == null)
-                throw new ArgumentNullException(nameof(entityEntries));
+            return this.ChangeTracker
+                .Entries<IEntity>()
+                .Where(x =>
+                    x.Entity.GetType().IsTypeDef(typeof(IEntityIdentity<>)) &&
+                    x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
+                    (x.State == EntityState.Added || x.State == EntityState.Deleted))
+                .Select(x =>
+                {
+                    var typeName = x.GetType().FullName;
 
-            var eventing = this.GetService<IEventing>();
+                    switch (x.Entity)
+                    {
+                        case IEntityIdentity<Guid> guid:
+                            return new EntityEvent(guid.Id, typeName, x.State);
 
-            if (eventing == null)
-                return;
+                        case IEntityIdentity<dynamic> dynamic:
+                            return new EntityEvent(dynamic.Id, typeName, x.State);
 
-            foreach (var entityEntry in entityEntries)
-            {
-                var key = entityEntry.GetType().FullName; // BUG: Eventing Annotation: Consider routing key. Add Application name?
-                var entityEvent = new EntityEvent(entityEntry);
+                        default:
+                            return null;
+                    }
+                })
+                .Select(x =>
+                {
+                    if (x == null)
+                        return null;
 
-                eventing
-                    .PublishAsync(entityEvent, key)
-                    .ConfigureAwait(false);
-            }
+                    return new Action(() =>
+                    {
+                        var eventing = this.GetService<IEventing>();
+
+                        if (eventing == null)
+                            return;
+
+                        eventing
+                            .PublishAsync(x, string.Empty) // TODO: Entity Event Routing Key.
+                            .ConfigureAwait(false);
+                    });
+                })
+                .Where(x => x != null);
         }
     }
 }

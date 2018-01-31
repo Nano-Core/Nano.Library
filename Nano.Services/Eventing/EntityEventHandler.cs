@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Nano.Eventing.Interfaces;
 using Nano.Models;
@@ -35,14 +34,14 @@ namespace Nano.Services.Eventing
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));
 
-            // BUG: Eventing Annotation: Entity Eventing Handler callback
-            var type = AppDomain.CurrentDomain
-                .GetAssemblies()
-                .SelectMany(x => x.GetTypes())
-                .FirstOrDefault(x => x.Name == @event.RoutingKey);
+            // TODO: Use type to instead of DefaultEntity further down.
+            //var type = AppDomain.CurrentDomain
+            //    .GetAssemblies()
+            //    .SelectMany(x => x.GetTypes())
+            //    .FirstOrDefault(x => x.Name == @event.RoutingKey);
 
             var entity = await this.Service
-                .GetAsync<DefaultEntity, Guid>((Guid)@event.Id);
+                .GetAsync<DefaultEntity, Guid>((Guid)@event.Id); // TODO: Guid
 
             switch (@event.State)
             {
@@ -54,10 +53,18 @@ namespace Nano.Services.Eventing
                     if (entity == null)
                     {
                         await this.Service
-                            .AddAsync(new DefaultEntity { Id = (Guid)@event.Id });
+                            .AddAsync(new DefaultEntity { Id = (Guid)@event.Id }); // TODO: Guid
                     }
 
                     break;
+
+                case EntityState.Detached:
+                case EntityState.Unchanged:
+                case EntityState.Modified:
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException("@event.State");
             }
         }
     }

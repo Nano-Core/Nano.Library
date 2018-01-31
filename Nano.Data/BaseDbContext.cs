@@ -152,8 +152,9 @@ namespace Nano.Data
         /// <summary>
         /// Imports data for all models annotated with <see cref="DataImportAttribute"/>.
         /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="BaseDbContext"/>.</returns>
-        public virtual async Task ImportDatabaseAsync()
+        public virtual async Task ImportDatabaseAsync(CancellationToken cancellationToken = default)
         {
             await Task.Factory.StartNew(() =>
             {
@@ -167,14 +168,15 @@ namespace Nano.Data
                         var attribute = y.GetCustomAttribute<DataImportAttribute>();
 
                         await this
-                            .AddRangeAsync(attribute.Uri, y);
+                            .AddRangeAsync(attribute.Uri, y, cancellationToken);
                     });
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
         /// Applies any pending migrations to the database.
         /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="BaseDbContext"/>.</returns>
         public virtual async Task MigrateDatabaseAsync(CancellationToken cancellationToken = default)
         {

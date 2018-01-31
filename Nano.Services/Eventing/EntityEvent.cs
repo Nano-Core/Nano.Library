@@ -1,7 +1,5 @@
 using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Nano.Models.Interfaces;
 
 namespace Nano.Services.Eventing
 {
@@ -18,7 +16,7 @@ namespace Nano.Services.Eventing
         /// <summary>
         /// Routing Key.
         /// </summary>
-        public virtual string RoutingKey { get; set; }
+        public virtual string RoutingKey { get; set; } // TODO: Entity Event Routing Key.
 
         /// <summary>
         /// State.
@@ -28,14 +26,20 @@ namespace Nano.Services.Eventing
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="entity">The <see cref="object"/> entity.</param>
-        public EntityEvent(EntityEntry<IEntityIdentity<Guid>> entity)
+        /// <param name="id"></param>
+        /// <param name="routingKey"></param>
+        /// <param name="state"></param>
+        public EntityEvent(object id, string routingKey, EntityState state)
         {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
 
-            this.Id = entity.Entity.Id;
-            this.State = entity.State;
+            if (routingKey == null)
+                throw new ArgumentNullException(nameof(routingKey));
+
+            this.Id = id;
+            this.RoutingKey = routingKey;
+            this.State = state;
         }
     }
 }
