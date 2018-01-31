@@ -2,18 +2,16 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using EasyNetQ;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.App.Extensions;
 using Nano.App.Extensions.Middleware;
 using Nano.App.Interfaces;
 using Nano.Data;
-using Nano.Data.Attributes;
 
 namespace Nano.App
 {
@@ -39,12 +37,16 @@ namespace Nano.App
 
             this.Configuration = configuration;
         }
-
         /// <inheritdoc />
-        public virtual void ConfigureServices(IServiceCollection services)
+        public virtual void Configure(IApplicationBuilder applicationBuilder)
         {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            var hostingEnvironment = applicationBuilder.ApplicationServices.GetService<IHostingEnvironment>();
+            var applicationLifetime = applicationBuilder.ApplicationServices.GetService<IApplicationLifetime>();
+
+            this.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
         }
 
         /// <inheritdoc />
@@ -59,9 +61,9 @@ namespace Nano.App
             if (applicationLifetime == null)
                 throw new ArgumentNullException(nameof(applicationLifetime));
 
-            var options = applicationBuilder.ApplicationServices.GetRequiredService<AppOptions>();
-            var dbContext = applicationBuilder.ApplicationServices.GetRequiredService<BaseDbContext>();
-            
+            var appOptions = applicationBuilder.ApplicationServices.GetRequiredService<AppOptions>();
+            var baseDbContext = applicationBuilder.ApplicationServices.GetRequiredService<BaseDbContext>();
+
             applicationBuilder
                 .UseSession()
                 .UseStaticFiles()
@@ -87,44 +89,71 @@ namespace Nano.App
                 .UseSwaggerUI(x =>
                 {
                     x.ShowRequestHeaders();
-                    x.DocumentTitle($"{options.Name} Docs v{options.Version}");
+                    x.DocumentTitle($"{appOptions.Name} Docs v{appOptions.Version}");
 
                     x.RoutePrefix = "docs";
-                    x.SwaggerEndpoint($"/docs/{options.Version}/swagger.json", $"{options.Name} v{options.Version}");
+                    x.SwaggerEndpoint($"/docs/{appOptions.Version}/swagger.json", $"{appOptions.Name} v{appOptions.Version}");
                 })
                 .UseRequestLocalization(new RequestLocalizationOptions
                 {
-                    DefaultRequestCulture = new RequestCulture(options.Cultures.Default),
-                    SupportedCultures = options.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray(),
-                    SupportedUICultures = options.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray()
+                    DefaultRequestCulture = new RequestCulture(appOptions.Cultures.Default),
+                    SupportedCultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray(),
+                    SupportedUICultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray()
                 })
                .UseExceptionHandler("/Home/Error");
 
-            dbContext.Database
-                .EnsureCreatedAsync()
-                .ContinueWith(x => dbContext.Database.MigrateAsync())
-                .ContinueWith(x =>
+            baseDbContext
+                .CreateDatabaseAsync()
+                .ContinueWith(async x =>
                 {
-                    AppDomain.CurrentDomain
-                        .GetAssemblies()
-                        .SelectMany(y => y.GetTypes())
-                        .Where(y => y.GetAttributes<DataImportAttribute>().Any())
-                        .ToList()
-                        .ForEach(async y =>
-                        {
-                            var attribute = y.GetAttribute<DataImportAttribute>();
+                    var success = await x;
+                    if (success)
+                    {
+                        await baseDbContext.MigrateDatabaseAsync();
+                    }
 
-                            await dbContext
-                                .AddRangeAsync(attribute.Uri, y);
-                        });
+                    return success;
                 })
-                .Wait();
+               .ContinueWith(async x =>
+                {
+                    var success = await x.Result;
+                    if (success)
+                    {
+                        await baseDbContext.ImportDatabaseAsync();
+                    }
+
+                    return success;
+                });
+        }
+
+        /// <inheritdoc />
+        public virtual IServiceProvider ConfigureServices(IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            return services
+                .BuildServiceProvider();
         }
 
         /// <summary>
         /// Creates a <see cref="IWebHostBuilder"/>, ready to <see cref="IWebHostBuilder.Build()"/> and <see cref="WebHostExtensions.Run(IWebHost)"/>.
+        /// The application startup implementation is defaulted to <see cref="DefaultApplication"/>.
+        /// </summary>
+        /// <param name="args">The command-line args, if any.</param>
+        /// <returns>The <see cref="IWebHostBuilder"/>.</returns>
+        public static IWebHostBuilder ConfigureApp(params string[] args)
+        {
+            return BaseApplication
+                .ConfigureApp<DefaultApplication>();
+        }
+
+        /// <summary>
+        /// Creates a <see cref="IWebHostBuilder"/>, ready to <see cref="IWebHostBuilder.Build()"/> and <see cref="WebHostExtensions.Run(IWebHost)"/>.
+        /// The application startup implementation is defined by the generic type parameter <typeparamref name="TApplication"/>.
         /// </summary>
         /// <typeparam name="TApplication">The type containing method for application start-up.</typeparam>
+        /// <param name="args">The command-line args, if any.</param>
         /// <returns>The <see cref="IWebHostBuilder"/>.</returns>
         public static IWebHostBuilder ConfigureApp<TApplication>(params string[] args)
             where TApplication : class, IApplication
@@ -155,15 +184,16 @@ namespace Nano.App
                 .UseShutdownTimeout(shutdownTimeout)
                 .ConfigureServices(x =>
                 {
+                    x.AddSingleton<IApplication, TApplication>();
+
                     x.AddApp(configuration);
                     x.AddData(configuration);
                     x.AddConfig(configuration);
                     x.AddLogging(configuration);
                     x.AddEventing(configuration);
-
-                    x.AddSingleton<IApplication, TApplication>();
                 })
-                .UseStartup<TApplication>();
+                .UseStartup<TApplication>()
+                .UseSetting(WebHostDefaults.ApplicationKey, Assembly.GetEntryAssembly().FullName);
         }
     }
 }
