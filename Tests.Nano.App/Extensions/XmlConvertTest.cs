@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Data.Providers.MySql
+namespace Tests.Nano.App.Extensions
 {
     [TestClass]
-    public class MySqlDataProviderTest
+    public class XmlConvertTest
     {
         [TestMethod]
         public void Test()

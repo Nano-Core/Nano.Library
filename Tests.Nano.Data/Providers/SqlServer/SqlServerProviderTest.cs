@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Data.Models
+namespace Tests.Nano.Data.Providers.SqlServer
 {
     [TestClass]
-    public class DefaultEntityIdentityMappingTest
+    public class SqlServerProviderTest
     {
         [TestMethod]
         public void Test()

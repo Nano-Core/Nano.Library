@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Web.Middleware
+namespace Tests.Nano.App.Extensions.ModelBinders
 {
     [TestClass]
-    public class HttpContextExceptionMiddlewareTest
+    public class QueryModelBinderProviderTest
     {
         [TestMethod]
         public void Test()

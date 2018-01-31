@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Data.Providers.SqlServer
+namespace Tests.Nano.App.Extensions.ModelBinders
 {
     [TestClass]
-    public class SqlServerDataProviderTest
+    public class QueryModelBinderTest
     {
         [TestMethod]
         public void Test()

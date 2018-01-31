@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Data.Models
+namespace Tests.Nano.App.Extensions.Serialization
 {
     [TestClass]
-    public class DefaultEntitySpatialMappingTest
+    public class EntityContractResolverTest
     {
         [TestMethod]
         public void Test()

@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Web.Middleware
+namespace Tests.Nano.Logging.Providers.Serilog
 {
     [TestClass]
-    public class HttpContextLoggingMiddlewareTest
+    public class SerilogProviderTest
     {
         [TestMethod]
         public void Test()

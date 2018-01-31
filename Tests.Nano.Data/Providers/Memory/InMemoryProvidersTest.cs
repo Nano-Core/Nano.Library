@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Web.Middleware
+namespace Tests.Nano.Data.Providers.Memory
 {
     [TestClass]
-    public class HttpContextContentTypeMiddlewareTest
+    public class InMemoryProviderTest
     {
         [TestMethod]
         public void Test()

@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Web
+namespace Tests.Nano.Eventing
 {
     [TestClass]
-    public class XmlConvertTest
+    public class NullEventingTest
     {
         [TestMethod]
         public void Test()

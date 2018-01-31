@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Data.Models
+namespace Tests.Nano.Web.Controllers.Extensions
 {
     [TestClass]
-    public class DefaultEntityMappingTest
+    public class HttpResponseExtensionsTest
     {
         [TestMethod]
         public void Test()

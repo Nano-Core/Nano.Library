@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Data.Providers.Memory
+namespace Tests.Nano.App.Extensions.Documentation
 {
     [TestClass]
-    public class InMemoryDataProvidersTest
+    public class LowercaseDocumentFilterTest
     {
         [TestMethod]
         public void Test()

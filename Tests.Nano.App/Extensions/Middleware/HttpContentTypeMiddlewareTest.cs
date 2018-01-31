@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Web.Middleware
+namespace Tests.Nano.App.Extensions.Middleware
 {
     [TestClass]
-    public class HttpContextIdentifierMiddlewareTest
+    public class HttpContentTypeMiddlewareTest
     {
         [TestMethod]
         public void Test()
