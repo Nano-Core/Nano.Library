@@ -27,13 +27,12 @@ namespace Nano.App.Extensions.Serialization
             if (propertyType.IsTypeDef(typeof(IEntityIdentity<>)))
             {
                 var genericType = this.GetGenericTypeArgument(propertyType);
+                var identityType = genericType?.GenericTypeArguments.FirstOrDefault();
+                var jsonConverter = identityType == typeof(Guid) ? new EntityIdentityJsonConverter<Guid>() : (JsonConverter)new EntityIdentityJsonConverter<dynamic>();
 
-                if (genericType.GenericTypeArguments.Any())
-                {
-                    property.PropertyName += "Id";
-                    property.PropertyType = genericType.GenericTypeArguments.FirstOrDefault();
-                    property.Converter = new EntityIdentityJsonConverter<Guid>(); // BUG: should not eb Guid directly.
-                }
+                property.PropertyName += "Id";
+                property.PropertyType = identityType;
+                property.Converter = jsonConverter;
             }
 
             return property;
