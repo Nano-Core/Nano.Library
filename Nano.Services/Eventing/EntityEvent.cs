@@ -1,4 +1,7 @@
 using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Nano.Models.Interfaces;
 
 namespace Nano.Services.Eventing
 {
@@ -8,29 +11,31 @@ namespace Nano.Services.Eventing
     public class EntityEvent
     {
         /// <summary>
-        /// Data.
+        /// Id.
         /// </summary>
-        public virtual object Data { get; set; }
+        public virtual object Id { get; set; }
 
         /// <summary>
-        /// Default Constructor.
+        /// Routing Key.
         /// </summary>
-        public EntityEvent()
-            : this(new object())
-        {
-            
-        }   
+        public virtual string RoutingKey { get; set; }
+
+        /// <summary>
+        /// State.
+        /// </summary>
+        public virtual EntityState State { get; set; }
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="data">The <see cref="object"/> data.</param>
-        public EntityEvent(object data)
+        /// <param name="entity">The <see cref="object"/> entity.</param>
+        public EntityEvent(EntityEntry<IEntityIdentity<Guid>> entity)
         {
-            if (data == null)
-                throw new ArgumentNullException(nameof(data));
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
-            this.Data = data;
+            this.Id = entity.Entity.Id;
+            this.State = entity.State;
         }
     }
 }
