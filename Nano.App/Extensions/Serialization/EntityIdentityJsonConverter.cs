@@ -29,7 +29,7 @@ namespace Nano.App.Extensions.Serialization
             if (serializer == null)
                 throw new ArgumentNullException(nameof(serializer));
 
-            // BUG: Entity Identity Json Converter, value is "null"
+            // BUG: Entity Identity Json Converter, value is "null". Try set Id property to Guid.NewGuid() on BaseEntityIdentity
             var token = JToken.FromObject(value);
             var propertyToken = token.SelectToken("Id");
 

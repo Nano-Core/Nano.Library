@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>NanoCore</id>
-        <version>0.3.1-alpha</version>
+        <version>0.3.3-alpha</version>
         <title>Nano Core</title>
         <authors>Nano Contributors</authors>
         <owners>Michael Vivet</owners>

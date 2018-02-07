@@ -34,14 +34,18 @@ namespace Nano.Services.Eventing
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));
 
+            // TODO: Ensure events wont loop between services
+            // TODO: Consider base class for eventing attributes, EventingAttribute, so that we may can limit to either Publish or Subscribe and not both.
             // TODO: Use type to instead of DefaultEntity further down.
             //var type = AppDomain.CurrentDomain
             //    .GetAssemblies()
             //    .SelectMany(x => x.GetTypes())
             //    .FirstOrDefault(x => x.Name == @event.RoutingKey);
 
+            var id = Guid.Parse(@event.Id.ToString());
+            
             var entity = await this.Service
-                .GetAsync<DefaultEntity, Guid>((Guid)@event.Id); // TODO: Guid
+                .GetAsync<DefaultEntity, Guid>(id);
 
             switch (@event.State)
             {
@@ -53,7 +57,7 @@ namespace Nano.Services.Eventing
                     if (entity == null)
                     {
                         await this.Service
-                            .AddAsync(new DefaultEntity { Id = (Guid)@event.Id }); // TODO: Guid
+                            .AddAsync(new DefaultEntity { Id = id });
                     }
 
                     break;
