@@ -23,8 +23,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nano.Models\Nano.Models.csproj" />
+    <ProjectReference Include="..\..\Nano.Data\Nano.Data.csproj" />
     <ProjectReference Include="..\Tests.Nano\Tests.Nano.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Attributes\" />
   </ItemGroup>
 
 </Project>

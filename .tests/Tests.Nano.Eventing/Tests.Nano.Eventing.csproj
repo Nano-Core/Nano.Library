@@ -10,20 +10,26 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <LangVersion>latest</LangVersion>
-    <NoWarn />
     <WarningsAsErrors />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn />
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>latest</LangVersion>
-    <NoWarn />
     <WarningsAsErrors />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn />
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nano.Services\Nano.Services.csproj" />
+    <Compile Remove="Providers\EasyNetQ\Providers - Copy %25282%2529\**" />
+    <EmbeddedResource Remove="Providers\EasyNetQ\Providers - Copy %25282%2529\**" />
+    <None Remove="Providers\EasyNetQ\Providers - Copy %25282%2529\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Nano.Eventing\Nano.Eventing.csproj" />
     <ProjectReference Include="..\Tests.Nano\Tests.Nano.csproj" />
   </ItemGroup>
 

@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nano.App\Nano.App.csproj" />
+    <ProjectReference Include="..\..\Nano.App\Nano.App.csproj" />
     <ProjectReference Include="..\Tests.Nano\Tests.Nano.csproj" />
   </ItemGroup>
 

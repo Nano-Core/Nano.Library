@@ -9,26 +9,21 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <NoWarn />
-    <WarningsAsErrors />
     <LangVersion>latest</LangVersion>
+    <WarningsAsErrors />
+    <NoWarn />
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn />
-    <WarningsAsErrors />
     <LangVersion>latest</LangVersion>
+    <WarningsAsErrors />
+    <NoWarn />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Api\**" />
-    <EmbeddedResource Remove="Api\**" />
-    <None Remove="Api\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Nano.Web\Nano.Web.csproj" />
+    <ProjectReference Include="..\..\Nano.Models\Nano.Models.csproj" />
     <ProjectReference Include="..\Tests.Nano\Tests.Nano.csproj" />
   </ItemGroup>
 
