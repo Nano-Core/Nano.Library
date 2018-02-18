@@ -14,9 +14,9 @@ namespace Nano.Services.Eventing
         public virtual object Id { get; set; }
 
         /// <summary>
-        /// Routing Key.
+        /// Type.
         /// </summary>
-        public virtual string RoutingKey { get; set; } // TODO: Entity Event Routing Key.
+        public virtual string Type { get; set; }
 
         /// <summary>
         /// State.
@@ -27,18 +27,18 @@ namespace Nano.Services.Eventing
         /// Constructor.
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="routingKey"></param>
+        /// <param name="type"></param>
         /// <param name="state"></param>
-        public EntityEvent(object id, string routingKey, EntityState state)
+        public EntityEvent(object id, string type, EntityState state)
         {
             if (id == null)
                 throw new ArgumentNullException(nameof(id));
 
-            if (routingKey == null)
-                throw new ArgumentNullException(nameof(routingKey));
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
 
             this.Id = id;
-            this.RoutingKey = routingKey;
+            this.Type = type;
             this.State = state;
         }
     }

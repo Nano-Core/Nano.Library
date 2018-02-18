@@ -63,16 +63,28 @@ namespace Nano.Services.Data
             this.SaveAudit();
             this.SaveSoftDeletion();
 
-            var pendingEvents = this.GetPendingEntityEvents().ToList();
+            var pendingEvents = this.GetPendingEntityEvents();
             
             return await base
                 .SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken)
                 .ContinueWith(async x =>
                 {
-                    if (!x.IsFaulted && !x.IsCanceled)
+                    if (x.IsFaulted)
+                        return await x;
+
+                    if (x.IsCanceled)
+                        return await x;
+
+                    var eventing = this.GetService<IEventing>();
+
+                    if (eventing == null)
+                        return await x;
+
+                    foreach (var @event in pendingEvents)
                     {
-                        pendingEvents
-                            .ForEach(y => y.Invoke());
+                        await eventing
+                            .PublishAsync(@event, @event.Type)
+                            .ConfigureAwait(false);
                     }
 
                     return await x;
@@ -100,46 +112,29 @@ namespace Nano.Services.Data
                 });
 
         }
-        private IEnumerable<Action> GetPendingEntityEvents()
+        private IEnumerable<EntityEvent> GetPendingEntityEvents()
         {
             return this.ChangeTracker
                 .Entries<IEntity>()
                 .Where(x =>
-                    x.Entity.GetType().IsTypeDef(typeof(IEntityIdentity<>)) &&
+                    x.Entity.GetType().IsTypeDef(typeof(IEntityIdentity<>)) && 
                     x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
                     (x.State == EntityState.Added || x.State == EntityState.Deleted))
                 .Select(x =>
                 {
-                    var typeName = x.GetType().FullName;
+                    var type = x.GetType();
 
                     switch (x.Entity)
                     {
                         case IEntityIdentity<Guid> guid:
-                            return new EntityEvent(guid.Id, typeName, x.State);
+                            return new EntityEvent(guid.Id, type.Name, x.State);
 
                         case IEntityIdentity<dynamic> dynamic:
-                            return new EntityEvent(dynamic.Id, typeName, x.State);
+                            return new EntityEvent(dynamic.Id, type.Name, x.State);
 
                         default:
                             return null;
                     }
-                })
-                .Select(x =>
-                {
-                    if (x == null)
-                        return null;
-
-                    return new Action(() =>
-                    {
-                        var eventing = this.GetService<IEventing>();
-
-                        if (eventing == null)
-                            return;
-
-                        eventing
-                            .PublishAsync(x, string.Empty) // TODO: Entity Event Routing Key.
-                            .ConfigureAwait(false);
-                    });
                 })
                 .Where(x => x != null);
         }

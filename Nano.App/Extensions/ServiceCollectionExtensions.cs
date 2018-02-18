@@ -377,7 +377,9 @@ namespace Nano.App.Extensions
                 .GetAssemblies()
                 .SelectMany(x => x.GetTypes())
                 .SelectMany(x => x.GetInterfaces(), (x, y) => new { Type = x, GenericType = y })
-                .Where(x => x.Type.IsTypeDef(typeof(IEventingHandler<>)) && x.Type != typeof(EntityEventHandler))
+                .Where(x =>
+                    x.Type != typeof(EntityEventHandler) &&
+                    x.Type.IsTypeDef(typeof(IEventingHandler<>))) 
                 .ToList()
                 .ForEach(x =>
                 {
@@ -413,13 +415,13 @@ namespace Nano.App.Extensions
             AppDomain.CurrentDomain
                 .GetAssemblies()
                 .SelectMany(x => x.GetTypes())
-                .Where(x => x.GetCustomAttributes<SubscribeAttribute>().Any() && x.IsTypeDef(typeof(IEntity)))
+                .Where(x => x.GetCustomAttributes<SubscribeAttribute>().Any())
                 .ToList()
                 .ForEach(x =>
                 {
+                    var eventType = typeof(EntityEvent);
                     var handlerType = typeof(EntityEventHandler);
                     var genericHandlerType = typeof(IEventingHandler<EntityEvent>);
-                    var eventType = typeof(EntityEvent);
 
                     services
                         .AddScoped(genericHandlerType, handlerType);

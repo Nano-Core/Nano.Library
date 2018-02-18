@@ -1,8 +1,9 @@
 using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Nano.Eventing.Interfaces;
-using Nano.Models;
-using Nano.Services.Interfaces;
+using Nano.Models.Extensions;
+using Nano.Models.Interfaces;
 
 namespace Nano.Services.Eventing
 {
@@ -12,64 +13,51 @@ namespace Nano.Services.Eventing
     public class EntityEventHandler : IEventingHandler<EntityEvent>
     {
         /// <summary>
-        /// Service.
+        /// Context.
         /// </summary>
-        protected virtual IService Service { get; }
+        protected virtual DbContext Context { get; }
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="service">The <see cref="IService"/>.</param>
-        public EntityEventHandler(IService service)
+        /// <param name="context">The <see cref="DbContext"/>.</param>
+        public EntityEventHandler(DbContext context)
         {
-            if (service == null)
-                throw new ArgumentNullException(nameof(service));
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
 
-            this.Service = service;
+            this.Context = context;
         }
 
         /// <inheritdoc />
-        public async void CallbackAsync(EntityEvent @event)
+        public void CallbackAsync(EntityEvent @event)
         {
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));
 
-            // TODO: Ensure events wont loop between services
-            // TODO: Consider base class for eventing attributes, EventingAttribute, so that we may can limit to either Publish or Subscribe and not both.
-            // TODO: Use type to instead of DefaultEntity further down.
-            //var type = AppDomain.CurrentDomain
-            //    .GetAssemblies()
-            //    .SelectMany(x => x.GetTypes())
-            //    .FirstOrDefault(x => x.Name == @event.RoutingKey);
+            var type = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .SelectMany(x => x.GetTypes())
+                .Where(x => x.IsTypeDef(typeof(IEntityIdentity<>)))
+                .FirstOrDefault(x => x.Name == @event.Type);
 
-            var id = Guid.Parse(@event.Id.ToString());
-            
-            var entity = await this.Service
-                .GetAsync<DefaultEntity, Guid>(id);
+            var entity = this.Context.Find(type, @event.Id);
 
             switch (@event.State)
             {
-                case EntityState.Deleted:
-                    await this.Service.DeleteAsync(entity);
-                    break;
-
                 case EntityState.Added:
                     if (entity == null)
                     {
-                        await this.Service
-                            .AddAsync(new DefaultEntity { Id = id });
+                        entity = Activator.CreateInstance(type);
+
+                        this.Context.Add(entity);
                     }
+                    return;
 
-                    break;
-
-                case EntityState.Detached:
-                case EntityState.Unchanged:
-                case EntityState.Modified:
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException("@event.State");
-            }
+                case EntityState.Deleted:
+                    this.Context.Remove(entity);
+                    return;
+          }
         }
     }
 }
