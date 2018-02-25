@@ -61,8 +61,7 @@ namespace Nano.App
             if (applicationLifetime == null)
                 throw new ArgumentNullException(nameof(applicationLifetime));
 
-            var appOptions = applicationBuilder.ApplicationServices.GetRequiredService<AppOptions>();
-            var baseDbContext = applicationBuilder.ApplicationServices.GetRequiredService<BaseDbContext>();
+            var appOptions = applicationBuilder.ApplicationServices.GetService<AppOptions>() ?? new AppOptions();
 
             applicationBuilder
                 .UseSession()
@@ -102,7 +101,9 @@ namespace Nano.App
                 })
                .UseExceptionHandler("/Home/Error");
 
-            baseDbContext
+            var baseDbContext = applicationBuilder.ApplicationServices.GetService<BaseDbContext>();
+
+            baseDbContext?
                 .CreateDatabaseAsync()
                 .ContinueWith(async x =>
                 {
@@ -114,7 +115,7 @@ namespace Nano.App
 
                     return success;
                 })
-               .ContinueWith(async x =>
+                .ContinueWith(async x =>
                 {
                     var success = await x.Result;
                     if (success)
@@ -123,7 +124,8 @@ namespace Nano.App
                     }
 
                     return success;
-                });
+                })
+                .Wait();
         }
 
         /// <inheritdoc />
@@ -162,7 +164,8 @@ namespace Nano.App
 
             var path = Directory.GetCurrentDirectory();
             var shutdownTimeout = TimeSpan.FromSeconds(10);
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(path)
                 .AddJsonFile($"{NAME}.json", false, true)

@@ -227,10 +227,11 @@ namespace Nano.App.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             services
-                .AddScoped<DbContext, DefaultDbContext>()
+                .AddScoped<DbContext, BaseDbContext>()
                 .AddScoped<BaseDbContext, DefaultDbContext>()
                 .AddScoped<IService, DefaultService>()
                 .AddScoped<IServiceSpatial, DefaultServiceSpatial>()
+                .AddScoped<DbContextOptions, DbContextOptions<DefaultDbContext>>() // TODO: Test (or make empty constructor for DefaultDbContext). Verify no db is created if Base / Default db context.
                 .AddConfigOptions<DataOptions>(configuration, DataOptions.SectionName, out var options);
 
             if (options.UseMemoryCache)
