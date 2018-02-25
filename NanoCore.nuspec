@@ -24,8 +24,8 @@
         <dependency id="Serilog" version="2.6.1-dev-00936" />
         <dependency id="Serilog.Extensions.Logging" version="2.0.2" exclude="Build,Analyzers" />
         <dependency id="Serilog.Sinks.Console" version="3.1.1" exclude="Build,Analyzers" />
-        <dependency id="DynamicExpression" version="1.0.4" />
-        <dependency id="NetTopologySuite" version="1.15.0-pre032" exclude="Build,Analyzers" />
+        <dependency id="DynamicExpression" version="1.0.5" />
+        <dependency id="NetTopologySuite" version="1.15.0-pre052" exclude="Build,Analyzers" />
         <dependency id="System.ComponentModel.Annotations" version="4.4.1" />
         <dependency id="Microsoft.AspNetCore" version="2.0.1" exclude="Build,Analyzers" />
         <dependency id="Microsoft.AspNetCore.Mvc" version="2.0.2" />
