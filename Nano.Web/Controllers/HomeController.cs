@@ -14,7 +14,7 @@ namespace Nano.Web.Controllers
     /// Home Controller.
     /// Contains method for handling application level operations.
     /// </summary>
-    [Route("api/home")]
+    [Route("[controller]")]
     public class HomeController : Controller
     {
         /// <summary>
