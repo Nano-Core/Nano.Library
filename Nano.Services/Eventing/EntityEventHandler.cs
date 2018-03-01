@@ -57,7 +57,15 @@ namespace Nano.Services.Eventing
                 case EntityState.Deleted:
                     this.Context.Remove(entity);
                     return;
-          }
+
+                case EntityState.Detached:
+                case EntityState.Unchanged:
+                case EntityState.Modified:
+                    return;
+
+                default:
+                    return;
+            }
         }
     }
 }
