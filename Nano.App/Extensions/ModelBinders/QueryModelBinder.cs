@@ -99,7 +99,7 @@ namespace Nano.App.Extensions.ModelBinders
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var orderBy = request.Query["by"].FirstOrDefault() ?? "Id";
+            var orderBy = request.Query["Order.By"].FirstOrDefault() ?? "Id";
 
             return orderBy;
         }
@@ -108,7 +108,7 @@ namespace Nano.App.Extensions.ModelBinders
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var success = Enum.TryParse<OrderingDirection>(request.Query["direction"].FirstOrDefault(), true, out var direction);
+            var success = Enum.TryParse<OrderingDirection>(request.Query["Order.Direction"].FirstOrDefault(), true, out var direction);
             if (!success)
                 direction = OrderingDirection.Asc;
 
@@ -134,7 +134,7 @@ namespace Nano.App.Extensions.ModelBinders
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var success = int.TryParse(request.Query["count"].FirstOrDefault(), out var count);
+            var success = int.TryParse(request.Query["Paging.Count"].FirstOrDefault(), out var count);
             if (!success)
                 count = 25;
 
@@ -145,7 +145,7 @@ namespace Nano.App.Extensions.ModelBinders
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var success = int.TryParse(request.Query["number"].FirstOrDefault(), out var number);
+            var success = int.TryParse(request.Query["Paging.Number"].FirstOrDefault(), out var number);
             if (!success)
                 number = 1;
 
