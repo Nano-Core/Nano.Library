@@ -21,12 +21,12 @@ namespace Nano.App.Extensions.Middleware
             var response = httpContext.Response;
 
             response.ContentType = request.IsContentTypeHtml()
-                ? HttpContentType.Html
+                ? HttpContentType.HTML
                 : request.IsContentTypeJson()
-                    ? HttpContentType.Json
+                    ? HttpContentType.JSON
                     : request.IsContentTypeXml()
-                        ? HttpContentType.Xml
-                        : HttpContentType.Text;
+                        ? HttpContentType.XML
+                        : HttpContentType.TEXT;
 
             await next(httpContext);
         }

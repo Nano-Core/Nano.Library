@@ -20,12 +20,12 @@ namespace Nano.Web.Controllers.Extensions
                 throw new ArgumentNullException(nameof(httpResponse));
 
             return httpResponse.IsContentTypeHtml()
-                ? HttpContentType.Html
+                ? HttpContentType.HTML
                 : httpResponse.IsContentTypeXml()
-                    ? HttpContentType.Xml
+                    ? HttpContentType.XML
                     : httpResponse.IsContentTypeJson()
-                        ? HttpContentType.Json
-                        : HttpContentType.Text;
+                        ? HttpContentType.JSON
+                        : HttpContentType.TEXT;
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Nano.Web.Controllers.Extensions
             if (httpResponse == null)
                 throw new ArgumentNullException(nameof(httpResponse));
 
-            return httpResponse.IsContentType(HttpContentType.Json);
+            return httpResponse.IsContentType(HttpContentType.JSON);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Nano.Web.Controllers.Extensions
             if (httpResponse == null)
                 throw new ArgumentNullException(nameof(httpResponse));
 
-            return httpResponse.IsContentType(HttpContentType.Xml);
+            return httpResponse.IsContentType(HttpContentType.XML);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Nano.Web.Controllers.Extensions
             if (httpResponse == null)
                 throw new ArgumentNullException(nameof(httpResponse));
 
-            return httpResponse.IsContentType(HttpContentType.Html);
+            return httpResponse.IsContentType(HttpContentType.HTML);
         }
 
         /// <summary>

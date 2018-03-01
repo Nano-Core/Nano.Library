@@ -8,26 +8,26 @@ namespace Nano.Web.Controllers.Extensions
         /// <summary>
         /// Text ("text/plain").
         /// </summary>
-        public static string Text => "text/plain";
+        public const string TEXT = "text/plain";
 
         /// <summary>
         /// Xml ("application/xml").
         /// </summary>
-        public static string Xml => "application/xml";
+        public const string XML = "application/xml";
 
         /// <summary>
         /// Json ("application/json").
         /// </summary>
-        public static string Json => "application/json";
+        public const string JSON = "application/json";
 
         /// <summary>
         /// JavaScript ("application/javascript").
         /// </summary>
-        public static string JavaScript => "application/javascript";
+        public const string JAVA_SCRIPT = "application/javascript";
 
         /// <summary>
         /// Html ("text/html").
         /// </summary>
-        public static string Html => "text/html";
+        public const string HTML = "text/html";
     }
 }
