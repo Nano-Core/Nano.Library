@@ -227,11 +227,11 @@ namespace Nano.App.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             services
-                .AddScoped<DbContext, BaseDbContext>()
+                .AddScoped<DbContext, DefaultDbContext>()
                 .AddScoped<BaseDbContext, DefaultDbContext>()
                 .AddScoped<IService, DefaultService>()
                 .AddScoped<IServiceSpatial, DefaultServiceSpatial>()
-                .AddScoped<DbContextOptions, DbContextOptions<DefaultDbContext>>() // TODO: Test (or make empty constructor for DefaultDbContext). Verify no db is created if Base / Default db context.
+                .AddScoped<DbContextOptions, DbContextOptions<DefaultDbContext>>() 
                 .AddConfigOptions<DataOptions>(configuration, DataOptions.SectionName, out var options);
 
             if (options.UseMemoryCache)
@@ -502,6 +502,7 @@ namespace Nano.App.Extensions
                         .ToList()
                         .ForEach(y =>
                         {
+                            // BUG: Issue 5: Swagger doesn't add documentation from xml file.
                             var fileName = y.Name.Replace(".dll", ".xml").Replace(".exe", ".xml");
                             var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
 
@@ -522,11 +523,10 @@ namespace Nano.App.Extensions
                     x.ReturnHttpNotAcceptable = true;
                     x.RespectBrowserAcceptHeader = true;
 
-                    x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.Json);
-                    x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JavaScript);
-                    x.FormatterMappings.SetMediaTypeMappingForFormat("xml", HttpContentType.Xml);
-                    x.FormatterMappings.SetMediaTypeMappingForFormat("html", HttpContentType.Html);
-                    x.FormatterMappings.SetMediaTypeMappingForFormat("text", HttpContentType.Text);
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("xml", HttpContentType.XML);
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("html", HttpContentType.HTML);
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JSON);
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JAVA_SCRIPT);
                 })
                 .AddXmlSerializerFormatters()
                 .AddXmlDataContractSerializerFormatters();
