@@ -24,6 +24,7 @@ namespace Nano.Web.Controllers
         /// <response code="200">Success.</response>
         [HttpGet]
         [Route("index")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public virtual IActionResult Index()
         {
@@ -41,9 +42,13 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [HttpPost]
         [Route("ping")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public virtual IActionResult Ping()
         {
+            if (this.Response.IsContentTypeHtml())
+                return this.View();
+
             return Ok();
         }
 
@@ -54,10 +59,16 @@ namespace Nano.Web.Controllers
         /// <response code="200">Success.</response>
         [HttpOptions]
         [Route("options")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public virtual IActionResult Options()
         {
-            return Ok(); // FEATURE: Http Options: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/OPTIONS
+            // FEATURE: Http Options: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/OPTIONS
+
+            if (this.Response.IsContentTypeHtml())
+                return this.View();
+
+            return Ok(); 
         }
 
         /// <summary>
@@ -67,10 +78,16 @@ namespace Nano.Web.Controllers
         /// <response code="200">Success.</response>
         [HttpGet]
         [Route("versions")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public virtual IActionResult Versions()
         {
-            return this.Ok(); // FEATURE: Http supported Versions. Get supported versions somehow.
+            // FEATURE: Http supported Versions.
+
+            if (this.Response.IsContentTypeHtml())
+                return this.View();
+
+            return this.Ok(); 
         }
 
         /// <summary>
@@ -82,8 +99,9 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [HttpPost]
         [Route("error")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.OK)]
-        public virtual IActionResult Error([FromQuery][FromBody]Error error)
+        public virtual IActionResult Error([FromQuery][FromBody][Required]Error error)
         {
             if (this.Response.IsContentTypeHtml())
                 return this.View(error);
@@ -101,7 +119,7 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [HttpPost]
         [Route("language")]
-        [ActionName("Language")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         public virtual IActionResult SetLanguage([FromQuery][FromHeader(Name = "Accept-Language")][Required]string code, [FromQuery]string returnUrl, CancellationToken cancellationToken = new CancellationToken())
         {
             // FEATURE: Http Localization, how to use IRequestCultureProviders? HomeController.SetLanguage?

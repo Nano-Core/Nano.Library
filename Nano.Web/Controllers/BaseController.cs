@@ -96,6 +96,7 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [HttpPost]
         [Route("index")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -122,6 +123,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">An error occured when processing the request.</response>
         [HttpGet]
         [Route("details")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -151,6 +153,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">An error occured when processing the request.</response>>
         [HttpPost]
         [Route("details")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(IEntity[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -177,6 +180,7 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [HttpPost]
         [Route("query")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -198,6 +202,7 @@ namespace Nano.Web.Controllers
         /// <response code="200">Success.</response>
         [HttpGet]
         [Route("create")]
+        [Produces(HttpContentType.HTML)]
         [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
         public virtual IActionResult Create()
         {
@@ -215,6 +220,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">An error occured when processing the request.</response>
         [HttpPost]
         [Route("create")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -240,6 +246,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">An error occured when processing the request.</response>
         [HttpPost]
         [Route("create/Many")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -264,6 +271,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">An error occured when processing the request.</response>>
         [HttpGet]
         [Route("edit")]
+        [Produces(HttpContentType.HTML)]
         [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -290,6 +298,7 @@ namespace Nano.Web.Controllers
         [HttpPut]
         [HttpPost]
         [Route("edit")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -316,6 +325,7 @@ namespace Nano.Web.Controllers
         [HttpPut]
         [HttpPost]
         [Route("edit/many")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -343,6 +353,7 @@ namespace Nano.Web.Controllers
         [HttpPut]
         [HttpPost]
         [Route("edit/query")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -367,6 +378,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">An error occured when processing the request.</response>>
         [HttpGet]
         [Route("delete")]
+        [Produces(HttpContentType.HTML)]
         [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -395,6 +407,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [HttpDelete]
         [Route("delete")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -428,6 +441,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [HttpDelete]
         [Route("delete/many")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -457,6 +471,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [HttpDelete]
         [Route("delete/query")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
