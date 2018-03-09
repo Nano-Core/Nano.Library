@@ -37,6 +37,7 @@ namespace Nano.App
 
             this.Configuration = configuration;
         }
+
         /// <inheritdoc />
         public virtual void Configure(IApplicationBuilder applicationBuilder)
         {
@@ -50,7 +51,7 @@ namespace Nano.App
         }
 
         /// <inheritdoc />
-        public virtual async void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime)
+        public virtual void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime)
         {
             if (applicationBuilder == null)
                 throw new ArgumentNullException(nameof(applicationBuilder));
@@ -87,8 +88,7 @@ namespace Nano.App
                 })
                 .UseSwaggerUI(x =>
                 {
-                    x.ShowRequestHeaders();
-                    x.DocumentTitle($"{appOptions.Name} Docs v{appOptions.Version}");
+                    x.DocumentTitle = $"{appOptions.Name} Docs v{appOptions.Version}";
 
                     x.RoutePrefix = "docs";
                     x.SwaggerEndpoint($"/docs/{appOptions.Version}/swagger.json", $"{appOptions.Name} v{appOptions.Version}");
@@ -103,16 +103,19 @@ namespace Nano.App
 
             var dbContext = applicationBuilder.ApplicationServices.GetService<BaseDbContext>();
 
-            if (dbContext != null)
-            {
-                var success = await dbContext.CreateDatabaseAsync();
+            dbContext?
+                .CreateDatabaseAsync()
+                .ContinueWith(async x =>
+                {
+                    var success = await x;
 
-                if (!success)
-                    throw new InvalidOperationException("Database could not be created. Success: false");
+                    if (!success)
+                        throw new InvalidOperationException("Database could not be created. Success: false");
 
-                await dbContext.MigrateDatabaseAsync();
-                await dbContext.ImportDatabaseAsync();
-            }
+                    await dbContext.MigrateDatabaseAsync();
+                    await dbContext.ImportDatabaseAsync();
+                })
+                .Wait();
         }
 
         /// <inheritdoc />
