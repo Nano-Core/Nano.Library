@@ -31,6 +31,11 @@ namespace Nano.Data
         public virtual bool UseAudit { get; set; } = true;
 
         /// <summary>
+        /// Use Lazy Loading.
+        /// </summary>
+        public virtual bool UseLazyLoading { get; set; } = true;
+        
+        /// <summary>
         /// Use Memory Cache.
         /// </summary>
         public virtual bool UseMemoryCache { get; set; } = true;

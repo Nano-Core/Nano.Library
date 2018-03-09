@@ -33,9 +33,11 @@ namespace Nano.Data.Providers.MySql
                 throw new ArgumentNullException(nameof(builder));
 
             var batchSize = this.Options.BatchSize;
+            var useLazyLoading = this.Options.UseLazyLoading;
             var connectionString = this.Options.ConnectionString;
 
             builder
+                .UseLazyLoadingProxies(useLazyLoading)
                 .UseMySql(connectionString, x => x.MaxBatchSize(batchSize));
         }
     }
