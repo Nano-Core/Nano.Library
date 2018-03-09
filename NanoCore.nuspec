@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>0.3.18-alpha</version>
+    <version>0.3.21-alpha</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -15,7 +15,6 @@
     <dependencies>
       <group targetFramework=".NETStandard2.0">
         <dependency id="Pomelo.EntityFrameworkCore.MySql" version="2.0.1" exclude="Build,Analyzers" />
-        <dependency id="Z.EntityFramework.Plus.EFCore" version="1.7.14" exclude="Build,Analyzers" />
         <dependency id="EasyNetQ" version="2.4.0-alpha0002" />
         <dependency id="Serilog.Extensions.Logging" version="2.0.2" exclude="Build,Analyzers" />
         <dependency id="Serilog.Sinks.Console" version="3.1.1" exclude="Build,Analyzers" />
@@ -28,16 +27,18 @@
         <dependency id="Microsoft.AspNetCore.Session" version="2.0.1" exclude="Build,Analyzers" />
         <dependency id="Microsoft.AspNetCore.StaticFiles" version="2.0.1" exclude="Build,Analyzers" />
         <dependency id="Swashbuckle.AspNetCore" version="1.2.0" />
-        <dependency id="Serilog" version="2.7.1-dev-00960" />
         <dependency id="NetTopologySuite" version="1.15.0-pre052" />
         <dependency id="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" version="2.2.0" />
+        <dependency id="DynamicExpression" version="1.1.0" />
+        <dependency id="Microsoft.Extensions.Logging" version="2.0.0" />
+        <dependency id="Serilog" version="2.6.0" />
+        <dependency id="System.ComponentModel.Annotations" version="4.4.1" />
         <dependency id="Microsoft.EntityFrameworkCore" version="2.1.0-preview1-final" />
         <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="2.1.0-preview1-final" />
-        <dependency id="Microsoft.EntityFrameworkCore.InMemory" version="2.1.0-preview1-final" />
         <dependency id="Microsoft.EntityFrameworkCore.Tools" version="2.1.0-preview1-final" />
-        <dependency id="DynamicExpression" version="1.1.0" />
-        <dependency id="System.ComponentModel.Annotations" version="4.5.0-preview1-26216-02" />
-        <dependency id="Microsoft.Extensions.Logging" version="2.1.0-preview1-final" />
+        <dependency id="Microsoft.EntityFrameworkCore.Proxies" version="2.1.0-preview1-final" />
+        <dependency id="Z.EntityFramework.Plus.EFCore" version="1.7.15" />
+        <dependency id="Microsoft.EntityFrameworkCore.InMemory" version="2.1.0-preview1-final" />
       </group>
     </dependencies>
   </metadata>
