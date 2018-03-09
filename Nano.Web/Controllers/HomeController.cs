@@ -24,7 +24,7 @@ namespace Nano.Web.Controllers
         /// <response code="200">Success.</response>
         [HttpGet]
         [Route("index")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.JAVA_SCRIPT, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public virtual IActionResult Index()
         {
@@ -42,7 +42,7 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [HttpPost]
         [Route("ping")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.JAVA_SCRIPT, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public virtual IActionResult Ping()
         {
@@ -59,7 +59,7 @@ namespace Nano.Web.Controllers
         /// <response code="200">Success.</response>
         [HttpOptions]
         [Route("options")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.JAVA_SCRIPT, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public virtual IActionResult Options()
         {
@@ -78,7 +78,7 @@ namespace Nano.Web.Controllers
         /// <response code="200">Success.</response>
         [HttpGet]
         [Route("versions")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.JAVA_SCRIPT, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public virtual IActionResult Versions()
         {
@@ -99,7 +99,7 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [HttpPost]
         [Route("error")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.JAVA_SCRIPT, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.OK)]
         public virtual IActionResult Error([FromQuery][FromBody][Required]Error error)
         {
@@ -119,7 +119,7 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [HttpPost]
         [Route("language")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.JAVA_SCRIPT, HttpContentType.XML, HttpContentType.HTML)]
         public virtual IActionResult SetLanguage([FromQuery][FromHeader(Name = "Accept-Language")][Required]string code, [FromQuery]string returnUrl, CancellationToken cancellationToken = new CancellationToken())
         {
             // FEATURE: Http Localization, how to use IRequestCultureProviders? HomeController.SetLanguage?

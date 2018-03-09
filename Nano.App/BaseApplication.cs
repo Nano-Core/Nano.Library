@@ -39,18 +39,6 @@ namespace Nano.App
         }
 
         /// <inheritdoc />
-        public virtual void Configure(IApplicationBuilder applicationBuilder)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            var hostingEnvironment = applicationBuilder.ApplicationServices.GetService<IHostingEnvironment>();
-            var applicationLifetime = applicationBuilder.ApplicationServices.GetService<IApplicationLifetime>();
-
-            this.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
-        }
-
-        /// <inheritdoc />
         public virtual void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime)
         {
             if (applicationBuilder == null)
@@ -88,11 +76,22 @@ namespace Nano.App
                 })
                 .UseSwaggerUI(x =>
                 {
-                    x.DocumentTitle = $"{appOptions.Name} Docs v{appOptions.Version}";
+                    x.EnableFilter();
+                    x.EnableDeepLinking();
+                    x.EnableValidator(null);
+                    x.ShowExtensions();
+                    x.DisplayOperationId();
+                    x.DisplayRequestDuration();
+                    x.MaxDisplayedTags(-1);
+                    x.DefaultModelExpandDepth(2);
+                    x.DefaultModelsExpandDepth(1);
+                    x.DefaultModelRendering(ModelRendering.Example);
+                    x.DocExpansion(DocExpansion.None);
 
                     x.RoutePrefix = "docs";
-                    x.SwaggerEndpoint($"/docs/{appOptions.Version}/swagger.json", $"{appOptions.Name} v{appOptions.Version}");
-                }) 
+                    x.DocumentTitle = $"Nano - {appOptions.Name} Docs v{appOptions.Version}";
+                    x.SwaggerEndpoint($"/docs/{appOptions.Version}/swagger.json", $"Nano - {appOptions.Name} v{appOptions.Version}");
+                })
                 .UseRequestLocalization(new RequestLocalizationOptions
                 {
                     DefaultRequestCulture = new RequestCulture(appOptions.Cultures.Default),
@@ -118,15 +117,7 @@ namespace Nano.App
                 .Wait();
         }
 
-        /// <inheritdoc />
-        public virtual IServiceProvider ConfigureServices(IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
 
-            return services
-                .BuildServiceProvider();
-        }
 
         /// <summary>
         /// Creates a <see cref="IWebHostBuilder"/>, ready to <see cref="IWebHostBuilder.Build()"/> and <see cref="WebHostExtensions.Run(IWebHost)"/>.
@@ -187,6 +178,28 @@ namespace Nano.App
                 })
                 .UseStartup<TApplication>()
                 .UseSetting(WebHostDefaults.ApplicationKey, Assembly.GetEntryAssembly().FullName);
+        }
+
+        /// <inheritdoc />
+        public System.IServiceProvider ConfigureServices(IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            return services
+                .BuildServiceProvider();
+        }
+
+        /// <inheritdoc />
+        public void Configure(IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            var hostingEnvironment = applicationBuilder.ApplicationServices.GetService<IHostingEnvironment>();
+            var applicationLifetime = applicationBuilder.ApplicationServices.GetService<IApplicationLifetime>();
+
+            this.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
         }
     }
 }
