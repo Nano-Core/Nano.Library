@@ -50,7 +50,7 @@ namespace Nano.App
         }
 
         /// <inheritdoc />
-        public virtual void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime)
+        public virtual async void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime)
         {
             if (applicationBuilder == null)
                 throw new ArgumentNullException(nameof(applicationBuilder));
@@ -92,7 +92,7 @@ namespace Nano.App
 
                     x.RoutePrefix = "docs";
                     x.SwaggerEndpoint($"/docs/{appOptions.Version}/swagger.json", $"{appOptions.Name} v{appOptions.Version}");
-                })
+                }) 
                 .UseRequestLocalization(new RequestLocalizationOptions
                 {
                     DefaultRequestCulture = new RequestCulture(appOptions.Cultures.Default),
@@ -101,31 +101,18 @@ namespace Nano.App
                 })
                .UseExceptionHandler("/Home/Error");
 
-            var baseDbContext = applicationBuilder.ApplicationServices.GetService<BaseDbContext>();
+            var dbContext = applicationBuilder.ApplicationServices.GetService<BaseDbContext>();
 
-            baseDbContext?
-                .CreateDatabaseAsync() // BUG: Doesn't throw on erros. Success is never evaluated!
-                .ContinueWith(async x =>
-                {
-                    var success = await x;
-                    if (success)
-                    {
-                        await baseDbContext.MigrateDatabaseAsync();
-                    }
+            if (dbContext != null)
+            {
+                var success = await dbContext.CreateDatabaseAsync();
 
-                    return success;
-                })
-                .ContinueWith(async x =>
-                {
-                    var success = await x.Result;
-                    if (success)
-                    {
-                        await baseDbContext.ImportDatabaseAsync();
-                    }
+                if (!success)
+                    throw new InvalidOperationException("Database could not be created. Success: false");
 
-                    return success;
-                })
-                .Wait();
+                await dbContext.MigrateDatabaseAsync();
+                await dbContext.ImportDatabaseAsync();
+            }
         }
 
         /// <inheritdoc />
