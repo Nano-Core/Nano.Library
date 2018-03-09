@@ -40,6 +40,7 @@ using Nano.Web.Controllers.Extensions;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Swagger;
 using Z.EntityFramework.Plus;
+using AuditEntryProperty = Nano.Data.Models.AuditEntryProperty;
 
 namespace Nano.App.Extensions
 {
@@ -251,18 +252,38 @@ namespace Nano.App.Extensions
                 AuditManager.DefaultConfiguration.AutoSavePreAction = (dbContext, audit) =>
                 {
                     var defaultDbContext = dbContext as DefaultDbContext;
-                    var defaultAuditEntries = audit.Entries.Where(x => x.AuditEntryID == 0).Cast<DefaultAuditEntry>();
-
-                    defaultDbContext?.__EFAudit.AddRange(defaultAuditEntries);
-                };
-                AuditManager.DefaultConfiguration.AuditEntryFactory = args =>
-                {
                     var httpRequestIdentifierFeature = httpContextAccessor.HttpContext.Features.Get<IHttpRequestIdentifierFeature>();
 
-                    return new DefaultAuditEntry
+                    var customAuditEntries = audit.Entries.Select(x =>
                     {
-                        RequestId = httpRequestIdentifierFeature.TraceIdentifier
-                    };
+                        var auditEntry = new DefaultAuditEntry
+                        {
+                            AuditEntryID = x.AuditEntryID,
+                            CreatedBy = x.CreatedBy,
+                            CreatedDate = x.CreatedDate,
+                            EntitySetName = x.EntitySetName,
+                            EntityTypeName = x.EntityTypeName,
+                            State = x.State,
+                            StateName = x.StateName,
+                            RequestId = httpRequestIdentifierFeature.TraceIdentifier
+                        };
+
+                        auditEntry.Properties = x.Properties.Select(y => new AuditEntryProperty
+                        {
+                            AuditEntryPropertyID = y.AuditEntryPropertyID,
+                            AuditEntryID = y.AuditEntryID,
+                            Parent = auditEntry,
+                            PropertyName = y.PropertyName,
+                            RelationName = y.RelationName,
+                            NewValue = y.NewValueFormatted,
+                            OldValue = y.OldValueFormatted
+
+                        }).ToList();
+
+                        return auditEntry;
+                    });
+
+                    defaultDbContext?.__EFAudit.AddRange(customAuditEntries);
                 };
                 AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsActive);
             }

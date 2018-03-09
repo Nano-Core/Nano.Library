@@ -1,6 +1,5 @@
 using System;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Z.EntityFramework.Plus;
 
 namespace Nano.Data.Models.Mappings
 {

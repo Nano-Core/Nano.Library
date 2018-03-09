@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using Nano.Models.Interfaces;
-using Z.EntityFramework.Plus;
 
 namespace Nano.Data.Models
 {
