@@ -104,7 +104,7 @@ namespace Nano.App
             var baseDbContext = applicationBuilder.ApplicationServices.GetService<BaseDbContext>();
 
             baseDbContext?
-                .CreateDatabaseAsync()
+                .CreateDatabaseAsync() // BUG: Doesn't throw on erros. Success is never evaluated!
                 .ContinueWith(async x =>
                 {
                     var success = await x;

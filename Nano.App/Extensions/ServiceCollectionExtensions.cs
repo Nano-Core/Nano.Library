@@ -502,7 +502,7 @@ namespace Nano.App.Extensions
                         .ToList()
                         .ForEach(y =>
                         {
-                            // BUG: Issue 5: Swagger doesn't add documentation from xml file.
+                            // COSMETIC: Issue 5: Swagger doesn't add documentation from xml file.
                             var fileName = y.Name.Replace(".dll", ".xml").Replace(".exe", ".xml");
                             var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
 
