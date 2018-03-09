@@ -97,7 +97,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("index")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Index([FromQuery][FromBody][FromForm]Query query, CancellationToken cancellationToken = new CancellationToken())
@@ -124,7 +124,7 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [Route("details")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -154,7 +154,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("details")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(IEntity[]), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Details([FromRoute][FromQuery][FromBody][FromForm][Required]TIdentity[] ids, CancellationToken cancellationToken = new CancellationToken())
@@ -181,7 +181,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("query")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Query([FromQuery][FromBody][FromForm][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
@@ -203,7 +203,7 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [Route("create")]
         [Produces(HttpContentType.HTML)]
-        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         public virtual IActionResult Create()
         {
             return this.View();
@@ -221,7 +221,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("create")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Create([FromBody][FromForm][Required]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
@@ -247,7 +247,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("create/Many")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Create([FromBody][FromForm][Required]TEntity[] entities, CancellationToken cancellationToken = new CancellationToken())
@@ -272,7 +272,7 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [Route("edit")]
         [Produces(HttpContentType.HTML)]
-        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Edit([FromRoute][FromQuery][Required]TIdentity id, CancellationToken cancellationToken = new CancellationToken())
@@ -299,7 +299,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("edit")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Edit([FromBody][FromForm][Required]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
@@ -326,7 +326,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("edit/many")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Edit([FromBody][FromForm][Required]TEntity[] entities, CancellationToken cancellationToken = new CancellationToken())
@@ -354,7 +354,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("edit/query")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Edit([FromQuery][FromBody][FromForm][Required]TCriteria select, TEntity update, CancellationToken cancellationToken = new CancellationToken())
@@ -379,7 +379,7 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [Route("delete")]
         [Produces(HttpContentType.HTML)]
-        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -408,7 +408,7 @@ namespace Nano.Web.Controllers
         [HttpDelete]
         [Route("delete")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -442,7 +442,7 @@ namespace Nano.Web.Controllers
         [HttpDelete]
         [Route("delete/many")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> DeleteConfirm([FromBody][FromForm][Required]TIdentity[] ids, CancellationToken cancellationToken = new CancellationToken())
@@ -472,7 +472,7 @@ namespace Nano.Web.Controllers
         [HttpDelete]
         [Route("delete/query")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> DeleteConfirm([FromQuery][FromBody][FromForm][Required]TCriteria select, CancellationToken cancellationToken = new CancellationToken())
