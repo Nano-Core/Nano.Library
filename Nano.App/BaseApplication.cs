@@ -39,6 +39,28 @@ namespace Nano.App
         }
 
         /// <inheritdoc />
+        public virtual IServiceProvider ConfigureServices(IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            return services
+                .BuildServiceProvider();
+        }
+
+        /// <inheritdoc />
+        public virtual void Configure(IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            var hostingEnvironment = applicationBuilder.ApplicationServices.GetService<IHostingEnvironment>();
+            var applicationLifetime = applicationBuilder.ApplicationServices.GetService<IApplicationLifetime>();
+
+            this.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
+        }
+
+        /// <inheritdoc />
         public virtual void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime)
         {
             if (applicationBuilder == null)
@@ -108,16 +130,13 @@ namespace Nano.App
                 {
                     var success = await x;
 
-                    if (!success)
-                        throw new InvalidOperationException("Database could not be created. Success: false");
-
-                    await dbContext.MigrateDatabaseAsync();
-                    await dbContext.ImportDatabaseAsync();
+                    if (success)
+                        await dbContext.ImportDatabaseAsync();
+                    else
+                        await dbContext.MigrateDatabaseAsync();
                 })
                 .Wait();
         }
-
-
 
         /// <summary>
         /// Creates a <see cref="IWebHostBuilder"/>, ready to <see cref="IWebHostBuilder.Build()"/> and <see cref="WebHostExtensions.Run(IWebHost)"/>.
@@ -178,28 +197,6 @@ namespace Nano.App
                 })
                 .UseStartup<TApplication>()
                 .UseSetting(WebHostDefaults.ApplicationKey, Assembly.GetEntryAssembly().FullName);
-        }
-
-        /// <inheritdoc />
-        public System.IServiceProvider ConfigureServices(IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            return services
-                .BuildServiceProvider();
-        }
-
-        /// <inheritdoc />
-        public void Configure(IApplicationBuilder applicationBuilder)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            var hostingEnvironment = applicationBuilder.ApplicationServices.GetService<IHostingEnvironment>();
-            var applicationLifetime = applicationBuilder.ApplicationServices.GetService<IApplicationLifetime>();
-
-            this.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
         }
     }
 }
