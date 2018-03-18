@@ -109,7 +109,7 @@ namespace Nano.App
                     x.DefaultModelsExpandDepth(1);
                     x.DefaultModelRendering(ModelRendering.Example);
                     x.DocExpansion(DocExpansion.None);
-
+                    
                     x.RoutePrefix = "docs";
                     x.DocumentTitle = $"Nano - {appOptions.Name} Docs v{appOptions.Version}";
                     x.SwaggerEndpoint($"/docs/{appOptions.Version}/swagger.json", $"Nano - {appOptions.Name} v{appOptions.Version}");
@@ -125,15 +125,11 @@ namespace Nano.App
             var dbContext = applicationBuilder.ApplicationServices.GetService<BaseDbContext>();
 
             dbContext?
-                .CreateDatabaseAsync()
+                .EnsureCreatedAsync()
                 .ContinueWith(async x =>
                 {
-                    var success = await x;
-
-                    if (success)
-                        await dbContext.ImportDatabaseAsync();
-                    else
-                        await dbContext.MigrateDatabaseAsync();
+                    await dbContext.EnsureMigratedAsync();
+                    await dbContext.EnsureSeededAsync();
                 })
                 .Wait();
         }

@@ -63,6 +63,53 @@ namespace Nano.Data
         }
 
         /// <summary>
+        /// Imports data for all models annotated with <see cref="DataImportAttribute"/>.
+        /// </summary>
+        /// <returns>The <see cref="Task"/> (void).</returns>
+        public virtual async Task EnsureSeededAsync()
+        {
+            await Task.Factory.StartNew(() =>
+            {
+                AppDomain.CurrentDomain
+                    .GetAssemblies()
+                    .SelectMany(y => y.GetTypes())
+                    .Where(y => y.GetCustomAttributes<DataImportAttribute>().Any())
+                    .ToList()
+                    .ForEach(async y =>
+                    {
+                        var attribute = y.GetCustomAttribute<DataImportAttribute>();
+
+                        await this
+                            .AddRangeAsync(attribute.Uri, y);
+                    });
+            });
+        }
+
+        /// <summary>
+        /// Create database.
+        /// </summary>
+        /// <returns>The <see cref="Task"/> (void).</returns>
+        public virtual async Task EnsureCreatedAsync()
+        {
+            if (!this.Options.UseCreateDatabase)
+                return;
+
+            await this.Database.EnsureCreatedAsync();
+        }
+
+        /// <summary>
+        /// Migrate database.
+        /// </summary>
+        /// <returns>The <see cref="Task"/> (void).</returns>
+        public virtual async Task EnsureMigratedAsync()
+        {
+            if (!this.Options.UseMigrateDatabase)
+                return;
+
+            await this.Database.MigrateAsync();
+        }
+
+        /// <summary>
         /// Import data from the passed <paramref name="uri"/>, deserilaized into the type of the generic argument <typeparamref name="TEntity"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntityCreatable"/> type, used for deserialization.</typeparam>
@@ -99,7 +146,8 @@ namespace Nano.Data
                     {
                         var result = await x;
                         var json = await result.Content.ReadAsStringAsync();
-                        var entities = JsonConvert.DeserializeObject(json, type);
+                        var collectionType = typeof(IEnumerable<>).MakeGenericType(type);
+                        var entities = (IEnumerable<object>)JsonConvert.DeserializeObject(json, collectionType);
 
                         await this.AddRangeAsync(entities, cancellationToken);
                     }, cancellationToken);
@@ -146,55 +194,6 @@ namespace Nano.Data
             {
                 this.AddOrUpdate(entity);
             }
-        }
-
-        /// <summary>
-        /// Imports data for all models annotated with <see cref="DataImportAttribute"/>.
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The <see cref="BaseDbContext"/>.</returns>
-        public virtual async Task ImportDatabaseAsync(CancellationToken cancellationToken = default)
-        {
-            await Task.Factory.StartNew(() =>
-            {
-                AppDomain.CurrentDomain
-                    .GetAssemblies()
-                    .SelectMany(y => y.GetTypes())
-                    .Where(y => y.GetCustomAttributes<DataImportAttribute>().Any())
-                    .ToList()
-                    .ForEach(async y =>
-                    {
-                        var attribute = y.GetCustomAttribute<DataImportAttribute>();
-
-                        await this
-                            .AddRangeAsync(attribute.Uri, y, cancellationToken);
-                    });
-            }, cancellationToken);
-        }
-
-        /// <summary>
-        /// Applies any pending migrations to the database.
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The <see cref="BaseDbContext"/>.</returns>
-        public virtual async Task MigrateDatabaseAsync(CancellationToken cancellationToken = default)
-        {
-            await this.Database
-                .MigrateAsync(cancellationToken);
-        }
-
-        /// <summary>
-        /// Create the initial database.
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>True when database was created, otherwise false.</returns>
-        public virtual async Task<bool> CreateDatabaseAsync(CancellationToken cancellationToken = default)
-        {
-            if (!this.Options.UseCreateDatabase)
-                return false;
-
-            return await this.Database
-                .EnsureCreatedAsync(cancellationToken);
         }
     }
 }

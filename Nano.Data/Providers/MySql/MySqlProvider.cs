@@ -37,7 +37,7 @@ namespace Nano.Data.Providers.MySql
             var connectionString = this.Options.ConnectionString;
 
             builder
-                .UseLazyLoadingProxies(useLazyLoading)
+                //TODO: .UseLazyLoadingProxies(useLazyLoading)
                 .UseMySql(connectionString, x => x.MaxBatchSize(batchSize));
         }
     }
