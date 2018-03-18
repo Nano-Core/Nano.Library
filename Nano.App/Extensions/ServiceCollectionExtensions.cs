@@ -56,7 +56,7 @@ namespace Nano.App.Extensions
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="section">The name of the <see cref="IConfigurationSection"/>.</param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddOptions<TOption>(this IServiceCollection services, string section)
+        public static IServiceCollection AddConfigOptions<TOption>(this IServiceCollection services, string section)
             where TOption : class, new()
         {
             if (services == null)
