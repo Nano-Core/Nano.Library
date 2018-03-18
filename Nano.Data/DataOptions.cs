@@ -51,6 +51,11 @@ namespace Nano.Data
         public virtual bool UseCreateDatabase { get; set; } = true;
 
         /// <summary>
+        /// Use Migrate Database.
+        /// </summary>
+        public virtual bool UseMigrateDatabase { get; set; } = true;
+
+        /// <summary>
         /// Connection String.
         /// </summary>
         public virtual string ConnectionString { get; set; }
