@@ -109,7 +109,7 @@ namespace Nano.App
                     x.DefaultModelsExpandDepth(1);
                     x.DefaultModelRendering(ModelRendering.Example);
                     x.DocExpansion(DocExpansion.None);
-                    
+
                     x.RoutePrefix = "docs";
                     x.DocumentTitle = $"Nano - {appOptions.Name} Docs v{appOptions.Version}";
                     x.SwaggerEndpoint($"/docs/{appOptions.Version}/swagger.json", $"Nano - {appOptions.Name} v{appOptions.Version}");

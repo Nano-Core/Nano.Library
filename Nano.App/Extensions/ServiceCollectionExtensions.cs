@@ -503,6 +503,7 @@ namespace Nano.App.Extensions
                     x.AddSecurityDefinition("Basic", new BasicAuthScheme()); // FEATURE: Security, Swagger doc
 
                     x.DocumentFilter<LowercaseDocumentFilter>();
+                    x.DocumentFilter<ActionOrderingDocumentFilter>();
 
                     x.SwaggerDoc(appOptions.Version, new Info
                     {
