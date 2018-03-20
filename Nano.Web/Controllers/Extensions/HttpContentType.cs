@@ -21,11 +21,6 @@ namespace Nano.Web.Controllers.Extensions
         public const string JSON = "application/json";
 
         /// <summary>
-        /// JavaScript ("application/javascript").
-        /// </summary>
-        public const string JAVA_SCRIPT = "application/javascript";
-
-        /// <summary>
         /// Html ("text/html").
         /// </summary>
         public const string HTML = "text/html";
