@@ -66,7 +66,7 @@ namespace Nano.Data
         /// Imports data for all models annotated with <see cref="DataImportAttribute"/>.
         /// </summary>
         /// <returns>The <see cref="Task"/> (void).</returns>
-        public virtual async Task EnsureSeededAsync()
+        public virtual async Task EnsureSeededAsync(CancellationToken cancellationToken = default)
         {
             await Task.Factory.StartNew(() =>
             {
@@ -80,33 +80,35 @@ namespace Nano.Data
                         var attribute = y.GetCustomAttribute<DataImportAttribute>();
 
                         await this
-                            .AddRangeAsync(attribute.Uri, y);
+                            .AddRangeAsync(attribute.Uri, y, cancellationToken);
                     });
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
         /// Create database.
         /// </summary>
         /// <returns>The <see cref="Task"/> (void).</returns>
-        public virtual async Task EnsureCreatedAsync()
+        public virtual async Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
         {
             if (!this.Options.UseCreateDatabase)
                 return;
 
-            await this.Database.EnsureCreatedAsync();
+            await this.Database
+                .EnsureCreatedAsync(cancellationToken);
         }
 
         /// <summary>
         /// Migrate database.
         /// </summary>
         /// <returns>The <see cref="Task"/> (void).</returns>
-        public virtual async Task EnsureMigratedAsync()
+        public virtual async Task EnsureMigratedAsync(CancellationToken cancellationToken = default)
         {
             if (!this.Options.UseMigrateDatabase)
                 return;
 
-            await this.Database.MigrateAsync();
+            await this.Database
+                .MigrateAsync(cancellationToken);
         }
 
         /// <summary>
