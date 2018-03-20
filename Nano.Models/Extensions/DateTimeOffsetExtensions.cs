@@ -29,8 +29,8 @@ namespace Nano.Models.Extensions
         /// <returns>The start and end date.</returns>
         public static (DateTimeOffset, DateTimeOffset) GetDayDates(this DateTimeOffset at)
         {
-            var startAt = at.Subtract(at.TimeOfDay);
-            var endAt = startAt.AddSeconds(-1);
+            var startAt = new DateTimeOffset(at.Year, at.Month, at.Day, 0, 0, 0, new TimeSpan());
+            var endAt = startAt.AddDays(1).AddSeconds(-1);
 
             return (startAt, endAt);
         }
