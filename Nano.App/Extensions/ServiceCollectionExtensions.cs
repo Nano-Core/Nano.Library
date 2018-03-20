@@ -547,7 +547,6 @@ namespace Nano.App.Extensions
                     x.FormatterMappings.SetMediaTypeMappingForFormat("xml", HttpContentType.XML);
                     x.FormatterMappings.SetMediaTypeMappingForFormat("html", HttpContentType.HTML);
                     x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JSON);
-                    x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JAVA_SCRIPT);
                     x.FormatterMappings.SetMediaTypeMappingForFormat("text", HttpContentType.TEXT);
                 })
                 .AddXmlSerializerFormatters()
