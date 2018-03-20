@@ -22,7 +22,7 @@ namespace Nano.Services
         /// <summary>
         /// Context.
         /// </summary>
-        protected virtual TContext Context { get; }
+        public virtual TContext Context { get; }
 
         /// <summary>
         /// Constructor.
