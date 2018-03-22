@@ -200,7 +200,7 @@ namespace Nano.App.Extensions
                     x.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     x.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
-                    x.SerializerSettings.ContractResolver = new NanoContractResolver();
+                    x.SerializerSettings.ContractResolver = new EntityContractResolver();
                 })
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()
