@@ -32,7 +32,7 @@ namespace Nano.Data.Providers.Memory
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var useLazyLoading = this.Options.UseLazyLoading;
+            //var useLazyLoading = this.Options.UseLazyLoading;
             var connectionString = this.Options.ConnectionString;
 
             builder

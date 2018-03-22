@@ -33,7 +33,7 @@ namespace Nano.Data.Providers.SqlServer
                 throw new ArgumentNullException(nameof(builder));
 
             var batchSize = this.Options.BatchSize;
-            var useLazyLoading = this.Options.UseLazyLoading;
+            //var useLazyLoading = this.Options.UseLazyLoading;
             var connectionString = this.Options.ConnectionString;
 
             builder
