@@ -105,7 +105,7 @@ namespace Nano.Web.Controllers
             var result = await this.Service
                 .GetAllAsync<TEntity>(query ?? new Query(), cancellationToken);
 
-            if (this.Response.IsContentTypeHtml())
+            if (this.Request.IsContentTypeHtml())
                 return this.View(result);
 
             return this.Ok(result);
@@ -224,7 +224,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Create([FromBody][FromForm][Required]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Create([FromBody][FromForm]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
                 .AddAsync(entity, cancellationToken);
