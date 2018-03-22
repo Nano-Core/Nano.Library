@@ -157,7 +157,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Details([FromRoute][FromQuery][FromBody][FromForm][Required]TIdentity[] ids, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Detailss([FromBody][FromForm][Required]TIdentity[] ids, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
                 .GetManyAsync<TEntity, TIdentity>(ids, cancellationToken);
@@ -178,13 +178,12 @@ namespace Nano.Web.Controllers
         /// <response code="400">The request model is invalid.</response>
         /// <response code="500">An error occured when processing the request.</response>>
         [HttpGet]
-        [HttpPost]
         [Route("query")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Query([FromQuery][FromBody][FromForm][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Query([FromQuery][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
                 .GetManyAsync<TEntity, TCriteria>(criteria, cancellationToken);
@@ -194,6 +193,33 @@ namespace Nano.Web.Controllers
 
             return this.Ok(result);
         }
+
+        /// <summary>
+        /// Gets the models, matching the query criteria, pagination and ordering.
+        /// </summary>
+        /// <param name="criteria">The criteria model, containing filters used in the query.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>The models.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="500">An error occured when processing the request.</response>>
+        [HttpPost]
+        [Route("query")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> QueryPost([FromBody][FromForm][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
+        {
+            var result = await this.Service
+                .GetManyAsync<TEntity, TCriteria>(criteria, cancellationToken);
+
+            if (this.Request.IsContentTypeHtml())
+                return this.View("Index", result);
+
+            return this.Ok(result);
+        }
+
 
         /// <summary>
         /// Gets the view for creating a new model.
@@ -224,7 +250,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Create([FromBody][FromForm][Required]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> CreateConfirm([FromBody][FromForm][Required]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
                 .AddAsync(entity, cancellationToken);
@@ -250,7 +276,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Create([FromBody][FromForm][Required]TEntity[] entities, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> CreateConfirms([FromBody][FromForm][Required]TEntity[] entities, CancellationToken cancellationToken = new CancellationToken())
         {
             await this.Service
                 .AddManyAsync(entities, cancellationToken);
@@ -302,7 +328,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Edit([FromBody][FromForm][Required]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> EditConfirm([FromBody][FromForm][Required]TEntity entity, CancellationToken cancellationToken = new CancellationToken())
         {
             await this.Service
                 .UpdateAsync(entity, cancellationToken);
@@ -329,7 +355,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Edit([FromBody][FromForm][Required]TEntity[] entities, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> EditConfirms([FromBody][FromForm][Required]TEntity[] entities, CancellationToken cancellationToken = new CancellationToken())
         {
             await this.Service
                 .UpdateManyAsync(entities.AsEnumerable(), cancellationToken);
@@ -357,7 +383,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Edit([FromQuery][FromBody][FromForm][Required]TCriteria select, TEntity update, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> EditConfirmQuery([FromBody][FromForm][Required]TCriteria select, [FromBody][FromForm][Required]TEntity update, CancellationToken cancellationToken = new CancellationToken())
         {
             await this.Service
                 .UpdateManyAsync(select, update, cancellationToken);
@@ -445,7 +471,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> DeleteConfirm([FromBody][FromForm][Required]TIdentity[] ids, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> DeleteConfirms([FromBody][FromForm][Required]TIdentity[] ids, CancellationToken cancellationToken = new CancellationToken())
         {
             var entities = await this
                 .Service.GetManyAsync<TEntity>(x => ids.Contains(x.Id), cancellationToken);
@@ -475,7 +501,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> DeleteConfirm([FromQuery][FromBody][FromForm][Required]TCriteria select, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> DeleteConfirmQuery([FromBody][FromForm][Required]TCriteria select, CancellationToken cancellationToken = new CancellationToken())
         {
             await this.Service
                 .DeleteManyAsync<TEntity, TCriteria>(select, cancellationToken);
