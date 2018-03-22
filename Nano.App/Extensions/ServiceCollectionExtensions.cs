@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -195,10 +196,11 @@ namespace Nano.App.Extensions
                 })
                 .AddJsonOptions(x =>
                 {
+                    x.SerializerSettings.Culture = CultureInfo.CurrentCulture;
                     x.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     x.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
-                    x.SerializerSettings.ContractResolver = new EntityContractResolver();
+                    x.SerializerSettings.ContractResolver = new NanoContractResolver();
                 })
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()
