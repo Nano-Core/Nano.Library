@@ -68,6 +68,19 @@ namespace Nano.Web.Controllers.Extensions
         }
 
         /// <summary>
+        /// Returns whether the <see cref="HttpResponse"/> headers contains a content-type of 'text/text'.
+        /// </summary>
+        /// <param name="httpResponse">The <see cref="HttpResponse"/>.</param>
+        /// <returns>A <see cref="bool"/>.</returns>
+        public static bool IsContentTypeText(this HttpResponse httpResponse)
+        {
+            if (httpResponse == null)
+                throw new ArgumentNullException(nameof(httpResponse));
+
+            return httpResponse.IsContentType(HttpContentType.TEXT);
+        }
+
+        /// <summary>
         /// Returns whether the <see cref="HttpResponse.ContentType"/> matches the passed <see cref="string"/>.
         /// </summary>
         /// <param name="httpResponse">The <see cref="HttpResponse"/>.</param>
