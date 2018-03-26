@@ -45,7 +45,7 @@ namespace Nano.Services
 
             return await this.Context
                 .Set<TEntity>()
-                .FindAsync(new[] { key }, cancellationToken);
+                .FindAsync(new[] { key });
         }
 
         /// <inheritdoc />
