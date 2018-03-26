@@ -1,11 +1,15 @@
 using System;
 using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -17,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Nano.App.Extensions.Conventions;
 using Nano.App.Extensions.Documentation;
 using Nano.App.Extensions.Middleware;
@@ -29,6 +34,7 @@ using Nano.Eventing.Attributes;
 using Nano.Eventing.Interfaces;
 using Nano.Logging;
 using Nano.Logging.Interfaces;
+using Nano.Models;
 using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Services;
@@ -180,7 +186,7 @@ namespace Nano.App.Extensions
                 .AddApi()
                 .AddCors()
                 .AddSession()
-                // .AddAuthorization() // FEATURE: Secuirty, AddAuthorization
+                .AddSecurity()
                 .AddLocalizations()
                 .AddGzipCompression()
                 .AddApiVersioning(options)
@@ -193,6 +199,9 @@ namespace Nano.App.Extensions
                 {
                     x.Conventions.Insert(0, new RoutePrefixConvention(new RouteAttribute(options.Hosting.Root)));
                     x.ModelBinderProviders.Insert(0, new QueryModelBinderProvider());
+
+                    if (options.Hosting.UseSsl)
+                        x.Filters.Add(new RequireHttpsAttribute());
                 })
                 .AddJsonOptions(x =>
                 {
@@ -369,6 +378,42 @@ namespace Nano.App.Extensions
 
             return services;
         }
+        private static IServiceCollection AddSecurity(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            var options = services
+                .BuildServiceProvider()
+                .GetService<AppOptions>() ?? new AppOptions();
+
+            if (!options.Hosting.UseAuthentication)
+                return services;
+
+            services
+                .AddIdentity<DefaultEntity, DefaultEntity>()
+                .AddUserStore<DefaultEntity>()
+                .AddTokenProvider("", typeof(JwtSecurityToken));
+
+            services
+                .AddAuthorization()
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(x =>
+                {
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = "issuer",
+                        ValidAudience = "issuer",
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("veryVerySecretKey"))
+                    };
+                });
+
+            return services;
+        }
         private static IServiceCollection AddLocalizations(this IServiceCollection services)
         {
             if (services == null)
@@ -502,7 +547,15 @@ namespace Nano.App.Extensions
                     x.IgnoreObsoleteActions();
                     x.IgnoreObsoleteProperties();
                     x.DescribeAllEnumsAsStrings();
-                    x.AddSecurityDefinition("Basic", new BasicAuthScheme()); // FEATURE: Security, Swagger doc
+
+                    // TODO: TEST: Security, Swagger doc
+                    x.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                    {
+                        In = "header",
+                        Type = "jwt",
+                        Name = "Authorization",
+                        Description = "Please insert JWT with Bearer into field"
+                    });
 
                     x.DocumentFilter<LowercaseDocumentFilter>();
                     x.DocumentFilter<ActionOrderingDocumentFilter>();
@@ -526,7 +579,6 @@ namespace Nano.App.Extensions
                         .ToList()
                         .ForEach(y =>
                         {
-                            // COSMETIC: Issue 5: Swagger doesn't add documentation from xml file.
                             var fileName = y.Name.Replace(".dll", ".xml").Replace(".exe", ".xml");
                             var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
 

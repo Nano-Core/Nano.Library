@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Entities;
 using DynamicExpression.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -24,6 +25,7 @@ namespace Nano.Web.Controllers
     /// <typeparam name="TEntity">The <see cref="IEntity"/> model the <see cref="IService"/> operates with.</typeparam>
     /// <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
     /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> implementation.</typeparam>
+    [Authorize]
     [Route("[controller]")]
     public abstract class BaseController<TService, TEntity, TIdentity, TCriteria> : Controller
         where TService : IService
@@ -219,7 +221,6 @@ namespace Nano.Web.Controllers
 
             return this.Ok(result);
         }
-
 
         /// <summary>
         /// Gets the view for creating a new model.

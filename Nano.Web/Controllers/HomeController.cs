@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,7 @@ namespace Nano.Web.Controllers
     /// Home Controller.
     /// Contains method for handling application level operations.
     /// </summary>
+    [Authorize]
     [Route("[controller]")]
     public class HomeController : Controller
     {
