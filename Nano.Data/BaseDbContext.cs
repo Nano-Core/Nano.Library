@@ -66,7 +66,7 @@ namespace Nano.Data
         /// Imports data for all models annotated with <see cref="DataImportAttribute"/>.
         /// </summary>
         /// <returns>The <see cref="Task"/> (void).</returns>
-        public virtual async Task EnsureSeededAsync(CancellationToken cancellationToken = default)
+        public virtual async Task EnsureImportAsync(CancellationToken cancellationToken = default)
         {
             await Task.Factory.StartNew(() =>
             {

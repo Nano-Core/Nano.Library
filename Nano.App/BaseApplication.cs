@@ -129,7 +129,7 @@ namespace Nano.App
                 .ContinueWith(async x =>
                 {
                     await dbContext.EnsureMigratedAsync();
-                    await dbContext.EnsureSeededAsync();
+                    await dbContext.EnsureImportAsync();
                 })
                 .Wait();
         }
