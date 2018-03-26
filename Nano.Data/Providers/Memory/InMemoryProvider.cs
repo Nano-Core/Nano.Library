@@ -36,7 +36,7 @@ namespace Nano.Data.Providers.Memory
             var connectionString = this.Options.ConnectionString;
 
             builder
-                // TODO: .UseLazyLoadingProxies(useLazyLoading)
+                // FEATURE: .UseLazyLoadingProxies(useLazyLoading)
                 .UseInMemoryDatabase(connectionString);
         }
     }

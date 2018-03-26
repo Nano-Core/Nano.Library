@@ -37,7 +37,7 @@ namespace Nano.Data.Providers.SqlServer
             var connectionString = this.Options.ConnectionString;
 
             builder
-                //TODO: .UseLazyLoadingProxies(useLazyLoading)
+                // FEATURE: .UseLazyLoadingProxies(useLazyLoading)
                 .UseSqlServer(connectionString, x => x.MaxBatchSize(batchSize));
         }
     }
