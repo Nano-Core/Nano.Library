@@ -129,6 +129,7 @@ namespace Nano.Web.Controllers
         /// <response code="200">Success.</response>
         /// <response code="400">The request model is invalid.</response>
         /// <response code="500">An error occured when processing the request.</response>>
+        [HttpGet]
         [HttpPost]
         [Route("query")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
@@ -136,7 +137,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Query([FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Query([FromQuery][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await this.Service
                 .GetManyAsync<TEntity, TCriteria>(criteria, cancellationToken);
