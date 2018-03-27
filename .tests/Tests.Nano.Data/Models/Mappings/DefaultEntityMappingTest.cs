@@ -6,7 +6,7 @@ namespace Tests.Nano.Data.Models.Mappings
     public class DefaultEntityMappingTest
     {
         [TestMethod]
-        public void Test()
+        public void MapTest()
         {
             Assert.Inconclusive();
         }

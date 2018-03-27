@@ -6,7 +6,19 @@ namespace Tests.Nano.Models.Types
     public class DistanceTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void PropertyMilesTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void PropertyKilometersTest()
         {
             Assert.Inconclusive();
         }

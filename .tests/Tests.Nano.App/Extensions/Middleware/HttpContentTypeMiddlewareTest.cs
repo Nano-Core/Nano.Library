@@ -6,7 +6,7 @@ namespace Tests.Nano.App.Extensions.Middleware
     public class HttpContentTypeMiddlewareTest
     {
         [TestMethod]
-        public void Test()
+        public void InvokeAsyncTest()
         {
             Assert.Inconclusive();
         }

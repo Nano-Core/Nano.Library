@@ -6,7 +6,31 @@ namespace Tests.Nano.App
     public class DefaultApplicationTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void ConfigureTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void ConfigureServicesTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void ConfigureAppTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void ConfigureAppWhenGenericTypeTest()
         {
             Assert.Inconclusive();
         }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Nano.Eventing;
 
 namespace Tests.Nano.Eventing
 {
@@ -6,7 +7,13 @@ namespace Tests.Nano.Eventing
     public class EventingOptionsTest
     {
         [TestMethod]
-        public void Test()
+        public void GetSectionNameTest()
+        {
+            Assert.AreEqual("Eventing", EventingOptions.SectionName);
+        }
+
+        [TestMethod]
+        public void DefaultValuesTest()
         {
             Assert.Inconclusive();
         }

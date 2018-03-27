@@ -6,7 +6,7 @@ namespace Tests.Nano.Eventing.Attributes
     public class PublishAttributeTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
         {
             Assert.Inconclusive();
         }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Nano.App;
 
 namespace Tests.Nano.App
 {
@@ -6,7 +7,13 @@ namespace Tests.Nano.App
     public class AppOptionsTest
     {
         [TestMethod]
-        public void Test()
+        public void GetSectionNameTest()
+        {
+            Assert.AreEqual("App", AppOptions.SectionName);
+        }
+
+        [TestMethod]
+        public void DefaultValuesTest()
         {
             Assert.Inconclusive();
         }

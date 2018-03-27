@@ -6,7 +6,7 @@ namespace Tests.Nano.App.Extensions.Documentation
     public class LowercaseDocumentFilterTest
     {
         [TestMethod]
-        public void Test()
+        public void ApplyTest()
         {
             Assert.Inconclusive();
         }

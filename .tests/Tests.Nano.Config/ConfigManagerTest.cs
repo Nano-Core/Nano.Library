@@ -6,7 +6,13 @@ namespace Tests.Nano.Config
     public class ConfigManagerTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorStaticTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void BuildConfigurationTest()
         {
             Assert.Inconclusive();
         }

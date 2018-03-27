@@ -6,7 +6,13 @@ namespace Tests.Nano.App.Extensions.Conventions
     public class RoutePrefixConventionTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void ApplyTest()
         {
             Assert.Inconclusive();
         }

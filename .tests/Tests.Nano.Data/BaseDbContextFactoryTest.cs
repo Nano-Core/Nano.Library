@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Eventing.Attributes
+namespace Tests.Nano.Data
 {
     [TestClass]
-    public class SubscribeAttributeTest
+    public class BaseDbContextFactoryTest
     {
         [TestMethod]
-        public void ConstructorTest()
+        public void CreateDbContextTest()
         {
             Assert.Inconclusive();
         }

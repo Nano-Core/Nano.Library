@@ -54,7 +54,7 @@ namespace Nano.Web.Controllers
                 return this.NotFound();
 
             if (this.Request.IsContentTypeHtml())
-                return this.View(result);
+                return this.View("Index", result);
 
             return this.Ok(result);
         }
@@ -84,8 +84,8 @@ namespace Nano.Web.Controllers
             if (result == null)
                 return this.NotFound();
 
-            if (this.Request.IsContentTypeHtml())
-                return this.View(result);
+            if (this.HttpContext.Request.IsContentTypeHtml())
+                return this.View("Details", result);
 
             return this.Ok(result);
         }

@@ -6,7 +6,13 @@ namespace Tests.Nano.Logging.Providers.Serilog
     public class SerilogProviderTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void ConfigureTest()
         {
             Assert.Inconclusive();
         }

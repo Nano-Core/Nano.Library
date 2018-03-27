@@ -6,7 +6,19 @@ namespace Tests.Nano.Models.Types
     public class PeriodTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void IsOccuringTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void IsOccuringWhenFalseTest()
         {
             Assert.Inconclusive();
         }

@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.App
+namespace Tests.Nano.Data.Models.Mappings
 {
     [TestClass]
-    public class BaseApplicationTest
+    public class DefaultAuditEntryMappingTest
     {
         [TestMethod]
-        public void ConfigureAppTest()
+        public void MapTest()
         {
             Assert.Inconclusive();
         }

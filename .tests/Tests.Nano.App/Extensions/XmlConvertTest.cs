@@ -6,7 +6,13 @@ namespace Tests.Nano.App.Extensions
     public class XmlConvertTest
     {
         [TestMethod]
-        public void Test()
+        public void SerializeObjectTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void DeserializeObjectTest()
         {
             Assert.Inconclusive();
         }

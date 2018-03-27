@@ -6,7 +6,7 @@ namespace Tests.Nano.Data.Models
     public class DefaultAuditEntryTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
         {
             Assert.Inconclusive();
         }

@@ -1,11 +1,17 @@
 ﻿using System;
+using System.Net;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using Nano.Models;
+using Nano.Models.Criterias;
+using Nano.Web.Controllers;
 
 namespace Tests.Nano.Web.Controllers
 {
     [TestClass]
-    public class DefaultControllerTest : BaseControllerTest<TestController>
+    public class DefaultControllerTest : BaseControllerTest<DefaultController<DefaultEntity, DefaultQueryCriteria>>
     {
         [TestMethod]
         public void IndexTest()
@@ -14,12 +20,46 @@ namespace Tests.Nano.Web.Controllers
         }
 
         [TestMethod]
-        public void DetailsTest()
+        public void DetailsViewTest()
         {
-            var result = this.Controller.Details(Guid.NewGuid()).Result as ViewResult;
+            this.Service
+                .Setup(x => x.GetAsync<DefaultEntity, Guid>(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new DefaultEntity());
+
+            var guid = Guid.NewGuid();
+            var result = this.Controller.Details(guid).Result as ViewResult;
 
             Assert.IsNotNull(result);
             Assert.AreEqual("Details", result.ViewName);
+        }
+
+        [TestMethod]
+        public void DetailsOkObjectTest()
+        {
+            this.Service
+                .Setup(x => x.GetAsync<DefaultEntity, Guid>(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new DefaultEntity());
+
+            var guid = Guid.NewGuid();
+            var result = this.Controller.Details(guid).Result as OkObjectResult;
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.Value);
+            Assert.AreEqual((int)HttpStatusCode.OK, result.StatusCode);
+        }
+
+        [TestMethod]
+        public void DetailsWhenNotFoundTest()
+        {
+            this.Service
+                .Setup(x => x.GetAsync<DefaultEntity, Guid>(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((DefaultEntity)null);
+
+            var guid = Guid.NewGuid();
+            var result = this.Controller.Details(guid).Result as NotFoundResult;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual((int)HttpStatusCode.NotFound, result.StatusCode);
         }
 
         [TestMethod]
@@ -77,7 +117,7 @@ namespace Tests.Nano.Web.Controllers
         }
 
         [TestMethod]
-        public void EditConfirmQueryTest()
+        public void EditConfirmsQueryTest()
         {
             Assert.Inconclusive();
         }
@@ -101,7 +141,7 @@ namespace Tests.Nano.Web.Controllers
         }
 
         [TestMethod]
-        public void DeleteConfirmQueryTest()
+        public void DeleteConfirmsQueryTest()
         {
             Assert.Inconclusive();
         }

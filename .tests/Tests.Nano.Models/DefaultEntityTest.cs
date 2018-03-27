@@ -6,7 +6,7 @@ namespace Tests.Nano.Models
     public class DefaultEntityTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
         {
             Assert.Inconclusive();
         }

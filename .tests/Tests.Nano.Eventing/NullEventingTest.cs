@@ -6,7 +6,13 @@ namespace Tests.Nano.Eventing
     public class NullEventingTest
     {
         [TestMethod]
-        public void Test()
+        public void PublishAsyncTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void SubscribeAsyncTest()
         {
             Assert.Inconclusive();
         }

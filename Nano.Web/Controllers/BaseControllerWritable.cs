@@ -45,7 +45,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         public virtual IActionResult Create()
         {
-            return this.View();
+            return this.View("Create");
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace Nano.Web.Controllers
             if (result == null)
                 return this.NotFound();
 
-            return this.View(result);
+            return this.View("Edit", result);
         }
 
         /// <summary>
@@ -242,7 +242,7 @@ namespace Nano.Web.Controllers
             if (entity == null)
                 return this.NotFound();
 
-            return this.View(entity);
+            return this.View("Delete", entity);
         }
 
         /// <summary>

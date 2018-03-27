@@ -1,54 +1,60 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Services
+namespace Tests.Nano.Data.Models.Mappings.Extensions
 {
     [TestClass]
-    public class DefaultServiceSpatialTest
+    public class ReferenceCollectionBuilderExtensionsTest
     {
         [TestMethod]
-        public void CoversTest()
+        public void MapTypeWhenAngleTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void CrossesTest()
+        public void MapTypeWhenPeriodTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void TouchesTest()
+        public void MapTypeWhenDistanceTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void OverlapsTest()
+        public void MapTypeWhenDurationTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void CoveredByTest()
+        public void MapTypeWhenLocationTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void DisjointsTest()
+        public void MapTypeWhenPhoneNumberTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void IntersectsTest()
+        public void MapTypeWhenPercentageTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void WithinTest()
+        public void MapTypeWhenEmailAddressTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void MapTypeWhenAuthenticationCredentialTest()
         {
             Assert.Inconclusive();
         }

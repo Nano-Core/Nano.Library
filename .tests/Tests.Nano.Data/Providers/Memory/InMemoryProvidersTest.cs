@@ -6,7 +6,13 @@ namespace Tests.Nano.Data.Providers.Memory
     public class InMemoryProviderTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void ConfigureTest()
         {
             Assert.Inconclusive();
         }

@@ -6,7 +6,31 @@ namespace Tests.Nano.Eventing.Providers.EasyNetQ
     public class EasyNetQLoggerTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void DebugWriteTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void InfoWriteTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void ErrorWriteTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void ErrorWriteWhenExceptionTest()
         {
             Assert.Inconclusive();
         }

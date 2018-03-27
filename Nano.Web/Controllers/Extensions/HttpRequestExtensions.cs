@@ -105,7 +105,7 @@ namespace Nano.Web.Controllers.Extensions
                 throw new ArgumentNullException(nameof(match));
 
             var headers = httpRequest.Headers;
-            var queryString = httpRequest.QueryString.Value;
+            var queryString = httpRequest.QueryString.HasValue ? httpRequest.QueryString.Value : string.Empty;
             var accept = headers["Accept"].Join();
             var contentType = headers["Content-Type"].Join();
 

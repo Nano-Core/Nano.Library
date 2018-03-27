@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.App.Extensions.Serialization
+namespace Tests.Nano.Data.Models.Mappings.Extensions
 {
     [TestClass]
-    public class EntityIdentityJsonConverterTest
+    public class ModelBuilderExtensionsTest
     {
         [TestMethod]
-        public void Test()
+        public void AddMappingTest()
         {
             Assert.Inconclusive();
         }

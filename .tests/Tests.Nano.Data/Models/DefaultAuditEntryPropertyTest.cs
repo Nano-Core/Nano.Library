@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Data.Models.Mappings
+namespace Tests.Nano.Data.Models
 {
     [TestClass]
-    public class DefaultEntityIdentityMappingTest
+    public class DefaultAuditEntryPropertyTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
         {
             Assert.Inconclusive();
         }

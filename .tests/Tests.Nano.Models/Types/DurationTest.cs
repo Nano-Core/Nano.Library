@@ -6,7 +6,13 @@ namespace Tests.Nano.Models.Types
     public class DurationTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void PropertyTotalTest()
         {
             Assert.Inconclusive();
         }

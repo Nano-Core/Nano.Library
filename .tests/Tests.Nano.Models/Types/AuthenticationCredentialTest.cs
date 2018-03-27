@@ -6,7 +6,7 @@ namespace Tests.Nano.Models.Types
     public class AuthenticationCredentialTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
         {
             Assert.Inconclusive();
         }

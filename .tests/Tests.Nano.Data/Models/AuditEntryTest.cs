@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Data.Models.Extensions
+namespace Tests.Nano.Data.Models
 {
     [TestClass]
-    public class ModelBuilderExtensionsTest
+    public class AuditEntryTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
         {
             Assert.Inconclusive();
         }

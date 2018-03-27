@@ -45,9 +45,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Nano.Services", ".tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Nano.Web", ".tests\Tests.Nano.Web\Tests.Nano.Web.csproj", "{477093C4-B097-49AF-B5F8-F7A138761996}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.Config", "Nano.Config\Nano.Config.csproj", "{B7AA7F96-5F1B-423E-9B44-E8AFA6978DDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nano.Config", "Nano.Config\Nano.Config.csproj", "{B7AA7F96-5F1B-423E-9B44-E8AFA6978DDC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Nano.Config", ".tests\Tests.Nano.Config\Tests.Nano.Config.csproj", "{6D8D2A03-0AFC-4B81-A249-DE71D9C779E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Nano.Config", ".tests\Tests.Nano.Config\Tests.Nano.Config.csproj", "{6D8D2A03-0AFC-4B81-A249-DE71D9C779E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

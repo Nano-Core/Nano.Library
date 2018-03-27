@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Eventing.Attributes
+namespace Tests.Nano.Data.Attributes
 {
     [TestClass]
-    public class SubscribeAttributeTest
+    public class ImportAttributeTest
     {
         [TestMethod]
         public void ConstructorTest()

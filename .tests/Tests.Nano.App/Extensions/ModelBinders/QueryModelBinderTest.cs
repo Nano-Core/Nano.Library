@@ -6,7 +6,7 @@ namespace Tests.Nano.App.Extensions.ModelBinders
     public class QueryModelBinderTest
     {
         [TestMethod]
-        public void Test()
+        public void BindModelAsyncTest()
         {
             Assert.Inconclusive();
         }

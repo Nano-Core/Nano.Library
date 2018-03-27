@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Data.Models.Extensions
+namespace Tests.Nano.App.Extensions.Documentation
 {
     [TestClass]
-    public class EntityTypeBuilderExtensionsTest
+    public class ActionOrderingDocumentFilterTest
     {
         [TestMethod]
-        public void Test()
+        public void ApplyTest()
         {
             Assert.Inconclusive();
         }

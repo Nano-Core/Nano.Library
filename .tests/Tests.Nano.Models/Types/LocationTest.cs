@@ -6,7 +6,19 @@ namespace Tests.Nano.Models.Types
     public class LocationTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void ToStringTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void FromStringTest()
         {
             Assert.Inconclusive();
         }

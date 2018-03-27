@@ -1,24 +1,30 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Models.Types
+namespace Tests.Nano.Web.Controllers
 {
     [TestClass]
-    public class EmailAddressTest
+    public class AuditControllerTest
     {
         [TestMethod]
-        public void ConstructorTest()
+        public void Index()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void IsValidTest()
+        public void DetailsTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void IsValidWhenFalseTest()
+        public void DetailsWhenMultipleTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void QueryTest()
         {
             Assert.Inconclusive();
         }

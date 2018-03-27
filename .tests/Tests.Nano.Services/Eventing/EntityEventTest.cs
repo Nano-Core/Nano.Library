@@ -6,7 +6,7 @@ namespace Tests.Nano.Services.Eventing
     public class EntityEventTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
         {
             Assert.Inconclusive();
         }

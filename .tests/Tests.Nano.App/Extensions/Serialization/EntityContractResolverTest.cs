@@ -6,7 +6,7 @@ namespace Tests.Nano.App.Extensions.Serialization
     public class EntityContractResolverTest
     {
         [TestMethod]
-        public void Test()
+        public void CreatePropertyTest()
         {
             Assert.Inconclusive();
         }
