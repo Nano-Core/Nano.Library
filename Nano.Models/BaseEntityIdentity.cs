@@ -6,7 +6,7 @@ namespace Nano.Models
     public abstract class BaseEntityIdentity<TIdentity> : BaseEntity, IEntityIdentity<TIdentity>
     {
         /// <inheritdoc />
-        public virtual TIdentity Id { get; protected set; }
+        public virtual TIdentity Id { get; set; }
 
         /// <inheritdoc />
         public override int GetHashCode()
