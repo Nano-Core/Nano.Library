@@ -113,7 +113,7 @@ namespace Nano.App
 
                     x.RoutePrefix = "docs";
                     x.DocumentTitle = $"Nano - {appOptions.Name} Docs v{appOptions.Version} ({ConfigManager.Environment})";
-                    x.SwaggerEndpoint($"/docs/{appOptions.Version}/swagger.json", $"Nano - {appOptions.Name} v{appOptions.Version}");
+                    x.SwaggerEndpoint($"/docs/{appOptions.Version}/swagger.json", $"Nano - {appOptions.Name} v{appOptions.Version} ({ConfigManager.Environment})");
                 })
                 .UseRequestLocalization(new RequestLocalizationOptions
                 {
