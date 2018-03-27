@@ -22,7 +22,7 @@ namespace Nano.Data
                 .GetSection(DataOptions.SectionName)
                 .Get<DataOptions>();
 
-            var provider = Activator.CreateInstance(typeof(TProvider), builder.Options) as TProvider;
+            var provider = Activator.CreateInstance(typeof(TProvider), dataOptions) as TProvider;
             provider?.Configure(builder);
 
             return Activator.CreateInstance(typeof(TContext), builder.Options, dataOptions) as TContext;
