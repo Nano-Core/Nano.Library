@@ -20,7 +20,7 @@
         <dependency id="Microsoft.AspNetCore.Mvc.Versioning" version="2.1.0" />
         <dependency id="NetTopologySuite" version="1.15.0-pre052" />
         <dependency id="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" version="2.2.0" />
-        <dependency id="DynamicExpression" version="1.1.0" />
+        <dependency id="DynamicExpression" version="1.1.1" />
         <dependency id="Z.EntityFramework.Plus.EFCore" version="1.7.15" />
         <dependency id="Serilog" version="2.7.1-dev-00960" />
         <dependency id="System.ComponentModel.Annotations" version="4.5.0-preview1-26216-02" />
