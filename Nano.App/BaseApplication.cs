@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Nano.App.Extensions;
 using Nano.App.Extensions.Middleware;
 using Nano.App.Interfaces;
+using Nano.Config;
 using Nano.Data;
 
 namespace Nano.App
@@ -23,7 +24,7 @@ namespace Nano.App
         /// <summary>
         /// Configuration.
         /// </summary>
-        protected virtual IConfiguration Configuration { get; set; }
+        protected virtual IConfiguration Configuration { get; }
 
         /// <summary>
         /// Constructor. 
@@ -156,40 +157,31 @@ namespace Nano.App
         public static IWebHostBuilder ConfigureApp<TApplication>(params string[] args)
             where TApplication : class, IApplication
         {
-            const string NAME = "appsettings";
-
-            var path = Directory.GetCurrentDirectory();
+            var root = Directory.GetCurrentDirectory();
+            var config = ConfigManager.BuildConfiguration(args);
             var shutdownTimeout = TimeSpan.FromSeconds(10);
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(path)
-                .AddJsonFile($"{NAME}.json", false, true)
-                .AddJsonFile($"{NAME}.{environment}.json", true)
-                .AddCommandLine(args)
-                .AddEnvironmentVariables()
-                .Build();
-
-            var options = configuration.GetSection(AppOptions.SectionName).Get<AppOptions>() ?? new AppOptions();
+            var options = config.GetSection(AppOptions.SectionName).Get<AppOptions>() ?? new AppOptions();
             var urls = options.Hosting.Ports.Select(x => $"http://*:{x}").Distinct().ToArray();
 
             return new WebHostBuilder()
                 .CaptureStartupErrors(true)
                 .UseKestrel()
                 .UseUrls(urls)
-                .UseContentRoot(path)
+                .UseContentRoot(root)
                 .UseEnvironment(environment)
-                .UseConfiguration(configuration)
+                .UseConfiguration(config)
                 .UseShutdownTimeout(shutdownTimeout)
                 .ConfigureServices(x =>
                 {
                     x.AddSingleton<IApplication, TApplication>();
 
-                    x.AddApp(configuration);
-                    x.AddData(configuration);
-                    x.AddConfig(configuration);
-                    x.AddLogging(configuration);
-                    x.AddEventing(configuration);
+                    x.AddApp(config);
+                    x.AddData(config);
+                    x.AddConfig(config);
+                    x.AddLogging(config);
+                    x.AddEventing(config);
                 })
                 .UseStartup<TApplication>()
                 .UseSetting(WebHostDefaults.ApplicationKey, Assembly.GetEntryAssembly().FullName);
