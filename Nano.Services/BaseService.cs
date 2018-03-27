@@ -22,7 +22,7 @@ namespace Nano.Services
         /// <summary>
         /// Context.
         /// </summary>
-        public virtual TContext Context { get; } // BUG: Should be protected.
+        protected virtual TContext Context { get; }
 
         /// <summary>
         /// Constructor.
@@ -45,7 +45,7 @@ namespace Nano.Services
 
             return await this.Context
                 .Set<TEntity>()
-                .FindAsync(new[] { key });
+                .FindAsync(new[] { (object)key }, cancellationToken);
         }
 
         /// <inheritdoc />
