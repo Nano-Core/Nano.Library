@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>NanoCore.TestTools</id>
+    <version>0.1.0-alpha</version>
+    <title>Nano Core Test Tools</title>
+    <authors>Nano Contributors</authors>
+    <owners>Michael Vivet</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://raw.githubusercontent.com/vivet/Nano/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Nano-Core</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/Nano-Core/Nano.Library/master/icon.ico</iconUrl>
+    <description>The package contains various mocks and configuration, to assist in testing Nano applications.</description>
+    <summary>Tools to assist unit-testing Nano applications.</summary>
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Microsoft.VisualStudio.TestPlatform" version="14.0.0.1" />
+        <dependency id="Moq" version="4.8.2" />
+        <dependency id="NanoCore" version="0.3.105-alpha" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+  </files>
+</package>
