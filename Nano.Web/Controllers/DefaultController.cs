@@ -8,7 +8,7 @@ using Nano.Services.Interfaces;
 namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
-    public class DefaultController<TEntity, TCriteria> : BaseController<IService, TEntity, Guid, TCriteria>
+    public class DefaultController<TEntity, TCriteria> : BaseControllerWritable<IService, TEntity, Guid, TCriteria>
         where TEntity : DefaultEntity
         where TCriteria : class, IQueryCriteria, new()
     {

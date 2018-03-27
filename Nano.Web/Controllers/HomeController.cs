@@ -120,6 +120,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("language")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.OK)]
         public virtual IActionResult SetLanguage([FromQuery][FromHeader(Name = "Accept-Language")][Required]string code, [FromQuery]string returnUrl, CancellationToken cancellationToken = new CancellationToken())
         {
             // FEATURE: Http Localization, how to use IRequestCultureProviders? HomeController.SetLanguage?
@@ -134,15 +135,20 @@ namespace Nano.Web.Controllers
             this.Response.Cookies
                 .Append(cookieName, cookieValue, cookieOptions);
 
-            if (returnUrl == null)
+            if (this.Request.IsContentTypeHtml())
             {
-                if (this.Response.IsContentTypeHtml())
-                    return this.RedirectToAction("Index");
+                if (returnUrl == null)
+                {
+                    if (this.Response.IsContentTypeHtml())
+                        return this.RedirectToAction("Index");
 
-                return Ok();
+                    return Ok();
+                }
+
+                return this.LocalRedirect(returnUrl);
             }
 
-            return this.LocalRedirect(returnUrl);
+            return this.Ok();
         }
     }
 }
