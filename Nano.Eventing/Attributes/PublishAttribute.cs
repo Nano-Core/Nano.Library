@@ -9,18 +9,6 @@ namespace Nano.Eventing.Attributes
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
     public class PublishAttribute : Attribute
     {
-        /// <summary>
-        /// Key.
-        /// </summary>
-        public virtual string Key { get; set; }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="key">The routing key used when publishing.</param>
-        public PublishAttribute(string key = null)
-        {
-            this.Key = key;
-        }
     }
 }

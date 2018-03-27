@@ -9,18 +9,6 @@ namespace Nano.Eventing.Attributes
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
     public class SubscribeAttribute : Attribute
     {
-        /// <summary>
-        /// Key.
-        /// </summary>
-        public virtual string Key { get; set; }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="key">The routing key used when subscribing.</param>
-        public SubscribeAttribute(string key = null)
-        {
-            this.Key = key;
-        }
     }
 }
