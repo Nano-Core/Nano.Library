@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Microsoft.Extensions.Configuration;
 
 namespace Nano.Config
@@ -10,6 +9,25 @@ namespace Nano.Config
     public static class ConfigManager
     {
         /// <summary>
+        /// Path.
+        /// </summary>
+        public static string Path { get; }
+
+        /// <summary>
+        /// Environment.
+        /// </summary>
+        public static string Environment { get; }
+
+        /// <summary>
+        /// Constructor (static).
+        /// </summary>
+        static ConfigManager()
+        {
+            ConfigManager.Path = Directory.GetCurrentDirectory();
+            ConfigManager.Environment = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+        }
+
+        /// <summary>
         /// Builds the <see cref="IConfiguration"/>.
         /// </summary>
         /// <returns>The <see cref="IConfiguration"/>.</returns>
@@ -17,8 +35,8 @@ namespace Nano.Config
         {
             const string NAME = "appsettings";
 
-            var path = Directory.GetCurrentDirectory();
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+            var path = ConfigManager.Path;
+            var environment = ConfigManager.Environment;
 
             return new ConfigurationBuilder()
                 .SetBasePath(path)
