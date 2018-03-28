@@ -49,6 +49,70 @@ namespace Nano.Data.Models.Mappings.Extensions
         }
 
         /// <summary>
+        /// Maps <see cref="Address"/> as owned by the entity.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
+        /// <param name="expression">The property expression.</param>
+        public static void MapType<TEntity>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, Address>> expression)
+            where TEntity : class, IEntity
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.String)
+                .HasMaxLength(256)
+                .IsRequired();
+
+            builder
+                .OwnsOne(expression)
+                .HasIndex(x => x.String);
+
+            builder
+                .OwnsOne(expression)
+                .MapType(x => x.Location);
+        }
+
+        /// <summary>
+        /// Maps <see cref="Contact"/> as owned by the entity.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
+        /// <param name="expression">The property expression.</param>
+        public static void MapType<TEntity>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, Contact>> expression)
+            where TEntity : class, IEntity
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.Name)
+                .HasMaxLength(128)
+                .IsRequired();
+
+            builder
+                .OwnsOne(expression)
+                .HasIndex(x => x.Name);
+
+            builder
+                .OwnsOne(expression)
+                .MapType(x => x.PhoneNumber);
+
+            builder
+                .OwnsOne(expression)
+                .MapType(x => x.EmailAddress);
+        }
+
+        /// <summary>
         /// Maps <see cref="Period"/> as owned by the entity.
         /// </summary>
         /// <typeparam name="TEntity">The entity type.</typeparam>

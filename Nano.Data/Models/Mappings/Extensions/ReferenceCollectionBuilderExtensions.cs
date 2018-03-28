@@ -50,6 +50,74 @@ namespace Nano.Data.Models.Mappings.Extensions
         }
 
         /// <summary>
+        /// Maps <see cref="Address"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <typeparam name="TRelatedEntity">The related entity type.</typeparam>
+        /// <param name="builder">The <see cref="ReferenceOwnershipBuilder{TEntity,TRelatedEntity}"/>.</param>
+        /// <param name="expression">The <see cref="Expression"/>.</param>
+        public static void MapType<TEntity, TRelatedEntity>(this ReferenceOwnershipBuilder<TEntity, TRelatedEntity> builder, Expression<Func<TRelatedEntity, Address>> expression)
+            where TEntity : class
+            where TRelatedEntity : class
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.String)
+                .HasMaxLength(256)
+                .IsRequired();
+
+            builder
+                .OwnsOne(expression)
+                .HasIndex(x => x.String);
+
+            builder
+                .OwnsOne(expression)
+                .MapType(x => x.Location);
+        }
+
+        /// <summary>
+        /// Maps <see cref="Contact"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <typeparam name="TRelatedEntity">The related entity type.</typeparam>
+        /// <param name="builder">The <see cref="ReferenceOwnershipBuilder{TEntity,TRelatedEntity}"/>.</param>
+        /// <param name="expression">The <see cref="Expression"/>.</param>
+        public static void MapType<TEntity, TRelatedEntity>(this ReferenceOwnershipBuilder<TEntity, TRelatedEntity> builder, Expression<Func<TRelatedEntity, Contact>> expression)
+            where TEntity : class
+            where TRelatedEntity : class
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.Name)
+                .HasMaxLength(128)
+                .IsRequired();
+
+            builder
+                .OwnsOne(expression)
+                .HasIndex(x => x.Name);
+
+            builder
+                .OwnsOne(expression)
+                .MapType(x => x.PhoneNumber);
+
+            builder
+                .OwnsOne(expression)
+                .MapType(x => x.EmailAddress);
+        }
+
+        /// <summary>
         /// Maps <see cref="Period"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
         /// </summary>
         /// <typeparam name="TEntity">The entity type.</typeparam>

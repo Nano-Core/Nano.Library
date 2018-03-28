@@ -12,6 +12,18 @@ namespace Tests.Nano.Data.Models.Mappings.Extensions
         }
 
         [TestMethod]
+        public void MapTypeWhenAddress()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void MapTypeWhenContactTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
         public void MapTypeWhenPeriodTest()
         {
             Assert.Inconclusive();
