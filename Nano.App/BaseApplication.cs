@@ -6,6 +6,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.App.Extensions;
@@ -74,6 +75,12 @@ namespace Nano.App
                 throw new ArgumentNullException(nameof(applicationLifetime));
 
             var appOptions = applicationBuilder.ApplicationServices.GetService<AppOptions>() ?? new AppOptions();
+   
+            if (appOptions.Hosting.UseSsl)
+            {
+                applicationBuilder
+                    .UseRewriter(new RewriteOptions().AddRedirectToHttps());
+            }
 
             applicationBuilder
                 .UseSession()

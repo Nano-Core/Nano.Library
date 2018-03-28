@@ -193,6 +193,9 @@ namespace Nano.App.Extensions
                 {
                     x.Conventions.Insert(0, new RoutePrefixConvention(new RouteAttribute(options.Hosting.Root)));
                     x.ModelBinderProviders.Insert(0, new QueryModelBinderProvider());
+
+                    if (options.Hosting.UseSsl)
+                        x.Filters.Add(new RequireHttpsAttribute());
                 })
                 .AddJsonOptions(x =>
                 {

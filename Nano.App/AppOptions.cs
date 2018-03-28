@@ -82,6 +82,11 @@ namespace Nano.App
             /// Ports.
             /// </summary>
             public virtual int[] Ports { get; set; } = new int[0];
+
+            /// <summary>
+            /// Use Ssl.
+            /// </summary>
+            public virtual bool UseSsl { get; set; }
         }
     }
 }
