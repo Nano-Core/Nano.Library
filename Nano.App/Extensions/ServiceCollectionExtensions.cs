@@ -1,8 +1,11 @@
 using System;
 using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -17,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Nano.App.Extensions.Conventions;
 using Nano.App.Extensions.Documentation;
 using Nano.App.Extensions.Middleware;
@@ -29,6 +33,7 @@ using Nano.Eventing.Attributes;
 using Nano.Eventing.Interfaces;
 using Nano.Logging;
 using Nano.Logging.Interfaces;
+using Nano.Models;
 using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Services;
@@ -180,7 +185,7 @@ namespace Nano.App.Extensions
                 .AddApi()
                 .AddCors()
                 .AddSession()
-                // .AddAuthorization() // FEATURE: Secuirty, AddAuthorization
+                //.AddSecurity() // TODO: Security
                 .AddLocalizations()
                 .AddGzipCompression()
                 .AddApiVersioning(options)
@@ -372,6 +377,35 @@ namespace Nano.App.Extensions
 
             return services;
         }
+        private static IServiceCollection AddSecurity(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services
+                .AddIdentity<DefaultEntity, DefaultEntity>()
+                .AddUserStore<DefaultEntity>()
+                .AddTokenProvider("", typeof(JwtSecurityToken));
+
+            services
+                .AddAuthorization()
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(x =>
+                {
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = "issuer",
+                        ValidAudience = "issuer",
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("veryVerySecretKey"))
+                    };
+                });
+
+            return services;
+        }
         private static IServiceCollection AddLocalizations(this IServiceCollection services)
         {
             if (services == null)
@@ -505,7 +539,15 @@ namespace Nano.App.Extensions
                     x.IgnoreObsoleteActions();
                     x.IgnoreObsoleteProperties();
                     x.DescribeAllEnumsAsStrings();
-                    x.AddSecurityDefinition("Basic", new BasicAuthScheme()); // FEATURE: Security, Swagger doc
+
+                    // TODO: Security
+                    //x.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                    //{
+                    //    In = "header",
+                    //    Type = "jwt",
+                    //    Name = "Authorization",
+                    //    Description = "Please insert JWT with Bearer into field"
+                    //});
 
                     x.DocumentFilter<LowercaseDocumentFilter>();
                     x.DocumentFilter<ActionOrderingDocumentFilter>();

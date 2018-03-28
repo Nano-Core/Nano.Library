@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -13,6 +14,7 @@ namespace Nano.Web.Controllers
     /// Base abstract <see cref="Controller"/>.
     /// </summary>
     /// <typeparam name="TService">The <see cref="IService"/>.</typeparam>
+    [Authorize]
     [Route("[controller]")]
     public abstract class BaseController<TService> : Controller
        where TService : IService

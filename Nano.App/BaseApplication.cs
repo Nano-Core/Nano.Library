@@ -85,6 +85,7 @@ namespace Nano.App
             applicationBuilder
                 .UseSession()
                 .UseStaticFiles()
+                //.UseAuthentication() // TODO: Security
                 .UseForwardedHeaders()
                 .UseResponseCompression()
                 .UseMiddleware<HttpContentTypeMiddleware>()

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Entities;
 using DynamicExpression.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Nano.Models;
@@ -16,6 +17,8 @@ using Nano.Web.Controllers.Extensions;
 namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
+    [Authorize]
+    [Route("[controller]")]
     public class AuditController : Controller
     {
         /// <summary>
