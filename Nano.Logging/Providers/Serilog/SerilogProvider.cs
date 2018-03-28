@@ -33,17 +33,28 @@ namespace Nano.Logging.Providers.Serilog
             var loggerConfiguration = new LoggerConfiguration()
                 .MinimumLevel.Is(this.Options.LogLevel);
 
-            if (this.Options.Sinks.Any(x => x == "Console"))
-                loggerConfiguration.WriteTo.Console();
+            var console = this.Options.Sinks.FirstOrDefault(x => x.Name?.ToLower() == "console");
+            if (console != null)
+            {
+                loggerConfiguration
+                    .WriteTo.Console();
+            }
+
+            var logstash = this.Options.Sinks.FirstOrDefault(x => x.Name?.ToLower() == "logstash");
+            if (logstash != null)
+            {
+                loggerConfiguration
+                    .WriteTo.LogstashHttp(logstash.ConnectionString);
+            }
+
+            loggerConfiguration
+                .Enrich.FromLogContext();
 
             foreach (var @override in this.Options.LogLevelOverrides)
             {
                 loggerConfiguration
                     .MinimumLevel.Override(@override.Namespace, @override.LogLevel);
             }
-
-            loggerConfiguration
-                .Enrich.FromLogContext();
             
             Log.Logger = loggerConfiguration.CreateLogger();
 

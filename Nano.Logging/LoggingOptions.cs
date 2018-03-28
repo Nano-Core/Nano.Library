@@ -20,12 +20,28 @@ namespace Nano.Logging
         /// <summary>
         /// Sinks.
         /// </summary>
-        public virtual string[] Sinks { get; set; } = new string[0];
+        public virtual Sink[] Sinks { get; set; } = new Sink[0];
 
         /// <summary>
         /// Log Level Overrides.
         /// </summary>
         public virtual LogLevelOverride[] LogLevelOverrides { get; set; } = new LogLevelOverride[0];
+
+        /// <summary>
+        /// Sink (nested class).
+        /// </summary>
+        public class Sink
+        {
+            /// <summary>
+            /// Name.
+            /// </summary>
+            public virtual string Name { get; set; }
+
+            /// <summary>
+            /// Connection String.
+            /// </summary>
+            public virtual string ConnectionString { get; set; }
+        }
 
         /// <summary>
         /// Log Level Override (nested class).

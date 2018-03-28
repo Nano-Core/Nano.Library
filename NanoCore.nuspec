@@ -17,6 +17,7 @@
         <dependency id="EasyNetQ" version="2.4.0-alpha0002" />
         <dependency id="Serilog.Extensions.Logging" version="2.0.2" exclude="Build,Analyzers" />
         <dependency id="Serilog.Sinks.Console" version="3.1.1" exclude="Build,Analyzers" />
+        <dependency id="Serilog.Sinks.LogstashHttp" version="1.2.0" />
         <dependency id="Microsoft.AspNetCore.Mvc.Versioning" version="2.1.0" />
         <dependency id="NetTopologySuite" version="1.15.0-pre052" />
         <dependency id="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" version="2.2.0" />
