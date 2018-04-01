@@ -46,7 +46,7 @@
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.1.0-preview1-final" />
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.1.0-preview1-final" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.1.0-preview1-final" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.1.0-preview1-final" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.1.0-preview1-final" />
