@@ -25,36 +25,46 @@ namespace Nano.App.Extensions.Serialization
 
             if (propertyType.IsTypeDef(typeof(IEntityIdentity<>)))
             {
-                property.Ignored = true;
+                if (property.DeclaringType.IsTypeDef(typeof(IEntity)))
+                {
+                    property.Ignored = true;
+                }
             }
             else if (propertyType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(propertyType))
             {
-                property.ShouldSerialize = instance =>
+                if (property.DeclaringType.IsTypeDef(typeof(IEntity)))
                 {
-                    IEnumerable enumerable = null;
-
-                    switch (member.MemberType)
+                    property.Ignored = true;
+                }
+                else
+                {
+                    property.ShouldSerialize = instance =>
                     {
-                        case MemberTypes.Field:
-                            enumerable = instance
-                                .GetType()
-                                .GetField(member.Name)
-                                .GetValue(instance) as IEnumerable;
-                            break;
+                        IEnumerable enumerable = null;
 
-                        case MemberTypes.Property:
-                            enumerable = instance
-                                .GetType()
-                                .GetProperty(member.Name)
-                                .GetValue(instance, null) as IEnumerable;
-                            break;
-                    }
+                        switch (member.MemberType)
+                        {
+                            case MemberTypes.Field:
+                                enumerable = instance
+                                    .GetType()
+                                    .GetField(member.Name)
+                                    .GetValue(instance) as IEnumerable;
+                                break;
 
-                    if (enumerable != null)
-                        return enumerable.GetEnumerator().MoveNext();
+                            case MemberTypes.Property:
+                                enumerable = instance
+                                    .GetType()
+                                    .GetProperty(member.Name)
+                                    .GetValue(instance, null) as IEnumerable;
+                                break;
+                        }
 
-                    return true;
-                };
+                        if (enumerable != null)
+                            return enumerable.GetEnumerator().MoveNext();
+
+                        return true;
+                    };
+                }
             }
 
             return property;

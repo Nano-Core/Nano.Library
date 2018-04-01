@@ -14,7 +14,7 @@ namespace Nano.Web.Controllers
     /// Base abstract <see cref="Controller"/>.
     /// </summary>
     /// <typeparam name="TService">The <see cref="IService"/>.</typeparam>
-    [Authorize]
+    // TODO: Security [Authorize]
     [Route("[controller]")]
     public abstract class BaseController<TService> : Controller
        where TService : IService

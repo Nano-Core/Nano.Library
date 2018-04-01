@@ -15,7 +15,7 @@ namespace Nano.Web.Controllers
     /// Home Controller.
     /// Contains method for handling application level operations.
     /// </summary>
-    [Authorize]
+    // TODO: Security [Authorize]
     [Route("[controller]")]
     public class HomeController : Controller
     {
