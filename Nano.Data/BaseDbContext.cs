@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Nano.Data.Attributes;
@@ -17,7 +19,7 @@ using Newtonsoft.Json;
 namespace Nano.Data
 {
     /// <inheritdoc />
-    public abstract class BaseDbContext : DbContext
+    public abstract class BaseDbContext : IdentityDbContext<IdentityUser<string>, IdentityRole<string>, string>
     {
         /// <summary>
         /// Options.
@@ -53,13 +55,48 @@ namespace Nano.Data
         }
 
         /// <inheritdoc />
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
+            if (modelBuilder == null)
+                throw new ArgumentNullException(nameof(modelBuilder));
 
-            builder
+            modelBuilder
                 .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>();
+
+            modelBuilder
+                .Entity<IdentityUserLogin<string>>()
+                .ToTable("__EFAuthUserLogin")
+                .HasKey(x => new { x.UserId, x.ProviderKey });
+
+            modelBuilder
+                .Entity<IdentityUserRole<string>>()
+                .ToTable("__EFAuthUserRole")
+                .HasKey(x => new { x.UserId, x.RoleId });
+
+            modelBuilder
+                .Entity<IdentityUserToken<string>>()
+                .ToTable("__EFAuthUserToken")
+                .HasKey(x => new { x.UserId, x.Value });
+
+            modelBuilder
+                .Entity<IdentityUserClaim<string>>()
+                .ToTable("__EFAuthUserClaim")
+                .HasKey(x => x.Id);
+
+            modelBuilder
+                .Entity<IdentityUser<string>>()
+                .ToTable("__EFAuthUser")
+                .HasKey(x => x.Id);
+
+            modelBuilder
+                .Entity<IdentityRoleClaim<string>>()
+                .ToTable("__EFAuthRoleClaim")
+                .HasKey(x => x.Id);
+
+            modelBuilder
+                .Entity<IdentityRole<string>>()
+                .ToTable("__EFAuthRole")
+                .HasKey(x => x.Id);
         }
 
         /// <summary>

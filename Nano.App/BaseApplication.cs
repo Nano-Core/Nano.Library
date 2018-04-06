@@ -85,7 +85,7 @@ namespace Nano.App
             applicationBuilder
                 .UseSession()
                 .UseStaticFiles()
-                //.UseAuthentication() // TODO: Security
+                .UseAuthentication()
                 .UseForwardedHeaders()
                 .UseResponseCompression()
                 .UseMiddleware<HttpContentTypeMiddleware>()
@@ -129,7 +129,7 @@ namespace Nano.App
                     SupportedCultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray(),
                     SupportedUICultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray()
                 })
-               .UseExceptionHandler("/Home/Error");
+               .UseExceptionHandler("/home/error");
 
             var dbContext = applicationBuilder.ApplicationServices.GetService<BaseDbContext>();
 
@@ -189,6 +189,7 @@ namespace Nano.App
                     x.AddData(config);
                     x.AddConfig(config);
                     x.AddLogging(config);
+                    x.AddSecurity(config);
                     x.AddEventing(config);
                 })
                 .UseStartup<TApplication>()

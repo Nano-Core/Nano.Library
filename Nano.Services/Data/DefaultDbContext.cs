@@ -31,12 +31,12 @@ namespace Nano.Services.Data
         }
 
         /// <inheritdoc />
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
+            if (modelBuilder == null)
+                throw new ArgumentNullException(nameof(modelBuilder));
 
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
         }
 
         /// <inheritdoc />

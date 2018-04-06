@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -33,9 +34,9 @@ using Nano.Eventing.Attributes;
 using Nano.Eventing.Interfaces;
 using Nano.Logging;
 using Nano.Logging.Interfaces;
-using Nano.Models;
 using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
+using Nano.Security;
 using Nano.Services;
 using Nano.Services.Data;
 using Nano.Services.Eventing;
@@ -149,7 +150,7 @@ namespace Nano.App.Extensions
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            return services
+            services
                 .AddScoped<DbContext, TContext>()
                 .AddScoped<BaseDbContext, TContext>()
                 .AddScoped<DefaultDbContext, TContext>()
@@ -160,6 +161,8 @@ namespace Nano.App.Extensions
                         .GetRequiredService<IDataProvider>()
                         .Configure(builder);
                 });
+
+            return services;
         }
 
         /// <summary>
@@ -185,7 +188,6 @@ namespace Nano.App.Extensions
                 .AddApi()
                 .AddCors()
                 .AddSession()
-                //.AddSecurity() // TODO: Security
                 .AddLocalizations()
                 .AddGzipCompression()
                 .AddApiVersioning(options)
@@ -339,6 +341,90 @@ namespace Nano.App.Extensions
             return services
                 .AddConfigOptions<LoggingOptions>(configuration, LoggingOptions.SectionName, out var _);
         }
+        /// <summary>
+        /// Adds <see cref="SecurityOptions"/> to the <see cref="IServiceCollection"/>, and configures security.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
+        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        internal static IServiceCollection AddSecurity(this IServiceCollection services, IConfiguration configuration)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
+
+            services
+                .AddConfigOptions<SecurityOptions>(configuration, SecurityOptions.SectionName, out var options);
+
+            if (options.IsEnabled)
+            {
+                JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+                services
+                    .AddAuthorization()
+                    .AddAuthentication(x =>
+                    {
+                        x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    })
+                    .AddJwtBearer(x =>
+                    {
+                        x.SaveToken = true;
+                        x.RequireHttpsMetadata = false;
+                        x.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            ValidIssuer = options.Jwt.Issuer,
+                            ValidAudience = options.Jwt.Issuer,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Jwt.SecretKey)),
+                            ClockSkew = TimeSpan.Zero
+                        };
+                    });
+
+                services
+                    .AddSwaggerGen(x =>
+                    {
+                        x.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                        {
+                            In = "header",
+                            Type = "jwt",
+                            Name = "authorization",
+                            Description = "Please insert JWT with Bearer..."
+                        });
+                    });
+
+                services
+                    .AddIdentity<IdentityUser, IdentityRole>(x =>
+                    {
+                        x.User.RequireUniqueEmail = options.User.RequireUniqueEmail;
+                        x.User.AllowedUserNameCharacters = options.User.AllowedUserNameCharacters;
+
+                        x.Password.RequireDigit = options.Password.RequireDigit;
+                        x.Password.RequiredLength = options.Password.RequiredLength;
+                        x.Password.RequireNonAlphanumeric = options.Password.RequireNonAlphanumeric;
+                        x.Password.RequireLowercase = options.Password.RequireLowercase;
+                        x.Password.RequireUppercase = options.Password.RequireUppercase;
+                        x.Password.RequiredUniqueChars = options.Password.RequiredUniqueCharecters;
+
+                        x.SignIn.RequireConfirmedEmail = options.SignIn.RequireConfirmedEmail;
+                        x.SignIn.RequireConfirmedPhoneNumber = options.SignIn.RequireConfirmedPhoneNumber;
+
+                        x.Lockout.AllowedForNewUsers = options.Lockout.AllowedForNewUsers;
+                        x.Lockout.DefaultLockoutTimeSpan = options.Lockout.DefaultLockoutTimeSpan;
+                        x.Lockout.MaxFailedAccessAttempts = options.Lockout.MaxFailedAccessAttempts;
+                    })
+                    .AddEntityFrameworkStores<DefaultDbContext>()
+                    .AddDefaultTokenProviders();
+            }
+
+            return services;
+        }
 
         /// <summary>
         /// Adds <see cref="EventingOptions"/> to the <see cref="IServiceCollection"/>.
@@ -373,35 +459,6 @@ namespace Nano.App.Extensions
                 {
                     services
                         .AddScoped(x);
-                });
-
-            return services;
-        }
-        private static IServiceCollection AddSecurity(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services
-                .AddIdentity<DefaultEntity, DefaultEntity>()
-                .AddUserStore<DefaultEntity>()
-                .AddTokenProvider("", typeof(JwtSecurityToken));
-
-            services
-                .AddAuthorization()
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(x =>
-                {
-                    x.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = "issuer",
-                        ValidAudience = "issuer",
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("veryVerySecretKey"))
-                    };
                 });
 
             return services;
@@ -540,14 +597,7 @@ namespace Nano.App.Extensions
                     x.IgnoreObsoleteProperties();
                     x.DescribeAllEnumsAsStrings();
 
-                    // TODO: Security
-                    //x.AddSecurityDefinition("Bearer", new ApiKeyScheme
-                    //{
-                    //    In = "header",
-                    //    Type = "jwt",
-                    //    Name = "Authorization",
-                    //    Description = "Please insert JWT with Bearer into field"
-                    //});
+                   
 
                     x.DocumentFilter<LowercaseDocumentFilter>();
                     x.DocumentFilter<ActionOrderingDocumentFilter>();

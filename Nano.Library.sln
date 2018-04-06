@@ -50,6 +50,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nano.Config", "Nano.Config\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Nano.Config", ".tests\Tests.Nano.Config\Tests.Nano.Config.csproj", "{6D8D2A03-0AFC-4B81-A249-DE71D9C779E9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.Security", "Nano.Security\Nano.Security.csproj", "{4A158BDD-CBCD-4007-8AB5-A21E188B11DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -124,6 +126,10 @@ Global
 		{6D8D2A03-0AFC-4B81-A249-DE71D9C779E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D8D2A03-0AFC-4B81-A249-DE71D9C779E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D8D2A03-0AFC-4B81-A249-DE71D9C779E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A158BDD-CBCD-4007-8AB5-A21E188B11DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A158BDD-CBCD-4007-8AB5-A21E188B11DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A158BDD-CBCD-4007-8AB5-A21E188B11DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A158BDD-CBCD-4007-8AB5-A21E188B11DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
