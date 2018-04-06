@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>0.3.149-alpha</version>
+    <version>0.4.0-beta1</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -45,10 +45,13 @@
         <dependency id="Microsoft.Extensions.Configuration.EnvironmentVariables" version="2.1.0-preview1-final" />
         <dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="2.1.0-preview1-final" />
         <dependency id="Microsoft.Extensions.Configuration.Json" version="2.1.0-preview1-final" />
-        <dependency id="DynamicExpression" version="1.1.1" />
-        <dependency id="Serilog.Sinks.LogstashHttp" version="1.2.0" />
         <dependency id="Microsoft.AspNetCore.Rewrite" version="2.1.0-preview1-final" />
         <dependency id="Swashbuckle.AspNetCore" version="2.3.0" />
+        <dependency id="DynamicExpression" version="1.1.2" />
+        <dependency id="Microsoft.AspNetCore.Authentication" version="2.1.0-preview1-final" />
+        <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="2.1.0-preview1-final" />
+        <dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="2.0.2" />
+        <dependency id="Microsoft.AspNetCore.Identity" version="2.0.2" />
       </group>
     </dependencies>
   </metadata>

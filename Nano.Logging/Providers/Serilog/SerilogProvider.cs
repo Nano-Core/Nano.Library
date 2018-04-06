@@ -40,13 +40,6 @@ namespace Nano.Logging.Providers.Serilog
                     .WriteTo.Console();
             }
 
-            var logstash = this.Options.Sinks?.FirstOrDefault(x => x?.Name?.ToLower() == "logstash");
-            if (logstash != null)
-            {
-                loggerConfiguration
-                    .WriteTo.LogstashHttp(logstash.ConnectionString);
-            }
-
             loggerConfiguration
                 .Enrich.FromLogContext();
 
