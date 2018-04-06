@@ -341,6 +341,7 @@ namespace Nano.App.Extensions
             return services
                 .AddConfigOptions<LoggingOptions>(configuration, LoggingOptions.SectionName, out var _);
         }
+       
         /// <summary>
         /// Adds <see cref="SecurityOptions"/> to the <see cref="IServiceCollection"/>, and configures security.
         /// </summary>
@@ -393,9 +394,8 @@ namespace Nano.App.Extensions
                         x.AddSecurityDefinition("Bearer", new ApiKeyScheme
                         {
                             In = "header",
-                            Type = "jwt",
-                            Name = "authorization",
-                            Description = "Please insert JWT with Bearer..."
+                            Type = "apiKey",
+                            Name = "Authorization"
                         });
                     });
 
