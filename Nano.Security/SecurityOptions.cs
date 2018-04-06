@@ -149,7 +149,7 @@ namespace Nano.Security
             /// <summary>
             /// Required Unique Characters.
             /// </summary>
-            public virtual int RequiredUniqueCharecters { get; set; } = 0;
+            public virtual int RequiredUniqueCharecters { get; set; } = 3;
         }
     }
 }
