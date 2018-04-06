@@ -47,8 +47,10 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Index([FromQuery][FromBody]Query query, CancellationToken cancellationToken = new CancellationToken())
         {
+            query = query ?? new Query();
+
             var result = await this.Service
-                .GetAllAsync<TEntity>(query ?? new Query(), cancellationToken);
+                .GetAllAsync<TEntity>(query, cancellationToken);
 
             if (result == null)
                 return this.NotFound();
@@ -121,9 +123,9 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Gets the models, matching the query criteria, pagination and ordering.
+        /// Gets the models, matching the query query, pagination and ordering.
         /// </summary>
-        /// <param name="criteria">The criteria model, containing filters used in the query.</param>
+        /// <param name="query">The query model, containing filters used in the query.</param>
         /// <param name="cancellationToken">The cancellationToken.</param>
         /// <returns>The models.</returns>
         /// <response code="200">Success.</response>
@@ -137,10 +139,12 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Query([FromQuery][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Query([FromQuery][FromBody]Query<TCriteria> query, CancellationToken cancellationToken = new CancellationToken())
         {
+            query = query ?? new Query<TCriteria>();
+
             var result = await this.Service
-                .GetManyAsync<TEntity, TCriteria>(criteria, cancellationToken);
+                .GetManyAsync<TEntity, TCriteria>(query, cancellationToken);
 
             if (result == null)
                 return this.NotFound();
