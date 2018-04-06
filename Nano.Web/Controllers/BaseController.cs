@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -11,12 +10,36 @@ using Nano.Services.Interfaces;
 namespace Nano.Web.Controllers
 {
     /// <summary>
-    /// Base abstract <see cref="Controller"/>.
+    /// Base controller.
+    /// </summary>
+    // TODO: [Authorize]
+    [Route("[controller]")]
+    public abstract class BaseController : Controller
+    {
+        /// <inheritdoc />
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+
+            if (context.ModelState.IsValid)
+                return;
+
+            var error = new Error
+            {
+                Summary = "Invalid ModelState",
+                Errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage)).ToArray()
+            };
+
+            context.Result = this.BadRequest(error);
+        }
+    }
+
+    /// <summary>
+    /// Base generic controller.
     /// </summary>
     /// <typeparam name="TService">The <see cref="IService"/>.</typeparam>
-    // TODO: Security [Authorize]
-    [Route("[controller]")]
-    public abstract class BaseController<TService> : Controller
+    public abstract class BaseController<TService> : BaseController
        where TService : IService
     {
         /// <summary>
@@ -54,24 +77,6 @@ namespace Nano.Web.Controllers
             this.Logger = logger;
             this.Service = service;
             this.Eventing = eventing;
-        }
-
-        /// <inheritdoc />
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
-
-            if (context.ModelState.IsValid)
-                return;
-
-            var error = new Error
-            {
-                Summary = "Invalid ModelState",
-                Errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage)).ToArray()
-            };
-
-            context.Result = this.BadRequest(error);
         }
     }
 }

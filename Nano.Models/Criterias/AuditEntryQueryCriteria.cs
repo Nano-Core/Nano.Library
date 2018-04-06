@@ -1,7 +1,6 @@
 using DynamicExpression;
-using Nano.Models.Criterias;
 
-namespace Nano.Web.Controllers.Criterias
+namespace Nano.Models.Criterias
 {
     /// <inheritdoc />
     public class AuditEntryQueryCriteria : BaseQueryCriteria

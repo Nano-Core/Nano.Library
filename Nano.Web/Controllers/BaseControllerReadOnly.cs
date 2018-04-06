@@ -45,7 +45,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Index([FromQuery][FromBody]Query query, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Index([FromQuery][FromBody]IQuery query, CancellationToken cancellationToken = default)
         {
             query = query ?? new Query();
 
@@ -78,7 +78,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Details([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Details([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
         {
             var result = await this.Service
                 .GetAsync<TEntity, TIdentity>(id, cancellationToken);
@@ -108,7 +108,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Details([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Details([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
         {
             var result = await this.Service
                 .GetManyAsync<TEntity, TIdentity>(ids, cancellationToken);
@@ -139,7 +139,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Query([FromQuery][FromBody]Query<TCriteria> query, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Query([FromQuery][FromBody]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         {
             query = query ?? new Query<TCriteria>();
 

@@ -1,4 +1,5 @@
 using System;
+using DynamicExpression.Entities;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Nano.Models.Criterias;
@@ -16,15 +17,17 @@ namespace Nano.App.Extensions.ModelBinders
 
             var modelType = context.Metadata.ModelType;
 
-            if (modelType == typeof(IQuery<>))
-                return (IModelBinder)Activator.CreateInstance(typeof(QueryModelBinder<DefaultQueryCriteria>));
-
-            if (modelType.IsGenericType && modelType.GetGenericTypeDefinition() == typeof(IQuery<>))
+            if (modelType.IsGenericType && (modelType.GetGenericTypeDefinition() == typeof(IQuery<>) || modelType.GetGenericTypeDefinition() == typeof(Query<>)))
             {
                 var types = modelType.GetGenericArguments();
                 var genericType = typeof(QueryModelBinder<>).MakeGenericType(types);
 
                 return (IModelBinder)Activator.CreateInstance(genericType);
+            }
+
+            if (modelType == typeof(IQuery) || modelType == typeof(Query))
+            {
+                return (IModelBinder)Activator.CreateInstance(typeof(QueryModelBinder<DefaultQueryCriteria>));
             }
 
             return null;

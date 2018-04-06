@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using DynamicExpression.Entities;
 using DynamicExpression.Extensions;
 using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -62,7 +61,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
             where TCriteria : class, IQueryCriteria, new()
         {
@@ -91,7 +90,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(Query query, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(IQuery query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
         {
             if (query == null)

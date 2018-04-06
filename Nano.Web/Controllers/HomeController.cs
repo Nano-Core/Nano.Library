@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +14,7 @@ namespace Nano.Web.Controllers
     /// Home Controller.
     /// Contains method for handling application level operations.
     /// </summary>
-    // TODO: Security [Authorize]
+    // TODO: [Authorize]
     [Route("[controller]")]
     public class HomeController : Controller
     {
@@ -123,7 +122,7 @@ namespace Nano.Web.Controllers
         [Route("language")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.OK)]
-        public virtual IActionResult SetLanguage([FromQuery][FromHeader(Name = "Accept-Language")][Required]string code, [FromQuery]string returnUrl, CancellationToken cancellationToken = new CancellationToken())
+        public virtual IActionResult SetLanguage([FromQuery][FromHeader(Name = "Accept-Language")][Required]string code, [FromQuery]string returnUrl, CancellationToken cancellationToken = default)
         {
             // FEATURE: Http Localization, how to use IRequestCultureProviders? HomeController.SetLanguage?
 

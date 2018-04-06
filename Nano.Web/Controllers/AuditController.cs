@@ -10,8 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Nano.Models;
+using Nano.Models.Criterias;
 using Nano.Services.Data;
-using Nano.Web.Controllers.Criterias;
 using Nano.Web.Controllers.Extensions;
 
 namespace Nano.Web.Controllers
@@ -52,7 +52,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Index([FromQuery][FromBody]Query query, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Index([FromQuery][FromBody]Query query, CancellationToken cancellationToken = default)
         {
             var result = await this.Context.__EFAudit
                 .Order(query.Order)
@@ -86,7 +86,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Details([FromRoute][Required]int id, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Details([FromRoute][Required]int id, CancellationToken cancellationToken = default)
         {
             var result = await this.Context.__EFAudit
                 .FindAsync(new[] { (object)id }, cancellationToken);
@@ -116,7 +116,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Details([FromForm][FromBody][Required]int[] ids, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Details([FromForm][FromBody][Required]int[] ids, CancellationToken cancellationToken = default)
         {
             var result = await this.Context.__EFAudit
                 .Where(x => ids.Any(y => y == x.AuditEntryID))
@@ -147,7 +147,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Query([FromForm][FromBody][Required]Query<AuditEntryQueryCriteria> query, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Query([FromForm][FromBody][Required]Query<AuditEntryQueryCriteria> query, CancellationToken cancellationToken = default)
         {
             var result = await this.Context
                 .__EFAudit

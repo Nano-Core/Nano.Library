@@ -40,7 +40,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Intersects([FromForm][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Intersects([FromForm][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = default)
         {
             var result = await this.Service
                 .Intersects<TEntity, TCriteria>(criteria, cancellationToken);
@@ -67,7 +67,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Covers([FromForm][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Covers([FromForm][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = default)
         {
             var result = await this.Service
                 .Covers<TEntity, TCriteria>(criteria, cancellationToken);
@@ -94,7 +94,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> CoveredBy([FromForm][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> CoveredBy([FromForm][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = default)
         {
             var result = await this.Service
                 .CoveredBy<TEntity, TCriteria>(criteria, cancellationToken);
@@ -121,7 +121,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Overlaps([FromForm][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Overlaps([FromForm][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = default)
         {
             var result = await this.Service
                 .Overlaps<TEntity, TCriteria>(criteria, cancellationToken);
@@ -148,7 +148,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Touches([FromForm][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Touches([FromForm][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = default)
         {
             var result = await this.Service
                 .Touches<TEntity, TCriteria>(criteria, cancellationToken);
@@ -175,7 +175,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Crosses([FromForm][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Crosses([FromForm][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = default)
         {
             var result = await this.Service
                 .Crosses<TEntity, TCriteria>(criteria, cancellationToken);
@@ -202,7 +202,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Disjoints([FromForm][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Disjoints([FromForm][FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = default)
         {
             var result = await this.Service
                 .Disjoints<TEntity, TCriteria>(criteria, cancellationToken);
@@ -231,7 +231,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Within([FromForm][FromBody][Required]Query<TCriteria> criteria, double distance, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<IActionResult> Within([FromForm][FromBody][Required]Query<TCriteria> criteria, double distance, CancellationToken cancellationToken = default)
         {
             var result = await this.Service
                 .Within<TEntity, TCriteria>(criteria, distance, cancellationToken);

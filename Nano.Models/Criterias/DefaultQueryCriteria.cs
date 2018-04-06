@@ -7,8 +7,9 @@ namespace Nano.Models.Criterias
     public class DefaultQueryCriteria : BaseQueryCriteria
     {
         /// <summary>
-        /// Is Active (read-only).
-        /// Default: true.
+        /// Is Active.
+        /// Default: true. 
+        /// WHen soft-deleted it's set to false instead of deleting data.
         /// </summary>
         public virtual bool IsActive { get; } = true;
 

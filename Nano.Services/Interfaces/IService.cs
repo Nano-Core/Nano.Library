@@ -46,7 +46,7 @@ namespace Nano.Services.Interfaces
         /// <param name="query">The <see cref="IQuery{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
-        Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(Query<TCriteria> query, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
             where TCriteria : class, IQueryCriteria, new();
 
@@ -67,7 +67,7 @@ namespace Nano.Services.Interfaces
         /// <param name="query">The <see cref="Query"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
-        Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(Query query, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(IQuery query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity;
 
         /// <summary>
