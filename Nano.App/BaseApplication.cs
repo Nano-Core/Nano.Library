@@ -169,6 +169,7 @@ namespace Nano.App
             var config = ConfigManager.BuildConfiguration(args);
             var shutdownTimeout = TimeSpan.FromSeconds(10);
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+            var applicationKey = Assembly.GetEntryAssembly().FullName;
 
             var options = config.GetSection(AppOptions.SectionName).Get<AppOptions>() ?? new AppOptions();
             var urls = options.Hosting.Ports.Select(x => $"http://*:{x}").Distinct().ToArray();
@@ -193,7 +194,7 @@ namespace Nano.App
                     x.AddEventing(config);
                 })
                 .UseStartup<TApplication>()
-                .UseSetting(WebHostDefaults.ApplicationKey, Assembly.GetEntryAssembly().FullName);
+                .UseSetting(WebHostDefaults.ApplicationKey, applicationKey);
         }
     }
 }
