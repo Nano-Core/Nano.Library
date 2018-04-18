@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -12,8 +13,8 @@ namespace Nano.Web.Controllers
     /// <summary>
     /// Base controller.
     /// </summary>
-    // TODO: [Authorize]
     [Route("[controller]")]
+    [Authorize(Roles = "administrator, service")]
     public abstract class BaseController : Controller
     {
         /// <inheritdoc />

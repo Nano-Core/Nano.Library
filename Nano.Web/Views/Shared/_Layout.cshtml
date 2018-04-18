@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Example Service</title>
+    <title>@ViewData["Title"]</title>
     <link id="favicon" rel="shortcut icon" type="image/png" href="" />
     <environment names="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -24,9 +24,6 @@
         <hr />
         <footer>
             <div class="row">
-                <div class="col-md-6">
-                    <p>&copy; 2015 - Localization.StarterWeb</p>
-                </div>
                 <div class="col-md-6 text-right">
                     @await Html.PartialAsync("_SelectLanguagePartial")
                 </div>

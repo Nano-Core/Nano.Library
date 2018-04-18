@@ -2,20 +2,4 @@
     ViewData["Title"] = "Index";
 }
 
-<h2>Index</h2>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-
-@if (TempData["SuccessMessage"] != null)
-{
-    <p class="alert alert-success" id="successMessage">@(Html.Raw(TempData["SuccessMessage"]))</p>
-}
-
-<table class="table">
-    <thead>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+<h1>@ViewData["Title"]</h1>

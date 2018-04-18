@@ -2,11 +2,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Nano.Models;
-using Nano.Web.Controllers.Extensions;
+using Nano.Web.Extensions;
 
 namespace Nano.Web.Controllers
 {
@@ -14,9 +15,8 @@ namespace Nano.Web.Controllers
     /// Home Controller.
     /// Contains method for handling application level operations.
     /// </summary>
-    // TODO: [Authorize]
-    [Route("[controller]")]
-    public class HomeController : Controller
+    [Authorize(Roles = "administrator, service, writer, reader, guest")]
+    public class HomeController : BaseController
     {
         /// <summary>
         /// Gets Ok response.
@@ -41,7 +41,6 @@ namespace Nano.Web.Controllers
         /// <returns>Nothing (void).</returns>
         /// <response code="200">Success.</response>
         [HttpGet]
-        [HttpPost]
         [Route("ping")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
@@ -97,12 +96,11 @@ namespace Nano.Web.Controllers
         /// <param name="error">The error.</param>
         /// <returns>The error.</returns>
         /// <response code="200">Success.</response>
-        [HttpGet]
         [HttpPost]
         [Route("error")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.OK)]
-        public virtual IActionResult Error([FromQuery][FromBody][Required]Error error)
+        public virtual IActionResult Error([FromBody][Required]Error error)
         {
             if (this.Response.IsContentTypeHtml())
                 return this.View(error);

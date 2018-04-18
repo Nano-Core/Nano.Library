@@ -13,11 +13,6 @@ namespace Nano.Security
         public static string SectionName => "Security";
 
         /// <summary>
-        /// Is Enabled.
-        /// </summary>
-        public virtual bool IsEnabled { get; set; } = false;
-
-        /// <summary>
         /// Jwt Options.
         /// </summary>
         public virtual JwtOptions Jwt { get; set; } = new JwtOptions();
@@ -50,12 +45,17 @@ namespace Nano.Security
             /// <summary>
             /// Issuer.
             /// </summary>
-            public virtual string Issuer { get; set; }
+            public virtual string Issuer { get; set; } = "issuer";
+
+            /// <summary>
+            /// Audience.
+            /// </summary>
+            public virtual string Audience { get; set; } = "audience";
 
             /// <summary>
             /// Secret Key.
             /// </summary>
-            public virtual string SecretKey { get; set; }
+            public virtual string SecretKey { get; set; } = null;
 
             /// <summary>
             /// Expiration In Hours.
@@ -76,7 +76,22 @@ namespace Nano.Security
             /// <summary>
             /// Allowed User Name Characters.
             /// </summary>
-            public virtual string AllowedUserNameCharacters { get; set; }
+            public virtual string AllowedUserNameCharacters { get; set; } = null;
+
+            /// <summary>
+            /// Admin Username.
+            /// </summary>
+            public virtual string AdminUsername { get; set; } = "admin";
+
+            /// <summary>
+            /// Admin Password.
+            /// </summary>
+            public virtual string AdminPassword { get; set; } = "password";
+
+            /// <summary>
+            /// Admin Email Address.
+            /// </summary>
+            public virtual string AdminEmailAddress { get; set; } = "admin@nobody.com";
         }
 
         /// <summary>

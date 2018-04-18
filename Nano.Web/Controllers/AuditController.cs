@@ -6,20 +6,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Entities;
 using DynamicExpression.Extensions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Nano.Data;
 using Nano.Models;
 using Nano.Models.Criterias;
-using Nano.Services.Data;
-using Nano.Web.Controllers.Extensions;
+using Nano.Web.Extensions;
 
 namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
-    [Authorize]
-    [Route("[controller]")]
-    public class AuditController : Controller
+    public class AuditController : BaseController
     {
         /// <summary>
         /// Context.
@@ -46,14 +43,15 @@ namespace Nano.Web.Controllers
         /// <response code="400">The request model is invalid.</response>
         /// <response code="500">An error occured when processing the request.</response>
         [HttpGet]
-        [HttpPost]
         [Route("index")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Index([FromQuery][FromBody]Query query, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> Index([FromQuery][Required]Query query, CancellationToken cancellationToken = default)
         {
+            query = query ?? new Query();
+
             var result = await this.Context.__EFAudit
                 .Order(query.Order)
                 .Limit(query.Paging)
@@ -64,7 +62,43 @@ namespace Nano.Web.Controllers
                 return this.NotFound();
 
             if (this.Request.IsContentTypeHtml())
-                return this.View(result);
+                return this.View("Index", result);
+
+            return this.Ok(result);
+        }
+
+        /// <summary>
+        /// Gets all models. 
+        /// Filtered by query model parameters (pagination and ordering).
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>A collection of models.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="500">An error occured when processing the request.</response>
+        [HttpGet]
+        [HttpPost]
+        [Route("index")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> IndexPost([FromBody][Required]Query query, CancellationToken cancellationToken = default)
+        {
+            query = query ?? new Query();
+
+            var result = await this.Context.__EFAudit
+                .Order(query.Order)
+                .Limit(query.Paging)
+                .Include(x => x.Properties)
+                .ToArrayAsync(cancellationToken);
+
+            if (result == null)
+                return this.NotFound();
+
+            if (this.Request.IsContentTypeHtml())
+                return this.View("Index", result);
 
             return this.Ok(result);
         }
@@ -116,7 +150,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Details([FromForm][FromBody][Required]int[] ids, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> DetailsPost([FromBody][Required]int[] ids, CancellationToken cancellationToken = default)
         {
             var result = await this.Context.__EFAudit
                 .Where(x => ids.Any(y => y == x.AuditEntryID))
@@ -126,7 +160,41 @@ namespace Nano.Web.Controllers
                 return this.NotFound();
 
             if (this.Request.IsContentTypeHtml())
-                return this.View(result);
+                return this.View("Details", result);
+
+            return this.Ok(result);
+        }
+
+        /// <summary>
+        /// Gets the models, matching the query criteria, pagination and ordering.
+        /// </summary>
+        /// <param name="query">The query criteria model, containing filters used in the query.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>The models.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">The request model is invalid.</response>
+        /// <response code="500">An error occured when processing the request.</response>>
+        [HttpGet]
+        [Route("query")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> Query([FromQuery][Required]Query<AuditEntryQueryCriteria> query, CancellationToken cancellationToken = default)
+        {
+            var result = await this.Context
+                .__EFAudit
+                .Where(query.Criteria)
+                .Order(query.Order)
+                .Limit(query.Paging)
+                .ToArrayAsync(cancellationToken);
+
+            if (result == null)
+                return this.NotFound();
+
+            if (this.Request.IsContentTypeHtml())
+                return this.View("Index", result);
 
             return this.Ok(result);
         }
@@ -147,7 +215,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Query([FromForm][FromBody][Required]Query<AuditEntryQueryCriteria> query, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> QueryPost([FromBody][Required]Query<AuditEntryQueryCriteria> query, CancellationToken cancellationToken = default)
         {
             var result = await this.Context
                 .__EFAudit

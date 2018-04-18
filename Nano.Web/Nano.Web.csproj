@@ -31,35 +31,29 @@
   <ItemGroup>
     <None Remove="Views\Audit\Details.cshtml" />
     <None Remove="Views\Audit\Index.cshtml" />
+    <None Remove="Views\Auth\Forbidden.cshtml" />
+    <None Remove="Views\Auth\Index.cshtml" />
     <None Remove="Views\Home\Options.cshtml" />
     <None Remove="Views\Home\Ping.cshtml" />
     <None Remove="Views\Home\Versions.cshtml" />
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Xml" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Xml" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="2.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.1.0-preview1-final" />
+    <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="2.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.1.0-preview2-final" />
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\Nano.Config\Nano.Config.csproj" />
-    <ProjectReference Include="..\Nano.Data\Nano.Data.csproj" />
-    <ProjectReference Include="..\Nano.Eventing\Nano.Eventing.csproj" />
-    <ProjectReference Include="..\Nano.Logging\Nano.Logging.csproj" />
-    <ProjectReference Include="..\Nano.Models\Nano.Models.csproj" />
-    <ProjectReference Include="..\Nano.Security\Nano.Security.csproj" />
-    <ProjectReference Include="..\Nano.Services\Nano.Services.csproj" />
+    <ProjectReference Include="..\Nano.App\Nano.App.csproj" />
   </ItemGroup>
 
 </Project>

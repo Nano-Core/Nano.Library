@@ -26,8 +26,8 @@
 
   <ItemGroup>
     <PackageReference Include="DynamicExpression" Version="1.1.3" />
-    <PackageReference Include="NetTopologySuite" Version="1.15.0-pre052" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0-preview1-26216-02" />
+    <PackageReference Include="NetTopologySuite" Version="1.15.0-pre063" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0-preview2-26406-04" />
   </ItemGroup>
 
 </Project>

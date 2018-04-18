@@ -2,17 +2,4 @@
     ViewData["Title"] = "Create";
 }
 
-<h2>Create</h2>
-
-<form asp-action="Create">
-    <div class="form-horizontal">
-    </div>
-</form>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+<h1>@ViewData["Title"]</h1>

@@ -38,7 +38,10 @@ namespace Nano.Data.Providers.MySql
 
             builder
                 // FEATURE: .UseLazyLoadingProxies(useLazyLoading)
-                .UseMySql(connectionString, x => x.MaxBatchSize(batchSize));
+                .UseMySql(connectionString, x =>
+                {
+                    x.MaxBatchSize(batchSize);
+                });
         }
     }
 }

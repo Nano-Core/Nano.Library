@@ -9,17 +9,20 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Logging;
 using Nano.Data.Attributes;
 using Nano.Data.Models;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
 using Nano.Models.Interfaces;
+using Nano.Security;
 using Newtonsoft.Json;
 
 namespace Nano.Data
 {
     /// <inheritdoc />
-    public abstract class BaseDbContext : IdentityDbContext<IdentityUser<string>, IdentityRole<string>, string>
+    public abstract class BaseDbContext : IdentityDbContext
     {
         /// <summary>
         /// Options.
@@ -80,23 +83,52 @@ namespace Nano.Data
 
             modelBuilder
                 .Entity<IdentityUserClaim<string>>()
-                .ToTable("__EFAuthUserClaim")
-                .HasKey(x => x.Id);
+                .ToTable("__EFAuthUserClaim");
 
             modelBuilder
-                .Entity<IdentityUser<string>>()
-                .ToTable("__EFAuthUser")
-                .HasKey(x => x.Id);
+                .Entity<IdentityUser>()
+                .ToTable("__EFAuthUser");
 
             modelBuilder
                 .Entity<IdentityRoleClaim<string>>()
-                .ToTable("__EFAuthRoleClaim")
-                .HasKey(x => x.Id);
+                .ToTable("__EFAuthRoleClaim");
 
             modelBuilder
-                .Entity<IdentityRole<string>>()
-                .ToTable("__EFAuthRole")
-                .HasKey(x => x.Id);
+                .Entity<IdentityRole>()
+                .ToTable("__EFAuthRole");
+        }
+
+        /// <summary>
+        /// Imports data for all models annotated with <see cref="DataImportAttribute"/>.
+        /// </summary>
+        /// <returns>The <see cref="Task"/> (void).</returns>
+        public virtual async Task EnsureSeedAsync(CancellationToken cancellationToken = default)
+        {
+            var securityOptions = this.GetService<SecurityOptions>() ?? new SecurityOptions();
+
+            await this.AddRole("guest");
+            await this.AddRole("reader");
+            await this.AddRole("writer");
+            await this.AddRole("service");
+            await this.AddRole("administrator");
+
+            var adminUser = await this.AddUser(securityOptions.User.AdminUsername, securityOptions.User.AdminPassword, securityOptions.User.AdminEmailAddress);
+
+            await this.AddUserToRole(adminUser, "service");
+            await this.AddUserToRole(adminUser, "administrator");
+
+            await this.SaveChangesAsync(cancellationToken)
+                .ContinueWith(x =>
+                {
+                    if (x.IsFaulted)
+                    {
+                        var logger = this.GetService<ILogger>();
+                        var message = x.Exception.Message;
+                        var excption = x.Exception.Flatten();
+
+                        logger.LogError(excption, message);
+                    }
+                }, cancellationToken);
         }
 
         /// <summary>
@@ -119,6 +151,17 @@ namespace Nano.Data
                         await this
                             .AddRangeAsync(attribute.Uri, y, cancellationToken);
                     });
+            }, cancellationToken)
+            .ContinueWith(x =>
+            {
+                if (x.IsFaulted)
+                {
+                    var logger = this.GetService<ILogger>();
+                    var message = x.Exception.Message;
+                    var excption = x.Exception.Flatten();
+
+                    logger.LogError(excption, message);
+                }
             }, cancellationToken);
         }
 
@@ -132,7 +175,18 @@ namespace Nano.Data
                 return;
 
             await this.Database
-                .EnsureCreatedAsync(cancellationToken);
+                .EnsureCreatedAsync(cancellationToken)
+                .ContinueWith(x =>
+                {
+                    if (x.IsFaulted)
+                    {
+                        var logger = this.GetService<ILogger>();
+                        var message = x.Exception.Message;
+                        var excption = x.Exception.Flatten();
+
+                        logger.LogError(excption, message);
+                    }
+                }, cancellationToken);
         }
 
         /// <summary>
@@ -145,7 +199,18 @@ namespace Nano.Data
                 return;
 
             await this.Database
-                .MigrateAsync(cancellationToken);
+                .MigrateAsync(cancellationToken)
+                .ContinueWith(x =>
+                {
+                    if (x.IsFaulted)
+                    {
+                        var logger = this.GetService<ILogger>();
+                        var message = x.Exception.Message;
+                        var excption = x.Exception.Flatten();
+
+                        logger.LogError(excption, message);
+                    }
+                }, cancellationToken);
         }
 
         /// <summary>
@@ -232,6 +297,73 @@ namespace Nano.Data
             foreach (var entity in entities)
             {
                 this.AddOrUpdate(entity);
+            }
+        }
+
+        private async Task<IdentityRole> AddRole(string role)
+        {
+            if (role == null)
+                throw new ArgumentNullException(nameof(role));
+
+            var roleManager = this.GetService<RoleManager<IdentityRole>>();
+
+            var exists = await roleManager.RoleExistsAsync(role);
+            if (!exists)
+            {
+                var identityRole = new IdentityRole(role);
+                await roleManager.CreateAsync(identityRole);
+
+                return identityRole;
+            }
+
+            return await roleManager.FindByNameAsync(role);
+        }
+        private async Task<IdentityUser> AddUser(string username, string password, string emailAddress)
+        {
+            if (username == null)
+                throw new ArgumentNullException(nameof(username));
+
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
+
+            if (emailAddress == null)
+                throw new ArgumentNullException(nameof(emailAddress));
+
+            var userManager = this.GetService<UserManager<IdentityUser>>();
+
+            var user = await userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                user = new IdentityUser
+                {
+                    UserName = username,
+                    Email = emailAddress,
+                    EmailConfirmed = true,
+                    PhoneNumber = "+1-000-000-0000",
+                    PhoneNumberConfirmed = true
+                };
+
+                await userManager.CreateAsync(user, password);
+
+                return user;
+            }
+
+            return await userManager.FindByNameAsync(username);
+        }
+        private async Task AddUserToRole(IdentityUser user, string role)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            if (role == null)
+                throw new ArgumentNullException(nameof(role));
+
+            var userManager = this.GetService<UserManager<IdentityUser>>();
+
+            var isInRole = await userManager.IsInRoleAsync(user, role);
+            if (!isInRole)
+            {
+                await userManager.AddToRoleAsync(user, role);
             }
         }
     }

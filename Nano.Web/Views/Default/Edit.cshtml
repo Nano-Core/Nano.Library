@@ -2,17 +2,4 @@
     ViewData["Title"] = "Edit";
 }
 
-<h2>Edit</h2>
-
-<form asp-action="Edit" method="put">
-    <div class="form-horizontal">
-    </div>
-</form>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+<h1>@ViewData["Title"]</h1>

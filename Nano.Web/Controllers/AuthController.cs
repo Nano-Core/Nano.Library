@@ -14,7 +14,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Nano.Models;
 using Nano.Security;
-using Nano.Web.Controllers.Extensions;
+using Nano.Web.Controllers.Entities;
+using Nano.Web.Extensions;
 
 namespace Nano.Web.Controllers
 {
@@ -22,7 +23,6 @@ namespace Nano.Web.Controllers
     /// Auth Controller.
     /// </summary>
     [AllowAnonymous]
-    [Route("[controller]")]
     public class AuthController : BaseController
     {
         /// <summary>
@@ -63,9 +63,34 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
+        /// Gets the view for index.
+        /// </summary>
+        /// <returns>The view.</returns>
+        [HttpGet]
+        [Route("index")]
+        [Produces(HttpContentType.HTML)]
+        public virtual IActionResult Index()
+        {
+            return this.View();
+        }
+
+        /// <summary>
+        /// Gets the view for access denied.
+        /// </summary>
+        /// <returns>The view.</returns>
+        [HttpGet]
+        [Route("forbidden")]
+        [Produces(HttpContentType.HTML)]
+        public virtual IActionResult Forbidden()
+        {
+            return View();
+        }
+
+        /// <summary>
         /// The user authenticates and on success recieves a jwt token for use with auhtorization.
         /// </summary>
         /// <param name="login">The login model.</param>
+        /// <param name="returnUrl"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A jwt token.</returns>
         /// <response code="200">Success.</response>
@@ -76,10 +101,10 @@ namespace Nano.Web.Controllers
         [Route("login")]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<object> Login([FromBody][Required]Login login, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> Login([FromBody][Required]Login login, string returnUrl = null, CancellationToken cancellationToken = default)
         {
             var result = await this.SignInManager
                 .PasswordSignInAsync(login.Username, login.Password, false, false);
@@ -87,8 +112,13 @@ namespace Nano.Web.Controllers
             if (!result.Succeeded)
                 return this.Unauthorized();
 
-            var user = this.UserManager.Users.SingleOrDefault(x => x.UserName == login.Username);
+            var user = this.UserManager.Users
+                .SingleOrDefault(x => x.UserName == login.Username);
+
             var token = await this.GenerateJwtToken(user);
+
+            if (this.Request.IsContentTypeHtml())
+                return this.LocalRedirect(returnUrl);
 
             return this.Ok(token);
         }
@@ -97,25 +127,38 @@ namespace Nano.Web.Controllers
         /// The user is logged out, and the token is invalidated.
         /// Usually, it's not needed to call this method, unless having a specific reason for invalidating a token.
         /// </summary>
-        /// <param name="logout">The logout model</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="Task"/> (void).</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">The request model is invalid.</response>
+        [HttpGet]
         [HttpPost]
         [Route("logout")]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task Logout([FromBody][Required]Logout logout, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> Logout(CancellationToken cancellationToken = default)
         {
-             await Task.Factory.StartNew(() => {  }, cancellationToken);
+            await this.SignInManager.SignOutAsync();
+
+            if (this.Request.IsContentTypeHtml())
+                return this.RedirectToAction("Index");
+
+            return this.Ok();
         }
 
-        private async Task<object> GenerateJwtToken(IdentityUser user)
+        /// <summary>
+        /// Generates the Jwt token.
+        /// </summary>
+        /// <param name="user">The <see cref="IdentityUser"/>.</param>
+        /// <returns>The token.</returns>
+        protected virtual async Task<AccessToken> GenerateJwtToken(IdentityUser user)
         {
+            var roles = await this.UserManager.GetRolesAsync(user);
             var userClaims = await this.UserManager.GetClaimsAsync(user);
+            var roleClaims = roles.Select(x => new Claim(ClaimTypes.Role, x));
+
             var claims = new Collection<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
@@ -123,15 +166,20 @@ namespace Nano.Web.Controllers
                 new Claim(ClaimTypes.NameIdentifier, user.Id)
             }
             .Union(userClaims)
-            .ToArray();
+            .Union(roleClaims);
 
-            var expires = DateTime.Now.AddHours(this.SecurityOptions.Jwt.ExpirationInHours);
+            var notBeforeAt = DateTime.UtcNow;
+            var expireAt = DateTime.UtcNow.AddHours(this.SecurityOptions.Jwt.ExpirationInHours);
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.SecurityOptions.Jwt.SecretKey));
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var securityToken = new JwtSecurityToken(this.SecurityOptions.Jwt.Issuer, this.SecurityOptions.Jwt.Issuer, claims, expires, null, signingCredentials);
-            var writeToken = new JwtSecurityTokenHandler().WriteToken(securityToken);
+            var securityToken = new JwtSecurityToken(this.SecurityOptions.Jwt.Issuer, this.SecurityOptions.Jwt.Issuer, claims, notBeforeAt, expireAt, signingCredentials);
+            var token = new JwtSecurityTokenHandler().WriteToken(securityToken);
 
-            return writeToken;
+            return new AccessToken
+            {
+                Token = token,
+                ExpireAt = expireAt
+            };
         }
     }
 }
