@@ -1,4 +1,4 @@
-namespace Nano.Web
+namespace Nano.Web.Hosting
 {
     /// <summary>
     /// Http Content Type.

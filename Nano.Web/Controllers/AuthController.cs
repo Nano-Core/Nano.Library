@@ -15,7 +15,8 @@ using Microsoft.IdentityModel.Tokens;
 using Nano.Models;
 using Nano.Security;
 using Nano.Web.Controllers.Entities;
-using Nano.Web.Extensions;
+using Nano.Web.Hosting;
+using Nano.Web.Hosting.Extensions;
 
 namespace Nano.Web.Controllers
 {

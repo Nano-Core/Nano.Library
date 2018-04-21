@@ -11,7 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Nano.Data;
 using Nano.Models;
 using Nano.Models.Criterias;
-using Nano.Web.Extensions;
+using Nano.Web.Hosting;
+using Nano.Web.Hosting.Extensions;
 
 namespace Nano.Web.Controllers
 {

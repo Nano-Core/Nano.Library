@@ -40,7 +40,7 @@ namespace Nano.Eventing.Handlers
                 .GetAssemblies()
                 .SelectMany(x => x.GetTypes())
                 .Where(x => x.IsTypeDef(typeof(IEntityIdentity<>)))
-                .FirstOrDefault(x => x.Name == @event.Type);
+                .First(x => x.Name == @event.Type);
 
             var entity = this.Context.Find(type, @event.Id);
 

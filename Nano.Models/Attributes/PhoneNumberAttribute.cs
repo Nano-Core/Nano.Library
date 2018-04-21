@@ -36,11 +36,11 @@ namespace Nano.Models.Attributes
         {
             try
             {
-                var e164 = value.ToString();
-                var prefix = PhoneNumberPrefixes.Find(e164).Value;
-                var number = e164.Replace(prefix, string.Empty).Trim();
+                var e164 = value?.ToString();
+                var prefix = PhoneNumberPrefixes.Find(e164);
+                var number = prefix.Value == null ? value : e164?.Replace(prefix.Value, string.Empty).Trim();
 
-                return prefix != null && number != null;
+                return prefix.Value != null && number != null;
             }
             catch
             {

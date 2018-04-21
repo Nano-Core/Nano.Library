@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.EntityFrameworkCore.Internal;
 using Nano.Models.Extensions;
 
-namespace Nano.Web.Extensions
+namespace Nano.Web.Hosting.Extensions
 {
     /// <summary>
     /// Http Request Extensions.

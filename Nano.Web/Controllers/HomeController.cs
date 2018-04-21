@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Nano.Models;
-using Nano.Web.Extensions;
+using Nano.Web.Hosting;
+using Nano.Web.Hosting.Extensions;
 
 namespace Nano.Web.Controllers
 {

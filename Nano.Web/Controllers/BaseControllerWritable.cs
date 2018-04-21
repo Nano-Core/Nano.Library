@@ -11,7 +11,8 @@ using Nano.Eventing.Interfaces;
 using Nano.Models;
 using Nano.Models.Interfaces;
 using Nano.Services.Interfaces;
-using Nano.Web.Extensions;
+using Nano.Web.Hosting;
+using Nano.Web.Hosting.Extensions;
 
 namespace Nano.Web.Controllers
 {

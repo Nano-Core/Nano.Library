@@ -28,7 +28,7 @@ using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Swagger;
 
-namespace Nano.Web.Extensions
+namespace Nano.Web.Hosting.Extensions
 {
     /// <summary>
     /// Service Collection Extensions.
@@ -60,13 +60,13 @@ namespace Nano.Web.Extensions
                 .AddApi()
                 .AddCors()
                 .AddSession()
+                .AddVersioning()
+                .AddDocumentation()
                 .AddLocalizations()
                 .AddGzipCompression()
-                .AddApiVersioning(options)
-                .AddApiDocumentation(options)
-                .AddHttpContentTypeMiddleware()
-                .AddHttpExceptionHandlingMiddleware()
-                .AddHttpRequestIdentifierMiddleware()
+                .AddContentTypeFormatters()
+                .AddSingleton<ExceptionHandlingMiddleware>()
+                .AddSingleton<HttpRequestIdentifierMiddleware>()
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddMvc(x =>
                 {
@@ -121,36 +121,10 @@ namespace Nano.Web.Extensions
 
             return services;
         }
-        private static IServiceCollection AddLocalizations(this IServiceCollection services)
+        private static IServiceCollection AddVersioning(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
-
-            services
-                .AddLocalization()
-                .AddMvc()
-                    .AddViewLocalization()
-                    .AddDataAnnotationsLocalization();
-
-            return services;
-        }
-        private static IServiceCollection AddGzipCompression(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services
-                .AddResponseCompression(y => y.Providers.Add<GzipCompressionProvider>());
-
-            return services;
-        }
-        private static IServiceCollection AddApiVersioning(this IServiceCollection services, WebOptions webOptions)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            if (webOptions == null)
-                throw new ArgumentNullException(nameof(webOptions));
 
             var appOptions = services.BuildServiceProvider().GetService<AppOptions>();
 
@@ -169,15 +143,13 @@ namespace Nano.Web.Extensions
                     x.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
                 });
         }
-        private static IServiceCollection AddApiDocumentation(this IServiceCollection services, WebOptions webOptions)
+        private static IServiceCollection AddDocumentation(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            if (webOptions == null)
-                throw new ArgumentNullException(nameof(webOptions));
-
             var appOptions = services.BuildServiceProvider().GetService<AppOptions>();
+            var webOptions = services.BuildServiceProvider().GetService<WebOptions>();
 
             return services
                 .AddSwaggerGen(x =>
@@ -231,7 +203,30 @@ namespace Nano.Web.Extensions
                         });
                 });
         }
-        private static IServiceCollection AddHttpContentTypeMiddleware(this IServiceCollection services)
+        private static IServiceCollection AddLocalizations(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services
+                .AddLocalization()
+                .AddMvc()
+                    .AddViewLocalization()
+                    .AddDataAnnotationsLocalization();
+
+            return services;
+        }
+        private static IServiceCollection AddGzipCompression(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services
+                .AddResponseCompression(y => y.Providers.Add<GzipCompressionProvider>());
+
+            return services;
+        }
+        private static IServiceCollection AddContentTypeFormatters(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
@@ -249,26 +244,6 @@ namespace Nano.Web.Extensions
                 })
                 .AddXmlSerializerFormatters()
                 .AddXmlDataContractSerializerFormatters();
-
-            return services;
-        }
-        private static IServiceCollection AddHttpExceptionHandlingMiddleware(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services
-                .AddScoped<ExceptionHandlingMiddleware>();
-
-            return services;
-        }
-        private static IServiceCollection AddHttpRequestIdentifierMiddleware(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services
-                .AddScoped<HttpRequestIdentifierMiddleware>();
 
             return services;
         }

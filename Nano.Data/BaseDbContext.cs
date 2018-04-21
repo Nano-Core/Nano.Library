@@ -123,8 +123,8 @@ namespace Nano.Data
                     if (x.IsFaulted)
                     {
                         var logger = this.GetService<ILogger>();
-                        var message = x.Exception.Message;
-                        var excption = x.Exception.Flatten();
+                        var message = x.Exception?.Message;
+                        var excption = x.Exception?.Flatten();
 
                         logger.LogError(excption, message);
                     }
@@ -157,8 +157,8 @@ namespace Nano.Data
                 if (x.IsFaulted)
                 {
                     var logger = this.GetService<ILogger>();
-                    var message = x.Exception.Message;
-                    var excption = x.Exception.Flatten();
+                    var message = x.Exception?.Message;
+                    var excption = x.Exception?.Flatten();
 
                     logger.LogError(excption, message);
                 }
@@ -181,8 +181,8 @@ namespace Nano.Data
                     if (x.IsFaulted)
                     {
                         var logger = this.GetService<ILogger>();
-                        var message = x.Exception.Message;
-                        var excption = x.Exception.Flatten();
+                        var message = x.Exception?.Message;
+                        var excption = x.Exception?.Flatten();
 
                         logger.LogError(excption, message);
                     }
@@ -205,8 +205,8 @@ namespace Nano.Data
                     if (x.IsFaulted)
                     {
                         var logger = this.GetService<ILogger>();
-                        var message = x.Exception.Message;
-                        var excption = x.Exception.Flatten();
+                        var message = x.Exception?.Message;
+                        var excption = x.Exception?.Flatten();
 
                         logger.LogError(excption, message);
                     }

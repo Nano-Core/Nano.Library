@@ -2,7 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Nano.Models;
-using Nano.Web.Extensions;
+using Nano.Web.Hosting.Extensions;
+using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
 
 namespace Nano.Web.Hosting.Middleware
@@ -36,16 +37,16 @@ namespace Nano.Web.Hosting.Middleware
                 if (httpContext.Request.IsContentTypeHtml())
                     throw;
 
-                var summary = "Internal Server Error";
+                const string SUMMARY = "Internal Server Error";
                 var exceptions = new[] { ex.GetBaseException().Message };
 
                 if (request.IsContentTypeHtml())
                 {
-                    response.Redirect($"home/error?summary={summary}&exceptions={exceptions}");
+                    response.Redirect($"home/error?summary={SUMMARY}&exceptions={exceptions}");
                 }
                 else
                 {
-                    var error = new Error { Summary = summary, Exceptions = exceptions };
+                    var error = new Error { Summary = SUMMARY, Exceptions = exceptions };
                     var result = request.IsContentTypeJson()
                         ? JsonConvert.SerializeObject(error)
                         : request.IsContentTypeXml()

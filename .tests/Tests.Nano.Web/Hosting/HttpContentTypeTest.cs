@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Nano.Web;
+using Nano.Web.Hosting;
 
-namespace Tests.Nano.Web
+namespace Tests.Nano.Web.Hosting
 {
     [TestClass]
     public class HttpContentTypeTest

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Xml.Serialization;
 
-namespace Nano.Web.Extensions
+namespace Nano.Web.Hosting.Serialization
 {
     /// <summary>
     /// Xml Convert.
@@ -23,7 +23,7 @@ namespace Nano.Web.Extensions
             if (@object == null)
                 throw new ArgumentNullException(nameof(@object));
 
-            var xmlSerializer = new XmlSerializer(typeof(T), null, knownTypes, null, defaultNamespace);
+            var xmlSerializer = new XmlSerializer(typeof(T), null, knownTypes ?? new Type[0], null, defaultNamespace);
 
             using (var stringWriter = new StringWriter())
             {
@@ -45,7 +45,7 @@ namespace Nano.Web.Extensions
             if (xml == null)
                 throw new ArgumentNullException(nameof(xml));
 
-            var xmlSerializer = new XmlSerializer(typeof(T), null, knownTypes, null, defaultNamespace);
+            var xmlSerializer = new XmlSerializer(typeof(T), null, knownTypes ?? new Type[0], null, defaultNamespace);
 
             using (var stringReader = new StringReader(xml))
             {

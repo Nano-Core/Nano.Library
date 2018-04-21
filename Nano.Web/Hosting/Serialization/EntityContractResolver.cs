@@ -47,14 +47,14 @@ namespace Nano.Web.Hosting.Serialization
                             case MemberTypes.Field:
                                 enumerable = instance
                                     .GetType()
-                                    .GetField(member.Name)
+                                    .GetField(member.Name)?
                                     .GetValue(instance) as IEnumerable;
                                 break;
 
                             case MemberTypes.Property:
                                 enumerable = instance
                                     .GetType()
-                                    .GetProperty(member.Name)
+                                    .GetProperty(member.Name)?
                                     .GetValue(instance, null) as IEnumerable;
                                 break;
                         }

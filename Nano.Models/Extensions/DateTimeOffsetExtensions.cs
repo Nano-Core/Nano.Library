@@ -17,7 +17,7 @@ namespace Nano.Models.Extensions
         public static int GetWeekNumber(this DateTimeOffset at)
         {
             var dfi = DateTimeFormatInfo.CurrentInfo;
-            var weekNumber = dfi.Calendar.GetWeekOfYear(at.DateTime, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
+            var weekNumber = dfi?.Calendar.GetWeekOfYear(at.DateTime, dfi.CalendarWeekRule, dfi.FirstDayOfWeek) ?? 0;
 
             return weekNumber;
         }
@@ -43,7 +43,7 @@ namespace Nano.Models.Extensions
         public static (DateTimeOffset, DateTimeOffset) GetWeekDates(this DateTimeOffset at)
         {
             var dfi = DateTimeFormatInfo.CurrentInfo;
-            var startAt = at.AddDays(-(at.DayOfWeek - dfi.FirstDayOfWeek)).Subtract(at.TimeOfDay);
+            var startAt = at.AddDays(-(at.DayOfWeek - dfi?.FirstDayOfWeek ?? 0)).Subtract(at.TimeOfDay);
             var endAt = startAt.AddDays(7).AddSeconds(-1);
 
             return (startAt, endAt);
