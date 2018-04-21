@@ -33,9 +33,6 @@
     <None Remove="Views\Audit\Index.cshtml" />
     <None Remove="Views\Auth\Forbidden.cshtml" />
     <None Remove="Views\Auth\Index.cshtml" />
-    <None Remove="Views\Home\Options.cshtml" />
-    <None Remove="Views\Home\Ping.cshtml" />
-    <None Remove="Views\Home\Versions.cshtml" />
   </ItemGroup>
   
   <ItemGroup>
