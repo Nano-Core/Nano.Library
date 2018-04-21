@@ -29,7 +29,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public virtual IActionResult Index()
         {
-            if (this.Response.IsContentTypeHtml())
+            if (this.Request.IsContentTypeHtml())
                 return this.View();
 
             return this.Ok();
@@ -46,7 +46,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public virtual IActionResult Ping()
         {
-            if (this.Response.IsContentTypeHtml())
+            if (this.Request.IsContentTypeHtml())
                 return this.View();
 
             return Ok();
@@ -65,7 +65,7 @@ namespace Nano.Web.Controllers
         {
             // FEATURE: Http Options: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/OPTIONS
 
-            if (this.Response.IsContentTypeHtml())
+            if (this.Request.IsContentTypeHtml())
                 return this.View();
 
             return Ok(); 
@@ -84,7 +84,7 @@ namespace Nano.Web.Controllers
         {
             // FEATURE: Http supported Versions.
 
-            if (this.Response.IsContentTypeHtml())
+            if (this.Request.IsContentTypeHtml())
                 return this.View();
 
             return this.Ok(); 
@@ -102,7 +102,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.OK)]
         public virtual IActionResult Error([FromBody][Required]Error error)
         {
-            if (this.Response.IsContentTypeHtml())
+            if (this.Request.IsContentTypeHtml())
                 return this.View(error);
 
             return this.Ok(error);
@@ -138,7 +138,7 @@ namespace Nano.Web.Controllers
             {
                 if (returnUrl == null)
                 {
-                    if (this.Response.IsContentTypeHtml())
+                    if (this.Request.IsContentTypeHtml())
                         return this.RedirectToAction("Index");
 
                     return Ok();
