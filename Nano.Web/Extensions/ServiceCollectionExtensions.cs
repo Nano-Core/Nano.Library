@@ -237,7 +237,6 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(services));
 
             services
-                .AddScoped<HttpContentTypeMiddleware>()
                 .AddMvc(x =>
                 {
                     x.ReturnHttpNotAcceptable = true;
@@ -259,7 +258,7 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(services));
 
             services
-                .AddScoped<HttpExceptionHandlingMiddleware>();
+                .AddScoped<ExceptionHandlingMiddleware>();
 
             return services;
         }
