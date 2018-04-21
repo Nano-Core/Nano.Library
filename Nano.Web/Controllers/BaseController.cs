@@ -29,7 +29,7 @@ namespace Nano.Web.Controllers
             var error = new Error
             {
                 Summary = "Invalid ModelState",
-                Errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage)).ToArray()
+                Exceptions = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage)).ToArray()
             };
 
             context.Result = this.BadRequest(error);

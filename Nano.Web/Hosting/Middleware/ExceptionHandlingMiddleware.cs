@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Nano.Web.Hosting.Middleware
 {
     /// <inheritdoc />
-    public class HttpExceptionHandlingMiddleware : IMiddleware
+    public class ExceptionHandlingMiddleware : IMiddleware
     {
         /// <inheritdoc />
         public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
@@ -19,7 +19,9 @@ namespace Nano.Web.Hosting.Middleware
             if (next == null)
                 throw new ArgumentNullException(nameof(next));
 
+            var request = httpContext.Request;
             var response = httpContext.Response;
+
             try
             {
                 await next(httpContext);
@@ -31,25 +33,28 @@ namespace Nano.Web.Hosting.Middleware
                 if (response.HasStarted)
                     return;
                 
-                if (httpContext.Response.IsContentTypeHtml())
+                if (httpContext.Request.IsContentTypeHtml())
                     throw;
 
-                var error = new Error
-                {
-                    Summary = "Internal Server Error",
-                    Errors = new[] { ex.GetBaseException().Message }
-                };
+                var summary = "Internal Server Error";
+                var exceptions = new[] { ex.GetBaseException().Message };
 
-                var textResult = response.IsContentTypeJson()
-                    ? JsonConvert.SerializeObject(error)
-                    : response.IsContentTypeXml()
-                        ? XmlConvert.SerializeObject(error)
-                        : response.IsContentTypeHtml()
-                            ? default
+                if (request.IsContentTypeHtml())
+                {
+                    response.Redirect($"home/error?summary={summary}&exceptions={exceptions}");
+                }
+                else
+                {
+                    var error = new Error { Summary = summary, Exceptions = exceptions };
+                    var result = request.IsContentTypeJson()
+                        ? JsonConvert.SerializeObject(error)
+                        : request.IsContentTypeXml()
+                            ? XmlConvert.SerializeObject(error)
                             : ex.Message;
 
-                await response
-                    .WriteAsync(textResult ?? string.Empty);
+                    await response
+                        .WriteAsync(result);
+                }
             }
         }
     }

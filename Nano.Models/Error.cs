@@ -16,6 +16,6 @@ namespace Nano.Models
         /// <summary>
         /// Description.
         /// </summary>
-        public virtual string[] Errors { get; set; } = new string[0];
+        public virtual string[] Exceptions { get; set; } = new string[0];
     }
 }
