@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Nano.Models;
 using Nano.Web.Hosting.Extensions;
 using Nano.Web.Hosting.Serialization;
@@ -11,6 +12,23 @@ namespace Nano.Web.Hosting.Middleware
     /// <inheritdoc />
     public class ExceptionHandlingMiddleware : IMiddleware
     {
+        /// <summary>
+        /// Logger.
+        /// </summary>
+        protected virtual ILogger Logger { get; }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
+        public ExceptionHandlingMiddleware(ILogger logger)
+        {
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
+
+            this.Logger = logger;
+        }
+
         /// <inheritdoc />
         public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
         {
@@ -29,33 +47,30 @@ namespace Nano.Web.Hosting.Middleware
             }
             catch (Exception ex)
             {
-                response.StatusCode = 500;
-
-                if (response.HasStarted)
-                    return;
-                
-                if (httpContext.Request.IsContentTypeHtml())
+                if (request.IsContentTypeHtml())
                     throw;
 
-                const string SUMMARY = "Internal Server Error";
-                var exceptions = new[] { ex.GetBaseException().Message };
+                if (response.HasStarted)
+                    response.Clear();
 
-                if (request.IsContentTypeHtml())
+                response.StatusCode = 500;
+                response.ContentType = request.ContentType;
+
+                var error = new Error
                 {
-                    response.Redirect($"home/error?summary={SUMMARY}&exceptions={exceptions}");
-                }
-                else
-                {
-                    var error = new Error { Summary = SUMMARY, Exceptions = exceptions };
-                    var result = request.IsContentTypeJson()
+                    Summary = "Internal Server Error",
+                    Exceptions = new[] { ex.GetBaseException().Message }
+                };
+
+                var result = 
+                    request.IsContentTypeJson()
                         ? JsonConvert.SerializeObject(error)
                         : request.IsContentTypeXml()
                             ? XmlConvert.SerializeObject(error)
                             : ex.Message;
 
-                    await response
-                        .WriteAsync(result);
-                }
+                await response
+                    .WriteAsync(result);
             }
         }
     }

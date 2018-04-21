@@ -62,6 +62,8 @@ namespace Nano.Web
                 .UseAuthentication()
                 .UseForwardedHeaders()
                 .UseResponseCompression()
+                .UseMiddleware<HttpRequestIdMiddleware>()
+                .UseMiddleware<ExceptionHandlingMiddleware>()
                 .UseCors(x =>
                 {
                     x.AllowAnyOrigin();
@@ -99,9 +101,7 @@ namespace Nano.Web
                     DefaultRequestCulture = new RequestCulture(appOptions.Cultures.Default),
                     SupportedCultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray(),
                     SupportedUICultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray()
-                })
-                .UseMiddleware<HttpRequestIdMiddleware>()
-                .UseMiddleware<ExceptionHandlingMiddleware>();
+                });
         }
 
         /// <summary>

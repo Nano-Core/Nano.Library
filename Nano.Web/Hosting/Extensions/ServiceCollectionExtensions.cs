@@ -63,8 +63,8 @@ namespace Nano.Web.Hosting.Extensions
                 .AddLocalizations()
                 .AddGzipCompression()
                 .AddContentTypeFormatters()
-                .AddSingleton<ExceptionHandlingMiddleware>()
                 .AddSingleton<HttpRequestIdMiddleware>()
+                .AddSingleton<ExceptionHandlingMiddleware>()
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddMvc(x =>
                 {
