@@ -129,7 +129,6 @@ namespace Nano.Security.Extensions
                     x.LoginPath = "/api/auth/login";
                     x.LogoutPath = "/api/auth/logout";
                     x.AccessDeniedPath = "/api/auth/forbidden";
-                    x.Cookie.Name = Guid.NewGuid().ToString("N");
                     x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                     x.Cookie.Expiration = TimeSpan.FromDays(options.Jwt.ExpirationInHours);
                 });
