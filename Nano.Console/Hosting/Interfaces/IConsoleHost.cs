@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Nano.Console.Hosting.Interfaces
 {
@@ -15,20 +13,18 @@ namespace Nano.Console.Hosting.Interfaces
         IServiceProvider Services { get; }
 
         /// <summary>
-        /// Starts listening on the configured addresses.
+        /// Starts the console host.
         /// </summary>
         void Start();
 
         /// <summary>
-        /// Starts listening on the configured addresses.
+        /// Stops the console host.
         /// </summary>
-        Task StartAsync(CancellationToken cancellationToken = default);
+        void Stop();
 
         /// <summary>
-        /// Attempt to gracefully stop the host.
+        /// Initializes the console host.
         /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task StopAsync(CancellationToken cancellationToken = default);
+        void Initialize();
     }
 }

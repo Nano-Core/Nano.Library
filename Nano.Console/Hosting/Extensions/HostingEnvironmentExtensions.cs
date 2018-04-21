@@ -6,37 +6,38 @@ using Microsoft.Extensions.FileProviders;
 namespace Nano.Console.Hosting.Extensions
 {
     /// <summary>
-    /// 
+    /// Hosting Environment Extensions.
     /// </summary>
     public static class HostingEnvironmentExtensions
     {
         /// <summary>
-        /// 
+        /// Initializes the <see cref="IHostingEnvironment"/>.
         /// </summary>
-        /// <param name="hostingEnvironment"></param>
-        /// <param name="contentRootPath"></param>
-        /// <param name="options"></param>
-        public static void InitializeConsole(this IHostingEnvironment hostingEnvironment, string contentRootPath, ConsoleHostOptions options)
+        /// <param name="hostingEnvironment">The <see cref="IHostingEnvironment"/>.</param>
+        /// <param name="contentRootPath">The content root path.</param>
+        /// <param name="options">The <see cref="ConsoleHostOptions"/>.</param>
+        public static void Initialize(this IHostingEnvironment hostingEnvironment, string contentRootPath, ConsoleHostOptions options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-            if (string.IsNullOrEmpty(contentRootPath))
-            {
-                throw new ArgumentException("A valid non-empty content root must be provided.", nameof(contentRootPath));
-            }
-            if (!Directory.Exists(contentRootPath))
-            {
-                throw new ArgumentException($"The content root '{contentRootPath}' does not exist.", nameof(contentRootPath));
-            }
+            if (hostingEnvironment == null)
+                throw new ArgumentNullException(nameof(hostingEnvironment));
 
-            hostingEnvironment.ApplicationName = options.ApplicationName;
+            if (string.IsNullOrEmpty(contentRootPath))
+                throw new ArgumentNullException(nameof(contentRootPath));
+
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+
+            var exists = Directory.Exists(contentRootPath);
+
+            if (!exists)
+                throw new ArgumentException($"The content root '{contentRootPath}' does not exist.", nameof(contentRootPath));
+
             hostingEnvironment.ContentRootPath = contentRootPath;
+            hostingEnvironment.ApplicationName = options.ApplicationName;
             hostingEnvironment.ContentRootFileProvider = new PhysicalFileProvider(hostingEnvironment.ContentRootPath);
 
-            var webRoot = options.ConsoleRoot;
-            if (webRoot == null)
+            var consoleRoot = options.ConsoleRoot;
+            if (consoleRoot == null)
             {
                 var wwwroot = Path.Combine(hostingEnvironment.ContentRootPath, "wwwroot");
                 if (Directory.Exists(wwwroot))
@@ -46,16 +47,18 @@ namespace Nano.Console.Hosting.Extensions
             }
             else
             {
-                hostingEnvironment.WebRootPath = Path.Combine(hostingEnvironment.ContentRootPath, webRoot);
+                hostingEnvironment.WebRootPath = Path.Combine(hostingEnvironment.ContentRootPath, consoleRoot);
             }
 
             if (!string.IsNullOrEmpty(hostingEnvironment.WebRootPath))
             {
                 hostingEnvironment.WebRootPath = Path.GetFullPath(hostingEnvironment.WebRootPath);
+
                 if (!Directory.Exists(hostingEnvironment.WebRootPath))
                 {
                     Directory.CreateDirectory(hostingEnvironment.WebRootPath);
                 }
+
                 hostingEnvironment.WebRootFileProvider = new PhysicalFileProvider(hostingEnvironment.WebRootPath);
             }
             else
@@ -63,9 +66,7 @@ namespace Nano.Console.Hosting.Extensions
                 hostingEnvironment.WebRootFileProvider = new NullFileProvider();
             }
 
-            hostingEnvironment.EnvironmentName =
-                options.Environment ??
-                hostingEnvironment.EnvironmentName;
+            hostingEnvironment.EnvironmentName = options.Environment ?? hostingEnvironment.EnvironmentName;
         }
     }
 }

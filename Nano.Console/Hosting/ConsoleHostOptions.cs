@@ -37,24 +37,9 @@ namespace Nano.Console.Hosting
         public virtual string ContentRootPath { get; set; }
 
         /// <summary>
-        /// Detailed Errors.
-        /// </summary>
-        public virtual bool DetailedErrors { get; set; }
-
-        /// <summary>
         /// Capture Startup Errors.
         /// </summary>
         public virtual bool CaptureStartupErrors { get; set; }
-
-        /// <summary>
-        /// Prevent Hosting Startup.
-        /// </summary>
-        public virtual bool PreventHostingStartup { get; set; }
-
-        /// <summary>
-        /// Suppress Status Messages.
-        /// </summary>
-        public virtual bool SuppressStatusMessages { get; set; }
 
         /// <summary>
         /// Shutdown Timeout.
@@ -105,19 +90,16 @@ namespace Nano.Console.Hosting
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
 
-            this.Environment = configuration[ConsoleHostDefaults.environmentKey];
-            this.ApplicationName = configuration[ConsoleHostDefaults.applicationKey] ?? applicationNameFallback;
-            this.StartupAssembly = configuration[ConsoleHostDefaults.startupAssemblyKey];
-            this.ConsoleRoot = configuration[ConsoleHostDefaults.consoleRootKey];
-            this.ContentRootPath = configuration[ConsoleHostDefaults.contentRootKey];
-            this.DetailedErrors = this.ParseBool(configuration, ConsoleHostDefaults.detailedErrorsKey);
-            this.CaptureStartupErrors = this.ParseBool(configuration, ConsoleHostDefaults.captureStartupErrorsKey);
-            this.PreventHostingStartup = this.ParseBool(configuration, ConsoleHostDefaults.preventHostingStartupKey);
-            this.SuppressStatusMessages = this.ParseBool(configuration, ConsoleHostDefaults.suppressStatusMessagesKey);
-            this.HostingStartupAssemblies = Split($"{ApplicationName};{configuration[ConsoleHostDefaults.hostingStartupAssembliesKey]}");
-            this.HostingStartupExcludeAssemblies = Split(configuration[ConsoleHostDefaults.hostingStartupExcludeAssembliesKey]);
+            this.Environment = configuration[ConsoleHostDefaults.EnvironmentKey];
+            this.ApplicationName = configuration[ConsoleHostDefaults.ApplicationKey] ?? applicationNameFallback;
+            this.StartupAssembly = configuration[ConsoleHostDefaults.StartupAssemblyKey];
+            this.ConsoleRoot = configuration[ConsoleHostDefaults.ConsoleRootKey];
+            this.ContentRootPath = configuration[ConsoleHostDefaults.ContentRootKey];
+            this.CaptureStartupErrors = this.ParseBool(configuration, ConsoleHostDefaults.CaptureStartupErrorsKey);
+            this.HostingStartupAssemblies = Split($"{ApplicationName};{configuration[ConsoleHostDefaults.HostingStartupAssembliesKey]}");
+            this.HostingStartupExcludeAssemblies = Split(configuration[ConsoleHostDefaults.HostingStartupExcludeAssembliesKey]);
 
-            var timeout = configuration[ConsoleHostDefaults.shutdownTimeoutKey];
+            var timeout = configuration[ConsoleHostDefaults.ShutdownTimeoutKey];
             if (!string.IsNullOrEmpty(timeout) && int.TryParse(timeout, NumberStyles.None, CultureInfo.InvariantCulture, out var seconds))
             {
                 ShutdownTimeout = TimeSpan.FromSeconds(seconds);

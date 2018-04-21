@@ -8,61 +8,46 @@
         /// <summary>
         /// Environment Key.
         /// </summary>
-        public static readonly string environmentKey = "environment";
+        public static string EnvironmentKey => "environment";
 
         /// <summary>
         /// Application Key.
         /// </summary>
-        public static readonly string applicationKey = "applicationName";
+        public static string ApplicationKey => "applicationName";
 
         /// <summary>
         /// Startup Assembly Key.
         /// </summary>
-        public static readonly string startupAssemblyKey = "startupAssembly";
+        public static string StartupAssemblyKey => "startupAssembly";
 
         /// <summary>
         /// Console Root Key.
         /// </summary>
-        public static readonly string consoleRootKey = "consoleroot";
+        public static string ConsoleRootKey => "consoleroot";
 
         /// <summary>
         /// Content Root Key.
         /// </summary>
-        public static readonly string contentRootKey = "contentRoot";
-
-        /// <summary>
-        /// Detailed Errors Key.
-        /// </summary>
-        public static readonly string detailedErrorsKey = "detailedErrors";
+        public static string ContentRootKey => "contentRoot";
 
         /// <summary>
         /// Shutdown Timeout Key.
         /// </summary>
-        public static readonly string shutdownTimeoutKey = "shutdownTimeoutSeconds";
+        public static string ShutdownTimeoutKey => "shutdownTimeoutSeconds";
 
         /// <summary>
         /// Capture Startup Errors Key.
         /// </summary>
-        public static readonly string captureStartupErrorsKey = "captureStartupErrors";
-
-        /// <summary>
-        /// Prevent Hosting Startup Key.
-        /// </summary>
-        public static readonly string preventHostingStartupKey = "preventHostingStartup";
-
-        /// <summary>
-        /// Suppress Status Messages Key.
-        /// </summary>
-        public static readonly string suppressStatusMessagesKey = "suppressStatusMessages";
+        public static string CaptureStartupErrorsKey => "captureStartupErrors";
 
         /// <summary>
         /// Hosting Startup Assemblies Key.
         /// </summary>
-        public static readonly string hostingStartupAssembliesKey = "hostingStartupAssemblies";
+        public static string HostingStartupAssembliesKey => "hostingStartupAssemblies";
 
         /// <summary>
         /// Hosting Startup Exclude Assemblies Key.
         /// </summary>
-        public static readonly string hostingStartupExcludeAssembliesKey = "hostingStartupExcludeAssemblies";
+        public static string HostingStartupExcludeAssembliesKey => "hostingStartupExcludeAssemblies";
     }
 }
