@@ -100,7 +100,7 @@ namespace Nano.Web
                     SupportedCultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray(),
                     SupportedUICultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray()
                 })
-                .UseMiddleware<HttpRequestIdentifierMiddleware>()
+                .UseMiddleware<HttpRequestIdMiddleware>()
                 .UseMiddleware<ExceptionHandlingMiddleware>();
         }
 
@@ -148,13 +148,12 @@ namespace Nano.Web
                     x.AddSingleton<IApplication, TApplication>();
 
                     x.AddApp(config);
+                    x.AddWeb(config);
+                    x.AddData(config);
                     x.AddConfig(config);
                     x.AddLogging(config);
                     x.AddSecurity(config);
-                    x.AddData(config);
                     x.AddEventing(config);
-
-                    x.AddWeb(config);
                 })
                 .UseStartup<TApplication>()
                 .UseSetting(WebHostDefaults.ApplicationKey, applicationKey);
