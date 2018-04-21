@@ -7,13 +7,6 @@ namespace Nano.Models.Criterias
     public class DefaultQueryCriteria : BaseQueryCriteria
     {
         /// <summary>
-        /// Is Active.
-        /// Default: true. 
-        /// WHen soft-deleted it's set to false instead of deleting data.
-        /// </summary>
-        public virtual bool IsActive { get; } = true;
-
-        /// <summary>
         /// After At.
         /// </summary>
         public virtual DateTimeOffset? AfterAt { get; set; }
@@ -27,8 +20,6 @@ namespace Nano.Models.Criterias
         public override CriteriaExpression GetExpression<TEntity>() 
         {
             var expression = base.GetExpression<TEntity>();
-
-            expression.Equal("IsActive", this.IsActive);
 
             if (this.BeforeAt.HasValue)
                 expression.LessThanOrEqual("CreatedAt", this.BeforeAt);
