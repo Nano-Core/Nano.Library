@@ -78,7 +78,6 @@ namespace Nano.Web.Controllers
         /// <response code="200">Success.</response>
         /// <response code="400">The request model is invalid.</response>
         /// <response code="500">An error occured when processing the request.</response>
-        [HttpGet]
         [HttpPost]
         [Route("index")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]

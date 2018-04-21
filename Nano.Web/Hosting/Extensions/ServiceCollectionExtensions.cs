@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
@@ -15,7 +14,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Nano.App;
 using Nano.Config.Extensions;
-using Nano.Models.Extensions;
 using Nano.Services;
 using Nano.Services.Interfaces;
 using Nano.Web.Api;
@@ -66,7 +64,7 @@ namespace Nano.Web.Hosting.Extensions
                 .AddGzipCompression()
                 .AddContentTypeFormatters()
                 .AddSingleton<ExceptionHandlingMiddleware>()
-                .AddSingleton<HttpRequestIdentifierMiddleware>()
+                .AddSingleton<HttpRequestIdMiddleware>()
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddMvc(x =>
                 {
@@ -160,7 +158,6 @@ namespace Nano.Web.Hosting.Extensions
 
                     x.DocumentFilter<LowercaseDocumentFilter>();
                     x.DocumentFilter<ActionOrderingDocumentFilter>();
-                    x.OperationFilter<AddAuthorizationOperationFilter>();
 
                     x.SwaggerDoc(appOptions.Version, new Info
                     {
@@ -177,30 +174,13 @@ namespace Nano.Web.Hosting.Extensions
                         In = "header",
                         Type = "apiKey",
                         Name = "Authorization",
-                        Description = $"JWT Authorization header using the Bearer scheme.{Environment.NewLine}Example: Authorization: Bearer [token]"
+                        Description = "JWT Authorization header using the Bearer scheme. Format: Authorization: Bearer [token]"
                     });
 
                     x.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
                     {
                         { "Bearer", new string[] { } }
                     });
-
-                    AppDomain.CurrentDomain
-                        .GetAssemblies()
-                        .SelectMany(y => y.GetTypes())
-                        .Where(y => y.IsTypeDef(typeof(Controller)))
-                        .Select(y => y.Module)
-                        .Distinct()
-                        .ToList()
-                        .ForEach(y =>
-                        {
-                            // COSMETIC: Issue 5: Swagger doesn't add documentation from xml file.
-                            var fileName = y.Name.Replace(".dll", ".xml").Replace(".exe", ".xml");
-                            var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
-
-                            if (File.Exists(filePath))
-                                x.IncludeXmlComments(filePath);
-                        });
                 });
         }
         private static IServiceCollection AddLocalizations(this IServiceCollection services)
