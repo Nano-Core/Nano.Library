@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Nano.App;
 using Nano.Config.Extensions;
+using Nano.Models.Extensions;
 using Nano.Services;
 using Nano.Services.Interfaces;
 using Nano.Web.Api;
@@ -146,8 +147,9 @@ namespace Nano.Web.Hosting.Extensions
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            var appOptions = services.BuildServiceProvider().GetService<AppOptions>();
-            var webOptions = services.BuildServiceProvider().GetService<WebOptions>();
+            var provider = services.BuildServiceProvider();
+            var appOptions = provider.GetService<AppOptions>();
+            var webOptions = provider.GetService<WebOptions>();
 
             return services
                 .AddSwaggerGen(x =>
@@ -181,6 +183,23 @@ namespace Nano.Web.Hosting.Extensions
                     {
                         { "Bearer", new string[] { } }
                     });
+
+                    AppDomain.CurrentDomain
+                        .GetAssemblies()
+                        .SelectMany(y => y.GetTypes())
+                        .Where(y => y.IsTypeDef(typeof(Controller)))
+                        .Select(y => y.Module)
+                        .Distinct()
+                        .ToList()
+                        .ForEach(y =>
+                        {
+                            // COSMETIC: Generates swagger error when xml included. Also Swagger doesn't add documentation from xml file in nuget packages.
+                            //var fileName = y.Name.Replace(".dll", ".xml").Replace(".exe", ".xml");
+                            //var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
+
+                            //if (File.Exists(filePath))
+                            //    x.IncludeXmlComments(filePath);
+                        });
                 });
         }
         private static IServiceCollection AddLocalizations(this IServiceCollection services)
