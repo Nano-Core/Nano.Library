@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
@@ -46,8 +47,9 @@ namespace Nano.Web
 
             base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
 
-            var appOptions = applicationBuilder.ApplicationServices.GetService<AppOptions>() ?? new AppOptions();
-            var webOptions = applicationBuilder.ApplicationServices.GetService<WebOptions>() ?? new WebOptions();
+            var services = applicationBuilder.ApplicationServices;
+            var appOptions = services.GetService<AppOptions>() ?? new AppOptions();
+            var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
             if (webOptions.Hosting.UseSsl)
             {
@@ -129,9 +131,10 @@ namespace Nano.Web
             var config = ConfigManager.BuildConfiguration(args);
             var shutdownTimeout = TimeSpan.FromSeconds(10);
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+            var applicationKey = Assembly.GetEntryAssembly().FullName;
 
-            var options = config.GetSection(WebOptions.SectionName).Get<WebOptions>() ?? new WebOptions();
-            var urls = options.Hosting.Ports.Select(x => $"http://*:{x}").Distinct().ToArray();
+            var webOptions = config.GetSection(WebOptions.SectionName).Get<WebOptions>() ?? new WebOptions();
+            var urls = webOptions.Hosting.Ports.Select(x => $"http://*:{x}").Distinct().ToArray();
 
             return new WebHostBuilder()
                 .UseKestrel()
@@ -153,6 +156,7 @@ namespace Nano.Web
                     x.AddEventing(config);
                 })
                 .UseStartup<TApplication>()
+                .UseSetting(WebHostDefaults.ApplicationKey, applicationKey)
                 .CaptureStartupErrors(true);
         }
     }
