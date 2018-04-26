@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.Logging;
 using Nano.Data.Attributes;
 using Nano.Data.Models;
 using Nano.Data.Models.Mappings;
@@ -117,18 +116,7 @@ namespace Nano.Data
             await this.AddUserToRole(adminUser, "service");
             await this.AddUserToRole(adminUser, "administrator");
 
-            await this.SaveChangesAsync(cancellationToken)
-                .ContinueWith(x =>
-                {
-                    if (x.IsFaulted)
-                    {
-                        var logger = this.GetService<ILogger>();
-                        var message = x.Exception?.Message;
-                        var excption = x.Exception?.Flatten();
-
-                        logger.LogError(excption, message);
-                    }
-                }, cancellationToken);
+            await this.SaveChangesAsync(cancellationToken);
         }
 
         /// <summary>
@@ -151,17 +139,6 @@ namespace Nano.Data
                         await this
                             .AddRangeAsync(attribute.Uri, y, cancellationToken);
                     });
-            }, cancellationToken)
-            .ContinueWith(x =>
-            {
-                if (x.IsFaulted)
-                {
-                    var logger = this.GetService<ILogger>();
-                    var message = x.Exception?.Message;
-                    var excption = x.Exception?.Flatten();
-
-                    logger.LogError(excption, message);
-                }
             }, cancellationToken);
         }
 
@@ -175,18 +152,7 @@ namespace Nano.Data
                 return;
 
             await this.Database
-                .EnsureCreatedAsync(cancellationToken)
-                .ContinueWith(x =>
-                {
-                    if (x.IsFaulted)
-                    {
-                        var logger = this.GetService<ILogger>();
-                        var message = x.Exception?.Message;
-                        var excption = x.Exception?.Flatten();
-
-                        logger.LogError(excption, message);
-                    }
-                }, cancellationToken);
+                .EnsureCreatedAsync(cancellationToken);
         }
 
         /// <summary>
@@ -199,18 +165,7 @@ namespace Nano.Data
                 return;
 
             await this.Database
-                .MigrateAsync(cancellationToken)
-                .ContinueWith(x =>
-                {
-                    if (x.IsFaulted)
-                    {
-                        var logger = this.GetService<ILogger>();
-                        var message = x.Exception?.Message;
-                        var excption = x.Exception?.Flatten();
-
-                        logger.LogError(excption, message);
-                    }
-                }, cancellationToken);
+                .MigrateAsync(cancellationToken);
         }
 
         /// <summary>
