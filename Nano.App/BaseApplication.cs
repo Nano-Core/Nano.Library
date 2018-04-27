@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Nano.App.Extensions;
 using Nano.App.Interfaces;
 
 namespace Nano.App
@@ -37,6 +38,9 @@ namespace Nano.App
                 throw new ArgumentNullException(nameof(services));
 
             var provider = services.BuildServiceProvider();
+
+            services
+                .LogServices();
 
             return provider;
         }
