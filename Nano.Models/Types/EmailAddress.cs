@@ -14,8 +14,8 @@ namespace Nano.Models.Types
         /// Email.
         /// </summary>
         [Required]
-        [MaxLength(254)]
         [EmailAddress]
+        [MaxLength(256)]
         public virtual string Email { get; set; }
 
         /// <summary>

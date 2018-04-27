@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace Nano.Models.Types
         /// Latitude.
         /// </summary>
         [Required]
+        [DefaultValue(0.00)]
         [Range(-90.00, 90.00)]
         public virtual double Latitude { get; set; }
 
@@ -21,6 +23,7 @@ namespace Nano.Models.Types
         /// Longitude.
         /// </summary>
         [Required]
+        [DefaultValue(0.00)]
         [Range(-180.00, 180.00)]
         public virtual double Longitude { get; set; }
 

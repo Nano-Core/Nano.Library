@@ -13,7 +13,7 @@ namespace Nano.Models.Types
         /// </summary>
         [Required]
         [PhoneNumber]
-        [MaxLength(20)]
+        [MaxLength(32)]
         public virtual string Number { get; set; }
     }
 }

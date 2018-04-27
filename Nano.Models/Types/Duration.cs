@@ -17,7 +17,6 @@ namespace Nano.Models.Types
         /// <summary>
         /// Adjustment.
         /// </summary>
-        [Required]
         public virtual TimeSpan Adjustment { get; set; } = TimeSpan.Zero;
 
         /// <summary>

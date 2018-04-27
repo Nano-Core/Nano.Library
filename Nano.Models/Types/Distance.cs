@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Models.Types
 {
@@ -21,6 +22,7 @@ namespace Nano.Models.Types
         /// Meters.
         /// </summary>
         [Required]
+        [DefaultValue(0.00)]
         public virtual double Meters { get; set; } = 0.00;
 
         /// <summary>

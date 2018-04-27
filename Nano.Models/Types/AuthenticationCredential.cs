@@ -11,20 +11,14 @@ namespace Nano.Models.Types
         /// Username.
         /// </summary>
         [Required]
-        [MaxLength(255)]
+        [MaxLength(256)]
         public virtual string Username { get; set; }
 
         /// <summary>
         /// Password.
         /// </summary>
         [Required]
-        [MaxLength(255)]
+        [MaxLength(256)]
         public virtual string Password { get; set; }
-
-        /// <summary>
-        /// Token.
-        /// </summary>
-        [MaxLength(255)]
-        public virtual string Token { get; set; }
     }
 }

@@ -1,4 +1,6 @@
 using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Models.Types
 {
@@ -13,6 +15,8 @@ namespace Nano.Models.Types
         /// <summary>
         /// The <see cref="Angle"/> represented in radians.
         /// </summary>
+        [Required]
+        [DefaultValue(0.00)]
         public virtual decimal Radians
         {
             get => radians;
@@ -45,6 +49,8 @@ namespace Nano.Models.Types
         /// <summary>
         /// The <see cref="Angle"/> represented in degrees.
         /// </summary>
+        [Required]
+        [DefaultValue(0.00)]
         public virtual decimal Degrees
         {
             get => this.degrees;

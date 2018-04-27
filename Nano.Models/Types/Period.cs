@@ -9,35 +9,35 @@ namespace Nano.Models.Types
     public class Period
     {
         /// <summary>
-        /// Start.
+        /// Begin At.
         /// </summary>
         [Required]
-        public virtual TimeSpan Start { get; set; }
+        public virtual DateTimeOffset BeginAt { get; set; }
 
         /// <summary>
-        /// Finish.
+        /// Finish At.
         /// </summary>
         [Required]
-        public virtual TimeSpan Finish { get; set; }
+        public virtual DateTimeOffset FinishAt { get; set; }
 
         /// <summary>
         /// Gets whether the <see cref="Period"/> is occuring or not, 
-        /// by comparing the passed <see cref="TimeSpan"/> to <see cref="Period.Start"/> and <see cref="Period.Finish"/>.
+        /// by comparing the passed <see cref="DateTimeOffset"/> to <see cref="Period.BeginAt"/> and <see cref="Period.FinishAt"/>.
         /// </summary>
-        /// <param name="timeSpan">The <see cref="TimeSpan"/>.</param>
+        /// <param name="dateTimeOffset">The <see cref="DateTimeOffset"/>.</param>
         /// <returns>Returns true if the <see cref="Period"/> is occuring, otherwise false.</returns>
-        public virtual bool IsOccuring(TimeSpan timeSpan)
+        public virtual bool IsOccuring(DateTimeOffset dateTimeOffset)
         {
-            var isFound = timeSpan >= this.Start && timeSpan <= this.Finish;
+            var isFound = dateTimeOffset >= this.BeginAt && dateTimeOffset <= this.FinishAt;
 
-            if (this.Start <= this.Finish)
+            if (this.BeginAt <= this.FinishAt)
                 return isFound;
 
-            if (timeSpan <= this.Start && timeSpan >= this.Finish)
+            if (dateTimeOffset <= this.BeginAt && dateTimeOffset >= this.FinishAt)
             {
                 isFound = false;
             }
-            else if (timeSpan <= this.Start || timeSpan >= this.Finish)
+            else if (dateTimeOffset <= this.BeginAt || dateTimeOffset >= this.FinishAt)
             {
                 isFound = true;
             }

@@ -129,20 +129,20 @@ namespace Nano.Data.Models.Mappings.Extensions
 
             builder
                 .OwnsOne(expression)
-                .Property(x => x.Start)
+                .Property(x => x.BeginAt)
                 .IsRequired();
 
             builder
                 .OwnsOne(expression)
-                .Property(x => x.Finish)
+                .Property(x => x.FinishAt)
                 .IsRequired();
 
             builder
                 .OwnsOne(expression)
                 .HasIndex(x => new
                 {
-                    x.Start,
-                    x.Finish
+                    x.BeginAt,
+                    x.FinishAt
                 });
         }
 
@@ -238,11 +238,13 @@ namespace Nano.Data.Models.Mappings.Extensions
             builder
                 .OwnsOne(expression)
                 .Property(x => x.Latitude)
+                .HasDefaultValue(0.00)
                 .IsRequired();
 
             builder
                 .OwnsOne(expression)
                 .Property(x => x.Longitude)
+                .HasDefaultValue(0.00)
                 .IsRequired();
 
             builder
@@ -327,7 +329,7 @@ namespace Nano.Data.Models.Mappings.Extensions
             builder
                 .OwnsOne(expression)
                 .Property(x => x.Email)
-                .HasMaxLength(254)
+                .HasMaxLength(256)
                 .IsRequired();
 
             builder
@@ -357,28 +359,19 @@ namespace Nano.Data.Models.Mappings.Extensions
             builder
                 .OwnsOne(expression)
                 .Property(x => x.Username)
-                .HasMaxLength(255)
+                .HasMaxLength(256)
                 .IsRequired();
 
             builder
                 .OwnsOne(expression)
                 .Property(x => x.Password)
-                .HasMaxLength(255)
+                .HasMaxLength(256)
                 .IsRequired();
 
             builder
                 .OwnsOne(expression)
                 .HasIndex(x => x.Username)
                 .IsUnique();
-
-            builder
-                .OwnsOne(expression)
-                .Property(x => x.Token)
-                .HasMaxLength(255);
-
-            builder
-                .OwnsOne(expression)
-                .HasIndex(x => x.Token);
         }
     }
 }
