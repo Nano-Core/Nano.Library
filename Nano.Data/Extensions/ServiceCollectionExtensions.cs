@@ -64,10 +64,12 @@ namespace Nano.Data.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             services
+                .AddConfigOptions<DataOptions>(configuration, DataOptions.SectionName, out var options);
+
+            services
                 .AddScoped<DbContext, DefaultDbContext>()
                 .AddScoped<BaseDbContext, DefaultDbContext>()
-                .AddScoped<DbContextOptions, DbContextOptions<DefaultDbContext>>()
-                .AddConfigOptions<DataOptions>(configuration, DataOptions.SectionName, out var options);
+                .AddScoped<DbContextOptions, DbContextOptions<DefaultDbContext>>();
 
             services
                 .AddIdentity<IdentityUser, IdentityRole>()

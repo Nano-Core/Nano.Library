@@ -23,8 +23,9 @@ namespace Nano.App
             if (applicationBuilder == null)
                 throw new ArgumentNullException(nameof(applicationBuilder));
 
-            var hostingEnvironment = applicationBuilder.ApplicationServices.GetService<IHostingEnvironment>();
-            var applicationLifetime = applicationBuilder.ApplicationServices.GetService<IApplicationLifetime>();
+            var services = applicationBuilder.ApplicationServices;
+            var hostingEnvironment = services.GetService<IHostingEnvironment>();
+            var applicationLifetime = services.GetService<IApplicationLifetime>();
 
             this.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
         }
