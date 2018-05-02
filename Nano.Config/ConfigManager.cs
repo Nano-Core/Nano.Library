@@ -42,8 +42,8 @@ namespace Nano.Config
                 .SetBasePath(path)
                 .AddJsonFile($"{NAME}.json", false, true)
                 .AddJsonFile($"{NAME}.{environment}.json", true)
-                .AddCommandLine(args)
                 .AddEnvironmentVariables()
+                .AddCommandLine(args)
                 .Build();
         }
     }

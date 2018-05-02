@@ -67,6 +67,10 @@ namespace Nano.Web.Hosting.ModelBinders
                     {
                         x.SetValue(criteria, TimeSpan.Parse(value));
                     }
+                    else if (x.PropertyType == typeof(DateTime) || x.PropertyType == typeof(DateTime?))
+                    {
+                        x.SetValue(criteria, DateTime.Parse(value));
+                    }
                     else if (x.PropertyType == typeof(DateTimeOffset) || x.PropertyType == typeof(DateTimeOffset?))
                     {
                         x.SetValue(criteria, DateTimeOffset.Parse(value));

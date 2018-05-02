@@ -31,6 +31,7 @@ namespace Nano.Logging.Providers.Serilog
         public virtual ILoggerProvider Configure()
         {
             var loggerConfiguration = new LoggerConfiguration()
+                .Enrich.FromLogContext()
                 .MinimumLevel.Is(this.Options.LogLevel);
 
             var console = this.Options.Sinks?.FirstOrDefault(x => x?.Name?.ToLower() == "console");
@@ -39,9 +40,6 @@ namespace Nano.Logging.Providers.Serilog
                 loggerConfiguration
                     .WriteTo.Console();
             }
-
-            loggerConfiguration
-                .Enrich.FromLogContext();
 
             foreach (var @override in this.Options.LogLevelOverrides)
             {

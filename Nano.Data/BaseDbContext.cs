@@ -103,6 +103,9 @@ namespace Nano.Data
         /// <returns>The <see cref="Task"/> (void).</returns>
         public virtual async Task EnsureSeedAsync(CancellationToken cancellationToken = default)
         {
+            if (this.Options.ConnectionString == null)
+                return;
+
             var securityOptions = this.GetService<SecurityOptions>() ?? new SecurityOptions();
 
             await this.AddRole("guest");
@@ -125,6 +128,9 @@ namespace Nano.Data
         /// <returns>The <see cref="Task"/> (void).</returns>
         public virtual async Task EnsureImportAsync(CancellationToken cancellationToken = default)
         {
+            if (this.Options.ConnectionString == null)
+                return;
+
             await Task.Factory.StartNew(() =>
             {
                 AppDomain.CurrentDomain
@@ -151,6 +157,9 @@ namespace Nano.Data
             if (!this.Options.UseCreateDatabase)
                 return;
 
+            if (this.Options.ConnectionString == null)
+                return;
+
             await this.Database
                 .EnsureCreatedAsync(cancellationToken);
         }
@@ -162,6 +171,9 @@ namespace Nano.Data
         public virtual async Task EnsureMigratedAsync(CancellationToken cancellationToken = default)
         {
             if (!this.Options.UseMigrateDatabase)
+                return;
+
+            if (this.Options.ConnectionString == null)
                 return;
 
             await this.Database

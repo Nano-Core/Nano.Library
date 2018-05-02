@@ -58,6 +58,6 @@ namespace Nano.Data
         /// <summary>
         /// Connection String.
         /// </summary>
-        public virtual string ConnectionString { get; set; }
+        public virtual string ConnectionString { get; set; } = null;
     }
 }

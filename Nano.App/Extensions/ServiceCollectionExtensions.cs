@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nano.Config.Extensions;
+using Nano.Models.Extensions;
 
 namespace Nano.App.Extensions
 {
@@ -42,13 +43,13 @@ namespace Nano.App.Extensions
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
+            var list = services.GetServices().ToList();
             var logger = services.BuildServiceProvider().GetService<ILogger>();
 
-            var servicesStr = services
-                .OrderBy(x => x.ServiceType.FullName)
-                .Aggregate(string.Empty, (current, service) => current + $"{service.ServiceType.FullName} => {service.ImplementationType?.FullName ?? "None"} ({service.Lifetime}){Environment.NewLine}");
+            var servicesStr = list
+                .Aggregate(string.Empty, (x, y) => x + $"{y.ServiceType.FullName} => {y.ImplementationType?.FullName ?? "None"} ({y.Lifetime}){Environment.NewLine}");
 
-            logger.LogDebug($"Total services registered: {services.Count}");
+            logger.LogDebug($"Total services registered: {list.Count}");
             logger.LogDebug(servicesStr);
 
             return services;
