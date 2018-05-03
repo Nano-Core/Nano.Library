@@ -7,10 +7,11 @@
     public interface IEntityDeletableSoft : IEntityDeletable
     {
         /// <summary>
-        /// Is Active.
-        /// Indicates whether the entity is active and relevant.
+        /// Deleted at.
+        /// Indicates whether the entity is deleted or not. Zero means active (true) and anything greater than zero means deleted (false).
+        /// THe Unix-based time in miliseconds is stored, in order for allowing unique indexes with soft-deletetion.
         /// NOTE: Only active instances are returned from queries, when filters are enabled (default behavior).
         /// </summary>
-        bool IsActive { get; set; }
+        long IsDeleted { get; set; }
     }
 }

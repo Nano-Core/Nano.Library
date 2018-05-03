@@ -17,7 +17,7 @@ namespace Nano.Data.Models.Mappings
 
             builder
                 .HasKey(y => y.Id);
-
+            
             builder
                 .Property(x => x.Id)
                 .ValueGeneratedOnAdd()

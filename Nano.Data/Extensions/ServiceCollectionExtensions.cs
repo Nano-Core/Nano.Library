@@ -133,7 +133,7 @@ namespace Nano.Data.Extensions
 
                     baseDbContext?.__EFAudit.AddRange(customAuditEntries);
                 };
-                AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsActive);
+                AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsDeleted > 0);
             }
             else
             {

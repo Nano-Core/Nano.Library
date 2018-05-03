@@ -6,6 +6,6 @@ namespace Nano.Models
     public abstract class BaseEntity : IEntityWritable
     {
         /// <inheritdoc />
-        public virtual bool IsActive { get; set; } = true;
+        public virtual long IsDeleted { get; set; } = 0L;
     }
 }
