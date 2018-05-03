@@ -46,6 +46,6 @@ namespace Nano.Eventing
         /// <summary>
         /// Authentication Credential.
         /// </summary>
-        public virtual AuthenticationCredential AuthenticationCredential { get; set; }
+        public virtual AuthenticationCredential AuthenticationCredential { get; set; } = new AuthenticationCredential();
     }
 }

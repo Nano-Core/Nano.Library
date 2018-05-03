@@ -39,13 +39,10 @@ namespace Nano.Web.Hosting.Middleware
                 exception = ex;
 
                 if (response.HasStarted)
-                    throw;
+                    response.Clear();
 
                 if (request.IsContentTypeHtml())
                     throw;
-
-                if (response.HasStarted)
-                    response.Clear();
 
                 response.StatusCode = 500;
                 response.ContentType = request.ContentType;
