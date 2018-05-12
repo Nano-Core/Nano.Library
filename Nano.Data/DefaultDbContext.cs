@@ -82,10 +82,10 @@ namespace Nano.Data
         /// <inheritdoc />
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
+            var pendingEvents = this.GetPendingEntityEvents();
+
             this.SaveAudit();
             this.SaveSoftDeletion();
-
-            var pendingEvents = this.GetPendingEntityEvents();
             
             return await base
                 .SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken)
@@ -128,9 +128,6 @@ namespace Nano.Data
         {
             if (!this.Options.UseSoftDeletetion)
                 return;
-
-            // TODO: this seems strange, they should be set as deleted (as set in the AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsDeleted > 0);
-            // test delete again and see if it works.
 
             this.ChangeTracker
                 .Entries<IEntityDeletableSoft>()
