@@ -84,8 +84,8 @@ namespace Nano.Data
         {
             var pendingEvents = this.GetPendingEntityEvents();
 
-            this.SaveAudit();
             this.SaveSoftDeletion();
+            this.SaveAudit();
             
             return await base
                 .SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken)
