@@ -60,7 +60,7 @@ namespace Nano.Logging.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             return services
-                .AddConfigOptions<LoggingOptions>(configuration, LoggingOptions.SectionName, out var _);
+                .AddConfigOptions<LoggingOptions>(configuration, LoggingOptions.SectionName, out _);
         }
     }
 }

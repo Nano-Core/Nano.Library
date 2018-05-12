@@ -17,6 +17,7 @@ using Nano.Data.Models.Mappings.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Security;
 using Newtonsoft.Json;
+using Z.EntityFramework.Plus;
 
 namespace Nano.Data
 {
@@ -311,11 +312,19 @@ namespace Nano.Data
                 };
 
                 await userManager.CreateAsync(user, password);
+            }
+            else
+            {
+                var isValid = await userManager.CheckPasswordAsync(user, password);
 
-                return user;
+                if (!isValid)
+                {
+                    var token = await userManager.GeneratePasswordResetTokenAsync(user);
+                    await userManager.ResetPasswordAsync(user, token, password);
+                }
             }
 
-            return await userManager.FindByNameAsync(username);
+            return user;
         }
         private async Task AddUserToRole(IdentityUser user, string role)
         {

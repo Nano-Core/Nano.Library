@@ -28,7 +28,7 @@ namespace Nano.App.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             services
-                .AddConfigOptions<AppOptions>(configuration, AppOptions.SectionName, out var _);
+                .AddConfigOptions<AppOptions>(configuration, AppOptions.SectionName, out _);
 
             return services;
         }

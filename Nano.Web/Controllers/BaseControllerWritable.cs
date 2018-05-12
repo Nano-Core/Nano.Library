@@ -262,7 +262,7 @@ namespace Nano.Web.Controllers
                 .Service.GetAsync<TEntity, TIdentity>(id, cancellationToken);
 
             if (entity == null)
-                return this.NotFound(id);
+                return this.NotFound();
 
             await this.Service
                 .DeleteAsync(entity, cancellationToken);

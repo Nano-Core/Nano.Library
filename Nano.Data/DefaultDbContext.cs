@@ -36,6 +36,29 @@ namespace Nano.Data
                 throw new ArgumentNullException(nameof(modelBuilder));
 
             base.OnModelCreating(modelBuilder);
+
+            // TODO: Unique constraints should always include IsActive. (by convention if possible)
+            //var models = this.Model.GetEntityTypes();
+
+            //foreach (var model in models)
+            //{
+            //    var typeBuilder = modelBuilder.Entity(model.GetType());
+            //    var indexes = model.GetIndexes().Where(y => y.IsUnique);
+
+            //    foreach (var index in indexes)
+            //    {
+            //        var indexProperties = index.Properties
+            //            .Cast<IMutableProperty>()
+            //            .ToList();
+
+            //        var a = (IMutableProperty)new Property("DeletedAt", typeof(DateTimeOffset), null, null, model.AsEntityType(), ConfigurationSource.Explicit, ConfigurationSource.Explicit);
+
+            //        indexProperties.Add(a);
+
+            //        typeBuilder.Metadata.RemoveIndex(index.Properties);
+            //        typeBuilder.Metadata.AddIndex(indexProperties);
+            //    }
+            //}
         }
 
         /// <inheritdoc />
@@ -59,10 +82,10 @@ namespace Nano.Data
         /// <inheritdoc />
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
-            this.SaveAudit();
-            this.SaveSoftDeletion();
-
             var pendingEvents = this.GetPendingEntityEvents();
+
+            this.SaveSoftDeletion();
+            this.SaveAudit();
             
             return await base
                 .SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken)
@@ -112,8 +135,8 @@ namespace Nano.Data
                 .ToList()
                 .ForEach(x =>
                 {
-                    x.Entity.IsActive = false;
                     x.State = EntityState.Modified;
+                    x.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
                 });
 
         }

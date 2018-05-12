@@ -1,4 +1,5 @@
 using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Models;
 using Nano.Models.Interfaces;
@@ -18,22 +19,23 @@ namespace Nano.Data.Models.Mappings
             base.Map(builder);
 
             builder
-                .HasQueryFilter(x => x.IsActive);
-
-            builder
-                .Property(y => y.IsActive)
-                .IsRequired();
+                .HasQueryFilter(x => x.IsDeleted == 0L);
 
             builder
                 .Property(x => x.CreatedAt)
                 .ValueGeneratedOnAdd()
                 .IsRequired();
- 
-            builder
-                .HasIndex(x => x.IsActive);
 
             builder
                 .HasIndex(x => x.CreatedAt);
+
+            builder
+                .Property(y => y.IsDeleted)
+                .HasDefaultValue(0L)
+                .IsRequired();
+
+            builder
+                .HasIndex(x => x.IsDeleted);
         }
     }
 }

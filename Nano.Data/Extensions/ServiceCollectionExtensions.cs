@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -10,8 +9,8 @@ using Nano.Config.Extensions;
 using Nano.Data.Interfaces;
 using Nano.Data.Models;
 using Nano.Models.Interfaces;
+using Nano.Security.Extensions;
 using Z.EntityFramework.Plus;
-using AuditEntryProperty = Nano.Data.Models.AuditEntryProperty;
 
 namespace Nano.Data.Extensions
 {
@@ -92,48 +91,37 @@ namespace Nano.Data.Extensions
 
             if (options.UseAudit)
             {
-                AuditManager.DefaultConfiguration.Include<IEntity>();
-                AuditManager.DefaultConfiguration.IncludeProperty<IEntity>();
+                AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
+                AuditManager.DefaultConfiguration.IncludeProperty<IEntityAuditable>();
                 AuditManager.DefaultConfiguration.IncludeDataAnnotation();
+                AuditManager.DefaultConfiguration.Exclude<IEntityAuditableNegated>();
                 AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
                 AuditManager.DefaultConfiguration.AutoSavePreAction = (dbContext, audit) =>
                 {
-                    var baseDbContext = dbContext as BaseDbContext;
                     var httpContextAccessor = services.BuildServiceProvider().GetService<IHttpContextAccessor>();
-                    var httpRequestIdentifierFeature = httpContextAccessor?.HttpContext?.Features.Get<IHttpRequestIdentifierFeature>();
+                    var httpContext = httpContextAccessor?.HttpContext;
 
-                    var customAuditEntries = audit.Entries.Select(x =>
-                    {
-                        var auditEntry = new DefaultAuditEntry
+                    var createdBy = httpContext?.Request.GetUser();
+                    var requestId = httpContext?.TraceIdentifier;
+
+                    var customAuditEntries = audit.Entries
+                        .Select(x => new DefaultAuditEntry
                         {
                             AuditEntryID = x.AuditEntryID,
-                            CreatedBy = x.CreatedBy,
+                            CreatedBy = createdBy ?? x.CreatedBy,
                             CreatedDate = x.CreatedDate,
                             EntitySetName = x.EntitySetName,
                             EntityTypeName = x.EntityTypeName,
                             State = x.State,
                             StateName = x.StateName,
-                            RequestId = httpRequestIdentifierFeature?.TraceIdentifier
-                        };
+                            Properties = x.Properties,
+                            RequestId = requestId
+                        });
 
-                        auditEntry.Properties = x.Properties.Select(y => new AuditEntryProperty
-                        {
-                            AuditEntryPropertyID = y.AuditEntryPropertyID,
-                            AuditEntryID = y.AuditEntryID,
-                            Parent = auditEntry,
-                            PropertyName = y.PropertyName,
-                            RelationName = y.RelationName,
-                            NewValue = y.NewValueFormatted,
-                            OldValue = y.OldValueFormatted
-
-                        }).ToList();
-
-                        return auditEntry;
-                    });
-
-                    baseDbContext?.__EFAudit.AddRange(customAuditEntries);
+                    dbContext.Set<DefaultAuditEntry>()
+                        .AddRange(customAuditEntries);
                 };
-                AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsActive);
+                AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsDeleted > 0);
             }
             else
             {
