@@ -11,7 +11,6 @@ using Nano.Data.Models;
 using Nano.Models.Interfaces;
 using Nano.Security.Extensions;
 using Z.EntityFramework.Plus;
-//using AuditEntryProperty = Nano.Data.Models.AuditEntryProperty;
 
 namespace Nano.Data.Extensions
 {
@@ -102,18 +101,21 @@ namespace Nano.Data.Extensions
                     var httpContextAccessor = services.BuildServiceProvider().GetService<IHttpContextAccessor>();
                     var httpContext = httpContextAccessor?.HttpContext;
 
+                    var createdBy = httpContext?.Request.GetUser();
+                    var requestId = httpContext?.TraceIdentifier;
+
                     var customAuditEntries = audit.Entries
                         .Select(x => new DefaultAuditEntry
                         {
                             AuditEntryID = x.AuditEntryID,
-                            CreatedBy = httpContext?.Request.GetUser() ?? x.CreatedBy,
+                            CreatedBy = createdBy ?? x.CreatedBy,
                             CreatedDate = x.CreatedDate,
                             EntitySetName = x.EntitySetName,
                             EntityTypeName = x.EntityTypeName,
                             State = x.State,
                             StateName = x.StateName,
-                            RequestId = httpContext?.TraceIdentifier,
-                            Properties = x.Properties
+                            Properties = x.Properties,
+                            RequestId = requestId
                         });
 
                     dbContext.Set<DefaultAuditEntry>()

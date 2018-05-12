@@ -107,8 +107,6 @@ namespace Nano.Data
             if (this.Options.ConnectionString == null)
                 return;
 
-            // TODO: If admin user password is altered in configuration, it should be updated in db.
-
             var securityOptions = this.GetService<SecurityOptions>() ?? new SecurityOptions();
 
             await this.AddRole("guest");
