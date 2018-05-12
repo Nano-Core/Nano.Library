@@ -129,6 +129,9 @@ namespace Nano.Data
             if (!this.Options.UseSoftDeletetion)
                 return;
 
+            // TODO: this seems strange, they should be set as deleted (as set in the AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsDeleted > 0);
+            // test delete again and see if it works.
+
             this.ChangeTracker
                 .Entries<IEntityDeletableSoft>()
                 .Where(x => x.State == EntityState.Deleted)

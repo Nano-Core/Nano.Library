@@ -17,6 +17,7 @@ using Nano.Data.Models.Mappings.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Security;
 using Newtonsoft.Json;
+using Z.EntityFramework.Plus;
 
 namespace Nano.Data
 {
@@ -105,6 +106,8 @@ namespace Nano.Data
         {
             if (this.Options.ConnectionString == null)
                 return;
+
+            // TODO: If admin user password is altered in configuration, it should be updated in db.
 
             var securityOptions = this.GetService<SecurityOptions>() ?? new SecurityOptions();
 

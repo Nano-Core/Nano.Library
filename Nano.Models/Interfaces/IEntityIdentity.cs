@@ -5,7 +5,7 @@ namespace Nano.Models.Interfaces
     /// Implementing <see cref="IEntity"/>'s having identity property.
     /// </summary>
     /// <typeparam name="TIdentity">The type of <see cref="IEntityIdentity{T}.Id"/>.</typeparam>
-    public interface IEntityIdentity<out TIdentity> : IEntity
+    public interface IEntityIdentity<out TIdentity> : IEntityAuditable
     {
         /// <summary>
         /// Id.
