@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace Nano.Models
 {
@@ -17,5 +19,19 @@ namespace Nano.Models
         /// Description.
         /// </summary>
         public virtual string[] Exceptions { get; set; } = new string[0];
+
+        /// <summary>
+        /// Status Code.
+        /// </summary>
+        public virtual int StatusCode { get; set; } = 500;
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            var exceptionsString = this.Exceptions
+                .Aggregate($"Messages:{Environment.NewLine}", (current, exception) => current + exception + Environment.NewLine);
+
+            return $"{this.StatusCode} {this.Summary}{Environment.NewLine}Messages:{Environment.NewLine}{exceptionsString}";
+        }
     }
 }

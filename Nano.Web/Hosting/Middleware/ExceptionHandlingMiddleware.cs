@@ -41,9 +41,6 @@ namespace Nano.Web.Hosting.Middleware
                 if (response.HasStarted)
                     response.Clear();
 
-                if (request.IsContentTypeHtml())
-                    throw;
-
                 response.StatusCode = 500;
                 response.ContentType = request.ContentType;
 
@@ -58,14 +55,14 @@ namespace Nano.Web.Hosting.Middleware
                         ? JsonConvert.SerializeObject(error)
                         : request.IsContentTypeXml()
                             ? XmlConvert.SerializeObject(error)
-                            : ex.Message;
+                            : error.ToString();
 
-                await response
+                    await response
                     .WriteAsync(result);
             }
             finally
             {
-                // COSMETIC: Logging, create Enrichers.
+                // TODO: Logging, implement Enrichers encapsulating the log context (specific to Serilog).
                 var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
 
                 var id = httpContext.TraceIdentifier;

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -29,10 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Views\Audit\Details.cshtml" />
-    <None Remove="Views\Audit\Index.cshtml" />
-    <None Remove="Views\Auth\Forbidden.cshtml" />
-    <None Remove="Views\Auth\Index.cshtml" />
+    <None Remove="Nano.Web.csproj.DotSettings" />
   </ItemGroup>
   
   <ItemGroup>

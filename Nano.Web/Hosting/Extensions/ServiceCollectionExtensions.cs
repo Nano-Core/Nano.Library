@@ -194,7 +194,7 @@ namespace Nano.Web.Hosting.Extensions
                         .ToList()
                         .ForEach(y =>
                         {
-                            // COSMETIC: Generates swagger error when xml included. Also Swagger doesn't add documentation from xml file in nuget packages.
+                            // TODO: Generates swagger error when xml included. Also Swagger doesn't add documentation from xml file in nuget packages.
                             //var fileName = y.Name.Replace(".dll", ".xml").Replace(".exe", ".xml");
                             //var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
 

@@ -37,7 +37,7 @@ namespace Nano.Data
 
             base.OnModelCreating(modelBuilder);
 
-            // TODO: Unique constraints should always include IsActive. (by convention if possible)
+            // TODO: All unique index constraints must include IsDeleted. (by convention if possible)
             //var models = this.Model.GetEntityTypes();
 
             //foreach (var model in models)
