@@ -50,6 +50,34 @@ namespace Nano.Data.Models.Mappings.Extensions
         }
 
         /// <summary>
+        /// Maps <see cref="Range"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <typeparam name="TRelatedEntity">The related entity type.</typeparam>
+        /// <param name="builder">The <see cref="ReferenceOwnershipBuilder{TEntity,TRelatedEntity}"/>.</param>
+        /// <param name="expression">The <see cref="Expression"/>.</param>
+        public static void MapType<TEntity, TRelatedEntity>(this ReferenceOwnershipBuilder<TEntity, TRelatedEntity> builder, Expression<Func<TRelatedEntity, Range>> expression)
+            where TEntity : class
+            where TRelatedEntity : class
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.Lower)
+                .HasDefaultValue(0)
+                .IsRequired();
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.Upper);
+        }
+
+        /// <summary>
         /// Maps <see cref="Address"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
         /// </summary>
         /// <typeparam name="TEntity">The entity type.</typeparam>

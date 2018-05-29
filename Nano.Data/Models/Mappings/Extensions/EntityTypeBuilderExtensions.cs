@@ -49,6 +49,32 @@ namespace Nano.Data.Models.Mappings.Extensions
         }
 
         /// <summary>
+        /// Maps <see cref="Range"/> as owned by the entity.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
+        /// <param name="expression">The property expression.</param>
+        public static void MapType<TEntity>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, Range>> expression)
+            where TEntity : class, IEntity
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.Lower)
+                .HasDefaultValue(0)
+                .IsRequired();
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.Upper);
+        }
+
+        /// <summary>
         /// Maps <see cref="Address"/> as owned by the entity.
         /// </summary>
         /// <typeparam name="TEntity">The entity type.</typeparam>
