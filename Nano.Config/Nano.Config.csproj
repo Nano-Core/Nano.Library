@@ -28,7 +28,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.0-rc1-final" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.1.0-rc1-final" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0-rc1-final" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0-rc1-final" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.0-rc1-final" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.0-rc1-final" />
   </ItemGroup>
