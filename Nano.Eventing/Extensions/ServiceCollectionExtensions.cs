@@ -67,8 +67,8 @@ namespace Nano.Eventing.Extensions
                 .SelectMany(x => x.GetTypes())
                 .SelectMany(x => x.GetInterfaces(), (x, y) => new { Type = x, GenericType = y })
                 .Where(x =>
-                    x.Type != typeof(EntityEventHandler) &&
-                    !x.Type.IsTypeDef(typeof(IEventingHandler<EntityEvent>)))
+                    x.Type.IsTypeDef(typeof(IEventingHandler<>)) &&
+                    x.Type != typeof(EntityEventHandler))
                 .ToList()
                 .ForEach(x =>
                 {
