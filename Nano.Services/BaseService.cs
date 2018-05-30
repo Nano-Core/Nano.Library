@@ -14,6 +14,9 @@ using Z.EntityFramework.Plus;
 
 namespace Nano.Services
 {
+    // TODO: What relevance does IService provide.
+    // TODO: Include entity relations when querying (EfCore-plus project has something, but only it's only for NET Framrwork, maybe peak and see if it can be ported).
+
     /// <inheritdoc />
     public abstract class BaseService<TContext> : IService
         where TContext : BaseDbContext

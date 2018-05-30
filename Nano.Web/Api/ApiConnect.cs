@@ -2,7 +2,7 @@ namespace Nano.Web.Api
 {
     /// <summary>
     /// Api Connect.
-    /// Template: http(s)://{this.Host}:{this.Port}{this.Path}{this.App}{this.Controller}{this.Action}
+    /// Uri Template: http(s)://{this.Host}:{this.Port}{this.Path}{this.App}{this.Controller}{this.Action}
     /// </summary>
     public class ApiConnect
     {
@@ -19,7 +19,7 @@ namespace Nano.Web.Api
         /// <summary>
         /// Path.
         /// </summary>
-        public virtual string Path { get; set; } = "app";
+        public virtual string Path { get; set; } = "api";
 
         /// <summary>
         /// Action.

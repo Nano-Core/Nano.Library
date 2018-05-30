@@ -18,7 +18,7 @@ namespace Nano.Web.Api
         protected virtual ApiConnect ApiConnect { get; }
 
         /// <summary>
-        /// Constructor
+        /// Constructor.
         /// </summary>
         /// <param name="apiConnect">The <see cref="ApiConnect"/>.</param>
         protected BaseApi(ApiConnect apiConnect)
@@ -45,7 +45,7 @@ namespace Nano.Web.Api
         }
 
         /// <summary>
-        /// Get.
+        /// Get All.
         /// </summary>
         public virtual async Task<GetAllResponse<TEntity>> GetAll<TEntity>(GetAllRequest request)
             where TEntity : IEntity
