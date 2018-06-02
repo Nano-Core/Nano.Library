@@ -33,15 +33,15 @@ namespace Nano.Data.Providers.MySql
                 throw new ArgumentNullException(nameof(builder));
 
             var batchSize = this.Options.BatchSize;
-            var useLazyLoading = this.Options.UseLazyLoading;
+            //var useLazyLoading = this.Options.UseLazyLoading;
             var connectionString = this.Options.ConnectionString;
 
             if (connectionString == null)
                 return;
 
             builder
-                .UseLazyLoadingProxies(useLazyLoading)
-                .UseMySQL(connectionString, x =>
+                // TODO: .UseLazyLoadingProxies(useLazyLoading)
+                .UseMySql(connectionString, x =>
                 {
                     x.MaxBatchSize(batchSize);
                 });

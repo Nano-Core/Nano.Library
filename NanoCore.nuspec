@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>0.5.250-beta</version>
+    <version>0.5.320-beta</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -16,48 +16,49 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
     <dependencies>
       <group targetFramework=".NETStandard2.0">
         <dependency id="DynamicExpression" version="1.1.9" />
-        <dependency id="Microsoft.AspNetCore.Authorization" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.AspNetCore.Authentication" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.AspNetCore.Authentication.Cookies" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="2.0.2" />
-        <dependency id="Microsoft.AspNetCore" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.AspNetCore.Mvc" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.AspNetCore.Session" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.AspNetCore.Mvc.Formatters.Json" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.AspNetCore.Mvc.Formatters.Xml" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.AspNetCore.StaticFiles" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.AspNetCore.ResponseCompression" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.AspNetCore.Rewrite" version="2.1.0-rc1-final" />
+        <dependency id="Microsoft.AspNetCore" version="2.1.0" />
+        <dependency id="Microsoft.AspNetCore.Authorization" version="2.1.0" />
+        <dependency id="Microsoft.AspNetCore.Authentication" version="2.1.0" />
+        <dependency id="Microsoft.AspNetCore.Authentication.Cookies" version="2.1.0" />
+        <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="2.1.0" />
+        <dependency id="Microsoft.AspNetCore.Mvc" version="2.1.0" />
+        <dependency id="Microsoft.AspNetCore.Session" version="2.1.0" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Formatters.Json" version="2.1.0" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Formatters.Xml" version="2.1.0" />
+        <dependency id="Microsoft.AspNetCore.StaticFiles" version="2.1.0" />
+        <dependency id="Microsoft.AspNetCore.ResponseCompression" version="2.1.0" />
+        <dependency id="Microsoft.AspNetCore.Rewrite" version="2.1.0" />
         <dependency id="Microsoft.AspNetCore.Mvc.Versioning" version="2.2.0" />
         <dependency id="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" version="2.2.0" />
-        <dependency id="Microsoft.EntityFrameworkCore" version="2.0.2" />
-        <dependency id="Microsoft.EntityFrameworkCore.Tools" version="2.0.2" />
-        <dependency id="Microsoft.EntityFrameworkCore.InMemory" version="2.0.2" />
-        <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="2.0.2" />
-        <dependency id="Microsoft.EntityFrameworkCore.Design" version="2.0.2" />
-        <dependency id="Microsoft.EntityFrameworkCore.Relational" version="2.0.2" />
-        <dependency id="Microsoft.Extensions.Configuration" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.Extensions.Configuration.Json" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.Extensions.Configuration.Binder" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.Extensions.Configuration.CommandLine" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.Extensions.Configuration.EnvironmentVariables" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.Extensions.DependencyInjection" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.Extensions.Identity.Core" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.Extensions.Logging" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.Extensions.Options" version="2.1.0-rc1-final" />
-        <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="2.1.0-rc1-final" />
+        <dependency id="Microsoft.Extensions.Configuration" version="2.1.0" />
+        <dependency id="Microsoft.Extensions.Configuration.Json" version="2.1.0" />
+        <dependency id="Microsoft.Extensions.Configuration.Binder" version="2.1.0" />
+        <dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="2.1.0" />
+        <dependency id="Microsoft.Extensions.Configuration.CommandLine" version="2.1.0" />
+        <dependency id="Microsoft.Extensions.Configuration.EnvironmentVariables" version="2.1.0" />
+        <dependency id="Microsoft.Extensions.DependencyInjection" version="2.1.0" />
+        <dependency id="Microsoft.Extensions.Identity.Core" version="2.1.0" />
+        <dependency id="Microsoft.Extensions.Logging" version="2.1.0" />
+        <dependency id="Microsoft.Extensions.Options" version="2.1.0" />
+        <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="2.1.0" />
         <dependency id="NetTopologySuite" version="1.15.0-pre063" />
-        <dependency id="Pomelo.EntityFrameworkCore.MySql" version="2.0.1" />
-        <dependency id="Serilog" version="2.7.1-dev-00983" />
+        <dependency id="Serilog" version="2.7.1" />
         <dependency id="Serilog.Extensions.Logging" version="2.0.2" />
         <dependency id="Serilog.Sinks.Console" version="3.1.1" />
-        <dependency id="System.ComponentModel.Annotations" version="4.5.0-rc1" />
+        <dependency id="System.ComponentModel.Annotations" version="4.5.0" />
         <dependency id="Swashbuckle.AspNetCore" version="2.4.0" />
-        <dependency id="Z.EntityFramework.Plus.EFCore" version="1.7.19" />
+        <dependency id="Z.EntityFramework.Plus.EFCore" version="1.7.20" />
         <dependency id="EasyNetQ" version="2.4.0-alpha0002" />
-        <dependency id="Microsoft.AspNetCore.Identity" version="2.1.0-rc1-final" />
+        <dependency id="Microsoft.AspNetCore.Identity" version="2.1.0" />
+        <dependency id="Microsoft.EntityFrameworkCore" version="2.0.3" />
+        <dependency id="Microsoft.EntityFrameworkCore.Design" version="2.0.3" />
+        <dependency id="Microsoft.EntityFrameworkCore.InMemory" version="2.0.3" />
+        <dependency id="Microsoft.EntityFrameworkCore.Relational" version="2.0.3" />
+        <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="2.0.3" />
+        <dependency id="Microsoft.EntityFrameworkCore.Tools" version="2.0.3" />
+        <dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="2.0.3" />
+        <dependency id="Pomelo.EntityFrameworkCore.MySql" version="2.0.1" />
+        <dependency id="Pomelo.EntityFrameworkCore.MySql.Design" version="1.1.2" />
       </group>
     </dependencies>
   </metadata>
