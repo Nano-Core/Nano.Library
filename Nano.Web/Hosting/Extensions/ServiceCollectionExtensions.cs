@@ -184,7 +184,7 @@ namespace Nano.Web.Hosting.Extensions
                         { "Bearer", new string[] { } }
                     });
 
-                    // COSMETIC: https://github.com/domaindrivendev/Swashbuckle/issues/749
+                    // TODO: Swagger xml-doc generic parameters (https://github.com/domaindrivendev/Swashbuckle/issues/749).
                    //AppDomain.CurrentDomain
                    //     .GetAssemblies()
                    //     .SelectMany(y => y.GetTypes())

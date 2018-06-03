@@ -30,38 +30,6 @@ namespace Nano.Data
         }
 
         /// <inheritdoc />
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            if (modelBuilder == null)
-                throw new ArgumentNullException(nameof(modelBuilder));
-
-            base.OnModelCreating(modelBuilder);
-
-            // TODO: All unique index constraints must include IsDeleted. (by convention if possible)
-            //var models = this.Model.GetEntityTypes();
-
-            //foreach (var model in models)
-            //{
-            //    var typeBuilder = modelBuilder.Entity(model.GetType());
-            //    var indexes = model.GetIndexes().Where(y => y.IsUnique);
-
-            //    foreach (var index in indexes)
-            //    {
-            //        var indexProperties = index.Properties
-            //            .Cast<IMutableProperty>()
-            //            .ToList();
-
-            //        var a = (IMutableProperty)new Property("DeletedAt", typeof(DateTimeOffset), null, null, model.AsEntityType(), ConfigurationSource.Explicit, ConfigurationSource.Explicit);
-
-            //        indexProperties.Add(a);
-
-            //        typeBuilder.Metadata.RemoveIndex(index.Properties);
-            //        typeBuilder.Metadata.AddIndex(indexProperties);
-            //    }
-            //}
-        }
-
-        /// <inheritdoc />
         public override int SaveChanges()
         {
             return this.SaveChanges(true);
