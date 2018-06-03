@@ -2,7 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Nano.Data.Extensions
+namespace Nano.Data.Models.Mappings.Extensions
 {
     /// <summary>
     /// Property Builder Extensions.
@@ -16,7 +16,7 @@ namespace Nano.Data.Extensions
         /// <param name="precision">The precision.</param>
         /// <param name="scale">The scale.</param>
         /// <returns>The <see cref="PropertyBuilder{TProperty}"/>.</returns>
-        public static PropertyBuilder<decimal?> HasPrecision(this PropertyBuilder<decimal?> builder, int precision, int scale)
+        public static PropertyBuilder<decimal> HasPrecision(this PropertyBuilder<decimal> builder, int precision, int scale)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
@@ -32,7 +32,7 @@ namespace Nano.Data.Extensions
         /// <param name="precision">The precision.</param>
         /// <param name="scale">The scale.</param>
         /// <returns>The <see cref="PropertyBuilder{TProperty}"/>.</returns>
-        public static PropertyBuilder<decimal> HasPrecision(this PropertyBuilder<decimal> builder, int precision, int scale)
+        public static PropertyBuilder<decimal?> HasPrecision(this PropertyBuilder<decimal?> builder, int precision, int scale)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));

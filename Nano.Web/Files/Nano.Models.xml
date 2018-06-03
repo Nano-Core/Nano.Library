@@ -1,0 +1,980 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Nano.Models</name>
+    </assembly>
+    <members>
+        <member name="T:Nano.Models.Attributes.Helpers.PhoneNumberPrefixes">
+            <summary>
+            Phone Number Prefixes.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Attributes.Helpers.PhoneNumberPrefixes.Find(System.String)">
+            <summary>
+            Find the phone number prefix matching the passed <see cref="T:System.String"/>.
+            </summary>
+            <param name="e164">The E164 <see cref="T:System.String"/>.</param>
+            <returns>The <see cref="T:System.Collections.Generic.KeyValuePair`2"/>.</returns>
+        </member>
+        <member name="T:Nano.Models.Attributes.PhoneNumberAttribute">
+            <summary>
+            PhoneNumber Attribute (Validation)
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Attributes.PhoneNumberAttribute.#ctor">
+            <summary>
+            Consrtuctor.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Attributes.PhoneNumberAttribute.#ctor(System.ComponentModel.DataAnnotations.DataType)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Models.Attributes.PhoneNumberAttribute.#ctor(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Models.Attributes.PhoneNumberAttribute.IsValid(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Models.BaseEntity">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Models.BaseEntity.IsDeleted">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Models.BaseEntityIdentity`1">
+            <inheritdoc cref="T:Nano.Models.Interfaces.IEntityIdentity`1"/>
+        </member>
+        <member name="P:Nano.Models.BaseEntityIdentity`1.Id">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Models.BaseEntityIdentity`1.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Models.BaseEntityIdentity`1.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Models.Criterias.AuditEntryQueryCriteria">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Models.Criterias.AuditEntryQueryCriteria.CreatedBy">
+            <summary>
+            Created By.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Criterias.AuditEntryQueryCriteria.CreatedDateTo">
+            <summary>
+            Create Date To.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Criterias.AuditEntryQueryCriteria.CreatedDateFrom">
+            <summary>
+            Create Date From.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Criterias.AuditEntryQueryCriteria.EntityTypeName">
+            <summary>
+            Entity Type Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Criterias.AuditEntryQueryCriteria.State">
+            <summary>
+            State.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Criterias.AuditEntryQueryCriteria.RequestId">
+            <summary>
+            Request Id.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Criterias.AuditEntryQueryCriteria.GetExpression``1">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Models.Criterias.BaseQueryCriteria">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Models.Criterias.BaseQueryCriteria.GetExpression``1">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Models.Criterias.DefaultQueryCriteria">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Models.Criterias.DefaultQueryCriteria.AfterAt">
+            <summary>
+            After At.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Criterias.DefaultQueryCriteria.BeforeAt">
+            <summary>
+            Before At.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Criterias.DefaultQueryCriteria.GetExpression``1">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Models.Criterias.DefaultQueryCriteriaSpatial">
+            <inheritdoc cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>
+        </member>
+        <member name="P:Nano.Models.Criterias.DefaultQueryCriteriaSpatial.Geometry">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial">
+            <summary>
+            Query Criteria Spatial.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial.Geometry">
+            <summary>
+            Geometry.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.DefaultEntity">
+            <inheritdoc cref="T:Nano.Models.BaseEntityIdentity`1"/>
+        </member>
+        <member name="P:Nano.Models.DefaultEntity.CreatedAt">
+            <summary>
+            Created At.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.DefaultEntitySpatial">
+            <inheritdoc cref="T:Nano.Models.Interfaces.IEntitySpatial"/>
+        </member>
+        <member name="P:Nano.Models.DefaultEntitySpatial.Geometry">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Models.EntityEvent">
+            <summary>
+            Entity Event.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.EntityEvent.Id">
+            <summary>
+            Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.EntityEvent.Type">
+            <summary>
+            Type.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.EntityEvent.State">
+            <summary>
+            State.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.EntityEvent.#ctor(System.Object,System.String,System.String)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="id"></param>
+            <param name="type"></param>
+            <param name="state"></param>
+        </member>
+        <member name="T:Nano.Models.Error">
+            <summary>
+            Error.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Error.Summary">
+            <summary>
+            Message.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Error.Exceptions">
+            <summary>
+            Description.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Error.StatusCode">
+            <summary>
+            Status Code.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Error.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Models.Extensions.DateTimeOffsetExtensions">
+            <summary>
+            DateTimeOffset Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Extensions.DateTimeOffsetExtensions.GetEpochTime(System.DateTimeOffset)">
+            <summary>
+            Gets the number of seconds since <see cref="F:Nano.Models.Extensions.DateTimeOffsetExtensions.epoch"/> (Unix). 
+            </summary>
+            <param name="at">The <see cref="T:System.DateTimeOffset"/>.</param>
+            <returns>The number of seconds</returns>
+        </member>
+        <member name="M:Nano.Models.Extensions.DateTimeOffsetExtensions.GetWeekNumber(System.DateTimeOffset)">
+            <summary>
+            Gets the week number.
+            </summary>
+            <param name="at">The <see cref="T:System.DateTimeOffset"/>.</param>
+            <returns>The week number if the passe <see cref="T:System.DateTimeOffset"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Extensions.DateTimeOffsetExtensions.GetDayDates(System.DateTimeOffset)">
+            <summary>
+            Get the start and end date of the day, matching the passed <see cref="T:System.DateTimeOffset"/>.
+            </summary>
+            <param name="at">The <see cref="T:System.DateTimeOffset"/>.</param>
+            <returns>The start and end date.</returns>
+        </member>
+        <member name="M:Nano.Models.Extensions.DateTimeOffsetExtensions.GetWeekDates(System.DateTimeOffset)">
+            <summary>
+            Get the start and end date of the week, matching the passed <see cref="T:System.DateTimeOffset"/>.
+            </summary>
+            <param name="at">The <see cref="T:System.DateTimeOffset"/>.</param>
+            <returns>The start and end date.</returns>
+        </member>
+        <member name="M:Nano.Models.Extensions.DateTimeOffsetExtensions.GetMonthDates(System.DateTimeOffset)">
+            <summary>
+            Gets the start and end date of the month, matching the passed <see cref="T:System.DateTimeOffset"/> instance.
+            </summary>
+            <param name="at">The <see cref="T:System.DateTimeOffset"/>.</param>
+            <returns>The start and end dates.</returns>
+        </member>
+        <member name="M:Nano.Models.Extensions.DateTimeOffsetExtensions.GetYearDates(System.DateTimeOffset)">
+            <summary>
+            Gets the start and end date of the year, matching the passed <see cref="T:System.DateTimeOffset"/> instance.
+            </summary>
+            <param name="at">The <see cref="T:System.DateTimeOffset"/>.</param>
+            <returns>The start and end date.</returns>
+        </member>
+        <member name="M:Nano.Models.Extensions.DateTimeOffsetExtensions.GetDates(System.DateTimeOffset,Nano.Models.Extensions.Enums.DateInterval)">
+            <summary>
+            Gets the start and end date of the <see cref="T:Nano.Models.Extensions.Enums.DateInterval"/> passed, matching the passed <see cref="T:System.DateTimeOffset"/>.
+            </summary>
+            <param name="dateInterval">The <see cref="T:Nano.Models.Extensions.Enums.DateInterval"/>.</param>
+            <param name="at">The <see cref="T:System.DateTimeOffset"/>.</param>
+            <returns>The start and end date.</returns>
+        </member>
+        <member name="T:Nano.Models.Extensions.Enums.DateInterval">
+            <summary>
+            Date Interval.
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Extensions.Enums.DateInterval.DAYLY">
+            <summary>
+            Daily.
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Extensions.Enums.DateInterval.WEEKLY">
+            <summary>
+            Weekly.
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Extensions.Enums.DateInterval.MONTHLY">
+            <summary>
+            Monthly.
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Extensions.Enums.DateInterval.YEARLY">
+            <summary>
+            Yearly.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Extensions.ObjectExtensions">
+            <summary>
+            Object Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Extensions.ObjectExtensions.GetShortId(System.Object)">
+            <summary>
+            Generates a short unique identifier for the passed an <see cref="T:System.Object"/>.
+            </summary>
+            <param name="object">The <see cref="T:System.Object"/>.</param>
+            <returns>The <see cref="T:System.String"/>.</returns>
+        </member>
+        <member name="T:Nano.Models.Extensions.ServiceCollectionExtensions">
+            <summary>
+            Service Collection Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Extensions.ServiceCollectionExtensions.GetServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
+            <summary>
+            Gets a colletion of dependencies registered in the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <param name="isUnique">Bool indicating if only unique service dependencies should be returned.</param>
+            <returns>The <see cref="T:System.Collections.Generic.IEnumerator`1"/> of <see cref="T:Microsoft.Extensions.DependencyInjection.ServiceDescriptor"/> items.</returns>
+        </member>
+        <member name="T:Nano.Models.Extensions.StreamExtensions">
+            <summary>
+            Stream Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Extensions.StreamExtensions.ReadAll(System.IO.Stream)">
+            <summary>
+            Reads all bytes in the <see cref="T:System.IO.Stream"/> and returns the content as string.
+            </summary>
+            <param name="stream">The <see cref="T:System.IO.Stream"/>.</param>
+            <returns>The content as string.</returns>
+        </member>
+        <member name="T:Nano.Models.Extensions.StringExtensions">
+            <summary>
+            String Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Extensions.StringExtensions.Substring(System.String,System.String)">
+            <summary>
+            Returns a substring consisting of all characters after the index of the passed <paramref name="indexOf"/> 
+            from the passed <paramref name="string"/>. 
+            </summary>
+            <param name="string">The <see cref="T:System.String"/>.</param>
+            <param name="indexOf">The <see cref="T:System.String"/> to find indexOf in the passed <paramref name="string"/>.</param>
+            <returns>The sustring.</returns>
+        </member>
+        <member name="M:Nano.Models.Extensions.StringExtensions.TrySubstring(System.String,System.String,System.String@)">
+            <summary>
+            Tries to get a substring consisting of all characters after the index of the passed <paramref name="indexOf"/> 
+            from the passed <paramref name="string"/>. 
+            </summary>
+            <param name="string">The <see cref="T:System.String"/>.</param>
+            <param name="indexOf">The <see cref="T:System.String"/> to find indexOf in the passed <paramref name="string"/>.</param>
+            <param name="result">The sustring.</param>
+            <returns>A <see cref="T:System.Boolean"/> indicating success or not.</returns>
+        </member>
+        <member name="T:Nano.Models.Extensions.TimeSpanExtensions">
+            <summary>
+            TimeSpan Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Extensions.TimeSpanExtensions.IsWithinPeriod(System.TimeSpan,System.TimeSpan,System.TimeSpan)">
+            <summary>
+            Is Within.
+            </summary>
+            <param name="timeSpan">The <see cref="T:System.TimeSpan"/>.</param>
+            <param name="timeBegin">The <see cref="T:System.TimeSpan"/> begin.</param>
+            <param name="timeEnd">The <see cref="T:System.TimeSpan"/> end.</param>
+            <returns>A boolean whether the instance waas within begin and end.</returns>
+        </member>
+        <member name="T:Nano.Models.Extensions.TypeExtensions">
+            <summary>
+            Type Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Extensions.TypeExtensions.IsTypeDef(System.Type,System.Type)">
+            <summary>
+            Gets whehter the passed <paramref name="type"/> derives or implements the passed <paramref name="baseType"/>.
+            All base classes and interfaces are inspected.
+            </summary>
+            <param name="type">The <see cref="T:System.Type"/> from which to determine, if the passed <paramref name="baseType"/> is parent.</param>
+            <param name="baseType">The <see cref="T:System.Type"/> that be inherited or implemented by the passed <paramref name="type"/>.</param>
+            <returns>True or false, depending on whehter the <paramref name="type"/> implements or derives from <paramref name="baseType"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Extensions.TypeExtensions.GetBaseTypes(System.Type)">
+            <summary>
+            Gets all <see cref="T:System.Type"/>'s derived by the passed <paramref name="type"/>.
+            </summary>
+            <param name="type">The <see cref="T:System.Type"/> from which to get all parent types.</param>
+            <returns>The <see cref="T:System.Collections.Generic.IEnumerable`1"/> containing all parent <see cref="T:System.Type"/>'s.</returns>
+        </member>
+        <member name="M:Nano.Models.Extensions.TypeExtensions.GetParentTypes(System.Type)">
+            <summary>
+            Gets all <see cref="T:System.Type"/>'s derived or implemeneted by the passed <paramref name="type"/>.
+            </summary>
+            <param name="type">The <see cref="T:System.Type"/> from which to get all parent types.</param>
+            <returns>The <see cref="T:System.Collections.Generic.IEnumerable`1"/> containing all parent <see cref="T:System.Type"/>'s.</returns>
+        </member>
+        <member name="T:Nano.Models.Interfaces.IEntity">
+            <summary>
+            Entity interface.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Interfaces.IEntityAuditable">
+            <summary>
+            Entity Auditable interface.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Interfaces.IEntityAuditableNegated">
+            <summary>
+            Entity Auditable Negated interface.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Interfaces.IEntityCreatable">
+            <summary>
+            Entity Creatable.
+            Implementing entities are creatable.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Interfaces.IEntityCreatableAndUpdatable">
+            <summary>
+            Entity Creatable and updatable.
+            Implementing entities are creatable and updatable.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Interfaces.IEntityDeletable">
+            <summary>
+            Entity Deletable.
+            Implementing entities are deletable.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Interfaces.IEntityDeletableSoft">
+            <summary>
+            Entity Deletable.
+            Implementing entities are deletable.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Interfaces.IEntityDeletableSoft.IsDeleted">
+            <summary>
+            Deleted at.
+            Indicates whether the entity is deleted or not. Zero means active (true) and anything greater than zero means deleted (false).
+            THe Unix-based time in miliseconds is stored, in order for allowing unique indexes with soft-deletetion.
+            NOTE: Only active instances are returned from queries, when filters are enabled (default behavior).
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Interfaces.IEntityIdentity`1">
+            <summary>
+            Entity identity inteface.
+            Implementing <see cref="T:Nano.Models.Interfaces.IEntity"/>'s having identity property.
+            </summary>
+            <typeparam name="TIdentity">The type of <see cref="P:Nano.Models.Interfaces.IEntityIdentity`1.Id"/>.</typeparam>
+        </member>
+        <member name="P:Nano.Models.Interfaces.IEntityIdentity`1.Id">
+            <summary>
+            Id.
+            Uniquely identifies the <see cref="T:Nano.Models.Interfaces.IEntity"/>.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Interfaces.IEntitySpatial">
+            <summary>
+            Relation Spatial.
+            Implementing entities are queryable spatially, having a property of <see cref="P:Nano.Models.Interfaces.IEntitySpatial.Geometry"/> type.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Interfaces.IEntitySpatial.Geometry">
+            <summary>
+            Geometry.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Interfaces.IEntityUpdatable">
+            <summary>
+            Entity Deletable.
+            Implementing entities are updatable.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Interfaces.IEntityWritable">
+            <summary>
+            Entity Writable.
+            Implementing entities are creatable, updatable and deletable.
+            Implements <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/>, <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/> and <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Types.Address">
+            <summary>
+            Address.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Address.String">
+            <summary>
+            String.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Address.Location">
+            <summary>
+            Location.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Types.Angle">
+            <summary>
+            Angle.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Angle.Radians">
+            <summary>
+            The <see cref="T:Nano.Models.Types.Angle"/> represented in radians.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Angle.Radians2Pi">
+            <summary>
+            The <see cref="T:Nano.Models.Types.Angle"/> represented in radians, between 0 and 2 Pi. 
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Angle.Degrees">
+            <summary>
+            The <see cref="T:Nano.Models.Types.Angle"/> represented in degrees.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Angle.Degrees360">
+            <summary>
+            The <see cref="T:Nano.Models.Types.Angle"/> represented in degrees, between 0 and 360. 
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.Equals(Nano.Models.Types.Angle)">
+            <summary>
+            Compare the instance for equality with the passed <paramref name="other"/>.
+            </summary>
+            <param name="other">The <see cref="T:Nano.Models.Types.Angle"/> to compare for equality with the instance.</param>
+            <returns>A <see cref="T:System.Boolean"/> indicating whether the instance was equal to <paramref name="other"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.Equals(System.Object)">
+            <summary>
+            Override of <see cref="M:System.Object.Equals(System.Object)"/> for use with operator overlods.
+            </summary>
+            <param name="object">The <see cref="T:System.Object"/> to compare for equality with the instance.</param>
+            <returns>A <see cref="T:System.Boolean"/> indicating whether the instance was equal to <paramref name="object"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.GetHashCode">
+            <summary>
+            Override of <see cref="M:System.Object.GetHashCode"/> to compare the <see cref="P:Nano.Models.Types.Angle.Radians"/> and not the instance itself.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.ToString">
+            <summary>
+            Overridden ToString.
+            </summary>
+            <returns>Returns instance formatted as radians.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_Addition(Nano.Models.Types.Angle,Nano.Models.Types.Angle)">
+            <summary>
+            Addition operator overload.
+            </summary>
+            <param name="lhs">Left-hand-side.</param>
+            <param name="rhs">Right-hand-side</param>
+            <returns>A new instance of <see cref="T:Nano.Models.Types.Angle"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_Subtraction(Nano.Models.Types.Angle,Nano.Models.Types.Angle)">
+            <summary>
+            Substraction operator overload.
+            </summary>
+            <param name="lhs">Left-hand-side.</param>
+            <param name="rhs">Right-hand-side</param>
+            <returns>A new instance of <see cref="T:Nano.Models.Types.Angle"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_Multiply(Nano.Models.Types.Angle,Nano.Models.Types.Angle)">
+            <summary>
+            Multiplication operator overload.
+            </summary>
+            <param name="lhs">Left-hand-side.</param>
+            <param name="rhs">Right-hand-side</param>
+            <returns>A new instance of <see cref="T:Nano.Models.Types.Angle"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_Multiply(Nano.Models.Types.Angle,System.Decimal)">
+            <summary>
+            Multiplication operator overload.
+            </summary>
+            <param name="lhs">Left-hand-side.</param>
+            <param name="rhs">Right-hand-side</param>
+            <returns>A new instance of <see cref="T:Nano.Models.Types.Angle"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_Multiply(System.Decimal,Nano.Models.Types.Angle)">
+            <summary>
+            Multiplication operator overload.
+            </summary>
+            <param name="lhs">Left-hand-side.</param>
+            <param name="rhs">Right-hand-side</param>
+            <returns>A new instance of <see cref="T:Nano.Models.Types.Angle"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_Division(Nano.Models.Types.Angle,Nano.Models.Types.Angle)">
+            <summary>
+            Division operator overload.
+            </summary>
+            <param name="lhs">Left-hand-side.</param>
+            <param name="rhs">Right-hand-side</param>
+            <returns>A new instance of <see cref="T:Nano.Models.Types.Angle"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_Division(Nano.Models.Types.Angle,System.Decimal)">
+            <summary>
+            Division operator overload.
+            </summary>
+            <param name="lhs">Left-hand-side.</param>
+            <param name="rhs">Right-hand-side</param>
+            <returns>A new instance of <see cref="T:Nano.Models.Types.Angle"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_Division(System.Decimal,Nano.Models.Types.Angle)">
+            <summary>
+            Division operator overload.
+            </summary>
+            <param name="lhs">Left-hand-side.</param>
+            <param name="rhs">Right-hand-side</param>
+            <returns>A new instance of <see cref="T:Nano.Models.Types.Angle"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_LessThan(Nano.Models.Types.Angle,Nano.Models.Types.Angle)">
+            <summary>
+            Less than operator override.
+            </summary>
+            <param name="lhs">Left-hand-side.</param>
+            <param name="rhs">Right-hand-side</param>
+            <returns>A <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_GreaterThan(Nano.Models.Types.Angle,Nano.Models.Types.Angle)">
+            <summary>
+            Greater than operator override.
+            </summary>
+            <param name="lhs">Left-hand-side.</param>
+            <param name="rhs">Right-hand-side</param>
+            <returns>A <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_LessThanOrEqual(Nano.Models.Types.Angle,Nano.Models.Types.Angle)">
+            <summary>
+            Less than or equal operator override.
+            </summary>
+            <param name="lhs">Left hand side.</param>
+            <param name="rhs">Right hand side.</param>
+            <returns>A <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_GreaterThanOrEqual(Nano.Models.Types.Angle,Nano.Models.Types.Angle)">
+            <summary>
+            Greater than or equal operator override.
+            </summary>
+            <param name="lhs">Left hand side.</param>
+            <param name="rhs">Right hand side.</param>
+            <returns>A <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_Inequality(Nano.Models.Types.Angle,Nano.Models.Types.Angle)">
+            <summary>
+            Checking if the <paramref name="lhs"/> is not equal to the <paramref name="lhs"/>.
+            </summary>
+            <param name="lhs">Instance to devide from.</param>
+            <param name="rhs">Value to divide from the instance.</param>
+            <returns>A <see cref="T:System.Boolean"/> indicating if the <see cref="P:Nano.Models.Types.Angle.Radians"/> of the <paramref name="lhs"/> is not equal to the <paramref name="lhs"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_Equality(Nano.Models.Types.Angle,Nano.Models.Types.Angle)">
+            <summary>
+            Checking if the <paramref name="lhs"/> is equal to the <paramref name="lhs"/>.
+            </summary>
+            <param name="lhs">Instance to devide from.</param>
+            <param name="rhs">Value to divide from the instance.</param>
+            <returns>A <see cref="T:System.Boolean"/> indicating if the <see cref="P:Nano.Models.Types.Angle.Radians"/> of the <paramref name="lhs"/> is equal to the <paramref name="lhs"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_Implicit(Nano.Models.Types.Angle)~System.Double">
+            <summary>
+            Double operator override.
+            </summary>
+            <param name="angle">The <see cref="T:Nano.Models.Types.Angle"/>.</param>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_Implicit(Nano.Models.Types.Angle)~System.Decimal">
+            <summary>
+            Double operator override.
+            </summary>
+            <param name="angle">The <see cref="T:Nano.Models.Types.Angle"/>.</param>
+        </member>
+        <member name="M:Nano.Models.Types.Angle.op_Implicit(Nano.Models.Types.Angle)~System.String">
+            <summary>
+            String operator override.
+            </summary>
+            <param name="angle">The <see cref="T:Nano.Models.Types.Angle"/>.</param>
+        </member>
+        <member name="T:Nano.Models.Types.AuthenticationCredential">
+            <summary>
+            Authentication Credential.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.AuthenticationCredential.Username">
+            <summary>
+            Username.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.AuthenticationCredential.Password">
+            <summary>
+            Password.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Types.Contact">
+            <summary>
+            Contact.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Contact.Name">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Contact.PhoneNumber">
+            <summary>
+            Phone Number.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Contact.EmailAddress">
+            <summary>
+            Admin Email Address.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Types.Distance">
+            <summary>
+            Distance.
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Types.Distance.RATIO_METER_TO_MILE">
+            <summary>
+            Ratio meter to mile.
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Types.Distance.RATIO_METER_TO_KILOMETER">
+            <summary>
+            Ratio meter to kilometer.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Distance.Meters">
+            <summary>
+            Meters.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Distance.Miles">
+            <summary>
+            Miles.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Distance.Kilometers">
+            <summary>
+            Kilometers.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Types.Duration">
+            <summary>
+            Duration.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Duration.Time">
+            <summary>
+            Time.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Duration.Adjustment">
+            <summary>
+            Adjustment.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Duration.Total">
+            <summary>
+            Total.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Types.EmailAddress">
+            <summary>
+            Email Address.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.EmailAddress.Email">
+            <summary>
+            Email.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.EmailAddress.IsValid">
+            <summary>
+            Is Valid.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Types.Location">
+            <summary>
+            Location.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Location.Latitude">
+            <summary>
+            Latitude.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Location.Longitude">
+            <summary>
+            Longitude.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Types.Location.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Models.Types.Location.FromString(System.String)">
+            <summary>
+            Converts a <see cref="T:System.String"/> into a <see cref="T:Nano.Models.Types.Location"/>.
+            Format: "latitude,longitude".
+            </summary>
+            <returns>The <see cref="T:Nano.Models.Types.Location"/>.</returns>
+        </member>
+        <member name="T:Nano.Models.Types.Percentage">
+            <summary>
+            Percentage.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Percentage.AsDecimal">
+            <summary>
+            Gets the percentage value as an <see cref="T:System.Decimal"/>.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Percentage.AsInteger">
+            <summary>
+            Gets the percentage value as an <see cref="T:System.Int32"/>.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.#ctor(System.Int32)">
+            <summary>
+            Constructor that accepts an <see cref="T:System.Int32"/>.
+            </summary>
+            <param name="int"></param>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.#ctor(System.Double)">
+            <summary>
+            Constructor that accepts an <see cref="T:System.Double"/>.
+            </summary>
+            <param name="double"></param>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.#ctor(System.Decimal)">
+            <summary>
+            Constructor that accepts an <see cref="T:System.Decimal"/>.
+            </summary>
+            <param name="decimal"></param>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.Equals(Nano.Models.Types.Percentage)">
+            <summary>
+            Compare the instance for equality with the passed <paramref name="other"/>.
+            </summary>
+            <param name="other">The <see cref="T:Nano.Models.Types.Percentage"/> to compare for equality with the instance.</param>
+            <returns>A <see cref="T:System.Boolean"/> indicating whether the instance was equal to <paramref name="other"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.Equals(System.Object)">
+            <summary>
+            Override of <see cref="M:System.Object.Equals(System.Object)"/> for use with operator overlods.
+            </summary>
+            <param name="object">The <see cref="T:System.Object"/> to compare for equality with the instance.</param>
+            <returns>A <see cref="T:System.Boolean"/> indicating whether the instance was equal to <paramref name="object"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.GetHashCode">
+            <summary>
+            Override of <see cref="M:System.Object.GetHashCode"/> to compare the <see cref="P:Nano.Models.Types.Percentage.AsDecimal"/> and not the instance itself.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.ToString">
+            <summary>
+            Gets the <see cref="T:Nano.Models.Types.Percentage"/> value as a <see cref="T:System.String"/>.
+            The <see cref="T:System.String"/> is formatted like: $"{<see cref="P:Nano.Models.Types.Percentage.AsInteger"/>}%"   
+            </summary>
+            <returns>A <see cref="T:System.String"/> formatted as a percentage value, where '%' is appended.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.op_Addition(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
+            <summary>
+            Adds the <paramref name="rhs"/> to the <paramref name="lhs"/>.
+            </summary>
+            <param name="lhs">Instance to add to.</param>
+            <param name="rhs">Value to add to the instance.</param>
+            <returns>A new <see cref="T:Nano.Models.Types.Percentage"/> value of the result.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.op_Subtraction(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
+            <summary>
+            Subtracts the <paramref name="rhs"/> from the <paramref name="lhs"/>.
+            </summary>
+            <param name="lhs">Instance to subtract from.</param>
+            <param name="rhs">Value to subtract from the instance.</param>
+            <returns>A new <see cref="T:Nano.Models.Types.Percentage"/> value of the result.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.op_Multiply(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
+            <summary>
+            Multiplies the <paramref name="rhs"/> with the <paramref name="lhs"/>.
+            </summary>
+            <param name="lhs">Instance to multiply with.</param>
+            <param name="rhs">Value to multiply with the instance.</param>
+            <returns>A new <see cref="T:Nano.Models.Types.Percentage"/> value of the result.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.op_Division(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
+            <summary>
+            Divides the <paramref name="rhs"/> from the <paramref name="lhs"/>.
+            </summary>
+            <param name="lhs">Instance to devide from.</param>
+            <param name="rhs">Value to divide from the instance.</param>
+            <returns>A new <see cref="T:Nano.Models.Types.Percentage"/> value of the result.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.op_GreaterThan(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
+            <summary>
+            Checking if the <paramref name="lhs"/> is greater than <paramref name="lhs"/>.
+            </summary>
+            <param name="lhs">Instance to devide from.</param>
+            <param name="rhs">Value to divide from the instance.</param>
+            <returns>A <see cref="T:System.Boolean"/> indicating if the <see cref="P:Nano.Models.Types.Percentage.AsDecimal"/> of the <paramref name="lhs"/> is greater than <paramref name="lhs"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.op_GreaterThanOrEqual(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
+            <summary>
+            Checking if the <paramref name="lhs"/> is greater or equal than <paramref name="lhs"/>.
+            </summary>
+            <param name="lhs">Instance to devide from.</param>
+            <param name="rhs">Value to divide from the instance.</param>
+            <returns>A <see cref="T:System.Boolean"/> indicating if the <see cref="P:Nano.Models.Types.Percentage.AsDecimal"/> of the <paramref name="lhs"/> is greater or equal than <paramref name="lhs"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.op_LessThan(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
+            <summary>
+            Checking if the <paramref name="lhs"/> is less than <paramref name="lhs"/>.
+            </summary>
+            <param name="lhs">Instance to devide from.</param>
+            <param name="rhs">Value to divide from the instance.</param>
+            <returns>A <see cref="T:System.Boolean"/> indicating if the <see cref="P:Nano.Models.Types.Percentage.AsDecimal"/> of the <paramref name="lhs"/> is less than <paramref name="lhs"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.op_LessThanOrEqual(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
+            <summary>
+            Checking if the <paramref name="lhs"/> is less or equal than <paramref name="lhs"/>.
+            </summary>
+            <param name="lhs">Instance to devide from.</param>
+            <param name="rhs">Value to divide from the instance.</param>
+            <returns>A <see cref="T:System.Boolean"/> indicating if the <see cref="P:Nano.Models.Types.Percentage.AsDecimal"/> of the <paramref name="lhs"/> is  less or equal than <paramref name="lhs"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.op_Inequality(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
+            <summary>
+            Checking if the <paramref name="lhs"/> is not equal to the <paramref name="lhs"/>.
+            </summary>
+            <param name="lhs">Instance to devide from.</param>
+            <param name="rhs">Value to divide from the instance.</param>
+            <returns>A <see cref="T:System.Boolean"/> indicating if the <see cref="P:Nano.Models.Types.Percentage.AsDecimal"/> of the <paramref name="lhs"/> is not equal to the <paramref name="lhs"/>.</returns>
+        </member>
+        <member name="M:Nano.Models.Types.Percentage.op_Equality(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
+            <summary>
+            Checking if the <paramref name="lhs"/> is equal to the <paramref name="lhs"/>.
+            </summary>
+            <param name="lhs">Instance to devide from.</param>
+            <param name="rhs">Value to divide from the instance.</param>
+            <returns>A <see cref="T:System.Boolean"/> indicating if the <see cref="P:Nano.Models.Types.Percentage.AsDecimal"/> of the <paramref name="lhs"/> is equal to the <paramref name="lhs"/>.</returns>
+        </member>
+        <member name="T:Nano.Models.Types.Period">
+            <summary>
+            Period.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Period.BeginAt">
+            <summary>
+            Begin At.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Period.FinishAt">
+            <summary>
+            Finish At.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Types.Period.IsOccuring(System.DateTimeOffset)">
+            <summary>
+            Gets whether the <see cref="T:Nano.Models.Types.Period"/> is occuring or not, 
+            by comparing the passed <see cref="T:System.DateTimeOffset"/> to <see cref="P:Nano.Models.Types.Period.BeginAt"/> and <see cref="P:Nano.Models.Types.Period.FinishAt"/>.
+            </summary>
+            <param name="dateTimeOffset">The <see cref="T:System.DateTimeOffset"/>.</param>
+            <returns>Returns true if the <see cref="T:Nano.Models.Types.Period"/> is occuring, otherwise false.</returns>
+        </member>
+        <member name="T:Nano.Models.Types.PhoneNumber">
+            <summary>
+            Phone Number
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.PhoneNumber.Number">
+            <summary>
+            Number (E164).
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Types.Range">
+            <summary>
+            Range.
+            A lower and upper limit.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Range.Lower">
+            <summary>
+            Lower.
+            The lower limit of the range.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Range.Upper">
+            <summary>
+            Upper.
+            The upper limit of the range.
+            </summary>
+        </member>
+    </members>
+</doc>

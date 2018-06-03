@@ -18,12 +18,14 @@ namespace Nano.Web.Controllers
         /// <summary>
         /// Gets Ok response.
         /// </summary>
-        /// <returns>Nothing (void).</returns>
+        /// <returns>Void.</returns>
         /// <response code="200">Success.</response>
+        /// <response code="401">Unauthorized.</response>
         [HttpGet]
         [Route("index")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public virtual IActionResult Index()
         {
             if (this.Request.IsContentTypeHtml())
@@ -38,9 +40,11 @@ namespace Nano.Web.Controllers
         /// <param name="error">The error.</param>
         /// <returns>The error.</returns>
         /// <response code="200">Success.</response>
+        /// <response code="401">Unauthorized.</response>
         [HttpPost]
         [Route("error")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.OK)]
         public virtual IActionResult Error([FromBody][Required]Error error)
         {

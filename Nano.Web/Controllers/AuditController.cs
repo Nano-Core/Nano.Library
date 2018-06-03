@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Entities;
 using DynamicExpression.Extensions;
+using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Nano.Data;
@@ -35,25 +36,29 @@ namespace Nano.Web.Controllers
 
         /// <summary>
         /// Gets all models. 
-        /// Filtered by query model parameters (pagination and ordering).
+        /// Filtered by query model parameter (pagination and ordering).
         /// </summary>
         /// <param name="query">The query.</param>
-        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
         /// <returns>A collection of models.</returns>
         /// <response code="200">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="500">An error occured when processing the request.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
         [HttpGet]
         [Route("index")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Index([FromQuery][Required]Query query, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> Index([FromQuery][Required]IQuery query, CancellationToken cancellationToken = default)
         {
             query = query ?? new Query();
 
-            var result = await this.Context.__EFAudit
+            var result = await this.Context.Audit
                 .Order(query.Order)
                 .Limit(query.Paging)
                 .Include(x => x.Properties)
@@ -70,25 +75,29 @@ namespace Nano.Web.Controllers
 
         /// <summary>
         /// Gets all models. 
-        /// Filtered by query model parameters (pagination and ordering).
+        /// Filtered by query model parameter (pagination and ordering).
         /// </summary>
         /// <param name="query">The query.</param>
-        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
         /// <returns>A collection of models.</returns>
         /// <response code="200">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="500">An error occured when processing the request.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
         [HttpPost]
         [Route("index")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> IndexPost([FromBody][Required]Query query, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> IndexPost([FromBody][Required]IQuery query, CancellationToken cancellationToken = default)
         {
             query = query ?? new Query();
 
-            var result = await this.Context.__EFAudit
+            var result = await this.Context.Audit
                 .Order(query.Order)
                 .Limit(query.Paging)
                 .Include(x => x.Properties)
@@ -104,25 +113,28 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Gets the model, uniquely identified by the supplied identifier.
+        /// Gets the model.
+        /// Uniquely identified by the supplied identifier.
         /// </summary>
         /// <param name="id">The identifier, that uniquely identifies the model.</param>
-        /// <param name="cancellationToken">The cancellationToken.</param>
-        /// <returns>Details about the model.</returns>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
+        /// <returns>The model.</returns>
         /// <response code="200">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="404">No results found.</response>
-        /// <response code="500">An error occured when processing the request.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
         [HttpGet]
         [Route("details/{id}")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Details([FromRoute][Required]int id, CancellationToken cancellationToken = default)
         {
-            var result = await this.Context.__EFAudit
+            var result = await this.Context.Audit
                 .FindAsync(new[] { (object)id }, cancellationToken);
 
             if (result == null)
@@ -135,24 +147,28 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Gets the models, uniquely identified by the supplied array of identifiers.
+        /// Gets the model.
+        /// Uniquely identified by the supplied identifier.
         /// </summary>
-        /// <param name="ids">The identifier, that uniquely identifies the model.</param>
-        /// <param name="cancellationToken">The cancellationToken.</param>
-        /// <returns>The models.</returns>
+        /// <param name="ids">The identifiers, that uniquely identifies the models.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
+        /// <returns>The model.</returns>
         /// <response code="200">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="500">An error occured when processing the request.</response>>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
         [HttpPost]
         [Route("details")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> DetailsPost([FromBody][Required]int[] ids, CancellationToken cancellationToken = default)
         {
-            var result = await this.Context.__EFAudit
+            var result = await this.Context.Audit
                 .Where(x => ids.Any(y => y == x.AuditEntryID))
                 .ToArrayAsync(cancellationToken);
 
@@ -169,22 +185,25 @@ namespace Nano.Web.Controllers
         /// Gets the models, matching the query criteria, pagination and ordering.
         /// </summary>
         /// <param name="query">The query criteria model, containing filters used in the query.</param>
-        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
         /// <returns>The models.</returns>
         /// <response code="200">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="500">An error occured when processing the request.</response>>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
         [HttpGet]
         [Route("query")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Query([FromQuery][Required]Query<AuditEntryQueryCriteria> query, CancellationToken cancellationToken = default)
         {
             var result = await this.Context
-                .__EFAudit
+                .Audit
                 .Where(query.Criteria)
                 .Order(query.Order)
                 .Limit(query.Paging)
@@ -202,23 +221,26 @@ namespace Nano.Web.Controllers
         /// <summary>
         /// Gets the models, matching the query criteria, pagination and ordering.
         /// </summary>
-        /// <param name="query">The query criteria model, containing filters used in the query.</param>
-        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <param name="query">The query criteria, containing filters used in the query.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
         /// <returns>The models.</returns>
         /// <response code="200">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="500">An error occured when processing the request.</response>>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
         [HttpPost]
         [Route("query")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> QueryPost([FromBody][Required]Query<AuditEntryQueryCriteria> query, CancellationToken cancellationToken = default)
         {
             var result = await this.Context
-                .__EFAudit
+                .Audit
                 .Where(query.Criteria)
                 .Order(query.Order)
                 .Limit(query.Paging)

@@ -25,7 +25,7 @@ namespace Nano.Services.Interfaces
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
         Task<TEntity> GetAsync<TEntity, TIdentity>(TIdentity key, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntity;
+            where TEntity : class, IEntityIdentity<TIdentity>;
 
         /// <summary>
         /// Gets instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/> of the <see cref="IEntity"/>
@@ -36,7 +36,7 @@ namespace Nano.Services.Interfaces
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
         Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TIdentity>(IEnumerable<TIdentity> keys, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntity;
+            where TEntity : class, IEntityIdentity<TIdentity>;
 
         /// <summary>
         /// GetAsync all instances of <typeparamref name="TEntity"/>, matching the criteria, pagination and ordering of the passed <paramref name="query"/>.

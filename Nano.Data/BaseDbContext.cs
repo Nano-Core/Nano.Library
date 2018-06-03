@@ -32,16 +32,12 @@ namespace Nano.Data
         /// <summary>
         /// Audit Entries.
         /// </summary>
-        // ReSharper disable InconsistentNaming
-        public virtual DbSet<AuditEntry> __EFAudit { get; set; }
-        // ReSharper restore InconsistentNaming
+        public virtual DbSet<AuditEntry> Audit { get; set; } 
 
         /// <summary>
         /// Audit Entry Properties.
         /// </summary>
-        // ReSharper disable InconsistentNaming
-        public virtual DbSet<AuditEntryProperty> __EFAuditProperties { get; set; }
-        // ReSharper restore InconsistentNaming
+        public virtual DbSet<AuditEntryProperty> AuditProperties { get; set; }
 
         /// <summary>
         /// Constructor.
@@ -65,6 +61,14 @@ namespace Nano.Data
 
             modelBuilder
                 .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>();
+
+            modelBuilder
+                .Entity<AuditEntry>()
+                .ToTable("__EFAudit");
+
+            modelBuilder
+                .Entity<AuditEntryProperty>()
+                .ToTable("__EFAuditProperties");
 
             modelBuilder
                 .Entity<IdentityUserLogin<string>>()

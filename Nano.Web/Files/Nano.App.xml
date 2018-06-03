@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Nano.App</name>
+    </assembly>
+    <members>
+        <member name="T:Nano.App.AppOptions">
+            <summary>
+            App Options.
+            </summary>
+        </member>
+        <member name="P:Nano.App.AppOptions.SectionName">
+            <summary>
+            Section Name.
+            </summary>
+        </member>
+        <member name="P:Nano.App.AppOptions.Name">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="P:Nano.App.AppOptions.Description">
+            <summary>
+            Description.
+            </summary>
+        </member>
+        <member name="P:Nano.App.AppOptions.TermsOfService">
+            <summary>
+            Terms Of Service.
+            </summary>
+        </member>
+        <member name="P:Nano.App.AppOptions.Version">
+            <summary>
+            Version.
+            </summary>
+        </member>
+        <member name="P:Nano.App.AppOptions.Cultures">
+            <summary>
+            Cultures.
+            </summary>
+        </member>
+        <member name="T:Nano.App.AppOptions.CultureOptions">
+            <summary>
+            Culture Options (nested class).
+            </summary>
+        </member>
+        <member name="P:Nano.App.AppOptions.CultureOptions.Default">
+            <summary>
+            Default.
+            </summary>
+        </member>
+        <member name="P:Nano.App.AppOptions.CultureOptions.Supported">
+            <summary>
+            Supported.
+            </summary>
+        </member>
+        <member name="T:Nano.App.BaseApplication">
+            <summary>
+            Base Application (abstract).
+            </summary>
+        </member>
+        <member name="P:Nano.App.BaseApplication.Configuration">
+            <summary>
+            Configuration.
+            </summary>
+        </member>
+        <member name="M:Nano.App.BaseApplication.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Constructor. 
+            Accepting an instance of <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.
+            </summary>
+            <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
+        </member>
+        <member name="M:Nano.App.BaseApplication.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.BaseApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.BaseApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.AspNetCore.Hosting.IApplicationLifetime)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.DefaultApplication">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.DefaultApplication.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.DefaultApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.DefaultApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.AspNetCore.Hosting.IApplicationLifetime)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Extensions.ServiceCollectionExtensions">
+            <summary>
+            Service Collection Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Extensions.ServiceCollectionExtensions.AddApp(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds <see cref="T:Nano.App.AppOptions"/> to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
+        <member name="M:Nano.App.Extensions.ServiceCollectionExtensions.LogServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Outputs the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to log.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
+        <member name="T:Nano.App.Interfaces.IApplication">
+            <summary>
+            Application.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Interfaces.IApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.AspNetCore.Hosting.IApplicationLifetime)">
+            <summary>
+            Configures the application.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <param name="hostingEnvironment">The <see cref="T:Microsoft.AspNetCore.Hosting.IHostingEnvironment"/>.</param>
+            <param name="applicationLifetime">The <see cref="T:Microsoft.AspNetCore.Hosting.IApplicationLifetime"/>.</param>
+        </member>
+    </members>
+</doc>

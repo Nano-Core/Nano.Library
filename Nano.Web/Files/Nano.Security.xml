@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Nano.Security</name>
+    </assembly>
+    <members>
+        <member name="T:Nano.Security.Extensions.HttpRequestExtensions">
+            <summary>
+            Http Request Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Security.Extensions.HttpRequestExtensions.GetUser(Microsoft.AspNetCore.Http.HttpRequest)">
+            <summary>
+            Extracts the User from the request header.
+            </summary>
+            <param name="httpRequest">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
+            <returns>The user.</returns>
+        </member>
+        <member name="T:Nano.Security.Extensions.ServiceCollectionExtensions">
+            <summary>
+            Service Collection Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Security.Extensions.ServiceCollectionExtensions.AddSecurity(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds <see cref="T:Nano.Security.SecurityOptions"/> to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>, and configures security.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
+        <member name="T:Nano.Security.SecurityOptions">
+            <summary>
+            Security Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.SectionName">
+            <summary>
+            Section Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.Jwt">
+            <summary>
+            Jwt Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.User">
+            <summary>
+            User Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.SignIn">
+            <summary>
+            Sign In Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.Lockout">
+            <summary>
+            Lockout Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.Password">
+            <summary>
+            Password Options.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.SecurityOptions.JwtOptions">
+            <summary>
+            Jwt Options (nested class)
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.JwtOptions.Issuer">
+            <summary>
+            Issuer.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.JwtOptions.Audience">
+            <summary>
+            Audience.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.JwtOptions.SecretKey">
+            <summary>
+            Secret Key.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.JwtOptions.ExpirationInHours">
+            <summary>
+            Expiration In Hours.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.SecurityOptions.UserOptions">
+            <summary>
+            User Options (nested class).
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.UserOptions.RequireUniqueEmail">
+            <summary>
+            Require Unique Email.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.UserOptions.AllowedUserNameCharacters">
+            <summary>
+            Allowed User Name Characters.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.UserOptions.AdminUsername">
+            <summary>
+            Admin Username.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.UserOptions.AdminPassword">
+            <summary>
+            Admin Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.UserOptions.AdminEmailAddress">
+            <summary>
+            Admin Email Address.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.SecurityOptions.SignInOptions">
+            <summary>
+            Sign-In Options (nested class).
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.SignInOptions.RequireConfirmedEmail">
+            <summary>
+            Require Confirmed Email-
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.SignInOptions.RequireConfirmedPhoneNumber">
+            <summary>
+            Require Confirmed PhoneNumber.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.SecurityOptions.LockoutOptions">
+            <summary>
+            Lockout Options (nested class).
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.LockoutOptions.AllowedForNewUsers">
+            <summary>
+            Allowed For New Users.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.LockoutOptions.MaxFailedAccessAttempts">
+            <summary>
+            Max Failed Access Attempts.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.LockoutOptions.DefaultLockoutTimeSpan">
+            <summary>
+            Default Lockout TimeSpan.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.SecurityOptions.PasswordOptions">
+            <summary>
+            Password Options (nested class).
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.PasswordOptions.RequireDigit">
+            <summary>
+            Require Digit.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.PasswordOptions.RequireNonAlphanumeric">
+            <summary>
+            Require Non Alphanumeric.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.PasswordOptions.RequireLowercase">
+            <summary>
+            Require Lowercase.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.PasswordOptions.RequireUppercase">
+            <summary>
+            Require Uppercase.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.PasswordOptions.RequiredLength">
+            <summary>
+            Required Length.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.PasswordOptions.RequiredUniqueCharecters">
+            <summary>
+            Required Unique Characters.
+            </summary>
+        </member>
+    </members>
+</doc>

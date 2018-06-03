@@ -26,7 +26,7 @@ namespace Nano.Web.Controllers
     [Authorize(Roles = "administrator, service, writer")]
     public abstract class BaseControllerWritable<TService, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TService, TEntity, TIdentity, TCriteria>
         where TService : IService
-        where TEntity : class, IEntity, IEntityIdentity<TIdentity>, IEntityWritable
+        where TEntity : class, IEntityIdentity<TIdentity>, IEntityWritable
         where TCriteria : class, IQueryCriteria, new()
     {
         /// <inheritdoc />
@@ -49,17 +49,19 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Create the model.
+        /// Creates the passed model.
         /// </summary>
         /// <param name="entity">The model to create.</param>
-        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
         /// <returns>The created model.</returns>
-        /// <response code="201">Created successfully.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="500">An error occured when processing the request.</response>
+        /// <response code="201">Created.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="500">Error occured.</response>
         [HttpPost]
         [Route("create")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -71,22 +73,24 @@ namespace Nano.Web.Controllers
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
 
-            return this.Created("Create", result);
+            return this.Created("CreateConfirm", result);
         }
 
         /// <summary>
-        /// Creates the models.
+        /// Creates the passed models.
         /// </summary>
-        /// <param name="entities">The model to create.</param>
-        /// <param name="cancellationToken">The cancellationToken.</param>
-        /// <returns>Nothing (void).</returns>
-        /// <response code="201">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="500">An error occured when processing the request.</response>
+        /// <param name="entities">The models to create.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Ok.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="500">Error occured.</response>
         [HttpPost]
         [Route("create/Many")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> CreateConfirms([FromBody][Required]TEntity[] entities, CancellationToken cancellationToken = default)
@@ -97,23 +101,18 @@ namespace Nano.Web.Controllers
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
 
-            return this.Created("Create/Many", entities);
+            return this.Ok();
         }
 
         /// <summary>
-        /// Gets the view for editing an existing model.
+        /// Gets the view for editing a model.
         /// </summary>
+        /// <param name="id">The identifier of the model to edit.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
         /// <returns>The view.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="404">No results found, when getting the model to edit.</response>
-        /// <response code="500">An error occured when processing the request.</response>>
         [HttpGet]
         [Route("edit/{id}")]
         [Produces(HttpContentType.HTML)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Edit([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
         {
             var result = await this.Service
@@ -123,18 +122,20 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Edit the model.
+        /// Edit the passed model.
         /// </summary>
         /// <param name="entity">The model to edit.</param>
-        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
         /// <returns>The edited model.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="500">An error occured when processing the request.</response>
+        /// <response code="200">Ok.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="500">Error occured.</response>
         [HttpPut]
         [HttpPost]
         [Route("edit")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -156,21 +157,23 @@ namespace Nano.Web.Controllers
 
             return this.Ok(result);
         }
-      
+
         /// <summary>
-        /// Edits the models.
+        /// Edits the passed models.
         /// </summary>
         /// <param name="entities">The models to edit.</param>
-        /// <param name="cancellationToken">The cancellationToken.</param>
-        /// <returns>Nothong (void).</returns>
-        /// <response code="201">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="500">An error occured when processing the request.</response>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Ok.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="500">Error occured.</response>
         [HttpPut]
         [HttpPost]
         [Route("edit/many")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> EditConfirms([FromBody][Required]TEntity[] entities, CancellationToken cancellationToken = default)
@@ -191,19 +194,21 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Edits the models returned by the select criteria.
+        /// Edits the models returned by the passed select criteria.
         /// </summary>
         /// <param name="select">The crtieria for selecting models to edit.</param>
         /// <param name="update">The model, of which to edit all selected entities by.</param>
-        /// <param name="cancellationToken">The cancellationToken.</param>
-        /// <returns>Nothing (void).</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="500">An error occured when processing the request.</response>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Ok.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="500">Error occured.</response>
         [HttpPut]
         [Route("edit/query")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> EditConfirmsQuery([FromBody][Required]TCriteria select, [FromBody][Required]TEntity update, CancellationToken cancellationToken = default)
@@ -219,17 +224,12 @@ namespace Nano.Web.Controllers
         /// <summary>
         /// Gets the view for deleting an existing model.
         /// </summary>
+        /// <param name="id">The identifier of the model to delete.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
         /// <returns>The view.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="404">No results found, when getting the model to delete.</response>
-        /// <response code="500">An error occured when processing the request.</response>>
         [HttpGet]
         [Route("delete/{id}")]
         [Produces(HttpContentType.HTML)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Delete([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
         {
             var entity = await this.Service
@@ -239,21 +239,23 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Delete the model.
+        /// Delete the model with the passed identifier.
         /// </summary>
         /// <param name="id">The identifier of the model to delete.</param>
-        /// <param name="cancellationToken">The cancellationToken.</param>
-        /// <returns>Nothing (void).</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="404">No results found, when getting the model to delete.</response>
-        /// <response code="500">An error occured when processing the request.</response>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Ok.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="500">Error occured.</response>
         [HttpPost]
         [HttpDelete]
         [Route("delete/{id}")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> DeleteConfirm([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
@@ -274,25 +276,32 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Deletes the models.
+        /// Deletes the models with the passed identifier's.
         /// </summary>
-        /// <param name="ids">The models to delete.</param>
-        /// <param name="cancellationToken">The cancellationToken.</param>
-        /// <returns>Nothing (void).</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="500">An error occured when processing the request.</response>
+        /// <param name="ids">The identifiers of the models to delete.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Ok.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="500">Error occured.</response>
         [HttpPost]
         [HttpDelete]
         [Route("delete/many")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> DeleteConfirms([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
         {
             var entities = await this
                 .Service.GetManyAsync<TEntity>(x => ids.Contains(x.Id), cancellationToken);
+
+            if (entities == null)
+                return this.NotFound();
 
             await this.Service
                 .DeleteManyAsync(entities, cancellationToken);
@@ -304,19 +313,21 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Deletes the models matching the select criteria.
+        /// Deletes the models matching the passed select criteria.
         /// </summary>
         /// <param name="select">The crtieria for selecting models to delete.</param>
-        /// <param name="cancellationToken">The cancellationToken.</param>
-        /// <returns>Nothing (void).</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="500">An error occured when processing the request.</response>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Ok.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="500">Error occured.</response>
         [HttpPost]
         [HttpDelete]
         [Route("delete/query")]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> DeleteConfirmsQuery([FromBody][Required]TCriteria select, CancellationToken cancellationToken = default)

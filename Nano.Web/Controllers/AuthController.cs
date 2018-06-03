@@ -95,9 +95,9 @@ namespace Nano.Web.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A jwt token.</returns>
         /// <response code="200">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
-        /// <response code="401">Unauthorized. Invalid authentication credential.</response>
-        /// <response code="500">An error occured when processing the request.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="500">Error occurred.</response>
         [HttpPost]
         [Route("login")]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
@@ -131,12 +131,13 @@ namespace Nano.Web.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> (void).</returns>
         /// <response code="200">Success.</response>
-        /// <response code="400">The request model is invalid.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="500">Error occurred.</response>
         [HttpGet]
         [HttpPost]
         [Route("logout")]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Logout(CancellationToken cancellationToken = default)

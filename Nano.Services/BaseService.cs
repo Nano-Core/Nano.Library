@@ -8,15 +8,13 @@ using DynamicExpression.Extensions;
 using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Nano.Data;
+using Nano.Data.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Services.Interfaces;
 using Z.EntityFramework.Plus;
 
 namespace Nano.Services
 {
-    // TODO: What relevance does IService provide.
-    // TODO: Include entity relations when querying (EfCore-plus project has something, but only it's only for NET Framrwork, maybe peak and see if it can be ported).
-
     /// <inheritdoc />
     public abstract class BaseService<TContext> : IService
         where TContext : BaseDbContext
@@ -40,19 +38,20 @@ namespace Nano.Services
 
         /// <inheritdoc />
         public virtual async Task<TEntity> GetAsync<TEntity, TIdentity>(TIdentity key, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntity
+            where TEntity : class, IEntityIdentity<TIdentity>
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
 
             return await this.Context
                 .Set<TEntity>()
-                .FindAsync(new[] { (object)key }, cancellationToken);
+                .IncludeAnnotations()
+                .FirstOrDefaultAsync(x => x.Id.Equals(key), cancellationToken);
         }
 
         /// <inheritdoc />
         public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TIdentity>(IEnumerable<TIdentity> keys, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntity
+            where TEntity : class, IEntityIdentity<TIdentity>
         {
             if (keys == null)
                 throw new ArgumentNullException(nameof(keys));
@@ -60,6 +59,7 @@ namespace Nano.Services
             return await this.Context
                 .Set<TEntity>()
                 .Where(x => keys.Any(y => y.Equals(x)))
+                .IncludeAnnotations()
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -76,6 +76,7 @@ namespace Nano.Services
                 .Where(query.Criteria)
                 .Order(query.Order)
                 .Limit(query.Paging)
+                .IncludeAnnotations()
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -89,6 +90,7 @@ namespace Nano.Services
             return await this.Context
                 .Set<TEntity>()
                 .Where(expression)
+                .IncludeAnnotations()
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -103,6 +105,7 @@ namespace Nano.Services
                 .Set<TEntity>()
                 .Order(query.Order)
                 .Limit(query.Paging)
+                .IncludeAnnotations()
                 .ToArrayAsync(cancellationToken);
         }
 

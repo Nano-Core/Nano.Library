@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Nano.App;
 using Nano.Config.Extensions;
-using Nano.Models.Extensions;
 using Nano.Services;
 using Nano.Services.Interfaces;
 using Nano.Web.Api;
@@ -26,6 +20,11 @@ using Nano.Web.Hosting.ModelBinders;
 using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Swagger;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
 
 namespace Nano.Web.Hosting.Extensions
 {
@@ -158,9 +157,9 @@ namespace Nano.Web.Hosting.Extensions
                     x.IgnoreObsoleteActions();
                     x.IgnoreObsoleteProperties();
                     x.DescribeAllEnumsAsStrings();
+                    x.OrderActionsBy(y => y.RelativePath);
 
                     x.DocumentFilter<LowercaseDocumentFilter>();
-                    x.DocumentFilter<ActionOrderingDocumentFilter>();
 
                     x.SwaggerDoc(appOptions.Version, new Info
                     {
@@ -185,22 +184,40 @@ namespace Nano.Web.Hosting.Extensions
                         { "Bearer", new string[] { } }
                     });
 
-                    AppDomain.CurrentDomain
-                        .GetAssemblies()
-                        .SelectMany(y => y.GetTypes())
-                        .Where(y => y.IsTypeDef(typeof(Controller)))
-                        .Select(y => y.Module)
-                        .Distinct()
-                        .ToList()
-                        .ForEach(y =>
-                        {
-                            // TODO: Generates swagger error when xml included. Also Swagger doesn't add documentation from xml file in nuget packages.
-                            //var fileName = y.Name.Replace(".dll", ".xml").Replace(".exe", ".xml");
-                            //var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
+                    // COSMETIC: https://github.com/domaindrivendev/Swashbuckle/issues/749
+                   //AppDomain.CurrentDomain
+                   //     .GetAssemblies()
+                   //     .SelectMany(y => y.GetTypes())
+                   //     .Where(y => y.IsTypeDef(typeof(BaseController)))
+                   //     .Select(y => y.Module)
+                   //     .Distinct()
+                   //     .ToList()
+                   //     .ForEach(y =>
+                   //     {
+                   //         var name = y.Name.Replace(".dll", ".xml").Replace(".exe", ".xml");
+                   //         var path = Path.Combine(AppContext.BaseDirectory, name);
 
-                            //if (File.Exists(filePath))
-                            //    x.IncludeXmlComments(filePath);
-                        });
+                   //         if (File.Exists(path))
+                   //             x.IncludeXmlComments(path);
+
+                   //         var modelsName = y.Name.Replace(".dll", "").Replace(".exe", "") + ".Models.xml";
+                   //         var modelsPath = Path.Combine(AppContext.BaseDirectory, modelsName);
+
+                   //         if (File.Exists(modelsPath))
+                   //             x.IncludeXmlComments(modelsPath);
+
+                   //         y.Assembly
+                   //             .GetManifestResourceNames()
+                   //             .Where(z => z.ToLower().EndsWith(".xml"))
+                   //             .ToList()
+                   //             .ForEach(z =>
+                   //             {
+                   //                 var resource = y.Assembly.GetManifestResourceStream(z);
+
+                   //                 if (resource != null)
+                   //                     x.IncludeXmlComments(() => new XPathDocument(resource));
+                   //             });
+                   //     });
                 });
         }
         private static IServiceCollection AddLocalizations(this IServiceCollection services)
