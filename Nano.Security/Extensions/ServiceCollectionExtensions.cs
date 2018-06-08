@@ -95,6 +95,9 @@ namespace Nano.Security.Extensions
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
+            // TODO: Disable authentication / authorization.
+            // TODO: Add Policy-based authorization (default policies)
+
             services
                 .AddAuthentication(x =>
                 {
@@ -126,7 +129,10 @@ namespace Nano.Security.Extensions
                 })
                 .AddCookie(x =>
                 {
-                    x.LoginPath = "/api/auth/login";
+                    // TODO: GDPR ad cookies (https://gunnarpeipman-com.cdn.ampproject.org/v/gunnarpeipman.com/aspnet/gdpr/amp/?amp_js_v=0.1#amp_tf=From%20%251%24s&ampshare=http%3A%2F%2Fgunnarpeipman.com%2Faspnet%2Fgdpr%2F)
+                    // TODO: hardcoded paths, at least "api" can be configred
+                    // TODO: Test if Cookies is needed at all
+                    x.LoginPath = "/api/auth/login"; 
                     x.LogoutPath = "/api/auth/logout";
                     x.AccessDeniedPath = "/api/auth/forbidden";
                     x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
