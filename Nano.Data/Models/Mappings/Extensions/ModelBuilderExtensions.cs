@@ -1,5 +1,8 @@
 using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 
 namespace Nano.Data.Models.Mappings.Extensions
@@ -23,9 +26,24 @@ namespace Nano.Data.Models.Mappings.Extensions
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var entityMap = new TMapping();
+            var mapping = new TMapping();
+            var entity = builder.Entity<TEntity>();
 
-            entityMap
+            // TODO: TEST: Soft-delete unique indexes (include "IsDeleted")
+            //if (typeof(TEntity).IsTypeDef<IEntityDeletableSoft>())
+            //{
+            //    entity.Metadata.
+            //        GetIndexes()
+            //        .Where(x => x.IsUnique)
+            //        .ToList()
+            //        .ForEach(x =>
+            //        {
+            //            entity.Metadata.RemoveIndex(x.Properties);
+            //            entity.HasIndex(x.Properties.Select(y => y.Name).Union(new[] { "IsDeletetd" }).ToArray());
+            //        });
+            //}
+
+            mapping
                 .Map(builder.Entity<TEntity>());
 
             return builder;
