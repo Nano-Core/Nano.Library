@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.Web.Controllers.Entities
+namespace Nano.Models
 {
     /// <summary>
     /// Access Token.
