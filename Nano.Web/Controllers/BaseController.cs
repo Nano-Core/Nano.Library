@@ -10,6 +10,8 @@ using Nano.Services.Interfaces;
 
 namespace Nano.Web.Controllers
 {
+    // TODO: Add Http OPTIONS support for all Nano controllers.
+
     /// <summary>
     /// Base controller.
     /// </summary>

@@ -59,6 +59,8 @@ namespace Nano.Data
             if (modelBuilder == null)
                 throw new ArgumentNullException(nameof(modelBuilder));
 
+            // TODO: Soft-delete data integrity (cascade)
+
             modelBuilder
                 .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>();
 

@@ -17,6 +17,8 @@ using Nano.Web.Hosting.Extensions;
 
 namespace Nano.Web.Controllers
 {
+    // TODO: AuditController should inherit from ReadOnly Controller. Add Include attribute to AuditProperty (we need to derive the Ef-plus implementation and test it works)
+
     /// <inheritdoc />
     public class AuditController : BaseController
     {
