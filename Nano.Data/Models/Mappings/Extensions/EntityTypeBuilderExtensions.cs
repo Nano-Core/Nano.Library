@@ -7,6 +7,8 @@ using Nano.Models.Types;
 
 namespace Nano.Data.Models.Mappings.Extensions
 {
+    // TODO: Figure out how to handle that compunds should be able to be optional. Maybe default all properties or add a "isRequired" parameter or something.
+
     /// <summary>
     /// Entity Type Builder Extensions.
     /// </summary>
@@ -31,12 +33,14 @@ namespace Nano.Data.Models.Mappings.Extensions
                 .OwnsOne(expression)
                 .Property(x => x.Radians)
                 .HasField("radians")
+                .HasDefaultValue(0.00M)
                 .IsRequired();
 
             builder
                 .OwnsOne(expression)
                 .Property(x => x.Degrees)
                 .HasField("degrees")
+                .HasDefaultValue(0.00M)
                 .IsRequired();
 
             builder
@@ -72,6 +76,38 @@ namespace Nano.Data.Models.Mappings.Extensions
             builder
                 .OwnsOne(expression)
                 .Property(x => x.Upper);
+        }
+
+        /// <summary>
+        /// Maps <see cref="Photo"/> as owned by the entity.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
+        /// <param name="expression">The property expression.</param>
+        public static void MapType<TEntity>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, Photo>> expression)
+            where TEntity : class, IEntity
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.Url)
+                .HasMaxLength(1024)
+                .IsRequired();
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.Reference)
+                .HasMaxLength(1024);
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.Alt)
+                .HasMaxLength(256);
         }
 
         /// <summary>

@@ -6,6 +6,8 @@ using Nano.Models.Types;
 
 namespace Nano.Data.Models.Mappings.Extensions
 {
+    // TODO: Figure out how to handle that compunds should be able to be optional. Maybe default all properties or add a "isRequired" parameter or something.
+
     /// <summary>
     /// Reference Collection Builder Extensions.
     /// </summary>
@@ -32,12 +34,14 @@ namespace Nano.Data.Models.Mappings.Extensions
                 .OwnsOne(expression)
                 .Property(x => x.Radians)
                 .HasField("radians")
+                .HasDefaultValue(0.00M)
                 .IsRequired();
 
             builder
                 .OwnsOne(expression)
                 .Property(x => x.Degrees)
                 .HasField("degrees")
+                .HasDefaultValue(0.00M)
                 .IsRequired();
 
             builder
@@ -75,6 +79,40 @@ namespace Nano.Data.Models.Mappings.Extensions
             builder
                 .OwnsOne(expression)
                 .Property(x => x.Upper);
+        }
+
+        /// <summary>
+        /// Maps <see cref="Photo"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <typeparam name="TRelatedEntity">The related entity type.</typeparam>
+        /// <param name="builder">The <see cref="ReferenceOwnershipBuilder{TEntity,TRelatedEntity}"/>.</param>
+        /// <param name="expression">The <see cref="Expression"/>.</param>
+        public static void MapType<TEntity, TRelatedEntity>(this ReferenceOwnershipBuilder<TEntity, TRelatedEntity> builder, Expression<Func<TRelatedEntity, Photo>> expression)
+            where TEntity : class
+            where TRelatedEntity : class
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.Url)
+                .HasMaxLength(1024)
+                .IsRequired();
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.Reference)
+                .HasMaxLength(1024);
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.Alt)
+                .HasMaxLength(256);
         }
 
         /// <summary>

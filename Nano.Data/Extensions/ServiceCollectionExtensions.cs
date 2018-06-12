@@ -120,7 +120,6 @@ namespace Nano.Data.Extensions
                                 {
                                     AuditEntryId = y.AuditEntryID,
                                     AuditEntryPropertyId = y.AuditEntryPropertyID,
-                                    //Parent = x,
                                     NewValue = y.NewValueFormatted,
                                     OldValue = y.OldValueFormatted,
                                     PropertyName = y.PropertyName,
