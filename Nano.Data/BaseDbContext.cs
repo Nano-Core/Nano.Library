@@ -17,7 +17,6 @@ using Nano.Data.Models.Mappings.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Security;
 using Newtonsoft.Json;
-using Z.EntityFramework.Plus;
 
 namespace Nano.Data
 {
@@ -32,12 +31,12 @@ namespace Nano.Data
         /// <summary>
         /// Audit Entries.
         /// </summary>
-        public virtual DbSet<AuditEntry> Audit { get; set; } 
+        public virtual DbSet<DefaultAuditEntry> Audit { get; set; } 
 
         /// <summary>
         /// Audit Entry Properties.
         /// </summary>
-        public virtual DbSet<AuditEntryProperty> AuditProperties { get; set; }
+        public virtual DbSet<DefaultAuditEntryProperty> AuditProperties { get; set; }
 
         /// <summary>
         /// Constructor.
@@ -62,15 +61,8 @@ namespace Nano.Data
             // TODO: Soft-delete data integrity (cascade)
 
             modelBuilder
-                .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>();
-
-            modelBuilder
-                .Entity<AuditEntry>()
-                .ToTable("__EFAudit");
-
-            modelBuilder
-                .Entity<AuditEntryProperty>()
-                .ToTable("__EFAuditProperties");
+                .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()
+                .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>();
 
             modelBuilder
                 .Entity<IdentityUserLogin<string>>()

@@ -107,15 +107,26 @@ namespace Nano.Data.Extensions
                     var customAuditEntries = audit.Entries
                         .Select(x => new DefaultAuditEntry
                         {
-                            AuditEntryID = x.AuditEntryID,
+                            AuditEntryId = x.AuditEntryID,
                             CreatedBy = createdBy ?? x.CreatedBy,
                             CreatedDate = x.CreatedDate,
                             EntitySetName = x.EntitySetName,
                             EntityTypeName = x.EntityTypeName,
                             State = x.State,
                             StateName = x.StateName,
-                            Properties = x.Properties,
-                            RequestId = requestId
+                            RequestId = requestId,
+                            Properties = x.Properties
+                                .Select(y => new DefaultAuditEntryProperty
+                                {
+                                    AuditEntryId = y.AuditEntryID,
+                                    AuditEntryPropertyId = y.AuditEntryPropertyID,
+                                    //Parent = x,
+                                    NewValue = y.NewValueFormatted,
+                                    OldValue = y.OldValueFormatted,
+                                    PropertyName = y.PropertyName,
+                                    RelationName = y.RelationName
+                                })
+                                .ToArray()
                         });
 
                     dbContext.Set<DefaultAuditEntry>()

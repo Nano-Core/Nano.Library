@@ -171,7 +171,7 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> DetailsPost([FromBody][Required]int[] ids, CancellationToken cancellationToken = default)
         {
             var result = await this.Context.Audit
-                .Where(x => ids.Any(y => y == x.AuditEntryID))
+                .Where(x => ids.Any(y => y == x.AuditEntryId))
                 .ToArrayAsync(cancellationToken);
 
             if (result == null)
