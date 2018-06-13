@@ -23,8 +23,11 @@ using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Xml.XPath;
+using Nano.Models.Extensions;
 
 namespace Nano.Web.Hosting.Extensions
 {
@@ -184,40 +187,39 @@ namespace Nano.Web.Hosting.Extensions
                         { "Bearer", new string[] { } }
                     });
 
-                    // TODO: Swagger xml-doc generic parameters (https://github.com/domaindrivendev/Swashbuckle/issues/749).
-                   //AppDomain.CurrentDomain
-                   //     .GetAssemblies()
-                   //     .SelectMany(y => y.GetTypes())
-                   //     .Where(y => y.IsTypeDef(typeof(BaseController)))
-                   //     .Select(y => y.Module)
-                   //     .Distinct()
-                   //     .ToList()
-                   //     .ForEach(y =>
-                   //     {
-                   //         var name = y.Name.Replace(".dll", ".xml").Replace(".exe", ".xml");
-                   //         var path = Path.Combine(AppContext.BaseDirectory, name);
+                    AppDomain.CurrentDomain
+                         .GetAssemblies()
+                         .SelectMany(y => y.GetTypes())
+                         .Where(y => y.IsTypeDef(typeof(BaseController)))
+                         .Select(y => y.Module)
+                         .Distinct()
+                         .ToList()
+                         .ForEach(y =>
+                         {
+                             var name = y.Name.Replace(".dll", ".xml").Replace(".exe", ".xml");
+                             var path = Path.Combine(AppContext.BaseDirectory, name);
 
-                   //         if (File.Exists(path))
-                   //             x.IncludeXmlComments(path);
+                             if (File.Exists(path))
+                                 x.IncludeXmlComments(path);
 
-                   //         var modelsName = y.Name.Replace(".dll", "").Replace(".exe", "") + ".Models.xml";
-                   //         var modelsPath = Path.Combine(AppContext.BaseDirectory, modelsName);
+                             var modelsName = y.Name.Replace(".dll", "").Replace(".exe", "") + ".Models.xml";
+                             var modelsPath = Path.Combine(AppContext.BaseDirectory, modelsName);
 
-                   //         if (File.Exists(modelsPath))
-                   //             x.IncludeXmlComments(modelsPath);
+                             if (File.Exists(modelsPath))
+                                 x.IncludeXmlComments(modelsPath);
 
-                   //         y.Assembly
-                   //             .GetManifestResourceNames()
-                   //             .Where(z => z.ToLower().EndsWith(".xml"))
-                   //             .ToList()
-                   //             .ForEach(z =>
-                   //             {
-                   //                 var resource = y.Assembly.GetManifestResourceStream(z);
+                             y.Assembly
+                                 .GetManifestResourceNames()
+                                 .Where(z => z.ToLower().EndsWith(".xml"))
+                                 .ToList()
+                                 .ForEach(z =>
+                                 {
+                                     var resource = y.Assembly.GetManifestResourceStream(z);
 
-                   //                 if (resource != null)
-                   //                     x.IncludeXmlComments(() => new XPathDocument(resource));
-                   //             });
-                   //     });
+                                     if (resource != null)
+                                         x.IncludeXmlComments(() => new XPathDocument(resource));
+                                 });
+                         });
                 });
         }
         private static IServiceCollection AddLocalizations(this IServiceCollection services)
