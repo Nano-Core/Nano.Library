@@ -63,18 +63,6 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Gets the view for index.
-        /// </summary>
-        /// <returns>The view.</returns>
-        [HttpGet]
-        [Route("index")]
-        [Produces(HttpContentType.HTML)]
-        public virtual IActionResult Index()
-        {
-            return this.View();
-        }
-
-        /// <summary>
         /// Gets the view for access denied.
         /// </summary>
         /// <returns>The view.</returns>
