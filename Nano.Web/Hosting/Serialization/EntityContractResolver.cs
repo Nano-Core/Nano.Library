@@ -20,6 +20,8 @@ namespace Nano.Web.Hosting.Serialization
         /// <returns>The <see cref="JsonProperty"/>.</returns>
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
+            // TODO: LazyProperties are serialized and returned in response.
+
             var property = base.CreateProperty(member, memberSerialization);
             var propertyType = property.PropertyType;
 
