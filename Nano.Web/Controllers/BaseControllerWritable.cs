@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
@@ -37,7 +38,7 @@ namespace Nano.Web.Controllers
         }
    
         /// <summary>
-        /// Gets the view for creating a new model.
+        /// Gets the 'create' view for creating a new model.
         /// </summary>
         /// <returns>The view.</returns>
         [HttpGet]
@@ -93,7 +94,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> CreateConfirms([FromBody][Required]TEntity[] entities, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> CreateConfirms([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         {
             await this.Service
                 .AddManyAsync(entities, cancellationToken);
@@ -105,11 +106,11 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Gets the view for editing a model.
+        /// Gets the 'edit' view for editing a model.
         /// </summary>
         /// <param name="id">The identifier of the model to edit.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The view.</returns>
+        /// <returns>The 'edit' view.</returns>
         [HttpGet]
         [Route("edit/{id}")]
         [Produces(HttpContentType.HTML)]
@@ -222,11 +223,11 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Gets the view for deleting an existing model.
+        /// Gets the 'delete' view for deleting an existing model.
         /// </summary>
         /// <param name="id">The identifier of the model to delete.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The view.</returns>
+        /// <returns>The 'delete' view.</returns>
         [HttpGet]
         [Route("delete/{id}")]
         [Produces(HttpContentType.HTML)]
@@ -313,7 +314,7 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Deletes the models matching the passed select criteria.
+        /// Deletes the models matching the passed 'select' criteria.
         /// </summary>
         /// <param name="select">The crtieria for selecting models to delete.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>

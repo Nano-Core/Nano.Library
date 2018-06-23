@@ -29,42 +29,35 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Files\Nano.App.xml" />
-    <None Remove="Files\Nano.Config.xml" />
-    <None Remove="Files\Nano.Data.xml" />
-    <None Remove="Files\Nano.Eventing.xml" />
-    <None Remove="Files\Nano.Logging.xml" />
-    <None Remove="Files\Nano.Models.xml" />
-    <None Remove="Files\Nano.Security.xml" />
-    <None Remove="Files\Nano.Services.xml" />
-    <None Remove="Files\Nano.Web.xml" />
     <None Remove="Nano.Web.csproj.DotSettings" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Files\Nano.App.xml" />
-    <EmbeddedResource Include="Files\Nano.Config.xml" />
-    <EmbeddedResource Include="Files\Nano.Data.xml" />
-    <EmbeddedResource Include="Files\Nano.Eventing.xml" />
-    <EmbeddedResource Include="Files\Nano.Logging.xml" />
-    <EmbeddedResource Include="Files\Nano.Models.xml" />
-    <EmbeddedResource Include="Files\Nano.Security.xml" />
-    <EmbeddedResource Include="Files\Nano.Services.xml" />
-    <EmbeddedResource Include="Files\Nano.Web.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.App.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Config.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Console.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Data.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Eventing.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Logging.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Models.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Security.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Services.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Web.xml" />
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore" Version="2.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Xml" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.CookiePolicy" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Xml" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="2.5.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.1.1" />
   </ItemGroup>
   
   <ItemGroup>

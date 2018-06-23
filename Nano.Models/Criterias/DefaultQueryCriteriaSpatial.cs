@@ -7,6 +7,6 @@ namespace Nano.Models.Criterias
     public class DefaultQueryCriteriaSpatial : DefaultQueryCriteria, IQueryCriteriaSpatial
     {
         /// <inheritdoc />
-        public virtual Geometry Geometry { get; set; } // FEATURE: SPATIAL: Geometry is abstract.
+        public virtual Geometry Geometry { get; set; } // TODO: SPATIAL: Geometry is abstract.
     }
 }

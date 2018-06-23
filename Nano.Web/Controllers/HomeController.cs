@@ -16,7 +16,7 @@ namespace Nano.Web.Controllers
     public class HomeController : BaseController
     {
         /// <summary>
-        /// Gets Ok response.
+        /// Default action, returning an Ok (success) response.
         /// </summary>
         /// <returns>Void.</returns>
         /// <response code="200">Success.</response>
@@ -35,7 +35,7 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Gets the error occured.
+        /// Error action, returning an Ok (success) response containing the error.
         /// </summary>
         /// <param name="error">The error.</param>
         /// <returns>The error.</returns>

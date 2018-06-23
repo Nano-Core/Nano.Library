@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Models.Types
@@ -12,6 +13,7 @@ namespace Nano.Models.Types
         /// Gets the percentage value as an <see cref="decimal"/>.
         /// </summary>
         [Required]
+        [DefaultValue(0.00)]
         public virtual decimal AsDecimal { get; set; }
 
         /// <summary>
@@ -73,6 +75,9 @@ namespace Nano.Models.Types
         /// <returns>A <see cref="Boolean"/> indicating whether the instance was equal to <paramref name="object"/>.</returns>
         public override bool Equals(object @object)
         {
+            if (@object == null)
+                throw new ArgumentNullException(nameof(@object));
+
             return @object is Percentage && this.Equals((Percentage)@object);
         }
 

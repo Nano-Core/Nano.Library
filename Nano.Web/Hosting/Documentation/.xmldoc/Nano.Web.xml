@@ -402,95 +402,8 @@
         <member name="T:Nano.Web.Controllers.AuditController">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Controllers.AuditController.Context">
-            <summary>
-            Context.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuditController.#ctor(Nano.Data.DefaultDbContext)">
+        <member name="M:Nano.Web.Controllers.AuditController.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Services.Interfaces.IService,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Controllers.AuditController.Index(DynamicExpression.Interfaces.IQuery,System.Threading.CancellationToken)">
-            <summary>
-            Gets all models. 
-            Filtered by query model parameter (pagination and ordering).
-            </summary>
-            <param name="query">The query.</param>
-            <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>A collection of models.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="404">Not Found.</response>
-            <response code="500">Error occured.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuditController.IndexPost(DynamicExpression.Interfaces.IQuery,System.Threading.CancellationToken)">
-            <summary>
-            Gets all models. 
-            Filtered by query model parameter (pagination and ordering).
-            </summary>
-            <param name="query">The query.</param>
-            <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>A collection of models.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="404">Not Found.</response>
-            <response code="500">Error occured.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuditController.Details(System.Int32,System.Threading.CancellationToken)">
-            <summary>
-            Gets the model.
-            Uniquely identified by the supplied identifier.
-            </summary>
-            <param name="id">The identifier, that uniquely identifies the model.</param>
-            <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>The model.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="404">Not Found.</response>
-            <response code="500">Error occured.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuditController.DetailsPost(System.Int32[],System.Threading.CancellationToken)">
-            <summary>
-            Gets the model.
-            Uniquely identified by the supplied identifier.
-            </summary>
-            <param name="ids">The identifiers, that uniquely identifies the models.</param>
-            <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>The model.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="404">Not Found.</response>
-            <response code="500">Error occured.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuditController.Query(DynamicExpression.Entities.Query{Nano.Models.Criterias.AuditEntryQueryCriteria},System.Threading.CancellationToken)">
-            <summary>
-            Gets the models, matching the query criteria, pagination and ordering.
-            </summary>
-            <param name="query">The query criteria model, containing filters used in the query.</param>
-            <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>The models.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="404">Not Found.</response>
-            <response code="500">Error occured.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuditController.QueryPost(DynamicExpression.Entities.Query{Nano.Models.Criterias.AuditEntryQueryCriteria},System.Threading.CancellationToken)">
-            <summary>
-            Gets the models, matching the query criteria, pagination and ordering.
-            </summary>
-            <param name="query">The query criteria, containing filters used in the query.</param>
-            <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>The models.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="404">Not Found.</response>
-            <response code="500">Error occured.</response>
         </member>
         <member name="T:Nano.Web.Controllers.AuthController">
             <summary>
@@ -532,7 +445,7 @@
             </summary>
             <returns>The view.</returns>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.Login(Nano.Web.Controllers.Entities.Login,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.AuthController.Login(Nano.Models.Login,System.String,System.Threading.CancellationToken)">
             <summary>
             The user authenticates and on success recieves a jwt token for use with auhtorization.
             </summary>
@@ -806,11 +719,11 @@
         </member>
         <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.Edit(`2,System.Threading.CancellationToken)">
             <summary>
-            Gets the view for editing a model.
+            Gets the 'edit' view for editing a model.
             </summary>
             <param name="id">The identifier of the model to edit.</param>
             <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>The view.</returns>
+            <returns>The 'edit' view.</returns>
         </member>
         <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.EditConfirm(`1,System.Threading.CancellationToken)">
             <summary>
@@ -851,11 +764,11 @@
         </member>
         <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.Delete(`2,System.Threading.CancellationToken)">
             <summary>
-            Gets the view for deleting an existing model.
+            Gets the 'delete' view for deleting an existing model.
             </summary>
             <param name="id">The identifier of the model to delete.</param>
             <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>The view.</returns>
+            <returns>The 'delete' view.</returns>
         </member>
         <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.DeleteConfirm(`2,System.Threading.CancellationToken)">
             <summary>
@@ -885,7 +798,7 @@
         </member>
         <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.DeleteConfirmsQuery(`3,System.Threading.CancellationToken)">
             <summary>
-            Deletes the models matching the passed select criteria.
+            Deletes the models matching the passed 'select' criteria.
             </summary>
             <param name="select">The crtieria for selecting models to delete.</param>
             <param name="cancellationToken">The token used when request is cancelled.</param>
@@ -913,36 +826,6 @@
         <member name="M:Nano.Web.Controllers.DefaultControllerSpatial`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Services.Interfaces.IServiceSpatial,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Controllers.Entities.AccessToken">
-            <summary>
-            Access Token.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.Controllers.Entities.AccessToken.Token">
-            <summary>
-            Token.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.Controllers.Entities.AccessToken.ExpireAt">
-            <summary>
-            ExpireAt.
-            </summary>
-        </member>
-        <member name="T:Nano.Web.Controllers.Entities.Login">
-            <summary>
-            Login.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.Controllers.Entities.Login.Username">
-            <summary>
-            Username.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.Controllers.Entities.Login.Password">
-            <summary>
-            Password.
-            </summary>
-        </member>
         <member name="T:Nano.Web.Controllers.HomeController">
             <summary>
             Home Controller.
@@ -951,7 +834,7 @@
         </member>
         <member name="M:Nano.Web.Controllers.HomeController.Index">
             <summary>
-            Gets Ok response.
+            Default action, returning an Ok (success) response.
             </summary>
             <returns>Void.</returns>
             <response code="200">Success.</response>
@@ -959,7 +842,7 @@
         </member>
         <member name="M:Nano.Web.Controllers.HomeController.Error(Nano.Models.Error)">
             <summary>
-            Gets the error occured.
+            Error action, returning an Ok (success) response containing the error.
             </summary>
             <param name="error">The error.</param>
             <returns>The error.</returns>

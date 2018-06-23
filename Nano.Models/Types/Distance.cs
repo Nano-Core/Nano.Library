@@ -28,6 +28,8 @@ namespace Nano.Models.Types
         /// <summary>
         /// Miles.
         /// </summary>
+        [Required]
+        [DefaultValue(0.00)]
         public virtual double Miles
         {
             get => this.Meters / Distance.RATIO_METER_TO_MILE;
@@ -37,6 +39,8 @@ namespace Nano.Models.Types
         /// <summary>
         /// Kilometers.
         /// </summary>
+        [Required]
+        [DefaultValue(0.00)]
         public virtual double Kilometers
         {
             get => this.Meters / Distance.RATIO_METER_TO_KILOMETER;

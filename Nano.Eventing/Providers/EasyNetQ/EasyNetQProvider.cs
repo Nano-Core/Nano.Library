@@ -1,6 +1,5 @@
 using System;
 using EasyNetQ;
-using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
 
 namespace Nano.Eventing.Providers.EasyNetQ
@@ -11,11 +10,6 @@ namespace Nano.Eventing.Providers.EasyNetQ
     public class EasyNetQProvider : IEventingProvider
     {
         /// <summary>
-        /// Logger.
-        /// </summary>
-        protected virtual ILogger Logger { get; }
-
-        /// <summary>
         /// Options.
         /// </summary>
         protected virtual EventingOptions Options { get; }
@@ -23,18 +17,13 @@ namespace Nano.Eventing.Providers.EasyNetQ
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="logger">The <see cref="ILogger"/>.</param>
         /// <param name="options">The <see cref="EventingOptions"/>.</param>
-        public EasyNetQProvider(EventingOptions options, ILogger logger)
+        public EasyNetQProvider(EventingOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
 
-            if (logger == null)
-                throw new ArgumentNullException(nameof(logger));
-
             this.Options = options;
-            this.Logger = logger;
         }
 
         /// <inheritdoc />
@@ -43,15 +32,11 @@ namespace Nano.Eventing.Providers.EasyNetQ
             var host = this.Options.Host;
             var port = this.Options.Port;
             var vhost = this.Options.VHost;
-            var username = this.Options.AuthenticationCredential.Username;
-            var password = this.Options.AuthenticationCredential.Password;
+            var username = this.Options.Username;
+            var password = this.Options.Password;
             var connectionString = $"amqp://{username}:{password}@{host}:{port}{vhost}";
 
-            var bus = RabbitHutch.CreateBus(connectionString, y =>
-            {
-                y.Register(z => this.Logger);
-                y.Register<IEasyNetQLogger, EasyNetQLogger>();
-            });
+            var bus = RabbitHutch.CreateBus(connectionString);
 
             return new EasyNetQEventing(bus);
         }

@@ -60,17 +60,20 @@ namespace Nano.Web
             applicationBuilder
                 .UseSession()
                 .UseStaticFiles()
+                .UseCookiePolicy()
                 .UseAuthentication()
                 .UseForwardedHeaders()
                 .UseResponseCompression()
                 .UseMiddleware<ExceptionHandlingMiddleware>()
                 .UseMiddleware<HttpRequestUserMiddleware>()
                 .UseMiddleware<HttpRequestIdentifierMiddleware>()
+                .UseMiddleware<HttpRequestOptionsMiddleware>()
                 .UseCors(x =>
                 {
                     x.AllowAnyOrigin();
                     x.AllowAnyHeader();
                     x.AllowAnyMethod();
+                    x.AllowCredentials();
                 })
                 .UseMvc(x =>
                 {

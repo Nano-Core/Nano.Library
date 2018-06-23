@@ -1,11 +1,12 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Nano.Models;
 
 namespace Nano.Data.Models.Mappings
 {
     /// <inheritdoc />
-    public class DefaultAuditEntryMapping : BaseEntityMapping<DefaultAuditEntry>
+    public class DefaultAuditEntryMapping : DefaultEntityMapping<DefaultAuditEntry>
     {
         /// <inheritdoc />
         public override void Map(EntityTypeBuilder<DefaultAuditEntry> builder)
@@ -13,11 +14,10 @@ namespace Nano.Data.Models.Mappings
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            builder
-                .ToTable("__EFAudit");
+            base.Map(builder);
 
             builder
-                .HasKey(y => y.AuditEntryId);
+                .ToTable("__EFAudit");
 
             builder
                 .Property(x => x.CreatedBy)
@@ -25,12 +25,6 @@ namespace Nano.Data.Models.Mappings
 
             builder
                 .HasIndex(y => y.CreatedBy);
-
-            builder
-                .Property(x => x.CreatedDate);
-
-            builder
-                .HasIndex(y => y.CreatedDate);
 
             builder
                 .Property(x => x.EntitySetName)

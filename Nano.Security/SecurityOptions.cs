@@ -13,6 +13,11 @@ namespace Nano.Security
         public static string SectionName => "Security";
 
         /// <summary>
+        /// Is Enabled.
+        /// </summary>
+        public virtual bool IsEnabled { get; set; } = false;
+
+        /// <summary>
         /// Jwt Options.
         /// </summary>
         public virtual JwtOptions Jwt { get; set; } = new JwtOptions();

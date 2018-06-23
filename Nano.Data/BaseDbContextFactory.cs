@@ -20,7 +20,7 @@ namespace Nano.Data
             var builder = new DbContextOptionsBuilder<TContext>();
             var dataOptions = configuration
                 .GetSection(DataOptions.SectionName)
-                .Get<DataOptions>();
+                .Get<DataOptions>() ?? new DataOptions();
 
             var provider = Activator.CreateInstance(typeof(TProvider), dataOptions) as TProvider;
             provider?.Configure(builder);

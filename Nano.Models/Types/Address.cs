@@ -10,7 +10,6 @@ namespace Nano.Models.Types
         /// <summary>
         /// String.
         /// </summary>
-        [Required]
         [MaxLength(256)]
         public virtual string String { get; set; }
 

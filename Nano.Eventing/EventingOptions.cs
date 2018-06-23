@@ -1,5 +1,3 @@
-using Nano.Models.Types;
-
 namespace Nano.Eventing
 {
     /// <summary>
@@ -23,6 +21,16 @@ namespace Nano.Eventing
         public virtual string VHost { get; set; } = "/";
 
         /// <summary>
+        /// Username.
+        /// </summary>
+        public virtual string Username { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Password.
+        /// </summary>
+        public virtual string Password { get; set; } = string.Empty;
+
+        /// <summary>
         /// Port.
         /// </summary>
         public virtual ushort Port { get; set; } = 5672;
@@ -42,10 +50,5 @@ namespace Nano.Eventing
         /// Zero means no hearbeat requests.
         /// </summary>
         public virtual ushort Heartbeat { get; set; } = 0;
-
-        /// <summary>
-        /// Authentication Credential.
-        /// </summary>
-        public virtual AuthenticationCredential AuthenticationCredential { get; set; } = new AuthenticationCredential();
     }
 }

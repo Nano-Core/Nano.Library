@@ -58,7 +58,7 @@ namespace Nano.Web.Hosting.Middleware
                             : error.ToString();
 
                     await response
-                    .WriteAsync(result);
+                        .WriteAsync(result);
             }
             finally
             {

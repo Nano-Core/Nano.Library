@@ -7,7 +7,7 @@ using Nano.Web.Api.Responses;
 
 namespace Nano.Web.Api
 {
-    // TODO: Generic api client Review, test, refactor
+    // TODO: Generic Api-Client
 
     /// <summary>
     /// Api (facade).

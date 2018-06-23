@@ -11,9 +11,8 @@ namespace Nano.Models.Types
         /// <summary>
         /// Number (E164).
         /// </summary>
-        [Required]
         [PhoneNumber]
-        [MaxLength(32)]
+        [MaxLength(20)]
         public virtual string Number { get; set; }
     }
 }

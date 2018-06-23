@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Nano.Data.Attributes;
-using Nano.Data.Models;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
+using Nano.Models;
 using Nano.Models.Interfaces;
 using Nano.Security;
 using Newtonsoft.Json;
@@ -57,8 +57,6 @@ namespace Nano.Data
         {
             if (modelBuilder == null)
                 throw new ArgumentNullException(nameof(modelBuilder));
-
-            // TODO: Soft-delete data integrity (cascade)
 
             modelBuilder
                 .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()

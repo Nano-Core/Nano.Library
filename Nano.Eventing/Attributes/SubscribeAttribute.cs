@@ -2,7 +2,7 @@ using System;
 
 namespace Nano.Eventing.Attributes
 {
-    // TODO: Publish / Subscribe Attributes, If you include a models package, where models has eventing attrbutes, those models would also get publish / subscribe event handlers configured. It's not good... Can we check if it's the core application or NuGet at runtime
+    // TODO: Subscribe Attribute will register event handlers for included models (with Subscribe annotation). How to avoid?
 
     /// <summary>
     /// Subscribe Attribute.

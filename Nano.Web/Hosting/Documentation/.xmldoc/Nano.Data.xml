@@ -21,6 +21,11 @@
             </summary>
             <param name="url">The url.</param>
         </member>
+        <member name="T:Nano.Data.Attributes.IncludeAttribute">
+            <summary>
+            Include Attribute.
+            </summary>
+        </member>
         <member name="T:Nano.Data.BaseDbContext">
             <inheritdoc />
         </member>
@@ -181,9 +186,6 @@
             <param name="contextOptions">The <see cref="T:Microsoft.EntityFrameworkCore.DbContextOptions"/>.</param>
             <param name="dataOptions">The <see cref="T:Nano.Data.DataOptions"/>.</param>
         </member>
-        <member name="M:Nano.Data.DefaultDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
         <member name="M:Nano.Data.DefaultDbContext.SaveChanges">
             <inheritdoc />
         </member>
@@ -196,28 +198,18 @@
         <member name="M:Nano.Data.DefaultDbContext.SaveChangesAsync(System.Boolean,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Data.Extensions.PropertyBuilderExtensions">
+        <member name="T:Nano.Data.Extensions.QueryableExtensions">
             <summary>
-            Property Builder Extensions.
+            Queryable Extensions.
             </summary>
         </member>
-        <member name="M:Nano.Data.Extensions.PropertyBuilderExtensions.HasPrecision(Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder{System.Nullable{System.Decimal}},System.Int32,System.Int32)">
+        <member name="M:Nano.Data.Extensions.QueryableExtensions.IncludeAnnotations``1(System.Linq.IQueryable{``0})">
             <summary>
-            Adds precision and scale to a decimal column in the database.
+            Includes all model associations in the query, which has the <see cref="T:Nano.Data.Attributes.IncludeAttribute"/> defined.
             </summary>
-            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder`1"/>.</param>
-            <param name="precision">The precision.</param>
-            <param name="scale">The scale.</param>
-            <returns>The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder`1"/>.</returns>
-        </member>
-        <member name="M:Nano.Data.Extensions.PropertyBuilderExtensions.HasPrecision(Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder{System.Decimal},System.Int32,System.Int32)">
-            <summary>
-            Adds precision and scale to a decimal column in the database.
-            </summary>
-            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder`1"/>.</param>
-            <param name="precision">The precision.</param>
-            <param name="scale">The scale.</param>
-            <returns>The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder`1"/>.</returns>
+            <typeparam name="T">The type of the queryable.</typeparam>
+            <param name="queryable"></param>
+            <returns></returns>
         </member>
         <member name="T:Nano.Data.Extensions.ServiceCollectionExtensions">
             <summary>
@@ -253,16 +245,6 @@
             </summary>
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.DbContextOptionsBuilder"/>.</param>
         </member>
-        <member name="T:Nano.Data.Models.DefaultAuditEntry">
-            <summary>
-            Default Audit Entry.
-            </summary>
-        </member>
-        <member name="P:Nano.Data.Models.DefaultAuditEntry.RequestId">
-            <summary>
-            Request Id.
-            </summary>
-        </member>
         <member name="T:Nano.Data.Models.Mappings.BaseEntityIdentityMapping`2">
             <inheritdoc />
         </member>
@@ -284,7 +266,13 @@
         <member name="T:Nano.Data.Models.Mappings.DefaultAuditEntryMapping">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Data.Models.Mappings.DefaultAuditEntryMapping.Map(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{Nano.Data.Models.DefaultAuditEntry})">
+        <member name="M:Nano.Data.Models.Mappings.DefaultAuditEntryMapping.Map(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{Nano.Models.DefaultAuditEntry})">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Data.Models.Mappings.DefaultAuditEntryPropertyMapping">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.Models.Mappings.DefaultAuditEntryPropertyMapping.Map(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{Nano.Models.DefaultAuditEntryProperty})">
             <inheritdoc />
         </member>
         <member name="T:Nano.Data.Models.Mappings.DefaultEntityMapping`1">
@@ -315,6 +303,14 @@
         <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.Range}})">
             <summary>
             Maps <see cref="T:Nano.Models.Types.Range"/> as owned by the entity.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
+            <param name="expression">The property expression.</param>
+        </member>
+        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.Photo}})">
+            <summary>
+            Maps <see cref="T:Nano.Models.Types.Photo"/> as owned by the entity.
             </summary>
             <typeparam name="TEntity">The entity type.</typeparam>
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
@@ -414,6 +410,29 @@
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.ModelBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.EntityFrameworkCore.ModelBuilder"/>.</returns>
         </member>
+        <member name="T:Nano.Data.Models.Mappings.Extensions.PropertyBuilderExtensions">
+            <summary>
+            Property Builder Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Data.Models.Mappings.Extensions.PropertyBuilderExtensions.HasPrecision(Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder{System.Decimal},System.Int32,System.Int32)">
+            <summary>
+            Adds precision and scale to a decimal column in the database.
+            </summary>
+            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder`1"/>.</param>
+            <param name="precision">The precision.</param>
+            <param name="scale">The scale.</param>
+            <returns>The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder`1"/>.</returns>
+        </member>
+        <member name="M:Nano.Data.Models.Mappings.Extensions.PropertyBuilderExtensions.HasPrecision(Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder{System.Nullable{System.Decimal}},System.Int32,System.Int32)">
+            <summary>
+            Adds precision and scale to a decimal column in the database.
+            </summary>
+            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder`1"/>.</param>
+            <param name="precision">The precision.</param>
+            <param name="scale">The scale.</param>
+            <returns>The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder`1"/>.</returns>
+        </member>
         <member name="T:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions">
             <summary>
             Reference Collection Builder Extensions.
@@ -431,6 +450,15 @@
         <member name="M:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions.MapType``2(Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder{``0,``1},System.Linq.Expressions.Expression{System.Func{``1,Nano.Models.Types.Range}})">
             <summary>
             Maps <see cref="T:Nano.Models.Types.Range"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <typeparam name="TRelatedEntity">The related entity type.</typeparam>
+            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder`2"/>.</param>
+            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/>.</param>
+        </member>
+        <member name="M:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions.MapType``2(Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder{``0,``1},System.Linq.Expressions.Expression{System.Func{``1,Nano.Models.Types.Photo}})">
+            <summary>
+            Maps <see cref="T:Nano.Models.Types.Photo"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">The entity type.</typeparam>
             <typeparam name="TRelatedEntity">The related entity type.</typeparam>
@@ -563,6 +591,25 @@
             <param name="options">The <see cref="T:Nano.Data.DataOptions"/>.</param>
         </member>
         <member name="M:Nano.Data.Providers.MySql.MySqlProvider.Configure(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Data.Providers.SqlLite.SqlLiteProvider">
+            <summary>
+            Sql Lite Data Provider.
+            </summary>
+        </member>
+        <member name="P:Nano.Data.Providers.SqlLite.SqlLiteProvider.Options">
+            <summary>
+            Options.
+            </summary>
+        </member>
+        <member name="M:Nano.Data.Providers.SqlLite.SqlLiteProvider.#ctor(Nano.Data.DataOptions)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="options">The <see cref="T:Nano.Data.DataOptions"/>.</param>
+        </member>
+        <member name="M:Nano.Data.Providers.SqlLite.SqlLiteProvider.Configure(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Data.Providers.SqlServer.SqlServerProvider">

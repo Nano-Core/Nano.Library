@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 
 namespace Nano.Data.Models.Mappings.Extensions
@@ -24,24 +26,48 @@ namespace Nano.Data.Models.Mappings.Extensions
                 throw new ArgumentNullException(nameof(builder));
 
             var mapping = new TMapping();
-            //var entity = builder.Entity<TEntity>();
-
-            // TODO: TEST: Soft-delete unique indexes (include "IsDeleted")
-            //if (typeof(TEntity).IsTypeDef<IEntityDeletableSoft>())
-            //{
-            //    entity.Metadata.
-            //        GetIndexes()
-            //        .Where(x => x.IsUnique)
-            //        .ToList()
-            //        .ForEach(x =>
-            //        {
-            //            entity.Metadata.RemoveIndex(x.Properties);
-            //            entity.HasIndex(x.Properties.Select(y => y.Name).Union(new[] { "IsDeletetd" }).ToArray());
-            //        });
-            //}
 
             mapping
                 .Map(builder.Entity<TEntity>());
+
+            builder
+                .UpdateSoftDeleteUniuqeIndex<TEntity>();
+
+            return builder;
+        }
+
+        private static ModelBuilder UpdateSoftDeleteUniuqeIndex<TEntity>(this ModelBuilder builder)
+            where TEntity : class, IEntity
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            var isDeletableSoft = typeof(TEntity).IsTypeDef(typeof(IEntityDeletableSoft));
+
+            if (isDeletableSoft)
+            {
+                var entity = builder.Entity<TEntity>();
+
+                entity.Metadata
+                    .GetIndexes()
+                    .Where(x => 
+                        x.IsUnique &&
+                        x.Properties.All(y => y.Name != "IsDeleted"))
+                    .ToList()
+                    .ForEach(x =>
+                    {
+                        entity.Metadata
+                            .RemoveIndex(x.Properties);
+
+                        var columns = x.Properties
+                            .Select(y => y.Name)
+                            .Union(new[] { "IsDeleted" })
+                            .ToArray();
+
+                        entity
+                            .HasIndex(columns);
+                    });
+            }
 
             return builder;
         }

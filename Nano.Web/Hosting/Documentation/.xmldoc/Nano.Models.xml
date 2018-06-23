@@ -4,6 +4,21 @@
         <name>Nano.Models</name>
     </assembly>
     <members>
+        <member name="T:Nano.Models.AccessToken">
+            <summary>
+            Access Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.AccessToken.Token">
+            <summary>
+            Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.AccessToken.ExpireAt">
+            <summary>
+            ExpireAt.
+            </summary>
+        </member>
         <member name="T:Nano.Models.Attributes.Helpers.PhoneNumberPrefixes">
             <summary>
             Phone Number Prefixes.
@@ -125,6 +140,81 @@
         <member name="P:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial.Geometry">
             <summary>
             Geometry.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.DefaultAuditEntry">
+            <summary>
+            Default Audit Entry.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.DefaultAuditEntry.CreatedBy">
+            <summary>
+            Created By.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.DefaultAuditEntry.EntitySetName">
+            <summary>
+            Entity Set Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.DefaultAuditEntry.EntityTypeName">
+            <summary>
+            Entity Type Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.DefaultAuditEntry.State">
+            <summary>
+            State.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.DefaultAuditEntry.StateName">
+            <summary>
+            State Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.DefaultAuditEntry.RequestId">
+            <summary>
+            Request Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.DefaultAuditEntry.Properties">
+            <summary>
+            Gets or sets the properties.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.DefaultAuditEntryProperty">
+            <summary>
+            Default Audit Entry Property.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.DefaultAuditEntryProperty.ParentId">
+            <summary>
+            Gets or sets the identifier of the parent audit entry.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.DefaultAuditEntryProperty.Parent">
+            <summary>
+            Gets or sets the parent.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.DefaultAuditEntryProperty.PropertyName">
+            <summary>
+            Gets or sets the name of the property audited.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.DefaultAuditEntryProperty.RelationName">
+            <summary>
+            Gets or sets the name of the relation audited.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.DefaultAuditEntryProperty.NewValue">
+            <summary>
+            Gets or sets the new value audited formatted.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.DefaultAuditEntryProperty.OldValue">
+            <summary>
+            Gets or sets the old value audited formatted.
             </summary>
         </member>
         <member name="T:Nano.Models.DefaultEntity">
@@ -457,6 +547,21 @@
             Entity Writable.
             Implementing entities are creatable, updatable and deletable.
             Implements <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/>, <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/> and <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Login">
+            <summary>
+            Login.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Login.Username">
+            <summary>
+            Username.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Login.Password">
+            <summary>
+            Password.
             </summary>
         </member>
         <member name="T:Nano.Models.Types.Address">
@@ -956,6 +1061,27 @@
         <member name="P:Nano.Models.Types.PhoneNumber.Number">
             <summary>
             Number (E164).
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Types.Photo">
+            <summary>
+            Photo.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Photo.Url">
+            <summary>
+            Url.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Photo.Reference">
+            <summary>
+            Reference.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Types.Photo.Alt">
+            <summary>
+            Alt.
+            The alternative text shown if the image cannot be loaded, and when hovering the image.
             </summary>
         </member>
         <member name="T:Nano.Models.Types.Range">

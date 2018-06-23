@@ -13,7 +13,6 @@ namespace Nano.Models.Types
         /// <summary>
         /// Email.
         /// </summary>
-        [Required]
         [EmailAddress]
         [MaxLength(256)]
         public virtual string Email { get; set; }
@@ -23,7 +22,7 @@ namespace Nano.Models.Types
         /// </summary>
         public virtual bool IsValid
         {
-            get => Regex.IsMatch(this.Email, EmailAddress.VALIDATE_PATTERN);
+            get => this.Email != null && Regex.IsMatch(this.Email, EmailAddress.VALIDATE_PATTERN);
             protected set { }
         }
     }

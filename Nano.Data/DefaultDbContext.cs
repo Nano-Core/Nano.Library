@@ -50,9 +50,10 @@ namespace Nano.Data
         /// <inheritdoc />
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
+            this.SaveSoftDeletion();
+
             var pendingEvents = this.GetPendingEntityEvents();
 
-            this.SaveSoftDeletion();
             this.SaveAudit();
             
             return await base
@@ -97,6 +98,8 @@ namespace Nano.Data
             if (!this.Options.UseSoftDeletetion)
                 return;
 
+            // TODO: Soft-Delete Cascade (https://github.com/aspnet/EntityFrameworkCore/issues/11240)
+
             this.ChangeTracker
                 .Entries<IEntityDeletableSoft>()
                 .Where(x => x.State == EntityState.Deleted)
@@ -106,7 +109,6 @@ namespace Nano.Data
                     x.State = EntityState.Modified;
                     x.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
                 });
-
         }
         private IEnumerable<EntityEvent> GetPendingEntityEvents()
         {

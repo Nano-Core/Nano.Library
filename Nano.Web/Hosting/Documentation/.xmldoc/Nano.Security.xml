@@ -39,6 +39,11 @@
             Section Name.
             </summary>
         </member>
+        <member name="P:Nano.Security.SecurityOptions.IsEnabled">
+            <summary>
+            Is Enabled.
+            </summary>
+        </member>
         <member name="P:Nano.Security.SecurityOptions.Jwt">
             <summary>
             Jwt Options.

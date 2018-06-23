@@ -23,11 +23,17 @@ using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Xml.XPath;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.IdentityModel.Tokens;
 using Nano.Models.Extensions;
+using Nano.Security;
 
 namespace Nano.Web.Hosting.Extensions
 {
@@ -61,6 +67,7 @@ namespace Nano.Web.Hosting.Extensions
                 .AddApi()
                 .AddCors()
                 .AddSession()
+                .AddSecurity(options)
                 .AddVersioning()
                 .AddDocumentation()
                 .AddLocalizations()
@@ -68,6 +75,7 @@ namespace Nano.Web.Hosting.Extensions
                 .AddContentTypeFormatters()
                 .AddSingleton<ExceptionHandlingMiddleware>()
                 .AddSingleton<HttpRequestUserMiddleware>()
+                .AddSingleton<HttpRequestOptionsMiddleware>()
                 .AddSingleton<HttpRequestIdentifierMiddleware>()
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddMvc(x =>
@@ -123,14 +131,77 @@ namespace Nano.Web.Hosting.Extensions
 
             return services;
         }
+        private static IServiceCollection AddSecurity(this IServiceCollection services, WebOptions webOptions)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            var options = services
+                .BuildServiceProvider()
+                .GetService<SecurityOptions>() ?? new SecurityOptions();
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+            if (!options.IsEnabled)
+            {
+                services.AddMvc(x =>
+                {
+                    x.Filters.Add(new AllowAnonymousFilter());
+                });
+            }
+
+            // TODO: Policy-based Authorization
+
+            services
+                .AddAuthorization()
+                .AddAuthentication(x =>
+                {
+                    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(x =>
+                {
+                    x.SaveToken = true;
+                    x.IncludeErrorDetails = true;
+                    x.RequireHttpsMetadata = false;
+
+                    x.Audience = options.Jwt.Issuer;
+                    x.ClaimsIssuer = options.Jwt.Issuer;
+
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateActor = true,
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = options.Jwt.Issuer,
+                        ValidAudience = options.Jwt.Issuer,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Jwt.SecretKey)),
+                        ClockSkew = TimeSpan.Zero
+                    };
+                })
+                .AddCookie(x =>
+                {
+                    x.LoginPath = $"/{webOptions.Hosting.Root}/auth/login";
+                    x.LogoutPath = $"/{webOptions.Hosting.Root}/auth/logout";
+                    x.AccessDeniedPath = $"/{webOptions.Hosting.Root}/auth/forbidden";
+                    x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    x.Cookie.Expiration = TimeSpan.FromDays(options.Jwt.ExpirationInHours);
+                });
+
+            return services;
+        }
         private static IServiceCollection AddVersioning(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            var appOptions = services.BuildServiceProvider().GetService<AppOptions>();
+            var appOptions = services.BuildServiceProvider().GetService<AppOptions>() ?? new AppOptions();
 
             var success = ApiVersion.TryParse(appOptions.Version, out var apiVersion);
+
             if (!success)
             {
                 apiVersion = new ApiVersion(1, 0);

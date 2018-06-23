@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Config.Extensions;
 using Nano.Data.Interfaces;
-using Nano.Data.Models;
+using Nano.Models;
 using Nano.Models.Interfaces;
 using Nano.Security.Extensions;
 using Z.EntityFramework.Plus;
@@ -105,33 +105,37 @@ namespace Nano.Data.Extensions
                     var requestId = httpContext?.TraceIdentifier;
 
                     var customAuditEntries = audit.Entries
-                        .Select(x => new DefaultAuditEntry
+                        .Select(x =>
                         {
-                            AuditEntryId = x.AuditEntryID,
-                            CreatedBy = createdBy ?? x.CreatedBy,
-                            CreatedDate = x.CreatedDate,
-                            EntitySetName = x.EntitySetName,
-                            EntityTypeName = x.EntityTypeName,
-                            State = x.State,
-                            StateName = x.StateName,
-                            RequestId = requestId,
-                            Properties = x.Properties
-                                .Select(y => new DefaultAuditEntryProperty
-                                {
-                                    AuditEntryId = y.AuditEntryID,
-                                    AuditEntryPropertyId = y.AuditEntryPropertyID,
-                                    NewValue = y.NewValueFormatted,
-                                    OldValue = y.OldValueFormatted,
-                                    PropertyName = y.PropertyName,
-                                    RelationName = y.RelationName
-                                })
-                                .ToArray()
+                            var id = Guid.NewGuid();
+
+                            return new DefaultAuditEntry
+                            {
+                                Id = id,
+                                CreatedBy = createdBy ?? x.CreatedBy,
+                                EntitySetName = x.EntitySetName,
+                                EntityTypeName = x.EntityTypeName,
+                                State = (int) x.State,
+                                StateName = x.StateName,
+                                RequestId = requestId,
+                                Properties = x.Properties
+                                    .Select(y => new DefaultAuditEntryProperty
+                                    {
+                                        ParentId = id,
+                                        NewValue = y.NewValueFormatted,
+                                        OldValue = y.OldValueFormatted,
+                                        PropertyName = y.PropertyName,
+                                        RelationName = y.RelationName
+                                    })
+                                    .ToArray()
+                            };
                         });
 
-                    dbContext.Set<DefaultAuditEntry>()
+                    dbContext
+                        .Set<DefaultAuditEntry>()
                         .AddRange(customAuditEntries);
                 };
-                AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsDeleted > 0);
+                AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsDeleted > 0L);
             }
             else
             {

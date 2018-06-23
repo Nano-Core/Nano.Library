@@ -7,109 +7,11 @@ using Nano.Models.Types;
 
 namespace Nano.Data.Models.Mappings.Extensions
 {
-    // TODO: Figure out how to handle that compunds should be able to be optional. Maybe default all properties or add a "isRequired" parameter or something.
-
     /// <summary>
     /// Entity Type Builder Extensions.
     /// </summary>
     public static class EntityTypeBuilderExtensions
     {
-        /// <summary>
-        /// Maps <see cref="Angle"/> as owned by the entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The entity type.</typeparam>
-        /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
-        /// <param name="expression">The property expression.</param>
-        public static void MapType<TEntity>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, Angle>> expression)
-            where TEntity : class, IEntity
-        {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
-
-            builder
-                .OwnsOne(expression)
-                .Property(x => x.Radians)
-                .HasField("radians")
-                .HasDefaultValue(0.00M)
-                .IsRequired();
-
-            builder
-                .OwnsOne(expression)
-                .Property(x => x.Degrees)
-                .HasField("degrees")
-                .HasDefaultValue(0.00M)
-                .IsRequired();
-
-            builder
-                .OwnsOne(expression)
-                .Ignore(x => x.Radians2Pi);
-
-            builder
-                .OwnsOne(expression)
-                .Ignore(x => x.Degrees360);
-        }
-
-        /// <summary>
-        /// Maps <see cref="Range"/> as owned by the entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The entity type.</typeparam>
-        /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
-        /// <param name="expression">The property expression.</param>
-        public static void MapType<TEntity>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, Range>> expression)
-            where TEntity : class, IEntity
-        {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
-
-            builder
-                .OwnsOne(expression)
-                .Property(x => x.Lower)
-                .HasDefaultValue(0)
-                .IsRequired();
-
-            builder
-                .OwnsOne(expression)
-                .Property(x => x.Upper);
-        }
-
-        /// <summary>
-        /// Maps <see cref="Photo"/> as owned by the entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The entity type.</typeparam>
-        /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
-        /// <param name="expression">The property expression.</param>
-        public static void MapType<TEntity>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, Photo>> expression)
-            where TEntity : class, IEntity
-        {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
-
-            builder
-                .OwnsOne(expression)
-                .Property(x => x.Url)
-                .HasMaxLength(1024)
-                .IsRequired();
-
-            builder
-                .OwnsOne(expression)
-                .Property(x => x.Reference)
-                .HasMaxLength(1024);
-
-            builder
-                .OwnsOne(expression)
-                .Property(x => x.Alt)
-                .HasMaxLength(256);
-        }
-
         /// <summary>
         /// Maps <see cref="Address"/> as owned by the entity.
         /// </summary>
@@ -128,8 +30,7 @@ namespace Nano.Data.Models.Mappings.Extensions
             builder
                 .OwnsOne(expression)
                 .Property(x => x.String)
-                .HasMaxLength(256)
-                .IsRequired();
+                .HasMaxLength(256);
 
             builder
                 .OwnsOne(expression)
@@ -138,74 +39,6 @@ namespace Nano.Data.Models.Mappings.Extensions
             builder
                 .OwnsOne(expression)
                 .MapType(x => x.Location);
-        }
-
-        /// <summary>
-        /// Maps <see cref="Contact"/> as owned by the entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The entity type.</typeparam>
-        /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
-        /// <param name="expression">The property expression.</param>
-        public static void MapType<TEntity>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, Contact>> expression)
-            where TEntity : class, IEntity
-        {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
-
-            builder
-                .OwnsOne(expression)
-                .Property(x => x.Name)
-                .HasMaxLength(128)
-                .IsRequired();
-
-            builder
-                .OwnsOne(expression)
-                .HasIndex(x => x.Name);
-
-            builder
-                .OwnsOne(expression)
-                .MapType(x => x.PhoneNumber);
-
-            builder
-                .OwnsOne(expression)
-                .MapType(x => x.EmailAddress);
-        }
-
-        /// <summary>
-        /// Maps <see cref="Period"/> as owned by the entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The entity type.</typeparam>
-        /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
-        /// <param name="expression">The property expression.</param>
-        public static void MapType<TEntity>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, Period>> expression)
-            where TEntity : class, IEntity
-        {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
-
-            builder
-                .OwnsOne(expression)
-                .Property(x => x.BeginAt)
-                .IsRequired();
-
-            builder
-                .OwnsOne(expression)
-                .Property(x => x.FinishAt)
-                .IsRequired();
-
-            builder
-                .OwnsOne(expression)
-                .HasIndex(x => new
-                {
-                    x.BeginAt,
-                    x.FinishAt
-                });
         }
 
         /// <summary>
@@ -236,12 +69,22 @@ namespace Nano.Data.Models.Mappings.Extensions
             builder
                 .OwnsOne(expression)
                 .Property(x => x.Miles)
-                .HasDefaultValue(0.00);
+                .HasDefaultValue(0.00)
+                .IsRequired();
+
+            builder
+                .OwnsOne(expression)
+                .HasIndex(x => x.Miles);
 
             builder
                 .OwnsOne(expression)
                 .Property(x => x.Kilometers)
-                .HasDefaultValue(0.00);
+                .HasDefaultValue(0.00)
+                .IsRequired();
+
+            builder
+                .OwnsOne(expression)
+                .HasIndex(x => x.Kilometers);
         }
 
         /// <summary>
@@ -262,6 +105,7 @@ namespace Nano.Data.Models.Mappings.Extensions
             builder
                 .OwnsOne(expression)
                 .Property(x => x.Time)
+                .HasDefaultValue(TimeSpan.Zero)
                 .IsRequired();
 
             builder
@@ -271,7 +115,8 @@ namespace Nano.Data.Models.Mappings.Extensions
             builder
                 .OwnsOne(expression)
                 .Property(x => x.Adjustment)
-                .HasDefaultValue(TimeSpan.Zero);
+                .HasDefaultValue(TimeSpan.Zero)
+                .IsRequired();
 
             builder
                 .OwnsOne(expression)
@@ -280,6 +125,35 @@ namespace Nano.Data.Models.Mappings.Extensions
             builder
                 .OwnsOne(expression)
                 .HasIndex(x => x.Total);
+        }
+
+        /// <summary>
+        /// Maps <see cref="EmailAddress"/> as owned by the entity.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
+        /// <param name="expression">The property expression.</param>
+        public static void MapType<TEntity>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, EmailAddress>> expression)
+            where TEntity : class, IEntity
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.Email)
+                .HasMaxLength(256);
+
+            builder
+                .OwnsOne(expression)
+                .HasIndex(x => x.Email);
+
+            builder
+                .OwnsOne(expression)
+                .Ignore(x => x.IsValid);
         }
 
         /// <summary>
@@ -319,6 +193,35 @@ namespace Nano.Data.Models.Mappings.Extensions
         }
 
         /// <summary>
+        /// Maps <see cref="Percentage"/> as owned by the entity.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
+        /// <param name="expression">The property expression.</param>
+        public static void MapType<TEntity>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, Percentage>> expression)
+            where TEntity : class, IEntity
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            builder
+                .OwnsOne(expression)
+                .Property(x => x.AsDecimal)
+                .IsRequired();
+
+            builder
+                .OwnsOne(expression)
+                .HasIndex(x => x.AsDecimal);
+
+            builder
+                .OwnsOne(expression)
+                .Ignore(x => x.AsInteger);
+        }
+
+        /// <summary>
         /// Maps <see cref="PhoneNumber"/> as owned by the entity.
         /// </summary>
         /// <typeparam name="TEntity">The entity type.</typeparam>
@@ -336,104 +239,11 @@ namespace Nano.Data.Models.Mappings.Extensions
             builder
                 .OwnsOne(expression)
                 .Property(x => x.Number)
-                .HasMaxLength(20)
-                .IsRequired();
+                .HasMaxLength(20);
 
             builder
                 .OwnsOne(expression)
                 .HasIndex(x => x.Number);
-        }
-
-        /// <summary>
-        /// Maps <see cref="Percentage"/> as owned by the entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The entity type.</typeparam>
-        /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
-        /// <param name="expression">The property expression.</param>
-        public static void MapType<TEntity>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, Percentage>> expression)
-            where TEntity : class, IEntity
-        {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
-
-            builder
-                .OwnsOne(expression)
-                .Ignore(x => x.AsInteger);
-
-            builder
-                .OwnsOne(expression)
-                .Property(x => x.AsDecimal)
-                .IsRequired();
-
-            builder
-                .OwnsOne(expression)
-                .HasIndex(x => x.AsDecimal);
-        }
-
-        /// <summary>
-        /// Maps <see cref="EmailAddress"/> as owned by the entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The entity type.</typeparam>
-        /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
-        /// <param name="expression">The property expression.</param>
-        public static void MapType<TEntity>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, EmailAddress>> expression)
-            where TEntity : class, IEntity
-        {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
-
-            builder
-                .OwnsOne(expression)
-                .Property(x => x.Email)
-                .HasMaxLength(256)
-                .IsRequired();
-
-            builder
-                .OwnsOne(expression)
-                .Ignore(x => x.IsValid);
-
-            builder
-                .OwnsOne(expression)
-                .HasIndex(x => x.Email);
-        }
-
-        /// <summary>
-        /// Maps <see cref="AuthenticationCredential"/> as owned by the entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The entity type.</typeparam>
-        /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
-        /// <param name="expression">The property expression.</param>
-        public static void MapType<TEntity>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, AuthenticationCredential>> expression)
-            where TEntity : class, IEntity
-        {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
-
-            builder
-                .OwnsOne(expression)
-                .Property(x => x.Username)
-                .HasMaxLength(256)
-                .IsRequired();
-
-            builder
-                .OwnsOne(expression)
-                .Property(x => x.Password)
-                .HasMaxLength(256)
-                .IsRequired();
-
-            builder
-                .OwnsOne(expression)
-                .HasIndex(x => x.Username)
-                .IsUnique();
         }
     }
 }
