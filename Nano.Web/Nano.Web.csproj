@@ -30,6 +30,8 @@
 
   <ItemGroup>
     <None Remove="Nano.Web.csproj.DotSettings" />
+    <None Remove="Views\Auth\Login.cshtml" />
+    <None Remove="Views\Auth\Logout.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

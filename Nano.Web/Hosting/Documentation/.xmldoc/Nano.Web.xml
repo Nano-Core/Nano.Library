@@ -433,17 +433,17 @@
             <param name="signInManager">The <see cref="T:Microsoft.AspNetCore.Identity.SignInManager`1"/>.</param>
             <param name="securityOptions">The <see cref="P:Nano.Web.Controllers.AuthController.SecurityOptions"/>.</param>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.Index">
+        <member name="M:Nano.Web.Controllers.AuthController.Login">
             <summary>
-            Gets the view for index.
+            Gets the view for login.
             </summary>
-            <returns>The view.</returns>
+            <returns>The 'login' view.</returns>
         </member>
         <member name="M:Nano.Web.Controllers.AuthController.Forbidden">
             <summary>
             Gets the view for access denied.
             </summary>
-            <returns>The view.</returns>
+            <returns>The 'forbidden' view.</returns>
         </member>
         <member name="M:Nano.Web.Controllers.AuthController.Login(Nano.Models.Login,System.String,System.Threading.CancellationToken)">
             <summary>
@@ -483,6 +483,14 @@
         </member>
         <member name="M:Nano.Web.Controllers.BaseController.OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext)">
             <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseController.Options">
+            <summary>
+            Options. Any route can be called with http options, to return options header information.
+            </summary>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
+            <response code="401">Unauthorized.</response>
         </member>
         <member name="T:Nano.Web.Controllers.BaseController`1">
             <summary>
@@ -689,7 +697,7 @@
         </member>
         <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.Create">
             <summary>
-            Gets the view for creating a new model.
+            Gets the 'create' view for creating a new model.
             </summary>
             <returns>The view.</returns>
         </member>
@@ -705,7 +713,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.CreateConfirms(`1[],System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.CreateConfirms(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
             <summary>
             Creates the passed models.
             </summary>
@@ -967,6 +975,12 @@
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Hosting.Middleware.HttpRequestIdentifierMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.Http.RequestDelegate)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.Middleware.HttpRequestOptionsMiddleware">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Middleware.HttpRequestOptionsMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.Http.RequestDelegate)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Hosting.Middleware.HttpRequestUserMiddleware">

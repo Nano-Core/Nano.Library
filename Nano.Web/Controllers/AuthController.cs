@@ -63,9 +63,21 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
+        /// Gets the view for login.
+        /// </summary>
+        /// <returns>The 'login' view.</returns>
+        [HttpGet]
+        [Route("login")]
+        [Produces(HttpContentType.HTML)]
+        public virtual IActionResult Login()
+        {
+            return View();
+        }
+
+        /// <summary>
         /// Gets the view for access denied.
         /// </summary>
-        /// <returns>The view.</returns>
+        /// <returns>The 'forbidden' view.</returns>
         [HttpGet]
         [Route("forbidden")]
         [Produces(HttpContentType.HTML)]
@@ -87,7 +99,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occurred.</response>
         [HttpPost]
         [Route("login")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -123,7 +135,7 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [HttpPost]
         [Route("logout")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -132,7 +144,7 @@ namespace Nano.Web.Controllers
             await this.SignInManager.SignOutAsync();
 
             if (this.Request.IsContentTypeHtml())
-                return this.RedirectToAction("Index");
+                return this.View();
 
             return this.Ok();
         }
