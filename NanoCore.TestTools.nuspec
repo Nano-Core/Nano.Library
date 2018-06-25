@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore.TestTools</id>
-    <version>0.1.0-alpha</version>
+    <version>0.6.19-beta</version>
     <title>Nano Core Test Tools</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -16,7 +16,7 @@
       <group targetFramework=".NETStandard2.0">
         <dependency id="Microsoft.VisualStudio.TestPlatform" version="14.0.0.1" />
         <dependency id="Moq" version="4.8.2" />
-        <dependency id="NanoCore" version="0.3.105-alpha" />
+        <dependency id="NanoCore" version="0.6.10-alpha" />
       </group>
     </dependencies>
   </metadata>
