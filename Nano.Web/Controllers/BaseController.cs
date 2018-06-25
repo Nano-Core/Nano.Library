@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
 using Nano.Models;
 using Nano.Services.Interfaces;
+using Nano.Web.Hosting;
 
 namespace Nano.Web.Controllers
 {
@@ -33,6 +35,22 @@ namespace Nano.Web.Controllers
             };
 
             context.Result = this.BadRequest(error);
+        }
+
+        /// <summary>
+        /// Options. Any route can be called with http options, to return options header information.
+        /// </summary>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="401">Unauthorized.</response>
+        [HttpOptions]
+        [Route("")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public virtual IActionResult Options()
+        {
+            return this.Ok("OK");
         }
     }
 
