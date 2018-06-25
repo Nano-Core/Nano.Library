@@ -173,6 +173,8 @@ namespace Nano.Data
             if (this.Options.ConnectionString == null)
                 return;
 
+            // TODO: Migrate in Transaction. (https://stackoverflow.com/questions/32014118/can-entity-framework-6-migrations-include-a-transaction-around-scripts)
+
             await this.Database
                 .MigrateAsync(cancellationToken);
         }

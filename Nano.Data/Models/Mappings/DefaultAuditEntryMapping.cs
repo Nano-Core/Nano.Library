@@ -55,6 +55,9 @@ namespace Nano.Data.Models.Mappings
             builder
                 .Property(y => y.RequestId)
                 .HasMaxLength(255);
+
+            builder
+                .HasIndex(y => y.RequestId);
         }
     }
 }
