@@ -31,12 +31,45 @@ namespace Nano.Data.Models.Mappings.Extensions
                 .Map(builder.Entity<TEntity>());
 
             builder
-                .UpdateSoftDeleteUniuqeIndex<TEntity>();
+                .UpdateSoftDeleteUniuqeIndexes<TEntity>()
+                .UpdateUniuqeIndexes<TEntity>();
 
             return builder;
         }
 
-        private static ModelBuilder UpdateSoftDeleteUniuqeIndex<TEntity>(this ModelBuilder builder)
+        private static ModelBuilder UpdateUniuqeIndexes<TEntity>(this ModelBuilder builder)
+            where TEntity : class, IEntity
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            var entity = builder.Entity<TEntity>();
+
+            entity.Metadata
+                .GetIndexes()
+                .Where(x => x.IsUnique)
+                .ToList()
+                .ForEach(x =>
+                {
+                    entity.Metadata
+                        .RemoveIndex(x.Properties);
+
+                    var columns = x.Properties
+                        .Select(y => y.Name)
+                        .ToArray();
+
+                    var name = columns
+                        .Aggregate("UX", (y, z) => y + $"_{z}");
+
+                    entity
+                        .HasIndex(columns)
+                        .HasName(name)
+                        .IsUnique();
+                });
+
+            return builder;
+        }
+        private static ModelBuilder UpdateSoftDeleteUniuqeIndexes<TEntity>(this ModelBuilder builder)
             where TEntity : class, IEntity
         {
             if (builder == null)
@@ -50,9 +83,9 @@ namespace Nano.Data.Models.Mappings.Extensions
 
                 entity.Metadata
                     .GetIndexes()
-                    .Where(x => 
+                    .Where(x =>
                         x.IsUnique &&
-                        x.Properties.All(y => y.Name != "IsDeleted"))
+                        x.Properties.All(y => y.Name != "IsDeleted" && !y.IsKey()))
                     .ToList()
                     .ForEach(x =>
                     {
@@ -65,7 +98,8 @@ namespace Nano.Data.Models.Mappings.Extensions
                             .ToArray();
 
                         entity
-                            .HasIndex(columns);
+                            .HasIndex(columns)
+                            .IsUnique();
                     });
             }
 
