@@ -1,25 +1,68 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
-    <id>NanoCore.TestTools</id>
-    <version>0.6.19-beta</version>
-    <title>Nano Core Test Tools</title>
+    <id>NanoCore</id>
+    <version>0.6.20-beta</version>
+    <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <licenseUrl>https://raw.githubusercontent.com/vivet/Nano/master/LICENSE</licenseUrl>
+    <licenseUrl>https://raw.githubusercontent.com/Nano-Core/Nano.Library/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/Nano-Core</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/Nano-Core/Nano.Library/master/icon.ico</iconUrl>
-    <description>The package contains various mocks and configuration, to assist in testing Nano applications.</description>
-    <summary>Tools to assist unit-testing Nano applications.</summary>
+    <description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
+    <summary>Rapidly built and deploy rich NET Core 2.1+ applications. 
+Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <dependencies>
       <group targetFramework=".NETStandard2.0">
-        <dependency id="Microsoft.VisualStudio.TestPlatform" version="14.0.0.1" />
-        <dependency id="Moq" version="4.8.2" />
-        <dependency id="NanoCore" version="0.6.10-alpha" />
+        <dependency id="DynamicExpression" version="1.1.9" />
+        <dependency id="Microsoft.AspNetCore.Authorization" version="2.1.1" />
+        <dependency id="Microsoft.AspNetCore.Authentication" version="2.1.1" />
+        <dependency id="Microsoft.AspNetCore.Authentication.Cookies" version="2.1.1" />
+        <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="2.1.1" />
+        <dependency id="Microsoft.AspNetCore.Hosting" version="2.1.1" />
+        <dependency id="Microsoft.AspNetCore.Mvc" version="2.1.1" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Formatters.Json" version="2.1.1" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Formatters.Xml" version="2.1.1" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Versioning" version="2.3.0" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" version="2.2.0" />
+        <dependency id="Microsoft.AspNetCore.ResponseCompression" version="2.1.1" />
+        <dependency id="Microsoft.AspNetCore.Rewrite" version="2.1.1" />
+        <dependency id="Microsoft.AspNetCore.Session" version="2.1.1" />
+        <dependency id="Microsoft.AspNetCore.StaticFiles" version="2.1.1" />
+        <dependency id="Microsoft.Extensions.Configuration" version="2.1.1" />
+        <dependency id="Microsoft.Extensions.Configuration.Json" version="2.1.1" />
+        <dependency id="Microsoft.Extensions.Configuration.Binder" version="2.1.1" />
+        <dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="2.1.1" />
+        <dependency id="Microsoft.Extensions.Configuration.CommandLine" version="2.1.1" />
+        <dependency id="Microsoft.Extensions.Configuration.EnvironmentVariables" version="2.1.1" />
+        <dependency id="Microsoft.Extensions.DependencyInjection" version="2.1.1" />
+        <dependency id="Microsoft.Extensions.Logging" version="2.1.1" />
+        <dependency id="Microsoft.Extensions.Options" version="2.1.1" />
+        <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="2.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore" version="2.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore.Design" version="2.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore.InMemory" version="2.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore.Relational" version="2.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="2.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="2.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore.Tools" version="2.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore.Proxies" version="2.1.1" />
+        <dependency id="NetTopologySuite" version="1.15.0-pre063" />
+        <dependency id="Serilog" version="2.7.1" />
+        <dependency id="Serilog.Extensions.Logging" version="2.0.2" />
+        <dependency id="Serilog.Sinks.Console" version="3.1.1" />
+        <dependency id="System.ComponentModel.Annotations" version="4.5.0" />
+        <dependency id="Microsoft.AspNetCore.CookiePolicy" version="2.1.1" />
+        <dependency id="Pomelo.EntityFrameworkCore.MySql" version="2.1.1" />
+        <dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="2.1.2" />
+        <dependency id="Microsoft.AspNetCore.Identity" version="2.1.2" />
+        <dependency id="Z.EntityFramework.Plus.EFCore" version="1.8.4" />
+        <dependency id="Microsoft.Extensions.Identity.Core" version="2.1.2" />
+        <dependency id="Swashbuckle.AspNetCore" version="3.0.0" />
+        <dependency id="EasyNetQ" version="3.1.1" />
+        <dependency id="Microsoft.AspNetCore" version="2.1.2" />
       </group>
     </dependencies>
   </metadata>
-  <files>
-  </files>
 </package>

@@ -52,7 +52,7 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
         <dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="2.1.1" />
         <dependency id="Microsoft.EntityFrameworkCore.Tools" version="2.1.1" />
         <dependency id="Microsoft.EntityFrameworkCore.Proxies" version="2.1.1" />
-        <dependency id="Pomelo.EntityFrameworkCore.MySql" version="2.1.0-rc1-final" />
+        <dependency id="Pomelo.EntityFrameworkCore.MySql" version="2.1.1" />
         <dependency id="EasyNetQ" version="3.1.0" />
         <dependency id="NetTopologySuite" version="1.15.0-pre063" />
         <dependency id="Serilog" version="2.7.1" />
