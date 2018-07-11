@@ -12,6 +12,6 @@
         /// THe Unix-based time in miliseconds is stored, in order for allowing unique indexes with soft-deletetion.
         /// NOTE: Only active instances are returned from queries, when filters are enabled (default behavior).
         /// </summary>
-        long IsDeleted { get; set; }
+        long IsDeleted { get; set; } // TODO: Consider hiding this in responses.
     }
 }

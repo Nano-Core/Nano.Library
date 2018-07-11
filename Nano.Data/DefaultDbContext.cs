@@ -98,7 +98,7 @@ namespace Nano.Data
             if (!this.Options.UseSoftDeletetion)
                 return;
 
-            // TODO: Soft-Delete Cascade (https://github.com/aspnet/EntityFrameworkCore/issues/11240)
+            // TODO: Soft-Delete Cascade on Update, soft delete related entities (https://github.com/aspnet/EntityFrameworkCore/issues/11240)
 
             this.ChangeTracker
                 .Entries<IEntityDeletableSoft>()
@@ -112,6 +112,8 @@ namespace Nano.Data
         }
         private IEnumerable<EntityEvent> GetPendingEntityEvents()
         {
+            // TODO: Entity Events doesn't seem to get published.
+            
             return this.ChangeTracker
                 .Entries<IEntity>()
                 .Where(x =>
