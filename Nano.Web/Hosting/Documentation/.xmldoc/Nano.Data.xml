@@ -34,6 +34,11 @@
             Options.
             </summary>
         </member>
+        <member name="P:Nano.Data.BaseDbContext.CacheEntryOptions">
+            <summary>
+            Cache Entry Options.
+            </summary>
+        </member>
         <member name="P:Nano.Data.BaseDbContext.Audit">
             <summary>
             Audit Entries.
@@ -138,7 +143,7 @@
         </member>
         <member name="P:Nano.Data.DataOptions.BulkBatchDelay">
             <summary>
-            Bulik Batch Delay.
+            Bulk Batch Delay.
             </summary>
         </member>
         <member name="P:Nano.Data.DataOptions.UseAudit">
@@ -208,8 +213,8 @@
             Includes all model associations in the query, which has the <see cref="T:Nano.Data.Attributes.IncludeAttribute"/> defined.
             </summary>
             <typeparam name="T">The type of the queryable.</typeparam>
-            <param name="queryable"></param>
-            <returns></returns>
+            <param name="queryable">The <see cref="T:System.Linq.IQueryable`1"/>.</param>
+            <returns>The <see cref="T:System.Linq.IQueryable`1"/>.</returns>
         </member>
         <member name="T:Nano.Data.Extensions.ServiceCollectionExtensions">
             <summary>
@@ -292,49 +297,9 @@
             Entity Type Builder Extensions.
             </summary>
         </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.Angle}})">
-            <summary>
-            Maps <see cref="T:Nano.Models.Types.Angle"/> as owned by the entity.
-            </summary>
-            <typeparam name="TEntity">The entity type.</typeparam>
-            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
-            <param name="expression">The property expression.</param>
-        </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.Range}})">
-            <summary>
-            Maps <see cref="T:Nano.Models.Types.Range"/> as owned by the entity.
-            </summary>
-            <typeparam name="TEntity">The entity type.</typeparam>
-            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
-            <param name="expression">The property expression.</param>
-        </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.Photo}})">
-            <summary>
-            Maps <see cref="T:Nano.Models.Types.Photo"/> as owned by the entity.
-            </summary>
-            <typeparam name="TEntity">The entity type.</typeparam>
-            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
-            <param name="expression">The property expression.</param>
-        </member>
         <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.Address}})">
             <summary>
             Maps <see cref="T:Nano.Models.Types.Address"/> as owned by the entity.
-            </summary>
-            <typeparam name="TEntity">The entity type.</typeparam>
-            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
-            <param name="expression">The property expression.</param>
-        </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.Contact}})">
-            <summary>
-            Maps <see cref="T:Nano.Models.Types.Contact"/> as owned by the entity.
-            </summary>
-            <typeparam name="TEntity">The entity type.</typeparam>
-            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
-            <param name="expression">The property expression.</param>
-        </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.Period}})">
-            <summary>
-            Maps <see cref="T:Nano.Models.Types.Period"/> as owned by the entity.
             </summary>
             <typeparam name="TEntity">The entity type.</typeparam>
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
@@ -356,17 +321,17 @@
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
             <param name="expression">The property expression.</param>
         </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.Location}})">
+        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.EmailAddress}})">
             <summary>
-            Maps <see cref="T:Nano.Models.Types.Location"/> as owned by the entity.
+            Maps <see cref="T:Nano.Models.Types.EmailAddress"/> as owned by the entity.
             </summary>
             <typeparam name="TEntity">The entity type.</typeparam>
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
             <param name="expression">The property expression.</param>
         </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.PhoneNumber}})">
+        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.Location}})">
             <summary>
-            Maps <see cref="T:Nano.Models.Types.PhoneNumber"/> as owned by the entity.
+            Maps <see cref="T:Nano.Models.Types.Location"/> as owned by the entity.
             </summary>
             <typeparam name="TEntity">The entity type.</typeparam>
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
@@ -380,17 +345,9 @@
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
             <param name="expression">The property expression.</param>
         </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.EmailAddress}})">
+        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.PhoneNumber}})">
             <summary>
-            Maps <see cref="T:Nano.Models.Types.EmailAddress"/> as owned by the entity.
-            </summary>
-            <typeparam name="TEntity">The entity type.</typeparam>
-            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
-            <param name="expression">The property expression.</param>
-        </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.AuthenticationCredential}})">
-            <summary>
-            Maps <see cref="T:Nano.Models.Types.AuthenticationCredential"/> as owned by the entity.
+            Maps <see cref="T:Nano.Models.Types.PhoneNumber"/> as owned by the entity.
             </summary>
             <typeparam name="TEntity">The entity type.</typeparam>
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
@@ -438,54 +395,9 @@
             Reference Collection Builder Extensions.
             </summary>
         </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions.MapType``2(Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder{``0,``1},System.Linq.Expressions.Expression{System.Func{``1,Nano.Models.Types.Angle}})">
-            <summary>
-            Maps <see cref="T:Nano.Models.Types.Angle"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">The entity type.</typeparam>
-            <typeparam name="TRelatedEntity">The related entity type.</typeparam>
-            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder`2"/>.</param>
-            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/>.</param>
-        </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions.MapType``2(Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder{``0,``1},System.Linq.Expressions.Expression{System.Func{``1,Nano.Models.Types.Range}})">
-            <summary>
-            Maps <see cref="T:Nano.Models.Types.Range"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">The entity type.</typeparam>
-            <typeparam name="TRelatedEntity">The related entity type.</typeparam>
-            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder`2"/>.</param>
-            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/>.</param>
-        </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions.MapType``2(Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder{``0,``1},System.Linq.Expressions.Expression{System.Func{``1,Nano.Models.Types.Photo}})">
-            <summary>
-            Maps <see cref="T:Nano.Models.Types.Photo"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">The entity type.</typeparam>
-            <typeparam name="TRelatedEntity">The related entity type.</typeparam>
-            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder`2"/>.</param>
-            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/>.</param>
-        </member>
         <member name="M:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions.MapType``2(Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder{``0,``1},System.Linq.Expressions.Expression{System.Func{``1,Nano.Models.Types.Address}})">
             <summary>
             Maps <see cref="T:Nano.Models.Types.Address"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">The entity type.</typeparam>
-            <typeparam name="TRelatedEntity">The related entity type.</typeparam>
-            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder`2"/>.</param>
-            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/>.</param>
-        </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions.MapType``2(Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder{``0,``1},System.Linq.Expressions.Expression{System.Func{``1,Nano.Models.Types.Contact}})">
-            <summary>
-            Maps <see cref="T:Nano.Models.Types.Contact"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">The entity type.</typeparam>
-            <typeparam name="TRelatedEntity">The related entity type.</typeparam>
-            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder`2"/>.</param>
-            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/>.</param>
-        </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions.MapType``2(Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder{``0,``1},System.Linq.Expressions.Expression{System.Func{``1,Nano.Models.Types.Period}})">
-            <summary>
-            Maps <see cref="T:Nano.Models.Types.Period"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">The entity type.</typeparam>
             <typeparam name="TRelatedEntity">The related entity type.</typeparam>
@@ -510,18 +422,18 @@
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder`2"/>.</param>
             <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/>.</param>
         </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions.MapType``2(Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder{``0,``1},System.Linq.Expressions.Expression{System.Func{``1,Nano.Models.Types.Location}})">
+        <member name="M:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions.MapType``2(Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder{``0,``1},System.Linq.Expressions.Expression{System.Func{``1,Nano.Models.Types.EmailAddress}})">
             <summary>
-            Maps <see cref="T:Nano.Models.Types.Location"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
+            Maps <see cref="T:Nano.Models.Types.EmailAddress"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">The entity type.</typeparam>
             <typeparam name="TRelatedEntity">The related entity type.</typeparam>
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder`2"/>.</param>
             <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/>.</param>
         </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions.MapType``2(Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder{``0,``1},System.Linq.Expressions.Expression{System.Func{``1,Nano.Models.Types.PhoneNumber}})">
+        <member name="M:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions.MapType``2(Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder{``0,``1},System.Linq.Expressions.Expression{System.Func{``1,Nano.Models.Types.Location}})">
             <summary>
-            Maps <see cref="T:Nano.Models.Types.PhoneNumber"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
+            Maps <see cref="T:Nano.Models.Types.Location"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">The entity type.</typeparam>
             <typeparam name="TRelatedEntity">The related entity type.</typeparam>
@@ -537,18 +449,9 @@
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder`2"/>.</param>
             <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/>.</param>
         </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions.MapType``2(Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder{``0,``1},System.Linq.Expressions.Expression{System.Func{``1,Nano.Models.Types.EmailAddress}})">
+        <member name="M:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions.MapType``2(Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder{``0,``1},System.Linq.Expressions.Expression{System.Func{``1,Nano.Models.Types.PhoneNumber}})">
             <summary>
-            Maps <see cref="T:Nano.Models.Types.EmailAddress"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">The entity type.</typeparam>
-            <typeparam name="TRelatedEntity">The related entity type.</typeparam>
-            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder`2"/>.</param>
-            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/>.</param>
-        </member>
-        <member name="M:Nano.Data.Models.Mappings.Extensions.ReferenceCollectionBuilderExtensions.MapType``2(Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder{``0,``1},System.Linq.Expressions.Expression{System.Func{``1,Nano.Models.Types.AuthenticationCredential}})">
-            <summary>
-            Maps <see cref="T:Nano.Models.Types.AuthenticationCredential"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
+            Maps <see cref="T:Nano.Models.Types.PhoneNumber"/> for the <typeparamref name="TRelatedEntity"/> owned by <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">The entity type.</typeparam>
             <typeparam name="TRelatedEntity">The related entity type.</typeparam>

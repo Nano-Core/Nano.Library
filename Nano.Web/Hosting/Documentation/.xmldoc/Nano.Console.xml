@@ -351,6 +351,14 @@
             Service Collection Extensions.
             </summary>
         </member>
+        <member name="M:Nano.Console.Hosting.Extensions.ServiceCollectionExtensions.AddConsole(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds <see cref="T:Nano.Console.ConsoleOptions"/> to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
         <member name="M:Nano.Console.Hosting.Extensions.ServiceCollectionExtensions.Clone(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             Clone the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.

@@ -36,6 +36,16 @@
             VHost.
             </summary>
         </member>
+        <member name="P:Nano.Eventing.EventingOptions.Username">
+            <summary>
+            Username.
+            </summary>
+        </member>
+        <member name="P:Nano.Eventing.EventingOptions.Password">
+            <summary>
+            Password.
+            </summary>
+        </member>
         <member name="P:Nano.Eventing.EventingOptions.Port">
             <summary>
             Port.
@@ -55,11 +65,6 @@
             <summary>
             Heartbeat, in seconds.
             Zero means no hearbeat requests.
-            </summary>
-        </member>
-        <member name="P:Nano.Eventing.EventingOptions.AuthenticationCredential">
-            <summary>
-            Authentication Credential.
             </summary>
         </member>
         <member name="T:Nano.Eventing.Extensions.ServiceCollectionExtensions">
@@ -193,42 +198,9 @@
             </summary>
             <param name="disposing">The <see cref="T:System.Boolean"/> indicating if disposing.</param>
         </member>
-        <member name="T:Nano.Eventing.Providers.EasyNetQ.EasyNetQLogger">
-            <summary>
-            EasyNetQ Logger.
-            </summary>
-        </member>
-        <member name="P:Nano.Eventing.Providers.EasyNetQ.EasyNetQLogger.Logger">
-            <summary>
-            Logger.
-            </summary>
-        </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQLogger.#ctor(Microsoft.Extensions.Logging.ILogger)">
-            <summary>
-            Constructor.
-            </summary>
-            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
-        </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQLogger.DebugWrite(System.String,System.Object[])">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQLogger.InfoWrite(System.String,System.Object[])">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQLogger.ErrorWrite(System.String,System.Object[])">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQLogger.ErrorWrite(System.Exception)">
-            <inheritdoc />
-        </member>
         <member name="T:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider">
             <summary>
             EasyNetQ Provider.
-            </summary>
-        </member>
-        <member name="P:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.Logger">
-            <summary>
-            Logger.
             </summary>
         </member>
         <member name="P:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.Options">
@@ -236,11 +208,10 @@
             Options.
             </summary>
         </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.#ctor(Nano.Eventing.EventingOptions,Microsoft.Extensions.Logging.ILogger)">
+        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.#ctor(Nano.Eventing.EventingOptions)">
             <summary>
             Constructor.
             </summary>
-            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
             <param name="options">The <see cref="T:Nano.Eventing.EventingOptions"/>.</param>
         </member>
         <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.Configure">
