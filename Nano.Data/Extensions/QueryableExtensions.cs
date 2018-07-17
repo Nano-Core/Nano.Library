@@ -23,6 +23,8 @@ namespace Nano.Data.Extensions
             if (queryable == null)
                 throw new ArgumentNullException(nameof(queryable));
 
+            // BUG: Include nested navigations as well. Only top-level navigation properties will be included.
+
             var type = typeof(T);
             var properties = type.GetProperties();
 
