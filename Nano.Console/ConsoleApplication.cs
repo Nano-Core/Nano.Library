@@ -17,6 +17,8 @@ using Nano.Security.Extensions;
 
 namespace Nano.Console
 {
+    // TODO: Console Application, complete Test and documentation.
+
     /// <inheritdoc />
     public class ConsoleApplication : DefaultApplication
     {
