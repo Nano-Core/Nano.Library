@@ -7,6 +7,7 @@ using DynamicExpression.Extensions;
 using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Nano.Data;
+using Nano.Data.Extensions;
 using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Services.Interfaces;
@@ -32,12 +33,15 @@ namespace Nano.Services
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
+            var indent = this.Context.Options.QueryIncludeDepth;
+
             return await this.Context
                 .Set<TEntity>()
                 .Where(query.Criteria)
                 .Where(x => x.Geometry.Covers(query.Criteria.Geometry))
                 .Order(query.Order)
                 .Limit(query.Paging)
+                .IncludeAnnotations(indent)
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -49,12 +53,15 @@ namespace Nano.Services
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
+            var indent = this.Context.Options.QueryIncludeDepth;
+
             return await this.Context
                 .Set<TEntity>()
                 .Where(query.Criteria)
                 .Where(x => x.Geometry.Crosses(query.Criteria.Geometry))
                 .Order(query.Order)
                 .Limit(query.Paging)
+                .IncludeAnnotations(indent)
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -66,12 +73,15 @@ namespace Nano.Services
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
+            var indent = this.Context.Options.QueryIncludeDepth;
+
             return await this.Context
                 .Set<TEntity>()
                 .Where(query.Criteria)
                 .Where(x => x.Geometry.Touches(query.Criteria.Geometry))
                 .Order(query.Order)
                 .Limit(query.Paging)
+                .IncludeAnnotations(indent)
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -83,12 +93,15 @@ namespace Nano.Services
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
+            var indent = this.Context.Options.QueryIncludeDepth;
+
             return await this.Context
                 .Set<TEntity>()
                 .Where(query.Criteria)
                 .Where(x => x.Geometry.Overlaps(query.Criteria.Geometry))
                 .Order(query.Order)
                 .Limit(query.Paging)
+                .IncludeAnnotations(indent)
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -100,12 +113,15 @@ namespace Nano.Services
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
+            var indent = this.Context.Options.QueryIncludeDepth;
+
             return await this.Context
                 .Set<TEntity>()
                 .Where(query.Criteria)
                 .Where(x => x.Geometry.CoveredBy(query.Criteria.Geometry))
                 .Order(query.Order)
                 .Limit(query.Paging)
+                .IncludeAnnotations(indent)
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -117,12 +133,15 @@ namespace Nano.Services
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
+            var indent = this.Context.Options.QueryIncludeDepth;
+
             return await this.Context
                 .Set<TEntity>()
                 .Where(query.Criteria)
                 .Where(x => x.Geometry.Disjoint(query.Criteria.Geometry))
                 .Order(query.Order)
                 .Limit(query.Paging)
+                .IncludeAnnotations(indent)
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -134,12 +153,15 @@ namespace Nano.Services
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
+            var indent = this.Context.Options.QueryIncludeDepth;
+
             return await this.Context
                 .Set<TEntity>()
                 .Where(query.Criteria)
                 .Where(x => x.Geometry.Intersects(query.Criteria.Geometry))
                 .Order(query.Order)
                 .Limit(query.Paging)
+                .IncludeAnnotations(indent)
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -150,12 +172,16 @@ namespace Nano.Services
         {
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
+
+            var indent = this.Context.Options.QueryIncludeDepth;
+
             return await this.Context
                 .Set<TEntity>()
                 .Where(query.Criteria)
                 .Where(x => x.Geometry.IsWithinDistance(query.Criteria.Geometry, distance))
                 .Order(query.Order)
                 .Limit(query.Paging)
+                .IncludeAnnotations(indent)
                 .ToArrayAsync(cancellationToken);
         }
     }

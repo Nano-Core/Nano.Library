@@ -26,6 +26,11 @@ namespace Nano.Data
         public virtual int BulkBatchDelay { get; set; } = 1000;
 
         /// <summary>
+        /// Query Include Depth.
+        /// </summary>
+        public virtual int QueryIncludeDepth { get; set; } = 4;
+
+        /// <summary>
         /// Use Audit.
         /// </summary>
         public virtual bool UseAudit { get; set; } = true;

@@ -16,25 +16,51 @@ namespace Nano.Data.Extensions
         /// </summary>
         /// <typeparam name="T">The type of the queryable.</typeparam>
         /// <param name="queryable">The <see cref="IQueryable{T}"/>.</param>
+        /// <param name="maxDepth">The max include indention.</param>
         /// <returns>The <see cref="IQueryable{T}"/>.</returns>
-        public static IQueryable<T> IncludeAnnotations<T>(this IQueryable<T> queryable)
+        public static IQueryable<T> IncludeAnnotations<T>(this IQueryable<T> queryable, int maxDepth)
             where T : class
         {
             if (queryable == null)
                 throw new ArgumentNullException(nameof(queryable));
 
-            // BUG: Include nested navigations as well. Only top-level navigation properties will be included.
+            queryable
+                .IncludeAnnotations(typeof(T), string.Empty, maxDepth);
 
-            var type = typeof(T);
-            var properties = type.GetProperties();
+            return queryable;
+        }
 
-            properties
+        /// <summary>
+        /// Includes all model associations in the query, which has the <see cref="IncludeAttribute"/> defined.
+        /// </summary>
+        /// <typeparam name="T">The type of the queryable.</typeparam>
+        /// <param name="queryable">The <see cref="IQueryable{T}"/>.</param>
+        /// <param name="type">The <see cref="Type"/> of entity to include from.</param>
+        /// <param name="navigationName">The name of the property navigation.</param>
+        /// <param name="depth">The current depth, when including nested navigation properties.</param>
+        /// <returns>The <see cref="IQueryable{T}"/>.</returns>
+        internal static IQueryable<T> IncludeAnnotations<T>(this IQueryable<T> queryable, Type type, string navigationName, int depth)
+            where T : class
+        {
+            if (queryable == null)
+                throw new ArgumentNullException(nameof(queryable));
+
+            if (depth <= 0)
+                return queryable;
+
+            type = type ?? typeof(T);
+
+            type
+                .GetProperties()
                 .Where(x => x.GetCustomAttributes<IncludeAttribute>().Any())
                 .ToList()
                 .ForEach(x =>
                 {
+                    navigationName += $".{x.Name}";
+
                     queryable
-                        .Include(x.Name);
+                        .Include(navigationName)
+                        .IncludeAnnotations(x.PropertyType, navigationName, depth - 1);
                 });
 
             return queryable;
