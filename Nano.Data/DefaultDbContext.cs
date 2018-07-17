@@ -97,8 +97,6 @@ namespace Nano.Data
             if (!this.Options.UseSoftDeletetion)
                 return;
 
-            // BUG: Implement Cascade Soft-Delete (https://github.com/aspnet/EntityFrameworkCore/issues/11240)
-
             this.ChangeTracker
                 .Entries<IEntityDeletableSoft>()
                 .Where(x => x.State == EntityState.Deleted)
