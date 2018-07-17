@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Newtonsoft.Json;
@@ -20,17 +21,12 @@ namespace Nano.Web.Hosting.Serialization
         /// <returns>The <see cref="JsonProperty"/>.</returns>
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
-            // TODO: LazyProperties are serialized and returned in response.
-
             var property = base.CreateProperty(member, memberSerialization);
             var propertyType = property.PropertyType;
 
-            if (propertyType.IsTypeDef(typeof(IEntityIdentity<>)))
+            if (propertyType == typeof(ILazyLoader))
             {
-                if (property.DeclaringType.IsTypeDef(typeof(IEntity)))
-                {
-                    property.Ignored = true;
-                }
+                property.Ignored = true;
             }
             else if (propertyType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(propertyType))
             {

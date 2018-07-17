@@ -31,7 +31,7 @@ namespace Nano.Eventing.Handlers
         }
 
         /// <inheritdoc />
-        public void CallbackAsync(EntityEvent @event)
+        public virtual async void CallbackAsync(EntityEvent @event)
         {
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));
@@ -50,7 +50,7 @@ namespace Nano.Eventing.Handlers
                     if (entity == null)
                     {
                         entity = Activator.CreateInstance(type);
-                        this.Context.Add(entity);
+                        await this.Context.AddAsync(entity);
                     }
                     return;
 

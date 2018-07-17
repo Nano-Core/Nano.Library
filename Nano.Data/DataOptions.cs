@@ -21,7 +21,7 @@ namespace Nano.Data
         public virtual int BulkBatchSize { get; set; } = 500;
 
         /// <summary>
-        /// Bulik Batch Delay.
+        /// Bulk Batch Delay.
         /// </summary>
         public virtual int BulkBatchDelay { get; set; } = 1000;
 

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Caching.Memory;
 using Nano.Data.Attributes;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
@@ -27,6 +28,11 @@ namespace Nano.Data
         /// Options.
         /// </summary>
         public virtual DataOptions Options { get; set; }
+
+        /// <summary>
+        /// Cache Entry Options.
+        /// </summary>
+        public virtual MemoryCacheEntryOptions CacheEntryOptions { get; set; }
 
         /// <summary>
         /// Audit Entries.
@@ -50,6 +56,10 @@ namespace Nano.Data
                 throw new ArgumentNullException(nameof(dataOptions));
 
             this.Options = dataOptions;
+            this.CacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                SlidingExpiration = TimeSpan.FromMinutes(dataOptions.BatchSize)
+            };
         }
 
         /// <inheritdoc />
@@ -172,8 +182,6 @@ namespace Nano.Data
 
             if (this.Options.ConnectionString == null)
                 return;
-
-            // TODO: Migrate in Transaction. (https://stackoverflow.com/questions/32014118/can-entity-framework-6-migrations-include-a-transaction-around-scripts)
 
             await this.Database
                 .MigrateAsync(cancellationToken);

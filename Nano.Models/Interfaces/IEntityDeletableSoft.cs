@@ -1,4 +1,6 @@
-﻿namespace Nano.Models.Interfaces
+﻿using Newtonsoft.Json;
+
+namespace Nano.Models.Interfaces
 {
     /// <summary>
     /// Entity Deletable.
@@ -12,6 +14,7 @@
         /// THe Unix-based time in miliseconds is stored, in order for allowing unique indexes with soft-deletetion.
         /// NOTE: Only active instances are returned from queries, when filters are enabled (default behavior).
         /// </summary>
-        long IsDeleted { get; set; } // TODO: Consider hiding this in responses.
+        [JsonIgnore]
+        long IsDeleted { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 using DynamicExpression.Interfaces;
-using NetTopologySuite.Geometries;
+using GeoAPI.Geometries;
 
 namespace Nano.Models.Criterias.Interfaces
 {
@@ -11,6 +11,6 @@ namespace Nano.Models.Criterias.Interfaces
         /// <summary>
         /// Geometry.
         /// </summary>
-        Geometry Geometry { get; set; }
+        IGeometry Geometry { get; set; }
     }
 }

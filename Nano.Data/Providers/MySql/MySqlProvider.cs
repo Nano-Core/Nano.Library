@@ -1,6 +1,5 @@
 using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Nano.Data.Interfaces;
 
 namespace Nano.Data.Providers.MySql
@@ -39,11 +38,6 @@ namespace Nano.Data.Providers.MySql
 
             if (connectionString == null)
                 return;
-
-            // TODO: Add caching...
-            //builder
-            //    .UseMemoryCache(new MemoryCache(new MemoryCacheOptions()));
-            // other config params, like version??? we need to support that.
 
             builder
                 .UseLazyLoadingProxies(useLazyLoading)

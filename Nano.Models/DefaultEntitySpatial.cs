@@ -1,5 +1,5 @@
+using GeoAPI.Geometries;
 using Nano.Models.Interfaces;
-using NetTopologySuite.Geometries;
 
 namespace Nano.Models
 {
@@ -7,6 +7,6 @@ namespace Nano.Models
     public abstract class DefaultEntitySpatial : DefaultEntity, IEntitySpatial
     {
         /// <inheritdoc />
-        public virtual Geometry Geometry { get; set; } // TODO: SPATIAL: Geometry is abstract.
+        public virtual IGeometry Geometry { get; set; }
     }
 }

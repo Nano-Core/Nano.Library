@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
@@ -14,22 +15,25 @@ namespace Nano.Data.Extensions
         /// Includes all model associations in the query, which has the <see cref="IncludeAttribute"/> defined.
         /// </summary>
         /// <typeparam name="T">The type of the queryable.</typeparam>
-        /// <param name="queryable"></param>
-        /// <returns></returns>
+        /// <param name="queryable">The <see cref="IQueryable{T}"/>.</param>
+        /// <returns>The <see cref="IQueryable{T}"/>.</returns>
         public static IQueryable<T> IncludeAnnotations<T>(this IQueryable<T> queryable)
             where T : class
         {
-            // TODO: Fix Include Annotations (doesn't work)
-            var includes = typeof(T)
-                .GetProperties()
-                .Where(x => x.GetCustomAttributes<IncludeAttribute>().Any())
-                .Aggregate(string.Empty, (current, include) => $"{current}{include.Name};");
+            if (queryable == null)
+                throw new ArgumentNullException(nameof(queryable));
 
-            if (!string.IsNullOrEmpty(includes))
-            {
-                queryable
-                    .Include(includes);
-            }
+            var type = typeof(T);
+            var properties = type.GetProperties();
+
+            properties
+                .Where(x => x.GetCustomAttributes<IncludeAttribute>().Any())
+                .ToList()
+                .ForEach(x =>
+                {
+                    queryable
+                        .Include(x.Name);
+                });
 
             return queryable;
         }
