@@ -101,6 +101,8 @@ namespace Nano.Eventing.Extensions
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
+            // BUG: Subscribe Attribute will register event handlers for models included from external sources like NuGet (with Subscribe annotation). How to avoid? (Namespace?)
+
             AppDomain.CurrentDomain
                 .GetAssemblies()
                 .SelectMany(x => x.GetTypes())
