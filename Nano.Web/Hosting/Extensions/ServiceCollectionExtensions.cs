@@ -330,7 +330,7 @@ namespace Nano.Web.Hosting.Extensions
                     x.FormatterMappings.SetMediaTypeMappingForFormat("xml", HttpContentType.XML);
                     x.FormatterMappings.SetMediaTypeMappingForFormat("html", HttpContentType.HTML);
                     x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JSON);
-                    x.FormatterMappings.SetMediaTypeMappingForFormat("text", HttpContentType.TEXT);
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("text", HttpContentType.TEXT); // TODO: Content-Type text/plain support (csv import) (https://code-maze.com/content-negotiation-dotnet-core/)
                 })
                 .AddXmlSerializerFormatters()
                 .AddXmlDataContractSerializerFormatters();
