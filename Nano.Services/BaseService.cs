@@ -58,12 +58,9 @@ namespace Nano.Services
             if (keys == null)
                 throw new ArgumentNullException(nameof(keys));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
-
             return await this.Context
                 .Set<TEntity>()
                 .Where(x => keys.Any(y => y.Equals(x)))
-                .IncludeAnnotations(indent)
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -75,14 +72,11 @@ namespace Nano.Services
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
-
             return await this.Context
                 .Set<TEntity>()
                 .Where(query.Criteria)
                 .Order(query.Order)
                 .Limit(query.Paging)
-                .IncludeAnnotations(indent)
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -93,12 +87,9 @@ namespace Nano.Services
             if (expression == null)
                 throw new ArgumentNullException(nameof(expression));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
-
             return await this.Context
                 .Set<TEntity>()
                 .Where(expression)
-                .IncludeAnnotations(indent)
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -109,13 +100,10 @@ namespace Nano.Services
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
-
             return await this.Context
                 .Set<TEntity>()
                 .Order(query.Order)
                 .Limit(query.Paging)
-                .IncludeAnnotations(indent)
                 .ToArrayAsync(cancellationToken);
         }
 
