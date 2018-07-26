@@ -42,20 +42,39 @@ namespace Nano.Eventing.Handlers
                 .Where(x => x.IsTypeDef(typeof(IEntityIdentity<>)))
                 .First(x => x.Name == @event.Type);
 
-            var entity = this.Context.Find(type, @event.Id);
+            var id = type.IsTypeDef(typeof(IEntityIdentity<Guid>))
+                ? new Guid(@event.Id.ToString())
+                : @event.Id;
+
+            var entity = await this.Context
+                .FindAsync(type, id);
 
             switch (@event.State)
             {
                 case "Added":
-                    if (entity == null)
-                    {
-                        entity = Activator.CreateInstance(type);
-                        await this.Context.AddAsync(entity);
-                    }
+                    if (entity != null)
+                        return;
+
+                    var property = type.GetProperty("Id");
+
+                    if (property == null)
+                        return;
+
+                    entity = Activator.CreateInstance(type);
+                    property.SetValue(entity, id);
+
+                    await this.Context.AddAsync(entity);
+                    await this.Context.SaveChangesAsync();
+
                     return;
 
                 case "Deleted":
+                    if (entity == null)
+                        return;
+
                     this.Context.Remove(entity);
+                    await this.Context.SaveChangesAsync();
+
                     return;
 
                 case "Detached":

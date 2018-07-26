@@ -117,16 +117,16 @@ namespace Nano.Data
                     (x.State == EntityState.Added || x.State == EntityState.Deleted))
                 .Select(x =>
                 {
-                    var type = x.GetType();
+                    var name = x.Entity.GetType().Name;
                     var state = x.State.ToString();
 
                     switch (x.Entity)
                     {
                         case IEntityIdentity<Guid> guid:
-                            return new EntityEvent(guid.Id, type.Name, state);
+                            return new EntityEvent(guid.Id, name, state);
 
                         case IEntityIdentity<dynamic> dynamic:
-                            return new EntityEvent(dynamic.Id, type.Name, state);
+                            return new EntityEvent(dynamic.Id, name, state);
 
                         default:
                             return null;
