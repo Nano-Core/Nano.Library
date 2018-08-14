@@ -117,7 +117,7 @@ namespace Nano.Data
                     (x.State == EntityState.Added || x.State == EntityState.Deleted))
                 .Select(x =>
                 {
-                    var name = x.Entity.GetType().Name;
+                    var name = x.Entity.GetType().Name.Replace("Proxy", "");
                     var state = x.State.ToString();
 
                     switch (x.Entity)

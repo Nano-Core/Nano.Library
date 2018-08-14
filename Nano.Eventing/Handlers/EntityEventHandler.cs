@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
 using Nano.Models;
 using Nano.Models.Extensions;
@@ -14,6 +15,11 @@ namespace Nano.Eventing.Handlers
     public class EntityEventHandler : IEventingHandler<EntityEvent>
     {
         /// <summary>
+        /// Logger.
+        /// </summary>
+        protected virtual ILogger Logger { get; }
+
+        /// <summary>
         /// Context.
         /// </summary>
         protected virtual DbContext Context { get; }
@@ -21,12 +27,17 @@ namespace Nano.Eventing.Handlers
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
         /// <param name="context">The <see cref="DbContext"/>.</param>
-        public EntityEventHandler(DbContext context)
+        public EntityEventHandler(ILogger logger, DbContext context)
         {
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
+
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
+            this.Logger = logger;
             this.Context = context;
         }
 
@@ -53,12 +64,18 @@ namespace Nano.Eventing.Handlers
             {
                 case "Added":
                     if (entity != null)
+                    {
+                        this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} already exists. Add entity ignored.");
                         return;
+                    }
 
                     var property = type.GetProperty("Id");
 
                     if (property == null)
+                    {
+                        this.Logger.LogWarning($"Nano: Subscribed to entity: {type.Name}, does not cotnain an 'Id' property. Add entity ignored.");
                         return;
+                    }
 
                     entity = Activator.CreateInstance(type);
                     property.SetValue(entity, id);
@@ -66,14 +83,23 @@ namespace Nano.Eventing.Handlers
                     await this.Context.AddAsync(entity);
                     await this.Context.SaveChangesAsync();
 
+                    this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} has been added.");
+
                     return;
 
                 case "Deleted":
-                    if (entity == null)
+                    var isSoftDeleted = entity is IEntityDeletableSoft deleted && deleted.IsDeleted > 0L;
+
+                    if (entity == null || isSoftDeleted)
+                    {
+                        this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} doesn't exists. Remove entity ignored.");
                         return;
+                    }
 
                     this.Context.Remove(entity);
                     await this.Context.SaveChangesAsync();
+
+                    this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} has been removed.");
 
                     return;
 
