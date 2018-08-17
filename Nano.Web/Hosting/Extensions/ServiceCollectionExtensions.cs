@@ -34,6 +34,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Nano.Models.Extensions;
 using Nano.Security;
+using Nano.Web.Hosting.Filters;
 
 namespace Nano.Web.Hosting.Extensions
 {
@@ -89,6 +90,8 @@ namespace Nano.Web.Hosting.Extensions
 
                     if (options.Hosting.UseSsl)
                         x.Filters.Add(new RequireHttpsAttribute());
+
+                    x.Filters.Add<DisableLazyLoadingResultFilterAttribute>();
                 })
                 .AddJsonOptions(x =>
                 {
