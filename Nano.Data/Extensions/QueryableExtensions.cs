@@ -24,10 +24,8 @@ namespace Nano.Data.Extensions
             if (queryable == null)
                 throw new ArgumentNullException(nameof(queryable));
 
-            queryable
+            return queryable
                 .IncludeAnnotations(typeof(T), string.Empty, maxDepth);
-
-            return queryable;
         }
 
         /// <summary>
@@ -45,10 +43,11 @@ namespace Nano.Data.Extensions
             if (queryable == null)
                 throw new ArgumentNullException(nameof(queryable));
 
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
             if (depth <= 0)
                 return queryable;
-
-            type = type ?? typeof(T);
 
             type
                 .GetProperties()
@@ -56,9 +55,12 @@ namespace Nano.Data.Extensions
                 .ToList()
                 .ForEach(x =>
                 {
-                    navigationName += $".{x.Name}";
+                    if (string.IsNullOrEmpty(navigationName))
+                        navigationName = x.Name;
+                    else
+                        navigationName += $".{x.Name}";
 
-                    queryable
+                    queryable = queryable
                         .Include(navigationName)
                         .IncludeAnnotations(x.PropertyType, navigationName, depth - 1);
                 });
