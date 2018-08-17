@@ -33,17 +33,22 @@ namespace Nano.Data.Providers.MySql
                 throw new ArgumentNullException(nameof(builder));
 
             var batchSize = this.Options.BatchSize;
+            var retryCount = this.Options.QueryRetryCount;
             var useLazyLoading = this.Options.UseLazyLoading;
+            var useSensitiveDataLogging = this.Options.UseSensitiveDataLogging;
             var connectionString = this.Options.ConnectionString;
 
             if (connectionString == null)
                 return;
 
             builder
+                .EnableSensitiveDataLogging(useSensitiveDataLogging)
+                // TODO: .ConfigureWarnings(x => x.Throw(RelationalEventId.QueryClientEvaluationWarning))
                 .UseLazyLoadingProxies(useLazyLoading)
                 .UseMySql(connectionString, x =>
                 {
                     x.MaxBatchSize(batchSize);
+                    x.EnableRetryOnFailure(retryCount);
                 });
         }
     }

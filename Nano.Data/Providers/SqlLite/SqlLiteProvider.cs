@@ -32,15 +32,21 @@ namespace Nano.Data.Providers.SqlLite
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
+            var batchSize = this.Options.BatchSize;
             var useLazyLoading = this.Options.UseLazyLoading;
+            var useSensitiveDataLogging = this.Options.UseSensitiveDataLogging;
             var connectionString = this.Options.ConnectionString;
 
             if (connectionString == null)
                 return;
 
             builder
+                .EnableSensitiveDataLogging(useSensitiveDataLogging)
                 .UseLazyLoadingProxies(useLazyLoading)
-                .UseInMemoryDatabase(connectionString);
+                .UseSqlite(connectionString, x =>
+                {
+                    x.MaxBatchSize(batchSize);
+                });
         }
     }
 }

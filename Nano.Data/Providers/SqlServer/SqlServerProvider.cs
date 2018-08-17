@@ -33,15 +33,22 @@ namespace Nano.Data.Providers.SqlServer
                 throw new ArgumentNullException(nameof(builder));
 
             var batchSize = this.Options.BatchSize;
+            var retryCount = this.Options.QueryRetryCount;
             var useLazyLoading = this.Options.UseLazyLoading;
+            var useSensitiveDataLogging = this.Options.UseSensitiveDataLogging;
             var connectionString = this.Options.ConnectionString;
 
             if (connectionString == null)
                 return;
 
             builder
+                .EnableSensitiveDataLogging(useSensitiveDataLogging)
                 .UseLazyLoadingProxies(useLazyLoading)
-                .UseSqlServer(connectionString, x => x.MaxBatchSize(batchSize));
+                .UseSqlServer(connectionString, x =>
+                {
+                    x.MaxBatchSize(batchSize);
+                    x.EnableRetryOnFailure(retryCount);
+                });
         }
     }
 }

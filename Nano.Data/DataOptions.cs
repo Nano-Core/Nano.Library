@@ -26,10 +26,15 @@ namespace Nano.Data
         public virtual int BulkBatchDelay { get; set; } = 1000;
 
         /// <summary>
+        /// Query Retry Count.
+        /// </summary>
+        public virtual int QueryRetryCount { get; set; } = 0;
+
+        /// <summary>
         /// Query Include Depth.
         /// </summary>
         public virtual int QueryIncludeDepth { get; set; } = 4;
-
+        
         /// <summary>
         /// Use Audit.
         /// </summary>
@@ -59,6 +64,11 @@ namespace Nano.Data
         /// Use Migrate Database.
         /// </summary>
         public virtual bool UseMigrateDatabase { get; set; } = true;
+
+        /// <summary>
+        /// Use Sensitive Data Logging .
+        /// </summary>
+        public virtual bool UseSensitiveDataLogging { get; set; } = false;
 
         /// <summary>
         /// Connection String.
