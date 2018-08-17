@@ -25,6 +25,15 @@ namespace Nano.Services
         protected virtual TContext Context { get; }
 
         /// <summary>
+        /// Is Lazy Loading Enabled.
+        /// </summary>
+        public virtual bool IsLazyLoadingEnabled
+        {
+            get { return this.Context.ChangeTracker.LazyLoadingEnabled; }
+            set { this.Context.ChangeTracker.LazyLoadingEnabled = value; }
+        }
+
+        /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="context">The <see cref="DbContext"/>.</param>

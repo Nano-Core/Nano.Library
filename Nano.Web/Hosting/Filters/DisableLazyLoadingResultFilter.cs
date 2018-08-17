@@ -1,5 +1,6 @@
+using System;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
+using Nano.Services.Interfaces;
 
 namespace Nano.Web.Hosting.Filters
 {
@@ -9,24 +10,27 @@ namespace Nano.Web.Hosting.Filters
     public class DisableLazyLoadingResultFilterAttribute : ResultFilterAttribute
     {
         /// <summary>
-        /// The <see cref="DbContext"/>.
+        /// The <see cref="IService"/>.
         /// </summary>
-        protected virtual DbContext DbContext { get; }
+        protected virtual IService Service { get; }
 
         /// <summary>
         /// Constructor.
-        /// Initialzing the <see cref="DbContext"/> with the passed <paramref name="dbContext"/>.
+        /// Initialzing the <see cref="IService"/> with the passed <paramref name="service"/>.
         /// </summary>
-        /// <param name="dbContext">The <see cref="DbContext"/>.</param>
-        public DisableLazyLoadingResultFilterAttribute(DbContext dbContext)
+        /// <param name="service">The <see cref="IService"/>.</param>
+        public DisableLazyLoadingResultFilterAttribute(IService service)
         {
-            this.DbContext = dbContext;
+            if (service == null)
+                throw new ArgumentNullException(nameof(service));
+
+            this.Service = service;
         }
 
         /// <inheritdoc />
         public override void OnResultExecuting(ResultExecutingContext context)
         {
-            this.DbContext.ChangeTracker.LazyLoadingEnabled = false;
+            this.Service.IsLazyLoadingEnabled = false;
 
             base.OnResultExecuting(context);
         }

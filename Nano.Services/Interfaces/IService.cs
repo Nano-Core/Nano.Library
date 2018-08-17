@@ -17,6 +17,11 @@ namespace Nano.Services.Interfaces
     public interface IService : IDisposable
     {
         /// <summary>
+        /// Is Lazy Loading Enabled.
+        /// </summary>
+        bool IsLazyLoadingEnabled { get; set; }
+
+        /// <summary>
         /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
