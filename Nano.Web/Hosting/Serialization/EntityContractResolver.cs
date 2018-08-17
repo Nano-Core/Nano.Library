@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -21,6 +22,9 @@ namespace Nano.Web.Hosting.Serialization
         /// <returns>The <see cref="JsonProperty"/>.</returns>
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
+            if (member == null)
+                throw new ArgumentNullException(nameof(member));
+
             var property = base.CreateProperty(member, memberSerialization);
             var propertyType = property.PropertyType;
 
@@ -30,7 +34,7 @@ namespace Nano.Web.Hosting.Serialization
             }
             else if (propertyType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(propertyType))
             {
-                if (property.DeclaringType.IsTypeDef(typeof(IEntity)))
+                if (propertyType.IsTypeDef(typeof(IEntity)))
                 {
                     property.Ignored = true;
                 }
