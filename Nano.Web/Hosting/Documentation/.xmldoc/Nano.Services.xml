@@ -12,6 +12,11 @@
             Context.
             </summary>
         </member>
+        <member name="P:Nano.Services.BaseService`1.IsLazyLoadingEnabled">
+            <summary>
+            Is Lazy Loading Enabled.
+            </summary>
+        </member>
         <member name="M:Nano.Services.BaseService`1.#ctor(`0)">
             <summary>
             Constructor.
@@ -128,6 +133,11 @@
             (Base) Interface for a service.
             Defines methods for the most rudamentory operations (get, criteria2, add, update, delete) on instances of <see cref="T:Nano.Models.Interfaces.IEntity"/>.
             <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/>, <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/> and <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>). 
+            </summary>
+        </member>
+        <member name="P:Nano.Services.Interfaces.IService.IsLazyLoadingEnabled">
+            <summary>
+            Is Lazy Loading Enabled.
             </summary>
         </member>
         <member name="M:Nano.Services.Interfaces.IService.GetAsync``2(``1,System.Threading.CancellationToken)">

@@ -146,6 +146,16 @@
             Bulk Batch Delay.
             </summary>
         </member>
+        <member name="P:Nano.Data.DataOptions.QueryRetryCount">
+            <summary>
+            Query Retry Count.
+            </summary>
+        </member>
+        <member name="P:Nano.Data.DataOptions.QueryIncludeDepth">
+            <summary>
+            Query Include Depth.
+            </summary>
+        </member>
         <member name="P:Nano.Data.DataOptions.UseAudit">
             <summary>
             Use Audit.
@@ -174,6 +184,11 @@
         <member name="P:Nano.Data.DataOptions.UseMigrateDatabase">
             <summary>
             Use Migrate Database.
+            </summary>
+        </member>
+        <member name="P:Nano.Data.DataOptions.UseSensitiveDataLogging">
+            <summary>
+            Use Sensitive Data Logging .
             </summary>
         </member>
         <member name="P:Nano.Data.DataOptions.ConnectionString">
@@ -208,12 +223,24 @@
             Queryable Extensions.
             </summary>
         </member>
-        <member name="M:Nano.Data.Extensions.QueryableExtensions.IncludeAnnotations``1(System.Linq.IQueryable{``0})">
+        <member name="M:Nano.Data.Extensions.QueryableExtensions.IncludeAnnotations``1(System.Linq.IQueryable{``0},System.Int32)">
             <summary>
             Includes all model associations in the query, which has the <see cref="T:Nano.Data.Attributes.IncludeAttribute"/> defined.
             </summary>
             <typeparam name="T">The type of the queryable.</typeparam>
             <param name="queryable">The <see cref="T:System.Linq.IQueryable`1"/>.</param>
+            <param name="maxDepth">The max include indention.</param>
+            <returns>The <see cref="T:System.Linq.IQueryable`1"/>.</returns>
+        </member>
+        <member name="M:Nano.Data.Extensions.QueryableExtensions.IncludeAnnotations``1(System.Linq.IQueryable{``0},System.Type,System.String,System.Int32)">
+            <summary>
+            Includes all model associations in the query, which has the <see cref="T:Nano.Data.Attributes.IncludeAttribute"/> defined.
+            </summary>
+            <typeparam name="T">The type of the queryable.</typeparam>
+            <param name="queryable">The <see cref="T:System.Linq.IQueryable`1"/>.</param>
+            <param name="type">The <see cref="T:System.Type"/> of entity to include from.</param>
+            <param name="navigationName">The name of the property navigation.</param>
+            <param name="depth">The current depth, when including nested navigation properties.</param>
             <returns>The <see cref="T:System.Linq.IQueryable`1"/>.</returns>
         </member>
         <member name="T:Nano.Data.Extensions.ServiceCollectionExtensions">

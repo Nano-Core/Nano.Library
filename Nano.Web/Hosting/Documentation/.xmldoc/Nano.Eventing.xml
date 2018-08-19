@@ -93,15 +93,21 @@
             Entity Event Handler.
             </summary>
         </member>
+        <member name="P:Nano.Eventing.Handlers.EntityEventHandler.Logger">
+            <summary>
+            Logger.
+            </summary>
+        </member>
         <member name="P:Nano.Eventing.Handlers.EntityEventHandler.Context">
             <summary>
             Context.
             </summary>
         </member>
-        <member name="M:Nano.Eventing.Handlers.EntityEventHandler.#ctor(Microsoft.EntityFrameworkCore.DbContext)">
+        <member name="M:Nano.Eventing.Handlers.EntityEventHandler.#ctor(Microsoft.Extensions.Logging.ILogger,Microsoft.EntityFrameworkCore.DbContext)">
             <summary>
             Constructor.
             </summary>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
             <param name="context">The <see cref="T:Microsoft.EntityFrameworkCore.DbContext"/>.</param>
         </member>
         <member name="M:Nano.Eventing.Handlers.EntityEventHandler.CallbackAsync(Nano.Models.EntityEvent)">

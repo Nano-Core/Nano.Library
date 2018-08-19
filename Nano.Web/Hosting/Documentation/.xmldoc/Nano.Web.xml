@@ -857,6 +857,15 @@
             <response code="200">Success.</response>
             <response code="401">Unauthorized.</response>
         </member>
+        <member name="M:Nano.Web.Controllers.HomeController.SetLanguage(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Sets the language in a cookie, for use with following requests.
+            </summary>
+            <param name="code">The langauge code.</param>
+            <param name="returnUrl">The return url (if any).</param>
+            <param name="cancellationToken">The cancellationToken.</param>
+            <returns>Nothing (void).</returns>
+        </member>
         <member name="T:Nano.Web.Hosting.Conventions.RoutePrefixConvention">
             <inheritdoc />
         </member>
@@ -939,6 +948,26 @@
             <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
             <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
             <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
+        <member name="T:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute">
+            <summary>
+            A <see cref="T:Microsoft.AspNetCore.Mvc.Filters.ResultFilterAttribute"/> that disables lazy loading before serialzing the response.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute.Service">
+            <summary>
+            The <see cref="T:Nano.Services.Interfaces.IService"/>.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute.#ctor(Nano.Services.Interfaces.IService)">
+            <summary>
+            Constructor.
+            Initialzing the <see cref="T:Nano.Services.Interfaces.IService"/> with the passed <paramref name="service"/>.
+            </summary>
+            <param name="service">The <see cref="T:Nano.Services.Interfaces.IService"/>.</param>
+        </member>
+        <member name="M:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute.OnResultExecuting(Microsoft.AspNetCore.Mvc.Filters.ResultExecutingContext)">
+            <inheritdoc />
         </member>
         <member name="T:Nano.Web.Hosting.HttpContentType">
             <summary>
