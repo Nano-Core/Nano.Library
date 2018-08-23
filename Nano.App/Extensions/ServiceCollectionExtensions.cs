@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Nano.Config.Extensions;
 using Nano.Models.Extensions;
@@ -29,6 +30,18 @@ namespace Nano.App.Extensions
 
             services
                 .AddConfigOptions<AppOptions>(configuration, AppOptions.SectionName, out _);
+
+            AppDomain.CurrentDomain
+                .GetAssemblies()
+                .SelectMany(x => x.GetTypes())
+                .Where(x =>
+                    !x.IsAbstract &&
+                    x.IsTypeDef(typeof(IHostedService)))
+                .ToList()
+                .ForEach(x =>
+                {
+                    services.AddSingleton(typeof(IHostedService), x);
+                });
 
             return services;
         }

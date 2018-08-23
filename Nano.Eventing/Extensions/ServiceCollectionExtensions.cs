@@ -104,7 +104,9 @@ namespace Nano.Eventing.Extensions
             AppDomain.CurrentDomain
                 .GetAssemblies()
                 .SelectMany(x => x.GetTypes())
-                .Where(x => x.GetCustomAttributes<SubscribeAttribute>().Any())
+                .Where(x =>
+                    !x.Name.EndsWith("Proxy") &&
+                    x.GetCustomAttributes<SubscribeAttribute>().Any())
                 .ToList()
                 .ForEach(x =>
                 {

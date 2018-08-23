@@ -45,6 +45,15 @@ namespace Nano.Data.Extensions
                         .Configure(builder);
                 });
 
+            var dbContext = services
+                .BuildServiceProvider()
+                .GetService<TContext>();
+
+            dbContext?.EnsureCreatedAsync().Wait();
+            dbContext?.EnsureMigratedAsync().Wait();
+            dbContext?.EnsureSeedAsync().Wait();
+            dbContext?.EnsureImportAsync().Wait();
+
             return services;
         }
 

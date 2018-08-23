@@ -1,6 +1,5 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.App.Extensions;
@@ -47,8 +46,5 @@ namespace Nano.App
 
         /// <inheritdoc />
         public abstract void Configure(IApplicationBuilder applicationBuilder);
-
-        /// <inheritdoc />
-        public abstract void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime);
     }
 }

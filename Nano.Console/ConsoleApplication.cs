@@ -34,8 +34,7 @@ namespace Nano.Console
         public static IHostBuilder ConfigureApp(params string[] args)
         {
             return ConsoleApplication
-                .ConfigureApp<ConsoleApplication>();
-
+                .ConfigureApp<ConsoleApplication>(args);
         }
 
         /// <summary>
@@ -51,10 +50,6 @@ namespace Nano.Console
             var root = Directory.GetCurrentDirectory();
             var config = ConfigManager.BuildConfiguration(args);
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
-
-            var services = new ServiceCollection();
-            var application = new ConsoleApplication(config);
-            application.ConfigureServices(services);
 
             return new HostBuilder()
                 .UseContentRoot(root)

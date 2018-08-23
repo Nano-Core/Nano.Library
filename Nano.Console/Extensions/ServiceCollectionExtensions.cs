@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Config.Extensions;
+using Nano.Services;
+using Nano.Services.Interfaces;
 
 namespace Nano.Console.Extensions
 {
@@ -25,6 +27,8 @@ namespace Nano.Console.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             services
+                .AddScoped<IService, DefaultService>()
+                .AddScoped<IServiceSpatial, DefaultServiceSpatial>()
                 .AddConfigOptions<ConsoleOptions>(configuration, ConsoleOptions.SectionName, out _);
 
             return services;
