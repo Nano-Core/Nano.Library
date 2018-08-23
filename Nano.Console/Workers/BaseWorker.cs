@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
 using Nano.Services.Interfaces;
 
-namespace Nano.Console
+namespace Nano.Console.Workers
 {
     /// <summary>
     /// Base .
