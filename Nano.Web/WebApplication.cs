@@ -39,7 +39,7 @@ namespace Nano.Web
         /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
         /// <param name="hostingEnvironment">The <see cref="IHostingEnvironment"/>.</param>
         /// <param name="applicationLifetime">The <see cref="IApplicationLifetime"/>.</param>
-        public virtual void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime)
+        public override void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime)
         {
             if (applicationBuilder == null)
                 throw new ArgumentNullException(nameof(applicationBuilder));
@@ -50,7 +50,7 @@ namespace Nano.Web
             if (applicationLifetime == null)
                 throw new ArgumentNullException(nameof(applicationLifetime));
 
-            base.Configure(applicationBuilder);
+            base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
 
             var services = applicationBuilder.ApplicationServices;
             var appOptions = services.GetService<AppOptions>() ?? new AppOptions();
