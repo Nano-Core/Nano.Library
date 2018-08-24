@@ -239,7 +239,7 @@
             <typeparam name="T">The type of the queryable.</typeparam>
             <param name="queryable">The <see cref="T:System.Linq.IQueryable`1"/>.</param>
             <param name="type">The <see cref="T:System.Type"/> of entity to include from.</param>
-            <param name="navigationName">The name of the property navigation.</param>
+            <param name="name">The name of the property navigation.</param>
             <param name="depth">The current depth, when including nested navigation properties.</param>
             <returns>The <see cref="T:System.Linq.IQueryable`1"/>.</returns>
         </member>

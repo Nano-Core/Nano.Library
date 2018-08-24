@@ -34,10 +34,10 @@ namespace Nano.Data.Extensions
         /// <typeparam name="T">The type of the queryable.</typeparam>
         /// <param name="queryable">The <see cref="IQueryable{T}"/>.</param>
         /// <param name="type">The <see cref="Type"/> of entity to include from.</param>
-        /// <param name="navigationName">The name of the property navigation.</param>
+        /// <param name="name">The name of the property navigation.</param>
         /// <param name="depth">The current depth, when including nested navigation properties.</param>
         /// <returns>The <see cref="IQueryable{T}"/>.</returns>
-        internal static IQueryable<T> IncludeAnnotations<T>(this IQueryable<T> queryable, Type type, string navigationName, int depth)
+        internal static IQueryable<T> IncludeAnnotations<T>(this IQueryable<T> queryable, Type type, string name, int depth)
             where T : class
         {
             if (queryable == null)
@@ -55,10 +55,9 @@ namespace Nano.Data.Extensions
                 .ToList()
                 .ForEach(x =>
                 {
-                    if (string.IsNullOrEmpty(navigationName))
-                        navigationName = x.Name;
-                    else
-                        navigationName += $".{x.Name}";
+                    var navigationName = string.IsNullOrEmpty(name) 
+                        ? x.Name 
+                        : $"{name}.{x.Name}";
 
                     queryable = queryable
                         .Include(navigationName)
