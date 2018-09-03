@@ -1,5 +1,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Nano.Data.Interfaces;
 
 namespace Nano.Data.Providers.Memory
@@ -41,6 +42,13 @@ namespace Nano.Data.Providers.Memory
 
             builder
                 .EnableSensitiveDataLogging(useSensitiveDataLogging)
+                .ConfigureWarnings(x =>
+                {
+                    x.Ignore(RelationalEventId.BoolWithDefaultWarning);
+                    x.Log(
+                        RelationalEventId.QueryClientEvaluationWarning,
+                        RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
+                })
                 .UseLazyLoadingProxies(useLazyLoading)
                 .UseInMemoryDatabase(connectionString);
         }
