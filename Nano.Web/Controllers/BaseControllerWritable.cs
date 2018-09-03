@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using DynamicExpression.Entities;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -298,8 +299,14 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> DeleteConfirms([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
         {
+            var paging = new Pagination
+            {
+                Count = 1,
+                Number = int.MaxValue
+            };
+
             var entities = await this
-                .Service.GetManyAsync<TEntity>(x => ids.Contains(x.Id), cancellationToken);
+                .Service.GetManyAsync<TEntity>(x => ids.Contains(x.Id), paging, cancellationToken);
 
             if (entities == null)
                 return this.NotFound();

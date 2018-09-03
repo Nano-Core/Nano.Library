@@ -29,8 +29,14 @@ namespace Nano.Services
         /// </summary>
         public virtual bool IsLazyLoadingEnabled
         {
-            get { return this.Context.ChangeTracker.LazyLoadingEnabled; }
-            set { this.Context.ChangeTracker.LazyLoadingEnabled = value; }
+            get
+            {
+                return this.Context.ChangeTracker.LazyLoadingEnabled;
+            }
+            set
+            {
+                this.Context.ChangeTracker.LazyLoadingEnabled = value;
+            }
         }
 
         /// <summary>
@@ -45,6 +51,17 @@ namespace Nano.Services
             this.Context = context;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <returns></returns>
+        public virtual DbSet<TEntity> GetEntitySet<TEntity>()
+            where TEntity : class, IEntity
+        {
+            return this.Context.Set<TEntity>();
+        }
+
         /// <inheritdoc />
         public virtual async Task<TEntity> GetAsync<TEntity, TIdentity>(TIdentity key, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityIdentity<TIdentity>
@@ -54,8 +71,7 @@ namespace Nano.Services
 
             var indent = this.Context.Options.QueryIncludeDepth;
 
-            return await this.Context
-                .Set<TEntity>()
+            return await this.GetEntitySet<TEntity>()
                 .IncludeAnnotations(indent)
                 .FirstOrDefaultAsync(x => x.Id.Equals(key), cancellationToken);
         }
@@ -67,52 +83,53 @@ namespace Nano.Services
             if (keys == null)
                 throw new ArgumentNullException(nameof(keys));
 
-            return await this.Context
-                .Set<TEntity>()
+            return await this.GetEntitySet<TEntity>()
                 .Where(x => keys.Any(y => y.Equals(x)))
                 .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IPagination pagination, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
-            where TCriteria : class, IQueryCriteria, new()
         {
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
+            if (pagination == null)
+                throw new ArgumentNullException(nameof(pagination));
 
-            return await this.Context
-                .Set<TEntity>()
-                .Where(query.Criteria)
-                .Order(query.Order)
-                .Limit(query.Paging)
+            return await this.GetEntitySet<TEntity>()
+                .Limit(pagination)
                 .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IPagination pagination, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
         {
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
+            if (where == null)
+                throw new ArgumentNullException(nameof(where));
 
-            return await this.Context
-                .Set<TEntity>()
-                .Where(expression)
+            if (pagination == null)
+                throw new ArgumentNullException(nameof(pagination));
+
+            return await this.GetEntitySet<TEntity>()
+                .Where(where)
+                .Limit(pagination)
                 .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(IQuery query, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IOrdering ordering, IPagination pagination, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
         {
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
+            if (where == null)
+                throw new ArgumentNullException(nameof(where));
 
-            return await this.Context
-                .Set<TEntity>()
-                .Order(query.Order)
-                .Limit(query.Paging)
+            if (pagination == null)
+                throw new ArgumentNullException(nameof(pagination));
+
+            return await this.GetEntitySet<TEntity>()
+                .Where(where)
+                .Limit(pagination)
+                .Order(ordering)
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -187,8 +204,7 @@ namespace Nano.Services
             if (update == null)
                 throw new ArgumentNullException(nameof(update));
 
-            await this.Context
-                .Set<TEntity>()
+            await this.GetEntitySet<TEntity>()
                 .Where(select)
                 .UpdateAsync(x => update, cancellationToken);
 
@@ -206,8 +222,7 @@ namespace Nano.Services
             if (update == null)
                 throw new ArgumentNullException(nameof(update));
 
-            await this.Context
-                .Set<TEntity>()
+            await this.GetEntitySet<TEntity>()
                 .Where(select)
                 .UpdateAsync(update, cancellationToken);
 
@@ -281,8 +296,7 @@ namespace Nano.Services
             if (critiera == null)
                 throw new ArgumentNullException(nameof(critiera));
 
-            await this.Context
-                .Set<TEntity>()
+            await this.GetEntitySet<TEntity>()
                 .Where(critiera)
                 .DeleteAsync(x =>
                 {
@@ -301,8 +315,7 @@ namespace Nano.Services
             if (select == null)
                 throw new ArgumentNullException(nameof(select));
 
-            await this.Context
-                .Set<TEntity>()
+            await this.GetEntitySet<TEntity>()
                 .Where(select)
                 .DeleteAsync(x =>
                 {

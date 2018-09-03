@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using DynamicExpression;
 using DynamicExpression.Entities;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -55,7 +56,7 @@ namespace Nano.Web.Controllers
             query = query ?? new Query();
 
             var result = await this.Service
-                .GetAllAsync<TEntity>(query, cancellationToken);
+                .GetManyAsync<TEntity>(x => true, query.Order, query.Paging, cancellationToken);
 
             if (result == null)
                 return this.NotFound();
@@ -91,7 +92,7 @@ namespace Nano.Web.Controllers
             query = query ?? new Query();
 
             var result = await this.Service
-                .GetAllAsync<TEntity>(query, cancellationToken);
+                .GetManyAsync<TEntity>(x => true, query.Order, query.Paging, cancellationToken);
 
             if (result == null)
                 return this.NotFound();
@@ -194,8 +195,13 @@ namespace Nano.Web.Controllers
         {
             query = query ?? new Query<TCriteria>();
 
+            var expr = query.Criteria.GetExpression<TEntity>();
+            var where = new CriteriaBuilder().GetExpression<TEntity>(expr);
+            var paging = query.Paging;
+            var ordering = query.Order;
+
             var result = await this.Service
-                .GetManyAsync<TEntity, TCriteria>(query, cancellationToken);
+                .GetManyAsync(where, ordering, paging, cancellationToken);
 
             if (result == null)
                 return this.NotFound();
@@ -230,8 +236,13 @@ namespace Nano.Web.Controllers
         {
             query = query ?? new Query<TCriteria>();
 
+            var expr = query.Criteria.GetExpression<TEntity>();
+            var where = new CriteriaBuilder().GetExpression<TEntity>(expr);
+            var paging = query.Paging;
+            var ordering = query.Order;
+
             var result = await this.Service
-                .GetManyAsync<TEntity, TCriteria>(query, cancellationToken);
+                .GetManyAsync(where, ordering, paging, cancellationToken);
 
             if (result == null)
                 return this.NotFound();

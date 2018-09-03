@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using DynamicExpression.Entities;
 using DynamicExpression.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Nano.Models.Interfaces;
 
 namespace Nano.Services.Interfaces
@@ -22,6 +22,14 @@ namespace Nano.Services.Interfaces
         bool IsLazyLoadingEnabled { get; set; }
 
         /// <summary>
+        /// Gets the <see cref="DbSet{TEntity}"/> mathcing the type of <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The type</typeparam>
+        /// <returns>The <see cref="DbSet{TEntity}"/>.</returns>
+        DbSet<TEntity> GetEntitySet<TEntity>()
+           where TEntity : class, IEntity;
+
+        /// <summary>
         /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
@@ -33,7 +41,7 @@ namespace Nano.Services.Interfaces
             where TEntity : class, IEntityIdentity<TIdentity>;
 
         /// <summary>
-        /// Gets instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/> of the <see cref="IEntity"/>
+        /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
         /// <typeparam name="TIdentity">The identity type.</typeparam>
@@ -44,35 +52,36 @@ namespace Nano.Services.Interfaces
             where TEntity : class, IEntityIdentity<TIdentity>;
 
         /// <summary>
-        /// GetAsync all instances of <typeparamref name="TEntity"/>, matching the criteria, pagination and ordering of the passed <paramref name="query"/>.
-        /// </summary>
-        /// <typeparam name="TEntity">The <see cref="IQueryCriteria"/> type.</typeparam>
-        /// <typeparam name="TCriteria">The <see cref="IQuery"/> type.</typeparam>
-        /// <param name="query">The <see cref="IQuery{TCriteria}"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
-        /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
-        Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntity
-            where TCriteria : class, IQueryCriteria, new();
-
-        /// <summary>
-        /// GetAsync all instances of <typeparamref name="TEntity"/>, matching the passed <paramref name="expression"/>.
+        /// Gets all instances of type <typeparamref name="TEntity"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
-        /// <param name="expression">The <see cref="Expression"/> to evaulate entities to be returned.</param>
+        /// <param name="pagination">The <see cref="IPagination"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
-        /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
-        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
+        /// <returns>The instances, matching the passed parameters.</returns>
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IPagination pagination, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity;
 
         /// <summary>
-        /// GetAsync all instances of <typeparamref name="TEntity"/>.
+        /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
-        /// <param name="query">The <see cref="Query"/>.</param>
+        /// <param name="where">The where clause</param>
+        /// <param name="pagination">The <see cref="IPagination"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
-        /// <returns>A <see cref="IEnumerable{TModel}"/> instance.</returns>
-        Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(IQuery query, CancellationToken cancellationToken = default)
+        /// <returns>The instances, matching the passed parameters.</returns>
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IPagination pagination, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity;
+
+        /// <summary>
+        /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause, ordering by the passed <paramref name="ordering"/>
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="where">The where clause</param>
+        /// <param name="ordering">The order by clause</param>
+        /// <param name="pagination">The <see cref="IPagination"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The instances, matching the passed parameters.</returns>
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IOrdering ordering, IPagination pagination, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity;
 
         /// <summary>
