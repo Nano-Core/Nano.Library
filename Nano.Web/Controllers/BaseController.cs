@@ -1,12 +1,9 @@
 using System;
-using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
-using Nano.Models;
 using Nano.Services.Interfaces;
 using Nano.Web.Hosting;
 
@@ -19,24 +16,6 @@ namespace Nano.Web.Controllers
     [Authorize(Roles = "administrator, service")]
     public abstract class BaseController : Controller
     {
-        /// <inheritdoc />
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
-
-            if (context.ModelState.IsValid)
-                return;
-
-            var error = new Error
-            {
-                Summary = "Invalid ModelState",
-                Exceptions = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage)).ToArray()
-            };
-
-            context.Result = this.BadRequest(error);
-        }
-
         /// <summary>
         /// Options. Any route can be called with http options, to return options header information.
         /// </summary>

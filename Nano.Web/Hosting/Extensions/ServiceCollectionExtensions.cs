@@ -91,6 +91,7 @@ namespace Nano.Web.Hosting.Extensions
                     if (options.Hosting.UseSsl)
                         x.Filters.Add(new RequireHttpsAttribute());
 
+                    x.Filters.Add<ModelStateValidationFilter>();
                     x.Filters.Add<DisableLazyLoadingResultFilterAttribute>();
                 })
                 .AddJsonOptions(x =>
