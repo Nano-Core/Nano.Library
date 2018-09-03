@@ -1,6 +1,7 @@
 using System;
 using EasyNetQ;
 using Nano.Eventing.Interfaces;
+using Nano.Eventing.Providers.EasyNetQ.Serialization;
 
 namespace Nano.Eventing.Providers.EasyNetQ
 {
@@ -36,7 +37,8 @@ namespace Nano.Eventing.Providers.EasyNetQ
             var password = this.Options.Password;
             var connectionString = $"amqp://{username}:{password}@{host}:{port}{vhost}";
 
-            var bus = RabbitHutch.CreateBus(connectionString);
+            var bus = RabbitHutch.CreateBus(connectionString, x => 
+                x.Register<ISerializer, EasyNetQJsonSerializer>());
 
             return new EasyNetQEventing(bus);
         }
