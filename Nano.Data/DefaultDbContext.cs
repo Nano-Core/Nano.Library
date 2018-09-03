@@ -70,12 +70,16 @@ namespace Nano.Data
                     if (eventing == null)
                         return await x;
 
+                    this.ChangeTracker.LazyLoadingEnabled = false;
+
                     foreach (var @event in pendingEvents)
                     {
                         await eventing
                             .PublishAsync(@event, @event.Type)
                             .ConfigureAwait(false);
                     }
+
+                    this.ChangeTracker.LazyLoadingEnabled = true;
 
                     return await x;
                 }, cancellationToken)
