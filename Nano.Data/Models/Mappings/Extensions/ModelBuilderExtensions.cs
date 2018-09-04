@@ -43,6 +43,8 @@ namespace Nano.Data.Models.Mappings.Extensions
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
+            // BUG: Nano's Unique Index modifer, triggers a drop index of an index that doesn't exist. Somehow the existing index must be modified and not removed and then re-added.
+
             var entity = builder.Entity<TEntity>();
 
             entity.Metadata
