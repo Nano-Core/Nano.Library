@@ -1,11 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Nano.Console.Workers;
 using Nano.Eventing.Interfaces;
 using Nano.Services.Interfaces;
 
-namespace Nano.Console
+namespace Nano.Console.Workers
 {
     /// <summary>
     /// Default Hosted Service.
