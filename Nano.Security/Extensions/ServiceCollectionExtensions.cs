@@ -29,7 +29,8 @@ namespace Nano.Security.Extensions
                 .AddConfigOptions<SecurityOptions>(configuration, SecurityOptions.SectionName, out var options);
 
             services
-                .AddSecurityIdentity(options);
+                .AddSecurityIdentity(options)
+                .AddSingleton<SecurityManager>();
 
             return services;
         }
