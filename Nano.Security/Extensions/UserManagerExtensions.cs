@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Nano.Models;
@@ -22,14 +23,14 @@ namespace Nano.Security.Extensions
         /// <param name="user">The <see cref="IdentityUser"/></param>
         /// <param name="options">The <see cref="SecurityOptions"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public static AccessToken GenerateJwtToken<T>(this UserManager<T> userManager, T user, SecurityOptions options) 
+        public static async Task<AccessToken> GenerateJwtToken<T>(this UserManager<T> userManager, T user, SecurityOptions options) 
             where T : IdentityUser
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var roles = userManager.GetRolesAsync(user).Result;
-            var userClaims = userManager.GetClaimsAsync(user).Result;
+            var roles = await userManager.GetRolesAsync(user);
+            var userClaims = await userManager.GetClaimsAsync(user);
             var roleClaims = roles.Select(y => new Claim(ClaimTypes.Role, y));
 
             var claims = new Collection<Claim>

@@ -59,7 +59,7 @@ namespace Nano.Security
             var user = this.UserManager.Users
                 .SingleOrDefault(x => x.UserName == login.Username);
 
-            return this.UserManager
+            return await this.UserManager
                 .GenerateJwtToken(user, this.Options);
         }
 
