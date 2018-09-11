@@ -38,7 +38,31 @@ namespace Nano.Data
         /// <inheritdoc />
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
-            return this.SaveChangesAsync(acceptAllChangesOnSuccess).Result;
+            var pendingEvents = this.GetPendingEntityEvents();
+
+            this.SaveSoftDeletion();
+            this.SaveAudit();
+
+            var success = base
+                .SaveChanges(acceptAllChangesOnSuccess);
+
+            var eventing = this.GetService<IEventing>();
+
+            if (eventing == null)
+                return success;
+
+            this.ChangeTracker.LazyLoadingEnabled = false;
+
+            foreach (var @event in pendingEvents)
+            {
+                eventing
+                    .PublishAsync(@event, @event.Type)
+                    .ConfigureAwait(false);
+            }
+
+            this.ChangeTracker.LazyLoadingEnabled = true;
+
+            return success;
         }
 
         /// <inheritdoc />
@@ -55,7 +79,7 @@ namespace Nano.Data
             this.SaveSoftDeletion();
             this.SaveAudit();
             
-            return await base
+            var success = await base
                 .SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken)
                 .ContinueWith(async x =>
                 {
@@ -75,15 +99,15 @@ namespace Nano.Data
                     foreach (var @event in pendingEvents)
                     {
                         await eventing
-                            .PublishAsync(@event, @event.Type)
-                            .ConfigureAwait(false);
+                            .PublishAsync(@event, @event.Type);
                     }
 
                     this.ChangeTracker.LazyLoadingEnabled = true;
 
                     return await x;
-                }, cancellationToken)
-                .Result;
+                }, cancellationToken);
+                
+                return await success;
         }
 
         private void SaveAudit()
