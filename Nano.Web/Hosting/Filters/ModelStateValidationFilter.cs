@@ -28,7 +28,7 @@ namespace Nano.Web.Hosting.Filters
             {
                 Summary = "Invalid ModelState",
                 StatusCode = (int)HttpStatusCode.BadRequest,
-                Exceptions = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage)).ToArray(),
+                Exceptions = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage)).ToArray()
             };
 
             context.Result = new BadRequestObjectResult(error);
