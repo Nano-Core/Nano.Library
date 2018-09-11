@@ -11,7 +11,6 @@ using Nano.App;
 using Nano.Config.Extensions;
 using Nano.Services;
 using Nano.Services.Interfaces;
-using Nano.Web.Api;
 using Nano.Web.Controllers;
 using Nano.Web.Hosting.Conventions;
 using Nano.Web.Hosting.Documentation;
@@ -65,7 +64,6 @@ namespace Nano.Web.Hosting.Extensions
             var assembly = typeof(BaseController).GetTypeInfo().Assembly;
 
             services
-                .AddApi()
                 .AddCors()
                 .AddSession()
                 .AddSecurity(options)
@@ -117,24 +115,6 @@ namespace Nano.Web.Hosting.Extensions
             return services;
         }
 
-        private static IServiceCollection AddApi(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            AppDomain.CurrentDomain
-                .GetAssemblies()
-                .SelectMany(x => x.GetTypes())
-                .Where(x => x.IsSubclassOf(typeof(BaseApi)))
-                .ToList()
-                .ForEach(x =>
-                {
-                    services
-                        .AddScoped(x);
-                });
-
-            return services;
-        }
         private static IServiceCollection AddSecurity(this IServiceCollection services, WebOptions webOptions)
         {
             if (services == null)
