@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using DynamicExpression;
 using DynamicExpression.Entities;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -45,6 +44,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpGet]
         [Route("index")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -56,7 +56,7 @@ namespace Nano.Web.Controllers
             query = query ?? new Query();
 
             var result = await this.Service
-                .GetManyAsync<TEntity>(x => true, query.Order, query.Paging, cancellationToken);
+                .GetManyAsync<TEntity>(query, cancellationToken);
 
             if (result == null)
                 return this.NotFound();
@@ -81,6 +81,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpPost]
         [Route("index")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -92,7 +93,7 @@ namespace Nano.Web.Controllers
             query = query ?? new Query();
 
             var result = await this.Service
-                .GetManyAsync<TEntity>(x => true, query.Order, query.Paging, cancellationToken);
+                .GetManyAsync<TEntity>(query, cancellationToken);
 
             if (result == null)
                 return this.NotFound();
@@ -117,6 +118,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpGet]
         [Route("details/{id}")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -151,6 +153,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpPost]
         [Route("details")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -185,6 +188,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpGet]
         [Route("query")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -195,13 +199,8 @@ namespace Nano.Web.Controllers
         {
             query = query ?? new Query<TCriteria>();
 
-            var expr = query.Criteria.GetExpression<TEntity>();
-            var where = new CriteriaBuilder().GetExpression<TEntity>(expr);
-            var paging = query.Paging;
-            var ordering = query.Order;
-
             var result = await this.Service
-                .GetManyAsync(where, ordering, paging, cancellationToken);
+                .GetManyAsync<TEntity, TCriteria>(query, cancellationToken);
 
             if (result == null)
                 return this.NotFound();
@@ -226,6 +225,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpPost]
         [Route("query")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -236,13 +236,8 @@ namespace Nano.Web.Controllers
         {
             query = query ?? new Query<TCriteria>();
 
-            var expr = query.Criteria.GetExpression<TEntity>();
-            var where = new CriteriaBuilder().GetExpression<TEntity>(expr);
-            var paging = query.Paging;
-            var ordering = query.Order;
-
             var result = await this.Service
-                .GetManyAsync(where, ordering, paging, cancellationToken);
+                .GetManyAsync<TEntity, TCriteria>(query, cancellationToken);
 
             if (result == null)
                 return this.NotFound();

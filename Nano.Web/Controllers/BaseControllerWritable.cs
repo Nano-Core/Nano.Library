@@ -62,6 +62,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpPost]
         [Route("create")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
@@ -75,7 +76,7 @@ namespace Nano.Web.Controllers
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
 
-            return this.Created("CreateConfirm", result);
+            return this.Created("create", result);
         }
 
         /// <summary>
@@ -90,6 +91,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpPost]
         [Route("create/Many")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -136,6 +138,7 @@ namespace Nano.Web.Controllers
         [HttpPut]
         [HttpPost]
         [Route("edit")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
@@ -173,6 +176,7 @@ namespace Nano.Web.Controllers
         [HttpPut]
         [HttpPost]
         [Route("edit/many")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -208,6 +212,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpPut]
         [Route("edit/query")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -215,7 +220,8 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> EditConfirmsQuery([FromBody][Required]TCriteria select, [FromBody][Required]TEntity update, CancellationToken cancellationToken = default)
         {
-            await this.Service.UpdateManyAsync(select, update, cancellationToken);
+            await this.Service
+                .UpdateManyAsync(select, update, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
@@ -254,6 +260,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [HttpDelete]
         [Route("delete/{id}")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -291,6 +298,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [HttpDelete]
         [Route("delete/many")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -333,6 +341,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [HttpDelete]
         [Route("delete/query")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]

@@ -72,6 +72,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occurred.</response>
         [HttpPost]
         [Route("login")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]

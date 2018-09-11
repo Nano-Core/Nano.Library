@@ -27,6 +27,7 @@ namespace Nano.Web.Controllers
         /// <response code="401">Unauthorized.</response>
         [HttpGet]
         [Route("index")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -47,6 +48,7 @@ namespace Nano.Web.Controllers
         /// <response code="401">Unauthorized.</response>
         [HttpPost]
         [Route("error")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.OK)]
@@ -68,6 +70,7 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [HttpPost]
         [Route("language")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.OK)]
         public virtual IActionResult SetLanguage([FromQuery][Required]string code, [FromQuery]string returnUrl, CancellationToken cancellationToken = default)

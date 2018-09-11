@@ -52,14 +52,26 @@ namespace Nano.Services.Interfaces
             where TEntity : class, IEntityIdentity<TIdentity>;
 
         /// <summary>
-        /// Gets all instances of type <typeparamref name="TEntity"/>.
+        /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="query"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
-        /// <param name="pagination">The <see cref="IPagination"/>.</param>
+        /// <param name="query">The <see cref="IQuery"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
-        /// <returns>The instances, matching the passed parameters.</returns>
-        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IPagination pagination, CancellationToken cancellationToken = default)
+        /// <returns>The instances, matching the passed <paramref name="query"/>.</returns>
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IQuery query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity;
+
+        /// <summary>
+        /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="query"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/>.</typeparam>
+        /// <param name="query">The <see cref="IQuery{TCriteria}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The instances, matching the passed <paramref name="query"/>.</returns>
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+            where TCriteria : class, IQueryCriteria, new();
 
         /// <summary>
         /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause.
@@ -91,7 +103,7 @@ namespace Nano.Services.Interfaces
         /// <param name="pagination">The <see cref="IPagination"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The instances, matching the passed parameters.</returns>
-        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IOrdering ordering, IPagination pagination, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IPagination pagination, IOrdering ordering, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity;
 
         /// <summary>

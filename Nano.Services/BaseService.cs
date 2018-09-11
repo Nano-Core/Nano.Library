@@ -89,14 +89,30 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IPagination pagination, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IQuery query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
         {
-            if (pagination == null)
-                throw new ArgumentNullException(nameof(pagination));
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
 
             return await this.GetEntitySet<TEntity>()
-                .Limit(pagination)
+                .Order(query.Order)
+                .Limit(query.Paging)
+                .ToArrayAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+            where TCriteria : class, IQueryCriteria, new()
+        {
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
+
+            return await this.GetEntitySet<TEntity>()
+                .Where(query.Criteria)
+                .Order(query.Order)
+                .Limit(query.Paging)
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -129,7 +145,7 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IOrdering ordering, IPagination pagination, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IPagination pagination, IOrdering ordering, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
         {
             if (where == null)
@@ -206,8 +222,8 @@ namespace Nano.Services
         }
 
         /// <inheritdoc />
-        public virtual async Task UpdateManyAsync<TEntity, TCriteria>(TCriteria select, TEntity update, CancellationToken cancellationToken = default) 
-            where TEntity : class, IEntityUpdatable 
+        public virtual async Task UpdateManyAsync<TEntity, TCriteria>(TCriteria select, TEntity update, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityUpdatable
             where TCriteria : class, IQueryCriteria, new()
         {
             if (select == null)
