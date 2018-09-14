@@ -17,9 +17,9 @@ namespace Nano.Models.Criterias
         public virtual DateTimeOffset? BeforeAt { get; set; }
 
         /// <inheritdoc />
-        public override CriteriaExpression GetExpression<TEntity>() 
+        public override CriteriaExpression GetExpression() 
         {
-            var expression = base.GetExpression<TEntity>();
+            var expression = base.GetExpression();
 
             if (this.BeforeAt.HasValue)
                 expression.LessThanOrEqual("CreatedAt", this.BeforeAt);

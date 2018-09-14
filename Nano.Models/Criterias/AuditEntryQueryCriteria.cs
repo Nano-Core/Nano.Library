@@ -36,9 +36,9 @@ namespace Nano.Models.Criterias
         public virtual string RequestId { get; set; }
 
         /// <inheritdoc />
-        public override CriteriaExpression GetExpression<TEntity>()
+        public override CriteriaExpression GetExpression()
         {
-            var filter = base.GetExpression<TEntity>();
+            var filter = base.GetExpression();
 
             if (this.CreatedBy != null)
                 filter.Equal("CreatedBy", this.CreatedBy);

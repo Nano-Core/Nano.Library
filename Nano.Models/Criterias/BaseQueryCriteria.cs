@@ -7,8 +7,7 @@ namespace Nano.Models.Criterias
     public abstract class BaseQueryCriteria : IQueryCriteria
     {
         /// <inheritdoc />
-        public virtual CriteriaExpression GetExpression<TEntity>()
-            where TEntity : class
+        public virtual CriteriaExpression GetExpression()
         {
             var expression = new CriteriaExpression();
 
