@@ -30,7 +30,7 @@ namespace Nano.Security.Extensions
 
             services
                 .AddSecurityIdentity(options)
-                .AddSingleton<SecurityManager>();
+                .AddScoped<SecurityManager>();
 
             return services;
         }
