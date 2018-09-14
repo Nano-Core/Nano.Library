@@ -29,6 +29,61 @@
             <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
             <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
         </member>
+        <member name="T:Nano.Security.Extensions.UserManagerExtensions">
+            <summary>
+            User Manager Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Security.Extensions.UserManagerExtensions.GenerateJwtToken``1(Microsoft.AspNetCore.Identity.UserManager{``0},``0,Nano.Security.SecurityOptions)">
+            <summary>
+            Generates the Jwt token.
+            </summary>
+            <param name="userManager">The <see cref="T:Microsoft.AspNetCore.Identity.UserManager`1"/></param>
+            <param name="user">The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/></param>
+            <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
+            <returns>The <see cref="T:Nano.Models.AccessToken"/>.</returns>
+        </member>
+        <member name="T:Nano.Security.SecurityManager">
+            <summary>
+            Security Manager.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityManager.UserManager">
+            <summary>
+            User Manager.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityManager.SignInManager">
+            <summary>
+            Sign In Manager.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityManager.Options">
+            <summary>
+            Options.
+            </summary>
+        </member>
+        <member name="M:Nano.Security.SecurityManager.#ctor(Microsoft.AspNetCore.Identity.SignInManager{Microsoft.AspNetCore.Identity.IdentityUser},Microsoft.AspNetCore.Identity.UserManager{Microsoft.AspNetCore.Identity.IdentityUser},Nano.Security.SecurityOptions)">
+            <summary>
+            The user authenticates and on success recieves a jwt token for use with auhtorization.
+            </summary>
+            <param name="signInManager">The <see cref="T:Microsoft.AspNetCore.Identity.SignInManager`1"/>.</param>
+            <param name="userManager">The <see cref="T:Microsoft.AspNetCore.Identity.UserManager`1"/>.</param>
+            <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
+        </member>
+        <member name="M:Nano.Security.SecurityManager.SignInAsync(Nano.Models.Login)">
+            <summary>
+            The user authenticates and on success recieves a jwt token for use with auhtorization.
+            </summary>
+            <param name="login"></param>
+            <returns>The <see cref="T:Nano.Models.AccessToken"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.SecurityManager.SignOutAsync">
+            <summary>
+            The user is logged out, and the token is invalidated.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Nano.Security.SecurityOptions">
             <summary>
             Security Options.

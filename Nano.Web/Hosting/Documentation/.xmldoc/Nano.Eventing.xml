@@ -223,5 +223,34 @@
         <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.Configure">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Eventing.Providers.EasyNetQ.Serialization.EasyNetQJsonSerializer">
+            <summary>
+            EasyNetQ Json Serializer.
+            </summary>
+        </member>
+        <member name="M:Nano.Eventing.Providers.EasyNetQ.Serialization.EasyNetQJsonSerializer.MessageToBytes``1(``0)">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="message"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Nano.Eventing.Providers.EasyNetQ.Serialization.EasyNetQJsonSerializer.BytesToMessage``1(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Nano.Eventing.Providers.EasyNetQ.Serialization.EasyNetQJsonSerializer.BytesToMessage(System.Type,System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="type"></param>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
     </members>
 </doc>

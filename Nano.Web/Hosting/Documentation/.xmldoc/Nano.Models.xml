@@ -101,13 +101,13 @@
             Request Id.
             </summary>
         </member>
-        <member name="M:Nano.Models.Criterias.AuditEntryQueryCriteria.GetExpression``1">
+        <member name="M:Nano.Models.Criterias.AuditEntryQueryCriteria.GetExpression">
             <inheritdoc />
         </member>
         <member name="T:Nano.Models.Criterias.BaseQueryCriteria">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Models.Criterias.BaseQueryCriteria.GetExpression``1">
+        <member name="M:Nano.Models.Criterias.BaseQueryCriteria.GetExpression">
             <inheritdoc />
         </member>
         <member name="T:Nano.Models.Criterias.DefaultQueryCriteria">
@@ -123,7 +123,7 @@
             Before At.
             </summary>
         </member>
-        <member name="M:Nano.Models.Criterias.DefaultQueryCriteria.GetExpression``1">
+        <member name="M:Nano.Models.Criterias.DefaultQueryCriteria.GetExpression">
             <inheritdoc />
         </member>
         <member name="T:Nano.Models.Criterias.DefaultQueryCriteriaSpatial">

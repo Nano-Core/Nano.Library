@@ -49,5 +49,57 @@
             <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
             <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
         </member>
+        <member name="T:Nano.Console.Workers.BaseWorker`1">
+            <summary>
+            Base .
+            </summary>
+            <typeparam name="TService">The <see cref="T:Nano.Services.Interfaces.IService"/>.</typeparam>
+        </member>
+        <member name="P:Nano.Console.Workers.BaseWorker`1.Logger">
+            <summary>
+            Logger.
+            </summary>
+        </member>
+        <member name="P:Nano.Console.Workers.BaseWorker`1.Service">
+            <summary>
+            Service.
+            </summary>
+        </member>
+        <member name="P:Nano.Console.Workers.BaseWorker`1.Eventing">
+            <summary>
+            Eventing.
+            </summary>
+        </member>
+        <member name="M:Nano.Console.Workers.BaseWorker`1.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
+            <summary>
+            Constructor accepting an instance of <typeparamref name="TService"/> and initializing <see cref="P:Nano.Console.Workers.BaseWorker`1.Service"/>
+            </summary>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
+            <param name="service">The <see cref="T:Nano.Services.Interfaces.IService"/>.</param>
+            <param name="eventing">The <see cref="T:Nano.Eventing.Interfaces.IEventingProvider"/>.</param>
+        </member>
+        <member name="M:Nano.Console.Workers.BaseWorker`1.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Console.Workers.BaseWorker`1.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Console.Workers.BaseWorker`1.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Console.Workers.DefaultWorker">
+            <summary>
+            Default Hosted Service.
+            </summary>
+        </member>
+        <member name="M:Nano.Console.Workers.DefaultWorker.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Services.Interfaces.IService,Nano.Eventing.Interfaces.IEventing)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Console.Workers.DefaultWorker.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Console.Workers.DefaultWorker.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
     </members>
 </doc>
