@@ -9,6 +9,8 @@ using Nano.Web.Hosting;
 
 namespace Nano.Web.Controllers
 {
+    // TODO: Api-Clubs generate (NSwag, Google or similar) 
+
     /// <summary>
     /// Base controller.
     /// </summary>
