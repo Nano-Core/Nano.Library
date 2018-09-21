@@ -78,7 +78,7 @@ namespace Nano.Data
 
             this.SaveSoftDeletion();
             this.SaveAudit();
-            
+
             var success = await base
                 .SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken)
                 .ContinueWith(async x =>
@@ -106,8 +106,8 @@ namespace Nano.Data
 
                     return await x;
                 }, cancellationToken);
-                
-                return await success;
+
+            return await success;
         }
 
         private void SaveAudit()
@@ -120,6 +120,7 @@ namespace Nano.Data
             audit.Configuration.AutoSavePreAction?.Invoke(this, audit);
             audit.PostSaveChanges();
         }
+
         private void SaveSoftDeletion()
         {
             if (!this.Options.UseSoftDeletetion)
@@ -135,12 +136,13 @@ namespace Nano.Data
                     x.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
                 });
         }
+
         private IEnumerable<EntityEvent> GetPendingEntityEvents()
         {
             return this.ChangeTracker
                 .Entries<IEntity>()
                 .Where(x =>
-                    x.Entity.GetType().IsTypeDef(typeof(IEntityIdentity<>)) && 
+                    x.Entity.GetType().IsTypeDef(typeof(IEntityIdentity<>)) &&
                     x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
                     (x.State == EntityState.Added || x.State == EntityState.Deleted))
                 .Select(x =>

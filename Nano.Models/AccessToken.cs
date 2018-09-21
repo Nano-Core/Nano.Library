@@ -16,5 +16,11 @@ namespace Nano.Models
         /// ExpireAt.
         /// </summary>
         public virtual DateTime ExpireAt { get; set; }
+
+        /// <summary>
+        /// Is Valid.
+        /// </summary>
+        public virtual bool IsValid => this.Token != null && this.ExpireAt > DateTimeOffset.UtcNow;
+
     }
 }

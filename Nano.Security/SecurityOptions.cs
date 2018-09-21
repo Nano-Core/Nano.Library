@@ -60,7 +60,7 @@ namespace Nano.Security
             /// <summary>
             /// Secret Key.
             /// </summary>
-            public virtual string SecretKey { get; set; } = null;
+            public virtual string SecretKey { get; set; } = "verysecretkey";
 
             /// <summary>
             /// Expiration In Hours.

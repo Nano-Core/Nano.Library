@@ -56,12 +56,16 @@ namespace Nano.Web.Hosting.Extensions
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
 
+            var assembly = typeof(BaseController).GetTypeInfo().Assembly;
+
             services
-                .AddScoped<IService, DefaultService>()
-                .AddScoped<IServiceSpatial, DefaultServiceSpatial>()
                 .AddConfigOptions<WebOptions>(configuration, WebOptions.SectionName, out var options);
 
-            var assembly = typeof(BaseController).GetTypeInfo().Assembly;
+            services
+                .AddScoped<IService, DefaultService>()
+                .AddScoped<IServiceSpatial, DefaultServiceSpatial>();
+
+            // TODO: Data Protection: https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-2.1&tabs=aspnetcore2x 
 
             services
                 .AddCors()

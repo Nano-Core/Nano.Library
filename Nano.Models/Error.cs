@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace Nano.Models
@@ -12,7 +11,6 @@ namespace Nano.Models
         /// <summary>
         /// Message.
         /// </summary>
-        [Required]
         public virtual string Summary { get; set; }
 
         /// <summary>

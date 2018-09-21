@@ -50,6 +50,9 @@ namespace Nano.Security
         /// <returns>The <see cref="AccessToken"/>.</returns>
         public virtual async Task<AccessToken> SignInAsync(Login login)
         {
+            if (!this.Options.IsEnabled)
+                return new AccessToken();
+
             var result = await this.SignInManager
                 .PasswordSignInAsync(login.Username, login.Password, false, false);
 
@@ -69,6 +72,9 @@ namespace Nano.Security
         /// <returns></returns>
         public virtual async Task SignOutAsync()
         {
+            if (!this.Options.IsEnabled)
+                return;
+
             await this.SignInManager.SignOutAsync();
         }
     }
