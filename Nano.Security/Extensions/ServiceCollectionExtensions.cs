@@ -35,13 +35,13 @@ namespace Nano.Security.Extensions
             return services;
         }
 
-        private static IServiceCollection AddSecurityIdentity(this IServiceCollection services, SecurityOptions options)
+        private static IServiceCollection AddSecurityIdentity(this IServiceCollection services, SecurityOptions options = null)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
             if (options == null)
-                throw new ArgumentNullException(nameof(options));
+                return services;
 
             services
                 .Configure<IdentityOptions>(x =>
