@@ -107,6 +107,7 @@ namespace Nano.Data
         /// <summary>
         /// Imports data for all models annotated with <see cref="DataImportAttribute"/>.
         /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="Task"/> (void).</returns>
         public virtual async Task EnsureSeedAsync(CancellationToken cancellationToken = default)
         {
@@ -132,6 +133,7 @@ namespace Nano.Data
         /// <summary>
         /// Imports data for all models annotated with <see cref="DataImportAttribute"/>.
         /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="Task"/> (void).</returns>
         public virtual async Task EnsureImportAsync(CancellationToken cancellationToken = default)
         {
@@ -158,6 +160,7 @@ namespace Nano.Data
         /// <summary>
         /// Create database.
         /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="Task"/> (void).</returns>
         public virtual async Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
         {
@@ -174,6 +177,7 @@ namespace Nano.Data
         /// <summary>
         /// Migrate database.
         /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="Task"/> (void).</returns>
         public virtual async Task EnsureMigratedAsync(CancellationToken cancellationToken = default)
         {

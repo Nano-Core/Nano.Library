@@ -75,7 +75,8 @@ namespace Nano.Security
             if (!this.Options.IsEnabled)
                 return;
 
-            await this.SignInManager.SignOutAsync();
+            await this.SignInManager
+                .SignOutAsync();
         }
     }
 }

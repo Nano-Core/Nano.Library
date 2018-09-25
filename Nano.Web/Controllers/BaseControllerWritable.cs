@@ -18,6 +18,8 @@ using Nano.Web.Hosting.Extensions;
 
 namespace Nano.Web.Controllers
 {
+    // BUG: Controller actions and api for addorupdate. look into it, and also check documentation.
+
     /// <summary>
     /// Base abstract <see cref="Controller"/>, implementing  methods for instances of <typeparamref name="TEntity"/>.
     /// </summary>
