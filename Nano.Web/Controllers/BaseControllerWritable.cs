@@ -146,16 +146,8 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> EditConfirm([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
         {
-            TEntity result;
-            if (this.Request.Method == WebRequestMethods.Http.Put)
-            {
-                result = await this.Service.AddOrUpdateAsync(entity, cancellationToken);
-
-            }
-            else
-            {
-                result = await this.Service.UpdateAsync(entity, cancellationToken);
-            }
+            var result = await this.Service
+                .UpdateAsync(entity, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
@@ -184,14 +176,8 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> EditConfirms([FromBody][Required]TEntity[] entities, CancellationToken cancellationToken = default)
         {
-            if (this.Request.Method == WebRequestMethods.Http.Put)
-            {
-                await this.Service.AddOrUpdateManyAsync(entities.AsEnumerable(), cancellationToken);
-            }
-            else
-            {
-                await this.Service.UpdateManyAsync(entities.AsEnumerable(), cancellationToken);
-            }
+            await this.Service
+                .UpdateManyAsync(entities.AsEnumerable(), cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");
