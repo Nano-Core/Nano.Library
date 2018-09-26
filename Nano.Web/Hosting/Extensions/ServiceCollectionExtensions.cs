@@ -33,6 +33,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Nano.Models.Extensions;
 using Nano.Security;
+using Nano.Web.Api;
 using Nano.Web.Hosting.Filters;
 
 namespace Nano.Web.Hosting.Extensions
@@ -68,12 +69,13 @@ namespace Nano.Web.Hosting.Extensions
             // TODO: Data Protection: https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-2.1&tabs=aspnetcore2x 
 
             services
+                .AddApis()
                 .AddCors()
                 .AddSession()
-                .AddSecurity(options)
                 .AddVersioning()
                 .AddDocumentation()
                 .AddLocalizations()
+                .AddSecurity(options)
                 .AddGzipCompression()
                 .AddContentTypeFormatters()
                 .AddSingleton<ExceptionHandlingMiddleware>()
@@ -119,6 +121,34 @@ namespace Nano.Web.Hosting.Extensions
             return services;
         }
 
+        private static IServiceCollection AddApis(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            AppDomain.CurrentDomain
+                .GetAssemblies()
+                .SelectMany(y => y.GetTypes())
+                .Where(y =>
+                    !y.IsAbstract &&
+                    y.IsTypeDef(typeof(BaseApi)))
+                .Distinct()
+                .ToList()
+                .ForEach(x =>
+                {
+                    services
+                        .AddSingleton(x, y =>
+                        {
+                            var configuration = y.GetRequiredService<IConfiguration>();
+                            var section = configuration.GetSection(x.Name);
+                            var options = section?.Get<ApiOptions>() ?? new ApiOptions();
+
+                            return Activator.CreateInstance(x, options);
+                        });
+                });
+
+            return services;
+        }
         private static IServiceCollection AddSecurity(this IServiceCollection services, WebOptions webOptions)
         {
             if (services == null)
@@ -210,12 +240,16 @@ namespace Nano.Web.Hosting.Extensions
                 throw new ArgumentNullException(nameof(services));
 
             var provider = services.BuildServiceProvider();
+
             var appOptions = provider.GetService<AppOptions>();
             var webOptions = provider.GetService<WebOptions>();
+            var securityOptions = provider.GetService<SecurityOptions>();
 
             return services
                 .AddSwaggerGen(x =>
                 {
+                    // BUG: Remove Audit Controller documentation when dataOptions is null.
+
                     x.IgnoreObsoleteActions();
                     x.IgnoreObsoleteProperties();
                     x.DescribeAllEnumsAsStrings();
@@ -233,18 +267,21 @@ namespace Nano.Web.Hosting.Extensions
                         License = webOptions.Documentation.License
                     });
 
-                    x.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                    if (securityOptions != null)
                     {
-                        In = "header",
-                        Type = "apiKey",
-                        Name = "Authorization",
-                        Description = "JWT Authorization header using the Bearer scheme. Format: Authorization: Bearer [token]"
-                    });
+                        x.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                        {
+                            In = "header",
+                            Type = "apiKey",
+                            Name = "Authorization",
+                            Description = "JWT Authorization header using the Bearer scheme. Format: Authorization: Bearer [token]"
+                        });
 
-                    x.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
-                    {
-                        { "Bearer", new string[] { } }
-                    });
+                        x.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                        {
+                            { "Bearer", new string[] { } }
+                        });
+                    }
 
                     AppDomain.CurrentDomain
                          .GetAssemblies()
