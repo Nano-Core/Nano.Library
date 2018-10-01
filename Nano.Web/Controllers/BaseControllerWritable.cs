@@ -18,7 +18,7 @@ using Nano.Web.Hosting.Extensions;
 
 namespace Nano.Web.Controllers
 {
-    // BUG: Controller actions and api for addorupdate. look into it, and also check documentation. Align with IService methods (How do Update actually works when taking two parameters as bodt?)
+    // BUG: Controller actions and api for addorupdate. look into it, and also check documentation.
     // BUG: Static Authentication, single user. "OnlyAdminAccess".
 
     /// <summary>
@@ -189,10 +189,9 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Edits the models returned by the passed select criteria.
+        /// Edits the models, changing all entities returned by the passed 'select' criteria, with the values of the passed 'update'.
         /// </summary>
-        /// <param name="select">The crtieria for selecting models to edit.</param>
-        /// <param name="update">The model, of which to edit all selected entities by.</param>
+        /// <param name="criteria">The criteria for selecting models to edit, and the model containing values to be changed for all matching entities.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
         /// <returns>Void.</returns>
         /// <response code="200">Ok.</response>
@@ -207,10 +206,10 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> EditConfirmsQuery([FromBody][Required]TCriteria select, [FromBody][Required]TEntity update, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> EditConfirmsQuery([FromBody][Required](TCriteria select, TEntity update) criteria, CancellationToken cancellationToken = default)
         {
             await this.Repository
-                .UpdateManyAsync(select, update, cancellationToken);
+                .UpdateManyAsync(criteria.select, criteria.update, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
                 return this.RedirectToAction("Index");

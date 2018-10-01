@@ -210,18 +210,18 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
-        public virtual async Task UpdateManyAsync<TEntity, TCriteria>(TCriteria select, TEntity update, CancellationToken cancellationToken = default)
+        public virtual async Task UpdateManyAsync<TEntity, TCriteria>(TCriteria criteria, TEntity update, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityUpdatable
             where TCriteria : class, IQueryCriteria, new()
         {
-            if (select == null)
-                throw new ArgumentNullException(nameof(select));
+            if (criteria == null)
+                throw new ArgumentNullException(nameof(criteria));
 
             if (update == null)
                 throw new ArgumentNullException(nameof(update));
 
             await this.GetEntitySet<TEntity>()
-                .Where(select)
+                .Where(criteria)
                 .UpdateAsync(x => update, cancellationToken);
 
             await this.Context
@@ -229,18 +229,19 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
-        public virtual async Task UpdateManyAsync<TEntity>(Expression<Func<TEntity, bool>> select, Expression<Func<TEntity, TEntity>> update, CancellationToken cancellationToken = default)
+        public virtual async Task UpdateManyAsync<TEntity, TCriteria>(Expression<Func<TEntity, bool>> expression, TEntity update, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityUpdatable
+            where TCriteria : class, IQueryCriteria, new()
         {
-            if (select == null)
-                throw new ArgumentNullException(nameof(select));
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
 
             if (update == null)
                 throw new ArgumentNullException(nameof(update));
 
             await this.GetEntitySet<TEntity>()
-                .Where(select)
-                .UpdateAsync(update, cancellationToken);
+                .Where(expression)
+                .UpdateAsync(x => update, cancellationToken);
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
@@ -325,19 +326,20 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
-        public virtual async Task DeleteManyAsync<TEntity>(Expression<Func<TEntity, bool>> select, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteManyAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable
         {
-            if (select == null)
-                throw new ArgumentNullException(nameof(select));
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
 
             await this.GetEntitySet<TEntity>()
-                .Where(select)
+                .Where(expression)
                 .DeleteAsync(x =>
                 {
                     x.BatchSize = this.Context.Options.BulkBatchSize;
                     x.BatchDelayInterval = this.Context.Options.BulkBatchDelay;
                 }, cancellationToken);
+
             await this.Context
                 .SaveChangesAsync(cancellationToken);
         }
