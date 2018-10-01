@@ -27,8 +27,8 @@ namespace Nano.Console.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             services
-                .AddScoped<IService, DefaultService>()
-                .AddScoped<IServiceSpatial, DefaultServiceSpatial>()
+                .AddScoped<IRepository, DefaultRepository>()
+                .AddScoped<IRepositorySpatial, DefaultRepositorySpatial>()
                 .AddConfigOptions<ConsoleOptions>(configuration, ConsoleOptions.SectionName, out _);
 
             return services;

@@ -9,11 +9,11 @@ namespace Nano.Console.Workers
     /// <summary>
     /// Default Hosted Service.
     /// </summary>
-    public class DefaultWorker : BaseWorker<IService>
+    public class DefaultWorker : BaseWorker<IRepository>
     {
         /// <inheritdoc />
-        public DefaultWorker(ILogger logger, IService service, IEventing eventing)
-            : base(logger, service, eventing)
+        public DefaultWorker(ILogger logger, IRepository repository, IEventing eventing)
+            : base(logger, repository, eventing)
         {
 
         }

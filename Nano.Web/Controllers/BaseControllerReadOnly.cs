@@ -18,14 +18,14 @@ namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
     [Authorize(Roles = "administrator, service, writer, reader")]
-    public abstract class BaseControllerReadOnly<TService, TEntity, TIdentity, TCriteria> : BaseController<TService>
-        where TService : IService
+    public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria> : BaseController<TRepository>
+        where TRepository : IRepository
         where TEntity : class, IEntityIdentity<TIdentity>
         where TCriteria : class, IQueryCriteria, new()
     {
         /// <inheritdoc />
-        protected BaseControllerReadOnly(ILogger logger, TService service, IEventing eventing)
-            : base(logger, service, eventing)
+        protected BaseControllerReadOnly(ILogger logger, TRepository repository, IEventing eventing)
+            : base(logger, repository, eventing)
         {
 
         }
@@ -55,7 +55,7 @@ namespace Nano.Web.Controllers
         {
             query = query ?? new Query();
 
-            var result = await this.Service
+            var result = await this.Repository
                 .GetManyAsync<TEntity>(query, cancellationToken);
 
             if (result == null)
@@ -92,7 +92,7 @@ namespace Nano.Web.Controllers
         {
             query = query ?? new Query();
 
-            var result = await this.Service
+            var result = await this.Repository
                 .GetManyAsync<TEntity>(query, cancellationToken);
 
             if (result == null)
@@ -127,7 +127,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Details([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
         {
-            var result = await this.Service
+            var result = await this.Repository
                 .GetAsync<TEntity, TIdentity>(id, cancellationToken);
 
             if (result == null)
@@ -162,7 +162,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> DetailsPost([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
         {
-            var result = await this.Service
+            var result = await this.Repository
                 .GetManyAsync<TEntity, TIdentity>(ids, cancellationToken);
 
             if (result == null)
@@ -199,7 +199,7 @@ namespace Nano.Web.Controllers
         {
             query = query ?? new Query<TCriteria>();
 
-            var result = await this.Service
+            var result = await this.Repository
                 .GetManyAsync<TEntity, TCriteria>(query, cancellationToken);
 
             if (result == null)
@@ -236,7 +236,7 @@ namespace Nano.Web.Controllers
         {
             query = query ?? new Query<TCriteria>();
 
-            var result = await this.Service
+            var result = await this.Repository
                 .GetManyAsync<TEntity, TCriteria>(query, cancellationToken);
 
             if (result == null)

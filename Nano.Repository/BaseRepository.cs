@@ -15,10 +15,8 @@ using Z.EntityFramework.Plus;
 
 namespace Nano.Services
 {
-    // BUG: Rename to "Repository"
-
     /// <inheritdoc />
-    public abstract class BaseService<TContext> : IService
+    public abstract class BaseRepository<TContext> : IRepository
         where TContext : BaseDbContext
     {
         /// <summary>
@@ -26,9 +24,7 @@ namespace Nano.Services
         /// </summary>
         protected virtual TContext Context { get; }
 
-        /// <summary>
-        /// Is Lazy Loading Enabled.
-        /// </summary>
+        /// <inheritdoc />
         public virtual bool IsLazyLoadingEnabled
         {
             get
@@ -45,19 +41,12 @@ namespace Nano.Services
         /// Constructor.
         /// </summary>
         /// <param name="context">The <see cref="DbContext"/>.</param>
-        protected BaseService(TContext context)
+        protected BaseRepository(TContext context)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
-
-            this.Context = context;
+            this.Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <returns></returns>
+        /// <inheritdoc />
         public virtual DbSet<TEntity> GetEntitySet<TEntity>()
             where TEntity : class, IEntity
         {

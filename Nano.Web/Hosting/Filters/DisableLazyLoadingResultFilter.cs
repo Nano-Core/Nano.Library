@@ -10,27 +10,27 @@ namespace Nano.Web.Hosting.Filters
     public class DisableLazyLoadingResultFilterAttribute : ResultFilterAttribute
     {
         /// <summary>
-        /// The <see cref="IService"/>.
+        /// The <see cref="IRepository"/>.
         /// </summary>
-        protected virtual IService Service { get; }
+        protected virtual IRepository Repository { get; }
 
         /// <summary>
         /// Constructor.
-        /// Initialzing the <see cref="IService"/> with the passed <paramref name="service"/>.
+        /// Initialzing the <see cref="IRepository"/> with the passed <paramref name="repository"/>.
         /// </summary>
-        /// <param name="service">The <see cref="IService"/>.</param>
-        public DisableLazyLoadingResultFilterAttribute(IService service)
+        /// <param name="repository">The <see cref="IRepository"/>.</param>
+        public DisableLazyLoadingResultFilterAttribute(IRepository repository)
         {
-            if (service == null)
-                throw new ArgumentNullException(nameof(service));
+            if (repository == null)
+                throw new ArgumentNullException(nameof(repository));
 
-            this.Service = service;
+            this.Repository = repository;
         }
 
         /// <inheritdoc />
         public override void OnResultExecuting(ResultExecutingContext context)
         {
-            this.Service.IsLazyLoadingEnabled = false;
+            this.Repository.IsLazyLoadingEnabled = false;
 
             base.OnResultExecuting(context);
         }

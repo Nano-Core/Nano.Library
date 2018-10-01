@@ -11,11 +11,11 @@ using Nano.Web.Hosting;
 namespace Tests.Nano
 {
     public abstract class BaseControllerTest<TController> : BaseTest
-        where TController : BaseController<IService>
+        where TController : BaseController<IRepository>
     {
         protected virtual TController Controller { get; set; }
         protected virtual Mock<ILogger> Logger { get; set; } = new Mock<ILogger>();
-        protected virtual Mock<IService> Service { get; set; } = new Mock<IService>();
+        protected virtual Mock<IRepository> Service { get; set; } = new Mock<IRepository>();
         protected virtual Mock<IEventing> Eventing { get; set; } = new Mock<IEventing>();
 
         [TestCleanup]

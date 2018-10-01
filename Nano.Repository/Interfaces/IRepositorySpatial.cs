@@ -8,9 +8,9 @@ using Nano.Models.Interfaces;
 namespace Nano.Services.Interfaces
 {
     /// <summary>
-    /// (Base) interface for a spatial service.
+    /// (Base) interface for a spatial repository.
     /// </summary>
-    public interface IServiceSpatial : IService
+    public interface IRepositorySpatial : IRepository
     {
         /// <summary>
         /// Gets <see cref="IEntitySpatial"/>'s that covers the <paramref name="query"/>.

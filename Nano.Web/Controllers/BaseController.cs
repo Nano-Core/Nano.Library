@@ -36,9 +36,9 @@ namespace Nano.Web.Controllers
     /// <summary>
     /// Base generic controller.
     /// </summary>
-    /// <typeparam name="TService">The <see cref="IService"/>.</typeparam>
-    public abstract class BaseController<TService> : BaseController
-       where TService : IService
+    /// <typeparam name="TRepository">The <see cref="IRepository"/>.</typeparam>
+    public abstract class BaseController<TRepository> : BaseController
+       where TRepository : IRepository
     {
         /// <summary>
         /// Logger.
@@ -46,34 +46,34 @@ namespace Nano.Web.Controllers
         protected virtual ILogger Logger { get; }
 
         /// <summary>
-        /// Service.
-        /// </summary>
-        protected virtual TService Service { get; }
-
-        /// <summary>
         /// Eventing.
         /// </summary>
         protected virtual IEventing Eventing { get; }
 
         /// <summary>
-        /// Constructor accepting an instance of <typeparamref name="TService"/> and initializing <see cref="Service"/>
+        /// Repository.
+        /// </summary>
+        protected virtual TRepository Repository { get; }
+
+        /// <summary>
+        /// Constructor accepting an instance of <typeparamref name="TRepository"/> and initializing <see cref="Repository"/>
         /// </summary>
         /// <param name="logger">The <see cref="ILogger"/>.</param>
-        /// <param name="service">The <see cref="IService"/>.</param>
+        /// <param name="repository">The <see cref="IRepository"/>.</param>
         /// <param name="eventing">The <see cref="IEventingProvider"/>.</param>
-        protected BaseController(ILogger logger, TService service, IEventing eventing)
+        protected BaseController(ILogger logger, TRepository repository, IEventing eventing)
         {
             if (logger == null)
                 throw new ArgumentNullException(nameof(logger));
 
-            if (service == null)
-                throw new ArgumentNullException(nameof(service));
+            if (repository == null)
+                throw new ArgumentNullException(nameof(repository));
 
             if (eventing == null)
                 throw new ArgumentNullException(nameof(eventing));
 
             this.Logger = logger;
-            this.Service = service;
+            this.Repository = repository;
             this.Eventing = eventing;
         }
     }

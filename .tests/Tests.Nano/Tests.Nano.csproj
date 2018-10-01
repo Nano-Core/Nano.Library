@@ -14,11 +14,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Nano.App\Nano.App.csproj" />
     <ProjectReference Include="..\..\Nano.Config\Nano.Config.csproj" />
+    <ProjectReference Include="..\..\Nano.Console\Nano.Console.csproj" />
     <ProjectReference Include="..\..\Nano.Data\Nano.Data.csproj" />
     <ProjectReference Include="..\..\Nano.Eventing\Nano.Eventing.csproj" />
     <ProjectReference Include="..\..\Nano.Logging\Nano.Logging.csproj" />
     <ProjectReference Include="..\..\Nano.Models\Nano.Models.csproj" />
-    <ProjectReference Include="..\..\Nano.Services\Nano.Services.csproj" />
+    <ProjectReference Include="..\..\Nano.Repository\Nano.Repository.csproj" />
+    <ProjectReference Include="..\..\Nano.Security\Nano.Security.csproj" />
     <ProjectReference Include="..\..\Nano.Web\Nano.Web.csproj" />
   </ItemGroup>
 

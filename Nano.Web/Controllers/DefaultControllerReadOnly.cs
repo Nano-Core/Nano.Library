@@ -8,13 +8,13 @@ using Nano.Services.Interfaces;
 namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
-    public class DefaultControllerReadOnly<TEntity, TCriteria> : BaseControllerReadOnly<IService, TEntity, Guid, TCriteria>
+    public class DefaultControllerReadOnly<TEntity, TCriteria> : BaseControllerReadOnly<IRepository, TEntity, Guid, TCriteria>
         where TEntity : class, IEntityIdentity<Guid>
         where TCriteria : class, IQueryCriteria, new()
     {
         /// <inheritdoc />
-        protected DefaultControllerReadOnly(ILogger logger, IService service, IEventing eventing)
-            : base(logger, service, eventing)
+        protected DefaultControllerReadOnly(ILogger logger, IRepository repository, IEventing eventing)
+            : base(logger, repository, eventing)
         {
 
         }

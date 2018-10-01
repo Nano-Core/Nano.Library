@@ -8,13 +8,13 @@ using Nano.Services.Interfaces;
 namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
-    public class DefaultControllerSpatial<TEntity, TCriteria> : BaseControllerSpatial<IServiceSpatial, TEntity, Guid, TCriteria>
+    public class DefaultControllerSpatial<TEntity, TCriteria> : BaseControllerSpatial<IRepositorySpatial, TEntity, Guid, TCriteria>
         where TEntity : DefaultEntitySpatial
         where TCriteria : class, IQueryCriteriaSpatial, new()
     {
         /// <inheritdoc />
-        protected DefaultControllerSpatial(ILogger logger, IServiceSpatial service, IEventing eventing)
-            : base(logger, service, eventing)
+        protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository, IEventing eventing)
+            : base(logger, repository, eventing)
         {
 
         }

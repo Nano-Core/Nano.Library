@@ -24,22 +24,24 @@ namespace Nano.Web.Controllers
     // Update docs
     // static Authentication, single user. "OnlyAdminAccess".
 
+    // BUG: setcompatibility version
+
     /// <summary>
     /// Base abstract <see cref="Controller"/>, implementing  methods for instances of <typeparamref name="TEntity"/>.
     /// </summary>
-    /// <typeparam name="TService">The <see cref="IService"/> inheriting from <see cref="BaseControllerReadOnly{TService,TEntity,TIdentity,TCriteria}"/>.</typeparam>
-    /// <typeparam name="TEntity">The <see cref="IEntity"/> model the <see cref="IService"/> operates with.</typeparam>
+    /// <typeparam name="TRepository">The <see cref="IRepository"/> inheriting from <see cref="BaseControllerReadOnly{TRepository,TEntity,TIdentity,TCriteria}"/>.</typeparam>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> model the <see cref="IRepository"/> operates with.</typeparam>
     /// <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
     /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> implementation.</typeparam>
     [Authorize(Roles = "administrator, service, writer")]
-    public abstract class BaseControllerWritable<TService, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TService, TEntity, TIdentity, TCriteria>
-        where TService : IService
+    public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
+        where TRepository : IRepository
         where TEntity : class, IEntityIdentity<TIdentity>, IEntityWritable
         where TCriteria : class, IQueryCriteria, new()
     {
         /// <inheritdoc />
-        protected BaseControllerWritable(ILogger logger, TService service, IEventing eventing)
-            : base(logger, service, eventing)
+        protected BaseControllerWritable(ILogger logger, TRepository repository, IEventing eventing)
+            : base(logger, repository, eventing)
         {
 
         }
@@ -76,7 +78,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> CreateConfirm([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
         {
-            var result = await this.Service
+            var result = await this.Repository
                 .AddAsync(entity, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
@@ -105,7 +107,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> CreateConfirms([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         {
-            await this.Service
+            await this.Repository
                 .AddManyAsync(entities, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
@@ -125,7 +127,7 @@ namespace Nano.Web.Controllers
         [Produces(HttpContentType.HTML)]
         public virtual async Task<IActionResult> Edit([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
         {
-            var result = await this.Service
+            var result = await this.Repository
                 .GetAsync<TEntity, TIdentity>(id, cancellationToken);
 
             return this.View("Edit", result);
@@ -152,7 +154,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> EditConfirm([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
         {
-            var result = await this.Service
+            var result = await this.Repository
                 .UpdateAsync(entity, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
@@ -182,7 +184,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> EditConfirms([FromBody][Required]TEntity[] entities, CancellationToken cancellationToken = default)
         {
-            await this.Service
+            await this.Repository
                 .UpdateManyAsync(entities.AsEnumerable(), cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
@@ -212,7 +214,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> EditConfirmsQuery([FromBody][Required]TCriteria select, [FromBody][Required]TEntity update, CancellationToken cancellationToken = default)
         {
-            await this.Service
+            await this.Repository
                 .UpdateManyAsync(select, update, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
@@ -232,7 +234,7 @@ namespace Nano.Web.Controllers
         [Produces(HttpContentType.HTML)]
         public virtual async Task<IActionResult> Delete([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
         {
-            var entity = await this.Service
+            var entity = await this.Repository
                 .GetAsync<TEntity, TIdentity>(id, cancellationToken);
 
             return this.View("Delete", entity);
@@ -262,12 +264,12 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> DeleteConfirm([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
         {
             var entity = await this
-                .Service.GetAsync<TEntity, TIdentity>(id, cancellationToken);
+                .Repository.GetAsync<TEntity, TIdentity>(id, cancellationToken);
 
             if (entity == null)
                 return this.NotFound();
 
-            await this.Service
+            await this.Repository
                 .DeleteAsync(entity, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
@@ -306,12 +308,12 @@ namespace Nano.Web.Controllers
             };
 
             var entities = await this
-                .Service.GetManyAsync<TEntity>(x => ids.Contains(x.Id), paging, cancellationToken);
+                .Repository.GetManyAsync<TEntity>(x => ids.Contains(x.Id), paging, cancellationToken);
 
             if (entities == null)
                 return this.NotFound();
 
-            await this.Service
+            await this.Repository
                 .DeleteManyAsync(entities, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())
@@ -341,7 +343,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> DeleteConfirmsQuery([FromBody][Required]TCriteria select, CancellationToken cancellationToken = default)
         {
-            await this.Service
+            await this.Repository
                 .DeleteManyAsync<TEntity, TCriteria>(select, cancellationToken);
 
             if (this.Request.IsContentTypeHtml())

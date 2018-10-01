@@ -10,8 +10,8 @@ namespace Nano.Web.Controllers
     public class AuditController : DefaultControllerReadOnly<DefaultAuditEntry, AuditEntryQueryCriteria>
     {
         /// <inheritdoc />
-        protected AuditController(ILogger logger, IService service, IEventing eventing) 
-            : base(logger, service, eventing)
+        protected AuditController(ILogger logger, IRepository repository, IEventing eventing) 
+            : base(logger, repository, eventing)
         {
 
         }

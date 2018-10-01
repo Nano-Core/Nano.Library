@@ -66,8 +66,8 @@ namespace Nano.Web.Hosting.Extensions
             // TODO: Data Protection: https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-2.1&tabs=aspnetcore2x 
 
             services
-                .AddScoped<IService, DefaultService>()
-                .AddScoped<IServiceSpatial, DefaultServiceSpatial>();
+                .AddScoped<IRepository, DefaultRepository>()
+                .AddScoped<IRepositorySpatial, DefaultRepositorySpatial>();
 
             var serviceProvider = services.BuildServiceProvider();
             var dataOptions = serviceProvider.GetService<DataOptions>();

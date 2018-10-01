@@ -3,10 +3,10 @@ using Nano.Data;
 namespace Nano.Services
 {
     /// <inheritdoc />
-    public class DefaultService : BaseService<DefaultDbContext>
+    public class DefaultRepositorySpatial : BaseRepositorySpatial<DefaultDbContext>
     {
         /// <inheritdoc />
-        public DefaultService(DefaultDbContext context)
+        public DefaultRepositorySpatial(DefaultDbContext context)
             : base(context)
         {
 

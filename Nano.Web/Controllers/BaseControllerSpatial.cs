@@ -18,14 +18,14 @@ namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
     [Authorize(Roles = "administrator, service, writer, reader")]
-    public abstract class BaseControllerSpatial<TService, TEntity, TIdentity, TCriteria> : BaseControllerWritable<TService, TEntity, TIdentity, TCriteria>
-        where TService : IServiceSpatial
+    public abstract class BaseControllerSpatial<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerWritable<TRepository, TEntity, TIdentity, TCriteria>
+        where TRepository : IRepositorySpatial
         where TEntity : class, IEntitySpatial, IEntityIdentity<TIdentity>, IEntityWritable
         where TCriteria : class, IQueryCriteriaSpatial, new()
     {
         /// <inheritdoc />
-        protected BaseControllerSpatial(ILogger logger, TService service, IEventing eventing)
-            : base(logger, service, eventing)
+        protected BaseControllerSpatial(ILogger logger, TRepository repository, IEventing eventing)
+            : base(logger, repository, eventing)
         {
 
         }
@@ -45,7 +45,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Intersects([FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = default)
         {
-            var result = await this.Service
+            var result = await this.Repository
                 .Intersects<TEntity, TCriteria>(criteria, cancellationToken);
 
             if (result == null)
@@ -72,7 +72,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Covers([FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = default)
         {
-            var result = await this.Service
+            var result = await this.Repository
                 .Covers<TEntity, TCriteria>(criteria, cancellationToken);
 
             if (result == null)
@@ -99,7 +99,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> CoveredBy([FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = default)
         {
-            var result = await this.Service
+            var result = await this.Repository
                 .CoveredBy<TEntity, TCriteria>(criteria, cancellationToken);
 
             if (result == null)
@@ -126,7 +126,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Overlaps([FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = default)
         {
-            var result = await this.Service
+            var result = await this.Repository
                 .Overlaps<TEntity, TCriteria>(criteria, cancellationToken);
 
             if (result == null)
@@ -153,7 +153,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Touches([FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = default)
         {
-            var result = await this.Service
+            var result = await this.Repository
                 .Touches<TEntity, TCriteria>(criteria, cancellationToken);
 
             if (result == null)
@@ -180,7 +180,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Crosses([FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = default)
         {
-            var result = await this.Service
+            var result = await this.Repository
                 .Crosses<TEntity, TCriteria>(criteria, cancellationToken);
 
             if (result == null)
@@ -207,7 +207,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Disjoints([FromBody][Required]Query<TCriteria> criteria, CancellationToken cancellationToken = default)
         {
-            var result = await this.Service
+            var result = await this.Repository
                 .Disjoints<TEntity, TCriteria>(criteria, cancellationToken);
 
             if (result == null)
@@ -236,7 +236,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Within([FromBody][Required]Query<TCriteria> criteria, double distance, CancellationToken cancellationToken = default)
         {
-            var result = await this.Service
+            var result = await this.Repository
                 .Within<TEntity, TCriteria>(criteria, distance, cancellationToken);
 
             if (result == null)

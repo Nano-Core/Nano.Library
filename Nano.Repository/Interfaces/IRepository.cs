@@ -10,11 +10,11 @@ using Nano.Models.Interfaces;
 namespace Nano.Services.Interfaces
 { 
     /// <summary>
-    /// (Base) Interface for a service.
+    /// (Base) Interface for a repository.
     /// Defines methods for the most rudamentory operations (get, criteria2, add, update, delete) on instances of <see cref="IEntity"/>.
     /// <see cref="IEntityCreatable"/>, <see cref="IEntityUpdatable"/> and <see cref="IEntityDeletable"/>). 
     /// </summary>
-    public interface IService : IDisposable
+    public interface IRepository : IDisposable
     {
         /// <summary>
         /// Is Lazy Loading Enabled.

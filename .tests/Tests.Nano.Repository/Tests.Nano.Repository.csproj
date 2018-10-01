@@ -1,36 +1,36 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <ApplicationIcon>..\icon.ico</ApplicationIcon>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+
     <Configurations>Debug;Release</Configurations>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0-pre</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <LangVersion>latest</LangVersion>
-    <WarningsAsErrors />
     <NoWarn />
+    <WarningsAsErrors />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Release\netstandard2.0\Nano.Services.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>latest</LangVersion>
-    <WarningsAsErrors />
     <NoWarn />
+    <WarningsAsErrors />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Debug\netstandard2.0\Nano.Services.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Nano.Services.csproj.DotSettings" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nano.Data\Nano.Data.csproj" />
-    <ProjectReference Include="..\Nano.Models\Nano.Models.csproj" />
+    <ProjectReference Include="..\..\Nano.Repository\Nano.Repository.csproj" />
+    <ProjectReference Include="..\Tests.Nano\Tests.Nano.csproj" />
   </ItemGroup>
 
 </Project>

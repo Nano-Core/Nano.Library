@@ -13,12 +13,12 @@ using Nano.Services.Interfaces;
 
 namespace Nano.Services
 {
-    /// <inheritdoc cref="BaseService{TContext}"/>
-    public abstract class BaseServiceSpatial<TContext> : BaseService<TContext>, IServiceSpatial
+    /// <inheritdoc cref="BaseRepository{TContext}"/>
+    public abstract class BaseRepositorySpatial<TContext> : BaseRepository<TContext>, IRepositorySpatial
         where TContext : BaseDbContext
     {
         /// <inheritdoc />
-        protected BaseServiceSpatial(TContext context)
+        protected BaseRepositorySpatial(TContext context)
             : base(context)
         {
 

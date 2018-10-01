@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Services
+namespace Tests.Nano.Repository
 {
     [TestClass]
-    public class DefaultServiceTest
+    public class DefaultRepositoryTest
     {
         [TestMethod]
         public void GetAsyncTest()

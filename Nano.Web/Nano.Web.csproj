@@ -33,19 +33,6 @@
     <None Remove="Views\Auth\Login.cshtml" />
     <None Remove="Views\Auth\Logout.cshtml" />
   </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.App.xml" />
-    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Config.xml" />
-    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Console.xml" />
-    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Data.xml" />
-    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Eventing.xml" />
-    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Logging.xml" />
-    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Models.xml" />
-    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Security.xml" />
-    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Services.xml" />
-    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Web.xml" />
-  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.2" />
@@ -64,6 +51,10 @@
   
   <ItemGroup>
     <ProjectReference Include="..\Nano.App\Nano.App.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Hosting\Documentation\.xmldoc\" />
   </ItemGroup>
 
 </Project>
