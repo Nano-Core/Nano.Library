@@ -33,6 +33,39 @@
     <None Remove="Views\Auth\Login.cshtml" />
     <None Remove="Views\Auth\Logout.cshtml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Hosting\Documentation\.xmldoc\Nano.App.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Hosting\Documentation\.xmldoc\Nano.Config.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Hosting\Documentation\.xmldoc\Nano.Console.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Hosting\Documentation\.xmldoc\Nano.Data.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Hosting\Documentation\.xmldoc\Nano.Eventing.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Hosting\Documentation\.xmldoc\Nano.Logging.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Hosting\Documentation\.xmldoc\Nano.Models.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Hosting\Documentation\.xmldoc\Nano.Repository.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Hosting\Documentation\.xmldoc\Nano.Security.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Hosting\Documentation\.xmldoc\Nano.Web.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.2" />
@@ -51,10 +84,6 @@
   
   <ItemGroup>
     <ProjectReference Include="..\Nano.App\Nano.App.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="Hosting\Documentation\.xmldoc\" />
   </ItemGroup>
 
 </Project>
