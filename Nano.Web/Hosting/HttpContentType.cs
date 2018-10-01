@@ -6,11 +6,6 @@ namespace Nano.Web.Hosting
     public static class HttpContentType
     {
         /// <summary>
-        /// Text ("text/plain").
-        /// </summary>
-        public const string TEXT = "text/plain";
-
-        /// <summary>
         /// Xml ("application/xml").
         /// </summary>
         public const string XML = "application/xml";

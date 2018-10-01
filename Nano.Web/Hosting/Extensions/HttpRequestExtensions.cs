@@ -77,20 +77,6 @@ namespace Nano.Web.Hosting.Extensions
         }
 
         /// <summary>
-        /// Returns whether the <see cref="HttpRequest"/> headers contains a content-type of 'text/plain' or
-        /// the <see cref="HttpRequest.QueryString"/> contains a 'format=html' parameter.
-        /// </summary>
-        /// <param name="httpRequest">The <see cref="HttpRequest"/>.</param>
-        /// <returns>A <see cref="bool"/>.</returns>
-        public static bool IsContentTypeText(this HttpRequest httpRequest)
-        {
-            if (httpRequest == null)
-                throw new ArgumentNullException(nameof(httpRequest));
-
-            return httpRequest.IsContentType(HttpContentType.TEXT);
-        }
-
-        /// <summary>
         /// Returns whether the <see cref="HttpRequest.ContentType"/> matches the passed <see cref="string"/>.
         /// </summary>
         /// <param name="httpRequest">The <see cref="HttpRequest"/>.</param>

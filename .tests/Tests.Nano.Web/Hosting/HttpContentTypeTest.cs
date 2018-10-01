@@ -13,12 +13,6 @@ namespace Tests.Nano.Web.Hosting
         }
 
         [TestMethod]
-        public void HttpContentTypeTextPlainTest()
-        {
-            Assert.AreEqual("text/plain", HttpContentType.TEXT);
-        }
-
-        [TestMethod]
         public void HttpContentTypeWhenJsonTest()
         {
             Assert.AreEqual("application/json", HttpContentType.JSON);
