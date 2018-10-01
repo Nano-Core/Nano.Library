@@ -121,7 +121,8 @@ namespace Nano.Web.Hosting.Extensions
                 })
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()
-                .AddApplicationPart(assembly);
+                .AddApplicationPart(assembly)
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services
                 .Configure<RazorViewEngineOptions>(x =>
