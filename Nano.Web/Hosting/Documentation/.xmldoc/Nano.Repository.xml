@@ -1,0 +1,426 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Nano.Repository</name>
+    </assembly>
+    <members>
+        <member name="T:Nano.Repository.BaseRepository`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Repository.BaseRepository`1.Context">
+            <summary>
+            Context.
+            </summary>
+        </member>
+        <member name="P:Nano.Repository.BaseRepository`1.IsLazyLoadingEnabled">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.#ctor(`0)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="context">The <see cref="T:Microsoft.EntityFrameworkCore.DbContext"/>.</param>
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.GetEntitySet``1">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.GetAsync``2(``1,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``2(System.Collections.Generic.IEnumerable{``1},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``1(DynamicExpression.Interfaces.IQuery,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IPagination,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IPagination,DynamicExpression.Interfaces.IOrdering,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.AddAsync``1(``0,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.AddManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.UpdateAsync``1(``0,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.UpdateManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.UpdateManyAsync``2(``1,``0,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.UpdateManyAsync``2(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},``0,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.AddOrUpdateAsync``1(``0,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.AddOrUpdateManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.DeleteAsync``1(``0,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.DeleteManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.DeleteManyAsync``2(``1,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.DeleteManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.Dispose(System.Boolean)">
+            <summary>
+            Dispose(bool).
+            Override in derived classes as needed.
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="T:Nano.Repository.BaseRepositorySpatial`1">
+            <inheritdoc cref="T:Nano.Repository.BaseRepository`1"/>
+        </member>
+        <member name="M:Nano.Repository.BaseRepositorySpatial`1.#ctor(`0)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepositorySpatial`1.Covers``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepositorySpatial`1.Crosses``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepositorySpatial`1.Touches``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepositorySpatial`1.Overlaps``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepositorySpatial`1.CoveredBy``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepositorySpatial`1.Disjoints``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepositorySpatial`1.Intersects``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepositorySpatial`1.Within``2(DynamicExpression.Interfaces.IQuery{``1},System.Double,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Repository.DefaultRepository">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.DefaultRepository.#ctor(Nano.Data.DefaultDbContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Repository.DefaultRepositorySpatial">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.DefaultRepositorySpatial.#ctor(Nano.Data.DefaultDbContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Repository.Interfaces.IRepository">
+            <summary>
+            (Base) Interface for a repository.
+            Defines methods for the most rudamentory operations (get, criteria2, add, update, delete) on instances of <see cref="T:Nano.Models.Interfaces.IEntity"/>.
+            <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/>, <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/> and <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>). 
+            </summary>
+        </member>
+        <member name="P:Nano.Repository.Interfaces.IRepository.IsLazyLoadingEnabled">
+            <summary>
+            Is Lazy Loading Enabled.
+            </summary>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.GetEntitySet``1">
+            <summary>
+            Gets the <see cref="T:Microsoft.EntityFrameworkCore.DbSet`1"/> mathcing the type of <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">The type</typeparam>
+            <returns>The <see cref="T:Microsoft.EntityFrameworkCore.DbSet`1"/>.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.GetAsync``2(``1,System.Threading.CancellationToken)">
+            <summary>
+            Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="T:Nano.Models.Interfaces.IEntity"/>
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> type.</typeparam>
+            <typeparam name="TIdentity">The identity type.</typeparam>
+            <param name="key">The <typeparamref name="TIdentity"/> type, uniquely identify the <see cref="T:Nano.Models.Interfaces.IEntity"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.GetManyAsync``2(System.Collections.Generic.IEnumerable{``1},System.Threading.CancellationToken)">
+            <summary>
+            Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> type.</typeparam>
+            <typeparam name="TIdentity">The identity type.</typeparam>
+            <param name="keys">The <typeparamref name="TIdentity"/> type, uniquely identifying the <see cref="T:Nano.Models.Interfaces.IEntity"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.GetManyAsync``1(DynamicExpression.Interfaces.IQuery,System.Threading.CancellationToken)">
+            <summary>
+            Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="query"/>.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> type.</typeparam>
+            <param name="query">The <see cref="T:DynamicExpression.Interfaces.IQuery"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The instances, matching the passed <paramref name="query"/>.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.GetManyAsync``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <summary>
+            Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="query"/>.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> type.</typeparam>
+            <typeparam name="TCriteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/>.</typeparam>
+            <param name="query">The <see cref="T:DynamicExpression.Interfaces.IQuery`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The instances, matching the passed <paramref name="query"/>.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
+            <summary>
+            Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> type.</typeparam>
+            <param name="where">The where clause</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The instances, matching the passed parameters.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IPagination,System.Threading.CancellationToken)">
+            <summary>
+            Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> type.</typeparam>
+            <param name="where">The where clause</param>
+            <param name="pagination">The <see cref="T:DynamicExpression.Interfaces.IPagination"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The instances, matching the passed parameters.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IPagination,DynamicExpression.Interfaces.IOrdering,System.Threading.CancellationToken)">
+            <summary>
+            Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause, ordering by the passed <paramref name="ordering"/>
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> type.</typeparam>
+            <param name="where">The where clause</param>
+            <param name="ordering">The order by clause</param>
+            <param name="pagination">The <see cref="T:DynamicExpression.Interfaces.IPagination"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The instances, matching the passed parameters.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.AddAsync``1(``0,System.Threading.CancellationToken)">
+            <summary>
+            Adds the instance of the passed <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/>.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/> type.</typeparam>
+            <param name="entity">The instance of <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The <see cref="T:System.Threading.Tasks.Task`1"/>.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.AddManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
+            <summary>
+            Adds all instances of the passed <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/>'s.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/> type.</typeparam>
+            <param name="entities">The instances of <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/>'s.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.UpdateAsync``1(``0,System.Threading.CancellationToken)">
+            <summary>
+            Updates the instance of the passed <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/>.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/> type.</typeparam>
+            <param name="entity">The instance of <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The <see cref="T:System.Threading.Tasks.Task`1"/>.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.UpdateManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
+            <summary>
+            Updates all instances of the passed <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/>'s.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/> type.</typeparam>
+            <param name="entities">The instances of <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/>'s.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.UpdateManyAsync``2(``1,``0,System.Threading.CancellationToken)">
+            <summary>
+            Updates all instances of <typeparamref name="TEntity"/> with value from <paramref name="update"/>, 
+            matching the criteria of the passed <paramref name="criteria"/>.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/> type.</typeparam>
+            <typeparam name="TCriteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/> type.</typeparam>
+            <param name="criteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/>.</param>
+            <param name="update">The <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.UpdateManyAsync``2(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},``0,System.Threading.CancellationToken)">
+            <summary>
+            Updates all instances of <typeparamref name="TEntity"/> with value from <paramref name="update"/>, 
+            matching the expression of the passed <paramref name="expression"/>.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/> type.</typeparam>
+            <typeparam name="TCriteria"></typeparam>
+            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/>.</param>
+            <param name="update">The <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.AddOrUpdateAsync``1(``0,System.Threading.CancellationToken)">
+            <summary>
+            Adds or Updates the instance of the passed <see cref="T:Nano.Models.Interfaces.IEntityCreatableAndUpdatable"/>.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityCreatableAndUpdatable"/> type.</typeparam>
+            <param name="entity">The instance of <see cref="T:Nano.Models.Interfaces.IEntityCreatableAndUpdatable"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The <see cref="T:System.Threading.Tasks.Task`1"/>.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.AddOrUpdateManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
+            <summary>
+            Adds or Updates the instances of the passed <see cref="T:Nano.Models.Interfaces.IEntityCreatableAndUpdatable"/>.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityCreatableAndUpdatable"/> type.</typeparam>
+            <param name="entities">The instances of <see cref="T:Nano.Models.Interfaces.IEntityCreatableAndUpdatable"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteAsync``1(``0,System.Threading.CancellationToken)">
+            <summary>
+            Deletes the instance of the passed <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
+            <param name="entity">The instance od <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> returning 'void'.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
+            <summary>
+            Deletes all instances of the passed <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>'s.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
+            <param name="entities">The instances of <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>'s.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteManyAsync``2(``1,System.Threading.CancellationToken)">
+            <summary>
+            Deletes all instances of <typeparamref name="TEntity"/>, matching the criterias of the passed <paramref name="critiera"/>.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
+            <typeparam name="TCriteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/> type.</typeparam>
+            <param name="critiera">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
+            <summary>
+            Deletes all instances matching the passed criteria <see cref="T:System.Linq.Expressions.Expression"/>.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/> type.</typeparam>
+            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/> to evaulate entities to be deleted.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+        </member>
+        <member name="T:Nano.Repository.Interfaces.IRepositorySpatial">
+            <summary>
+            (Base) interface for a spatial repository.
+            </summary>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepositorySpatial.Covers``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s that covers the <paramref name="query"/>.
+            </summary>
+            <typeparam name="TEntity">The type of <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>.</typeparam>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+            <param name="query">The <see cref="T:DynamicExpression.Interfaces.IQuery`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Collections.Generic.IEnumerable`1"/> of matching results.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepositorySpatial.Crosses``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s that crosses the <paramref name="query"/>.
+            </summary>
+            <typeparam name="TEntity">The type of <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>.</typeparam>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+            <param name="query">The <see cref="T:DynamicExpression.Interfaces.IQuery`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Collections.Generic.IEnumerable`1"/> of matching results.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepositorySpatial.Touches``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s that touches the <paramref name="query"/>.
+            </summary>
+            <typeparam name="TEntity">The type of <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>.</typeparam>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+            <param name="query">The <see cref="T:DynamicExpression.Interfaces.IQuery`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Collections.Generic.IEnumerable`1"/> of matching results.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepositorySpatial.Overlaps``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s that overlaps the <paramref name="query"/>.
+            </summary>
+            <typeparam name="TEntity">The type of <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>.</typeparam>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+            <param name="query">The <see cref="T:DynamicExpression.Interfaces.IQuery`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Collections.Generic.IEnumerable`1"/> of matching results.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepositorySpatial.CoveredBy``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s that is covered by the <paramref name="query"/>.
+            </summary>
+            <typeparam name="TEntity">The type of <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>.</typeparam>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+            <param name="query">The <see cref="T:DynamicExpression.Interfaces.IQuery`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Collections.Generic.IEnumerable`1"/> of matching results.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepositorySpatial.Disjoints``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s that are disjointing of the <paramref name="query"/>.
+            </summary>
+            <typeparam name="TEntity">The type of <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>.</typeparam>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+            <param name="query">The <see cref="T:DynamicExpression.Interfaces.IQuery`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Collections.Generic.IEnumerable`1"/> of matching results.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepositorySpatial.Intersects``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s that intersects the <paramref name="query"/>.
+            </summary>
+            <typeparam name="TEntity">The type of <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>.</typeparam>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+            <param name="query">The <see cref="T:DynamicExpression.Interfaces.IQuery`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Collections.Generic.IEnumerable`1"/> of matching results.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepositorySpatial.Within``2(DynamicExpression.Interfaces.IQuery{``1},System.Double,System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s that are within the radius of the <paramref name="query"/>.
+            </summary>
+            <typeparam name="TEntity">The type of <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>.</typeparam>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+            <param name="query">The <see cref="T:DynamicExpression.Interfaces.IQuery`1"/>.</param>
+            <param name="distance">The distance in meters.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Collections.Generic.IEnumerable`1"/> of matching results.</returns>
+        </member>
+    </members>
+</doc>

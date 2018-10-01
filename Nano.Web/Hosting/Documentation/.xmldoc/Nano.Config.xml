@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Nano.Config</name>
+    </assembly>
+    <members>
+        <member name="T:Nano.Config.ConfigManager">
+            <summary>
+            Config Manager.
+            </summary>
+        </member>
+        <member name="P:Nano.Config.ConfigManager.Path">
+            <summary>
+            Path.
+            </summary>
+        </member>
+        <member name="P:Nano.Config.ConfigManager.Environment">
+            <summary>
+            Environment.
+            </summary>
+        </member>
+        <member name="M:Nano.Config.ConfigManager.#cctor">
+            <summary>
+            Constructor (static).
+            </summary>
+        </member>
+        <member name="M:Nano.Config.ConfigManager.BuildConfiguration(System.String[])">
+            <summary>
+            Builds the <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.
+            </summary>
+            <returns>The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</returns>
+        </member>
+        <member name="T:Nano.Config.Extensions.ServiceCollectionExtensions">
+            <summary>
+            Service Collection Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Config.Extensions.ServiceCollectionExtensions.AddConfig(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/> appOptions to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
+        <member name="M:Nano.Config.Extensions.ServiceCollectionExtensions.AddConfigOptions``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+            <summary>
+            Adds a appOptions <see cref="T:Microsoft.Extensions.Configuration.IConfigurationSection"/> as <see cref="T:Microsoft.Extensions.Options.IOptions`1"/> to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+            <typeparam name="TOption">The option implementation type.</typeparam>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <param name="name">The name of the section.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
+        <member name="M:Nano.Config.Extensions.ServiceCollectionExtensions.AddConfigOptions``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String,``0@)">
+            <summary>
+            Adds a appOptions <see cref="T:Microsoft.Extensions.Configuration.IConfigurationSection"/> as <see cref="T:Microsoft.Extensions.Options.IOptions`1"/> to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+            <typeparam name="TOption">The option implementation type.</typeparam>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <param name="name">The name of the section.</param>
+            <param name="options">The options configured and loaded.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
+        <member name="M:Nano.Config.Extensions.ServiceCollectionExtensions.AddConfigOptions``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration,System.String,``0@)">
+            <summary>
+            Adds a appOptions <see cref="T:Microsoft.Extensions.Configuration.IConfigurationSection"/> as <see cref="T:Microsoft.Extensions.Options.IOptions`1"/> to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+            <typeparam name="TOption">The option implementation type.</typeparam>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
+            <param name="name">The name of the section.</param>
+            <param name="options">The options configured and loaded.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Nano.Logging</name>
+    </assembly>
+    <members>
+        <member name="T:Nano.Logging.Extensions.ServiceCollectionExtensions">
+            <summary>
+            Service Collection Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Logging.Extensions.ServiceCollectionExtensions.AddLogging``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds logging provider of type <typeparamref name="TProvider"/> to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+            <typeparam name="TProvider">The <typeparamref name="TProvider"/> type.</typeparam>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
+        <member name="M:Nano.Logging.Extensions.ServiceCollectionExtensions.AddLogging(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds <see cref="T:Nano.Logging.LoggingOptions"/> to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
+        <member name="T:Nano.Logging.Interfaces.ILoggingProvider">
+            <summary>
+            Logging Provider interface.
+            Defines the provider used for logging in the application.
+            </summary>
+        </member>
+        <member name="M:Nano.Logging.Interfaces.ILoggingProvider.Configure">
+            <summary>
+            Configures the <see cref="T:Nano.Logging.Interfaces.ILoggingProvider"/>.
+            </summary>
+            <returns>The <see cref="T:Microsoft.Extensions.Logging.ILoggerProvider"/>.</returns>
+        </member>
+        <member name="T:Nano.Logging.LoggingOptions">
+            <summary>
+            Logging Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Logging.LoggingOptions.SectionName">
+            <summary>
+            Section Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Logging.LoggingOptions.LogLevel">
+            <summary>
+            Log Level.
+            </summary>
+        </member>
+        <member name="P:Nano.Logging.LoggingOptions.Sinks">
+            <summary>
+            Sinks.
+            </summary>
+        </member>
+        <member name="P:Nano.Logging.LoggingOptions.LogLevelOverrides">
+            <summary>
+            Log Level Overrides.
+            </summary>
+        </member>
+        <member name="T:Nano.Logging.LoggingOptions.Sink">
+            <summary>
+            Sink (nested class).
+            </summary>
+        </member>
+        <member name="P:Nano.Logging.LoggingOptions.Sink.Name">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Logging.LoggingOptions.Sink.ConnectionString">
+            <summary>
+            Connection String.
+            </summary>
+        </member>
+        <member name="T:Nano.Logging.LoggingOptions.LogLevelOverride">
+            <summary>
+            Log Level Override (nested class).
+            </summary>
+        </member>
+        <member name="P:Nano.Logging.LoggingOptions.LogLevelOverride.Namespace">
+            <summary>
+            Namespace.
+            </summary>
+        </member>
+        <member name="P:Nano.Logging.LoggingOptions.LogLevelOverride.LogLevel">
+            <summary>
+            Log Level.
+            </summary>
+        </member>
+        <member name="T:Nano.Logging.Providers.Serilog.SerilogProvider">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Logging.Providers.Serilog.SerilogProvider.Options">
+            <summary>
+            Options.
+            </summary>
+        </member>
+        <member name="M:Nano.Logging.Providers.Serilog.SerilogProvider.#ctor(Nano.Logging.LoggingOptions)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="options">The <see cref="T:Nano.Logging.LoggingOptions"/>.</param>
+        </member>
+        <member name="M:Nano.Logging.Providers.Serilog.SerilogProvider.Configure">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

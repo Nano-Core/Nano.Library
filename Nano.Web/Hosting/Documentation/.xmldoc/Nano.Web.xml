@@ -1,0 +1,1143 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Nano.Web</name>
+    </assembly>
+    <members>
+        <member name="T:Nano.Web.Api.ApiOptions">
+            <summary>
+            Api Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.ApiOptions.Host">
+            <summary>
+            Host.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.ApiOptions.Root">
+            <summary>
+            Root.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.ApiOptions.Port">
+            <summary>
+            Port.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.ApiOptions.UseSsl">
+            <summary>
+            Use Ssl.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.ApiOptions.Login">
+            <summary>
+            Login.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.Api.BaseApi">
+            <summary>
+            Base Api (abstract).
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.BaseApi.#ctor(Nano.Web.Api.ApiOptions)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="apiOptions">The <see cref="T:Nano.Web.Api.ApiOptions"/>.</param>
+        </member>
+        <member name="M:Nano.Web.Api.BaseApi.Invoke``2(``0,System.Threading.CancellationToken)">
+            <summary>
+            Invokes the request, and returns the response.
+            </summary>
+            <typeparam name="TRequest">The request type.</typeparam>
+            <typeparam name="TResponse">The response type.</typeparam>
+            <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The instance of <typeparamref name="TResponse"/>.</returns>
+        </member>
+        <member name="T:Nano.Web.Api.BaseApiReadOnly">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.BaseApiReadOnly.#ctor(Nano.Web.Api.ApiOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.BaseApiReadOnly.Index``1(Nano.Web.Api.Requests.IndexRequest,System.Threading.CancellationToken)">
+            <summary>
+            Index.
+            Invokes the 'index' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.IndexRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entities.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.BaseApiReadOnly.Query``1(Nano.Web.Api.Requests.QueryRequest,System.Threading.CancellationToken)">
+            <summary>
+            Query.
+            Invokes the 'query' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.QueryRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entities.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.BaseApiReadOnly.Details``1(Nano.Web.Api.Requests.DetailsRequest,System.Threading.CancellationToken)">
+            <summary>
+            Details.
+            Invokes the 'details' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.DetailsRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entities.</returns>
+        </member>
+        <member name="T:Nano.Web.Api.BaseApiWritable">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.BaseApiWritable.#ctor(Nano.Web.Api.ApiOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.BaseApiWritable.Create``1(Nano.Web.Api.Requests.CreateRequest,System.Threading.CancellationToken)">
+            <summary>
+            Create.
+            Invokes the 'create' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.CreateRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The created entity.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.BaseApiWritable.CreateMany``1(Nano.Web.Api.Requests.CreateManyRequest,System.Threading.CancellationToken)">
+            <summary>
+            Create Many.
+            Invokes the 'create/many' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.CreateManyRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The created entities.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.BaseApiWritable.Edit``1(Nano.Web.Api.Requests.EditRequest,System.Threading.CancellationToken)">
+            <summary>
+            Edit.
+            Invokes the 'edit' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.EditRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The updated entity.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.BaseApiWritable.EditMany``1(Nano.Web.Api.Requests.EditManyRequest,System.Threading.CancellationToken)">
+            <summary>
+            Edit Many.
+            Invokes the 'Edit/many' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.EditManyRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The updated entities.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.BaseApiWritable.Delete``1(Nano.Web.Api.Requests.DeleteRequest,System.Threading.CancellationToken)">
+            <summary>
+            Delete.
+            Invokes the 'delete' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.DeleteRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Nothing.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.BaseApiWritable.DeleteMany``1(Nano.Web.Api.Requests.DeleteManyRequest,System.Threading.CancellationToken)">
+            <summary>
+            Delete Many.
+            Invokes the 'delete/many' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.DeleteManyRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Nothing.</returns>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Auth.LoginRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Auth.LoginRequest.Login">
+            <summary>
+            Login.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.LoginRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.LoginRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.BaseRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.BaseRequest.Action">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.BaseRequest.Controller">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.BaseRequest.GetUri(Nano.Web.Api.ApiOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.BaseRequest.GetQueryStringParameters">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.BaseRequestJson">
+            <summary>
+            Details Request.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.BaseRequestJson.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.CreateManyRequest">
+            <summary>
+            Create Many Request.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.CreateManyRequest.Entities">
+            <summary>
+            Entities.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.CreateManyRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.CreateManyRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.CreateRequest">
+            <summary>
+            Create Request.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.CreateRequest.Entity">
+            <summary>
+            Entity.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.CreateRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.CreateRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.DeleteManyRequest">
+            <summary>
+            Delete Many Request.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.DeleteManyRequest.Ids">
+            <summary>
+            Ids.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.DeleteManyRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.DeleteManyRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.DeleteRequest">
+            <summary>
+            Delete Request.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.DeleteRequest.Id">
+            <summary>
+            Id.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.DeleteRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.DetailsRequest">
+            <summary>
+            Details Request.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.DetailsRequest.Id">
+            <summary>
+            Id.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.DetailsRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.EditManyRequest">
+            <summary>
+            Update Many Request.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.EditManyRequest.Entities">
+            <summary>
+            Entities.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.EditManyRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.EditManyRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.EditRequest">
+            <summary>
+            Update Request.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.EditRequest.Entity">
+            <summary>
+            Entity.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.EditRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.EditRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.IndexRequest">
+            <summary>
+            Index Request.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.IndexRequest.Query">
+            <summary>
+            Query.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.IndexRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.IndexRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequest">
+            <summary>
+            Base interface for requests.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Interfaces.IRequest.Action">
+            <summary>
+            Action.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Interfaces.IRequest.Controller">
+            <summary>
+            Controller.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Interfaces.IRequest.GetUri(Nano.Web.Api.ApiOptions)">
+            <summary>
+            Returns the Uri for the request.
+            </summary>
+            <param name="apiOptions">The <see cref="T:Nano.Web.Api.ApiOptions"/>.</param>
+            <returns>The <see cref="T:System.Uri"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Interfaces.IRequest.GetQueryStringParameters">
+            <summary>
+            Get the collection  querystring  key/values.
+            </summary>
+            <returns>The <see cref="T:System.Collections.Generic.IList`1"/>.</returns>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequestJson">
+            <summary>
+            Base interface for json requests (POST).
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Interfaces.IRequestJson.GetBody">
+            <summary>
+            Gets the body of the request.
+            </summary>
+            <returns>The body <see cref="T:System.Object"/>.</returns>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequestQueryString">
+            <summary>
+            Base interface for querystring requests (GET).
+            </summary>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.QueryRequest">
+            <summary>
+            Query Request.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.QueryRequest.QueryCriteria">
+            <summary>
+            Query Criteria.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.QueryRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.QueryRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Controllers.AuditController">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.AuditController.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Controllers.AuthController">
+            <summary>
+            Auth Controller.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Controllers.AuthController.SecurityManager">
+            <summary>
+            User Manager.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Controllers.AuthController.#ctor(Nano.Security.SecurityManager)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="securityManager">The <see cref="P:Nano.Web.Controllers.AuthController.SecurityManager"/>.</param>
+        </member>
+        <member name="M:Nano.Web.Controllers.AuthController.Login">
+            <summary>
+            Gets the view for login.
+            </summary>
+            <returns>The 'login' view.</returns>
+        </member>
+        <member name="M:Nano.Web.Controllers.AuthController.Forbidden">
+            <summary>
+            Gets the view for access denied.
+            </summary>
+            <returns>The 'forbidden' view.</returns>
+        </member>
+        <member name="M:Nano.Web.Controllers.AuthController.Login(Nano.Models.Login,System.String,System.Threading.CancellationToken)">
+            <summary>
+            The user authenticates and on success recieves a jwt token for use with auhtorization.
+            </summary>
+            <param name="login">The login model.</param>
+            <param name="returnUrl"></param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>A jwt token.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.AuthController.Logout(System.Threading.CancellationToken)">
+            <summary>
+            The user is logged out, and the token is invalidated.
+            Usually, it's not needed to call this method, unless having a specific reason for invalidating a token.
+            </summary>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="T:Nano.Web.Controllers.BaseController">
+            <summary>
+            Base controller.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseController.Options">
+            <summary>
+            Options. Any route can be called with http options, to return options header information.
+            </summary>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
+            <response code="401">Unauthorized.</response>
+        </member>
+        <member name="T:Nano.Web.Controllers.BaseController`1">
+            <summary>
+            Base generic controller.
+            </summary>
+            <typeparam name="TRepository">The <see cref="T:Nano.Repository.Interfaces.IRepository"/>.</typeparam>
+        </member>
+        <member name="P:Nano.Web.Controllers.BaseController`1.Logger">
+            <summary>
+            Logger.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Controllers.BaseController`1.Eventing">
+            <summary>
+            Eventing.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Controllers.BaseController`1.Repository">
+            <summary>
+            Repository.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseController`1.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
+            <summary>
+            Constructor accepting an instance of <typeparamref name="TRepository"/> and initializing <see cref="P:Nano.Web.Controllers.BaseController`1.Repository"/>
+            </summary>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
+            <param name="repository">The <see cref="T:Nano.Repository.Interfaces.IRepository"/>.</param>
+            <param name="eventing">The <see cref="T:Nano.Eventing.Interfaces.IEventingProvider"/>.</param>
+        </member>
+        <member name="T:Nano.Web.Controllers.BaseControllerReadOnly`4">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.Index(DynamicExpression.Interfaces.IQuery,System.Threading.CancellationToken)">
+            <summary>
+            Gets all models.
+            Filtered by the parameters in the passed query (pagination and ordering).
+            </summary>
+            <param name="query">The query.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>A collection of models, matching the passed query.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.IndexPost(DynamicExpression.Interfaces.IQuery,System.Threading.CancellationToken)">
+            <summary>
+            Gets all models.
+            Filtered by the parameters in the passed query (pagination and ordering).
+            </summary>
+            <param name="query">The query.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>A collection of models, matching the passed query.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.Details(`2,System.Threading.CancellationToken)">
+            <summary>
+            Gets the model.
+            Uniquely identified by the passed id.
+            </summary>
+            <param name="id">The identifier, that uniquely identifies the model.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>The model.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.DetailsPost(`2[],System.Threading.CancellationToken)">
+            <summary>
+            Gets the models.
+            Uniquely identified by the passed id's.
+            </summary>
+            <param name="ids">The identifiers, that uniquely identifies the models.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>The model.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.Query(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
+            <summary>
+            Gets all models.
+            Filtered by the parameters in the passed query (criteria, pagination and ordering).
+            </summary>
+            <param name="query">The query model, containing filters used in the query.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>A collection of models, matching the passed query.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.QueryPost(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
+            <summary>
+            Gets all models.
+            Filtered by the parameters in the passed query (criteria, pagination and ordering).
+            </summary>
+            <param name="query">The query model, containing filters used in the query.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>A collection of models, matching the passed query.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="T:Nano.Web.Controllers.BaseControllerSpatial`4">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatial`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatial`4.Intersects(DynamicExpression.Entities.Query{`3},System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s instances, that intersects the <paramref name="criteria.Geometry.Geometry"/>.
+            </summary>
+            <param name="criteria">The <see cref="T:DynamicExpression.Entities.Query`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The 'Index' <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatial`4.Covers(DynamicExpression.Entities.Query{`3},System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s instances, that covers the <paramref name="criteria.Geometry.Geometry"/>.
+            </summary>
+            <param name="criteria">The <see cref="T:DynamicExpression.Entities.Query`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The 'Index' <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatial`4.CoveredBy(DynamicExpression.Entities.Query{`3},System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s instances, that are covered By the <paramref name="criteria.Geometry.Geometry"/>.
+            </summary>
+            <param name="criteria">The <see cref="T:DynamicExpression.Entities.Query`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The 'Index' <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatial`4.Overlaps(DynamicExpression.Entities.Query{`3},System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s instances, that overlaps the <paramref name="criteria.Geometry.Geometry"/>.
+            </summary>
+            <param name="criteria">The <see cref="T:DynamicExpression.Entities.Query`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The 'Index' <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatial`4.Touches(DynamicExpression.Entities.Query{`3},System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s instances, that touches the <paramref name="criteria.Geometry.Geometry"/>.
+            </summary>
+            <param name="criteria">The <see cref="T:DynamicExpression.Entities.Query`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The 'Index' <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatial`4.Crosses(DynamicExpression.Entities.Query{`3},System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s instances, that crosses the <paramref name="criteria.Geometry.Geometry"/>.
+            </summary>
+            <param name="criteria">The <see cref="T:DynamicExpression.Entities.Query`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The 'Index' <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatial`4.Disjoints(DynamicExpression.Entities.Query{`3},System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s instances, that disjoints the <paramref name="criteria.Geometry.Geometry"/>.
+            </summary>
+            <param name="criteria">The <see cref="T:DynamicExpression.Entities.Query`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The 'Index' <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatial`4.Within(DynamicExpression.Entities.Query{`3},System.Double,System.Threading.CancellationToken)">
+            <summary>
+            Within.
+            Gets <see cref="T:Nano.Models.Interfaces.IEntitySpatial"/>'s instances, that are within the <paramref name="criteria.Radius.Radius"/> of <paramref name="criteria.Geometry.Geometry"/>.
+            </summary>
+            <param name="criteria">The <see cref="T:DynamicExpression.Entities.Query`1"/>.</param>
+            <param name="distance">The distance in meters.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The 'Index' <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/>.</returns>
+        </member>
+        <member name="T:Nano.Web.Controllers.BaseControllerWritable`4">
+            <summary>
+            Base abstract <see cref="T:Microsoft.AspNetCore.Mvc.Controller"/>, implementing  methods for instances of <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TRepository">The <see cref="T:Nano.Repository.Interfaces.IRepository"/> inheriting from <see cref="T:Nano.Web.Controllers.BaseControllerReadOnly`4"/>.</typeparam>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> model the <see cref="T:Nano.Repository.Interfaces.IRepository"/> operates with.</typeparam>
+            <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
+            <typeparam name="TCriteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/> implementation.</typeparam>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.Create">
+            <summary>
+            Gets the 'create' view for creating a new model.
+            </summary>
+            <returns>The view.</returns>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.CreateConfirm(`1,System.Threading.CancellationToken)">
+            <summary>
+            Creates the passed model.
+            </summary>
+            <param name="entity">The model to create.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>The created model.</returns>
+            <response code="201">Created.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.CreateConfirms(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
+            <summary>
+            Creates the passed models.
+            </summary>
+            <param name="entities">The models to create.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>Void.</returns>
+            <response code="200">Ok.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.Edit(`2,System.Threading.CancellationToken)">
+            <summary>
+            Gets the 'edit' view for editing a model.
+            </summary>
+            <param name="id">The identifier of the model to edit.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>The 'edit' view.</returns>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.EditConfirm(`1,System.Threading.CancellationToken)">
+            <summary>
+            Edit the passed model.
+            </summary>
+            <param name="entity">The model to edit.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>The edited model.</returns>
+            <response code="200">Ok.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.EditConfirms(`1[],System.Threading.CancellationToken)">
+            <summary>
+            Edits the passed models.
+            </summary>
+            <param name="entities">The models to edit.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>Void.</returns>
+            <response code="200">Ok.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.EditConfirmsQuery(System.ValueTuple{`3,`1},System.Threading.CancellationToken)">
+            <summary>
+            Edits the models, changing all entities returned by the passed 'select' criteria, with the values of the passed 'update'.
+            </summary>
+            <param name="criteria">The criteria for selecting models to edit, and the model containing values to be changed for all matching entities.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>Void.</returns>
+            <response code="200">Ok.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.Delete(`2,System.Threading.CancellationToken)">
+            <summary>
+            Gets the 'delete' view for deleting an existing model.
+            </summary>
+            <param name="id">The identifier of the model to delete.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>The 'delete' view.</returns>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.DeleteConfirm(`2,System.Threading.CancellationToken)">
+            <summary>
+            Delete the model with the passed identifier.
+            </summary>
+            <param name="id">The identifier of the model to delete.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>Void.</returns>
+            <response code="200">Ok.</response>
+            <response code="400">Bad Request.</response>
+            <response code="404">Not Found.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.DeleteConfirms(`2[],System.Threading.CancellationToken)">
+            <summary>
+            Deletes the models with the passed identifier's.
+            </summary>
+            <param name="ids">The identifiers of the models to delete.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>Void.</returns>
+            <response code="200">Ok.</response>
+            <response code="400">Bad Request.</response>
+            <response code="404">Not Found.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.DeleteConfirmsQuery(`3,System.Threading.CancellationToken)">
+            <summary>
+            Deletes the models matching the passed 'select' criteria.
+            </summary>
+            <param name="select">The crtieria for selecting models to delete.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>Void.</returns>
+            <response code="200">Ok.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="T:Nano.Web.Controllers.DefaultController`2">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.DefaultController`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Controllers.DefaultControllerReadOnly`2">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.DefaultControllerReadOnly`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Controllers.DefaultControllerSpatial`2">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.DefaultControllerSpatial`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepositorySpatial,Nano.Eventing.Interfaces.IEventing)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Controllers.HomeController">
+            <summary>
+            Home Controller.
+            Contains method for handling application level operations.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Controllers.HomeController.Index">
+            <summary>
+            Default action, returning an Ok (success) response.
+            </summary>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
+            <response code="401">Unauthorized.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.HomeController.Error(Nano.Models.Error)">
+            <summary>
+            Error action, returning an Ok (success) response containing the error.
+            </summary>
+            <param name="error">The error.</param>
+            <returns>The error.</returns>
+            <response code="200">Success.</response>
+            <response code="401">Unauthorized.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.HomeController.SetLanguage(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Sets the language in a cookie, for use with following requests.
+            </summary>
+            <param name="code">The langauge code.</param>
+            <param name="returnUrl">The return url (if any).</param>
+            <param name="cancellationToken">The cancellationToken.</param>
+            <returns>Nothing (void).</returns>
+        </member>
+        <member name="T:Nano.Web.Hosting.Conventions.AduitControllerDisabledConvention">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Conventions.AduitControllerDisabledConvention.Apply(Microsoft.AspNetCore.Mvc.ApplicationModels.ApplicationModel)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.Conventions.AuthControllerDisabledConvention">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Conventions.AuthControllerDisabledConvention.Apply(Microsoft.AspNetCore.Mvc.ApplicationModels.ApplicationModel)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.Conventions.RoutePrefixConvention">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Conventions.RoutePrefixConvention.#ctor(Microsoft.AspNetCore.Mvc.Routing.IRouteTemplateProvider)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="templateProvider">The <see cref="T:Microsoft.AspNetCore.Mvc.Routing.IRouteTemplateProvider"/>.</param>
+        </member>
+        <member name="M:Nano.Web.Hosting.Conventions.RoutePrefixConvention.Apply(Microsoft.AspNetCore.Mvc.ApplicationModels.ApplicationModel)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.Documentation.LowercaseDocumentFilter">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Documentation.LowercaseDocumentFilter.Apply(Swashbuckle.AspNetCore.Swagger.SwaggerDocument,Swashbuckle.AspNetCore.SwaggerGen.DocumentFilterContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.Extensions.HttpRequestExtensions">
+            <summary>
+            Http Request Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.Extensions.HttpRequestExtensions.ReadBody(Microsoft.AspNetCore.Http.HttpRequest)">
+            <summary>
+            Gets the <see cref="P:Microsoft.AspNetCore.Http.HttpRequest.Body"/> as a raw string.
+            </summary>
+            <param name="httpRequest">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
+            <returns>A <see cref="T:System.String"/> read from the <see cref="T:System.IO.Stream"/> of <see cref="P:Microsoft.AspNetCore.Http.HttpRequest.Body"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Hosting.Extensions.HttpRequestExtensions.IsContentTypeJson(Microsoft.AspNetCore.Http.HttpRequest)">
+            <summary>
+            Returns whether the <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/> headers contains a content-type of 'application/json', 'application/javascript' or 
+            the <see cref="P:Microsoft.AspNetCore.Http.HttpRequest.QueryString"/> contains a 'format=json' parameter.
+            </summary>
+            <param name="httpRequest">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
+            <returns>A <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Hosting.Extensions.HttpRequestExtensions.IsContentTypeXml(Microsoft.AspNetCore.Http.HttpRequest)">
+            <summary>
+            Returns whether the <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/> headers contains a content-type of 'application/xml' or  
+            the <see cref="P:Microsoft.AspNetCore.Http.HttpRequest.QueryString"/> contains a 'format=xml' parameter.
+            </summary>
+            <param name="httpRequest">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
+            <returns>A <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Hosting.Extensions.HttpRequestExtensions.IsContentTypeHtml(Microsoft.AspNetCore.Http.HttpRequest)">
+            <summary>
+            Returns whether the <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/> headers contains a content-type of 'text/html' or
+            the <see cref="P:Microsoft.AspNetCore.Http.HttpRequest.QueryString"/> contains a 'format=html' parameter.
+            </summary>
+            <param name="httpRequest">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
+            <returns>A <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Hosting.Extensions.HttpRequestExtensions.IsContentType(Microsoft.AspNetCore.Http.HttpRequest,System.String)">
+            <summary>
+            Returns whether the <see cref="P:Microsoft.AspNetCore.Http.HttpRequest.ContentType"/> matches the passed <see cref="T:System.String"/>.
+            </summary>
+            <param name="httpRequest">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
+            <param name="match">The <see cref="T:System.String"/> content-type.</param>
+            <returns>A <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="T:Nano.Web.Hosting.Extensions.ServiceCollectionExtensions">
+            <summary>
+            Service Collection Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.Extensions.ServiceCollectionExtensions.AddWeb(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds <see cref="T:Nano.Web.WebOptions"/> to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
+        <member name="T:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute">
+            <summary>
+            A <see cref="T:Microsoft.AspNetCore.Mvc.Filters.ResultFilterAttribute"/> that disables lazy loading before serialzing the response.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute.Repository">
+            <summary>
+            The <see cref="T:Nano.Repository.Interfaces.IRepository"/>.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute.#ctor(Nano.Repository.Interfaces.IRepository)">
+            <summary>
+            Constructor.
+            Initialzing the <see cref="T:Nano.Repository.Interfaces.IRepository"/> with the passed <paramref name="repository"/>.
+            </summary>
+            <param name="repository">The <see cref="T:Nano.Repository.Interfaces.IRepository"/>.</param>
+        </member>
+        <member name="M:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute.OnResultExecuting(Microsoft.AspNetCore.Mvc.Filters.ResultExecutingContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.Filters.ModelStateValidationFilter">
+            <summary>
+            Model State Validation Filter.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.Filters.ModelStateValidationFilter.OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext)">
+            <summary>
+            Validates the model state upon execiting a controller action.
+            </summary>
+            <param name="context">The <see cref="T:Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext"/>.</param>
+        </member>
+        <member name="T:Nano.Web.Hosting.HttpContentType">
+            <summary>
+            Http Content Type.
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Hosting.HttpContentType.XML">
+            <summary>
+            Xml ("application/xml").
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Hosting.HttpContentType.JSON">
+            <summary>
+            Json ("application/json").
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Hosting.HttpContentType.HTML">
+            <summary>
+            Html ("text/html").
+            </summary>
+        </member>
+        <member name="T:Nano.Web.Hosting.Middleware.ExceptionHandlingMiddleware">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Middleware.ExceptionHandlingMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.Http.RequestDelegate)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.Middleware.HttpRequestIdentifierMiddleware">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Middleware.HttpRequestIdentifierMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.Http.RequestDelegate)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.Middleware.HttpRequestOptionsMiddleware">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Middleware.HttpRequestOptionsMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.Http.RequestDelegate)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.Middleware.HttpRequestUserMiddleware">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Middleware.HttpRequestUserMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.Http.RequestDelegate)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.ModelBinders.QueryModelBinder`1">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.ModelBinders.QueryModelBinder`1.BindModelAsync(Microsoft.AspNetCore.Mvc.ModelBinding.ModelBindingContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.ModelBinders.QueryModelBinderProvider">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.ModelBinders.QueryModelBinderProvider.GetBinder(Microsoft.AspNetCore.Mvc.ModelBinding.ModelBinderProviderContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.Serialization.EntityContractResolver">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Serialization.EntityContractResolver.CreateProperty(System.Reflection.MemberInfo,Newtonsoft.Json.MemberSerialization)">
+            <summary>
+            Create a property.
+            Empty collections is not serialzied.
+            Properties of types implementing <see cref="T:Nano.Models.Interfaces.IEntityIdentity`1"/> is not serialized. 
+            </summary>
+            <param name="member">The <see cref="T:System.Reflection.MemberInfo"/>.</param>
+            <param name="memberSerialization">The <see cref="T:Newtonsoft.Json.MemberSerialization"/>.</param>
+            <returns>The <see cref="T:Newtonsoft.Json.Serialization.JsonProperty"/>.</returns>
+        </member>
+        <member name="T:Nano.Web.Hosting.Serialization.XmlConvert">
+            <summary>
+            Xml Convert.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.Serialization.XmlConvert.SerializeObject``1(``0,System.String,System.Xml.Serialization.XmlSerializerNamespaces,System.Type[])">
+            <summary>
+            Serializes an instance of type <typeparamref name="T"/> to xml.
+            </summary>
+            <typeparam name="T">The type to serialize.</typeparam>
+            <param name="object">The object instance to serialize.</param>
+            <param name="defaultNamespace">The default namespace used in the xml.</param>
+            <param name="namespaces">The namespaces.</param>
+            <param name="knownTypes">The known types.</param>
+            <returns>A <see cref="T:System.String"/> formatted as xml.</returns>
+        </member>
+        <member name="M:Nano.Web.Hosting.Serialization.XmlConvert.DeserializeObject``1(System.String,System.String,System.Type[])">
+            <summary>
+            Deserializes an xml strong to an instance of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type to deserialize the xml into.</typeparam>
+            <param name="xml">The xml to deserialize.</param>
+            <param name="defaultNamespace">The default namespace used in the xml.</param>
+            <param name="knownTypes">The known types.</param>
+            <returns>The instance of type <typeparamref name="T"/>.</returns>
+        </member>
+        <member name="T:Nano.Web.WebApplication">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.WebApplication.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.WebApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.AspNetCore.Hosting.IApplicationLifetime)">
+            <summary>
+            Configures the application.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <param name="hostingEnvironment">The <see cref="T:Microsoft.AspNetCore.Hosting.IHostingEnvironment"/>.</param>
+            <param name="applicationLifetime">The <see cref="T:Microsoft.AspNetCore.Hosting.IApplicationLifetime"/>.</param>
+        </member>
+        <member name="M:Nano.Web.WebApplication.ConfigureApp(System.String[])">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Hosting.IWebHostBuilder"/>, ready to <see cref="M:Microsoft.AspNetCore.Hosting.IWebHostBuilder.Build"/> and <see cref="M:Microsoft.AspNetCore.Hosting.WebHostExtensions.Run(Microsoft.AspNetCore.Hosting.IWebHost)"/>.
+            The application startup implementation is defaulted to <see cref="T:Nano.Web.WebApplication"/>.
+            </summary>
+            <param name="args">The command-line args, if any.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Hosting.IWebHostBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.WebApplication.ConfigureApp``1(System.String[])">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Hosting.IWebHostBuilder"/>, ready to <see cref="M:Microsoft.AspNetCore.Hosting.IWebHostBuilder.Build"/> and <see cref="M:Microsoft.AspNetCore.Hosting.WebHostExtensions.Run(Microsoft.AspNetCore.Hosting.IWebHost)"/>.
+            The application startup implementation is defined by the generic type parameter <typeparamref name="TApplication"/>.
+            </summary>
+            <typeparam name="TApplication">The type containing method for application start-up.</typeparam>
+            <param name="args">The command-line args, if any.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Hosting.IWebHostBuilder"/>.</returns>
+        </member>
+        <member name="T:Nano.Web.WebOptions">
+            <summary>
+            Web Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.SectionName">
+            <summary>
+            Section Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.Hosting">
+            <summary>
+            Hosting.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.Documentation">
+            <summary>
+            Documentation.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions">
+            <summary>
+            Hosting Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.Root">
+            <summary>
+            Root.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.Ports">
+            <summary>
+            Ports.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseSsl">
+            <summary>
+            Use Ssl.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.DocumentationOptions">
+            <summary>
+            Documentation Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.DocumentationOptions.Contact">
+            <summary>
+            Contact.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.DocumentationOptions.License">
+            <summary>
+            License.
+            </summary>
+        </member>
+    </members>
+</doc>
