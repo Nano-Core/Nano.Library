@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Nano.Models.Attributes;
 
 namespace Nano.Models.Types
 {
@@ -11,7 +10,7 @@ namespace Nano.Models.Types
         /// <summary>
         /// Number (E164).
         /// </summary>
-        [PhoneNumber]
+        [Phone]
         [MaxLength(20)]
         public virtual string Number { get; set; }
     }
