@@ -89,6 +89,9 @@ namespace Nano.Web.Controllers
             }
             catch (UnauthorizedAccessException)
             {
+                if (this.Request.IsContentTypeHtml())
+                    return this.RedirectToAction("forbidden");
+
                 return this.Unauthorized();
             }
         }
