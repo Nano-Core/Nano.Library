@@ -31,6 +31,7 @@ using System.Xml.XPath;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using Nano.Data;
 using Nano.Models.Extensions;
 using Nano.Security;
 using Nano.Web.Api;
@@ -62,11 +63,15 @@ namespace Nano.Web.Hosting.Extensions
             services
                 .AddConfigOptions<WebOptions>(configuration, WebOptions.SectionName, out var options);
 
+            // TODO: Data Protection: https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-2.1&tabs=aspnetcore2x 
+
             services
                 .AddScoped<IService, DefaultService>()
                 .AddScoped<IServiceSpatial, DefaultServiceSpatial>();
 
-            // TODO: Data Protection: https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-2.1&tabs=aspnetcore2x 
+            var serviceProvider = services.BuildServiceProvider();
+            var dataOptions = serviceProvider.GetService<DataOptions>();
+            var securityOptions = serviceProvider.GetService<SecurityOptions>();
 
             services
                 .AddApis()
@@ -87,13 +92,19 @@ namespace Nano.Web.Hosting.Extensions
                 {
                     var routeAttribute = new RouteAttribute(options.Hosting.Root);
                     var routePrefixConvention = new RoutePrefixConvention(routeAttribute);
-                    var modelBinderProvider = new QueryModelBinderProvider();
+                    var queryModelBinderProvider = new QueryModelBinderProvider();
 
                     x.Conventions.Insert(0, routePrefixConvention);
-                    x.ModelBinderProviders.Insert(0, modelBinderProvider);
+                    x.ModelBinderProviders.Insert(0, queryModelBinderProvider);
+
+                    if (dataOptions.ConnectionString == null)
+                        x.Conventions.Insert(0, new AduitControllerDisabledConvention());
+
+                    if (!securityOptions.IsEnabled)
+                        x.Conventions.Insert(1, new AuthControllerDisabledConvention());
 
                     if (options.Hosting.UseSsl)
-                        x.Filters.Add(new RequireHttpsAttribute());
+                        x.Filters.Add<RequireHttpsAttribute>();
 
                     x.Filters.Add<ModelStateValidationFilter>();
                     x.Filters.Add<DisableLazyLoadingResultFilterAttribute>();
@@ -164,7 +175,7 @@ namespace Nano.Web.Hosting.Extensions
             {
                 services.AddMvc(x =>
                 {
-                    x.Filters.Add(new AllowAnonymousFilter());
+                    x.Filters.Add<AllowAnonymousFilter>();
                 });
             }
 
@@ -248,8 +259,6 @@ namespace Nano.Web.Hosting.Extensions
             return services
                 .AddSwaggerGen(x =>
                 {
-                    // BUG: Remove Audit Controller documentation when dataOptions is null.
-
                     x.IgnoreObsoleteActions();
                     x.IgnoreObsoleteProperties();
                     x.DescribeAllEnumsAsStrings();
@@ -355,7 +364,6 @@ namespace Nano.Web.Hosting.Extensions
                     x.FormatterMappings.SetMediaTypeMappingForFormat("xml", HttpContentType.XML);
                     x.FormatterMappings.SetMediaTypeMappingForFormat("html", HttpContentType.HTML);
                     x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JSON);
-                    x.FormatterMappings.SetMediaTypeMappingForFormat("text", HttpContentType.TEXT); // TODO: Content-Type text/plain support (csv import) (https://code-maze.com/content-negotiation-dotnet-core/)
                 })
                 .AddXmlSerializerFormatters()
                 .AddXmlDataContractSerializerFormatters();
