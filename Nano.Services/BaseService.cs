@@ -15,6 +15,8 @@ using Z.EntityFramework.Plus;
 
 namespace Nano.Services
 {
+    // BUG: Rename to "Repository"
+
     /// <inheritdoc />
     public abstract class BaseService<TContext> : IService
         where TContext : BaseDbContext
@@ -354,9 +356,7 @@ namespace Nano.Services
                 .SaveChangesAsync(cancellationToken);
         }
 
-        /// <summary>
-        /// Dispose (non-virtual).
-        /// </summary>
+        /// <inheritdoc />
         public void Dispose()
         {
             this.Dispose(true);

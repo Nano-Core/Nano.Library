@@ -62,7 +62,7 @@ namespace Nano.Web.Hosting.Middleware
             }
             finally
             {
-                // BUG: Logging, implement Enrichers encapsulating the log context (specific to Serilog).
+                // TODO: Logging, implement Enrichers encapsulating the log context (specific to Serilog).
                 var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
 
                 var id = httpContext.TraceIdentifier;
