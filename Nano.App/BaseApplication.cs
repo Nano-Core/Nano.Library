@@ -25,10 +25,7 @@ namespace Nano.App
         /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
         protected BaseApplication(IConfiguration configuration)
         {
-            if (configuration == null)
-                throw new ArgumentNullException(nameof(configuration));
-
-            this.Configuration = configuration;
+            this.Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         /// <inheritdoc />

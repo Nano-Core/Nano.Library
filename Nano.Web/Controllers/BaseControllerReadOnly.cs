@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
 using Nano.Models;
 using Nano.Models.Interfaces;
-using Nano.Services.Interfaces;
+using Nano.Repository.Interfaces;
 using Nano.Web.Hosting;
 using Nano.Web.Hosting.Extensions;
 

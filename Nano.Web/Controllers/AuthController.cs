@@ -29,10 +29,7 @@ namespace Nano.Web.Controllers
         /// <param name="securityManager">The <see cref="SecurityManager"/>.</param>
         public AuthController(SecurityManager securityManager)
         {
-            if (securityManager == null)
-                throw new ArgumentNullException(nameof(securityManager));
-
-            this.SecurityManager = securityManager;
+            this.SecurityManager = securityManager ?? throw new ArgumentNullException(nameof(securityManager));
         }
 
         /// <summary>

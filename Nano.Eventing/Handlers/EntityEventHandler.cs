@@ -31,14 +31,8 @@ namespace Nano.Eventing.Handlers
         /// <param name="context">The <see cref="DbContext"/>.</param>
         public EntityEventHandler(ILogger logger, DbContext context)
         {
-            if (logger == null)
-                throw new ArgumentNullException(nameof(logger));
-
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
-
-            this.Logger = logger;
-            this.Context = context;
+            this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         /// <inheritdoc />

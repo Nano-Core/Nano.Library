@@ -12,19 +12,14 @@ using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
 using Nano.Models;
 using Nano.Models.Interfaces;
-using Nano.Services.Interfaces;
+using Nano.Repository.Interfaces;
 using Nano.Web.Hosting;
 using Nano.Web.Hosting.Extensions;
 
 namespace Nano.Web.Controllers
 {
-    // BUG: Controller actions and api for addorupdate. look into it, and also check documentation.
-    // Align with IService methods
-    // How do Update actually works when taking two parameters as bodt?
-    // Update docs
-    // static Authentication, single user. "OnlyAdminAccess".
-
-    // BUG: setcompatibility version
+    // BUG: Controller actions and api for addorupdate. look into it, and also check documentation. Align with IService methods (How do Update actually works when taking two parameters as bodt?)
+    // BUG: Static Authentication, single user. "OnlyAdminAccess".
 
     /// <summary>
     /// Base abstract <see cref="Controller"/>, implementing  methods for instances of <typeparamref name="TEntity"/>.

@@ -10,10 +10,10 @@ using Microsoft.EntityFrameworkCore;
 using Nano.Data;
 using Nano.Data.Extensions;
 using Nano.Models.Interfaces;
-using Nano.Services.Interfaces;
+using Nano.Repository.Interfaces;
 using Z.EntityFramework.Plus;
 
-namespace Nano.Services
+namespace Nano.Repository
 {
     /// <inheritdoc />
     public abstract class BaseRepository<TContext> : IRepository
@@ -27,10 +27,7 @@ namespace Nano.Services
         /// <inheritdoc />
         public virtual bool IsLazyLoadingEnabled
         {
-            get
-            {
-                return this.Context.ChangeTracker.LazyLoadingEnabled;
-            }
+            get => this.Context.ChangeTracker.LazyLoadingEnabled;
             set
             {
                 this.Context.ChangeTracker.LazyLoadingEnabled = value;

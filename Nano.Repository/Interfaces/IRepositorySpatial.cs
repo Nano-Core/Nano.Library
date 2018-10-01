@@ -5,7 +5,7 @@ using DynamicExpression.Interfaces;
 using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Interfaces;
 
-namespace Nano.Services.Interfaces
+namespace Nano.Repository.Interfaces
 {
     /// <summary>
     /// (Base) interface for a spatial repository.

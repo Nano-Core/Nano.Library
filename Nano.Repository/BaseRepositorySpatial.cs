@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using Nano.Data;
 using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Interfaces;
-using Nano.Services.Interfaces;
+using Nano.Repository.Interfaces;
 
-namespace Nano.Services
+namespace Nano.Repository
 {
     /// <inheritdoc cref="BaseRepository{TContext}"/>
     public abstract class BaseRepositorySpatial<TContext> : BaseRepository<TContext>, IRepositorySpatial

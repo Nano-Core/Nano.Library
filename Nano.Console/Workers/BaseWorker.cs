@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
-using Nano.Services.Interfaces;
+using Nano.Repository.Interfaces;
 
 namespace Nano.Console.Workers
 {
@@ -21,35 +21,26 @@ namespace Nano.Console.Workers
         protected virtual ILogger Logger { get; }
 
         /// <summary>
-        /// Service.
-        /// </summary>
-        protected virtual TRepository Repository { get; }
-
-        /// <summary>
         /// Eventing.
         /// </summary>
         protected virtual IEventing Eventing { get; }
 
         /// <summary>
-        /// Constructor accepting an instance of <typeparamref name="TRepository"/> and initializing <see cref="Repository"/>
+        /// Repository.
+        /// </summary>
+        protected virtual TRepository Repository { get; }
+
+        /// <summary>
+        /// Constructor.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger"/>.</param>
         /// <param name="repository">The <see cref="IRepository"/>.</param>
         /// <param name="eventing">The <see cref="IEventingProvider"/>.</param>
         protected BaseWorker(ILogger logger, TRepository repository, IEventing eventing)
         {
-            if (logger == null)
-                throw new ArgumentNullException(nameof(logger));
-
-            if (repository == null)
-                throw new ArgumentNullException(nameof(repository));
-
-            if (eventing == null)
-                throw new ArgumentNullException(nameof(eventing));
-
-            this.Logger = logger;
+            this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.Repository = repository;
-            this.Eventing = eventing;
+            this.Eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
         }
 
         /// <inheritdoc />

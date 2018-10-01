@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
-using Nano.Services.Interfaces;
+using Nano.Repository.Interfaces;
 using Nano.Web.Hosting;
 
 namespace Nano.Web.Controllers
@@ -63,18 +63,9 @@ namespace Nano.Web.Controllers
         /// <param name="eventing">The <see cref="IEventingProvider"/>.</param>
         protected BaseController(ILogger logger, TRepository repository, IEventing eventing)
         {
-            if (logger == null)
-                throw new ArgumentNullException(nameof(logger));
-
-            if (repository == null)
-                throw new ArgumentNullException(nameof(repository));
-
-            if (eventing == null)
-                throw new ArgumentNullException(nameof(eventing));
-
-            this.Logger = logger;
+            this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.Repository = repository;
-            this.Eventing = eventing;
+            this.Eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
         }
     }
 }

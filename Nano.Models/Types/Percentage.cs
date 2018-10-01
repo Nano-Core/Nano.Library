@@ -78,7 +78,7 @@ namespace Nano.Models.Types
             if (@object == null)
                 throw new ArgumentNullException(nameof(@object));
 
-            return @object is Percentage && this.Equals((Percentage)@object);
+            return @object is Percentage percentage && this.Equals(percentage);
         }
 
         /// <summary>

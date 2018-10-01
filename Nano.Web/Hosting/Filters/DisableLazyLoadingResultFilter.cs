@@ -1,6 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Nano.Services.Interfaces;
+using Nano.Repository.Interfaces;
 
 namespace Nano.Web.Hosting.Filters
 {
@@ -21,10 +21,7 @@ namespace Nano.Web.Hosting.Filters
         /// <param name="repository">The <see cref="IRepository"/>.</param>
         public DisableLazyLoadingResultFilterAttribute(IRepository repository)
         {
-            if (repository == null)
-                throw new ArgumentNullException(nameof(repository));
-
-            this.Repository = repository;
+            this.Repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
         /// <inheritdoc />

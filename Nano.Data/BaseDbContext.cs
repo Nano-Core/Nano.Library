@@ -52,10 +52,8 @@ namespace Nano.Data
         protected BaseDbContext(DbContextOptions contextOptions, DataOptions dataOptions)
             : base(contextOptions)
         {
-            if (dataOptions == null)
-                throw new ArgumentNullException(nameof(dataOptions));
+            this.Options = dataOptions ?? throw new ArgumentNullException(nameof(dataOptions));
 
-            this.Options = dataOptions;
             this.CacheEntryOptions = new MemoryCacheEntryOptions
             {
                 SlidingExpiration = TimeSpan.FromMinutes(dataOptions.BatchSize)

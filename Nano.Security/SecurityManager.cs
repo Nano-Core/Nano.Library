@@ -35,12 +35,9 @@ namespace Nano.Security
         /// <param name="options">The <see cref="SecurityOptions"/>.</param>
         public SecurityManager(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, SecurityOptions options)
         {
-            if (signInManager == null)
-                throw new ArgumentNullException(nameof(signInManager));
-
-            this.UserManager = userManager;
-            this.SignInManager = signInManager;
-            this.Options = options;
+            this.UserManager = userManager?? throw new ArgumentNullException(nameof(userManager));
+            this.SignInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+            this.Options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// <summary>

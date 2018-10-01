@@ -1,6 +1,6 @@
 using Nano.Data;
 
-namespace Nano.Services
+namespace Nano.Repository
 {
     /// <inheritdoc />
     public class DefaultRepositorySpatial : BaseRepositorySpatial<DefaultDbContext>

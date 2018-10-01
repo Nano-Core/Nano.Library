@@ -97,16 +97,16 @@ namespace Nano.Models.Extensions
         {
             switch (dateInterval)
             {
-                case DateInterval.DAYLY:
+                case DateInterval.Dayly:
                     return at.GetDayDates();
 
-                case DateInterval.WEEKLY:
+                case DateInterval.Weekly:
                     return at.GetWeekDates();
 
-                case DateInterval.MONTHLY:
+                case DateInterval.Monthly:
                     return at.GetMonthDates();
 
-                case DateInterval.YEARLY:
+                case DateInterval.Yearly:
                     return at.GetYearDates();
 
                 default:

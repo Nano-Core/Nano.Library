@@ -41,10 +41,8 @@ namespace Nano.Web.Api
         /// <param name="apiOptions">The <see cref="Api.ApiOptions"/>.</param>
         protected BaseApi(ApiOptions apiOptions)
         {
-            if (apiOptions == null)
-                throw new ArgumentNullException(nameof(apiOptions));
+            this.apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
 
-            this.apiOptions = apiOptions;
             this.httpClient = new HttpClient(this.httpClientHandler)
             {
                 Timeout = this.httpTimeout

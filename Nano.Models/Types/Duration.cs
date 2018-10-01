@@ -27,7 +27,10 @@ namespace Nano.Models.Types
         public virtual TimeSpan Total
         {
             get => this.Time.Add(this.Adjustment);
-            protected set { }
+            protected set
+            {
+                // do nothing.
+            }
         }
     }
 }

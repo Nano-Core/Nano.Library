@@ -7,7 +7,7 @@ using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Nano.Models.Interfaces;
 
-namespace Nano.Services.Interfaces
+namespace Nano.Repository.Interfaces
 { 
     /// <summary>
     /// (Base) Interface for a repository.

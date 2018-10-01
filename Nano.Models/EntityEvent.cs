@@ -30,15 +30,9 @@ namespace Nano.Models
         /// <param name="state"></param>
         public EntityEvent(object id, string type, string state)
         {
-            if (id == null)
-                throw new ArgumentNullException(nameof(id));
-
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-
-            this.Id = id;
-            this.Type = type;
-            this.State = state;
+            this.Id = id ?? throw new ArgumentNullException(nameof(id));
+            this.Type = type ?? throw new ArgumentNullException(nameof(type));
+            this.State = state ?? throw new ArgumentNullException(nameof(state));
         }
     }
 }

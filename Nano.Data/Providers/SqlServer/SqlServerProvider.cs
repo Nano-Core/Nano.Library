@@ -21,10 +21,7 @@ namespace Nano.Data.Providers.SqlServer
         /// <param name="options">The <see cref="DataOptions"/>.</param>
         public SqlServerProvider(DataOptions options)
         {
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
-
-            this.Options = options;
+            this.Options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// <inheritdoc />

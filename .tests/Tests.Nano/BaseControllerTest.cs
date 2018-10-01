@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Nano.Eventing.Interfaces;
-using Nano.Services.Interfaces;
+using Nano.Repository.Interfaces;
 using Nano.Web.Controllers;
 using Nano.Web.Hosting;
 

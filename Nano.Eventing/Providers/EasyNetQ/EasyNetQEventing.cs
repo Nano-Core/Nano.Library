@@ -20,10 +20,7 @@ namespace Nano.Eventing.Providers.EasyNetQ
         /// <param name="bus">The <see cref="IBus"/>.</param>
         public EasyNetQEventing(IBus bus)
         {
-            if (bus == null)
-                throw new ArgumentNullException(nameof(bus));
-
-            this.Bus = bus;
+            this.Bus = bus ?? throw new ArgumentNullException(nameof(bus));
         }
 
         /// <inheritdoc />

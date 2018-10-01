@@ -2,12 +2,12 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
-using Nano.Services.Interfaces;
+using Nano.Repository.Interfaces;
 
 namespace Nano.Console.Workers
 {
     /// <summary>
-    /// Default Hosted Service.
+    /// Default Worker.
     /// </summary>
     public class DefaultWorker : BaseWorker<IRepository>
     {

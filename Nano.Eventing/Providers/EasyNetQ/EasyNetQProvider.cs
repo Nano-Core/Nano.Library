@@ -21,10 +21,7 @@ namespace Nano.Eventing.Providers.EasyNetQ
         /// <param name="options">The <see cref="EventingOptions"/>.</param>
         public EasyNetQProvider(EventingOptions options)
         {
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
-
-            this.Options = options;
+            this.Options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// <inheritdoc />

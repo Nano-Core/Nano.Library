@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Config.Extensions;
-using Nano.Services;
-using Nano.Services.Interfaces;
+using Nano.Repository;
+using Nano.Repository.Interfaces;
 
 namespace Nano.Console.Extensions
 {

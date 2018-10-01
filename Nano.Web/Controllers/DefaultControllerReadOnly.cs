@@ -3,7 +3,7 @@ using DynamicExpression.Interfaces;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
 using Nano.Models.Interfaces;
-using Nano.Services.Interfaces;
+using Nano.Repository.Interfaces;
 
 namespace Nano.Web.Controllers
 {

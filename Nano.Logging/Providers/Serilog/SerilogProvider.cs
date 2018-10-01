@@ -21,10 +21,7 @@ namespace Nano.Logging.Providers.Serilog
         /// <param name="options">The <see cref="LoggingOptions"/>.</param>
         public SerilogProvider(LoggingOptions options)
         {
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
-
-            this.Options = options;
+            this.Options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// <inheritdoc />

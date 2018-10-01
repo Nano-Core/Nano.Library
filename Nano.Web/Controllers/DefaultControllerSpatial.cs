@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
 using Nano.Models;
 using Nano.Models.Criterias.Interfaces;
-using Nano.Services.Interfaces;
+using Nano.Repository.Interfaces;
 
 namespace Nano.Web.Controllers
 {
