@@ -86,6 +86,23 @@ namespace Nano.Web.Api
         }
 
         /// <summary>
+        /// Edit Many.
+        /// Invokes the 'Edit/query' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="request">The <see cref="EditManyRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The updated entities.</returns>
+        public virtual async Task<IEnumerable<TEntity>> EditQuery<TEntity>(EditQueryRequest request, CancellationToken cancellationToken = default)
+            where TEntity : IEntityUpdatable
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.Invoke<EditQueryRequest, IEnumerable<TEntity>>(request, cancellationToken);
+        }
+
+        /// <summary>
         /// Delete.
         /// Invokes the 'delete' endpoint of the api.
         /// </summary>
@@ -117,6 +134,23 @@ namespace Nano.Web.Api
                 throw new ArgumentNullException(nameof(request));
 
             await this.Invoke<DeleteManyRequest, TEntity>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Delete Query.
+        /// Invokes the 'delete/query' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="request">The <see cref="DeleteManyRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Nothing.</returns>
+        public virtual async Task DeleteQuery<TEntity>(DeleteQueryRequest request, CancellationToken cancellationToken = default)
+            where TEntity : IEntityDeletable
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            await this.Invoke<DeleteQueryRequest, TEntity>(request, cancellationToken);
         }
     }
 }
