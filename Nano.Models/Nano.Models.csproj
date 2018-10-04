@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DynamicExpression" Version="2.0.0" />
+    <PackageReference Include="DynamicExpression" Version="2.0.1" />
     <PackageReference Include="libphonenumber-csharp" Version="8.9.14" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
     <PackageReference Include="NetTopologySuite" Version="1.15.1" />
