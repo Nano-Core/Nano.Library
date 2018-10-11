@@ -21,13 +21,13 @@ namespace Nano.Web.Hosting
         public const string HTML = "text/html";
         
         /// <summary>
-        /// Html ("text/plain").
+        /// Text ("text/plain").
         /// </summary>
         public const string TEXT = "text/plain";
         
         /// <summary>
-        /// Html ("application/x-www-form-urlencoded").
+        /// Form ("application/x-www-form-urlencoded").
         /// </summary>
-        public const string FROM = "application/x-www-form-urlencoded";
+        public const string FORM = "application/x-www-form-urlencoded";
     }
 }
