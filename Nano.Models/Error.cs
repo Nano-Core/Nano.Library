@@ -23,6 +23,11 @@ namespace Nano.Models
         /// </summary>
         public virtual int StatusCode { get; set; } = 500;
 
+        /// <summary>
+        /// Translation Code.
+        /// </summary>
+        public virtual long TranslationCode { get; set; }
+
         /// <inheritdoc />
         public override string ToString()
         {
