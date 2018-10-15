@@ -35,36 +35,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Hosting\Documentation\.xmldoc\Nano.App.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Hosting\Documentation\.xmldoc\Nano.Config.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Hosting\Documentation\.xmldoc\Nano.Console.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Hosting\Documentation\.xmldoc\Nano.Data.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Hosting\Documentation\.xmldoc\Nano.Eventing.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Hosting\Documentation\.xmldoc\Nano.Logging.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Hosting\Documentation\.xmldoc\Nano.Models.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Hosting\Documentation\.xmldoc\Nano.Repository.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Hosting\Documentation\.xmldoc\Nano.Security.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Hosting\Documentation\.xmldoc\Nano.Web.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.App.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Config.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Console.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Data.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Eventing.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Logging.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Models.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Repository.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Security.xml" />
+    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Web.xml" />
   </ItemGroup>
   
   <ItemGroup>

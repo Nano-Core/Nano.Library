@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Nano.Models;
+using Nano.Web.Hosting.Exceptions;
 using Nano.Web.Hosting.Extensions;
 using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
@@ -47,7 +48,9 @@ namespace Nano.Web.Hosting.Middleware
                 var error = new Error
                 {
                     Summary = "Internal Server Error",
-                    Exceptions = new[] {ex.GetBaseException().Message}
+                    Exceptions = new[] {ex.GetBaseException().Message},
+                    StatusCode = 500,
+                    TranslationCode = ex is TranslationException translationException ? translationException.Code : -1
                 };
 
                 var result =
