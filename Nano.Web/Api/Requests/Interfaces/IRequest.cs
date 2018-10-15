@@ -9,21 +9,12 @@ namespace Nano.Web.Api.Requests.Interfaces
     public interface IRequest
     {
         /// <summary>
-        /// Action.
-        /// </summary>
-        string Action { get; set; }
-
-        /// <summary>
-        /// Controller.
-        /// </summary>
-        string Controller { get; set; }
-
-        /// <summary>
         /// Returns the Uri for the request.
         /// </summary>
+        /// <typeparam name="TResponse">The type of response.</typeparam>
         /// <param name="apiOptions">The <see cref="ApiOptions"/>.</param>
         /// <returns>The <see cref="Uri"/>.</returns>
-        Uri GetUri(ApiOptions apiOptions);
+        Uri GetUri<TResponse>(ApiOptions apiOptions);
 
         /// <summary>
         /// Get the collection  querystring  key/values.

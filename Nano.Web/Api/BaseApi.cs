@@ -49,7 +49,7 @@ namespace Nano.Web.Api
             };
 
             this.httpClient.DefaultRequestHeaders.Accept
-                .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                .Add(new MediaTypeWithQualityHeaderValue(HttpContentType.JSON));
         }
 
         /// <summary>
@@ -70,11 +70,7 @@ namespace Nano.Web.Api
 
             var taskCompletion = new TaskCompletionSource<TResponse>();
 
-            request.Controller = request.Controller ?? (typeof(TResponse).IsGenericType
-                ? $"{typeof(TResponse).GenericTypeArguments[0].Name}s"
-                : $"{typeof(TResponse).Name.ToLower()}s");
-
-            await this.ProcessRequestAsync(request)
+            await this.ProcessRequestAsync<TRequest, TResponse>(request)
                 .ContinueWith(async x =>
                 {
                     if (x.IsFaulted)
@@ -110,7 +106,7 @@ namespace Nano.Web.Api
                 Login = this.apiOptions.Login
             };
 
-            await this.ProcessRequestAsync(loginRequest)
+            await this.ProcessRequestAsync<LoginRequest, AccessToken>(loginRequest)
                 .ContinueWith(async x =>
                 {
                     var result = await x;
@@ -120,13 +116,13 @@ namespace Nano.Web.Api
                     this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this.accessToken.Token);
                 });
         }
-        private async Task<HttpResponseMessage> ProcessRequestAsync<TRequest>(TRequest request)
+        private async Task<HttpResponseMessage> ProcessRequestAsync<TRequest, TResponse>(TRequest request)
             where TRequest : class, IRequest
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var uri = request.GetUri(this.apiOptions);
+            var uri = request.GetUri<TResponse>(this.apiOptions);
 
             switch (request)
             {

@@ -8,25 +8,33 @@ namespace Nano.Web.Api.Requests
     /// <inheritdoc />
     public abstract class BaseRequest : IRequest
     {
-        /// <inheritdoc />
-        public virtual string Action { get; set; }
+        /// <summary>
+        /// Controller.
+        /// </summary>
+        public virtual string Action { get; protected set; }
+
+        /// <summary>
+        /// Controller.
+        /// </summary>
+        public virtual string Controller { get; protected set; }
 
         /// <inheritdoc />
-        public virtual string Controller { get; set; }
-
-        /// <inheritdoc />
-        public virtual Uri GetUri(ApiOptions apiOptions)
+        public virtual Uri GetUri<TResponse>(ApiOptions apiOptions)
         {
             if (apiOptions == null)
                 throw new ArgumentNullException(nameof(apiOptions));
 
+            var type = typeof(TResponse);
             var protocol = apiOptions.UseSsl ? "https://" : "http://";
+            var controller = this.Controller ?? (type.IsGenericType
+                ? $"{type.GenericTypeArguments[0].Name}s"
+                : $"{type.Name.ToLower()}s");
             var parameters = this.GetQueryStringParameters()
                 .Select(x => x.Value == null 
                     ? Uri.EscapeDataString(x.Key) 
                     : Uri.EscapeDataString(x.Key) + "=" + Uri.EscapeDataString(x.Value));
             var queryString = string.Join("&", parameters);
-            var uri = new Uri($"{protocol}{apiOptions.Host}:{apiOptions.Port}/{apiOptions.Root}/{this.Controller}/{this.Action}?{queryString}");
+            var uri = new Uri($"{protocol}{apiOptions.Host}:{apiOptions.Port}/{apiOptions.Root}/{controller}/{this.Action}?{queryString}");
 
             return uri;
         }
