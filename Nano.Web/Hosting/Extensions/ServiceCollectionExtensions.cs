@@ -138,6 +138,8 @@ namespace Nano.Web.Hosting.Extensions
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
+            // BUG: We cant do Read-only and Writable, cause it's not based on the Api but on each controller.
+
             AppDomain.CurrentDomain
                 .GetAssemblies()
                 .SelectMany(y => y.GetTypes())
