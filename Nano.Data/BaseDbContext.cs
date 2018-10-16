@@ -113,6 +113,9 @@ namespace Nano.Data
                 return;
 
             var securityOptions = this.GetService<SecurityOptions>() ?? new SecurityOptions();
+            var adminUsername = securityOptions.User.AdminUsername ?? "username";
+            var adminPassword = securityOptions.User.AdminPassword ?? "password";
+            var adminEmailAddress = securityOptions.User.AdminEmailAddress ?? "admin@admin.com";
 
             await this.AddRole("guest");
             await this.AddRole("reader");
@@ -120,7 +123,7 @@ namespace Nano.Data
             await this.AddRole("service");
             await this.AddRole("administrator");
 
-            var adminUser = await this.AddUser(securityOptions.User.AdminUsername, securityOptions.User.AdminPassword, securityOptions.User.AdminEmailAddress);
+            var adminUser = await this.AddUser(adminUsername, adminPassword, adminEmailAddress);
 
             await this.AddUserToRole(adminUser, "service");
             await this.AddUserToRole(adminUser, "administrator");
@@ -294,16 +297,13 @@ namespace Nano.Data
 
             return await roleManager.FindByNameAsync(role);
         }
-        private async Task<IdentityUser> AddUser(string username, string password, string emailAddress)
+        private async Task<IdentityUser> AddUser(string username, string password, string emailAddress = null)
         {
             if (username == null)
                 throw new ArgumentNullException(nameof(username));
 
             if (password == null)
                 throw new ArgumentNullException(nameof(password));
-
-            if (emailAddress == null)
-                throw new ArgumentNullException(nameof(emailAddress));
 
             var userManager = this.GetService<UserManager<IdentityUser>>();
 
