@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -6,6 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.Models;
+using Nano.Models.Interfaces;
+using Nano.Web.Api.Requests;
 using Nano.Web.Api.Requests.Auth;
 using Nano.Web.Api.Requests.Interfaces;
 using Nano.Web.Hosting;
@@ -50,6 +53,223 @@ namespace Nano.Web.Api
 
             this.httpClient.DefaultRequestHeaders.Accept
                 .Add(new MediaTypeWithQualityHeaderValue(HttpContentType.JSON));
+        }
+
+        /// <summary>
+        /// Index.
+        /// Invokes the 'index' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="request">The <see cref="IndexRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The matching entities.</returns>
+        public virtual async Task<IEnumerable<TEntity>> Index<TEntity>(IndexRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.Invoke<IndexRequest, IEnumerable<TEntity>>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Query.
+        /// Invokes the 'query' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="request">The <see cref="QueryRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The matching entities.</returns>
+        public virtual async Task<IEnumerable<TEntity>> Query<TEntity>(QueryRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.Invoke<QueryRequest, IEnumerable<TEntity>>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Details.
+        /// Invokes the 'details' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="request">The <see cref="DetailsRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The matching entities.</returns>
+        public virtual async Task<TEntity> Details<TEntity>(DetailsRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.Invoke<DetailsRequest, TEntity>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Create.
+        /// Invokes the 'create' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="request">The <see cref="CreateRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The created entity.</returns>
+        public virtual async Task<TEntity> Create<TEntity>(CreateRequest request, CancellationToken cancellationToken = default)
+            where TEntity : IEntityCreatable
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.Invoke<CreateRequest, TEntity>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Create Many.
+        /// Invokes the 'create/many' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="request">The <see cref="CreateManyRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The created entities.</returns>
+        public virtual async Task<IEnumerable<TEntity>> CreateMany<TEntity>(CreateManyRequest request, CancellationToken cancellationToken = default)
+            where TEntity : IEntityCreatable
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.Invoke<CreateManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Edit.
+        /// Invokes the 'edit' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="request">The <see cref="EditRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The updated entity.</returns>
+        public virtual async Task<TEntity> Edit<TEntity>(EditRequest request, CancellationToken cancellationToken = default)
+            where TEntity : IEntityUpdatable
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.Invoke<EditRequest, TEntity>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Edit Many.
+        /// Invokes the 'Edit/many' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="request">The <see cref="EditManyRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The updated entities.</returns>
+        public virtual async Task<IEnumerable<TEntity>> EditMany<TEntity>(EditManyRequest request, CancellationToken cancellationToken = default)
+            where TEntity : IEntityUpdatable
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.Invoke<EditManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Edit Many.
+        /// Invokes the 'Edit/query' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="request">The <see cref="EditManyRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The updated entities.</returns>
+        public virtual async Task<IEnumerable<TEntity>> EditQuery<TEntity>(EditQueryRequest request, CancellationToken cancellationToken = default)
+            where TEntity : IEntityUpdatable
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.Invoke<EditQueryRequest, IEnumerable<TEntity>>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Delete.
+        /// Invokes the 'delete' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="request">The <see cref="DeleteRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Nothing.</returns>
+        public virtual async Task Delete<TEntity>(DeleteRequest request, CancellationToken cancellationToken = default)
+            where TEntity : IEntityDeletable
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            await this.Invoke<DeleteRequest, TEntity>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Delete Many.
+        /// Invokes the 'delete/many' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="request">The <see cref="DeleteManyRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Nothing.</returns>
+        public virtual async Task DeleteMany<TEntity>(DeleteManyRequest request, CancellationToken cancellationToken = default)
+            where TEntity : IEntityDeletable
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            await this.Invoke<DeleteManyRequest, TEntity>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Delete Query.
+        /// Invokes the 'delete/query' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="request">The <see cref="DeleteManyRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Nothing.</returns>
+        public virtual async Task DeleteQuery<TEntity>(DeleteQueryRequest request, CancellationToken cancellationToken = default)
+            where TEntity : IEntityDeletable
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            await this.Invoke<DeleteQueryRequest, TEntity>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Invokes a custom request and returns void.
+        /// </summary>
+        /// <typeparam name="TRequest">The request type.</typeparam>
+        /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Nothing (void).</returns>
+        public virtual async Task Custom<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : class, IRequest
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            await this.Invoke<TRequest, object>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Invokes a custom request and returns a response.
+        /// </summary>
+        /// <typeparam name="TRequest">The request type.</typeparam>
+        /// <typeparam name="TResponse">The response type.</typeparam>
+        /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
+        public virtual async Task<TResponse> Custom<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : class, IRequest
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.Invoke<TRequest, TResponse>(request, cancellationToken);
         }
 
         /// <summary>

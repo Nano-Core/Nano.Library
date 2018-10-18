@@ -5,18 +5,19 @@ using Nano.Web.Api.Requests.Interfaces;
 
 namespace Nano.Web.Api.Requests
 {
+
     /// <inheritdoc />
     public abstract class BaseRequest : IRequest
     {
         /// <summary>
         /// Controller.
         /// </summary>
-        public virtual string Action { get; protected set; }
+        public virtual string Action { get; set; }
 
         /// <summary>
         /// Controller.
         /// </summary>
-        public virtual string Controller { get; protected set; }
+        public virtual string Controller { get; set; }
 
         /// <inheritdoc />
         public virtual Uri GetUri<TResponse>(ApiOptions apiOptions)
