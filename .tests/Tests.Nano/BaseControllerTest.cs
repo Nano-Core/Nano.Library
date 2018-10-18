@@ -10,27 +10,47 @@ using Nano.Web.Hosting;
 
 namespace Tests.Nano
 {
+    /// <inheritdoc />
     public abstract class BaseControllerTest<TController> : BaseTest
         where TController : BaseController<IRepository>
     {
+        /// <summary>
+        /// Controller.
+        /// THe initialized controller of type <typeparamref name="TController"/>.
+        /// All dependencies has been mocked and resolved, and is ready for invoking actions.
+        /// </summary>
         protected virtual TController Controller { get; set; }
+
+        /// <summary>
+        /// Logger.
+        /// </summary>
         protected virtual Mock<ILogger> Logger { get; set; } = new Mock<ILogger>();
-        protected virtual Mock<IRepository> Service { get; set; } = new Mock<IRepository>();
+
+        /// <summary>
+        /// Eventing.
+        /// </summary>
         protected virtual Mock<IEventing> Eventing { get; set; } = new Mock<IEventing>();
 
+        /// <summary>
+        /// Repository.
+        /// </summary>
+        protected virtual Mock<IRepository> Repository { get; set; } = new Mock<IRepository>();
+
+        /// <inheritdoc />
         [TestCleanup]
         public override void Cleanup()
         {
             this.Logger = null;
-            this.Service = null;
+            this.Repository = null;
             this.Eventing = null;
             this.Controller = null;
         }
 
+        /// <inheritdoc />
         [TestInitialize]
         public override void Initialize()
         {
-            var controllerMock = new Mock<TController>(this.Logger.Object, this.Service.Object, this.Eventing.Object)
+            var controllerMock = new Mock<TController>(this.Logger.Object, this.Repository.Object, this.Eventing.Object)
             {
                 CallBase = true
             };
