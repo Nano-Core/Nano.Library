@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Nano.Models.Interfaces;
 
 namespace Nano.Repository.Interfaces
-{ 
+{
     /// <summary>
     /// (Base) Interface for a repository.
     /// Defines methods for the most rudamentory operations (get, criteria2, add, update, delete) on instances of <see cref="IEntity"/>.
@@ -39,6 +39,46 @@ namespace Nano.Repository.Interfaces
         /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
         Task<TEntity> GetAsync<TEntity, TIdentity>(TIdentity key, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityIdentity<TIdentity>;
+
+        /// <summary>
+        /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="key">The unique key.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
+        Task<TEntity> GetAsync<TEntity>(int key, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<int>;
+
+        /// <summary>
+        /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="key">The unique key.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
+        Task<TEntity> GetAsync<TEntity>(long key, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<long>;
+
+        /// <summary>
+        /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="key">The unique key.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
+        Task<TEntity> GetAsync<TEntity>(string key, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<string>;
+        
+        /// <summary>
+        /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="key">The unique key.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
+        Task<TEntity> GetAsync<TEntity>(Guid key, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<Guid>;
 
         /// <summary>
         /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
@@ -235,5 +275,37 @@ namespace Nano.Repository.Interfaces
         /// <returns>The <see cref="Task"/> (void).</returns>
         Task DeleteManyAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable;
+
+        /// <summary>
+        /// Returns the count (long) of elements satisfying the passed expression.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="expression">The <see cref="Expression"/> to evaulate entities to be included in the count.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The number of elements.</returns>
+        Task<long> CountAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity;
+
+        /// <summary>
+        /// Returns the sum of the passed sum expression, conditioned by passed where expression.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="whereExpr">The <see cref="Expression"/> to evaulate entities to be included in the count.</param>
+        /// <param name="sumExpr">The property expression of what to summarize.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The sum.</returns>
+        Task<decimal> SumAsync<TEntity>(Expression<Func<TEntity, bool>> whereExpr, Expression<Func<TEntity, decimal>> sumExpr, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity;
+
+        /// <summary>
+        /// Returns the average of the passed sum expression, conditioned by passed where expression.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="whereExpr">The <see cref="Expression"/> to evaulate entities to be included in the count.</param>
+        /// <param name="avgExpr">THe property expression of what to average.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The average.</returns>
+        Task<decimal> AverageAsync<TEntity>(Expression<Func<TEntity, bool>> whereExpr, Expression<Func<TEntity, decimal>> avgExpr, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity;
     }
 }

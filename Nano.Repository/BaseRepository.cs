@@ -22,7 +22,7 @@ namespace Nano.Repository
         /// <summary>
         /// Context.
         /// </summary>
-        protected virtual TContext Context { get; }
+        internal virtual TContext Context { get; }
 
         /// <inheritdoc />
         public virtual bool IsLazyLoadingEnabled
@@ -63,6 +63,41 @@ namespace Nano.Repository
                 .IncludeAnnotations(indent)
                 .FirstOrDefaultAsync(x => x.Id.Equals(key), cancellationToken);
         }
+        
+        /// <inheritdoc />
+        public virtual async Task<TEntity> GetAsync<TEntity>(int key, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<int>
+        {
+            return await this
+                .GetAsync<TEntity, int>(key, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<TEntity> GetAsync<TEntity>(long key, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<long>
+        {
+            return await this
+                .GetAsync<TEntity, long>(key, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<TEntity> GetAsync<TEntity>(string key, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<string>
+        {
+            return await this
+                .GetAsync<TEntity, string>(key, cancellationToken);
+        }
+        
+        /// <inheritdoc />
+        public virtual async Task<TEntity> GetAsync<TEntity>(Guid key, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<Guid>
+        {
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+
+            return await this
+                .GetAsync<TEntity, Guid>(key, cancellationToken);
+        }
 
         /// <inheritdoc />
         public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TIdentity>(IEnumerable<TIdentity> keys, CancellationToken cancellationToken = default)
@@ -72,7 +107,7 @@ namespace Nano.Repository
                 throw new ArgumentNullException(nameof(keys));
 
             return await this.GetEntitySet<TEntity>()
-                .Where(x => keys.Any(y => y.Equals(x)))
+                .Where(x => keys.Any(y => y.Equals(x.Id)))
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -342,6 +377,47 @@ namespace Nano.Repository
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<long> CountAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+        {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            return await this.GetEntitySet<TEntity>()
+                .LongCountAsync(expression, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<decimal> SumAsync<TEntity>(Expression<Func<TEntity, bool>> whereExpr, Expression<Func<TEntity, decimal>> sumExpr, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+        {
+            if (whereExpr == null)
+                throw new ArgumentNullException(nameof(whereExpr));
+            
+            if (sumExpr == null) 
+                throw new ArgumentNullException(nameof(sumExpr));
+
+            return await this.GetEntitySet<TEntity>()
+                .Where(whereExpr)
+                .SumAsync(sumExpr, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<decimal> AverageAsync<TEntity>(Expression<Func<TEntity, bool>> whereExpr, Expression<Func<TEntity, decimal>> avgExpr, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+        {
+            if (whereExpr == null)
+                throw new ArgumentNullException(nameof(whereExpr));
+
+            if (avgExpr == null) 
+                throw new ArgumentNullException(nameof(avgExpr));
+
+            return await this.GetEntitySet<TEntity>()
+                .Where(whereExpr)
+                .AverageAsync(avgExpr, cancellationToken);
         }
 
         /// <inheritdoc />
