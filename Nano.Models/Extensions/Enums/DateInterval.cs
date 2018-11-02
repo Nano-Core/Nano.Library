@@ -8,21 +8,21 @@ namespace Nano.Models.Extensions.Enums
         /// <summary>
         /// Daily.
         /// </summary>
-        Dayly,
+        Dayly = 1,
 
         /// <summary>
         /// Weekly.
         /// </summary>
-        Weekly,
+        Weekly = 2,
 
         /// <summary>
         /// Monthly.
         /// </summary>
-        Monthly,
+        Monthly = 3,
 
         /// <summary>
         /// Yearly.
         /// </summary>
-        Yearly
+        Yearly = 4
     }
 }
