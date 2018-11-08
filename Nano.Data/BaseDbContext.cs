@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using EntityFrameworkCore.Triggers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +15,14 @@ using Microsoft.Extensions.Caching.Memory;
 using Nano.Data.Attributes;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
+using Nano.Eventing.Attributes;
+using Nano.Eventing.Interfaces;
 using Nano.Models;
+using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Security;
 using Newtonsoft.Json;
+using Z.EntityFramework.Plus;
 
 namespace Nano.Data
 {
@@ -100,6 +105,87 @@ namespace Nano.Data
             modelBuilder
                 .Entity<IdentityRole>()
                 .ToTable("__EFAuthRole");
+        }
+
+        /// <inheritdoc />
+        public override int SaveChanges()
+        {
+            return this.SaveChanges(true);
+        }
+
+        /// <inheritdoc />
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            var pendingEvents = this.GetPendingEntityEvents();
+
+            this.SaveSoftDeletion();
+            this.SaveAudit();
+
+            var success = base
+                .SaveChanges(acceptAllChangesOnSuccess);
+
+            var eventing = this.GetService<IEventing>();
+
+            if (eventing == null)
+                return success;
+
+            this.ChangeTracker.LazyLoadingEnabled = false;
+
+            foreach (var @event in pendingEvents)
+            {
+                eventing
+                    .PublishAsync(@event, @event.Type)
+                    .ConfigureAwait(false);
+            }
+
+            this.ChangeTracker.LazyLoadingEnabled = true;
+
+            return success;
+        }
+
+        /// <inheritdoc />
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            return await this.SaveChangesAsync(true, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        {
+            var pendingEvents = this.GetPendingEntityEvents();
+
+            this.SaveSoftDeletion();
+            this.SaveAudit();
+
+            var success = await this
+                .SaveChangesWithTriggersAsync(base.SaveChangesAsync, acceptAllChangesOnSuccess, cancellationToken)
+                .ContinueWith(async x =>
+            {
+                if (x.IsFaulted)
+                    return await x;
+
+                if (x.IsCanceled)
+                    return await x;
+
+                var eventing = this.GetService<IEventing>();
+
+                if (eventing == null)
+                    return await x;
+
+                this.ChangeTracker.LazyLoadingEnabled = false;
+
+                foreach (var @event in pendingEvents)
+                {
+                    await eventing
+                        .PublishAsync(@event, @event.Type);
+                }
+
+                this.ChangeTracker.LazyLoadingEnabled = true;
+
+                return await x;
+            }, cancellationToken);
+
+            return await success;
         }
 
         /// <summary>
@@ -277,6 +363,60 @@ namespace Nano.Data
             {
                 this.AddOrUpdate(entity);
             }
+        }
+
+        private void SaveAudit()
+        {
+            if (!this.Options.UseAudit)
+                return;
+
+            var audit = new Audit();
+            audit.PreSaveChanges(this);
+            audit.Configuration.AutoSavePreAction?.Invoke(this, audit);
+            audit.PostSaveChanges();
+        }
+        private void SaveSoftDeletion()
+        {
+            if (!this.Options.UseSoftDeletetion)
+                return;
+
+            this.ChangeTracker
+                .Entries<IEntityDeletableSoft>()
+                .Where(x => x.State == EntityState.Deleted)
+                .ToList()
+                .ForEach(x =>
+                {
+                    x.State = EntityState.Modified;
+                    x.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
+                });
+        }
+        private IEnumerable<EntityEvent> GetPendingEntityEvents()
+        {
+            return this.ChangeTracker
+                .Entries<IEntity>()
+                .Where(x =>
+                    x.Entity.GetType().IsTypeDef(typeof(IEntityIdentity<>)) &&
+                    x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
+                    (x.State == EntityState.Added || x.State == EntityState.Deleted))
+                .Select(x =>
+                {
+                    var name = x.Entity.GetType().Name.Replace("Proxy", "");
+                    var state = x.State.ToString();
+
+                    switch (x.Entity)
+                    {
+                        case IEntityIdentity<Guid> guid:
+                            return new EntityEvent(guid.Id, name, state);
+
+                        case IEntityIdentity<dynamic> dynamic:
+                            return new EntityEvent(dynamic.Id, name, state);
+
+                        default:
+                            return null;
+                    }
+                })
+                .Where(x => x != null)
+                .ToArray();
         }
 
         private async Task<IdentityRole> AddRole(string role)
