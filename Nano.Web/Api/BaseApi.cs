@@ -94,13 +94,29 @@ namespace Nano.Web.Api
         /// <typeparam name="TEntity">The entity type.</typeparam>
         /// <param name="request">The <see cref="DetailsRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The matching entities.</returns>
+        /// <returns>The matching entity.</returns>
         public virtual async Task<TEntity> Details<TEntity>(DetailsRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
             return await this.Invoke<DetailsRequest, TEntity>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Details Many.
+        /// Invokes the 'details' endpoint of the api, with multiple id's.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="request">The <see cref="DetailsManyRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The matching entities.</returns>
+        public virtual async Task<IEnumerable<TEntity>> Details<TEntity>(DetailsManyRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.Invoke<DetailsManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>

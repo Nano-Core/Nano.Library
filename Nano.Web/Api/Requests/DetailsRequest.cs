@@ -20,6 +20,5 @@ namespace Nano.Web.Api.Requests
         {
             this.Action = "details";
         }
-
     }
 }
