@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DynamicExpression.Interfaces;
 using Nano.Models;
 using Nano.Models.Interfaces;
 using Nano.Web.Api.Requests;
@@ -76,15 +77,17 @@ namespace Nano.Web.Api
         /// Invokes the 'query' endpoint of the api.
         /// </summary>
         /// <typeparam name="TEntity">The entity type.</typeparam>
-        /// <param name="request">The <see cref="QueryRequest"/>.</param>
+        /// <typeparam name="TCriteria">The criteira type</typeparam>
+        /// <param name="request">The <see cref="QueryRequest{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The matching entities.</returns>
-        public virtual async Task<IEnumerable<TEntity>> Query<TEntity>(QueryRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> Query<TEntity, TCriteria>(QueryRequest<TCriteria> request, CancellationToken cancellationToken = default) 
+            where TCriteria : IQueryCriteria, new()
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.Invoke<QueryRequest, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.Invoke<QueryRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>

@@ -1,17 +1,19 @@
-﻿using DynamicExpression.Interfaces;
-using Nano.Models.Criterias;
+﻿using DynamicExpression.Entities;
+using DynamicExpression.Interfaces;
 
 namespace Nano.Web.Api.Requests
 {
     /// <summary>
     /// Query Request.
     /// </summary>
-    public class QueryRequest : BaseRequestJson
+    /// <typeparam name="TCriteria">The type of <see cref="IQueryCriteria"/>.</typeparam>
+    public class QueryRequest<TCriteria> : BaseRequestJson
+        where TCriteria : IQueryCriteria, new()
     {
         /// <summary>
-        /// Query Criteria.
+        /// Query.
         /// </summary>
-        public virtual IQueryCriteria QueryCriteria { get; set; } = new DefaultQueryCriteria();
+        public virtual IQuery<TCriteria> Query { get; set; } = new Query<TCriteria>();
 
         /// <summary>
         /// Constructor.
@@ -24,7 +26,7 @@ namespace Nano.Web.Api.Requests
         /// <inheritdoc />
         public override object GetBody()
         {
-            return this.QueryCriteria;
+            return this.Query;
         }
     }
 }
