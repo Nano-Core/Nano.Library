@@ -18,7 +18,7 @@ namespace Nano.Web.Api.Requests
         /// </summary>
         public DetailsRequest()
         {
-            this.Action = "details";
+            this.Action = $"details/{this.Id}";
         }
     }
 }
