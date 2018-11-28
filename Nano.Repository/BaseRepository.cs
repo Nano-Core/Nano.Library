@@ -100,6 +100,18 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
+        public virtual async Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+        {
+            if (where == null)
+                throw new ArgumentNullException(nameof(where));
+
+            return await this.GetEntitySet<TEntity>()
+                .Where(where)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
         public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TIdentity>(IEnumerable<TIdentity> keys, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityIdentity<TIdentity>
         {

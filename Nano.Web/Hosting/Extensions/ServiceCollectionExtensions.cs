@@ -97,11 +97,11 @@ namespace Nano.Web.Hosting.Extensions
                     x.Conventions.Insert(0, routePrefixConvention);
                     x.ModelBinderProviders.Insert(0, queryModelBinderProvider);
 
-                    if (dataOptions.ConnectionString == null)
-                        x.Conventions.Insert(0, new AduitControllerDisabledConvention());
-
                     if (!securityOptions.IsEnabled)
-                        x.Conventions.Insert(1, new AuthControllerDisabledConvention());
+                        x.Conventions.Insert(0, new AuthControllerDisabledConvention());
+
+                    if (dataOptions.ConnectionString == null)
+                        x.Conventions.Insert(1, new AduitControllerDisabledConvention());
 
                     if (options.Hosting.UseSsl)
                         x.Filters.Add<RequireHttpsAttribute>();
@@ -264,7 +264,6 @@ namespace Nano.Web.Hosting.Extensions
                     x.IgnoreObsoleteProperties();
                     x.DescribeAllEnumsAsStrings();
                     x.OrderActionsBy(y => y.RelativePath);
-
                     x.DocumentFilter<LowercaseDocumentFilter>();
 
                     x.SwaggerDoc(appOptions.Version, new Info

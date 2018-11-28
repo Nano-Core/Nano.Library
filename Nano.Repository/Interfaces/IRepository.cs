@@ -43,7 +43,7 @@ namespace Nano.Repository.Interfaces
         /// <summary>
         /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
         /// </summary>
-        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <typeparam name="TEntity">The <see cref="IEntityIdentity{Int32}"/> type.</typeparam>
         /// <param name="key">The unique key.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
@@ -53,7 +53,7 @@ namespace Nano.Repository.Interfaces
         /// <summary>
         /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
         /// </summary>
-        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <typeparam name="TEntity">The <see cref="IEntityIdentity{Int64}"/> type.</typeparam>
         /// <param name="key">The unique key.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
@@ -63,7 +63,7 @@ namespace Nano.Repository.Interfaces
         /// <summary>
         /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
         /// </summary>
-        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <typeparam name="TEntity">The <see cref="IEntityIdentity{String}"/> type.</typeparam>
         /// <param name="key">The unique key.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
@@ -73,12 +73,22 @@ namespace Nano.Repository.Interfaces
         /// <summary>
         /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
         /// </summary>
-        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <typeparam name="TEntity">The <see cref="IEntityIdentity{Guid}"/> type.</typeparam>
         /// <param name="key">The unique key.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
         Task<TEntity> GetAsync<TEntity>(Guid key, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityIdentity<Guid>;
+
+        /// <summary>
+        /// Gets the fist or default instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> of the <see cref="IEntity"/>
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="where">The where clause.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The fist instance matching the passed <paramref name="where"/> clause.</returns>
+        Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity;
 
         /// <summary>
         /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
