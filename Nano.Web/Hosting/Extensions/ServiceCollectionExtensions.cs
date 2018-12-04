@@ -263,6 +263,7 @@ namespace Nano.Web.Hosting.Extensions
                     x.IgnoreObsoleteActions();
                     x.IgnoreObsoleteProperties();
                     x.DescribeAllEnumsAsStrings();
+                    x.CustomSchemaIds(y => y.FullName);
                     x.OrderActionsBy(y => y.RelativePath);
                     x.DocumentFilter<LowercaseDocumentFilter>();
 
