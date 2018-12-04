@@ -229,7 +229,7 @@ namespace Nano.Web.Controllers
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> QueryPost([FromBody][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
@@ -244,6 +244,78 @@ namespace Nano.Web.Controllers
 
             if (this.Request.IsContentTypeHtml())
                 return this.View("Index", result);
+
+            return this.Ok(result);
+        }
+        
+        /// <summary>
+        /// Gets first entity mathcing the passed query (criteria, pagination and ordering).
+        /// </summary>
+        /// <param name="query">The query model, containing filters used in the query.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
+        /// <returns>The model, matching the passed query.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpGet]
+        [Route("query/first")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> QueryFirst([FromQuery][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        {
+            query = query ?? new Query<TCriteria>();
+
+            var result = await this.Repository
+                .GetFirstAsync<TEntity, TCriteria>(query, cancellationToken);
+
+            if (result == null)
+                return this.NotFound();
+
+            if (this.Request.IsContentTypeHtml())
+                return this.View("details", result);
+
+            return this.Ok(result);
+        }
+        
+        /// <summary>
+        /// Gets first entity mathcing the passed query (criteria, pagination and ordering).
+        /// </summary>
+        /// <param name="query">The query model, containing filters used in the query.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
+        /// <returns>The model, matching the passed query.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("query/first")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> QueryFirstPost([FromQuery][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        {
+            query = query ?? new Query<TCriteria>();
+
+            var result = await this.Repository
+                .GetFirstAsync<TEntity, TCriteria>(query, cancellationToken);
+
+            if (result == null)
+                return this.NotFound();
+
+            if (this.Request.IsContentTypeHtml())
+                return this.View("details", result);
 
             return this.Ok(result);
         }

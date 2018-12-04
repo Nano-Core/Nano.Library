@@ -73,24 +73,6 @@ namespace Nano.Web.Api
         }
 
         /// <summary>
-        /// Query.
-        /// Invokes the 'query' endpoint of the api.
-        /// </summary>
-        /// <typeparam name="TEntity">The entity type.</typeparam>
-        /// <typeparam name="TCriteria">The criteira type</typeparam>
-        /// <param name="request">The <see cref="QueryRequest{TCriteria}"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The matching entities.</returns>
-        public virtual async Task<IEnumerable<TEntity>> Query<TEntity, TCriteria>(QueryRequest<TCriteria> request, CancellationToken cancellationToken = default) 
-            where TCriteria : IQueryCriteria, new()
-        {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-
-            return await this.Invoke<QueryRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
-        }
-
-        /// <summary>
         /// Details.
         /// Invokes the 'details' endpoint of the api.
         /// </summary>
@@ -120,6 +102,42 @@ namespace Nano.Web.Api
                 throw new ArgumentNullException(nameof(request));
 
             return await this.Invoke<DetailsManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Query.
+        /// Invokes the 'query' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <typeparam name="TCriteria">The criteira type</typeparam>
+        /// <param name="request">The <see cref="QueryRequest{TCriteria}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The matching entities.</returns>
+        public virtual async Task<IEnumerable<TEntity>> Query<TEntity, TCriteria>(QueryRequest<TCriteria> request, CancellationToken cancellationToken = default) 
+            where TCriteria : IQueryCriteria, new()
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.Invoke<QueryRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Query.
+        /// Invokes the 'query/first' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <typeparam name="TCriteria">The criteira type</typeparam>
+        /// <param name="request">The <see cref="QueryFirstRequest{TCriteria}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The first match entity.</returns>
+        public virtual async Task<IEnumerable<TEntity>> QueryFirst<TEntity, TCriteria>(QueryFirstRequest<TCriteria> request, CancellationToken cancellationToken = default) 
+            where TCriteria : IQueryCriteria, new()
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.Invoke<QueryFirstRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>

@@ -112,6 +112,21 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
+        public virtual async Task<TEntity> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+            where TCriteria : class, IQueryCriteria, new()
+        {
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
+
+            return await this.GetEntitySet<TEntity>()
+                .Where(query.Criteria)
+                .Order(query.Order)
+                .Limit(query.Paging)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
         public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TIdentity>(IEnumerable<TIdentity> keys, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityIdentity<TIdentity>
         {

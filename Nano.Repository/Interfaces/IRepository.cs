@@ -91,6 +91,18 @@ namespace Nano.Repository.Interfaces
             where TEntity : class, IEntity;
 
         /// <summary>
+        /// Gets the first instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="query"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/>.</typeparam>
+        /// <param name="query">The <see cref="IQuery{TCriteria}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The instances, matching the passed <paramref name="query"/>.</returns>
+        Task<TEntity> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+            where TCriteria : class, IQueryCriteria, new();
+
+        /// <summary>
         /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
