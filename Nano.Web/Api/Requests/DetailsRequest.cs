@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Nano.Web.Api.Requests.Interfaces;
 
 namespace Nano.Web.Api.Requests
@@ -6,7 +7,7 @@ namespace Nano.Web.Api.Requests
     /// <summary>
     /// Details Request.
     /// </summary>
-    public class DetailsRequest : BaseRequest, IRequestQueryString
+    public class DetailsRequest : BaseRequest, IRequestQuerystring
     {
         /// <summary>
         /// Id.
@@ -18,7 +19,18 @@ namespace Nano.Web.Api.Requests
         /// </summary>
         public DetailsRequest()
         {
-            this.Action = $"details/{this.Id}";
+            this.Action = "details";
+        }
+
+        /// <inheritdoc />
+        public override IList<string> GetRouteParameters()
+        {
+            var parameters = base.GetRouteParameters();
+
+            parameters
+                .Add(this.Id.ToString());
+
+            return parameters;
         }
     }
 }

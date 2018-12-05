@@ -21,5 +21,13 @@ namespace Nano.Web.Api.Requests.Interfaces
         /// </summary>
         /// <returns>The <see cref="IList{KeyValuePair}"/>.</returns>
         IList<KeyValuePair<string, string>> GetQueryStringParameters();
+
+        /// <summary>
+        /// Get the collection  querystring  key/values.
+        /// </summary>
+        /// <returns>The <see cref="IList{KeyValuePair}"/>.</returns>
+        IList<string> GetRouteParameters();
+
+        
     }
 }

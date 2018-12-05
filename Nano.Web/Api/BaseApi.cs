@@ -383,7 +383,7 @@ namespace Nano.Web.Api
 
             switch (request)
             {
-                case IRequestQueryString _:
+                case IRequestQuerystring _:
                     return await this.httpClient.GetAsync(uri);
 
                 case IRequestJson requestJson:

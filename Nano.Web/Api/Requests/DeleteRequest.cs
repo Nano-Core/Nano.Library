@@ -1,12 +1,12 @@
 ﻿using System;
-using Nano.Web.Api.Requests.Interfaces;
+using System.Collections.Generic;
 
 namespace Nano.Web.Api.Requests
 {
     /// <summary>
     /// Delete Request.
     /// </summary>
-    public class DeleteRequest : BaseRequest, IRequestQueryString
+    public class DeleteRequest : BaseRequestQuerystring
     {
         /// <summary>
         /// Id.
@@ -18,7 +18,18 @@ namespace Nano.Web.Api.Requests
         /// </summary>
         public DeleteRequest()
         {
-            this.Action = $"delete/{this.Id}";
+            this.Action = "delete";
+        }
+
+        /// <inheritdoc />
+        public override IList<string> GetRouteParameters()
+        {
+            var parameters = base.GetRouteParameters();
+
+            parameters
+                .Add(this.Id.ToString());
+
+            return parameters;
         }
     }
 }

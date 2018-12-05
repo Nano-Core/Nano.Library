@@ -3,7 +3,7 @@
 namespace Nano.Web.Api.Requests
 {
     /// <summary>
-    /// Details Request.
+    /// Base Request Json.
     /// </summary>
     public abstract class BaseRequestJson : BaseRequest, IRequestJson
     {

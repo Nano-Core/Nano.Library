@@ -26,18 +26,28 @@ namespace Nano.Web.Api.Requests
                 throw new ArgumentNullException(nameof(apiOptions));
 
             var type = typeof(TResponse);
+            var action = this.Action;
             var protocol = apiOptions.UseSsl ? "https://" : "http://";
             var controller = this.Controller ?? (type.IsGenericType
                 ? $"{type.GenericTypeArguments[0].Name}s"
                 : $"{type.Name.ToLower()}s");
-            var parameters = this.GetQueryStringParameters()
+            var routeParameters = this.GetRouteParameters()
+                .Aggregate("", (x, y) => x + $"/{y}");
+            var queryParameters = this.GetQueryStringParameters()
                 .Select(x => x.Value == null 
                     ? Uri.EscapeDataString(x.Key) 
                     : Uri.EscapeDataString(x.Key) + "=" + Uri.EscapeDataString(x.Value));
-            var queryString = string.Join("&", parameters);
-            var uri = new Uri($"{protocol}{apiOptions.Host}:{apiOptions.Port}/{apiOptions.Root}/{controller}/{this.Action}?{queryString}");
+            var queryString = string.Join("&", queryParameters);
 
-            return uri;
+            return new Uri($"{protocol}{apiOptions.Host}:{apiOptions.Port}/{apiOptions.Root}/{controller}/{action}{routeParameters}?{queryString}");
+        }
+
+        /// <inheritdoc />
+        public virtual IList<string> GetRouteParameters()
+        {
+            var parameters = new List<string>();
+
+            return parameters;
         }
 
         /// <inheritdoc />

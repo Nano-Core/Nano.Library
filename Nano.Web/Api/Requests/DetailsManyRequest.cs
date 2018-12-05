@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nano.Web.Api.Requests.Interfaces;
 
 namespace Nano.Web.Api.Requests
 {
     /// <summary>
     /// Details Many Request.
     /// </summary>
-    public class DetailsManyRequest : BaseRequest, IRequestJson
+    public class DetailsManyRequest : BaseRequestJson
     {
         /// <summary>
         /// Ids.
@@ -23,7 +22,7 @@ namespace Nano.Web.Api.Requests
         }
 
         /// <inheritdoc />
-        public object GetBody()
+        public override object GetBody()
         {
             return this.Ids;
         }

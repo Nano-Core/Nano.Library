@@ -373,7 +373,7 @@
             </summary>
             <returns>The body <see cref="T:System.Object"/>.</returns>
         </member>
-        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequestQueryString">
+        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequestQuerystring">
             <summary>
             Base interface for querystring requests (GET).
             </summary>
