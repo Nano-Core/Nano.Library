@@ -59,9 +59,13 @@ namespace Nano.Data.Extensions
                         ? x.Name 
                         : $"{name}.{x.Name}";
 
+                    var nextType = x.PropertyType.IsGenericType 
+                        ? x.PropertyType.GenericTypeArguments[0] 
+                        : x.PropertyType;
+
                     queryable = queryable
                         .Include(navigationName)
-                        .IncludeAnnotations(x.PropertyType, navigationName, depth - 1);
+                        .IncludeAnnotations(nextType, navigationName, depth - 1);
                 });
 
             return queryable;
