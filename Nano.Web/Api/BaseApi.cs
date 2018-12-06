@@ -384,7 +384,8 @@ namespace Nano.Web.Api
             switch (request)
             {
                 case IRequestQuerystring _:
-                    return await this.httpClient.GetAsync(uri);
+                    return await this.httpClient
+                        .GetAsync(uri);
 
                 case IRequestJson requestJson:
                     var body = requestJson.GetBody();
@@ -392,7 +393,8 @@ namespace Nano.Web.Api
 
                     using (var stringContent = new StringContent(content, Encoding.UTF8, HttpContentType.JSON))
                     {
-                        return await this.httpClient.PostAsync(uri, stringContent);
+                        return await this.httpClient
+                            .PostAsync(uri, stringContent);
                     }
 
                 default:
@@ -406,7 +408,8 @@ namespace Nano.Web.Api
 
             using (httpResponse)
             {
-                httpResponse.EnsureSuccessStatusCode();
+                httpResponse
+                    .EnsureSuccessStatusCode();
 
                 var rawJson = await httpResponse.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<TResponse>(rawJson);
