@@ -218,6 +218,7 @@ namespace Nano.Data.Models.Mappings.Extensions
             builder
                 .OwnsOne(expression)
                 .Property(x => x.AsDecimal)
+                .HasDefaultValue(0.00)
                 .IsRequired();
 
             builder
