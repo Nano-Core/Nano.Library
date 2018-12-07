@@ -44,7 +44,6 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpGet]
         [Route("index")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -118,7 +117,6 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpGet]
         [Route("details/{id}")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -188,7 +186,6 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpGet]
         [Route("query")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -261,7 +258,6 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpGet]
         [Route("query/first")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
