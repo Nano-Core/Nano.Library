@@ -17,11 +17,6 @@ namespace Nano.Models.Types
         public virtual decimal AsDecimal { get; set; }
 
         /// <summary>
-        /// Gets the percentage value as an <see cref="System.Int32"/>.
-        /// </summary>
-        public virtual int AsInteger => (int)(this.AsDecimal * 100.00M);
-
-        /// <summary>
         /// Constructor.
         /// </summary>
         public Percentage()
@@ -93,13 +88,13 @@ namespace Nano.Models.Types
         }
 
         /// <summary>
-        /// Gets the <see cref="Percentage"/> value as a <see cref="string"/>.
-        /// The <see cref="string"/> is formatted like: $"{<see cref="Percentage.AsInteger"/>}%"   
+        /// Gets the <see cref="Percentage"/> value as a string.
+        /// Format: $"{this.AsDecimal * 100.00M}%". 
         /// </summary>
-        /// <returns>A <see cref="string"/> formatted as a percentage value, where '%' is appended.</returns>
+        /// <returns>A string formatted as a percentage value, where '%' is appended.</returns>
         public override string ToString()
         {
-            return $"{this.AsInteger}%";
+            return $"{this.AsDecimal * 100.00M}%";
         }
 
         /// <summary>

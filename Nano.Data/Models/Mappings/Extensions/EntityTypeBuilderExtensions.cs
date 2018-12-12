@@ -313,10 +313,6 @@ namespace Nano.Data.Models.Mappings.Extensions
             builder
                 .OwnsOne(expression)
                 .HasIndex(x => x.AsDecimal);
-
-            builder
-                .OwnsOne(expression)
-                .Ignore(x => x.AsInteger);
         }
 
         /// <summary>
