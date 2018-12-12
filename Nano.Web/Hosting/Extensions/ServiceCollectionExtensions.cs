@@ -277,7 +277,7 @@ namespace Nano.Web.Hosting.Extensions
                         License = webOptions.Documentation.License
                     });
 
-                    if (securityOptions != null)
+                    if (securityOptions.IsEnabled)
                     {
                         x.AddSecurityDefinition("Bearer", new ApiKeyScheme
                         {
