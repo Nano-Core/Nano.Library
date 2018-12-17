@@ -20,7 +20,7 @@ namespace Nano.Models
         /// <summary>
         /// Is Valid.
         /// </summary>
-        public virtual bool IsValid => this.Token != null && this.ExpireAt > DateTimeOffset.UtcNow;
+        public virtual bool IsExpired => this.Token != null && this.ExpireAt > DateTimeOffset.UtcNow;
 
     }
 }

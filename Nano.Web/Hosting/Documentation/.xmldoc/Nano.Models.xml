@@ -19,7 +19,7 @@
             ExpireAt.
             </summary>
         </member>
-        <member name="P:Nano.Models.AccessToken.IsValid">
+        <member name="P:Nano.Models.AccessToken.IsExpired">
             <summary>
             Is Valid.
             </summary>
@@ -613,7 +613,7 @@
             Email.
             </summary>
         </member>
-        <member name="P:Nano.Models.Types.EmailAddress.IsValid">
+        <member name="P:Nano.Models.Types.EmailAddress.IsExpired">
             <summary>
             Is Valid.
             </summary>

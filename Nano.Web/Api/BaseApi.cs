@@ -131,7 +131,7 @@ namespace Nano.Web.Api
 
         private async Task Authenticate()
         {
-            if (this.accessToken != null && this.accessToken.IsValid)
+            if (this.accessToken != null && this.accessToken.IsExpired)
                 return;
 
             var loginRequest = new LoginRequest
