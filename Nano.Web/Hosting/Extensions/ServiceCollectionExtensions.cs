@@ -45,7 +45,7 @@ namespace Nano.Web.Hosting.Extensions
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds <see cref="WebOptions"/> to the <see cref="IServiceCollection"/>.
+        /// Adds <see cref="WebOptions"/> and services to the <see cref="IServiceCollection"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
@@ -63,12 +63,6 @@ namespace Nano.Web.Hosting.Extensions
             services
                 .AddConfigOptions<WebOptions>(configuration, WebOptions.SectionName, out var options);
 
-            // TODO: Data Protection: https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview?view=aspnetcore-2.1&tabs=aspnetcore2x 
-
-            services
-                .AddScoped<IRepository, DefaultRepository>()
-                .AddScoped<IRepositorySpatial, DefaultRepositorySpatial>();
-
             var serviceProvider = services.BuildServiceProvider();
             var dataOptions = serviceProvider.GetService<DataOptions>();
             var securityOptions = serviceProvider.GetService<SecurityOptions>();
@@ -77,6 +71,7 @@ namespace Nano.Web.Hosting.Extensions
                 .AddApis()
                 .AddCors()
                 .AddSession()
+                .AddRepository()
                 .AddVersioning()
                 .AddDocumentation()
                 .AddLocalizations()
@@ -132,7 +127,7 @@ namespace Nano.Web.Hosting.Extensions
 
             return services;
         }
-
+        
         private static IServiceCollection AddApis(this IServiceCollection services)
         {
             if (services == null)
@@ -180,8 +175,6 @@ namespace Nano.Web.Hosting.Extensions
                 });
             }
 
-            // TODO: Policy-based Authorization
-
             services
                 .AddAuthorization()
                 .AddAuthentication(x =>
@@ -220,6 +213,17 @@ namespace Nano.Web.Hosting.Extensions
                     x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                     x.Cookie.Expiration = TimeSpan.FromDays(options.Jwt.ExpirationInHours);
                 });
+
+            return services;
+        }
+        private static IServiceCollection AddRepository(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services
+                .AddScoped<IRepository, DefaultRepository>()
+                .AddScoped<IRepositorySpatial, DefaultRepositorySpatial>();
 
             return services;
         }

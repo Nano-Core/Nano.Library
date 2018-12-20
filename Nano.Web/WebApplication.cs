@@ -6,7 +6,6 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.App;
@@ -20,6 +19,7 @@ using Nano.Logging.Extensions;
 using Nano.Security.Extensions;
 using Nano.Web.Hosting.Extensions;
 using Nano.Web.Hosting.Middleware;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Nano.Web
 {
@@ -52,66 +52,9 @@ namespace Nano.Web
 
             base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
 
-            var services = applicationBuilder.ApplicationServices;
-            var appOptions = services.GetService<AppOptions>() ?? new AppOptions();
-            var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
-
-            if (webOptions.Hosting.UseSsl)
-            {
-                applicationBuilder
-                    .UseRewriter(new RewriteOptions().AddRedirectToHttps());
-            }
-
-            applicationBuilder
-                .UseSession()
-                .UseStaticFiles()
-                .UseCookiePolicy()
-                .UseAuthentication()
-                .UseForwardedHeaders()
-                .UseResponseCompression()
-                .UseMiddleware<ExceptionHandlingMiddleware>()
-                .UseMiddleware<HttpRequestUserMiddleware>()
-                .UseMiddleware<HttpRequestIdentifierMiddleware>()
-                .UseMiddleware<HttpRequestOptionsMiddleware>()
-                .UseCors(x =>
-                {
-                    x.AllowAnyOrigin();
-                    x.AllowAnyHeader();
-                    x.AllowAnyMethod();
-                    x.AllowCredentials();
-                })
-                .UseMvc(x =>
-                {
-                    x.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                })
-                .UseSwagger(x =>
-                {
-                    x.RouteTemplate = "docs/{documentName}/swagger.json";
-                })
-                .UseSwaggerUI(x =>
-                {
-                    x.EnableFilter();
-                    x.EnableDeepLinking();
-                    x.EnableValidator(null);
-                    x.ShowExtensions();
-                    x.DisplayOperationId();
-                    x.DisplayRequestDuration();
-                    x.MaxDisplayedTags(-1);
-                    x.DefaultModelExpandDepth(2);
-                    x.DefaultModelsExpandDepth(1);
-                    x.DefaultModelRendering(ModelRendering.Example);
-                    x.DocExpansion(DocExpansion.None);
-
-                    x.RoutePrefix = "docs";
-                    x.DocumentTitle = $"Nano - {appOptions.Name} Docs v{appOptions.Version} ({ConfigManager.Environment})";
-                    x.SwaggerEndpoint($"/docs/{appOptions.Version}/swagger.json", $"Nano - {appOptions.Name} v{appOptions.Version} ({ConfigManager.Environment})");
-                })
-                .UseRequestLocalization(new RequestLocalizationOptions
-                {
-                    DefaultRequestCulture = new RequestCulture(appOptions.Cultures.Default),
-                    SupportedCultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray(),
-                    SupportedUICultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray()
-                });
+            this.ConfigureHosting(applicationBuilder);
+            this.ConfigureLocalization(applicationBuilder);
+            this.ConfigureDocumentation(applicationBuilder);
         }
 
         /// <summary>
@@ -162,12 +105,98 @@ namespace Nano.Web
                     x.AddLogging(config);
                     x.AddSecurity(config);
                     x.AddEventing(config);
-
                     x.AddWeb(config);
                 })
                 .UseStartup<TApplication>()
                 .UseSetting(WebHostDefaults.ApplicationKey, applicationKey)
                 .CaptureStartupErrors(true);
+        }
+
+        private void ConfigureHosting(IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null) 
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            applicationBuilder
+                .UseSsl()
+                .UseSession()
+                .UseStaticFiles()
+                .UseCookiePolicy()
+                .UseAuthentication()
+                .UseForwardedHeaders()
+                .UseResponseCompression()
+                .UseMiddleware<ExceptionHandlingMiddleware>()
+                .UseMiddleware<HttpRequestUserMiddleware>()
+                .UseMiddleware<HttpRequestIdentifierMiddleware>()
+                .UseMiddleware<HttpRequestOptionsMiddleware>()
+                .UseHsts()
+                .UseNoCache()
+                .UseRobotsTag()
+                .UseDownloadOptions()
+                .UseContentTypeOptions()
+                .UseReferrerPolicies()
+                .UseRedirectValidationPolicies()
+                .UseXFrameOptionsPolicies()
+                .UseXXssProtectionPolicies()
+                .UseCors(x =>
+                {
+                    x.AllowAnyOrigin();
+                    x.AllowAnyHeader();
+                    x.AllowAnyMethod();
+                    x.AllowCredentials();
+                })
+                .UseMvc(x =>
+                {
+                    x.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                });
+        }
+        private void ConfigureLocalization(IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            var services = applicationBuilder.ApplicationServices;
+            var appOptions = services.GetService<AppOptions>() ?? new AppOptions();
+
+            applicationBuilder
+                .UseRequestLocalization(new RequestLocalizationOptions
+                {
+                    DefaultRequestCulture = new RequestCulture(appOptions.Cultures.Default),
+                    SupportedCultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray(),
+                    SupportedUICultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray()
+                });
+        }
+        private void ConfigureDocumentation(IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            var services = applicationBuilder.ApplicationServices;
+            var appOptions = services.GetService<AppOptions>() ?? new AppOptions();
+
+            applicationBuilder
+                .UseSwagger(x =>
+                {
+                    x.RouteTemplate = "docs/{documentName}/swagger.json";
+                })
+                .UseSwaggerUI(x =>
+                {
+                    x.EnableFilter();
+                    x.EnableDeepLinking();
+                    x.EnableValidator(null);
+                    x.ShowExtensions();
+                    x.DisplayOperationId();
+                    x.DisplayRequestDuration();
+                    x.MaxDisplayedTags(-1);
+                    x.DefaultModelExpandDepth(2);
+                    x.DefaultModelsExpandDepth(1);
+                    x.DefaultModelRendering(ModelRendering.Example);
+                    x.DocExpansion(DocExpansion.None);
+
+                    x.RoutePrefix = "docs";
+                    x.DocumentTitle = $"Nano - {appOptions.Name} Docs v{appOptions.Version} ({ConfigManager.Environment})";
+                    x.SwaggerEndpoint($"/docs/{appOptions.Version}/swagger.json", $"Nano - {appOptions.Name} v{appOptions.Version} ({ConfigManager.Environment})");
+                });
         }
     }
 }

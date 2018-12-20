@@ -114,7 +114,8 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Logout(CancellationToken cancellationToken = default)
         {
-            await this.SecurityManager.SignOutAsync();
+            await this.SecurityManager
+                .SignOutAsync();
 
             if (this.Request.IsContentTypeHtml())
                 return this.View();

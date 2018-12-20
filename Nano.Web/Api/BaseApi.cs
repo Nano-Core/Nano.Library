@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -9,6 +10,7 @@ using Nano.Models;
 using Nano.Web.Api.Requests.Auth;
 using Nano.Web.Api.Requests.Interfaces;
 using Nano.Web.Hosting;
+using Nano.Web.Hosting.Exceptions;
 using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
 
@@ -184,10 +186,31 @@ namespace Nano.Web.Api
 
             using (httpResponse)
             {
+                var rawJson = await httpResponse.Content
+                    .ReadAsStringAsync();
+
+                switch (httpResponse.StatusCode)
+                {
+                    case HttpStatusCode.BadRequest:
+                    case HttpStatusCode.InternalServerError:
+                        var error = JsonConvert.DeserializeObject<Error>(rawJson);
+                        var message = error.Exceptions.FirstOrDefault() ?? error.Summary;
+
+                        if (error.TranslationCode > 0)
+                        {
+                            throw new TranslationException(error.TranslationCode, message);
+                        }
+                        else if (this.apiOptions.UseExposeErrors)
+                        {
+                            throw new InvalidOperationException(message);
+                        }
+
+                        break;
+                }
+
                 httpResponse
                     .EnsureSuccessStatusCode();
 
-                var rawJson = await httpResponse.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<TResponse>(rawJson);
 
                 return response;

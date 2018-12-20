@@ -28,6 +28,11 @@ namespace Nano.Web.Api
         public virtual bool UseSsl { get; set; } = false;
 
         /// <summary>
+        /// Use Expose Erros.
+        /// </summary>
+        public virtual bool UseExposeErrors { get; set; } = false;
+
+        /// <summary>
         /// Login.
         /// </summary>
         public virtual Login Login { get; set; }
