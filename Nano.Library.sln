@@ -9,8 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{
 		appsettings.default.json = appsettings.default.json
 		icon.ico = icon.ico
 		LICENSE = LICENSE
-		NanoCore.nuspec = NanoCore.nuspec
-		NanoCore.TestTools.nuspec = NanoCore.TestTools.nuspec
 		README.md = README.md
 	EndProjectSection
 EndProject

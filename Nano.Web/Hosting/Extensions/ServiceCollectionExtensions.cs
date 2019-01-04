@@ -12,7 +12,6 @@ using Nano.Config.Extensions;
 using Nano.Web.Controllers;
 using Nano.Web.Hosting.Conventions;
 using Nano.Web.Hosting.Documentation;
-using Nano.Web.Hosting.Middleware;
 using Nano.Web.Hosting.ModelBinders;
 using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
@@ -36,6 +35,7 @@ using Nano.Repository.Interfaces;
 using Nano.Security;
 using Nano.Web.Api;
 using Nano.Web.Hosting.Filters;
+using Nano.Web.Hosting.Middleware;
 
 namespace Nano.Web.Hosting.Extensions
 {
@@ -71,11 +71,11 @@ namespace Nano.Web.Hosting.Extensions
                 .AddApis()
                 .AddCors()
                 .AddSession()
+                .AddSecurity()
                 .AddRepository()
                 .AddVersioning()
                 .AddDocumentation()
                 .AddLocalizations()
-                .AddSecurity(options)
                 .AddGzipCompression()
                 .AddContentTypeFormatters()
                 .AddSingleton<ExceptionHandlingMiddleware>()
@@ -98,7 +98,7 @@ namespace Nano.Web.Hosting.Extensions
                     if (dataOptions.ConnectionString == null)
                         x.Conventions.Insert(1, new AduitControllerDisabledConvention());
 
-                    if (options.Hosting.UseSsl)
+                    if (options.Hosting.UseHttpsRequired)
                         x.Filters.Add<RequireHttpsAttribute>();
 
                     x.Filters.Add<ModelStateValidationFilter>();
@@ -117,7 +117,7 @@ namespace Nano.Web.Hosting.Extensions
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()
                 .AddApplicationPart(assembly)
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+                .SetCompatibilityVersion(options.CompatabilityVersion);
 
             services
                 .Configure<RazorViewEngineOptions>(x =>
@@ -156,7 +156,7 @@ namespace Nano.Web.Hosting.Extensions
 
             return services;
         }
-        private static IServiceCollection AddSecurity(this IServiceCollection services, WebOptions webOptions)
+        private static IServiceCollection AddSecurity(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
@@ -207,9 +207,6 @@ namespace Nano.Web.Hosting.Extensions
                 })
                 .AddCookie(x =>
                 {
-                    x.LoginPath = $"/{webOptions.Hosting.Root}/auth/login";
-                    x.LogoutPath = $"/{webOptions.Hosting.Root}/auth/logout";
-                    x.AccessDeniedPath = $"/{webOptions.Hosting.Root}/auth/forbidden";
                     x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                     x.Cookie.Expiration = TimeSpan.FromDays(options.Jwt.ExpirationInHours);
                 });
@@ -367,8 +364,8 @@ namespace Nano.Web.Hosting.Extensions
                     x.RespectBrowserAcceptHeader = true;
 
                     x.FormatterMappings.SetMediaTypeMappingForFormat("xml", HttpContentType.XML);
-                    x.FormatterMappings.SetMediaTypeMappingForFormat("html", HttpContentType.HTML);
                     x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JSON);
+                    x.FormatterMappings.SetMediaTypeMappingForFormat("html", HttpContentType.HTML);
                 })
                 .AddXmlSerializerFormatters()
                 .AddXmlDataContractSerializerFormatters();

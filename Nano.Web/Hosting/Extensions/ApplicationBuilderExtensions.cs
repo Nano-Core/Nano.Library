@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
+using Nano.Web.Hosting.Enums;
 using NWebsec.AspNetCore.Mvc;
 using ReferrerPolicy = NWebsec.Core.Common.HttpHeaders.ReferrerPolicy;
 
@@ -12,53 +13,6 @@ namespace Nano.Web.Hosting.Extensions
     /// </summary>
     public static class ApplicationBuilderExtensions
     {
-        /// <summary>
-        /// Adds ssl middleware to the <see cref="Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-        /// </summary>
-        /// <param name="applicationBuilder">The <see cref="Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-        /// <returns>The <see cref="Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        internal static IApplicationBuilder UseSsl(this IApplicationBuilder applicationBuilder)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            var services = applicationBuilder.ApplicationServices;
-            var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
-                    
-            if (webOptions.Hosting.UseSsl)
-            {
-                applicationBuilder
-                    .UseRewriter(new RewriteOptions().AddRedirectToHttps());
-            }
-            
-            return applicationBuilder;
-        }
-
-        /// <summary>
-        /// Adds Hsts middleware to the <see cref="IApplicationBuilder"/>.
-        /// </summary>
-        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
-        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
-        internal static IApplicationBuilder UseHsts(this IApplicationBuilder applicationBuilder)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            var services = applicationBuilder.ApplicationServices;
-            var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
-                    
-            if (webOptions.Hosting.UseHsts)
-            {
-                applicationBuilder
-                    .UseHsts(x => x
-                        .MaxAge(7)
-                        .IncludeSubdomains()
-                        .UpgradeInsecureRequests());
-            }
-            
-            return applicationBuilder;
-        }
-
         /// <summary>
         /// Adds no cache middleware to the <see cref="IApplicationBuilder"/>.
         /// </summary>
@@ -77,7 +31,7 @@ namespace Nano.Web.Hosting.Extensions
                 applicationBuilder
                     .UseNoCacheHttpHeaders();
             }
-            
+
             return applicationBuilder;
         }
 
@@ -94,14 +48,59 @@ namespace Nano.Web.Hosting.Extensions
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
-            if (webOptions.Hosting.UseXRobotsTag)
+            if (webOptions.Hosting.Robots.IsEnabled)
             {
-                applicationBuilder
-                    .UseXRobotsTag(x => x
-                        .NoIndex()
-                        .NoFollow());
-            }
+                var xRobot = webOptions.Hosting.Robots;
 
+                applicationBuilder
+                    .UseXRobotsTag(x =>
+                    {
+                        if (xRobot.UseNoIndex)
+                            x.NoIndex();
+
+                        if (xRobot.UseNoFollow)
+                            x.NoFollow();
+
+                        if (xRobot.UseNoSnippet)
+                            x.NoSnippet();
+
+                        if (xRobot.UseNoArchive)
+                            x.NoArchive();
+
+                        if (xRobot.UseNoOdp)
+                            x.NoOdp();
+
+                        if (xRobot.UseNoTranslate)
+                            x.NoTranslate();
+
+                        if (xRobot.UseNoImageIndex)
+                            x.NoImageIndex();
+                    });
+            }
+            
+            return applicationBuilder;
+        }
+
+        /// <summary>
+        /// Adds ssl middleware to the <see cref="Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+        /// </summary>
+        /// <param name="applicationBuilder">The <see cref="Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+        /// <returns>The <see cref="Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        internal static IApplicationBuilder UseHttpsRewrite(this IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            var services = applicationBuilder.ApplicationServices;
+            var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
+                    
+            if (webOptions.Hosting.UseHttpsRedirect)
+            {
+                // TODO: More Rewrite Options avaialble.
+                applicationBuilder
+                    .UseRewriter(new RewriteOptions()
+                        .AddRedirectToHttps());
+            }
             
             return applicationBuilder;
         }
@@ -255,19 +254,23 @@ namespace Nano.Web.Hosting.Extensions
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
-            if (webOptions.Hosting.XXssProtectionPolicy != XXssProtectionPolicy.Disabled)
+            if (webOptions.Hosting.XXssProtectionPolicy != XXssProtectionPolicyBlockMode.Disabled)
             {
                 applicationBuilder
                     .UseXXssProtection(x =>
                     {
                         switch (webOptions.Hosting.XXssProtectionPolicy)
                         {
-                            case XXssProtectionPolicy.FilterEnabled:
+                            case XXssProtectionPolicyBlockMode.FilterDisabled:
+                                x.Disabled();
+                                break;
+
+                            case XXssProtectionPolicyBlockMode.FilterEnabled:
                                 x.Enabled();
                                 break;
 
-                            case XXssProtectionPolicy.FilterDisabled:
-                                x.Disabled();
+                            case XXssProtectionPolicyBlockMode.FilterEnabledBlockMode:
+                                x.EnabledWithBlockMode();
                                 break;
                         }
                     });
@@ -275,13 +278,55 @@ namespace Nano.Web.Hosting.Extensions
 
             return applicationBuilder;
         }
-        
+
+        /// <summary>
+        /// Adds Hsts middleware to the <see cref="IApplicationBuilder"/>.
+        /// </summary>
+        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+        internal static IApplicationBuilder UseStrictTransportSecurity(this IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            var services = applicationBuilder.ApplicationServices;
+            var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
+            var hsts = webOptions.Hosting.Hsts;
+                    
+            if (hsts.IsEnabled)
+            {
+                var maxAge = hsts.MaxAge;
+
+                applicationBuilder
+                    .UseHsts(x =>
+                    {
+                        if (hsts.IncludeSubdomains)
+                        {
+                            x.IncludeSubdomains();
+
+                            if (maxAge.HasValue)
+                            {
+                                var weeks = maxAge.Value.TotalDays / 7;  
+
+                                if (hsts.UsePreload && weeks >= 18)
+                                    x.Preload();
+                            }
+                        }
+
+                        if (maxAge.HasValue)
+                        {                            x.MaxAge(maxAge.Value.Days, maxAge.Value.Hours, maxAge.Value.Minutes, maxAge.Value.Seconds);}
+                    });
+            }
+            
+            return applicationBuilder;
+        }
+
         /// <summary>
         /// Adds rerdirect valiation middleware to the <see cref="IApplicationBuilder"/>.
         /// </summary>
         /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
         /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
-        internal static IApplicationBuilder UseRedirectValidationPolicies(this IApplicationBuilder applicationBuilder)
+        internal static IApplicationBuilder UseHttpsRedirectionValidation(this IApplicationBuilder applicationBuilder)
         {
             if (applicationBuilder == null)
                 throw new ArgumentNullException(nameof(applicationBuilder));
@@ -293,7 +338,10 @@ namespace Nano.Web.Hosting.Extensions
             {
                 applicationBuilder
                     .UseRedirectValidation(x =>
-                        x.AllowSameHostRedirectsToHttps());
+                    {
+                        x.AllowedDestinations();
+                        x.AllowSameHostRedirectsToHttps(webOptions.Hosting.PortsHttps);
+                    });
             }
             
             return applicationBuilder;

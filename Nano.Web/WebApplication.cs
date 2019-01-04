@@ -6,6 +6,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.App;
@@ -52,6 +53,8 @@ namespace Nano.Web
 
             base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
 
+            applicationBuilder.UseHttpsRedirection();
+
             this.ConfigureHosting(applicationBuilder);
             this.ConfigureLocalization(applicationBuilder);
             this.ConfigureDocumentation(applicationBuilder);
@@ -86,15 +89,36 @@ namespace Nano.Web
             var applicationKey = Assembly.GetEntryAssembly().FullName;
 
             var webOptions = config.GetSection(WebOptions.SectionName).Get<WebOptions>() ?? new WebOptions();
-            var urls = webOptions.Hosting.Ports.Select(x => $"http://*:{x}").Distinct().ToArray();
 
             return new WebHostBuilder()
-                .UseKestrel()
-                .UseUrls(urls)
+                .UseKestrel(x =>
+                {
+                    webOptions.Hosting.Ports
+                        .ToList()
+                        .ForEach(y =>
+                        {
+                            x.ListenAnyIP(y, z =>
+                            {
+                                z.Protocols = HttpProtocols.Http1AndHttp2;
+                            });
+                        });
+
+                    var certificate = webOptions.Hosting.Certificate;
+
+                    webOptions.Hosting.PortsHttps
+                        .ToList()
+                        .ForEach(y =>
+                        {
+                            x.ListenAnyIP(y, z =>
+                            {
+                                z.Protocols = HttpProtocols.Http1AndHttp2;
+                                z.UseHttps(certificate.Path, certificate.Password);
+                            });
+                        });
+                })
                 .UseContentRoot(root)
-                .UseEnvironment(environment)
                 .UseConfiguration(config)
-                .UseShutdownTimeout(shutdownTimeout)
+                .UseEnvironment(environment)
                 .ConfigureServices(x =>
                 {
                     x.AddSingleton<IApplication, TApplication>();
@@ -109,7 +133,8 @@ namespace Nano.Web
                 })
                 .UseStartup<TApplication>()
                 .UseSetting(WebHostDefaults.ApplicationKey, applicationKey)
-                .CaptureStartupErrors(true);
+                .CaptureStartupErrors(true)
+                .UseShutdownTimeout(shutdownTimeout);
         }
 
         private void ConfigureHosting(IApplicationBuilder applicationBuilder)
@@ -118,24 +143,25 @@ namespace Nano.Web
                 throw new ArgumentNullException(nameof(applicationBuilder));
 
             applicationBuilder
-                .UseSsl()
                 .UseSession()
                 .UseStaticFiles()
+                .UseHttpsRewrite()
                 .UseCookiePolicy()
                 .UseAuthentication()
                 .UseForwardedHeaders()
                 .UseResponseCompression()
+                .UseHttpsRedirection()
+                .UseHttpsRedirectionValidation()
                 .UseMiddleware<ExceptionHandlingMiddleware>()
                 .UseMiddleware<HttpRequestUserMiddleware>()
                 .UseMiddleware<HttpRequestIdentifierMiddleware>()
                 .UseMiddleware<HttpRequestOptionsMiddleware>()
-                .UseHsts()
                 .UseNoCache()
                 .UseRobotsTag()
                 .UseDownloadOptions()
                 .UseContentTypeOptions()
+                .UseStrictTransportSecurity()
                 .UseReferrerPolicies()
-                .UseRedirectValidationPolicies()
                 .UseXFrameOptionsPolicies()
                 .UseXXssProtectionPolicies()
                 .UseCors(x =>
