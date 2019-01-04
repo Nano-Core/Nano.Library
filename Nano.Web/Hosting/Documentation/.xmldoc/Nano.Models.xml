@@ -4,24 +4,297 @@
         <name>Nano.Models</name>
     </assembly>
     <members>
-        <member name="T:Nano.Models.AccessToken">
+        <member name="T:Nano.Models.Auth.AccessToken">
             <summary>
             Access Token.
             </summary>
         </member>
-        <member name="P:Nano.Models.AccessToken.Token">
+        <member name="P:Nano.Models.Auth.AccessToken.Token">
             <summary>
             Token.
             </summary>
         </member>
-        <member name="P:Nano.Models.AccessToken.ExpireAt">
+        <member name="P:Nano.Models.Auth.AccessToken.ExpireAt">
             <summary>
-            ExpireAt.
+            Expire At.
             </summary>
         </member>
-        <member name="P:Nano.Models.AccessToken.IsExpired">
+        <member name="P:Nano.Models.Auth.AccessToken.IsExpired">
             <summary>
-            Is Valid.
+            Is Expired.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.ChangePassword">
+            <summary>
+            Change Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.ChangePassword.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.ChangePassword.OldPassword">
+            <summary>
+            Old Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.ChangePassword.NewPassword">
+            <summary>
+            New Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.ChangePassword.ConfirmNewPassword">
+            <summary>
+            Confirm New Passowrd.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.ConfirmEmail">
+            <summary>
+            Confirm Email.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.ConfirmEmail.Code">
+            <summary>
+            Code.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.ConfirmEmail.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.GetConfirmEmail">
+            <summary>
+            Get Confirm Email.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.GetConfirmEmail.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.GetExternalLogin">
+            <summary>
+            Remove External Login.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.GetExternalLogin.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.GetExternalLogin.ProviderKey">
+            <summary>
+            Provider Key.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.GetExternalLogin.LoginProvider">
+            <summary>
+            Login Provider.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.GetExternalLogin.AllowRemoval">
+            <summary>
+            Allow Removal.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.GetExternalLogins">
+            <summary>
+            Get External Logins.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.GetExternalLogins.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.GetResetPassword">
+            <summary>
+            Send Reset Password
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.GetResetPassword.Email">
+            <summary>
+            Email.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.Login">
+            <summary>
+            Login.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.Login.Username">
+            <summary>
+            Username.
+            The username of the user to sign-in.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.Login.Password">
+            <summary>
+            Password.
+            The password of the user to sign-in.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.Login.IsRememerMe">
+            <summary>
+            Is Remember Me.
+            Flag indicating whether the sign-in cookie should persist after the browser is closed.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.LoginExternal">
+            <summary>
+            External Login.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.LoginExternal.Name">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.LoginExternal.CallbackUrl">
+            <summary>
+            Callback Url.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.LoginExternalCallback">
+            <summary>
+            Login External Callback.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.LoginExternalCallback.RemoteError">
+            <summary>
+            Remote Error.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.LoginExternalProvider">
+            <summary>
+            External Login Provider.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.LoginExternalProvider.Name">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.LoginExternalProvider.DisplayName">
+            <summary>
+            Display Name.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.RemoveExternalLogin">
+            <summary>
+            Remove External Login.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.RemoveExternalLogin.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.RemoveExternalLogin.ProviderKey">
+            <summary>
+            Provider Key.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.RemoveExternalLogin.LoginProvider">
+            <summary>
+            Login Provider.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.ResetPassword">
+            <summary>
+            Reset Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.ResetPassword.Email">
+            <summary>
+            Email
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.ResetPassword.Password">
+            <summary>
+            Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.ResetPassword.ConfirmPassword">
+            <summary>
+            Confirm Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.ResetPassword.Code">
+            <summary>
+            Code.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.SetPassword">
+            <summary>
+            Set Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.SetPassword.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.SetPassword.NewPassword">
+            <summary>
+            New Password.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.SetUsername">
+            <summary>
+            Set Username.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.SetUsername.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.SetUsername.Username">
+            <summary>
+            Username.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.Signup">
+            <summary>
+            Sign Up.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.Signup.Email">
+            <summary>
+            Email
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.Signup.Username">
+            <summary>
+            Username.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.Signup.Password">
+            <summary>
+            Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.Signup.ConfirmPassword">
+            <summary>
+            Confirm Password.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Auth.SignupExternal">
+            <summary>
+            Sign Up External.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.SignupExternal.Email">
+            <summary>
+            Email
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Auth.SignupExternal.Username">
+            <summary>
+            Username.
             </summary>
         </member>
         <member name="T:Nano.Models.BaseEntity">
@@ -34,12 +307,6 @@
             <inheritdoc cref="T:Nano.Models.Interfaces.IEntityIdentity`1"/>
         </member>
         <member name="P:Nano.Models.BaseEntityIdentity`1.Id">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Models.BaseEntityIdentity`1.GetHashCode">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Models.BaseEntityIdentity`1.Equals(System.Object)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Models.Criterias.AuditEntryQueryCriteria">
@@ -251,6 +518,11 @@
         <member name="P:Nano.Models.Error.StatusCode">
             <summary>
             Status Code.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Error.TranslationCode">
+            <summary>
+            Translation Code.
             </summary>
         </member>
         <member name="M:Nano.Models.Error.ToString">
@@ -523,21 +795,6 @@
             Implements <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/>, <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/> and <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>.
             </summary>
         </member>
-        <member name="T:Nano.Models.Login">
-            <summary>
-            Login.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Login.Username">
-            <summary>
-            Username.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Login.Password">
-            <summary>
-            Password.
-            </summary>
-        </member>
         <member name="T:Nano.Models.Types.Address">
             <summary>
             Address.
@@ -613,7 +870,7 @@
             Email.
             </summary>
         </member>
-        <member name="P:Nano.Models.Types.EmailAddress.IsExpired">
+        <member name="P:Nano.Models.Types.EmailAddress.IsValid">
             <summary>
             Is Valid.
             </summary>
@@ -653,21 +910,10 @@
             Gets the percentage value as an <see cref="T:System.Decimal"/>.
             </summary>
         </member>
-        <member name="P:Nano.Models.Types.Percentage.AsInteger">
-            <summary>
-            Gets the percentage value as an <see cref="T:System.Int32"/>.
-            </summary>
-        </member>
         <member name="M:Nano.Models.Types.Percentage.#ctor">
             <summary>
             Constructor.
             </summary>
-        </member>
-        <member name="M:Nano.Models.Types.Percentage.#ctor(System.Int32)">
-            <summary>
-            Constructor that accepts an <see cref="T:System.Int32"/>.
-            </summary>
-            <param name="int"></param>
         </member>
         <member name="M:Nano.Models.Types.Percentage.#ctor(System.Double)">
             <summary>
@@ -680,113 +926,6 @@
             Constructor that accepts an <see cref="T:System.Decimal"/>.
             </summary>
             <param name="decimal"></param>
-        </member>
-        <member name="M:Nano.Models.Types.Percentage.Equals(Nano.Models.Types.Percentage)">
-            <summary>
-            Compare the instance for equality with the passed <paramref name="other"/>.
-            </summary>
-            <param name="other">The <see cref="T:Nano.Models.Types.Percentage"/> to compare for equality with the instance.</param>
-            <returns>A <see cref="T:System.Boolean"/> indicating whether the instance was equal to <paramref name="other"/>.</returns>
-        </member>
-        <member name="M:Nano.Models.Types.Percentage.Equals(System.Object)">
-            <summary>
-            Override of <see cref="M:System.Object.Equals(System.Object)"/> for use with operator overlods.
-            </summary>
-            <param name="object">The <see cref="T:System.Object"/> to compare for equality with the instance.</param>
-            <returns>A <see cref="T:System.Boolean"/> indicating whether the instance was equal to <paramref name="object"/>.</returns>
-        </member>
-        <member name="M:Nano.Models.Types.Percentage.GetHashCode">
-            <summary>
-            Override of <see cref="M:System.Object.GetHashCode"/> to compare the <see cref="P:Nano.Models.Types.Percentage.AsDecimal"/> and not the instance itself.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Nano.Models.Types.Percentage.ToString">
-            <summary>
-            Gets the <see cref="T:Nano.Models.Types.Percentage"/> value as a <see cref="T:System.String"/>.
-            The <see cref="T:System.String"/> is formatted like: $"{<see cref="P:Nano.Models.Types.Percentage.AsInteger"/>}%"   
-            </summary>
-            <returns>A <see cref="T:System.String"/> formatted as a percentage value, where '%' is appended.</returns>
-        </member>
-        <member name="M:Nano.Models.Types.Percentage.op_Addition(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
-            <summary>
-            Adds the <paramref name="rhs"/> to the <paramref name="lhs"/>.
-            </summary>
-            <param name="lhs">Instance to add to.</param>
-            <param name="rhs">Value to add to the instance.</param>
-            <returns>A new <see cref="T:Nano.Models.Types.Percentage"/> value of the result.</returns>
-        </member>
-        <member name="M:Nano.Models.Types.Percentage.op_Subtraction(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
-            <summary>
-            Subtracts the <paramref name="rhs"/> from the <paramref name="lhs"/>.
-            </summary>
-            <param name="lhs">Instance to subtract from.</param>
-            <param name="rhs">Value to subtract from the instance.</param>
-            <returns>A new <see cref="T:Nano.Models.Types.Percentage"/> value of the result.</returns>
-        </member>
-        <member name="M:Nano.Models.Types.Percentage.op_Multiply(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
-            <summary>
-            Multiplies the <paramref name="rhs"/> with the <paramref name="lhs"/>.
-            </summary>
-            <param name="lhs">Instance to multiply with.</param>
-            <param name="rhs">Value to multiply with the instance.</param>
-            <returns>A new <see cref="T:Nano.Models.Types.Percentage"/> value of the result.</returns>
-        </member>
-        <member name="M:Nano.Models.Types.Percentage.op_Division(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
-            <summary>
-            Divides the <paramref name="rhs"/> from the <paramref name="lhs"/>.
-            </summary>
-            <param name="lhs">Instance to devide from.</param>
-            <param name="rhs">Value to divide from the instance.</param>
-            <returns>A new <see cref="T:Nano.Models.Types.Percentage"/> value of the result.</returns>
-        </member>
-        <member name="M:Nano.Models.Types.Percentage.op_GreaterThan(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
-            <summary>
-            Checking if the <paramref name="lhs"/> is greater than <paramref name="lhs"/>.
-            </summary>
-            <param name="lhs">Instance to devide from.</param>
-            <param name="rhs">Value to divide from the instance.</param>
-            <returns>A <see cref="T:System.Boolean"/> indicating if the <see cref="P:Nano.Models.Types.Percentage.AsDecimal"/> of the <paramref name="lhs"/> is greater than <paramref name="lhs"/>.</returns>
-        </member>
-        <member name="M:Nano.Models.Types.Percentage.op_GreaterThanOrEqual(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
-            <summary>
-            Checking if the <paramref name="lhs"/> is greater or equal than <paramref name="lhs"/>.
-            </summary>
-            <param name="lhs">Instance to devide from.</param>
-            <param name="rhs">Value to divide from the instance.</param>
-            <returns>A <see cref="T:System.Boolean"/> indicating if the <see cref="P:Nano.Models.Types.Percentage.AsDecimal"/> of the <paramref name="lhs"/> is greater or equal than <paramref name="lhs"/>.</returns>
-        </member>
-        <member name="M:Nano.Models.Types.Percentage.op_LessThan(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
-            <summary>
-            Checking if the <paramref name="lhs"/> is less than <paramref name="lhs"/>.
-            </summary>
-            <param name="lhs">Instance to devide from.</param>
-            <param name="rhs">Value to divide from the instance.</param>
-            <returns>A <see cref="T:System.Boolean"/> indicating if the <see cref="P:Nano.Models.Types.Percentage.AsDecimal"/> of the <paramref name="lhs"/> is less than <paramref name="lhs"/>.</returns>
-        </member>
-        <member name="M:Nano.Models.Types.Percentage.op_LessThanOrEqual(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
-            <summary>
-            Checking if the <paramref name="lhs"/> is less or equal than <paramref name="lhs"/>.
-            </summary>
-            <param name="lhs">Instance to devide from.</param>
-            <param name="rhs">Value to divide from the instance.</param>
-            <returns>A <see cref="T:System.Boolean"/> indicating if the <see cref="P:Nano.Models.Types.Percentage.AsDecimal"/> of the <paramref name="lhs"/> is  less or equal than <paramref name="lhs"/>.</returns>
-        </member>
-        <member name="M:Nano.Models.Types.Percentage.op_Inequality(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
-            <summary>
-            Checking if the <paramref name="lhs"/> is not equal to the <paramref name="lhs"/>.
-            </summary>
-            <param name="lhs">Instance to devide from.</param>
-            <param name="rhs">Value to divide from the instance.</param>
-            <returns>A <see cref="T:System.Boolean"/> indicating if the <see cref="P:Nano.Models.Types.Percentage.AsDecimal"/> of the <paramref name="lhs"/> is not equal to the <paramref name="lhs"/>.</returns>
-        </member>
-        <member name="M:Nano.Models.Types.Percentage.op_Equality(Nano.Models.Types.Percentage,Nano.Models.Types.Percentage)">
-            <summary>
-            Checking if the <paramref name="lhs"/> is equal to the <paramref name="lhs"/>.
-            </summary>
-            <param name="lhs">Instance to devide from.</param>
-            <param name="rhs">Value to divide from the instance.</param>
-            <returns>A <see cref="T:System.Boolean"/> indicating if the <see cref="P:Nano.Models.Types.Percentage.AsDecimal"/> of the <paramref name="lhs"/> is equal to the <paramref name="lhs"/>.</returns>
         </member>
         <member name="T:Nano.Models.Types.PhoneNumber">
             <summary>

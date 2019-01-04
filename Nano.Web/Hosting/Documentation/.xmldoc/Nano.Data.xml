@@ -59,6 +59,18 @@
         <member name="M:Nano.Data.BaseDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="M:Nano.Data.BaseDbContext.SaveChanges">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.BaseDbContext.SaveChanges(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.BaseDbContext.SaveChangesAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.BaseDbContext.SaveChangesAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="M:Nano.Data.BaseDbContext.EnsureSeedAsync(System.Threading.CancellationToken)">
             <summary>
             Imports data for all models annotated with <see cref="T:Nano.Data.Attributes.DataImportAttribute"/>.
@@ -210,27 +222,6 @@
             <param name="contextOptions">The <see cref="T:Microsoft.EntityFrameworkCore.DbContextOptions"/>.</param>
             <param name="dataOptions">The <see cref="T:Nano.Data.DataOptions"/>.</param>
         </member>
-        <member name="M:Nano.Data.DefaultDbContext.SaveChanges">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Data.DefaultDbContext.SaveChanges(System.Boolean)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Data.DefaultDbContext.SaveChangesAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Data.DefaultDbContext.SaveChangesAsync(System.Boolean,System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="T:Nano.Data.DummyDbContext">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Data.DummyDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions,Nano.Data.DataOptions)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Data.DummyDbContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
-            <inheritdoc />
-        </member>
         <member name="T:Nano.Data.Extensions.QueryableExtensions">
             <summary>
             Queryable Extensions.
@@ -336,6 +327,60 @@
             <summary>
             Entity Type Builder Extensions.
             </summary>
+        </member>
+        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.OnInserted``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Action{EntityFrameworkCore.Triggers.IInsertedEntry{``0}})">
+            <summary>
+            Adds an inserted event trigger to the model.
+            The passed <paramref name="action"/> will be invoked, after the entity of type <typeparamref name="TEntity"/> is inserted.
+            </summary>
+            <typeparam name="TEntity">the type of entity.</typeparam>
+            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
+            <param name="action">The <see cref="T:System.Action"/> invoked.</param>
+        </member>
+        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.OnInserting``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Action{EntityFrameworkCore.Triggers.IInsertingEntry{``0}})">
+            <summary>
+            Adds an inserting event trigger to the model.
+            The passed <paramref name="action"/> will be invoked, before the entity of type <typeparamref name="TEntity"/> is inserted.
+            </summary>
+            <typeparam name="TEntity">the type of entity.</typeparam>
+            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
+            <param name="action">The <see cref="T:System.Action"/> invoked.</param>
+        </member>
+        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.OnUpdated``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Action{EntityFrameworkCore.Triggers.IUpdatedEntry{``0}})">
+            <summary>
+            Adds an updated event trigger to the model.
+            The passed <paramref name="action"/> will be invoked, after the entity of type <typeparamref name="TEntity"/> is updated.
+            </summary>
+            <typeparam name="TEntity">the type of entity.</typeparam>
+            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
+            <param name="action">The <see cref="T:System.Action"/> invoked.</param>
+        </member>
+        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.OnUpdating``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Action{EntityFrameworkCore.Triggers.IUpdatingEntry{``0}})">
+            <summary>
+            Adds an updating event trigger to the model.
+            The passed <paramref name="action"/> will be invoked, before the entity of type <typeparamref name="TEntity"/> is updated.
+            </summary>
+            <typeparam name="TEntity">the type of entity.</typeparam>
+            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
+            <param name="action">The <see cref="T:System.Action"/> invoked.</param>
+        </member>
+        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.OnDeleted``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Action{EntityFrameworkCore.Triggers.IDeletedEntry{``0}})">
+            <summary>
+            Adds an deleted event trigger to the model.
+            The passed <paramref name="action"/> will be invoked, after the entity of type <typeparamref name="TEntity"/> is deleted.
+            </summary>
+            <typeparam name="TEntity">the type of entity.</typeparam>
+            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
+            <param name="action">The <see cref="T:System.Action"/> invoked.</param>
+        </member>
+        <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.OnDeleting``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Action{EntityFrameworkCore.Triggers.IDeletingEntry{``0}})">
+            <summary>
+            Adds an deleted event trigger to the model.
+            The passed <paramref name="action"/> will be invoked, before the entity of type <typeparamref name="TEntity"/> is deleted.
+            </summary>
+            <typeparam name="TEntity">the type of entity.</typeparam>
+            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
+            <param name="action">The <see cref="T:System.Action"/> invoked.</param>
         </member>
         <member name="M:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions.MapType``1(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{``0},System.Linq.Expressions.Expression{System.Func{``0,Nano.Models.Types.Address}})">
             <summary>
