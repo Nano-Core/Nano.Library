@@ -24,7 +24,7 @@ namespace Nano.Web.Controllers
         /// <response code="401">Unauthorized.</response>
         [HttpOptions]
         [Route("")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public virtual IActionResult Options()

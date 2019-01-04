@@ -13,7 +13,6 @@ using Nano.Models;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Web.Hosting;
-using Nano.Web.Hosting.Extensions;
 
 namespace Nano.Web.Controllers
 {
@@ -38,23 +37,6 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Gets the 'delete' view for deleting an existing model.
-        /// </summary>
-        /// <param name="id">The identifier of the model to delete.</param>
-        /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The 'delete' view.</returns>
-        [HttpGet]
-        [Route("delete/{id}")]
-        [Produces(HttpContentType.HTML)]
-        public virtual async Task<IActionResult> Delete([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
-        {
-            var entity = await this.Repository
-                .GetAsync<TEntity, TIdentity>(id, cancellationToken);
-
-            return this.View("Delete", entity);
-        }
-
-        /// <summary>
         /// Delete the model with the passed identifier.
         /// </summary>
         /// <param name="id">The identifier of the model to delete.</param>
@@ -69,7 +51,7 @@ namespace Nano.Web.Controllers
         [HttpDelete]
         [Route("delete/{id}")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -85,9 +67,6 @@ namespace Nano.Web.Controllers
 
             await this.Repository
                 .DeleteAsync(entity, cancellationToken);
-
-            if (this.Request.IsContentTypeHtml())
-                return this.RedirectToAction("Index");
 
             return this.Ok();
         }
@@ -107,7 +86,7 @@ namespace Nano.Web.Controllers
         [HttpDelete]
         [Route("delete/many")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -130,9 +109,6 @@ namespace Nano.Web.Controllers
             await this.Repository
                 .DeleteManyAsync(entities, cancellationToken);
 
-            if (this.Request.IsContentTypeHtml())
-                return this.RedirectToAction("Index");
-
             return this.Ok();
         }
 
@@ -150,7 +126,7 @@ namespace Nano.Web.Controllers
         [HttpDelete]
         [Route("delete/query")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -159,9 +135,6 @@ namespace Nano.Web.Controllers
         {
             await this.Repository
                 .DeleteManyAsync<TEntity, TCriteria>(select, cancellationToken);
-
-            if (this.Request.IsContentTypeHtml())
-                return this.RedirectToAction("Index");
 
             return this.Ok();
         }

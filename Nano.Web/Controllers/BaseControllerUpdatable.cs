@@ -12,7 +12,6 @@ using Nano.Models;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Web.Hosting;
-using Nano.Web.Hosting.Extensions;
 
 namespace Nano.Web.Controllers
 {
@@ -35,23 +34,6 @@ namespace Nano.Web.Controllers
         {
 
         }
-   
-        /// <summary>
-        /// Gets the 'edit' view for editing a model.
-        /// </summary>
-        /// <param name="id">The identifier of the model to edit.</param>
-        /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The 'edit' view.</returns>
-        [HttpGet]
-        [Route("edit/{id}")]
-        [Produces(HttpContentType.HTML)]
-        public virtual async Task<IActionResult> Edit([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
-        {
-            var result = await this.Repository
-                .GetAsync<TEntity, TIdentity>(id, cancellationToken);
-
-            return this.View("Edit", result);
-        }
 
         /// <summary>
         /// Edit the passed model.
@@ -67,7 +49,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("edit")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -76,9 +58,6 @@ namespace Nano.Web.Controllers
         {
             var result = await this.Repository
                 .UpdateAsync(entity, cancellationToken);
-
-            if (this.Request.IsContentTypeHtml())
-                return this.RedirectToAction("Index");
 
             return this.Ok(result);
         }
@@ -97,7 +76,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("edit/many")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -106,9 +85,6 @@ namespace Nano.Web.Controllers
         {
             await this.Repository
                 .UpdateManyAsync(entities.AsEnumerable(), cancellationToken);
-
-            if (this.Request.IsContentTypeHtml())
-                return this.RedirectToAction("Index");
 
             return this.Ok();
         }
@@ -126,7 +102,7 @@ namespace Nano.Web.Controllers
         [HttpPut]
         [Route("edit/query")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -135,9 +111,6 @@ namespace Nano.Web.Controllers
         {
             await this.Repository
                 .UpdateManyAsync(criteria.select, criteria.update, cancellationToken);
-
-            if (this.Request.IsContentTypeHtml())
-                return this.RedirectToAction("Index");
 
             return this.Ok();
         }

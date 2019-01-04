@@ -12,7 +12,6 @@ using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Web.Hosting;
-using Nano.Web.Hosting.Extensions;
 
 namespace Nano.Web.Controllers
 {
@@ -38,7 +37,7 @@ namespace Nano.Web.Controllers
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpPost]
         [Route("intersects")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -51,9 +50,6 @@ namespace Nano.Web.Controllers
             if (result == null)
                 return this.NotFound();
 
-            if (this.Request.IsContentTypeHtml())
-                return this.View("Index", result);
-
             return this.Ok(result);
         }
 
@@ -65,7 +61,7 @@ namespace Nano.Web.Controllers
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpPost]
         [Route("covers")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -78,9 +74,6 @@ namespace Nano.Web.Controllers
             if (result == null)
                 return this.NotFound();
 
-            if (this.Request.IsContentTypeHtml())
-                return this.View("Index", result);
-
             return this.Ok(result);
         }
 
@@ -92,7 +85,7 @@ namespace Nano.Web.Controllers
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpPost]
         [Route("coveredby")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -105,9 +98,6 @@ namespace Nano.Web.Controllers
             if (result == null)
                 return this.NotFound();
 
-            if (this.Request.IsContentTypeHtml())
-                return this.View("Index", result);
-
             return this.Ok(result);
         }
 
@@ -119,7 +109,7 @@ namespace Nano.Web.Controllers
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpPost]
         [Route("overlaps")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -132,9 +122,6 @@ namespace Nano.Web.Controllers
             if (result == null)
                 return this.NotFound();
 
-            if (this.Request.IsContentTypeHtml())
-                return this.View("Index", result);
-
             return this.Ok(result);
         }
 
@@ -146,7 +133,7 @@ namespace Nano.Web.Controllers
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpPost]
         [Route("touches")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -159,9 +146,6 @@ namespace Nano.Web.Controllers
             if (result == null)
                 return this.NotFound();
 
-            if (this.Request.IsContentTypeHtml())
-                return this.View("Index", result);
-
             return this.Ok(result);
         }
 
@@ -173,7 +157,7 @@ namespace Nano.Web.Controllers
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpPost]
         [Route("crosses")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -186,9 +170,6 @@ namespace Nano.Web.Controllers
             if (result == null)
                 return this.NotFound();
 
-            if (this.Request.IsContentTypeHtml())
-                return this.View("Index", result);
-
             return this.Ok(result);
         }
 
@@ -200,7 +181,7 @@ namespace Nano.Web.Controllers
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpPost]
         [Route("disjoints")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -212,9 +193,6 @@ namespace Nano.Web.Controllers
 
             if (result == null)
                 return this.NotFound();
-
-            if (this.Request.IsContentTypeHtml())
-                return this.View("Index", result);
 
             return this.Ok(result);
         }
@@ -229,7 +207,7 @@ namespace Nano.Web.Controllers
         /// <returns>The 'Index' <see cref="IActionResult"/>.</returns>
         [HttpPost]
         [Route("within")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -241,9 +219,6 @@ namespace Nano.Web.Controllers
 
             if (result == null)
                 return this.NotFound();
-
-            if (this.Request.IsContentTypeHtml())
-                return this.View("Index", result);
 
             return this.Ok(result);
         }

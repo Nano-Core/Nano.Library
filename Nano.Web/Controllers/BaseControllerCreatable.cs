@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using DynamicExpression.Entities;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +12,6 @@ using Nano.Models;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Web.Hosting;
-using Nano.Web.Hosting.Extensions;
 
 namespace Nano.Web.Controllers
 {
@@ -37,18 +34,6 @@ namespace Nano.Web.Controllers
         {
 
         }
-   
-        /// <summary>
-        /// Gets the 'create' view for creating a new model.
-        /// </summary>
-        /// <returns>The view.</returns>
-        [HttpGet]
-        [Route("create")]
-        [Produces(HttpContentType.HTML)]
-        public virtual IActionResult Create()
-        {
-            return this.View();
-        }
 
         /// <summary>
         /// Creates the passed model.
@@ -63,7 +48,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("create")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -72,9 +57,6 @@ namespace Nano.Web.Controllers
         {
             var result = await this.Repository
                 .AddAsync(entity, cancellationToken);
-
-            if (this.Request.IsContentTypeHtml())
-                return this.RedirectToAction("Index");
 
             return this.Created("create", result);
         }
@@ -92,7 +74,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("create/Many")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -101,9 +83,6 @@ namespace Nano.Web.Controllers
         {
             await this.Repository
                 .AddManyAsync(entities, cancellationToken);
-
-            if (this.Request.IsContentTypeHtml())
-                return this.RedirectToAction("Index");
 
             return this.Ok();
         }

@@ -12,7 +12,6 @@ using Nano.Models;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Web.Hosting;
-using Nano.Web.Hosting.Extensions;
 
 namespace Nano.Web.Controllers
 {
@@ -44,7 +43,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpGet]
         [Route("index")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
@@ -59,9 +58,6 @@ namespace Nano.Web.Controllers
 
             if (result == null)
                 return this.NotFound();
-
-            if (this.Request.IsContentTypeHtml())
-                return this.View("Index", result);
 
             return this.Ok(result);
         }
@@ -81,7 +77,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("index")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
@@ -96,9 +92,6 @@ namespace Nano.Web.Controllers
 
             if (result == null)
                 return this.NotFound();
-
-            if (this.Request.IsContentTypeHtml())
-                return this.View("Index", result);
 
             return this.Ok(result);
         }
@@ -117,7 +110,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpGet]
         [Route("details/{id}")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
@@ -130,9 +123,6 @@ namespace Nano.Web.Controllers
 
             if (result == null)
                 return this.NotFound();
-
-            if (this.HttpContext.Request.IsContentTypeHtml())
-                return this.View("Details", result);
 
             return this.Ok(result);
         }
@@ -152,7 +142,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("details")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
@@ -165,9 +155,6 @@ namespace Nano.Web.Controllers
 
             if (result == null)
                 return this.NotFound();
-
-            if (this.Request.IsContentTypeHtml())
-                return this.View("Details", result);
 
             return this.Ok(result);
         }
@@ -186,7 +173,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpGet]
         [Route("query")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
@@ -202,9 +189,6 @@ namespace Nano.Web.Controllers
             if (result == null)
                 return this.NotFound();
 
-            if (this.Request.IsContentTypeHtml())
-                return this.View("Index", result);
-
             return this.Ok(result);
         }
 
@@ -223,7 +207,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("query")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
@@ -238,9 +222,6 @@ namespace Nano.Web.Controllers
 
             if (result == null)
                 return this.NotFound();
-
-            if (this.Request.IsContentTypeHtml())
-                return this.View("Index", result);
 
             return this.Ok(result);
         }
@@ -258,7 +239,7 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpGet]
         [Route("query/first")]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
@@ -273,9 +254,6 @@ namespace Nano.Web.Controllers
 
             if (result == null)
                 return this.NotFound();
-
-            if (this.Request.IsContentTypeHtml())
-                return this.View("details", result);
 
             return this.Ok(result);
         }
@@ -294,7 +272,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("query/first")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
@@ -309,9 +287,6 @@ namespace Nano.Web.Controllers
 
             if (result == null)
                 return this.NotFound();
-
-            if (this.Request.IsContentTypeHtml())
-                return this.View("details", result);
 
             return this.Ok(result);
         }

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Nano.Models;
 using Nano.Web.Hosting;
-using Nano.Web.Hosting.Extensions;
 
 namespace Nano.Web.Controllers
 {
@@ -28,36 +27,12 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [Route("index")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public virtual IActionResult Index()
         {
-            if (this.Request.IsContentTypeHtml())
-                return this.View();
-
             return this.Ok();
-        }
-
-        /// <summary>
-        /// Error action, returning an Ok (success) response containing the error.
-        /// </summary>
-        /// <param name="error">The error.</param>
-        /// <returns>The error.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="401">Unauthorized.</response>
-        [HttpPost]
-        [Route("error")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.OK)]
-        public virtual IActionResult Error([FromBody][Required]Error error)
-        {
-            if (this.Request.IsContentTypeHtml())
-                return this.View(error);
-
-            return this.Ok(error);
         }
 
         /// <summary>
@@ -71,7 +46,7 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("language")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML, HttpContentType.HTML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.OK)]
         public virtual IActionResult SetLanguage([FromQuery][Required]string code, [FromQuery]string returnUrl, CancellationToken cancellationToken = default)
         {
@@ -84,19 +59,6 @@ namespace Nano.Web.Controllers
 
             this.Response.Cookies
                 .Append(cookieName, cookieValue, cookieOptions);
-
-            if (this.Request.IsContentTypeHtml())
-            {
-                if (returnUrl == null)
-                {
-                    if (this.Request.IsContentTypeHtml())
-                        return this.RedirectToAction("Index");
-
-                    return Ok();
-                }
-
-                return this.LocalRedirect(returnUrl);
-            }
 
             return this.Ok();
         }
