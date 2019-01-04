@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.Models;
+using Nano.Models.Auth;
 using Nano.Web.Api.Requests.Auth;
 using Nano.Web.Api.Requests.Interfaces;
 using Nano.Web.Hosting;
