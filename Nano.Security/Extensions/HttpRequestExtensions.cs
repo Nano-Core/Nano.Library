@@ -34,7 +34,7 @@ namespace Nano.Security.Extensions
 
             var jwtSecurityToken = new JwtSecurityToken(jwtToken);
 
-            return jwtSecurityToken.Payload.Sub;
+            return jwtSecurityToken.Payload?.Sub;
         }
     }
 }

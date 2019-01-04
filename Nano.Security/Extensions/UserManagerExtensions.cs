@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using Nano.Models;
+using Nano.Models.Auth;
 
 namespace Nano.Security.Extensions
 {

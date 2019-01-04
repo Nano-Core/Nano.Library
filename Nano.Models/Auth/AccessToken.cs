@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.Models
+namespace Nano.Models.Auth
 {
     /// <summary>
     /// Access Token.
@@ -13,14 +13,13 @@ namespace Nano.Models
         public virtual string Token { get; set; }
 
         /// <summary>
-        /// ExpireAt.
+        /// Expire At.
         /// </summary>
         public virtual DateTime ExpireAt { get; set; }
 
         /// <summary>
-        /// Is Valid.
+        /// Is Expired.
         /// </summary>
         public virtual bool IsExpired => this.Token != null && this.ExpireAt > DateTimeOffset.UtcNow;
-
     }
 }
