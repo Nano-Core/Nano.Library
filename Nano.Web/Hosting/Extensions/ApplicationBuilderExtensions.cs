@@ -1,6 +1,5 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Web.Hosting.Enums;
 using NWebsec.AspNetCore.Mvc;
@@ -82,24 +81,26 @@ namespace Nano.Web.Hosting.Extensions
         }
 
         /// <summary>
-        /// Adds ssl middleware to the <see cref="Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+        /// Adds rerdirect valiation middleware to the <see cref="IApplicationBuilder"/>.
         /// </summary>
-        /// <param name="applicationBuilder">The <see cref="Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-        /// <returns>The <see cref="Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        internal static IApplicationBuilder UseHttpsRewrite(this IApplicationBuilder applicationBuilder)
+        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+        internal static IApplicationBuilder UseHttpsRedirect(this IApplicationBuilder applicationBuilder)
         {
             if (applicationBuilder == null)
                 throw new ArgumentNullException(nameof(applicationBuilder));
 
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
-                    
+
             if (webOptions.Hosting.UseHttpsRedirect)
             {
-                // TODO: More Rewrite Options avaialble.
                 applicationBuilder
-                    .UseRewriter(new RewriteOptions()
-                        .AddRedirectToHttps());
+                    .UseRedirectValidation(x =>
+                    {
+                        x.AllowedDestinations();
+                        x.AllowSameHostRedirectsToHttps(webOptions.Hosting.PortsHttps);
+                    });
             }
             
             return applicationBuilder;
@@ -306,41 +307,18 @@ namespace Nano.Web.Hosting.Extensions
 
                             if (maxAge.HasValue)
                             {
+                                const int MAX_WEEKS = 18;
                                 var weeks = maxAge.Value.TotalDays / 7;  
 
-                                if (hsts.UsePreload && weeks >= 18)
+                                if (hsts.UsePreload && weeks >= MAX_WEEKS)
                                     x.Preload();
                             }
                         }
 
                         if (maxAge.HasValue)
-                        {                            x.MaxAge(maxAge.Value.Days, maxAge.Value.Hours, maxAge.Value.Minutes, maxAge.Value.Seconds);}
-                    });
-            }
-            
-            return applicationBuilder;
-        }
-
-        /// <summary>
-        /// Adds rerdirect valiation middleware to the <see cref="IApplicationBuilder"/>.
-        /// </summary>
-        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
-        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
-        internal static IApplicationBuilder UseHttpsRedirectionValidation(this IApplicationBuilder applicationBuilder)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            var services = applicationBuilder.ApplicationServices;
-            var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
-
-            if (webOptions.Hosting.UseRedirectValidation)
-            {
-                applicationBuilder
-                    .UseRedirectValidation(x =>
-                    {
-                        x.AllowedDestinations();
-                        x.AllowSameHostRedirectsToHttps(webOptions.Hosting.PortsHttps);
+                        {
+                            x.MaxAge(maxAge.Value.Days, maxAge.Value.Hours, maxAge.Value.Minutes, maxAge.Value.Seconds);
+                        }
                     });
             }
             

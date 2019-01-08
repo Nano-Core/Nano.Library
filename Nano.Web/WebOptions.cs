@@ -75,12 +75,6 @@ namespace Nano.Web
             public virtual bool UseXDownloadOptions { get; set; } = false;
 
             /// <summary>
-            /// Use Redirect Validation.
-            /// Enables request redirect validation.
-            /// </summary>
-            public virtual bool UseRedirectValidation { get; set; } = false;
-
-            /// <summary>
             /// Use X-Content Type Options.
             /// </summary>
             public virtual bool UseXContentTypeOptions { get; set; } = false;

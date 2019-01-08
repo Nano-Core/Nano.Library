@@ -91,6 +91,8 @@ namespace Nano.Web
             var webOptions = config.GetSection(WebOptions.SectionName).Get<WebOptions>() ?? new WebOptions();
 
             return new WebHostBuilder()
+                .UseEnvironment(environment)
+                .UseConfiguration(config)
                 .UseKestrel(x =>
                 {
                     webOptions.Hosting.Ports
@@ -99,6 +101,7 @@ namespace Nano.Web
                         {
                             x.ListenAnyIP(y, z =>
                             {
+                                z.NoDelay = true;
                                 z.Protocols = HttpProtocols.Http1AndHttp2;
                             });
                         });
@@ -111,14 +114,17 @@ namespace Nano.Web
                         {
                             x.ListenAnyIP(y, z =>
                             {
+                                z.NoDelay = true;
                                 z.Protocols = HttpProtocols.Http1AndHttp2;
-                                z.UseHttps(certificate.Path, certificate.Password);
+
+                                if (certificate.Path != null)
+                                {
+                                    z.UseHttps(certificate.Path, certificate.Password);
+                                }
                             });
                         });
                 })
                 .UseContentRoot(root)
-                .UseConfiguration(config)
-                .UseEnvironment(environment)
                 .ConfigureServices(x =>
                 {
                     x.AddSingleton<IApplication, TApplication>();
@@ -145,13 +151,11 @@ namespace Nano.Web
             applicationBuilder
                 .UseSession()
                 .UseStaticFiles()
-                .UseHttpsRewrite()
                 .UseCookiePolicy()
+                .UseHttpsRedirect()
                 .UseAuthentication()
                 .UseForwardedHeaders()
                 .UseResponseCompression()
-                .UseHttpsRedirection()
-                .UseHttpsRedirectionValidation()
                 .UseMiddleware<ExceptionHandlingMiddleware>()
                 .UseMiddleware<HttpRequestUserMiddleware>()
                 .UseMiddleware<HttpRequestIdentifierMiddleware>()
@@ -159,11 +163,11 @@ namespace Nano.Web
                 .UseNoCache()
                 .UseRobotsTag()
                 .UseDownloadOptions()
-                .UseContentTypeOptions()
-                .UseStrictTransportSecurity()
                 .UseReferrerPolicies()
+                .UseContentTypeOptions()
                 .UseXFrameOptionsPolicies()
                 .UseXXssProtectionPolicies()
+                .UseStrictTransportSecurity()
                 .UseCors(x =>
                 {
                     x.AllowAnyOrigin();

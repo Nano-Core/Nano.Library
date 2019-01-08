@@ -1468,7 +1468,7 @@
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpsRedirectionValidation(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpsRedirect(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
             Adds rerdirect valiation middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
