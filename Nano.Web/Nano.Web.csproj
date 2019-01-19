@@ -31,7 +31,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.App.xml" />
     <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Config.xml" />
-    <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Console.xml" />
     <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Data.xml" />
     <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Eventing.xml" />
     <EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Logging.xml" />
@@ -44,6 +43,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.CookiePolicy" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />

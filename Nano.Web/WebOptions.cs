@@ -53,46 +53,66 @@ namespace Nano.Web
             public virtual int[] PortsHttps { get; set; } = new int[0];
 
             /// <summary>
-            /// Use No Cache.
-            /// Setting these headers will make the browser reload every page in the browsing history when the user navigates with the “Back” and “Forward” buttons.
-            /// This will affect the load on your server(s) — and also the user experience.
-            /// </summary>
-            public virtual bool UseNoCache { get; set; } = false;
-
-            /// <summary>
             /// Use Https Redirect.
+            /// Forces https for all requests.
             /// </summary>
             public virtual bool UseHttpsRequired { get; set; } = false;
 
             /// <summary>
             /// Use Https Redirect.
+            /// Enables middleware for automatically redirect http requests to https.
             /// </summary>
             public virtual bool UseHttpsRedirect { get; set; } = false;
 
             /// <summary>
-            /// Use X-Download Options.
+            /// Use Http Response Compression.
+            /// Enables middleware for dynamic compression of http responses.
             /// </summary>
-            public virtual bool UseXDownloadOptions { get; set; } = false;
+            public virtual bool UseHttpResponseCompression { get; set; } = true;
 
             /// <summary>
-            /// Use X-Content Type Options.
+            /// Use Http No Cache Header.
+            /// Setting these headers will make the browser reload every page in the browsing history when the user navigates with the “Back” and “Forward” buttons.
+            /// This will affect the load on your server(s) — and also the user experience.
             /// </summary>
-            public virtual bool UseXContentTypeOptions { get; set; } = false;
-            
-            /// <summary>
-            /// Referrer Policy.
-            /// </summary>
-            public virtual ReferrerPolicy ReferrerPolicy { get; set; } = ReferrerPolicy.Disabled;
+            public virtual bool UseHttpNoCacheHeader { get; set; } = false;
 
             /// <summary>
-            /// X-Frame Options Policy.
+            /// Use Http Forwarded Headers.
+            /// Enables forwarded headers, when application is behind a proxy.
             /// </summary>
-            public virtual XFrameOptionsPolicy XFrameOptionsPolicy { get; set; } = XFrameOptionsPolicy.Disabled;
+            public virtual bool UseHttpXForwardedHeaders { get; set; } = true;
 
             /// <summary>
-            /// XXss Protection Policy.
+            /// Use Http X-Download Options.
             /// </summary>
-            public virtual XXssProtectionPolicyBlockMode XXssProtectionPolicy { get; set; } = XXssProtectionPolicyBlockMode.Disabled;
+            public virtual bool UseHttpXDownloadOptionsHeader { get; set; } = false;
+
+            /// <summary>
+            /// Use Http X-Content Type Options Header.
+            /// </summary>
+            public virtual bool UseHttpXContentTypeOptionsHeader { get; set; } = false;
+
+            /// <summary>
+            /// Use Http Referrer Policy Header.
+            /// </summary>
+            public virtual ReferrerPolicy UseHttpReferrerPolicyHeader { get; set; } = ReferrerPolicy.Disabled;
+
+            /// <summary>
+            /// Use Http X-Frame Options Policy Header.
+            /// </summary>
+            public virtual XFrameOptionsPolicy UseHttpXFrameOptionsPolicyHeader { get; set; } = XFrameOptionsPolicy.Disabled;
+
+            /// <summary>
+            /// Use Http XXss Protection Policy Header.
+            /// </summary>
+            public virtual XXssProtectionPolicyBlockMode UseHttpXXssProtectionPolicyHeader { get; set; } = XXssProtectionPolicyBlockMode.Disabled;
+
+            /// <summary>
+            /// Use Http Session Timeout.
+            /// Enables middleware for session context middleware, and sets the session timeout to the value.
+            /// </summary>
+            public virtual TimeSpan UseHttpSessionTimeout { get; set; } = TimeSpan.FromMinutes(20);
 
             /// <summary>
             /// Use Hsts.
@@ -104,13 +124,18 @@ namespace Nano.Web
             /// Robots.
             /// Settings for robots (search engines) behavior.
             /// </summary>
-            public virtual RobotOptions Robots { get; set; } = new RobotOptions();
+            public virtual RobotOptions UseHttpXRobotsTagHeaders { get; set; } = new RobotOptions();
 
             /// <summary>
             /// Certificate (ssl)
             /// </summary>
             public virtual CertificateOptions Certificate { get; set; } = new CertificateOptions();
 
+            /// <summary>
+            /// HealthChecks.
+            /// </summary>
+            public virtual HealthCheckOptions HealthChecks { get; set; } = new HealthCheckOptions();
+            
             /// <summary>
             /// Hsts Options
             /// </summary>
@@ -193,6 +218,22 @@ namespace Nano.Web
                 /// Instructs search engines to not index images on the page (Google only)
                 /// </summary>
                 public virtual bool UseNoImageIndex { get; set; } = false;
+            }
+
+            /// <summary>
+            /// Health Check Options.
+            /// </summary>
+            public class HealthCheckOptions
+            {
+                /// <summary>
+                /// Liveness.
+                /// </summary>
+                public virtual bool Liveness { get; set; } = false;
+
+                /// <summary>
+                /// Readyness.
+                /// </summary>
+                public virtual bool Readyness { get; set; } = false;
             }
         }
 

@@ -9,7 +9,7 @@ namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
     public class DefaultControllerUpdatable<TEntity, TCriteria> : BaseControllerUpdatable<IRepository, TEntity, Guid, TCriteria>
-        where TEntity : class, IEntityIdentity<Guid>,IEntityUpdatable
+        where TEntity : class, IEntityIdentity<Guid>, IEntityUpdatable
         where TCriteria : class, IQueryCriteria, new()
     {
         /// <inheritdoc />

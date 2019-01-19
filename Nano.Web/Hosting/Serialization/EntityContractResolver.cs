@@ -54,10 +54,7 @@ namespace Nano.Web.Hosting.Serialization
                             break;
                     }
 
-                    if (enumerable != null)
-                        return enumerable.GetEnumerator().MoveNext();
-
-                    return true;
+                    return enumerable == null || enumerable.GetEnumerator().MoveNext();
                 };
             }
 

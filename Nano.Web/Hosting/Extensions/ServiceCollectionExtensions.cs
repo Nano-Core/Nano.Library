@@ -35,6 +35,7 @@ using Nano.Repository.Interfaces;
 using Nano.Security;
 using Nano.Web.Api;
 using Nano.Web.Hosting.Filters;
+using Nano.Web.Hosting.HealthChecks;
 using Nano.Web.Hosting.Middleware;
 
 namespace Nano.Web.Hosting.Extensions
@@ -124,6 +125,11 @@ namespace Nano.Web.Hosting.Extensions
                 {
                     x.FileProviders.Add(new EmbeddedFileProvider(assembly));
                 });
+
+            services
+                .AddHealthChecks()
+                    .AddCheck<LivenessHealthCheck>("Liveness")
+                    .AddCheck<ReadynessHealthCheck>("Readiness");
 
             return services;
         }

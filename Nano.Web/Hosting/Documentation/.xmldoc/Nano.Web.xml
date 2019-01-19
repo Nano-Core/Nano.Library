@@ -1405,63 +1405,77 @@
             Application Builder Extensions.
             </summary>
         </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseNoCache(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpSession(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds rerdirect valiation middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpResponseCompression(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
             Adds no cache middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseRobotsTag(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpNoCacheHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
-            Adds x-Robots tag middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            Adds no cache middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpsRewrite(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpXForwardedHeaders(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
-            Adds ssl middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            Adds no cache middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseDownloadOptions(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpXDownloadOptionsHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
             Adds x-download options middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseContentTypeOptions(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpXContentTypeOptionsHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
             Adds x-content-type options middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseReferrerPolicies(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpXRobotsTagHeaders(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds x-Robots tag middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpReferrerPolicyHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
             Adds referrer policy middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseXFrameOptionsPolicies(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpXFrameOptionsPolicyHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
             Adds X-frame options policy middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseXXssProtectionPolicies(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpXXssProtectionPolicyHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
             Adds XXss protection policy middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseStrictTransportSecurity(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpStrictTransportSecurityPolicyHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
             Adds Hsts middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
@@ -1562,6 +1576,22 @@
             Validates the model state upon execiting a controller action.
             </summary>
             <param name="context">The <see cref="T:Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext"/>.</param>
+        </member>
+        <member name="T:Nano.Web.Hosting.HealthChecks.LivenessHealthCheck">
+            <summary>
+            Liveness Health Check
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.HealthChecks.LivenessHealthCheck.CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.HealthChecks.ReadynessHealthCheck">
+            <summary>
+            Readyness Health Check.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.HealthChecks.ReadynessHealthCheck.CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext,System.Threading.CancellationToken)">
+            <inheritdoc />
         </member>
         <member name="T:Nano.Web.Hosting.HttpContentType">
             <summary>
@@ -1744,52 +1774,66 @@
             Ports Https.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseNoCache">
-            <summary>
-            Use No Cache.
-            Setting these headers will make the browser reload every page in the browsing history when the user navigates with the “Back” and “Forward” buttons.
-            This will affect the load on your server(s) — and also the user experience.
-            </summary>
-        </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpsRequired">
             <summary>
             Use Https Redirect.
+            Forces https for all requests.
             </summary>
         </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpsRedirect">
             <summary>
             Use Https Redirect.
+            Enables middleware for automatically redirect http requests to https.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseXDownloadOptions">
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpResponseCompression">
             <summary>
-            Use X-Download Options.
+            Use Http Response Compression.
+            Enables middleware for dynamic compression of http responses.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseRedirectValidation">
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpNoCacheHeader">
             <summary>
-            Use Redirect Validation.
-            Enables request redirect validation.
+            Use Http No Cache Header.
+            Setting these headers will make the browser reload every page in the browsing history when the user navigates with the “Back” and “Forward” buttons.
+            This will affect the load on your server(s) — and also the user experience.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseXContentTypeOptions">
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpXForwardedHeaders">
             <summary>
-            Use X-Content Type Options.
+            Use Http Forwarded Headers.
+            Enables forwarded headers, when application is behind a proxy.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.ReferrerPolicy">
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpXDownloadOptionsHeader">
             <summary>
-            Referrer Policy.
+            Use Http X-Download Options.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.XFrameOptionsPolicy">
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpXContentTypeOptionsHeader">
             <summary>
-            X-Frame Options Policy.
+            Use Http X-Content Type Options Header.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.XXssProtectionPolicy">
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpReferrerPolicyHeader">
             <summary>
-            XXss Protection Policy.
+            Use Http Referrer Policy Header.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpXFrameOptionsPolicyHeader">
+            <summary>
+            Use Http X-Frame Options Policy Header.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpXXssProtectionPolicyHeader">
+            <summary>
+            Use Http XXss Protection Policy Header.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpSessionTimeout">
+            <summary>
+            Use Http Session Timeout.
+            Enables middleware for session context middleware, and sets the session timeout to the value.
             </summary>
         </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.Hsts">
@@ -1798,7 +1842,7 @@
             Settings for Strict-Transport-Security.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.Robots">
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpXRobotsTagHeaders">
             <summary>
             Robots.
             Settings for robots (search engines) behavior.
@@ -1807,6 +1851,11 @@
         <member name="P:Nano.Web.WebOptions.HostingOptions.Certificate">
             <summary>
             Certificate (ssl)
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.HealthChecks">
+            <summary>
+            HealthChecks.
             </summary>
         </member>
         <member name="T:Nano.Web.WebOptions.HostingOptions.HstsOptions">
@@ -1889,6 +1938,21 @@
             <summary>
             Use No Image Index.
             Instructs search engines to not index images on the page (Google only)
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions">
+            <summary>
+            Health Check Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions.Liveness">
+            <summary>
+            Liveness.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions.Readyness">
+            <summary>
+            Readyness.
             </summary>
         </member>
         <member name="T:Nano.Web.WebOptions.DocumentationOptions">

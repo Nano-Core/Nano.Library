@@ -9,7 +9,7 @@ namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
     public class DefaultControllerDeletable<TEntity, TCriteria> : BaseControllerDeletable<IRepository, TEntity, Guid, TCriteria>
-        where TEntity : class, IEntityIdentity<Guid>,IEntityDeletable
+        where TEntity : class, IEntityIdentity<Guid>, IEntityDeletable
         where TCriteria : class, IQueryCriteria, new()
     {
         /// <inheritdoc />

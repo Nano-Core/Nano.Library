@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
@@ -52,8 +54,6 @@ namespace Nano.Web
                 throw new ArgumentNullException(nameof(applicationLifetime));
 
             base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
-
-            applicationBuilder.UseHttpsRedirection();
 
             this.ConfigureHosting(applicationBuilder);
             this.ConfigureLocalization(applicationBuilder);
@@ -149,25 +149,17 @@ namespace Nano.Web
                 throw new ArgumentNullException(nameof(applicationBuilder));
 
             applicationBuilder
-                .UseSession()
+                .UseHttpNoCacheHeader()
+                .UseHttpXRobotsTagHeaders()
+                .UseHttpXForwardedHeaders()
+                .UseHttpXDownloadOptionsHeader()
+                .UseHttpXContentTypeOptionsHeader()
+                .UseHttpXFrameOptionsPolicyHeader()
+                .UseHttpXXssProtectionPolicyHeader()
+                .UseHttpReferrerPolicyHeader()
+                .UseHttpStrictTransportSecurityPolicyHeader()
                 .UseStaticFiles()
-                .UseCookiePolicy()
                 .UseHttpsRedirect()
-                .UseAuthentication()
-                .UseForwardedHeaders()
-                .UseResponseCompression()
-                .UseMiddleware<ExceptionHandlingMiddleware>()
-                .UseMiddleware<HttpRequestUserMiddleware>()
-                .UseMiddleware<HttpRequestIdentifierMiddleware>()
-                .UseMiddleware<HttpRequestOptionsMiddleware>()
-                .UseNoCache()
-                .UseRobotsTag()
-                .UseDownloadOptions()
-                .UseReferrerPolicies()
-                .UseContentTypeOptions()
-                .UseXFrameOptionsPolicies()
-                .UseXXssProtectionPolicies()
-                .UseStrictTransportSecurity()
                 .UseCors(x =>
                 {
                     x.AllowAnyOrigin();
@@ -175,9 +167,24 @@ namespace Nano.Web
                     x.AllowAnyMethod();
                     x.AllowCredentials();
                 })
+                .UseCookiePolicy(new CookiePolicyOptions
+                {
+                    Secure = CookieSecurePolicy.SameAsRequest
+                })
+                .UseHttpSession()
+                .UseAuthentication()
+                .UseHttpResponseCompression()
+                .UseMiddleware<HttpRequestUserMiddleware>()
+                .UseMiddleware<ExceptionHandlingMiddleware>()
+                .UseMiddleware<HttpRequestOptionsMiddleware>()
+                .UseMiddleware<HttpRequestIdentifierMiddleware>()
                 .UseMvc(x =>
                 {
                     x.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                })
+                .UseHealthChecks("/health", new HealthCheckOptions
+                {
+                    AllowCachingResponses = true
                 });
         }
         private void ConfigureLocalization(IApplicationBuilder applicationBuilder)

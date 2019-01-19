@@ -28,10 +28,9 @@ namespace Nano.Models.Extensions
             if (index < 0)
                 return @string;
 
-            if (length < 0)
-                return string.Empty;
-
-            return @string.Substring(index, length);
+            return length < 0 
+                ? string.Empty 
+                : @string.Substring(index, length);
         }
 
         /// <summary>
