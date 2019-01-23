@@ -77,6 +77,7 @@ namespace Nano.Data.Extensions
             services
                 .AddScoped<DbContext, DefaultDbContext>()
                 .AddScoped<BaseDbContext, DefaultDbContext>()
+                .AddScoped<DefaultDbContext, NullDbContext>()
                 .AddScoped<DbContextOptions, DbContextOptions<DefaultDbContext>>();
 
             services
