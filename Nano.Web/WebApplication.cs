@@ -119,7 +119,8 @@ namespace Nano.Web
 
                                 if (certificate.Path != null)
                                 {
-                                    z.UseHttps(certificate.Path, certificate.Password);
+                                    if (File.Exists(certificate.Path))
+                                        z.UseHttps(certificate.Path, certificate.Password);
                                 }
                             });
                         });
