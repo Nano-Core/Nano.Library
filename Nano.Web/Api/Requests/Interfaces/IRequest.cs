@@ -27,7 +27,5 @@ namespace Nano.Web.Api.Requests.Interfaces
         /// </summary>
         /// <returns>The <see cref="IList{KeyValuePair}"/>.</returns>
         IList<string> GetRouteParameters();
-
-        
     }
 }
