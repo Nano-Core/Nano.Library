@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 
 namespace Nano.Data
@@ -15,7 +16,11 @@ namespace Nano.Data
         /// <inheritdoc />
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            if (optionsBuilder == null) 
+                throw new ArgumentNullException(nameof(optionsBuilder));
 
+            optionsBuilder
+                .UseInMemoryDatabase("nullDb");
         }
     }
 }

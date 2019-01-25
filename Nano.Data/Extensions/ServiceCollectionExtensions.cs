@@ -75,10 +75,10 @@ namespace Nano.Data.Extensions
                 .AddConfigOptions<DataOptions>(configuration, DataOptions.SectionName, out var options);
 
             services
-                .AddScoped<DbContext, DefaultDbContext>()
-                .AddScoped<BaseDbContext, DefaultDbContext>()
+                .AddScoped<DbContext, NullDbContext>()
+                .AddScoped<BaseDbContext, NullDbContext>()
                 .AddScoped<DefaultDbContext, NullDbContext>()
-                .AddScoped<DbContextOptions, DbContextOptions<DefaultDbContext>>();
+                .AddScoped<DbContextOptions, DbContextOptions<NullDbContext>>();
 
             services
                 .AddIdentity<IdentityUser, IdentityRole>()
