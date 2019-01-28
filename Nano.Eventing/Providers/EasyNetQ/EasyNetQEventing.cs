@@ -33,8 +33,8 @@ namespace Nano.Eventing.Providers.EasyNetQ
             var name = typeof(TMessage).FullName;
             var message = new Message<TMessage>(body);
 
-            var exchange = this.Bus.Advanced
-                .ExchangeDeclare(name, ExchangeType.Fanout);
+            var exchange = await this.Bus.Advanced
+                .ExchangeDeclareAsync(name, ExchangeType.Fanout);
 
             await this.Bus.Advanced
                 .PublishAsync(exchange, routing, true, message);
@@ -47,22 +47,21 @@ namespace Nano.Eventing.Providers.EasyNetQ
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));
 
-            await Task.Run(() =>
-            {
-                var name = typeof(TMessage).FullName;
+            var type = typeof(TMessage);
 
-                var queue = this.Bus.Advanced
-                    .QueueDeclare($"{name}");
+            var queueName = $"{type.FullName}.{routing}-{Guid.NewGuid()}";
+            var queue = await this.Bus.Advanced
+                .QueueDeclareAsync($"{queueName}");
 
-                this.Bus.Advanced
-                    .Consume<TMessage>(queue, (message, info) => callback(message.Body));
+            this.Bus.Advanced
+                .Consume<TMessage>(queue, (message, info) => callback(message.Body));
 
-                var exchange = this.Bus.Advanced
-                    .ExchangeDeclare(name, ExchangeType.Fanout);
+            var exchangeName = type.FullName;
+            var exchange = await this.Bus.Advanced
+                .ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout);
 
-                this.Bus.Advanced
-                    .Bind(exchange, queue, routing);
-            });
+            this.Bus.Advanced
+                .Bind(exchange, queue, routing);
         }
 
         /// <inheritdoc />
