@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using EasyNetQ;
 using EasyNetQ.Topology;
@@ -48,8 +49,9 @@ namespace Nano.Eventing.Providers.EasyNetQ
                 throw new ArgumentNullException(nameof(callback));
 
             var type = typeof(TMessage);
+            var appName = Assembly.GetEntryAssembly().GetName().Name;
+            var queueName = $"{appName}:{type.Name}.{routing}";
 
-            var queueName = $"{type.FullName}.{routing}-{Guid.NewGuid()}";
             var queue = await this.Bus.Advanced
                 .QueueDeclareAsync($"{queueName}");
 
