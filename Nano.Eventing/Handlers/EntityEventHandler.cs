@@ -74,8 +74,11 @@ namespace Nano.Eventing.Handlers
                     entity = Activator.CreateInstance(type);
                     property.SetValue(entity, id);
 
-                    await this.Context.AddAsync(entity);
-                    await this.Context.SaveChangesAsync();
+                    await this.Context
+                        .AddAsync(entity);
+
+                    await this.Context
+                        .SaveChangesAsync();
 
                     this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} has been added.");
 
@@ -90,8 +93,11 @@ namespace Nano.Eventing.Handlers
                         return;
                     }
 
-                    this.Context.Remove(entity);
-                    await this.Context.SaveChangesAsync();
+                    this.Context
+                        .Remove(entity);
+                    
+                    await this.Context
+                        .SaveChangesAsync();
 
                     this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} has been removed.");
 

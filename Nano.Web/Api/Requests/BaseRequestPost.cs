@@ -3,9 +3,9 @@
 namespace Nano.Web.Api.Requests
 {
     /// <summary>
-    /// Base Request Json.
+    /// Base Request Post.
     /// </summary>
-    public abstract class BaseRequestJson : BaseRequest, IRequestJson
+    public abstract class BaseRequestPost : BaseRequest, IRequestPost
     {
         /// <inheritdoc />
         public abstract object GetBody();

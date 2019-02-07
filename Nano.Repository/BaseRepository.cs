@@ -368,15 +368,15 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
-        public virtual async Task DeleteManyAsync<TEntity, TCriteria>(TCriteria critiera, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteManyAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable
             where TCriteria : class, IQueryCriteria, new()
         {
-            if (critiera == null)
-                throw new ArgumentNullException(nameof(critiera));
+            if (criteria == null)
+                throw new ArgumentNullException(nameof(criteria));
 
             await this.GetEntitySet<TEntity>()
-                .Where(critiera)
+                .Where(criteria)
                 .DeleteAsync(x =>
                 {
                     x.BatchSize = this.Context.Options.BulkBatchSize;
@@ -406,6 +406,19 @@ namespace Nano.Repository
                 .SaveChangesAsync(cancellationToken);
         }
 
+        /// <inheritdoc />
+        public virtual async Task<long> CountAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+            where TCriteria : class, IQueryCriteria, new()
+        {
+            if (criteria == null)
+                throw new ArgumentNullException(nameof(criteria));
+
+            return await this.GetEntitySet<TEntity>()
+                .Where(criteria)
+                .LongCountAsync(cancellationToken);
+        }
+        
         /// <inheritdoc />
         public virtual async Task<long> CountAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity

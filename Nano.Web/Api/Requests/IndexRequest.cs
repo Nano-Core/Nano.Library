@@ -6,7 +6,7 @@ namespace Nano.Web.Api.Requests
     /// <summary>
     /// Index Request.
     /// </summary>
-    public class IndexRequest : BaseRequestJson
+    public class IndexRequest : BaseRequestPost
     {
         /// <summary>
         /// Query.

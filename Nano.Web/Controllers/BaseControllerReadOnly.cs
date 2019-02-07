@@ -290,5 +290,60 @@ namespace Nano.Web.Controllers
 
             return this.Ok(result);
         }
+
+        /// <summary>
+        /// Gets the number of models (Count).
+        /// </summary>
+        /// <param name="criteria">The criteria model, containing filters used in the criteria.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
+        /// <returns>The count of models, matching the passed query.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpGet]
+        [Route("query/count")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> QueryCount([FromQuery][Required]TCriteria criteria, CancellationToken cancellationToken = default)
+        {
+            var result = await this.Repository
+                .CountAsync<TEntity, TCriteria>(criteria, cancellationToken);
+
+            return this.Ok(result);
+        }
+
+        /// <summary>
+        /// Gets the number of models (Count).
+        /// </summary>
+        /// <param name="criteria">The criteria model, containing filters used in the query.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
+        /// <returns>The count of models, matching the passed query.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("query/count")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> QueryCountPost([FromBody][Required]TCriteria criteria, CancellationToken cancellationToken = default)
+        {
+            var result = await this.Repository
+                .CountAsync<TEntity, TCriteria>(criteria, cancellationToken);
+
+            return this.Ok(result);
+        }
     }
 }

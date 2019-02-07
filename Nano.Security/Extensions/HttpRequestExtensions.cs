@@ -11,16 +11,17 @@ namespace Nano.Security.Extensions
     public static class HttpRequestExtensions
     {
         /// <summary>
-        /// Extracts the User from the request header.
+        /// Extracts the User from the jwt-token in the 'Authorization' request header.
         /// </summary>
         /// <param name="httpRequest">The <see cref="HttpRequest"/>.</param>
-        /// <returns>The user.</returns>
-        public static string GetUser(this HttpRequest httpRequest)
+        /// <returns>The user id.</returns>
+        public static string GetJwtUser(this HttpRequest httpRequest)
         {
             if (httpRequest == null)
                 throw new ArgumentNullException(nameof(httpRequest));
 
-            var header = httpRequest.Headers["Authorization"].FirstOrDefault();
+            var header = httpRequest.Headers["Authorization"]
+                .FirstOrDefault();
 
             if (header == null)
                 return null;

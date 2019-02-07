@@ -6,7 +6,7 @@ namespace Nano.Web.Api.Requests
     /// <summary>
     /// Details Many Request.
     /// </summary>
-    public class DetailsManyRequest : BaseRequestJson
+    public class DetailsManyRequest : BaseRequestPost
     {
         /// <summary>
         /// Ids.

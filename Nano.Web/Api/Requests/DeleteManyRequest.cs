@@ -6,7 +6,7 @@ namespace Nano.Web.Api.Requests
     /// <summary>
     /// Delete Many Request.
     /// </summary>
-    public class DeleteManyRequest : BaseRequestJson
+    public class DeleteManyRequest : BaseRequestPost
     {
         /// <summary>
         /// Ids.

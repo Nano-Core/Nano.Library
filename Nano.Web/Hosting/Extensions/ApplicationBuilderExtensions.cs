@@ -1,8 +1,15 @@
 using System;
+using System.Globalization;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using Nano.App;
+using Nano.Config;
 using Nano.Web.Hosting.Enums;
+using Nano.Web.Hosting.Middleware;
 using NWebsec.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using ReferrerPolicy = NWebsec.Core.Common.HttpHeaders.ReferrerPolicy;
 
 namespace Nano.Web.Hosting.Extensions
@@ -11,9 +18,123 @@ namespace Nano.Web.Hosting.Extensions
     /// Application Builder Extensions.
     /// </summary>
     public static class ApplicationBuilderExtensions
-    {        
+    {
         /// <summary>
-        /// Adds rerdirect valiation middleware to the <see cref="IApplicationBuilder"/>.
+        /// Adds exception handling middleware to the <see cref="IApplicationBuilder"/>.
+        /// </summary>
+        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+        internal static IApplicationBuilder UseExceptionHandling(this IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            applicationBuilder
+                .UseMiddleware<ExceptionHandlingMiddleware>();
+
+            return applicationBuilder;
+        }
+        
+        /// <summary>
+        /// Adds options action middleware to the <see cref="IApplicationBuilder"/>.
+        /// </summary>
+        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+        internal static IApplicationBuilder UseHttpRequestOptions(this IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            applicationBuilder
+                .UseMiddleware<HttpRequestOptionsMiddleware>();
+
+            return applicationBuilder;
+        }
+ 
+        /// <summary>
+        /// Adds request identifier middleware to the <see cref="IApplicationBuilder"/>.
+        /// </summary>
+        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+        internal static IApplicationBuilder UseHttpRequestIdentifier(this IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            applicationBuilder
+                .UseMiddleware<HttpRequestIdentifierMiddleware>();
+
+            return applicationBuilder;
+        }
+
+        /// <summary>
+        /// Adds documentation middleware to the <see cref="IApplicationBuilder"/>.
+        /// </summary>
+        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+        internal static IApplicationBuilder UseHttpDocumentataion(this IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            var services = applicationBuilder.ApplicationServices;
+            var appOptions = services.GetService<AppOptions>() ?? new AppOptions();
+
+            applicationBuilder
+                .UseSwagger(x =>
+                {
+                    x.RouteTemplate = "docs/{documentName}/swagger.json";
+                })
+                .UseSwaggerUI(x =>
+                {
+                    x.EnableFilter();
+                    x.EnableDeepLinking();
+                    x.EnableValidator(null);
+                    x.ShowExtensions();
+                    x.DisplayOperationId();
+                    x.DisplayRequestDuration();
+                    x.MaxDisplayedTags(-1);
+                    x.DefaultModelExpandDepth(2);
+                    x.DefaultModelsExpandDepth(1);
+                    x.DefaultModelRendering(ModelRendering.Example);
+                    x.DocExpansion(DocExpansion.None);
+
+                    x.RoutePrefix = "docs";
+                    x.DocumentTitle = $"Nano - {appOptions.Name} Docs v{appOptions.Version} ({ConfigManager.Environment})";
+                    x.SwaggerEndpoint($"/docs/{appOptions.Version}/swagger.json", $"Nano - {appOptions.Name} v{appOptions.Version} ({ConfigManager.Environment})");
+                });
+
+            return applicationBuilder;
+        }
+
+        /// <summary>
+        /// Adds localization middleware to the <see cref="IApplicationBuilder"/>.
+        /// </summary>
+        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+        internal static IApplicationBuilder UseHttpLocalization(this IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            var services = applicationBuilder.ApplicationServices;
+            var appOptions = services.GetService<AppOptions>() ?? new AppOptions();
+
+            applicationBuilder
+                .UseRequestLocalization(new RequestLocalizationOptions
+                {
+                    DefaultRequestCulture = new RequestCulture(appOptions.Cultures.Default),
+                    SupportedCultures = appOptions.Cultures.Supported
+                        .Select(x => new CultureInfo(x)).ToArray(),
+                    SupportedUICultures = appOptions.Cultures.Supported
+                        .Select(x => new CultureInfo(x)).ToArray()
+                });
+
+            return applicationBuilder;
+        }
+
+        /// <summary>
+        /// Adds http session middleware to the <see cref="IApplicationBuilder"/>.
         /// </summary>
         /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
         /// <returns>The <see cref="IApplicationBuilder"/>.</returns>

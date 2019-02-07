@@ -3,7 +3,7 @@
 namespace Nano.Web.Api.Requests.Auth
 {
     /// <inheritdoc />
-    public class LoginRequest : BaseRequestJson
+    public class LoginRequest : BaseRequestPost
     {
         /// <summary>
         /// Login.

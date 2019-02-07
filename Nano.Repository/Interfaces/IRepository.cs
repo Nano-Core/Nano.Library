@@ -277,14 +277,14 @@ namespace Nano.Repository.Interfaces
             where TEntity : class, IEntityDeletable;
 
         /// <summary>
-        /// Deletes all instances of <typeparamref name="TEntity"/>, matching the criterias of the passed <paramref name="critiera"/>.
+        /// Deletes all instances of <typeparamref name="TEntity"/>, matching the criterias of the passed <paramref name="criteria"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
         /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> type.</typeparam>
-        /// <param name="critiera">The <see cref="IQueryCriteria"/>.</param>
+        /// <param name="criteria">The <see cref="IQueryCriteria"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="Task"/> (void).</returns>
-        Task DeleteManyAsync<TEntity, TCriteria>(TCriteria critiera, CancellationToken cancellationToken = default)
+        Task DeleteManyAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable
             where TCriteria : class, IQueryCriteria, new();
 
@@ -297,6 +297,18 @@ namespace Nano.Repository.Interfaces
         /// <returns>The <see cref="Task"/> (void).</returns>
         Task DeleteManyAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable;
+
+        /// <summary>
+        /// Returns the count (long) of elements satisfying the passed criteria.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> type.</typeparam>
+        /// <param name="criteria">The <see cref="IQueryCriteria"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The number of elements.</returns>
+        Task<long> CountAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+            where TCriteria : class, IQueryCriteria, new();
 
         /// <summary>
         /// Returns the count (long) of elements satisfying the passed expression.

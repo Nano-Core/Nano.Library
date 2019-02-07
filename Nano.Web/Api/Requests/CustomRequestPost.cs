@@ -3,7 +3,7 @@
     /// <summary>
     /// Custom Request Json.
     /// </summary>
-    public class CustomRequestJson : BaseRequestJson
+    public class CustomRequestPost : BaseRequestPost
     {
         /// <summary>
         /// Body.

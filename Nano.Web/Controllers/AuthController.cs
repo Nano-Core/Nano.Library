@@ -445,7 +445,7 @@ namespace Nano.Web.Controllers
             await this.SecurityManager
                 .GetConfirmEmailAsync(getConfirmEmail, cancellationToken);
 
-            // BUG: Email confirmation event.
+            // TODO: Email confirmation event.
             //var callbackUrl = Url.Page("/Account/ConfirmEmail", pageHandler: null, values: new { userId = user.Id, code = code }, protocol: Request.Scheme);
             //await _emailSender.SendEmailAsync(user.Email, "Confirm your email", $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 

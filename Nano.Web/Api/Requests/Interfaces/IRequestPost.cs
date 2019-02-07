@@ -1,9 +1,9 @@
 namespace Nano.Web.Api.Requests.Interfaces
 {
     /// <summary>
-    /// Base interface for json requests (POST).
+    /// Base interface for requests (POST).
     /// </summary>
-    public interface IRequestJson : IRequest
+    public interface IRequestPost : IRequest
     {
         /// <summary>
         /// Gets the body of the request.

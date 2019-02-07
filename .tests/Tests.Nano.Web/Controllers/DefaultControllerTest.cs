@@ -22,7 +22,7 @@ namespace Tests.Nano.Web.Controllers
         [TestMethod]
         public void DetailsViewTest()
         {
-            this.Repository
+            this.MockRepository
                 .Setup(x => x.GetAsync<DefaultEntity, Guid>(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new DefaultEntity());
 
@@ -36,7 +36,7 @@ namespace Tests.Nano.Web.Controllers
         [TestMethod]
         public void DetailsOkObjectTest()
         {
-            this.Repository
+            this.MockRepository
                 .Setup(x => x.GetAsync<DefaultEntity, Guid>(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new DefaultEntity());
 
@@ -51,7 +51,7 @@ namespace Tests.Nano.Web.Controllers
         [TestMethod]
         public void DetailsWhenNotFoundTest()
         {
-            this.Repository
+            this.MockRepository
                 .Setup(x => x.GetAsync<DefaultEntity, Guid>(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((DefaultEntity)null);
 

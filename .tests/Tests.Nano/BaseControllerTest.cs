@@ -24,37 +24,49 @@ namespace Tests.Nano
         /// <summary>
         /// Logger.
         /// </summary>
-        protected virtual Mock<ILogger> Logger { get; set; } = new Mock<ILogger>();
+        protected virtual Mock<ILogger> MockLogger { get; set; } = new Mock<ILogger>();
 
         /// <summary>
         /// Eventing.
         /// </summary>
-        protected virtual Mock<IEventing> Eventing { get; set; } = new Mock<IEventing>();
+        protected virtual Mock<IEventing> MockEventing { get; set; } = new Mock<IEventing>();
 
         /// <summary>
         /// Repository.
         /// </summary>
-        protected virtual Mock<IRepository> Repository { get; set; } = new Mock<IRepository>();
+        protected virtual Mock<IRepository> MockRepository { get; set; } = new Mock<IRepository>();
+
+        /// <summary>
+        /// Controller.
+        /// </summary>
+        protected virtual Mock<TController> MockController { get; set; }
+
+        protected BaseControllerTest()
+        {
+            this.MockController = new Mock<TController>(this.MockLogger.Object, this.MockRepository.Object, this.MockEventing.Object)
+            {
+                CallBase = true
+            };
+        }
 
         /// <inheritdoc />
         [TestCleanup]
         public override void Cleanup()
         {
-            this.Logger = null;
-            this.Repository = null;
-            this.Eventing = null;
-            this.Controller = null;
+            this.MockEventing.Object?.Dispose();
+            this.MockRepository.Object?.Dispose();
+            this.Controller.Dispose();
+
+            this.MockLogger = null;
+            this.MockEventing = null;
+            this.MockRepository = null;
+            this.MockController = null;
         }
 
         /// <inheritdoc />
         [TestInitialize]
         public override void Initialize()
         {
-            var controllerMock = new Mock<TController>(this.Logger.Object, this.Repository.Object, this.Eventing.Object)
-            {
-                CallBase = true
-            };
-
             var httpContext = new Mock<HttpContext>();
             var httpRequest = new Mock<HttpRequest>();
             var httpResponse = new Mock<HttpResponse>();
@@ -74,7 +86,7 @@ namespace Tests.Nano
                 .SetupGet(x => x.Response)
                 .Returns(httpResponse.Object);
 
-            this.Controller = controllerMock.Object;
+            this.Controller = this.MockController.Object;
             this.Controller.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext.Object

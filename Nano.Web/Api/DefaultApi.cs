@@ -30,7 +30,7 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="IndexRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The matching entities.</returns>
-        public virtual async Task<IEnumerable<TEntity>> Index<TEntity>(IndexRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> IndexAsync<TEntity>(IndexRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -46,7 +46,8 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="DetailsRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The matching entity.</returns>
-        public virtual async Task<TEntity> Details<TEntity>(DetailsRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity> DetailsAsync<TEntity>(DetailsRequest request, CancellationToken cancellationToken = default)
+            where TEntity: class
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -62,7 +63,8 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="DetailsManyRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The matching entities.</returns>
-        public virtual async Task<IEnumerable<TEntity>> Details<TEntity>(DetailsManyRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> DetailsManyAsync<TEntity>(DetailsManyRequest request, CancellationToken cancellationToken = default)
+            where TEntity: class
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -75,11 +77,12 @@ namespace Nano.Web.Api
         /// Invokes the 'query' endpoint of the api.
         /// </summary>
         /// <typeparam name="TEntity">The entity type.</typeparam>
-        /// <typeparam name="TCriteria">The criteira type</typeparam>
+        /// <typeparam name="TCriteria">The criteria type</typeparam>
         /// <param name="request">The <see cref="QueryRequest{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The matching entities.</returns>
-        public virtual async Task<IEnumerable<TEntity>> Query<TEntity, TCriteria>(QueryRequest<TCriteria> request, CancellationToken cancellationToken = default) 
+        public virtual async Task<IEnumerable<TEntity>> QueryAsync<TEntity, TCriteria>(QueryRequest<TCriteria> request, CancellationToken cancellationToken = default) 
+            where TEntity: class
             where TCriteria : IQueryCriteria, new()
         {
             if (request == null)
@@ -97,13 +100,33 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="QueryFirstRequest{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The first match entity.</returns>
-        public virtual async Task<IEnumerable<TEntity>> QueryFirst<TEntity, TCriteria>(QueryFirstRequest<TCriteria> request, CancellationToken cancellationToken = default) 
+        public virtual async Task<TEntity> QueryFirstAsync<TEntity, TCriteria>(QueryFirstRequest<TCriteria> request, CancellationToken cancellationToken = default) 
+            where TEntity: class
             where TCriteria : IQueryCriteria, new()
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.Invoke<QueryFirstRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.Invoke<QueryFirstRequest<TCriteria>, TEntity>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Query.
+        /// Invokes the 'query/first' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <typeparam name="TCriteria">The criteria type</typeparam>
+        /// <param name="request">The <see cref="QueryCountRequest{TCriteria}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The count of matching entities.</returns>
+        public virtual async Task<int> QueryCountAsync<TEntity, TCriteria>(QueryCountRequest<TCriteria> request, CancellationToken cancellationToken = default) 
+            where TEntity: class, IEntity
+            where TCriteria : IQueryCriteria, new()
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.Invoke<TEntity, QueryCountRequest<TCriteria>, int>(request, cancellationToken);
         }
 
         /// <summary>
@@ -114,8 +137,8 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="CreateRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The created entity.</returns>
-        public virtual async Task<TEntity> Create<TEntity>(CreateRequest request, CancellationToken cancellationToken = default)
-            where TEntity : IEntityCreatable
+        public virtual async Task<TEntity> CreateAsync<TEntity>(CreateRequest request, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityCreatable
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -131,8 +154,8 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="CreateManyRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The created entities.</returns>
-        public virtual async Task<IEnumerable<TEntity>> CreateMany<TEntity>(CreateManyRequest request, CancellationToken cancellationToken = default)
-            where TEntity : IEntityCreatable
+        public virtual async Task<IEnumerable<TEntity>> CreateManyAsync<TEntity>(CreateManyRequest request, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityCreatable
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -148,8 +171,8 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="EditRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The updated entity.</returns>
-        public virtual async Task<TEntity> Edit<TEntity>(EditRequest request, CancellationToken cancellationToken = default)
-            where TEntity : IEntityUpdatable
+        public virtual async Task<TEntity> EditAsync<TEntity>(EditRequest request, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityUpdatable
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -165,8 +188,8 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="EditManyRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The updated entities.</returns>
-        public virtual async Task<IEnumerable<TEntity>> EditMany<TEntity>(EditManyRequest request, CancellationToken cancellationToken = default)
-            where TEntity : IEntityUpdatable
+        public virtual async Task<IEnumerable<TEntity>> EditManyAsync<TEntity>(EditManyRequest request, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityUpdatable
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -182,8 +205,8 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="EditManyRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The updated entities.</returns>
-        public virtual async Task<IEnumerable<TEntity>> EditQuery<TEntity>(EditQueryRequest request, CancellationToken cancellationToken = default)
-            where TEntity : IEntityUpdatable
+        public virtual async Task<IEnumerable<TEntity>> EditQueryAsync<TEntity>(EditQueryRequest request, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityUpdatable
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -199,8 +222,8 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="DeleteRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Nothing.</returns>
-        public virtual async Task Delete<TEntity>(DeleteRequest request, CancellationToken cancellationToken = default)
-            where TEntity : IEntityDeletable
+        public virtual async Task DeleteAsync<TEntity>(DeleteRequest request, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -216,8 +239,8 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="DeleteManyRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Nothing.</returns>
-        public virtual async Task DeleteMany<TEntity>(DeleteManyRequest request, CancellationToken cancellationToken = default)
-            where TEntity : IEntityDeletable
+        public virtual async Task DeleteManyAsync<TEntity>(DeleteManyRequest request, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -233,8 +256,8 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="DeleteManyRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Nothing.</returns>
-        public virtual async Task DeleteQuery<TEntity>(DeleteQueryRequest request, CancellationToken cancellationToken = default)
-            where TEntity : IEntityDeletable
+        public virtual async Task DeleteQueryAsync<TEntity>(DeleteQueryRequest request, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));

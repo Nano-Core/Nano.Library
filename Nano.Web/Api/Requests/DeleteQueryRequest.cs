@@ -6,7 +6,7 @@ namespace Nano.Web.Api.Requests
     /// <summary>
     /// Delete Many Query Request.
     /// </summary>
-    public class DeleteQueryRequest : BaseRequestJson
+    public class DeleteQueryRequest : BaseRequestPost
     {
         /// <summary>
         /// Query Criteria.

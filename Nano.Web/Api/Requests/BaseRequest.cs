@@ -5,7 +5,6 @@ using Nano.Web.Api.Requests.Interfaces;
 
 namespace Nano.Web.Api.Requests
 {
-
     /// <inheritdoc />
     public abstract class BaseRequest : IRequest
     {
@@ -20,12 +19,12 @@ namespace Nano.Web.Api.Requests
         protected virtual string Controller { get; set; }
 
         /// <inheritdoc />
-        public virtual Uri GetUri<TResponse>(ApiOptions apiOptions)
+        public virtual Uri GetUri<TEntity>(ApiOptions apiOptions)
         {
             if (apiOptions == null)
                 throw new ArgumentNullException(nameof(apiOptions));
 
-            var type = typeof(TResponse);
+            var type = typeof(TEntity);
             var action = this.Action;
             var protocol = apiOptions.UseSsl ? "https://" : "http://";
             var controller = this.Controller ?? (type.IsGenericType

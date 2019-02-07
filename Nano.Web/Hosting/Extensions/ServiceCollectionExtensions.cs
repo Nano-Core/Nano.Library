@@ -37,6 +37,7 @@ using Nano.Web.Api;
 using Nano.Web.Hosting.Filters;
 using Nano.Web.Hosting.HealthChecks;
 using Nano.Web.Hosting.Middleware;
+using Newtonsoft.Json.Converters;
 
 namespace Nano.Web.Hosting.Extensions
 {
@@ -80,7 +81,6 @@ namespace Nano.Web.Hosting.Extensions
                 .AddGzipCompression()
                 .AddContentTypeFormatters()
                 .AddSingleton<ExceptionHandlingMiddleware>()
-                .AddSingleton<HttpRequestUserMiddleware>()
                 .AddSingleton<HttpRequestOptionsMiddleware>()
                 .AddSingleton<HttpRequestIdentifierMiddleware>()
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
@@ -114,6 +114,9 @@ namespace Nano.Web.Hosting.Extensions
                     x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     x.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
                     x.SerializerSettings.ContractResolver = new EntityContractResolver();
+
+                    x.SerializerSettings.Converters
+                        .Add(new StringEnumConverter());
                 })
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()

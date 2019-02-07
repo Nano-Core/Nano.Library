@@ -1,22 +1,35 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Nano.Models;
 using Nano.Web.Hosting.Exceptions;
 using Nano.Web.Hosting.Extensions;
 using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
-using Serilog;
-using Serilog.Events;
 
 namespace Nano.Web.Hosting.Middleware
 {
     /// <inheritdoc />
     public class ExceptionHandlingMiddleware : IMiddleware
     {
+        private const string MESSAGE_TEMPLATE = "{protocol} {method} {path}{queryString} {StatusCode} in {Elapsed:0.0000} ms. (Id={id})";
+
+        /// <summary>
+        /// Logger.
+        /// </summary>
+        protected virtual ILogger Logger { get; }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="logger">the <see cref="ILogger"/></param>
+        public ExceptionHandlingMiddleware(ILogger logger)
+        {
+            this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
         /// <inheritdoc />
         public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
         {
@@ -65,43 +78,18 @@ namespace Nano.Web.Hosting.Middleware
             }
             finally
             {
-                // TODO: Logging, implement Enrichers encapsulating the log context (specific to Serilog).
+                var protocol = request.IsHttps ? request.Protocol.Replace("HTTP", "HTTPS") : request.Protocol;
+                var method = request.Method;
+                var path = request.Path.Value;
+                var queryString = request.QueryString.HasValue ? request.QueryString.Value : null;
+                var statusCode = response.StatusCode;
+                var id = httpContext.TraceIdentifier;
+
+                var logeLevel = statusCode >= 500 && statusCode <= 599 ? LogLevel.Error : LogLevel.Information;
                 var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
 
-                var id = httpContext.TraceIdentifier;
-                var ssl = request.IsHttps;
-                var path = request.Path.Value;
-                var host = request.Host.Value;
-                var method = request.Method;
-                var session = httpContext.Session;
-                var protocol = request.Protocol;
-                var queryString = request.QueryString.Value;
-                var formData = request.HasFormContentType ? request.Form.ToDictionary(x => x.Key, x => x.Value.ToString()) : new Dictionary<string, string>();
-                var requestHeaders = request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString());
-                var responseHeaders = response.Headers.ToDictionary(x => x.Key, x => x.Value.ToString());
-                var statusCode = response.StatusCode;
-                var logeLevel = statusCode >= 500 && statusCode <= 599 ? LogEventLevel.Error : LogEventLevel.Information;
-
-                Log.Logger
-                    .ForContext("Request", new
-                    {
-                        Id = id,
-                        Ssl = ssl,
-                        Path = path,
-                        Host = host,
-                        Method = method,
-                        Form = formData,
-                        Protocol = protocol,
-                        Headers = requestHeaders,
-                        QueryString = queryString,
-                        Body = request.ReadBody()
-                    }, true)
-                    .ForContext("Response", new
-                    {
-                        Session = session,
-                        Headers = responseHeaders
-                    }, true)
-                    .Write(logeLevel, exception, "{Message} {StatusCode} in {Elapsed:0.0000} ms.", $"{protocol} {method} {path}", statusCode, elapsed);
+                this.Logger
+                    .Log(logeLevel, exception, MESSAGE_TEMPLATE, protocol, method, path, queryString, statusCode, elapsed, id);
             }
         }
     }

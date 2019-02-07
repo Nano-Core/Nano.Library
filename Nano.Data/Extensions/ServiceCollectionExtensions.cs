@@ -111,7 +111,7 @@ namespace Nano.Data.Extensions
                     var httpContextAccessor = services.BuildServiceProvider().GetService<IHttpContextAccessor>();
                     var httpContext = httpContextAccessor?.HttpContext;
 
-                    var createdBy = httpContext?.Request.GetUser();
+                    var createdBy = httpContext?.Request.GetJwtUser();
                     var requestId = httpContext?.TraceIdentifier;
 
                     var customAuditEntries = audit.Entries

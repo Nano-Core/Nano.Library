@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -7,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,8 +19,6 @@ using Nano.Eventing.Extensions;
 using Nano.Logging.Extensions;
 using Nano.Security.Extensions;
 using Nano.Web.Hosting.Extensions;
-using Nano.Web.Hosting.Middleware;
-using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Nano.Web
 {
@@ -55,9 +51,45 @@ namespace Nano.Web
 
             base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
 
-            this.ConfigureHosting(applicationBuilder);
-            this.ConfigureLocalization(applicationBuilder);
-            this.ConfigureDocumentation(applicationBuilder);
+            applicationBuilder
+                .UseExceptionHandling()
+                .UseHttpNoCacheHeader()
+                .UseHttpXRobotsTagHeaders()
+                .UseHttpXForwardedHeaders()
+                .UseHttpXDownloadOptionsHeader()
+                .UseHttpXContentTypeOptionsHeader()
+                .UseHttpXFrameOptionsPolicyHeader()
+                .UseHttpXXssProtectionPolicyHeader()
+                .UseHttpReferrerPolicyHeader()
+                .UseHttpStrictTransportSecurityPolicyHeader()
+                .UseCors(x =>
+                {
+                    x.AllowAnyOrigin();
+                    x.AllowAnyHeader();
+                    x.AllowAnyMethod();
+                    x.AllowCredentials();
+                })
+                .UseStaticFiles()
+                .UseHttpsRedirect()
+                .UseCookiePolicy(new CookiePolicyOptions
+                {
+                    Secure = CookieSecurePolicy.SameAsRequest
+                })
+                .UseAuthentication()
+                .UseHttpSession()
+                .UseHttpRequestOptions()
+                .UseHttpRequestIdentifier()
+                .UseHttpResponseCompression()
+                .UseMvc(x =>
+                {
+                    x.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                })
+                .UseHealthChecks("/health", new HealthCheckOptions
+                {
+                    AllowCachingResponses = true
+                })
+                .UseHttpLocalization()
+                .UseHttpDocumentataion();
         }
 
         /// <summary>
@@ -142,99 +174,6 @@ namespace Nano.Web
                 .UseSetting(WebHostDefaults.ApplicationKey, applicationKey)
                 .CaptureStartupErrors(true)
                 .UseShutdownTimeout(shutdownTimeout);
-        }
-
-        private void ConfigureHosting(IApplicationBuilder applicationBuilder)
-        {
-            if (applicationBuilder == null) 
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            applicationBuilder
-                .UseHttpNoCacheHeader()
-                .UseHttpXRobotsTagHeaders()
-                .UseHttpXForwardedHeaders()
-                .UseHttpXDownloadOptionsHeader()
-                .UseHttpXContentTypeOptionsHeader()
-                .UseHttpXFrameOptionsPolicyHeader()
-                .UseHttpXXssProtectionPolicyHeader()
-                .UseHttpReferrerPolicyHeader()
-                .UseHttpStrictTransportSecurityPolicyHeader()
-                .UseStaticFiles()
-                .UseHttpsRedirect()
-                .UseCors(x =>
-                {
-                    x.AllowAnyOrigin();
-                    x.AllowAnyHeader();
-                    x.AllowAnyMethod();
-                    x.AllowCredentials();
-                })
-                .UseCookiePolicy(new CookiePolicyOptions
-                {
-                    Secure = CookieSecurePolicy.SameAsRequest
-                })
-                .UseHttpSession()
-                .UseAuthentication()
-                .UseHttpResponseCompression()
-                .UseMiddleware<HttpRequestUserMiddleware>()
-                .UseMiddleware<ExceptionHandlingMiddleware>()
-                .UseMiddleware<HttpRequestOptionsMiddleware>()
-                .UseMiddleware<HttpRequestIdentifierMiddleware>()
-                .UseMvc(x =>
-                {
-                    x.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                })
-                .UseHealthChecks("/health", new HealthCheckOptions
-                {
-                    AllowCachingResponses = true
-                });
-        }
-        private void ConfigureLocalization(IApplicationBuilder applicationBuilder)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            var services = applicationBuilder.ApplicationServices;
-            var appOptions = services.GetService<AppOptions>() ?? new AppOptions();
-
-            applicationBuilder
-                .UseRequestLocalization(new RequestLocalizationOptions
-                {
-                    DefaultRequestCulture = new RequestCulture(appOptions.Cultures.Default),
-                    SupportedCultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray(),
-                    SupportedUICultures = appOptions.Cultures.Supported.Select(x => new CultureInfo(x)).ToArray()
-                });
-        }
-        private void ConfigureDocumentation(IApplicationBuilder applicationBuilder)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            var services = applicationBuilder.ApplicationServices;
-            var appOptions = services.GetService<AppOptions>() ?? new AppOptions();
-
-            applicationBuilder
-                .UseSwagger(x =>
-                {
-                    x.RouteTemplate = "docs/{documentName}/swagger.json";
-                })
-                .UseSwaggerUI(x =>
-                {
-                    x.EnableFilter();
-                    x.EnableDeepLinking();
-                    x.EnableValidator(null);
-                    x.ShowExtensions();
-                    x.DisplayOperationId();
-                    x.DisplayRequestDuration();
-                    x.MaxDisplayedTags(-1);
-                    x.DefaultModelExpandDepth(2);
-                    x.DefaultModelsExpandDepth(1);
-                    x.DefaultModelRendering(ModelRendering.Example);
-                    x.DocExpansion(DocExpansion.None);
-
-                    x.RoutePrefix = "docs";
-                    x.DocumentTitle = $"Nano - {appOptions.Name} Docs v{appOptions.Version} ({ConfigManager.Environment})";
-                    x.SwaggerEndpoint($"/docs/{appOptions.Version}/swagger.json", $"Nano - {appOptions.Name} v{appOptions.Version} ({ConfigManager.Environment})");
-                });
         }
     }
 }

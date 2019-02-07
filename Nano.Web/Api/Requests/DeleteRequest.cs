@@ -6,7 +6,7 @@ namespace Nano.Web.Api.Requests
     /// <summary>
     /// Delete Request.
     /// </summary>
-    public class DeleteRequest : BaseRequestQuerystring
+    public class DeleteRequest : BaseRequestDelete
     {
         /// <summary>
         /// Id.

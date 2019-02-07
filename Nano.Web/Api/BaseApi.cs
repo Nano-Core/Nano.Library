@@ -8,12 +8,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nano.Models;
 using Nano.Models.Auth;
+using Nano.Models.Interfaces;
 using Nano.Web.Api.Requests.Auth;
 using Nano.Web.Api.Requests.Interfaces;
 using Nano.Web.Hosting;
 using Nano.Web.Hosting.Exceptions;
 using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Nano.Web.Api
 {
@@ -53,6 +55,9 @@ namespace Nano.Web.Api
 
             this.httpClient.DefaultRequestHeaders.Accept
                 .Add(new MediaTypeWithQualityHeaderValue(HttpContentType.JSON));
+
+            this.jsonSerializerSettings.Converters
+                .Add(new StringEnumConverter());
         }
 
         /// <summary>
@@ -132,6 +137,52 @@ namespace Nano.Web.Api
             return await taskCompletion.Task;
         }
 
+        /// <summary>
+        /// Invokes the request, and returns the response.
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <typeparam name="TRequest">The request type.</typeparam>
+        /// <typeparam name="TResponse">The response type.</typeparam>
+        /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
+        protected virtual async Task<TResponse> Invoke<TEntity, TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+            where TRequest : class, IRequest
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            await this.Authenticate();
+
+            var taskCompletion = new TaskCompletionSource<TResponse>();
+
+            await this.ProcessRequestAsync<TRequest, TEntity>(request)
+                .ContinueWith(async x =>
+                {
+                    if (x.IsFaulted)
+                    {
+                        taskCompletion.SetException(x.Exception ?? new Exception());
+                    }
+                    else
+                    {
+                        try
+                        {
+                            var result = await x;
+                            var response = await this.ProcessResponseAsync<TResponse>(result);
+
+                            taskCompletion.SetResult(response);
+                        }
+                        catch (Exception ex)
+                        {
+                            taskCompletion.SetException(ex);
+                        }
+                    }
+                }, cancellationToken);
+
+            return await taskCompletion.Task;
+        }
+
         private async Task Authenticate()
         {
             if (this.accessToken != null && this.accessToken.IsExpired)
@@ -162,20 +213,36 @@ namespace Nano.Web.Api
 
             switch (request)
             {
-                case IRequestQuerystring _:
+                case IRequestGet _:
                     return await this.httpClient
                         .GetAsync(uri);
 
-                case IRequestJson requestJson:
-                    var body = requestJson.GetBody();
-                    var content = JsonConvert.SerializeObject(body, this.jsonSerializerSettings);
+                case IRequestDelete _:
+                    var bodyDelete = string.Empty;
+                    using (var stringContent = new StringContent(bodyDelete, Encoding.UTF8, HttpContentType.JSON))
+                    {
+                        var httpDeleteMessage = new HttpRequestMessage(HttpMethod.Delete, uri)
+                        {
+                            Content = stringContent
+                        };
+
+                        using (httpDeleteMessage)
+                        {
+                            return await this.httpClient
+                                .SendAsync(httpDeleteMessage);
+                        }
+                    }
+
+                case IRequestPost requestPost:
+                    var bodyPost = requestPost.GetBody();
+                    var content = JsonConvert.SerializeObject(bodyPost, this.jsonSerializerSettings);
 
                     using (var stringContent = new StringContent(content, Encoding.UTF8, HttpContentType.JSON))
                     {
                         return await this.httpClient
                             .PostAsync(uri, stringContent);
                     }
-
+                    
                 default:
                     throw new NotSupportedException();
             }
@@ -192,6 +259,9 @@ namespace Nano.Web.Api
 
                 switch (httpResponse.StatusCode)
                 {
+                    case HttpStatusCode.NotFound:
+                        return default;
+
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.InternalServerError:
                         var error = JsonConvert.DeserializeObject<Error>(rawJson);
@@ -205,7 +275,6 @@ namespace Nano.Web.Api
                         {
                             throw new InvalidOperationException(message);
                         }
-
                         break;
                 }
 

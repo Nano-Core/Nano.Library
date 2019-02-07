@@ -260,15 +260,15 @@
         <member name="M:Nano.Web.Api.Requests.BaseRequest.GetQueryStringParameters">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Api.Requests.BaseRequestJson">
+        <member name="T:Nano.Web.Api.Requests.BaseRequestPost">
             <summary>
             Base Request Json.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.Requests.BaseRequestJson.GetBody">
+        <member name="M:Nano.Web.Api.Requests.BaseRequestPost.GetBody">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Api.Requests.BaseRequestQuerystring">
+        <member name="T:Nano.Web.Api.Requests.BaseRequestGet">
             <summary>
             Base Request Querystring.
             </summary>
@@ -314,18 +314,18 @@
             Custom Request.
             </summary>
         </member>
-        <member name="T:Nano.Web.Api.Requests.CustomRequestJson">
+        <member name="T:Nano.Web.Api.Requests.CustomRequestPost">
             <summary>
             Custom Request Json.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.Requests.CustomRequestJson.Body">
+        <member name="P:Nano.Web.Api.Requests.CustomRequestPost.Body">
             <summary>
             Body.
             The body of the request.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.Requests.CustomRequestJson.GetBody">
+        <member name="M:Nano.Web.Api.Requests.CustomRequestPost.GetBody">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.DeleteManyRequest">
@@ -520,18 +520,18 @@
             </summary>
             <returns>The <see cref="T:System.Collections.Generic.IList`1"/>.</returns>
         </member>
-        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequestJson">
+        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequestPost">
             <summary>
             Base interface for json requests (POST).
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.Requests.Interfaces.IRequestJson.GetBody">
+        <member name="M:Nano.Web.Api.Requests.Interfaces.IRequestPost.GetBody">
             <summary>
             Gets the body of the request.
             </summary>
             <returns>The body <see cref="T:System.Object"/>.</returns>
         </member>
-        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequestQuerystring">
+        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequestGet">
             <summary>
             Base interface for querystring requests (GET).
             </summary>

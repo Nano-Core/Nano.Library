@@ -401,11 +401,11 @@
         </member>
         <member name="M:Nano.Repository.Interfaces.IRepository.DeleteManyAsync``2(``1,System.Threading.CancellationToken)">
             <summary>
-            Deletes all instances of <typeparamref name="TEntity"/>, matching the criterias of the passed <paramref name="critiera"/>.
+            Deletes all instances of <typeparamref name="TEntity"/>, matching the criterias of the passed <paramref name="criteria"/>.
             </summary>
             <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
             <typeparam name="TCriteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/> type.</typeparam>
-            <param name="critiera">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/>.</param>
+            <param name="criteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>

@@ -3,9 +3,9 @@
 namespace Nano.Web.Api.Requests
 {
     /// <summary>
-    /// Base Request Querystring.
+    /// Base Request Delete.
     /// </summary>
-    public abstract class BaseRequestQuerystring : BaseRequest, IRequestQuerystring
+    public abstract class BaseRequestDelete : BaseRequest, IRequestDelete
     {
 
     }

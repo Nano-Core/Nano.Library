@@ -5,7 +5,7 @@ namespace Nano.Web.Api.Requests
     /// <summary>
     /// Create Request.
     /// </summary>
-    public class CreateRequest : BaseRequestJson
+    public class CreateRequest : BaseRequestPost
     {
         /// <summary>
         /// Entity.

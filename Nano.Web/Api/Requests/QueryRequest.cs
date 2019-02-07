@@ -7,7 +7,7 @@ namespace Nano.Web.Api.Requests
     /// Query Request.
     /// </summary>
     /// <typeparam name="TCriteria">The type of <see cref="IQueryCriteria"/>.</typeparam>
-    public class QueryRequest<TCriteria> : BaseRequestJson
+    public class QueryRequest<TCriteria> : BaseRequestPost
         where TCriteria : IQueryCriteria, new()
     {
         /// <summary>

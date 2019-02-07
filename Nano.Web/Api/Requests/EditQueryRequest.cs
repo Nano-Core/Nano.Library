@@ -7,7 +7,7 @@ namespace Nano.Web.Api.Requests
     /// <summary>
     /// Update Many Query Request.
     /// </summary>
-    public class EditQueryRequest : BaseRequestJson
+    public class EditQueryRequest : BaseRequestPost
     {
         /// <summary>
         /// Entity.

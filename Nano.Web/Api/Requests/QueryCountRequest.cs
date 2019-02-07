@@ -1,32 +1,31 @@
-﻿using DynamicExpression.Entities;
-using DynamicExpression.Interfaces;
+﻿using DynamicExpression.Interfaces;
 
 namespace Nano.Web.Api.Requests
 {
     /// <summary>
-    /// Query First Request.
+    /// Query Count Request.
     /// </summary>
     /// <typeparam name="TCriteria">The type of <see cref="IQueryCriteria"/>.</typeparam>
-    public class QueryFirstRequest<TCriteria> : BaseRequestPost
+    public class QueryCountRequest<TCriteria> : BaseRequestPost
         where TCriteria : IQueryCriteria, new()
     {
         /// <summary>
-        /// Query.
+        /// Criteria.
         /// </summary>
-        public virtual IQuery<TCriteria> Query { get; set; } = new Query<TCriteria>();
+        public virtual TCriteria Criteria { get; set; } = new TCriteria();
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public QueryFirstRequest()
+        public QueryCountRequest()
         {
-            this.Action = "query/first";
+            this.Action = "query/count";
         }
 
         /// <inheritdoc />
         public override object GetBody()
         {
-            return this.Query;
+            return this.Criteria;
         }
     }
 }
