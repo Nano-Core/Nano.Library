@@ -14,7 +14,7 @@ namespace Nano.Web.Hosting.Middleware
     /// <inheritdoc />
     public class ExceptionHandlingMiddleware : IMiddleware
     {
-        private const string MESSAGE_TEMPLATE = "{protocol} {method} {path}{queryString} {StatusCode} in {Elapsed:0.0000} ms. (Id={id})";
+        private const string MESSAGE_TEMPLATE = "{protocol} {method} {path}{queryString} {statusCode} in {elapsed:0.0000} ms. (Id={id})";
 
         /// <summary>
         /// Logger.
@@ -61,7 +61,7 @@ namespace Nano.Web.Hosting.Middleware
                 var error = new Error
                 {
                     Summary = "Internal Server Error",
-                    Exceptions = new[] {ex.GetBaseException().Message},
+                    Exceptions = new[] { ex.GetBaseException().Message },
                     StatusCode = 500,
                     TranslationCode = ex is TranslationException translationException ? translationException.Code : -1
                 };
@@ -78,15 +78,17 @@ namespace Nano.Web.Hosting.Middleware
             }
             finally
             {
-                var protocol = request.IsHttps ? request.Protocol.Replace("HTTP", "HTTPS") : request.Protocol;
                 var method = request.Method;
                 var path = request.Path.Value;
-                var queryString = request.QueryString.HasValue ? request.QueryString.Value : null;
-                var statusCode = response.StatusCode;
                 var id = httpContext.TraceIdentifier;
-
-                var logeLevel = statusCode >= 500 && statusCode <= 599 ? LogLevel.Error : LogLevel.Information;
+                var statusCode = response.StatusCode;
                 var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
+                var protocol = request.IsHttps ? request.Protocol.Replace("HTTP", "HTTPS") : request.Protocol;
+                var queryString = request.QueryString.HasValue ? $"?{request.QueryString.Value}"  : string.Empty;
+                
+                var logeLevel = statusCode >= 500 && statusCode <= 599 
+                    ? LogLevel.Error 
+                    : LogLevel.Information;
 
                 this.Logger
                     .Log(logeLevel, exception, MESSAGE_TEMPLATE, protocol, method, path, queryString, statusCode, elapsed, id);
