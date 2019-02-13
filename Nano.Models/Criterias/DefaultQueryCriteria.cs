@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DynamicExpression;
 
 namespace Nano.Models.Criterias
@@ -17,9 +18,11 @@ namespace Nano.Models.Criterias
         public virtual DateTimeOffset? BeforeAt { get; set; }
 
         /// <inheritdoc />
-        public override CriteriaExpression GetExpression() 
+        public override IList<CriteriaExpression> GetExpressions()
         {
-            var expression = base.GetExpression();
+            var expressions = base.GetExpressions();
+
+            var expression = new CriteriaExpression();
 
             if (this.BeforeAt.HasValue)
                 expression.LessThanOrEqual("CreatedAt", this.BeforeAt);
@@ -27,7 +30,10 @@ namespace Nano.Models.Criterias
             if (this.AfterAt.HasValue)
                 expression.GreaterThanOrEqual("CreatedAt", this.AfterAt);
 
-            return expression;
+            expressions
+                .Add(expression);
+
+            return expressions;
         }
     }
 }

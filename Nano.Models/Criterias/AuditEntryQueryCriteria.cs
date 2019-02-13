@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using DynamicExpression;
 
 namespace Nano.Models.Criterias
@@ -36,29 +37,34 @@ namespace Nano.Models.Criterias
         public virtual string RequestId { get; set; }
 
         /// <inheritdoc />
-        public override CriteriaExpression GetExpression()
+        public override IList<CriteriaExpression> GetExpressions()
         {
-            var filter = base.GetExpression();
+            var expressions = base.GetExpressions();
+
+            var expression = new CriteriaExpression();
 
             if (this.CreatedBy != null)
-                filter.Equal("CreatedBy", this.CreatedBy);
+                expression.Equal("CreatedBy", this.CreatedBy);
 
             if (this.CreatedDateTo != null)
-                filter.LessThanOrEqual("CreatedDate", this.CreatedDateTo);
+                expression.LessThanOrEqual("CreatedDate", this.CreatedDateTo);
 
             if (this.CreatedDateFrom != null)
-                filter.GreaterThanOrEqual("CreatedDate", this.CreatedDateFrom);
+                expression.GreaterThanOrEqual("CreatedDate", this.CreatedDateFrom);
 
             if (this.EntityTypeName != null)
-                filter.Equal("EntityTypeName", this.EntityTypeName);
+                expression.Equal("EntityTypeName", this.EntityTypeName);
 
             if (this.State != null)
-                filter.Equal("State", this.State);
+                expression.Equal("State", this.State);
 
             if (this.RequestId != null)
-                filter.Equal("RequestId", this.RequestId);
+                expression.Equal("RequestId", this.RequestId);
 
-            return filter;
+            expressions
+                .Add(expression);
+
+            return expressions;
         }
     }
 }
