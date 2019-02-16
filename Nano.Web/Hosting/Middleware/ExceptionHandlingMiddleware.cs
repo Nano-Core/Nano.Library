@@ -40,6 +40,7 @@ namespace Nano.Web.Hosting.Middleware
                 throw new ArgumentNullException(nameof(next));
 
             var timestamp = Stopwatch.GetTimestamp();
+
             var request = httpContext.Request;
             var response = httpContext.Response;
 
@@ -50,7 +51,7 @@ namespace Nano.Web.Hosting.Middleware
             }
             catch (Exception ex)
             {
-                exception = ex;
+                exception = ex.GetBaseException();
 
                 if (response.HasStarted)
                     response.Clear();
@@ -61,9 +62,11 @@ namespace Nano.Web.Hosting.Middleware
                 var error = new Error
                 {
                     Summary = "Internal Server Error",
-                    Exceptions = new[] { ex.GetBaseException().Message },
+                    Exceptions = new[] { exception.Message },
                     StatusCode = 500,
-                    TranslationCode = ex is TranslationException translationException ? translationException.Code : -1
+                    TranslationCode = ex is TranslationException translationException 
+                        ? translationException.Code 
+                        : -1
                 };
 
                 var result =
