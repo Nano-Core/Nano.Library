@@ -41,75 +41,82 @@ namespace Nano.Eventing.Handlers
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));
 
-            var type = AppDomain.CurrentDomain
-                .GetAssemblies()
-                .SelectMany(x => x.GetTypes())
-                .Where(x => x.IsTypeDef(typeof(IEntityIdentity<>)))
-                .First(x => x.Name == @event.Type);
-
-            var id = type.IsTypeDef(typeof(IEntityIdentity<Guid>))
-                ? new Guid(@event.Id.ToString())
-                : @event.Id;
-
-            var entity = await this.Context
-                .FindAsync(type, id);
-
-            switch (@event.State)
+            try
             {
-                case "Added":
-                    if (entity != null)
-                    {
-                        this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} already exists. Add entity ignored.");
+                var type = AppDomain.CurrentDomain
+                    .GetAssemblies()
+                    .SelectMany(x => x.GetTypes())
+                    .Where(x => x.IsTypeDef(typeof(IEntityIdentity<>)))
+                    .First(x => x.Name == @event.Type);
+
+                var id = type.IsTypeDef(typeof(IEntityIdentity<Guid>))
+                    ? new Guid(@event.Id.ToString())
+                    : @event.Id;
+
+                var entity = await this.Context
+                    .FindAsync(type, id);
+
+                switch (@event.State)
+                {
+                    case "Added":
+                        if (entity != null)
+                        {
+                            this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} already exists. Add entity ignored.");
+                            return;
+                        }
+
+                        var property = type.GetProperty("Id");
+
+                        if (property == null)
+                        {
+                            this.Logger.LogWarning($"Nano: Subscribed to entity: {type.Name}, does not cotnain an 'Id' property. Add entity ignored.");
+                            return;
+                        }
+
+                        entity = Activator.CreateInstance(type);
+                        property.SetValue(entity, id);
+
+                        await this.Context
+                            .AddAsync(entity);
+
+                        await this.Context
+                            .SaveChangesAsync();
+
+                        this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} has been added.");
+
                         return;
-                    }
 
-                    var property = type.GetProperty("Id");
+                    case "Deleted":
+                        var isSoftDeleted = entity is IEntityDeletableSoft deleted && deleted.IsDeleted > 0L;
 
-                    if (property == null)
-                    {
-                        this.Logger.LogWarning($"Nano: Subscribed to entity: {type.Name}, does not cotnain an 'Id' property. Add entity ignored.");
+                        if (entity == null || isSoftDeleted)
+                        {
+                            this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} doesn't exists. Remove entity ignored.");
+                            return;
+                        }
+
+                        this.Context
+                            .Remove(entity);
+                        
+                        await this.Context
+                            .SaveChangesAsync();
+
+                        this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} has been removed.");
+
                         return;
-                    }
 
-                    entity = Activator.CreateInstance(type);
-                    property.SetValue(entity, id);
-
-                    await this.Context
-                        .AddAsync(entity);
-
-                    await this.Context
-                        .SaveChangesAsync();
-
-                    this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} has been added.");
-
-                    return;
-
-                case "Deleted":
-                    var isSoftDeleted = entity is IEntityDeletableSoft deleted && deleted.IsDeleted > 0L;
-
-                    if (entity == null || isSoftDeleted)
-                    {
-                        this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} doesn't exists. Remove entity ignored.");
+                    case "Detached":
+                    case "Unchanged":
+                    case "Modified":
                         return;
-                    }
 
-                    this.Context
-                        .Remove(entity);
-                    
-                    await this.Context
-                        .SaveChangesAsync();
-
-                    this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} has been removed.");
-
-                    return;
-
-                case "Detached":
-                case "Unchanged":
-                case "Modified":
-                    return;
-
-                default:
-                    return;
+                    default:
+                        return;
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Logger.Log(LogLevel.Error, ex, ex.Message);
             }
         }
     }

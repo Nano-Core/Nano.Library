@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -19,6 +18,8 @@ using Nano.Eventing.Extensions;
 using Nano.Logging.Extensions;
 using Nano.Security.Extensions;
 using Nano.Web.Hosting.Extensions;
+using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Nano.Web
 {
@@ -36,8 +37,8 @@ namespace Nano.Web
         /// Configures the application.
         /// </summary>
         /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
-        /// <param name="hostingEnvironment">The <see cref="IHostingEnvironment"/>.</param>
-        /// <param name="applicationLifetime">The <see cref="IApplicationLifetime"/>.</param>
+        /// <param name="hostingEnvironment">The <see cref="Microsoft.AspNetCore.Hosting.IHostingEnvironment"/>.</param>
+        /// <param name="applicationLifetime">The <see cref="Microsoft.AspNetCore.Hosting.IApplicationLifetime"/>.</param>
         public override void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime)
         {
             if (applicationBuilder == null)
@@ -80,13 +81,10 @@ namespace Nano.Web
                 .UseHttpRequestOptions()
                 .UseHttpRequestIdentifier()
                 .UseHttpResponseCompression()
+                .UseHealthChecks()
                 .UseMvc(x =>
                 {
                     x.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                })
-                .UseHealthChecks("/health", new HealthCheckOptions
-                {
-                    AllowCachingResponses = true
                 })
                 .UseHttpLocalization()
                 .UseHttpDocumentataion();
@@ -120,7 +118,9 @@ namespace Nano.Web
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
             var applicationKey = Assembly.GetEntryAssembly().FullName;
 
-            var webOptions = config.GetSection(WebOptions.SectionName).Get<WebOptions>() ?? new WebOptions();
+            var webOptions = config
+                .GetSection(WebOptions.SectionName)
+                .Get<WebOptions>() ?? new WebOptions();
 
             return new WebHostBuilder()
                 .UseEnvironment(environment)
@@ -160,12 +160,13 @@ namespace Nano.Web
                 .UseContentRoot(root)
                 .ConfigureServices(x =>
                 {
+                    x.AddSingleton(x);
                     x.AddSingleton<IApplication, TApplication>();
 
                     x.AddApp(config);
-                    x.AddData(config);
                     x.AddConfig(config);
                     x.AddLogging(config);
+                    x.AddData(config);
                     x.AddSecurity(config);
                     x.AddEventing(config);
                     x.AddWeb(config);

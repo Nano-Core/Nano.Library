@@ -581,23 +581,23 @@
         <member name="M:Nano.Data.Providers.MySql.MySqlProvider.Configure(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Data.Providers.SqlLite.SqlLiteProvider">
+        <member name="T:Nano.Data.Providers.SqlLite.SqliteProvider">
             <summary>
             Sql Lite Data Provider.
             </summary>
         </member>
-        <member name="P:Nano.Data.Providers.SqlLite.SqlLiteProvider.Options">
+        <member name="P:Nano.Data.Providers.SqlLite.SqliteProvider.Options">
             <summary>
             Options.
             </summary>
         </member>
-        <member name="M:Nano.Data.Providers.SqlLite.SqlLiteProvider.#ctor(Nano.Data.DataOptions)">
+        <member name="M:Nano.Data.Providers.SqlLite.SqliteProvider.#ctor(Nano.Data.DataOptions)">
             <summary>
             Constructor.
             </summary>
             <param name="options">The <see cref="T:Nano.Data.DataOptions"/>.</param>
         </member>
-        <member name="M:Nano.Data.Providers.SqlLite.SqlLiteProvider.Configure(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
+        <member name="M:Nano.Data.Providers.SqlLite.SqliteProvider.Configure(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Data.Providers.SqlServer.SqlServerProvider">

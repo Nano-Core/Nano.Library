@@ -29,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="2.2.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.Sqlite" Version="2.2.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="2.2.0" />
     <PackageReference Include="EntityFrameworkCore.Triggers" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />

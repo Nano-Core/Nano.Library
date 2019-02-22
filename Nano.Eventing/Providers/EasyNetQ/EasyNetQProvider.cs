@@ -27,14 +27,7 @@ namespace Nano.Eventing.Providers.EasyNetQ
         /// <inheritdoc />
         public virtual IEventing Configure()
         {
-            var host = this.Options.Host;
-            var port = this.Options.Port;
-            var vhost = this.Options.VHost;
-            var username = this.Options.Username;
-            var password = this.Options.Password;
-            var connectionString = $"amqp://{username}:{password}@{host}:{port}{vhost}";
-
-            var bus = RabbitHutch.CreateBus(connectionString, x => 
+            var bus = RabbitHutch.CreateBus(this.Options.ConnectionString, x => 
                 x.Register<ISerializer, EasyNetQJsonSerializer>());
 
             return new EasyNetQEventing(bus);

@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -63,7 +64,7 @@ namespace Nano.Web.Hosting.Middleware
                 {
                     Summary = "Internal Server Error",
                     Exceptions = new[] { exception.Message },
-                    StatusCode = 500,
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
                     TranslationCode = ex is TranslationException translationException 
                         ? translationException.Code 
                         : -1

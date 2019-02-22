@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Nano.Data.Interfaces;
 
-namespace Nano.Data.Providers.SqlLite
+namespace Nano.Data.Providers.Sqlite
 {
     /// <summary>
     /// Sql Lite Data Provider.
     /// </summary>
-    public class SqlLiteProvider : IDataProvider
+    public class SqliteProvider : IDataProvider
     {
         /// <summary>
         /// Options.
@@ -19,7 +19,7 @@ namespace Nano.Data.Providers.SqlLite
         /// Constructor.
         /// </summary>
         /// <param name="options">The <see cref="DataOptions"/>.</param>
-        public SqlLiteProvider(DataOptions options)
+        public SqliteProvider(DataOptions options)
         {
             this.Options = options ?? throw new ArgumentNullException(nameof(options));
         }

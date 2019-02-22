@@ -69,6 +69,11 @@ namespace Nano.Data
         /// Use Sensitive Data Logging .
         /// </summary>
         public virtual bool UseSensitiveDataLogging { get; set; } = false;
+        
+        /// <summary>
+        /// Use Health Check.
+        /// </summary>
+        public virtual bool UseHealthCheck { get; set; } = true;
 
         /// <summary>
         /// Connection String.

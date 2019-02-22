@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.Caching.Memory;
 using Nano.Data.Attributes;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
@@ -35,11 +34,6 @@ namespace Nano.Data
         public virtual DataOptions Options { get; set; }
 
         /// <summary>
-        /// Cache Entry Options.
-        /// </summary>
-        public virtual MemoryCacheEntryOptions CacheEntryOptions { get; set; }
-
-        /// <summary>
         /// Audit Entries.
         /// </summary>
         public virtual DbSet<DefaultAuditEntry> Audit { get; set; } 
@@ -49,22 +43,13 @@ namespace Nano.Data
         /// </summary>
         public virtual DbSet<DefaultAuditEntryProperty> AuditProperties { get; set; }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="contextOptions">The <see cref="DbContextOptions"/>.</param>
-        /// <param name="dataOptions">The <see cref="DataOptions"/>.</param>
+        /// <inheritdoc />
         protected BaseDbContext(DbContextOptions contextOptions, DataOptions dataOptions)
             : base(contextOptions)
         {
             this.Options = dataOptions ?? throw new ArgumentNullException(nameof(dataOptions));
-
-            this.CacheEntryOptions = new MemoryCacheEntryOptions
-            {
-                SlidingExpiration = TimeSpan.FromMinutes(dataOptions.BatchSize)
-            };
         }
-
+        
         /// <inheritdoc />
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -106,88 +91,7 @@ namespace Nano.Data
                 .Entity<IdentityRole>()
                 .ToTable("__EFAuthRole");
         }
-
-        /// <inheritdoc />
-        public override int SaveChanges()
-        {
-            return this.SaveChanges(true);
-        }
-
-        /// <inheritdoc />
-        public override int SaveChanges(bool acceptAllChangesOnSuccess)
-        {
-            var pendingEvents = this.GetPendingEntityEvents();
-
-            this.SaveSoftDeletion();
-            this.SaveAudit();
-
-            var success = base
-                .SaveChanges(acceptAllChangesOnSuccess);
-
-            var eventing = this.GetService<IEventing>();
-
-            if (eventing == null)
-                return success;
-
-            this.ChangeTracker.LazyLoadingEnabled = false;
-
-            foreach (var @event in pendingEvents)
-            {
-                eventing
-                    .PublishAsync(@event, @event.Type)
-                    .ConfigureAwait(false);
-            }
-
-            this.ChangeTracker.LazyLoadingEnabled = true;
-
-            return success;
-        }
-
-        /// <inheritdoc />
-        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            return await this.SaveChangesAsync(true, cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
-        {
-            var pendingEvents = this.GetPendingEntityEvents();
-
-            this.SaveSoftDeletion();
-            this.SaveAudit();
-
-            var success = await this
-                .SaveChangesWithTriggersAsync(base.SaveChangesAsync, acceptAllChangesOnSuccess, cancellationToken)
-                .ContinueWith(async x =>
-            {
-                if (x.IsFaulted)
-                    return await x;
-
-                if (x.IsCanceled)
-                    return await x;
-
-                var eventing = this.GetService<IEventing>();
-
-                if (eventing == null)
-                    return await x;
-
-                this.ChangeTracker.LazyLoadingEnabled = false;
-
-                foreach (var @event in pendingEvents)
-                {
-                    await eventing
-                        .PublishAsync(@event, @event.Type);
-                }
-
-                this.ChangeTracker.LazyLoadingEnabled = true;
-
-                return await x;
-            }, cancellationToken);
-
-            return await success;
-        }
-
+        
         /// <summary>
         /// Imports data for all models annotated with <see cref="DataImportAttribute"/>.
         /// </summary>
@@ -277,6 +181,48 @@ namespace Nano.Data
             await this.Database
                 .MigrateAsync(cancellationToken);
         }
+        
+        /// <summary>
+        /// Adds or updates (if exists) the entity.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
+        /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
+        /// <returns>A <see cref="EntityEntry{TEntity}"/>.</returns>
+        public virtual EntityEntry<TEntity> AddOrUpdate<TEntity>(TEntity entity)
+            where TEntity : class
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            var dbSet = this.Set<TEntity>();
+            var tracked = dbSet.SingleOrDefault(x => x == entity);
+
+            if (tracked != null)
+            {
+                this.Entry(tracked).CurrentValues.SetValues(entity);
+                return this.Entry(tracked);
+            }
+
+            return dbSet.Add(entity);
+        }
+
+        /// <summary>
+        /// Adds or updates (if exists) the entities.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of <paramref name="entities"/>.</typeparam>
+        /// <param name="entities">The <see cref="object"/>'s of type <typeparamref name="TEntity"/>.</param>
+        /// <returns>A <see cref="EntityEntry{TEntity}"/>.</returns>
+        public virtual void AddOrUpdateMany<TEntity>(IEnumerable<TEntity> entities)
+            where TEntity : class
+        {
+            if (entities == null)
+                throw new ArgumentNullException(nameof(entities));
+
+            foreach (var entity in entities)
+            {
+                this.AddOrUpdate(entity);
+            }
+        }
 
         /// <summary>
         /// Import data from the passed <paramref name="uri"/>, deserilaized into the type of the generic argument <typeparamref name="TEntity"/>.
@@ -323,100 +269,85 @@ namespace Nano.Data
             }
         }
 
-        /// <summary>
-        /// Adds or updates (if exists) the entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
-        /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
-        /// <returns>A <see cref="EntityEntry{TEntity}"/>.</returns>
-        public virtual EntityEntry<TEntity> AddOrUpdate<TEntity>(TEntity entity)
-            where TEntity : class
+        /// <inheritdoc />
+        public override int SaveChanges()
         {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
+            return this.SaveChanges(true);
+        }
 
-            var dbSet = this.Set<TEntity>();
-            var tracked = dbSet.SingleOrDefault(x => x == entity);
+        /// <inheritdoc />
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            var pendingEvents = this.GetPendingEntityEvents();
 
-            if (tracked != null)
+            this.SaveSoftDeletion();
+            this.SaveAudit();
+
+            var success = base
+                .SaveChanges(acceptAllChangesOnSuccess);
+
+            var eventing = this.GetService<IEventing>();
+
+            if (eventing == null)
+                return success;
+
+            this.ChangeTracker.LazyLoadingEnabled = false;
+
+            foreach (var @event in pendingEvents)
             {
-                this.Entry(tracked).CurrentValues.SetValues(entity);
-                return this.Entry(tracked);
+                eventing
+                    .PublishAsync(@event, @event.Type)
+                    .ConfigureAwait(false);
             }
 
-            return dbSet.Add(entity);
+            this.ChangeTracker.LazyLoadingEnabled = true;
+
+            return success;
         }
 
-        /// <summary>
-        /// Adds or updates (if exists) the entities.
-        /// </summary>
-        /// <typeparam name="TEntity">The type of <paramref name="entities"/>.</typeparam>
-        /// <param name="entities">The <see cref="object"/>'s of type <typeparamref name="TEntity"/>.</param>
-        /// <returns>A <see cref="EntityEntry{TEntity}"/>.</returns>
-        public virtual void AddOrUpdateMany<TEntity>(IEnumerable<TEntity> entities)
-            where TEntity : class
+        /// <inheritdoc />
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            if (entities == null)
-                throw new ArgumentNullException(nameof(entities));
+            return await this.SaveChangesAsync(true, cancellationToken);
+        }
 
-            foreach (var entity in entities)
+        /// <inheritdoc />
+        public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        {
+            var pendingEvents = this.GetPendingEntityEvents();
+
+            this.SaveSoftDeletion();
+            this.SaveAudit();
+
+            var success = await this
+                .SaveChangesWithTriggersAsync(base.SaveChangesAsync, acceptAllChangesOnSuccess, cancellationToken)
+                .ContinueWith(async x =>
             {
-                this.AddOrUpdate(entity);
-            }
-        }
+                if (x.IsFaulted)
+                    return await x;
 
-        private void SaveAudit()
-        {
-            if (!this.Options.UseAudit)
-                return;
+                if (x.IsCanceled)
+                    return await x;
 
-            var audit = new Audit();
-            audit.PreSaveChanges(this);
-            audit.Configuration.AutoSavePreAction?.Invoke(this, audit);
-            audit.PostSaveChanges();
-        }
-        private void SaveSoftDeletion()
-        {
-            if (!this.Options.UseSoftDeletetion)
-                return;
+                var eventing = this.GetService<IEventing>();
 
-            this.ChangeTracker
-                .Entries<IEntityDeletableSoft>()
-                .Where(x => x.State == EntityState.Deleted)
-                .ToList()
-                .ForEach(x =>
+                if (eventing == null)
+                    return await x;
+
+                this.ChangeTracker.LazyLoadingEnabled = false;
+
+                foreach (var @event in pendingEvents)
                 {
-                    x.State = EntityState.Modified;
-                    x.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
-                });
-        }
-        private IEnumerable<EntityEvent> GetPendingEntityEvents()
-        {
-            return this.ChangeTracker
-                .Entries<IEntity>()
-                .Where(x =>
-                    x.Entity.GetType().IsTypeDef(typeof(IEntityIdentity<>)) &&
-                    x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
-                    (x.State == EntityState.Added || x.State == EntityState.Deleted))
-                .Select(x =>
-                {
-                    var name = x.Entity.GetType().Name.Replace("Proxy", "");
-                    var state = x.State.ToString();
+                    await eventing
+                        .PublishAsync(@event, @event.Type);
+                }
 
-                    switch (x.Entity)
-                    {
-                        case IEntityIdentity<Guid> guid:
-                            return new EntityEvent(guid.Id, name, state);
+                this.ChangeTracker.LazyLoadingEnabled = true;
 
-                        case IEntityIdentity<dynamic> dynamic:
-                            return new EntityEvent(dynamic.Id, name, state);
+                return await x;
+            }, cancellationToken);
 
-                        default:
-                            return null;
-                    }
-                })
-                .Where(x => x != null)
-                .ToArray();
+            return await success;
         }
 
         private async Task<IdentityRole> AddRole(string role)
@@ -489,6 +420,60 @@ namespace Nano.Data
             {
                 await userManager.AddToRoleAsync(user, role);
             }
+        }
+
+        private void SaveAudit()
+        {
+            if (!this.Options.UseAudit)
+                return;
+
+            var audit = new Audit();
+            audit.PreSaveChanges(this);
+            audit.Configuration.AutoSavePreAction?.Invoke(this, audit);
+            audit.PostSaveChanges();
+        }
+        private void SaveSoftDeletion()
+        {
+            if (!this.Options.UseSoftDeletetion)
+                return;
+
+            this.ChangeTracker
+                .Entries<IEntityDeletableSoft>()
+                .Where(x => x.State == EntityState.Deleted)
+                .ToList()
+                .ForEach(x =>
+                {
+                    x.State = EntityState.Modified;
+                    x.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
+                });
+        }
+        private IEnumerable<EntityEvent> GetPendingEntityEvents()
+        {
+            return this.ChangeTracker
+                .Entries<IEntity>()
+                .Where(x =>
+                    x.Entity.GetType().IsTypeDef(typeof(IEntityIdentity<>)) &&
+                    x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
+                    (x.State == EntityState.Added || x.State == EntityState.Deleted))
+                .Select(x =>
+                {
+                    var name = x.Entity.GetType().Name.Replace("Proxy", "");
+                    var state = x.State.ToString();
+
+                    switch (x.Entity)
+                    {
+                        case IEntityIdentity<Guid> guid:
+                            return new EntityEvent(guid.Id, name, state);
+
+                        case IEntityIdentity<dynamic> dynamic:
+                            return new EntityEvent(dynamic.Id, name, state);
+
+                        default:
+                            return null;
+                    }
+                })
+                .Where(x => x != null)
+                .ToArray();
         }
     }
 }

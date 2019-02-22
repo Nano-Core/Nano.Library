@@ -1,7 +1,9 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.App;
@@ -19,6 +21,45 @@ namespace Nano.Web.Hosting.Extensions
     /// </summary>
     public static class ApplicationBuilderExtensions
     {
+        /// <summary>
+        /// Adds health checks middleware to the <see cref="IApplicationBuilder"/>.
+        /// </summary>
+        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+        internal static IApplicationBuilder UseHealthChecks(this IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            var services = applicationBuilder.ApplicationServices;
+            var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
+
+            if (webOptions.Hosting.UseHealthCheck)
+            {
+                applicationBuilder
+                    .UseHealthChecks("/healthz", new HealthCheckOptions
+                    {
+                        Predicate = _ => true,
+                        AllowCachingResponses = true,
+                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                    });
+
+                if (webOptions.Hosting.UseHealthCheckUI)
+                {
+                    applicationBuilder
+                        .UseHealthChecksUI(x =>
+                        {
+                            x.UIPath = "/healthz-ui";
+                            x.ApiPath = "/healthz-api";
+                            x.ResourcesPath = "/healthz-rex";
+                            x.ApiPath = "/healthz-hooks";
+                        });
+                }
+            }
+
+            return applicationBuilder;
+        }
+
         /// <summary>
         /// Adds exception handling middleware to the <see cref="IApplicationBuilder"/>.
         /// </summary>

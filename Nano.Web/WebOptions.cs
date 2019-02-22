@@ -115,6 +115,16 @@ namespace Nano.Web
             public virtual TimeSpan UseHttpSessionTimeout { get; set; } = TimeSpan.FromMinutes(20);
 
             /// <summary>
+            /// Use Health Check.
+            /// </summary>
+            public virtual bool UseHealthCheck { get; set; } = true;
+
+            /// <summary>
+            /// Use Health Check UI.
+            /// </summary>
+            public virtual bool UseHealthCheckUI { get; set; } = true;
+
+            /// <summary>
             /// Use Hsts.
             /// Settings for Strict-Transport-Security.
             /// </summary>
@@ -130,11 +140,6 @@ namespace Nano.Web
             /// Certificate (ssl)
             /// </summary>
             public virtual CertificateOptions Certificate { get; set; } = new CertificateOptions();
-
-            /// <summary>
-            /// HealthChecks.
-            /// </summary>
-            public virtual HealthCheckOptions HealthChecks { get; set; } = new HealthCheckOptions();
             
             /// <summary>
             /// Hsts Options
@@ -218,22 +223,6 @@ namespace Nano.Web
                 /// Instructs search engines to not index images on the page (Google only)
                 /// </summary>
                 public virtual bool UseNoImageIndex { get; set; } = false;
-            }
-
-            /// <summary>
-            /// Health Check Options.
-            /// </summary>
-            public class HealthCheckOptions
-            {
-                /// <summary>
-                /// Liveness.
-                /// </summary>
-                public virtual bool Liveness { get; set; } = false;
-
-                /// <summary>
-                /// Readyness.
-                /// </summary>
-                public virtual bool Readyness { get; set; } = false;
             }
         }
 

@@ -50,5 +50,15 @@ namespace Nano.Eventing
         /// Zero means no hearbeat requests.
         /// </summary>
         public virtual ushort Heartbeat { get; set; } = 0;
+
+        /// <summary>
+        /// Use Health Check.
+        /// </summary>
+        public virtual bool UseHealthCheck { get; set; } = true;
+
+        /// <summary>
+        /// ConnectionString.
+        /// </summary>
+        public virtual string ConnectionString => $"amqp://{this.Username}:{this.Password}@{this.Host}:{this.Port}{this.VHost}";
     }
 }

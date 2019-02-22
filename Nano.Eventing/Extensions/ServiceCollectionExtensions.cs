@@ -7,6 +7,7 @@ using Nano.Config.Extensions;
 using Nano.Eventing.Attributes;
 using Nano.Eventing.Handlers;
 using Nano.Eventing.Interfaces;
+using Nano.Eventing.Providers.EasyNetQ;
 using Nano.Models;
 using Nano.Models.Extensions;
 
@@ -29,13 +30,20 @@ namespace Nano.Eventing.Extensions
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            return services
+            var options = services
+                .BuildServiceProvider()
+                .GetService<EventingOptions>();
+
+            services
                 .AddSingleton<IEventingProvider, TProvider>()
                 .AddSingleton(x => x
                     .GetRequiredService<IEventingProvider>()
                     .Configure())
                 .AddEventingHandlers()
-                .AddEventingHandlerAttributes();
+                .AddEventingHandlerAttributes()
+                .AddEventingHealthChecks<TProvider>(options);
+
+            return services;
         }
 
         /// <summary>
@@ -53,7 +61,7 @@ namespace Nano.Eventing.Extensions
                 throw new ArgumentNullException(nameof(configuration));
 
             return services
-                .AddSingleton<IEventing, NullEventing>()
+                .AddScoped<IEventing, NullEventing>()
                 .AddConfigOptions<EventingOptions>(configuration, EventingOptions.SectionName, out _);
         }
 
@@ -131,6 +139,24 @@ namespace Nano.Eventing.Extensions
                         .MakeGenericMethod(eventType)
                         .Invoke(eventing, new object[] { @delegate, x.Name });
                 });
+
+            return services;
+        }
+        private static IServiceCollection AddEventingHealthChecks<TProvider>(this IServiceCollection services, EventingOptions options)
+            where TProvider : class, IEventingProvider
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            if (!options.UseHealthCheck)
+                return services;
+
+            if (typeof(TProvider) == typeof(EasyNetQProvider))
+            {
+                services
+                    .AddHealthChecks()
+                    .AddRabbitMQ(options.ConnectionString);
+            }
 
             return services;
         }

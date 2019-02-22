@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +5,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Config.Extensions;
 using Nano.Data.Interfaces;
+using Nano.Data.Providers.MySql;
+using Nano.Data.Providers.SqlServer;
 using Nano.Models;
 using Nano.Models.Interfaces;
 using Nano.Security.Extensions;
+using System;
+using System.Linq;
+using Nano.Data.Providers.Sqlite;
 using Z.EntityFramework.Plus;
 
 namespace Nano.Data.Extensions
@@ -33,26 +36,21 @@ namespace Nano.Data.Extensions
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
+            var options = services.BuildServiceProvider().GetService<DataOptions>();
+
             services
                 .AddScoped<DbContext, TContext>()
                 .AddScoped<BaseDbContext, TContext>()
                 .AddScoped<DefaultDbContext, TContext>()
+                .AddScoped<DbContextOptions, DbContextOptions<TContext>>()
                 .AddSingleton<IDataProvider, TProvider>()
                 .AddDbContext<TContext>((provider, builder) =>
                 {
                     provider
                         .GetRequiredService<IDataProvider>()
                         .Configure(builder);
-                });
-
-            var dbContext = services
-                .BuildServiceProvider()
-                .GetService<TContext>();
-
-            dbContext?.EnsureCreatedAsync().Wait();
-            dbContext?.EnsureMigratedAsync().Wait();
-            dbContext?.EnsureSeedAsync().Wait();
-            dbContext?.EnsureImportAsync().Wait();
+                })
+                .AddDataHealthChecks<TProvider>(options);
 
             return services;
         }
@@ -85,8 +83,9 @@ namespace Nano.Data.Extensions
                 .AddEntityFrameworkStores<BaseDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddAudit(options);
-            services.AddDataCache(options);
+            services
+                .AddAudit(options)
+                .AddDataCache(options);
 
             return services;
         }
@@ -167,9 +166,42 @@ namespace Nano.Data.Extensions
                 return services;
 
             // TODO: Data cache (custom / distributed, e.g. redis) (https://github.com/VahidN/EFSecondLevelCache.Core/)
-
+ 
             services
-                .AddMemoryCache(cacheOptions => cacheOptions.ExpirationScanFrequency = TimeSpan.FromMinutes(15));            
+                .AddMemoryCache(cacheOptions => cacheOptions.ExpirationScanFrequency = TimeSpan.FromMinutes(15));
+
+            return services;
+        }
+        private static IServiceCollection AddDataHealthChecks<TProvider>(this IServiceCollection services, DataOptions options)
+            where TProvider : class, IDataProvider
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+
+            if (!options.UseHealthCheck)
+                return services;
+
+            if (typeof(TProvider) == typeof(MySqlProvider))
+            {
+                services
+                    .AddHealthChecks()
+                        .AddMySql(options.ConnectionString);
+            }
+            else if (typeof(TProvider) == typeof(SqlServerProvider))
+            {
+                services
+                    .AddHealthChecks()
+                        .AddSqlServer(options.ConnectionString);
+            }
+            else if (typeof(TProvider) == typeof(SqliteProvider))
+            {
+                services
+                    .AddHealthChecks()
+                        .AddSqlite(options.ConnectionString);
+            }
 
             return services;
         }

@@ -27,6 +27,8 @@ using System.Text;
 using System.Xml.XPath;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Nano.Data;
 using Nano.Models.Extensions;
@@ -37,6 +39,8 @@ using Nano.Web.Api;
 using Nano.Web.Hosting.Filters;
 using Nano.Web.Hosting.HealthChecks;
 using Nano.Web.Hosting.Middleware;
+using Nano.Web.Hosting.Startup;
+using Nano.Web.Hosting.Startup.Tasks;
 using Newtonsoft.Json.Converters;
 
 namespace Nano.Web.Hosting.Extensions
@@ -78,7 +82,7 @@ namespace Nano.Web.Hosting.Extensions
                 .AddVersioning()
                 .AddDocumentation()
                 .AddLocalizations()
-                .AddGzipCompression()
+                .AddCompression()
                 .AddContentTypeFormatters()
                 .AddSingleton<ExceptionHandlingMiddleware>()
                 .AddSingleton<HttpRequestOptionsMiddleware>()
@@ -126,41 +130,44 @@ namespace Nano.Web.Hosting.Extensions
             services
                 .Configure<RazorViewEngineOptions>(x =>
                 {
-                    x.FileProviders.Add(new EmbeddedFileProvider(assembly));
+                    x.FileProviders
+                        .Add(new EmbeddedFileProvider(assembly));
                 });
 
             services
-                .AddHealthChecks()
-                    .AddCheck<LivenessHealthCheck>("Liveness")
-                    .AddCheck<ReadynessHealthCheck>("Readiness");
+                .AddStartupTasks()
+                .AddHealthChecking(options);
 
             return services;
         }
-        
+
         private static IServiceCollection AddApis(this IServiceCollection services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
+            var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+
             AppDomain.CurrentDomain
                 .GetAssemblies()
-                .SelectMany(y => y.GetTypes())
-                .Where(y =>
-                    !y.IsAbstract &&
-                    y.IsTypeDef(typeof(BaseApi)))
+                .SelectMany(x => x.GetTypes())
+                .Where(x =>
+                    !x.IsAbstract &&
+                    x.IsTypeDef(typeof(BaseApi)))
                 .Distinct()
                 .ToList()
                 .ForEach(x =>
                 {
-                    services
-                        .AddSingleton(x, y =>
-                        {
-                            var configuration = y.GetRequiredService<IConfiguration>();
-                            var section = configuration.GetSection(x.Name);
-                            var options = section?.Get<ApiOptions>() ?? new ApiOptions();
+                    var section = configuration.GetSection(x.Name);
+                    var options = section?.Get<ApiOptions>();
 
-                            return Activator.CreateInstance(x, options);
-                        });
+                    if (options == null)
+                        return;
+
+                    services
+                        .AddSingleton(x, Activator.CreateInstance(x, options))
+                        .AddHealthChecks()
+                            .AddTcpHealthCheck(y => y.AddHost(options.Host, options.Port), options.Host);
                 });
 
             return services;
@@ -256,6 +263,64 @@ namespace Nano.Web.Hosting.Extensions
                     x.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
                 });
         }
+        private static IServiceCollection AddCompression(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services
+                .AddResponseCompression(x =>
+                {
+                    x.EnableForHttps = true;
+                    x.Providers.Add<GzipCompressionProvider>();
+                    x.Providers.Add<BrotliCompressionProvider>();
+                });
+
+            return services;
+        }
+        private static IServiceCollection AddStartupTasks(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services
+                .AddSingleton<StartupTaskContext>()
+                .AddHostedService<InitializeDatabaseStartupTask>()
+                .AddHostedService<InitializeApplicationStartupTask>();
+
+            return services;
+        }
+        private static IServiceCollection AddHealthChecking(this IServiceCollection services, WebOptions options)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+                                
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+
+            if (!options.Hosting.UseHealthCheck)
+                return services;
+
+            services
+                .AddHealthChecks()
+                    .AddCheck<StartupHealthCheck>("app");
+
+            if (options.Hosting.UseHealthCheckUI)
+            {
+                var port = options.Hosting.Ports.FirstOrDefault();
+                var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+
+                config[HostDefaults.ContentRootKey] = Directory.GetCurrentDirectory();
+                config["HealthChecks-UI"] = string.Concat("\"HealthChecks-UI\": {\"HealthChecks\": [{\"Name\": \"app\",\"Uri\": \"http://localhost:", port, "/healthz\"}]}"); // BUG: Doesn't work. https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/blob/master/README.md
+
+                services
+                    .AddHealthChecksUI();
+
+                services.AddScoped<DbContextOptions, DbContextOptions<NullDbContext>>(); // BUG: Wihtout this line, EF-Core fails when no Data Provider / Context is registerd and 'NullDbContext' is used.
+            }
+
+            return services;
+        }
         private static IServiceCollection AddDocumentation(this IServiceCollection services)
         {
             if (services == null)
@@ -348,16 +413,6 @@ namespace Nano.Web.Hosting.Extensions
                 .AddMvc()
                     .AddViewLocalization()
                     .AddDataAnnotationsLocalization();
-
-            return services;
-        }
-        private static IServiceCollection AddGzipCompression(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services
-                .AddResponseCompression(y => y.Providers.Add<GzipCompressionProvider>());
 
             return services;
         }
