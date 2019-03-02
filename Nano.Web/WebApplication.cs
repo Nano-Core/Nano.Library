@@ -53,6 +53,7 @@ namespace Nano.Web
             base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
 
             applicationBuilder
+                .UseHttpLocalization()
                 .UseExceptionHandling()
                 .UseHttpNoCacheHeader()
                 .UseHttpXRobotsTagHeaders()
@@ -86,7 +87,6 @@ namespace Nano.Web
                 {
                     x.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 })
-                .UseHttpLocalization()
                 .UseHttpDocumentataion();
         }
 

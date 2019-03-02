@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -55,6 +56,9 @@ namespace Nano.Web.Api
 
             this.httpClient.DefaultRequestHeaders.Accept
                 .Add(new MediaTypeWithQualityHeaderValue(HttpContentType.JSON));
+
+            this.httpClient.DefaultRequestHeaders.AcceptLanguage
+                .Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
 
             this.jsonSerializerSettings.Converters
                 .Add(new StringEnumConverter());

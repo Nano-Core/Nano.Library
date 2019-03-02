@@ -162,13 +162,11 @@ namespace Nano.Web.Hosting.Extensions
             var appOptions = services.GetService<AppOptions>() ?? new AppOptions();
 
             applicationBuilder
-                .UseRequestLocalization(new RequestLocalizationOptions
+                .UseRequestLocalization(x =>
                 {
-                    DefaultRequestCulture = new RequestCulture(appOptions.Cultures.Default),
-                    SupportedCultures = appOptions.Cultures.Supported
-                        .Select(x => new CultureInfo(x)).ToArray(),
-                    SupportedUICultures = appOptions.Cultures.Supported
-                        .Select(x => new CultureInfo(x)).ToArray()
+                    x.DefaultRequestCulture = new RequestCulture(appOptions.Cultures.Default);
+                    x.SupportedCultures = appOptions.Cultures.Supported.Select(y => new CultureInfo(y)).ToArray();
+                    x.SupportedUICultures = appOptions.Cultures.Supported.Select(y => new CultureInfo(y)).ToArray();
                 });
 
             return applicationBuilder;

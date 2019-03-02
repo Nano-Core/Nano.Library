@@ -307,7 +307,7 @@ namespace Nano.Web.Hosting.Extensions
 
             if (options.Hosting.UseHealthCheckUI)
             {
-                var port = options.Hosting.Ports.FirstOrDefault();
+                //var port = options.Hosting.Ports.FirstOrDefault();
                 var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
                 config[HostDefaults.ContentRootKey] = Directory.GetCurrentDirectory();
