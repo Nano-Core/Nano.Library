@@ -1,3 +1,4 @@
+using System;
 using Nano.Models.Interfaces;
 
 namespace Nano.Models

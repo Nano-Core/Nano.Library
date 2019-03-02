@@ -311,7 +311,9 @@ namespace Nano.Web.Hosting.Extensions
                 var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
                 config[HostDefaults.ContentRootKey] = Directory.GetCurrentDirectory();
-                config["HealthChecks-UI"] = string.Concat("\"HealthChecks-UI\": {\"HealthChecks\": [{\"Name\": \"app\",\"Uri\": \"http://localhost:", port, "/healthz\"}]}"); // BUG: Doesn't work. https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/blob/master/README.md
+                
+                // BUG: Doesn't work. https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/blob/master/README.md
+                //config["HealthChecks-UI"] = string.Concat("\"HealthChecks-UI\": {\"HealthChecks\": [{\"Name\": \"app\",\"Uri\": \"http://localhost:", port, "/healthz\"}]}");
 
                 services
                     .AddHealthChecksUI();
