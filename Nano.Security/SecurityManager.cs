@@ -145,22 +145,22 @@ namespace Nano.Security
         /// Registers a new user.
         /// The new user is signed in as well, and an email confirmation is sent, if enabled. 
         /// </summary>
-        /// <param name="signup">The <see cref="Signup"/>.</param>
+        /// <param name="signUp">The <see cref="SignUp"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="IdentityUser"/>.</returns>
-        public virtual async Task<IdentityUser> SignupAsync(Signup signup, CancellationToken cancellationToken = default)
+        public virtual async Task<IdentityUser> SignupAsync(SignUp signUp, CancellationToken cancellationToken = default)
         {
-            if (signup == null) 
-                throw new ArgumentNullException(nameof(signup));
+            if (signUp == null) 
+                throw new ArgumentNullException(nameof(signUp));
             
             var user = new IdentityUser
             {
-                Email = signup.Email,
-                UserName = signup.Username 
+                Email = signUp.Email,
+                UserName = signUp.Username 
             };
 
             var result = await this.UserManager
-                .CreateAsync(user, signup.Password);
+                .CreateAsync(user, signUp.Password);
             
             if (!result.Succeeded)
                 this.ThrowErrors(result.Errors);

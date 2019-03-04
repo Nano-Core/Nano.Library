@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -80,9 +79,8 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occurred.</response>
         [HttpGet]
         [HttpPost]
-         [Route("logout")]
+        [Route("logout")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -92,16 +90,13 @@ namespace Nano.Web.Controllers
             await this.SecurityManager
                 .SignOutAsync(cancellationToken);
 
-            await HttpContext
-                .SignOutAsync(IdentityConstants.ExternalScheme);
-
             return this.Ok();
         }
 
         /// <summary>
         /// Signs up a user for an account.
         /// </summary>
-        /// <param name="signup">The signup.</param>
+        /// <param name="signUp">The signup.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The created user.</returns>
         /// <response code="200">Success.</response>
@@ -115,10 +110,10 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(IdentityUser), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Signup([FromBody][Required]Signup signup, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> Signup([FromBody][Required]SignUp signUp, CancellationToken cancellationToken = default)
         {
             var user = await this.SecurityManager
-                .SignupAsync(signup, cancellationToken);
+                .SignupAsync(signUp, cancellationToken);
 
             return this.Created("Signup", user);
         }
@@ -445,7 +440,7 @@ namespace Nano.Web.Controllers
             await this.SecurityManager
                 .GetConfirmEmailAsync(getConfirmEmail, cancellationToken);
 
-            // TODO: Email confirmation event.
+            // BUG: Email confirmation event.
             //var callbackUrl = Url.Page("/Account/ConfirmEmail", pageHandler: null, values: new { userId = user.Id, code = code }, protocol: Request.Scheme);
             //await _emailSender.SendEmailAsync(user.Email, "Confirm your email", $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 

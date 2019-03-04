@@ -57,9 +57,6 @@ namespace Nano.Web.Api
             this.httpClient.DefaultRequestHeaders.Accept
                 .Add(new MediaTypeWithQualityHeaderValue(HttpContentType.JSON));
 
-            this.httpClient.DefaultRequestHeaders.AcceptLanguage
-                .Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
-
             this.jsonSerializerSettings.Converters
                 .Add(new StringEnumConverter());
         }
@@ -111,7 +108,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            await this.Authenticate();
+            await this.AuthenticateAsync();
 
             var taskCompletion = new TaskCompletionSource<TResponse>();
 
@@ -157,7 +154,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            await this.Authenticate();
+            await this.AuthenticateAsync();
 
             var taskCompletion = new TaskCompletionSource<TResponse>();
 
@@ -187,7 +184,7 @@ namespace Nano.Web.Api
             return await taskCompletion.Task;
         }
 
-        private async Task Authenticate()
+        private async Task AuthenticateAsync()
         {
             if (this.accessToken != null && this.accessToken.IsExpired)
                 return;
@@ -214,6 +211,9 @@ namespace Nano.Web.Api
                 throw new ArgumentNullException(nameof(request));
 
             var uri = request.GetUri<TResponse>(this.apiOptions);
+
+            this.httpClient.DefaultRequestHeaders.AcceptLanguage.Clear();
+            this.httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
 
             switch (request)
             {

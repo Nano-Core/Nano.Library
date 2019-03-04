@@ -9,7 +9,7 @@ using Nano.Web.Api.Requests;
 namespace Nano.Web.Api
 {
     /// <summary>
-    /// 
+    /// Default Api.
     /// </summary>
     public class DefaultApi : BaseApi
     {

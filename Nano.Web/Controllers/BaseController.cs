@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
 using Nano.Repository.Interfaces;
+using Nano.Security.Extensions;
 using Nano.Web.Hosting;
 
 namespace Nano.Web.Controllers
@@ -16,6 +17,21 @@ namespace Nano.Web.Controllers
     [Authorize(Roles = "administrator, service")]
     public abstract class BaseController : Controller
     {
+        /// <summary>
+        /// User Id.
+        /// </summary>
+        public virtual Guid? UserId => this.HttpContext.GetJwtUserId();
+
+        /// <summary>
+        /// User Name.
+        /// </summary>
+        public virtual string UserName => this.HttpContext.GetJwtUserName();
+
+        /// <summary>
+        /// User Email.
+        /// </summary>
+        public virtual string UserEmail => this.HttpContext.GetJwtUserEmail();
+
         /// <summary>
         /// Options. Any route can be called with http options, to return options header information.
         /// </summary>

@@ -88,7 +88,7 @@ namespace Nano.Web.Hosting.Middleware
                 var statusCode = response.StatusCode;
                 var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
                 var protocol = request.IsHttps ? request.Protocol.Replace("HTTP", "HTTPS") : request.Protocol;
-                var queryString = request.QueryString.HasValue ? $"?{request.QueryString.Value}"  : string.Empty;
+                var queryString = request.QueryString.HasValue ? $"{request.QueryString.Value}" : string.Empty;
                 
                 var logeLevel = statusCode >= 500 && statusCode <= 599 
                     ? LogLevel.Error 

@@ -74,7 +74,6 @@ namespace Nano.Web.Hosting.Extensions
             var securityOptions = serviceProvider.GetService<SecurityOptions>();
 
             services
-                .AddApis()
                 .AddCors()
                 .AddSession()
                 .AddSecurity()
@@ -97,11 +96,11 @@ namespace Nano.Web.Hosting.Extensions
                     x.Conventions.Insert(0, routePrefixConvention);
                     x.ModelBinderProviders.Insert(0, queryModelBinderProvider);
 
-                    if (!securityOptions.IsEnabled)
-                        x.Conventions.Insert(0, new AuthControllerDisabledConvention());
-
                     if (dataOptions.ConnectionString == null)
                         x.Conventions.Insert(1, new AduitControllerDisabledConvention());
+
+                    if (dataOptions.ConnectionString == null || !securityOptions.IsEnabled)
+                        x.Conventions.Insert(0, new AuthControllerDisabledConvention());
 
                     if (options.Hosting.UseHttpsRequired)
                         x.Filters.Add<RequireHttpsAttribute>();
@@ -135,6 +134,7 @@ namespace Nano.Web.Hosting.Extensions
                 });
 
             services
+                .AddApis()
                 .AddStartupTasks()
                 .AddHealthChecking(options);
 
@@ -205,7 +205,7 @@ namespace Nano.Web.Hosting.Extensions
                     x.IncludeErrorDetails = true;
                     x.RequireHttpsMetadata = false;
 
-                    x.Audience = options.Jwt.Issuer;
+                    x.Audience = options.Jwt.Audience;
                     x.ClaimsIssuer = options.Jwt.Issuer;
 
                     x.TokenValidationParameters = new TokenValidationParameters
@@ -216,9 +216,9 @@ namespace Nano.Web.Hosting.Extensions
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = options.Jwt.Issuer,
-                        ValidAudience = options.Jwt.Issuer,
+                        ValidAudience = options.Jwt.Audience,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Jwt.SecretKey)),
-                        ClockSkew = TimeSpan.Zero
+                        ClockSkew = TimeSpan.FromMinutes(5)
                     };
                 })
                 .AddCookie(x =>
@@ -303,18 +303,29 @@ namespace Nano.Web.Hosting.Extensions
 
             services
                 .AddHealthChecks()
-                    .AddCheck<StartupHealthCheck>("app");
+                    .AddCheck<StartupHealthCheck>("self");
 
             if (options.Hosting.UseHealthCheckUI)
             {
-                //var port = options.Hosting.Ports.FirstOrDefault();
+                var port = options.Hosting.Ports.FirstOrDefault();
                 var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+                var appOptions = config.GetSection(AppOptions.SectionName).Get<AppOptions>();
 
+                var healthz = new
+                {
+                    HealthChecks = new[]
+                    {
+                        new
+                        {
+                            Name = appOptions.Name.ToLower(),
+                            Uri = $"http://localhost:{port}/healthz"
+                        }
+                    }
+                };
+
+                config["HealthChecks-UI"] = JsonConvert.SerializeObject(healthz); // BUG: string.Concat("{\"HealthChecks\": [{\"Name\": \"app\",\"Uri\": \"http://localhost:", port, "/healthz\"}]}");
                 config[HostDefaults.ContentRootKey] = Directory.GetCurrentDirectory();
                 
-                // BUG: Doesn't work. https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/blob/master/README.md
-                //config["HealthChecks-UI"] = string.Concat("\"HealthChecks-UI\": {\"HealthChecks\": [{\"Name\": \"app\",\"Uri\": \"http://localhost:", port, "/healthz\"}]}");
-
                 services
                     .AddHealthChecksUI();
 

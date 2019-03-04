@@ -5,7 +5,7 @@ namespace Nano.Models.Auth
     /// <summary>
     /// Sign Up.
     /// </summary>
-    public class Signup
+    public class SignUp
     {
         /// <summary>
         /// Email
