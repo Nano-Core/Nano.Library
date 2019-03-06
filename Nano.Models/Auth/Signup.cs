@@ -29,7 +29,7 @@ namespace Nano.Models.Auth
         public virtual string Password { get; set; }
 
         /// <summary>
-        /// Confirm Password.
+        /// Confirm Password. 
         /// </summary>
         [Required]
         [MaxLength(128)]
