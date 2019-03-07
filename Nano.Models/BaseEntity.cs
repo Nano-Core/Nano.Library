@@ -3,9 +3,8 @@ using Nano.Models.Interfaces;
 namespace Nano.Models
 {
     /// <inheritdoc />
-    public abstract class BaseEntity : IEntityWritable
+    public abstract class BaseEntity : IEntity
     {
-        /// <inheritdoc />
-        public virtual long IsDeleted { get; set; } = 0L;
+
     }
 }

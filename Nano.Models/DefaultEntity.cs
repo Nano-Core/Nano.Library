@@ -1,10 +1,14 @@
 using System;
+using Nano.Models.Interfaces;
 
 namespace Nano.Models
 {
-    /// <inheritdoc />
-    public class DefaultEntity : BaseEntityIdentity<Guid>
+    /// <inheritdoc cref="IEntityWritable"/>
+    public class DefaultEntity : BaseEntityIdentity<Guid>, IEntityWritable
     {
+        /// <inheritdoc />
+        public virtual long IsDeleted { get; set; } = 0L;
+
         /// <summary>
         /// Created At.
         /// </summary>

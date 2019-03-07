@@ -51,6 +51,13 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
+        public virtual DbQuery<TEntity> GetEntityQuery<TEntity>()
+            where TEntity : class, IEntity
+        {
+            return this.Context.Query<TEntity>();
+        }
+
+        /// <inheritdoc />
         public virtual async Task<TEntity> GetAsync<TEntity, TIdentity>(TIdentity key, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityIdentity<TIdentity>
         {
@@ -106,7 +113,7 @@ namespace Nano.Repository
             if (where == null)
                 throw new ArgumentNullException(nameof(where));
 
-            return await this.GetEntitySet<TEntity>()
+            return await this.GetEntityQuery<TEntity>()
                 .Where(where)
                 .FirstOrDefaultAsync(cancellationToken);
         }
@@ -119,7 +126,7 @@ namespace Nano.Repository
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
-            return await this.GetEntitySet<TEntity>()
+            return await this.GetEntityQuery<TEntity>()
                 .Where(query.Criteria)
                 .Order(query.Order)
                 .Limit(query.Paging)
@@ -135,7 +142,7 @@ namespace Nano.Repository
 
             var indent = this.Context.Options.QueryIncludeDepth;
 
-            return await this.GetEntitySet<TEntity>()
+            return await this.GetEntityQuery<TEntity>()
                 .IncludeAnnotations(indent)
                 .Where(x => keys.Any(y => y.Equals(x.Id)))
                 .ToArrayAsync(cancellationToken);
@@ -150,7 +157,7 @@ namespace Nano.Repository
 
             var indent = this.Context.Options.QueryIncludeDepth;
 
-            return await this.GetEntitySet<TEntity>()
+            return await this.GetEntityQuery<TEntity>()
                 .IncludeAnnotations(indent)
                 .Order(query.Order)
                 .Limit(query.Paging)
@@ -167,7 +174,7 @@ namespace Nano.Repository
 
             var indent = this.Context.Options.QueryIncludeDepth;
 
-            return await this.GetEntitySet<TEntity>()
+            return await this.GetEntityQuery<TEntity>()
                 .IncludeAnnotations(indent)
                 .Where(query.Criteria)
                 .Order(query.Order)
@@ -184,7 +191,7 @@ namespace Nano.Repository
 
             var indent = this.Context.Options.QueryIncludeDepth;
 
-            return await this.GetEntitySet<TEntity>()
+            return await this.GetEntityQuery<TEntity>()
                 .IncludeAnnotations(indent)
                 .Where(where)
                 .ToArrayAsync(cancellationToken);
@@ -202,7 +209,7 @@ namespace Nano.Repository
 
             var indent = this.Context.Options.QueryIncludeDepth;
 
-            return await this.GetEntitySet<TEntity>()
+            return await this.GetEntityQuery<TEntity>()
                 .IncludeAnnotations(indent)
                 .Where(where)
                 .Limit(pagination)
@@ -221,7 +228,9 @@ namespace Nano.Repository
 
             var indent = this.Context.Options.QueryIncludeDepth;
 
-            return await this.GetEntitySet<TEntity>()
+
+
+            return await this.GetEntityQuery<TEntity>()
                 .IncludeAnnotations(indent)
                 .Where(where)
                 .Limit(pagination)
