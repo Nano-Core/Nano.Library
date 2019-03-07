@@ -67,6 +67,16 @@
             Zero means no hearbeat requests.
             </summary>
         </member>
+        <member name="P:Nano.Eventing.EventingOptions.UseHealthCheck">
+            <summary>
+            Use Health Check.
+            </summary>
+        </member>
+        <member name="P:Nano.Eventing.EventingOptions.ConnectionString">
+            <summary>
+            ConnectionString.
+            </summary>
+        </member>
         <member name="T:Nano.Eventing.Extensions.ServiceCollectionExtensions">
             <summary>
             Service Collection Extensions.

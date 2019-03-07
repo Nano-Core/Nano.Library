@@ -34,11 +34,6 @@
             Options.
             </summary>
         </member>
-        <member name="P:Nano.Data.BaseDbContext.CacheEntryOptions">
-            <summary>
-            Cache Entry Options.
-            </summary>
-        </member>
         <member name="P:Nano.Data.BaseDbContext.Audit">
             <summary>
             Audit Entries.
@@ -50,25 +45,9 @@
             </summary>
         </member>
         <member name="M:Nano.Data.BaseDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions,Nano.Data.DataOptions)">
-            <summary>
-            Constructor.
-            </summary>
-            <param name="contextOptions">The <see cref="T:Microsoft.EntityFrameworkCore.DbContextOptions"/>.</param>
-            <param name="dataOptions">The <see cref="T:Nano.Data.DataOptions"/>.</param>
+            <inheritdoc />
         </member>
         <member name="M:Nano.Data.BaseDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Data.BaseDbContext.SaveChanges">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Data.BaseDbContext.SaveChanges(System.Boolean)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Data.BaseDbContext.SaveChangesAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Data.BaseDbContext.SaveChangesAsync(System.Boolean,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Data.BaseDbContext.EnsureSeedAsync(System.Threading.CancellationToken)">
@@ -99,6 +78,22 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>
+        <member name="M:Nano.Data.BaseDbContext.AddOrUpdate``1(``0)">
+            <summary>
+            Adds or updates (if exists) the entity.
+            </summary>
+            <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
+            <param name="entity">The <see cref="T:System.Object"/> of type <typeparamref name="TEntity"/>.</param>
+            <returns>A <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry`1"/>.</returns>
+        </member>
+        <member name="M:Nano.Data.BaseDbContext.AddOrUpdateMany``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Adds or updates (if exists) the entities.
+            </summary>
+            <typeparam name="TEntity">The type of <paramref name="entities"/>.</typeparam>
+            <param name="entities">The <see cref="T:System.Object"/>'s of type <typeparamref name="TEntity"/>.</param>
+            <returns>A <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry`1"/>.</returns>
+        </member>
         <member name="M:Nano.Data.BaseDbContext.AddRangeAsync``1(System.Uri,System.Threading.CancellationToken)">
             <summary>
             Import data from the passed <paramref name="uri"/>, deserilaized into the type of the generic argument <typeparamref name="TEntity"/>.
@@ -115,21 +110,17 @@
             <param name="type">The <see cref="T:System.Type"/> used when deserializing.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
         </member>
-        <member name="M:Nano.Data.BaseDbContext.AddOrUpdate``1(``0)">
-            <summary>
-            Adds or updates (if exists) the entity.
-            </summary>
-            <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
-            <param name="entity">The <see cref="T:System.Object"/> of type <typeparamref name="TEntity"/>.</param>
-            <returns>A <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry`1"/>.</returns>
+        <member name="M:Nano.Data.BaseDbContext.SaveChanges">
+            <inheritdoc />
         </member>
-        <member name="M:Nano.Data.BaseDbContext.AddOrUpdateMany``1(System.Collections.Generic.IEnumerable{``0})">
-            <summary>
-            Adds or updates (if exists) the entities.
-            </summary>
-            <typeparam name="TEntity">The type of <paramref name="entities"/>.</typeparam>
-            <param name="entities">The <see cref="T:System.Object"/>'s of type <typeparamref name="TEntity"/>.</param>
-            <returns>A <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry`1"/>.</returns>
+        <member name="M:Nano.Data.BaseDbContext.SaveChanges(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.BaseDbContext.SaveChangesAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.BaseDbContext.SaveChangesAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc />
         </member>
         <member name="T:Nano.Data.BaseDbContextFactory`2">
             <inheritdoc />
@@ -207,6 +198,11 @@
             Use Sensitive Data Logging .
             </summary>
         </member>
+        <member name="P:Nano.Data.DataOptions.UseHealthCheck">
+            <summary>
+            Use Health Check.
+            </summary>
+        </member>
         <member name="P:Nano.Data.DataOptions.ConnectionString">
             <summary>
             Connection String.
@@ -216,11 +212,7 @@
             <inheritdoc />
         </member>
         <member name="M:Nano.Data.DefaultDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions,Nano.Data.DataOptions)">
-            <summary>
-            Constructor.
-            </summary>
-            <param name="contextOptions">The <see cref="T:Microsoft.EntityFrameworkCore.DbContextOptions"/>.</param>
-            <param name="dataOptions">The <see cref="T:Nano.Data.DataOptions"/>.</param>
+            <inheritdoc />
         </member>
         <member name="T:Nano.Data.Extensions.QueryableExtensions">
             <summary>
@@ -298,6 +290,18 @@
             Abstract method for mapping a type of <typeparamref name="TEntity"/>.
             </summary>
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
+        </member>
+        <member name="T:Nano.Data.Models.Mappings.BaseEntityQueryMapping`1">
+            <summary>
+            Base Mapping (abstract).
+            </summary>
+            <typeparam name="TEntity">Type implementing <see cref="T:Nano.Models.Interfaces.IEntity"/>.</typeparam>
+        </member>
+        <member name="M:Nano.Data.Models.Mappings.BaseEntityQueryMapping`1.Map(Microsoft.EntityFrameworkCore.Metadata.Builders.QueryTypeBuilder{`0})">
+            <summary>
+            Abstract method for mapping a type of <typeparamref name="TEntity"/>.
+            </summary>
+            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.QueryTypeBuilder`1"/>.</param>
         </member>
         <member name="T:Nano.Data.Models.Mappings.DefaultAuditEntryMapping">
             <inheritdoc />
@@ -452,6 +456,15 @@
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.ModelBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.EntityFrameworkCore.ModelBuilder"/>.</returns>
         </member>
+        <member name="M:Nano.Data.Models.Mappings.Extensions.ModelBuilderExtensions.AddMappingView``2(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>
+            Adds a view mapping for the type <typeparamref name="TEntity"/> using the <typeparamref name="TMapping"/> implementation.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/>.</typeparam>
+            <typeparam name="TMapping">The <see cref="T:Nano.Data.Models.Mappings.BaseEntityQueryMapping`1"/>.</typeparam>
+            <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.ModelBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.EntityFrameworkCore.ModelBuilder"/>.</returns>
+        </member>
         <member name="T:Nano.Data.Models.Mappings.Extensions.PropertyBuilderExtensions">
             <summary>
             Property Builder Extensions.
@@ -543,6 +556,15 @@
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.ReferenceOwnershipBuilder`2"/>.</param>
             <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/>.</param>
         </member>
+        <member name="T:Nano.Data.NullDbContext">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.NullDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions,Nano.Data.DataOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.NullDbContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Data.Providers.Memory.InMemoryProvider">
             <summary>
             In Memory Data Provider.
@@ -581,23 +603,23 @@
         <member name="M:Nano.Data.Providers.MySql.MySqlProvider.Configure(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Data.Providers.SqlLite.SqliteProvider">
+        <member name="T:Nano.Data.Providers.Sqlite.SqliteProvider">
             <summary>
             Sql Lite Data Provider.
             </summary>
         </member>
-        <member name="P:Nano.Data.Providers.SqlLite.SqliteProvider.Options">
+        <member name="P:Nano.Data.Providers.Sqlite.SqliteProvider.Options">
             <summary>
             Options.
             </summary>
         </member>
-        <member name="M:Nano.Data.Providers.SqlLite.SqliteProvider.#ctor(Nano.Data.DataOptions)">
+        <member name="M:Nano.Data.Providers.Sqlite.SqliteProvider.#ctor(Nano.Data.DataOptions)">
             <summary>
             Constructor.
             </summary>
             <param name="options">The <see cref="T:Nano.Data.DataOptions"/>.</param>
         </member>
-        <member name="M:Nano.Data.Providers.SqlLite.SqliteProvider.Configure(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
+        <member name="M:Nano.Data.Providers.Sqlite.SqliteProvider.Configure(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Data.Providers.SqlServer.SqlServerProvider">

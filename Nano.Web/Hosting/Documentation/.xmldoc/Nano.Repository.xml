@@ -24,6 +24,9 @@
         <member name="M:Nano.Repository.BaseRepository`1.GetEntitySet``1">
             <inheritdoc />
         </member>
+        <member name="M:Nano.Repository.BaseRepository`1.GetEntityQuery``1">
+            <inheritdoc />
+        </member>
         <member name="M:Nano.Repository.BaseRepository`1.GetAsync``2(``1,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
@@ -97,6 +100,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nano.Repository.BaseRepository`1.DeleteManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.CountAsync``2(``1,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Repository.BaseRepository`1.CountAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
@@ -178,6 +184,13 @@
             </summary>
             <typeparam name="TEntity">The type</typeparam>
             <returns>The <see cref="T:Microsoft.EntityFrameworkCore.DbSet`1"/>.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.GetEntityQuery``1">
+            <summary>
+            Gets the <see cref="T:Microsoft.EntityFrameworkCore.DbQuery`1"/> mathcing the type of <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">The type</typeparam>
+            <returns>The <see cref="T:Microsoft.EntityFrameworkCore.DbQuery`1"/>.</returns>
         </member>
         <member name="M:Nano.Repository.Interfaces.IRepository.GetAsync``2(``1,System.Threading.CancellationToken)">
             <summary>
@@ -417,6 +430,16 @@
             <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/> to evaulate entities to be deleted.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
             <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.CountAsync``2(``1,System.Threading.CancellationToken)">
+            <summary>
+            Returns the count (long) of elements satisfying the passed criteria.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> type.</typeparam>
+            <typeparam name="TCriteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/> type.</typeparam>
+            <param name="criteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The number of elements.</returns>
         </member>
         <member name="M:Nano.Repository.Interfaces.IRepository.CountAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
             <summary>

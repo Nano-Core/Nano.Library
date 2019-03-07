@@ -39,6 +39,30 @@
             Login.
             </summary>
         </member>
+        <member name="T:Nano.Web.Api.AuthApi">
+            <summary>
+            Auth Api.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.AuthApi.#ctor(Nano.Web.Api.ApiOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.AuthApi.LogInAsync(Nano.Web.Api.Requests.Auth.LoginRequest,System.Threading.CancellationToken)">
+            <summary>
+            Log In Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.LoginRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Models.Auth.AccessToken"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.AuthApi.LogOutAsync(Nano.Web.Api.Requests.Auth.LoginRequest,System.Threading.CancellationToken)">
+            <summary>
+            Log Out Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.LoginRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Models.Auth.AccessToken"/>.</returns>
+        </member>
         <member name="T:Nano.Web.Api.BaseApi">
             <summary>
             Base Api (abstract).
@@ -79,9 +103,20 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The instance of <typeparamref name="TResponse"/>.</returns>
         </member>
+        <member name="M:Nano.Web.Api.BaseApi.Invoke``3(``1,System.Threading.CancellationToken)">
+            <summary>
+            Invokes the request, and returns the response.
+            </summary>
+            <typeparam name="TEntity"></typeparam>
+            <typeparam name="TRequest">The request type.</typeparam>
+            <typeparam name="TResponse">The response type.</typeparam>
+            <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The instance of <typeparamref name="TResponse"/>.</returns>
+        </member>
         <member name="T:Nano.Web.Api.DefaultApi">
             <summary>
-            
+            Default Api.
             </summary>
         </member>
         <member name="M:Nano.Web.Api.DefaultApi.#ctor(Nano.Web.Api.ApiOptions)">
@@ -90,7 +125,7 @@
             </summary>
             <param name="apiOptions">The <see cref="T:Nano.Web.Api.ApiOptions"/>.</param>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.Index``1(Nano.Web.Api.Requests.IndexRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.DefaultApi.IndexAsync``1(Nano.Web.Api.Requests.IndexRequest,System.Threading.CancellationToken)">
             <summary>
             Index.
             Invokes the 'index' endpoint of the api.
@@ -100,7 +135,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The matching entities.</returns>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.Details``1(Nano.Web.Api.Requests.DetailsRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.DefaultApi.DetailsAsync``1(Nano.Web.Api.Requests.DetailsRequest,System.Threading.CancellationToken)">
             <summary>
             Details.
             Invokes the 'details' endpoint of the api.
@@ -110,7 +145,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The matching entity.</returns>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.Details``1(Nano.Web.Api.Requests.DetailsManyRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.DefaultApi.DetailsManyAsync``1(Nano.Web.Api.Requests.DetailsManyRequest,System.Threading.CancellationToken)">
             <summary>
             Details Many.
             Invokes the 'details' endpoint of the api, with multiple id's.
@@ -120,18 +155,18 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The matching entities.</returns>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.Query``2(Nano.Web.Api.Requests.QueryRequest{``1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.DefaultApi.QueryAsync``2(Nano.Web.Api.Requests.QueryRequest{``1},System.Threading.CancellationToken)">
             <summary>
             Query.
             Invokes the 'query' endpoint of the api.
             </summary>
             <typeparam name="TEntity">The entity type.</typeparam>
-            <typeparam name="TCriteria">The criteira type</typeparam>
+            <typeparam name="TCriteria">The criteria type</typeparam>
             <param name="request">The <see cref="T:Nano.Web.Api.Requests.QueryRequest`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The matching entities.</returns>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.QueryFirst``2(Nano.Web.Api.Requests.QueryFirstRequest{``1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.DefaultApi.QueryFirstAsync``2(Nano.Web.Api.Requests.QueryFirstRequest{``1},System.Threading.CancellationToken)">
             <summary>
             Query.
             Invokes the 'query/first' endpoint of the api.
@@ -142,7 +177,18 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The first match entity.</returns>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.Create``1(Nano.Web.Api.Requests.CreateRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.DefaultApi.QueryCountAsync``2(Nano.Web.Api.Requests.QueryCountRequest{``1},System.Threading.CancellationToken)">
+            <summary>
+            Query.
+            Invokes the 'query/first' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <typeparam name="TCriteria">The criteria type</typeparam>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.QueryCountRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The count of matching entities.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.DefaultApi.CreateAsync``1(Nano.Web.Api.Requests.CreateRequest,System.Threading.CancellationToken)">
             <summary>
             Create.
             Invokes the 'create' endpoint of the api.
@@ -152,7 +198,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The created entity.</returns>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.CreateMany``1(Nano.Web.Api.Requests.CreateManyRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.DefaultApi.CreateManyAsync``1(Nano.Web.Api.Requests.CreateManyRequest,System.Threading.CancellationToken)">
             <summary>
             Create Many.
             Invokes the 'create/many' endpoint of the api.
@@ -162,7 +208,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The created entities.</returns>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.Edit``1(Nano.Web.Api.Requests.EditRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.DefaultApi.EditAsync``1(Nano.Web.Api.Requests.EditRequest,System.Threading.CancellationToken)">
             <summary>
             Edit.
             Invokes the 'edit' endpoint of the api.
@@ -172,7 +218,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The updated entity.</returns>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.EditMany``1(Nano.Web.Api.Requests.EditManyRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.DefaultApi.EditManyAsync``1(Nano.Web.Api.Requests.EditManyRequest,System.Threading.CancellationToken)">
             <summary>
             Edit Many.
             Invokes the 'Edit/many' endpoint of the api.
@@ -182,7 +228,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The updated entities.</returns>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.EditQuery``1(Nano.Web.Api.Requests.EditQueryRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.DefaultApi.EditQueryAsync``1(Nano.Web.Api.Requests.EditQueryRequest,System.Threading.CancellationToken)">
             <summary>
             Edit Many.
             Invokes the 'Edit/query' endpoint of the api.
@@ -192,7 +238,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The updated entities.</returns>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.Delete``1(Nano.Web.Api.Requests.DeleteRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.DefaultApi.DeleteAsync``1(Nano.Web.Api.Requests.DeleteRequest,System.Threading.CancellationToken)">
             <summary>
             Delete.
             Invokes the 'delete' endpoint of the api.
@@ -202,7 +248,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Nothing.</returns>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.DeleteMany``1(Nano.Web.Api.Requests.DeleteManyRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.DefaultApi.DeleteManyAsync``1(Nano.Web.Api.Requests.DeleteManyRequest,System.Threading.CancellationToken)">
             <summary>
             Delete Many.
             Invokes the 'delete/many' endpoint of the api.
@@ -212,7 +258,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Nothing.</returns>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.DeleteQuery``1(Nano.Web.Api.Requests.DeleteQueryRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.DefaultApi.DeleteQueryAsync``1(Nano.Web.Api.Requests.DeleteQueryRequest,System.Threading.CancellationToken)">
             <summary>
             Delete Query.
             Invokes the 'delete/query' endpoint of the api.
@@ -260,18 +306,23 @@
         <member name="M:Nano.Web.Api.Requests.BaseRequest.GetQueryStringParameters">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Web.Api.Requests.BaseRequestDelete">
+            <summary>
+            Base Request Delete.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.BaseRequestGet">
+            <summary>
+            Base Request Get.
+            </summary>
+        </member>
         <member name="T:Nano.Web.Api.Requests.BaseRequestPost">
             <summary>
-            Base Request Json.
+            Base Request Post.
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.BaseRequestPost.GetBody">
             <inheritdoc />
-        </member>
-        <member name="T:Nano.Web.Api.Requests.BaseRequestGet">
-            <summary>
-            Base Request Querystring.
-            </summary>
         </member>
         <member name="T:Nano.Web.Api.Requests.CreateManyRequest">
             <summary>
@@ -520,9 +571,19 @@
             </summary>
             <returns>The <see cref="T:System.Collections.Generic.IList`1"/>.</returns>
         </member>
+        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequestDelete">
+            <summary>
+            Base interface for requests (DELETE).
+            </summary>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequestGet">
+            <summary>
+            Base interface for querystring requests (GET).
+            </summary>
+        </member>
         <member name="T:Nano.Web.Api.Requests.Interfaces.IRequestPost">
             <summary>
-            Base interface for json requests (POST).
+            Base interface for requests (POST).
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Interfaces.IRequestPost.GetBody">
@@ -531,10 +592,24 @@
             </summary>
             <returns>The body <see cref="T:System.Object"/>.</returns>
         </member>
-        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequestGet">
+        <member name="T:Nano.Web.Api.Requests.QueryCountRequest`1">
             <summary>
-            Base interface for querystring requests (GET).
+            Query Count Request.
             </summary>
+            <typeparam name="TCriteria">The type of <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/>.</typeparam>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.QueryCountRequest`1.Criteria">
+            <summary>
+            Criteria.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.QueryCountRequest`1.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.QueryCountRequest`1.GetBody">
+            <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.QueryFirstRequest`1">
             <summary>
@@ -621,11 +696,11 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.Signup(Nano.Models.Auth.Signup,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.AuthController.Signup(Nano.Models.Auth.SignUp,System.Threading.CancellationToken)">
             <summary>
             Signs up a user for an account.
             </summary>
-            <param name="signup">The signup.</param>
+            <param name="signUp">The signup.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The created user.</returns>
             <response code="200">Success.</response>
@@ -793,6 +868,21 @@
         <member name="T:Nano.Web.Controllers.BaseController">
             <summary>
             Base controller.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Controllers.BaseController.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Controllers.BaseController.UserName">
+            <summary>
+            User Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Controllers.BaseController.UserEmail">
+            <summary>
+            User Email.
             </summary>
         </member>
         <member name="M:Nano.Web.Controllers.BaseController.Options">
@@ -1028,6 +1118,32 @@
             <param name="query">The query model, containing filters used in the query.</param>
             <param name="cancellationToken">The token used when request is cancelled.</param>
             <returns>The model, matching the passed query.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.QueryCount(`3,System.Threading.CancellationToken)">
+            <summary>
+            Gets the number of models (Count).
+            </summary>
+            <param name="criteria">The criteria model, containing filters used in the criteria.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>The count of models, matching the passed query.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.QueryCountPost(`3,System.Threading.CancellationToken)">
+            <summary>
+            Gets the number of models (Count).
+            </summary>
+            <param name="criteria">The criteria model, containing filters used in the query.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>The count of models, matching the passed query.</returns>
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
             <response code="401">Unauthorized.</response>
@@ -1405,9 +1521,51 @@
             Application Builder Extensions.
             </summary>
         </member>
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHealthChecks(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds health checks middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseExceptionHandling(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds exception handling middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpRequestOptions(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds options action middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpRequestIdentifier(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds request identifier middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpDocumentataion(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds documentation middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpLocalization(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds localization middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
         <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpSession(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
-            Adds rerdirect valiation middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            Adds http session middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
@@ -1577,20 +1735,13 @@
             </summary>
             <param name="context">The <see cref="T:Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext"/>.</param>
         </member>
-        <member name="T:Nano.Web.Hosting.HealthChecks.LivenessHealthCheck">
-            <summary>
-            Liveness Health Check
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Hosting.HealthChecks.LivenessHealthCheck.CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext,System.Threading.CancellationToken)">
+        <member name="T:Nano.Web.Hosting.HealthChecks.StartupHealthCheck">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Hosting.HealthChecks.ReadynessHealthCheck">
-            <summary>
-            Readyness Health Check.
-            </summary>
+        <member name="M:Nano.Web.Hosting.HealthChecks.StartupHealthCheck.#ctor(Nano.Web.Hosting.Startup.StartupTaskContext)">
+            <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Hosting.HealthChecks.ReadynessHealthCheck.CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Hosting.HealthChecks.StartupHealthCheck.CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Hosting.HttpContentType">
@@ -1626,6 +1777,17 @@
         <member name="T:Nano.Web.Hosting.Middleware.ExceptionHandlingMiddleware">
             <inheritdoc />
         </member>
+        <member name="P:Nano.Web.Hosting.Middleware.ExceptionHandlingMiddleware.Logger">
+            <summary>
+            Logger.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.Middleware.ExceptionHandlingMiddleware.#ctor(Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="logger">the <see cref="T:Microsoft.Extensions.Logging.ILogger"/></param>
+        </member>
         <member name="M:Nano.Web.Hosting.Middleware.ExceptionHandlingMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.Http.RequestDelegate)">
             <inheritdoc />
         </member>
@@ -1639,12 +1801,6 @@
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Hosting.Middleware.HttpRequestOptionsMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.Http.RequestDelegate)">
-            <inheritdoc />
-        </member>
-        <member name="T:Nano.Web.Hosting.Middleware.HttpRequestUserMiddleware">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Hosting.Middleware.HttpRequestUserMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.Http.RequestDelegate)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Hosting.ModelBinders.QueryModelBinder`1">
@@ -1697,6 +1853,61 @@
             <param name="defaultNamespace">The default namespace used in the xml.</param>
             <param name="knownTypes">The known types.</param>
             <returns>The instance of type <typeparamref name="T"/>.</returns>
+        </member>
+        <member name="T:Nano.Web.Hosting.Startup.BaseStartupTask">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Hosting.Startup.BaseStartupTask.StartupTaskContext">
+            <summary>
+            Startup Task Context.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.Startup.BaseStartupTask.#ctor(Nano.Web.Hosting.Startup.StartupTaskContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Startup.BaseStartupTask.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Startup.BaseStartupTask.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.Startup.StartupTaskContext">
+            <summary>
+            Startup Task Context.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Hosting.Startup.StartupTaskContext.IsDone">
+            <summary>
+            Is Complete.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.Startup.StartupTaskContext.Increment">
+            <summary>
+            Increment
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.Startup.StartupTaskContext.Decrement">
+            <summary>
+            Decrement.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.Hosting.Startup.Tasks.InitializeApplicationStartupTask">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Startup.Tasks.InitializeApplicationStartupTask.#ctor(Nano.Web.Hosting.Startup.StartupTaskContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Startup.Tasks.InitializeApplicationStartupTask.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.Startup.Tasks.InitializeDatabaseStartupTask">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Startup.Tasks.InitializeDatabaseStartupTask.#ctor(Nano.Web.Hosting.Startup.StartupTaskContext,Nano.Data.BaseDbContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.Startup.Tasks.InitializeDatabaseStartupTask.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
         </member>
         <member name="T:Nano.Web.WebApplication">
             <inheritdoc />
@@ -1836,6 +2047,16 @@
             Enables middleware for session context middleware, and sets the session timeout to the value.
             </summary>
         </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHealthCheck">
+            <summary>
+            Use Health Check.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHealthCheckUI">
+            <summary>
+            Use Health Check UI.
+            </summary>
+        </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.Hsts">
             <summary>
             Use Hsts.
@@ -1851,11 +2072,6 @@
         <member name="P:Nano.Web.WebOptions.HostingOptions.Certificate">
             <summary>
             Certificate (ssl)
-            </summary>
-        </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.HealthChecks">
-            <summary>
-            HealthChecks.
             </summary>
         </member>
         <member name="T:Nano.Web.WebOptions.HostingOptions.HstsOptions">
@@ -1938,21 +2154,6 @@
             <summary>
             Use No Image Index.
             Instructs search engines to not index images on the page (Google only)
-            </summary>
-        </member>
-        <member name="T:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions">
-            <summary>
-            Health Check Options.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions.Liveness">
-            <summary>
-            Liveness.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions.Readyness">
-            <summary>
-            Readyness.
             </summary>
         </member>
         <member name="T:Nano.Web.WebOptions.DocumentationOptions">

@@ -14,17 +14,31 @@
             Unauthorized Lockout Exception.
             </summary>
         </member>
-        <member name="T:Nano.Security.Extensions.HttpRequestExtensions">
+        <member name="T:Nano.Security.Extensions.HttpContextExtensions">
             <summary>
-            Http Request Extensions.
+            Http Context Extensions.
             </summary>
         </member>
-        <member name="M:Nano.Security.Extensions.HttpRequestExtensions.GetUser(Microsoft.AspNetCore.Http.HttpRequest)">
+        <member name="M:Nano.Security.Extensions.HttpContextExtensions.GetJwtUserId(Microsoft.AspNetCore.Http.HttpContext)">
             <summary>
-            Extracts the User from the request header.
+            Get Jwt User Id.
             </summary>
-            <param name="httpRequest">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
-            <returns>The user.</returns>
+            <param name="httpContext">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.</param>
+            <returns>The user id.</returns>
+        </member>
+        <member name="M:Nano.Security.Extensions.HttpContextExtensions.GetJwtUserName(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Get Jwt User Name.
+            </summary>
+            <param name="httpContext">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.</param>
+            <returns>The user name.</returns>
+        </member>
+        <member name="M:Nano.Security.Extensions.HttpContextExtensions.GetJwtUserEmail(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Get Jwt User Email.
+            </summary>
+            <param name="httpContext">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.</param>
+            <returns>The email.</returns>
         </member>
         <member name="T:Nano.Security.Extensions.ServiceCollectionExtensions">
             <summary>
@@ -106,12 +120,12 @@
             </summary>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.SecurityManager.SignupAsync(Nano.Models.Auth.Signup,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.SecurityManager.SignupAsync(Nano.Models.Auth.SignUp,System.Threading.CancellationToken)">
             <summary>
             Registers a new user.
             The new user is signed in as well, and an email confirmation is sent, if enabled. 
             </summary>
-            <param name="signup">The <see cref="T:Nano.Models.Auth.Signup"/>.</param>
+            <param name="signUp">The <see cref="T:Nano.Models.Auth.SignUp"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.</returns>
         </member>
