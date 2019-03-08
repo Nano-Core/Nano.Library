@@ -68,7 +68,7 @@ namespace Nano.Web.Api
         /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Nothing (void).</returns>
-        public virtual async Task Custom<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task CustomAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
             where TRequest : class, IRequest
         {
             if (request == null)
@@ -85,7 +85,7 @@ namespace Nano.Web.Api
         /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
-        public virtual async Task<TResponse> Custom<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task<TResponse> CustomAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
             where TRequest : class, IRequest
         {
             if (request == null)
@@ -189,12 +189,12 @@ namespace Nano.Web.Api
             if (this.accessToken != null && this.accessToken.IsExpired)
                 return;
 
-            var loginRequest = new LoginRequest
+            var loginRequest = new LogInRequest
             {
                 Login = this.apiOptions.Login
             };
 
-            await this.ProcessRequestAsync<LoginRequest, AccessToken>(loginRequest)
+            await this.ProcessRequestAsync<LogInRequest, AccessToken>(loginRequest)
                 .ContinueWith(async x =>
                 {
                     var result = await x;

@@ -74,7 +74,7 @@
             </summary>
             <param name="apiOptions">The <see cref="T:Nano.Web.Api.ApiOptions"/>.</param>
         </member>
-        <member name="M:Nano.Web.Api.BaseApi.Custom``1(``0,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.BaseApi.CustomAsync``1(``0,System.Threading.CancellationToken)">
             <summary>
             Invokes a custom request and returns void.
             </summary>
@@ -83,7 +83,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Nothing (void).</returns>
         </member>
-        <member name="M:Nano.Web.Api.BaseApi.Custom``2(``0,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.BaseApi.CustomAsync``2(``0,System.Threading.CancellationToken)">
             <summary>
             Invokes a custom request and returns a response.
             </summary>
@@ -360,23 +360,23 @@
         <member name="M:Nano.Web.Api.Requests.CreateRequest.GetBody">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Api.Requests.CustomRequest">
+        <member name="T:Nano.Web.Api.Requests.CustomAsyncRequest">
             <summary>
-            Custom Request.
+            CustomAsync Request.
             </summary>
         </member>
-        <member name="T:Nano.Web.Api.Requests.CustomRequestPost">
+        <member name="T:Nano.Web.Api.Requests.CustomAsyncRequestPost">
             <summary>
-            Custom Request Json.
+            CustomAsync Request Json.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.Requests.CustomRequestPost.Body">
+        <member name="P:Nano.Web.Api.Requests.CustomAsyncRequestPost.Body">
             <summary>
             Body.
             The body of the request.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.Requests.CustomRequestPost.GetBody">
+        <member name="M:Nano.Web.Api.Requests.CustomAsyncRequestPost.GetBody">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.DeleteManyRequest">

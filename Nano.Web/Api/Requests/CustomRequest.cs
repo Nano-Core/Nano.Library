@@ -1,7 +1,7 @@
 ﻿namespace Nano.Web.Api.Requests
 {
     /// <summary>
-    /// Custom Request.
+    /// CustomAsync Request.
     /// </summary>
     public class CustomRequest : BaseRequest
     {

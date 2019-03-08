@@ -167,17 +167,17 @@
             Remote Error.
             </summary>
         </member>
-        <member name="T:Nano.Models.Auth.LoginExternalProvider">
+        <member name="T:Nano.Models.Auth.ExternalScheme">
             <summary>
             External Login Provider.
             </summary>
         </member>
-        <member name="P:Nano.Models.Auth.LoginExternalProvider.Name">
+        <member name="P:Nano.Models.Auth.ExternalScheme.Name">
             <summary>
             Name.
             </summary>
         </member>
-        <member name="P:Nano.Models.Auth.LoginExternalProvider.DisplayName">
+        <member name="P:Nano.Models.Auth.ExternalScheme.DisplayName">
             <summary>
             Display Name.
             </summary>

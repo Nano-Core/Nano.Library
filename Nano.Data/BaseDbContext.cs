@@ -28,6 +28,15 @@ namespace Nano.Data
     /// <inheritdoc />
     public abstract class BaseDbContext : IdentityDbContext
     {
+        private static readonly IEnumerable<string> builtInRoles = new[]
+        {
+            BuiltInUserRoles.Guest,
+            BuiltInUserRoles.Reader,
+            BuiltInUserRoles.Writer,
+            BuiltInUserRoles.Service,
+            BuiltInUserRoles.Administrator
+        };
+        
         /// <summary>
         /// Options.
         /// </summary>
@@ -107,16 +116,15 @@ namespace Nano.Data
             var adminPassword = securityOptions.User.AdminPassword ?? "password";
             var adminEmailAddress = securityOptions.User.AdminEmailAddress ?? "admin@admin.com";
 
-            await this.AddRole("guest");
-            await this.AddRole("reader");
-            await this.AddRole("writer");
-            await this.AddRole("service");
-            await this.AddRole("administrator");
+            foreach (var builtInRole in BaseDbContext.builtInRoles)
+            {
+                await this.AddRole(builtInRole);
+            }
 
             var adminUser = await this.AddUser(adminUsername, adminPassword, adminEmailAddress);
 
-            await this.AddUserToRole(adminUser, "service");
-            await this.AddUserToRole(adminUser, "administrator");
+            await this.AddUserToRole(adminUser, BuiltInUserRoles.Service);
+            await this.AddUserToRole(adminUser, BuiltInUserRoles.Administrator);
 
             await this.SaveChangesAsync(cancellationToken);
         }

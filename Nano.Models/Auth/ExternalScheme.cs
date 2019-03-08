@@ -1,18 +1,18 @@
 namespace Nano.Models.Auth
 {
     /// <summary>
-    /// External Login.
+    /// External Login Provider.
     /// </summary>
-    public class LoginExternal
+    public class ExternalScheme
     {
         /// <summary>
         /// Name.
         /// </summary>
         public virtual string Name { get; set; }
-
+        
         /// <summary>
-        /// Callback Url.
+        /// Display Name.
         /// </summary>
-        public virtual string CallbackUrl { get; set; }
+        public virtual string DisplayName { get; set; }
     }
 }

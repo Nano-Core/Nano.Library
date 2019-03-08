@@ -3,7 +3,20 @@
 namespace Nano.Web.Api.Requests.Auth
 {
     /// <inheritdoc />
-    public class LoginRequest : BaseRequestPost
+    public class LogOutRequest : BaseRequestGet
+    {
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public LogOutRequest()
+        {
+            this.Action = "logout";
+            this.Controller = "auth";
+        }
+    }
+
+    /// <inheritdoc />
+    public class LogInRequest : BaseRequestPost
     {
         /// <summary>
         /// Login.
@@ -13,7 +26,7 @@ namespace Nano.Web.Api.Requests.Auth
         /// <summary>
         /// Constructor.
         /// </summary>
-        public LoginRequest()
+        public LogInRequest()
         {
             this.Action = "login";
             this.Controller = "auth";
@@ -25,4 +38,5 @@ namespace Nano.Web.Api.Requests.Auth
             return this.Login;
         }
     }
+
 }

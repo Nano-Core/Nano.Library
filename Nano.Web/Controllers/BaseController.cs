@@ -3,6 +3,7 @@ using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Nano.Data;
 using Nano.Eventing.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security.Extensions;
@@ -14,7 +15,7 @@ namespace Nano.Web.Controllers
     /// Base controller.
     /// </summary>
     [Route("[controller]")]
-    [Authorize(Roles = "administrator, service")]
+    [Authorize(Roles = BuiltInUserRoles.Administrator + "," + BuiltInUserRoles.Service)]
     public abstract class BaseController : Controller
     {
         /// <summary>
