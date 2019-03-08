@@ -113,9 +113,18 @@ namespace Nano.Repository
             if (where == null)
                 throw new ArgumentNullException(nameof(where));
 
-            return await this.GetEntityQuery<TEntity>()
-                .Where(where)
-                .FirstOrDefaultAsync(cancellationToken);
+            try
+            {
+                return await this.GetEntitySet<TEntity>()
+                    .Where(where)
+                    .FirstOrDefaultAsync(cancellationToken);
+            }
+            catch
+            {
+                return await this.GetEntityQuery<TEntity>()
+                    .Where(where)
+                    .FirstOrDefaultAsync(cancellationToken);
+            }    
         }
 
         /// <inheritdoc />
@@ -126,11 +135,22 @@ namespace Nano.Repository
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
-            return await this.GetEntityQuery<TEntity>()
-                .Where(query.Criteria)
-                .Order(query.Order)
-                .Limit(query.Paging)
-                .FirstOrDefaultAsync(cancellationToken);
+            try
+            {
+                return await this.GetEntitySet<TEntity>()
+                    .Where(query.Criteria)
+                    .Order(query.Order)
+                    .Limit(query.Paging)
+                    .FirstOrDefaultAsync(cancellationToken);
+            }
+            catch
+            {
+                return await this.GetEntityQuery<TEntity>()
+                    .Where(query.Criteria)
+                    .Order(query.Order)
+                    .Limit(query.Paging)
+                    .FirstOrDefaultAsync(cancellationToken);
+            }    
         }
 
         /// <inheritdoc />
@@ -140,12 +160,18 @@ namespace Nano.Repository
             if (keys == null)
                 throw new ArgumentNullException(nameof(keys));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
-
-            return await this.GetEntityQuery<TEntity>()
-                .IncludeAnnotations(indent)
-                .Where(x => keys.Any(y => y.Equals(x.Id)))
-                .ToArrayAsync(cancellationToken);
+            try
+            {
+                return await this.GetEntitySet<TEntity>()
+                    .Where(x => keys.Any(y => y.Equals(x.Id)))
+                    .ToArrayAsync(cancellationToken);
+            }
+            catch
+            {
+                return await this.GetEntityQuery<TEntity>()
+                    .Where(x => keys.Any(y => y.Equals(x.Id)))
+                    .ToArrayAsync(cancellationToken);
+            }    
         }
 
         /// <inheritdoc />
@@ -155,13 +181,20 @@ namespace Nano.Repository
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
-
-            return await this.GetEntityQuery<TEntity>()
-                .IncludeAnnotations(indent)
-                .Order(query.Order)
-                .Limit(query.Paging)
-                .ToArrayAsync(cancellationToken);
+            try
+            {
+                return await this.GetEntitySet<TEntity>()
+                    .Order(query.Order)
+                    .Limit(query.Paging)
+                    .ToArrayAsync(cancellationToken);
+            }
+            catch
+            {
+                return await this.GetEntityQuery<TEntity>()
+                    .Order(query.Order)
+                    .Limit(query.Paging)
+                    .ToArrayAsync(cancellationToken);
+            }    
         }
 
         /// <inheritdoc />
@@ -172,14 +205,22 @@ namespace Nano.Repository
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
-
-            return await this.GetEntityQuery<TEntity>()
-                .IncludeAnnotations(indent)
-                .Where(query.Criteria)
-                .Order(query.Order)
-                .Limit(query.Paging)
-                .ToArrayAsync(cancellationToken);
+            try
+            {
+                return await this.GetEntitySet<TEntity>()
+                    .Where(query.Criteria)
+                    .Order(query.Order)
+                    .Limit(query.Paging)
+                    .ToArrayAsync(cancellationToken);
+            }
+            catch
+            {
+                return await this.GetEntityQuery<TEntity>()
+                    .Where(query.Criteria)
+                    .Order(query.Order)
+                    .Limit(query.Paging)
+                    .ToArrayAsync(cancellationToken);
+            }    
         }
 
         /// <inheritdoc />
@@ -189,12 +230,18 @@ namespace Nano.Repository
             if (where == null)
                 throw new ArgumentNullException(nameof(where));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
-
-            return await this.GetEntityQuery<TEntity>()
-                .IncludeAnnotations(indent)
-                .Where(where)
-                .ToArrayAsync(cancellationToken);
+            try
+            {
+                return await this.GetEntitySet<TEntity>()
+                    .Where(where)
+                    .ToArrayAsync(cancellationToken);
+            }
+            catch
+            {
+                return await this.GetEntityQuery<TEntity>()
+                    .Where(where)
+                    .ToArrayAsync(cancellationToken);
+            }    
         }
 
         /// <inheritdoc />
@@ -207,13 +254,20 @@ namespace Nano.Repository
             if (pagination == null)
                 throw new ArgumentNullException(nameof(pagination));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
-
-            return await this.GetEntityQuery<TEntity>()
-                .IncludeAnnotations(indent)
-                .Where(where)
-                .Limit(pagination)
-                .ToArrayAsync(cancellationToken);
+            try
+            {
+                return await this.GetEntitySet<TEntity>()
+                    .Where(where)
+                    .Limit(pagination)
+                    .ToArrayAsync(cancellationToken);
+            }
+            catch
+            {
+                return await this.GetEntityQuery<TEntity>()
+                    .Where(where)
+                    .Limit(pagination)
+                    .ToArrayAsync(cancellationToken);
+            }    
         }
 
         /// <inheritdoc />
@@ -226,16 +280,22 @@ namespace Nano.Repository
             if (pagination == null)
                 throw new ArgumentNullException(nameof(pagination));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
-
-
-
-            return await this.GetEntityQuery<TEntity>()
-                .IncludeAnnotations(indent)
-                .Where(where)
-                .Limit(pagination)
-                .Order(ordering)
-                .ToArrayAsync(cancellationToken);
+            try
+            {
+                return await this.GetEntitySet<TEntity>()
+                    .Where(where)
+                    .Limit(pagination)
+                    .Order(ordering)
+                    .ToArrayAsync(cancellationToken);
+            }
+            catch
+            {
+                return await this.GetEntityQuery<TEntity>()
+                    .Where(where)
+                    .Limit(pagination)
+                    .Order(ordering)
+                    .ToArrayAsync(cancellationToken);
+            }    
         }
 
         /// <inheritdoc />
