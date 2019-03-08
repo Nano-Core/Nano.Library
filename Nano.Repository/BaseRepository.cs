@@ -119,8 +119,11 @@ namespace Nano.Repository
                     .Where(where)
                     .FirstOrDefaultAsync(cancellationToken);
             }
-            catch
+            catch (InvalidOperationException ex)
             {
+                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
+                    throw;
+
                 return await this.GetEntityQuery<TEntity>()
                     .Where(where)
                     .FirstOrDefaultAsync(cancellationToken);
@@ -143,8 +146,11 @@ namespace Nano.Repository
                     .Limit(query.Paging)
                     .FirstOrDefaultAsync(cancellationToken);
             }
-            catch
+            catch (InvalidOperationException ex)
             {
+                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
+                    throw;
+
                 return await this.GetEntityQuery<TEntity>()
                     .Where(query.Criteria)
                     .Order(query.Order)
@@ -166,8 +172,11 @@ namespace Nano.Repository
                     .Where(x => keys.Any(y => y.Equals(x.Id)))
                     .ToArrayAsync(cancellationToken);
             }
-            catch
+            catch (InvalidOperationException ex)
             {
+                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
+                    throw;
+
                 return await this.GetEntityQuery<TEntity>()
                     .Where(x => keys.Any(y => y.Equals(x.Id)))
                     .ToArrayAsync(cancellationToken);
@@ -188,8 +197,11 @@ namespace Nano.Repository
                     .Limit(query.Paging)
                     .ToArrayAsync(cancellationToken);
             }
-            catch
+            catch (InvalidOperationException ex)
             {
+                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
+                    throw;
+
                 return await this.GetEntityQuery<TEntity>()
                     .Order(query.Order)
                     .Limit(query.Paging)
@@ -213,8 +225,11 @@ namespace Nano.Repository
                     .Limit(query.Paging)
                     .ToArrayAsync(cancellationToken);
             }
-            catch
+            catch (InvalidOperationException ex)
             {
+                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
+                    throw;
+
                 return await this.GetEntityQuery<TEntity>()
                     .Where(query.Criteria)
                     .Order(query.Order)
@@ -236,8 +251,11 @@ namespace Nano.Repository
                     .Where(where)
                     .ToArrayAsync(cancellationToken);
             }
-            catch
+            catch (InvalidOperationException ex)
             {
+                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
+                    throw;
+
                 return await this.GetEntityQuery<TEntity>()
                     .Where(where)
                     .ToArrayAsync(cancellationToken);
@@ -261,8 +279,11 @@ namespace Nano.Repository
                     .Limit(pagination)
                     .ToArrayAsync(cancellationToken);
             }
-            catch
+            catch (InvalidOperationException ex)
             {
+                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
+                    throw;
+
                 return await this.GetEntityQuery<TEntity>()
                     .Where(where)
                     .Limit(pagination)
@@ -288,8 +309,11 @@ namespace Nano.Repository
                     .Order(ordering)
                     .ToArrayAsync(cancellationToken);
             }
-            catch
+            catch (InvalidOperationException ex)
             {
+                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
+                    throw;
+
                 return await this.GetEntityQuery<TEntity>()
                     .Where(where)
                     .Limit(pagination)

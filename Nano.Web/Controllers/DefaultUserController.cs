@@ -92,6 +92,7 @@ namespace Nano.Web.Controllers
             var identityUser = await this.SecurityManager
                 .SignUpAsync(signUp, cancellationToken);
 
+            entity.Id = Guid.Parse(identityUser.Id);
             entity.Password = null;
             entity.IdentityUserId = identityUser.Id;
 
@@ -124,22 +125,7 @@ namespace Nano.Web.Controllers
         {
             foreach (var entity in entities)
             {
-                var signUp = new SignUp
-                {
-                    Email = entity.EmailAddress.Email,
-                    Username = entity.EmailAddress.Email,
-                    Password = entity.Password,
-                    ConfirmPassword = entity.Password
-                };
-
-                var identityUser = await this.SecurityManager
-                    .SignUpAsync(signUp, cancellationToken);
-
-                entity.Password = null;
-                entity.IdentityUserId = identityUser.Id;
-
-                await this.Repository
-                    .AddAsync(entity, cancellationToken);
+                await this.CreateConfirm(entity, cancellationToken);
             }
 
             return this.Ok();
