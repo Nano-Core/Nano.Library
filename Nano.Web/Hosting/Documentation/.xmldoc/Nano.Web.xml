@@ -47,21 +47,29 @@
         <member name="M:Nano.Web.Api.AuthApi.#ctor(Nano.Web.Api.ApiOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.AuthApi.LogInAsync(Nano.Web.Api.Requests.Auth.LoginRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.AuthApi.LogInAsync(Nano.Web.Api.Requests.Auth.LogInRequest,System.Threading.CancellationToken)">
             <summary>
             Log In Async.
             </summary>
-            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.LoginRequest"/>.</param>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.LogInRequest"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Models.Auth.AccessToken"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Api.AuthApi.LogOutAsync(Nano.Web.Api.Requests.Auth.LoginRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.AuthApi.LogOutAsync(Nano.Web.Api.Requests.Auth.LogOutRequest,System.Threading.CancellationToken)">
             <summary>
             Log Out Async.
             </summary>
-            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.LoginRequest"/>.</param>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.LogOutRequest"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Models.Auth.AccessToken"/>.</returns>
+            <returns>Void..</returns>
+        </member>
+        <member name="M:Nano.Web.Api.AuthApi.GetExternalSchemesAsync(Nano.Web.Api.Requests.Auth.ExternalSchemesRequest,System.Threading.CancellationToken)">
+            <summary>
+            Get External Schemes Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.ExternalSchemesRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>A collection of <see cref="T:Nano.Models.Auth.ExternalScheme"/>'s.</returns>
         </member>
         <member name="T:Nano.Web.Api.BaseApi">
             <summary>
@@ -268,21 +276,37 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Nothing.</returns>
         </member>
-        <member name="T:Nano.Web.Api.Requests.Auth.LoginRequest">
+        <member name="T:Nano.Web.Api.Requests.Auth.ExternalSchemesRequest">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Api.Requests.Auth.LoginRequest.Login">
-            <summary>
-            Login.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Api.Requests.Auth.LoginRequest.#ctor">
+        <member name="M:Nano.Web.Api.Requests.Auth.ExternalSchemesRequest.#ctor">
             <summary>
             Constructor.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.Requests.Auth.LoginRequest.GetBody">
+        <member name="T:Nano.Web.Api.Requests.Auth.LogInRequest">
             <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Auth.LogInRequest.Login">
+            <summary>
+            Login.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.LogInRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.LogInRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Auth.LogOutRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.LogOutRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
         </member>
         <member name="T:Nano.Web.Api.Requests.BaseRequest">
             <inheritdoc />
@@ -360,23 +384,23 @@
         <member name="M:Nano.Web.Api.Requests.CreateRequest.GetBody">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Api.Requests.CustomAsyncRequest">
+        <member name="T:Nano.Web.Api.Requests.CustomRequest">
             <summary>
             CustomAsync Request.
             </summary>
         </member>
-        <member name="T:Nano.Web.Api.Requests.CustomAsyncRequestPost">
+        <member name="T:Nano.Web.Api.Requests.CustomRequestPost">
             <summary>
             CustomAsync Request Json.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.Requests.CustomAsyncRequestPost.Body">
+        <member name="P:Nano.Web.Api.Requests.CustomRequestPost.Body">
             <summary>
             Body.
             The body of the request.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.Requests.CustomAsyncRequestPost.GetBody">
+        <member name="M:Nano.Web.Api.Requests.CustomRequestPost.GetBody">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.DeleteManyRequest">
@@ -662,7 +686,7 @@
         </member>
         <member name="P:Nano.Web.Controllers.AuthController.SecurityManager">
             <summary>
-            User Manager.
+            Security Manager.
             </summary>
         </member>
         <member name="M:Nano.Web.Controllers.AuthController.#ctor(Nano.Security.SecurityManager)">
@@ -671,7 +695,7 @@
             </summary>
             <param name="securityManager">The <see cref="P:Nano.Web.Controllers.AuthController.SecurityManager"/>.</param>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.Login(Nano.Models.Auth.Login,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.AuthController.LogIn(Nano.Models.Auth.Login,System.Threading.CancellationToken)">
             <summary>
             Authenticates and signs in a user.
             On success a jwt-token is created and returned, for later use with auhtorization.
@@ -684,7 +708,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.Logout(System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.AuthController.LogOut(System.Threading.CancellationToken)">
             <summary>
             Logs out a user.
             The jwt-token and any external login is invalidated.
@@ -696,173 +720,15 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.Signup(Nano.Models.Auth.SignUp,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.AuthController.GetExternalSchemes(System.Threading.CancellationToken)">
             <summary>
-            Signs up a user for an account.
-            </summary>
-            <param name="signUp">The signup.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns>The created user.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="500">Error occurred.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuthController.GetExternalLogins(Nano.Models.Auth.GetExternalLogins,System.Threading.CancellationToken)">
-            <summary>
-            Gets the external logins, that is currently assoicated with a user.
-            </summary>
-            <param name="getExternalLogins">The get external logins</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occurred.</response>
-            <returns></returns>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuthController.GetExternalLogins(System.Threading.CancellationToken)">
-            <summary>
-            Gets all the configured external logins, that is available.
+            Gets all the configured external login schemes.
             E.g. Google, Facebook, etc.
             </summary>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The collection of external login providers.</returns>
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
-            <response code="500">Error occurred.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuthController.LoginExternal(Nano.Models.Auth.LoginExternal,System.Threading.CancellationToken)">
-            <summary>
-            Authenticates and signs in a user, using an external login provider.
-            A callback is invoked on successful login, completing the authentication.
-            </summary>
-            <param name="loginExternal">The external login.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns>The challange result.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occurred.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuthController.LoginExternalCallback(Nano.Models.Auth.LoginExternalCallback,System.Threading.CancellationToken)">
-            <summary>
-            Completes authentication using external login provider.
-            On success a jwt-token is created and returned, for later use with auhtorization.
-            </summary>
-            <param name="loginExternalCallback">The login external callback.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns>The identity user.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occurred.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuthController.SignUpExternal(Nano.Models.Auth.SignupExternal,System.Threading.CancellationToken)">
-            <summary>
-            Creaes a user account for a user, that is logged in, using external logn provider.
-            </summary>
-            <param name="signupExternal">The sign-up external.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns>The identity user.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occurred.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuthController.RemoveExternalLogin(Nano.Models.Auth.RemoveExternalLogin,System.Threading.CancellationToken)">
-            <summary>
-            Removes an external login.
-            </summary>
-            <param name="removeExternalLogin">the remove external login.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns>Void.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occurred.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuthController.SetPassword(Nano.Models.Auth.SetUsername,System.Threading.CancellationToken)">
-            <summary>
-            Sets / changes the username of a user.
-            </summary>
-            <param name="setUsername">The set username.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns>Nothing (Void).</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occurred.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuthController.SetPassword(Nano.Models.Auth.SetPassword,System.Threading.CancellationToken)">
-            <summary>
-            Sets the password of a user that has logged in with an external provider.
-            Faulure when the user already has a password set. use a´'Change Password' instead. 
-            </summary>
-            <param name="setPassword">The set password.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns>Nothing (Void).</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occurred.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuthController.ChangePasswordAsync(Nano.Models.Auth.ChangePassword,System.Threading.CancellationToken)">
-            <summary>
-            Changes the password of a user.
-            </summary>
-            <param name="changePassword">The change password request.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns>Void.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occurred.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuthController.GetResetPasswordAsync(Nano.Models.Auth.GetResetPassword,System.Threading.CancellationToken)">
-            <summary>
-            Gets the forgot password code, used to reset the password of a user.
-            </summary>
-            <param name="getResetPassword">The get reset password request.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns>Void.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occurred.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuthController.ResetPasswordAsync(Nano.Models.Auth.ResetPassword,System.Threading.CancellationToken)">
-            <summary>
-            Resets the password of a user.
-            </summary>
-            <param name="resetPassword">The reset password request.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns>Void.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occurred.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuthController.SendEmailConfirmation(Nano.Models.Auth.GetConfirmEmail,System.Threading.CancellationToken)">
-            <summary>
-            Sends an email confirmation to a user.
-            </summary>
-            <param name="getConfirmEmail">The get confirm email request.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns>Void.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occurred.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuthController.ConfirmEmail(Nano.Models.Auth.ConfirmEmail,System.Threading.CancellationToken)">
-            <summary>
-            Confirms an email of a user.
-            </summary>
-            <param name="confirmEmail">The confirm email request.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns>Void.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
             <response code="500">Error occurred.</response>
         </member>
         <member name="T:Nano.Web.Controllers.BaseController">
@@ -1415,6 +1281,53 @@
         </member>
         <member name="M:Nano.Web.Controllers.DefaultControllerUpdatable`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Controllers.DefaultUserController`2">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Controllers.DefaultUserController`2.SecurityManager">
+            <summary>
+            Security Manager.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Controllers.DefaultUserController`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing,Nano.Security.SecurityManager)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.DefaultUserController`2.SignUp(`0,System.Threading.CancellationToken)">
+            <summary>
+            Creates the passed model.
+            </summary>
+            <param name="entity">The model to create.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>The created model.</returns>
+            <response code="201">Created.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.DefaultUserController`2.CreateConfirm(`0,System.Threading.CancellationToken)">
+            <summary>
+            Creates the passed model.
+            </summary>
+            <param name="entity">The model to create.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>The created model.</returns>
+            <response code="201">Created.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.DefaultUserController`2.CreateConfirms(System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
+            <summary>
+            Creates the passed models.
+            </summary>
+            <param name="entities">The models to create.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>Void.</returns>
+            <response code="200">Ok.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occured.</response>
         </member>
         <member name="T:Nano.Web.Controllers.HomeController">
             <summary>

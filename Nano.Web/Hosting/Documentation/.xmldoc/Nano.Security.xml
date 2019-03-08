@@ -67,6 +67,31 @@
             <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
             <returns>The <see cref="T:Nano.Models.Auth.AccessToken"/>.</returns>
         </member>
+        <member name="T:Nano.Security.Models.DefaultIdentityUser">
+            <summary>
+            Default Identity User.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.DefaultIdentityUser.IdentityUserId">
+            <summary>
+            Identity User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.DefaultIdentityUser.IdentityUser">
+            <summary>
+            Identity User.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.DefaultIdentityUser.Password">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.DefaultIdentityUser.EmailAddress">
+            <summary>
+            Email Address.
+            </summary>
+        </member>
         <member name="T:Nano.Security.SecurityManager">
             <summary>
             Security Manager.
@@ -105,15 +130,6 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Models.Auth.AccessToken"/>.</returns>
         </member>
-        <member name="M:Nano.Security.SecurityManager.SignInExternalAsync(Nano.Models.Auth.LoginExternalCallback,System.Threading.CancellationToken)">
-            <summary>
-            Signs in a user, using an external login provider.
-            This method should be invoked after getting callback response from external login provider.
-            </summary>
-            <param name="loginExternalCallback">The <see cref="T:Nano.Models.Auth.LoginExternalCallback"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Models.Auth.AccessToken"/>.</returns>
-        </member>
         <member name="M:Nano.Security.SecurityManager.SignOutAsync(System.Threading.CancellationToken)">
             <summary>
             The user is logged out, and the token is invalidated.
@@ -129,102 +145,12 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.</returns>
         </member>
-        <member name="M:Nano.Security.SecurityManager.SignUpExternalAsync(Nano.Models.Auth.SignupExternal,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.SecurityManager.GetExternalSchemesAsync(System.Threading.CancellationToken)">
             <summary>
-            Completes a sign-up after successfull external logn.
-            The user is created and linked to the external login provider.
-            </summary>
-            <param name="signupExternal">The <see cref="T:Nano.Models.Auth.SignupExternal"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.</returns>
-        </member>
-        <member name="M:Nano.Security.SecurityManager.GetExternalLoginsAsync(System.Threading.CancellationToken)">
-            <summary>
-            Gets all the external logins configured to be allowed for authentication.
+            Gets all the external login schemes, configured for authentication.
             </summary>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The collection of <see cref="T:Nano.Models.Auth.ExternalScheme"/>.</returns>
-        </member>
-        <member name="M:Nano.Security.SecurityManager.GetExternalLoginsAsync(Nano.Models.Auth.GetExternalLogins,System.Threading.CancellationToken)">
-            <summary>
-            Gets external logins for a user.
-            </summary>
-            <param name="getExternalLogins">The <see cref="T:Nano.Models.Auth.GetExternalLogins"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>A collection of <see cref="T:Nano.Models.Auth.GetExternalLogin"/>.</returns>
-        </member>
-        <member name="M:Nano.Security.SecurityManager.GetExternalLoginsPropertiesAsync(Nano.Models.Auth.LoginExternal,System.Threading.CancellationToken)">
-            <summary>
-            Gets the external authentication properties of the <see cref="T:Nano.Models.Auth.LoginExternal"/> passed.
-            </summary>
-            <param name="loginExternal">The <see cref="T:Nano.Models.Auth.ExternalScheme"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Authentication.AuthenticationProperties"/>.</returns>
-        </member>
-        <member name="M:Nano.Security.SecurityManager.SetUsernameAsync(Nano.Models.Auth.SetUsername,System.Threading.CancellationToken)">
-            <summary>
-            Changes the username of a user.
-            </summary>
-            <param name="setUsername">The <see cref="T:Nano.Models.Auth.SetUsername"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>Void.</returns>
-        </member>
-        <member name="M:Nano.Security.SecurityManager.SetPasswordAsync(Nano.Models.Auth.SetPassword,System.Threading.CancellationToken)">
-            <summary>
-            Createa a password for a user.
-            Used when logged in using external login provider, and no password has been created for the user.
-            </summary>
-            <param name="setPassword">The <see cref="T:Nano.Models.Auth.SetPassword"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>Void.</returns>
-        </member>
-        <member name="M:Nano.Security.SecurityManager.ChangePasswordAsync(Nano.Models.Auth.ChangePassword,System.Threading.CancellationToken)">
-            <summary>
-            Changes the password of a user.
-            </summary>
-            <param name="changePassword">The <see cref="T:Nano.Models.Auth.ChangePassword"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>Void.</returns>
-        </member>
-        <member name="M:Nano.Security.SecurityManager.ResetPasswordAsync(Nano.Models.Auth.ResetPassword,System.Threading.CancellationToken)">
-            <summary>
-            Resets the password of a user.
-            </summary>
-            <param name="resetPassword">The <see cref="T:Nano.Models.Auth.ResetPassword"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>Void.</returns>
-        </member>
-        <member name="M:Nano.Security.SecurityManager.GetResetPasswordAsync(Nano.Models.Auth.GetResetPassword,System.Threading.CancellationToken)">
-            <summary>
-            Generates an reset password token for a user.
-            </summary>
-            <param name="getResetPassword">The <see cref="T:Nano.Models.Auth.GetResetPassword"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Models.Auth.ResetPassword"/>.</returns>
-        </member>
-        <member name="M:Nano.Security.SecurityManager.RemoveExternalLoginAsync(Nano.Models.Auth.RemoveExternalLogin,System.Threading.CancellationToken)">
-            <summary>
-            Removes the extenral login of a user.
-            </summary>
-            <param name="removeExternalLogin">The <see cref="T:Nano.Models.Auth.RemoveExternalLogin"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>Void.</returns>
-        </member>
-        <member name="M:Nano.Security.SecurityManager.ConfirmEmailAsync(Nano.Models.Auth.ConfirmEmail,System.Threading.CancellationToken)">
-            <summary>
-            Confirms the email of a user.
-            </summary>
-            <param name="confirmEmail">The <see cref="T:Nano.Models.Auth.ConfirmEmail"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>Void.</returns>
-        </member>
-        <member name="M:Nano.Security.SecurityManager.GetConfirmEmailAsync(Nano.Models.Auth.GetConfirmEmail,System.Threading.CancellationToken)">
-            <summary>
-            Generates an email confirmation token for a user.
-            </summary>
-            <param name="getConfirmEmail">The <see cref="T:Nano.Models.Auth.GetConfirmEmail"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Models.Auth.ConfirmEmail"/>.</returns>
         </member>
         <member name="T:Nano.Security.SecurityOptions">
             <summary>

@@ -24,99 +24,19 @@
             Is Expired.
             </summary>
         </member>
-        <member name="T:Nano.Models.Auth.ChangePassword">
+        <member name="T:Nano.Models.Auth.ExternalScheme">
             <summary>
-            Change Password.
+            External Login Provider.
             </summary>
         </member>
-        <member name="P:Nano.Models.Auth.ChangePassword.UserId">
+        <member name="P:Nano.Models.Auth.ExternalScheme.Name">
             <summary>
-            User Id.
+            Name.
             </summary>
         </member>
-        <member name="P:Nano.Models.Auth.ChangePassword.OldPassword">
+        <member name="P:Nano.Models.Auth.ExternalScheme.DisplayName">
             <summary>
-            Old Password.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.ChangePassword.NewPassword">
-            <summary>
-            New Password.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.ChangePassword.ConfirmNewPassword">
-            <summary>
-            Confirm New Passowrd.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Auth.ConfirmEmail">
-            <summary>
-            Confirm Email.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.ConfirmEmail.Code">
-            <summary>
-            Code.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.ConfirmEmail.UserId">
-            <summary>
-            User Id.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Auth.GetConfirmEmail">
-            <summary>
-            Get Confirm Email.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.GetConfirmEmail.UserId">
-            <summary>
-            User Id.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Auth.GetExternalLogin">
-            <summary>
-            Remove External Login.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.GetExternalLogin.UserId">
-            <summary>
-            User Id.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.GetExternalLogin.ProviderKey">
-            <summary>
-            Provider Key.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.GetExternalLogin.LoginProvider">
-            <summary>
-            Login Provider.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.GetExternalLogin.AllowRemoval">
-            <summary>
-            Allow Removal.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Auth.GetExternalLogins">
-            <summary>
-            Get External Logins.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.GetExternalLogins.UserId">
-            <summary>
-            User Id.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Auth.GetResetPassword">
-            <summary>
-            Send Reset Password
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.GetResetPassword.Email">
-            <summary>
-            Email.
+            Display Name.
             </summary>
         </member>
         <member name="T:Nano.Models.Auth.Login">
@@ -142,121 +62,6 @@
             Flag indicating whether the sign-in cookie should persist after the browser is closed.
             </summary>
         </member>
-        <member name="T:Nano.Models.Auth.LoginExternal">
-            <summary>
-            External Login.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.LoginExternal.Name">
-            <summary>
-            Name.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.LoginExternal.CallbackUrl">
-            <summary>
-            Callback Url.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Auth.LoginExternalCallback">
-            <summary>
-            Login External Callback.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.LoginExternalCallback.RemoteError">
-            <summary>
-            Remote Error.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Auth.ExternalScheme">
-            <summary>
-            External Login Provider.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.ExternalScheme.Name">
-            <summary>
-            Name.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.ExternalScheme.DisplayName">
-            <summary>
-            Display Name.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Auth.RemoveExternalLogin">
-            <summary>
-            Remove External Login.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.RemoveExternalLogin.UserId">
-            <summary>
-            User Id.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.RemoveExternalLogin.ProviderKey">
-            <summary>
-            Provider Key.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.RemoveExternalLogin.LoginProvider">
-            <summary>
-            Login Provider.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Auth.ResetPassword">
-            <summary>
-            Reset Password.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.ResetPassword.Email">
-            <summary>
-            Email
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.ResetPassword.Password">
-            <summary>
-            Password.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.ResetPassword.ConfirmPassword">
-            <summary>
-            Confirm Password.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.ResetPassword.Code">
-            <summary>
-            Code.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Auth.SetPassword">
-            <summary>
-            Set Password.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.SetPassword.UserId">
-            <summary>
-            User Id.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.SetPassword.NewPassword">
-            <summary>
-            New Password.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Auth.SetUsername">
-            <summary>
-            Set Username.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.SetUsername.UserId">
-            <summary>
-            User Id.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.SetUsername.Username">
-            <summary>
-            Username.
-            </summary>
-        </member>
         <member name="T:Nano.Models.Auth.SignUp">
             <summary>
             Sign Up.
@@ -280,21 +85,6 @@
         <member name="P:Nano.Models.Auth.SignUp.ConfirmPassword">
             <summary>
             Confirm Password. 
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Auth.SignupExternal">
-            <summary>
-            Sign Up External.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.SignupExternal.Email">
-            <summary>
-            Email
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.SignupExternal.Username">
-            <summary>
-            Username.
             </summary>
         </member>
         <member name="T:Nano.Models.BaseEntity">
