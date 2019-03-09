@@ -17,7 +17,7 @@ namespace Nano.Web.Api.Requests.User
         /// </summary>
         public SingUpRequest()
         {
-            this.Controller = "signup";
+            this.Action = "signup";
         }
 
         /// <inheritdoc />

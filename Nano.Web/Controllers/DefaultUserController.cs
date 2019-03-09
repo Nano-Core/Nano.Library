@@ -58,14 +58,12 @@ namespace Nano.Web.Controllers
             var identityUser = await this.SecurityManager
                 .SignUpAsync(signUp, cancellationToken);
 
-            var entity = signUp.User;
-
             // BUG: See if it can be mapped as Foreign key, so we dont need the extra property IdentiyUserId, as well as these lines of code.
-            entity.IdentityUserId = identityUser.Id;
-            entity.Id = Guid.Parse(entity.IdentityUserId); 
+            signUp.User.Id = Guid.Parse(identityUser.Id); 
+            signUp.User.IdentityUserId = identityUser.Id;
 
             var result = await this.Repository
-                .AddAsync(entity, cancellationToken);
+                .AddAsync(signUp.User, cancellationToken);
 
             return this.Created("signup", result);
         }
