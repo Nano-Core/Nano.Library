@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
+using Nano.Models;
 using Nano.Models.Auth;
 using Nano.Models.Interfaces;
 using Nano.Web.Api.Requests;
 using Nano.Web.Api.Requests.Auth;
+using Nano.Web.Api.Requests.User;
 
 namespace Nano.Web.Api
 {
+    // BUG: Find better way to define Api. SignIn, SignOut, SignUp etc shouldn't be part of all apis / Controllers.
+
     /// <summary>
     /// Default Api.
     /// </summary>
@@ -51,7 +55,22 @@ namespace Nano.Web.Api
 
             await this.CustomAsync(request, cancellationToken);
         }
-        
+                
+        /// <summary>
+        /// Sign Up Async.
+        /// </summary>
+        /// <param name="request">The <see cref="SingUpRequest{TUser}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The instance of <typeparamref name="TUser"/>.</returns>
+        public virtual async Task<TUser> SignUpAsync<TUser>(SingUpRequest<TUser> request, CancellationToken cancellationToken = default)
+            where TUser : DefaultEntityUser
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.CustomAsync<SingUpRequest<TUser>, TUser>(request, cancellationToken);
+        }
+
         /// <summary>
         /// Get External Schemes Async.
         /// </summary>

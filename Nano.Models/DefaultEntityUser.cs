@@ -1,19 +1,18 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
-using Nano.Models;
-using Nano.Models.Types;
 using Newtonsoft.Json;
 
-namespace Nano.Security.Models
+namespace Nano.Models
 {
     /// <summary>
-    /// Default Identity User.
+    /// Default Entity User.
     /// </summary>
-    public class DefaultIdentityUser : DefaultEntity
+    public class DefaultEntityUser : DefaultEntity
     {
         /// <summary>
         /// Identity User Id.
         /// </summary>
+        [JsonIgnore]
         [MaxLength(128)]
         public virtual string IdentityUserId { get; set; }
 
@@ -22,16 +21,5 @@ namespace Nano.Security.Models
         /// </summary>
         [JsonIgnore]
         public virtual IdentityUser IdentityUser { get; set; }
-
-        /// <summary>
-        /// Name.
-        /// </summary>
-        public virtual string Password { get; set; }
-        
-        /// <summary>
-        /// Email Address.
-        /// </summary>
-        [Required]
-        public virtual EmailAddress EmailAddress { get; set; } = new EmailAddress();
     }
 }

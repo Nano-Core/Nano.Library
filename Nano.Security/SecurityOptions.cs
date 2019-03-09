@@ -1,4 +1,5 @@
 using System;
+using Nano.Security.Const;
 
 namespace Nano.Security
 {
@@ -97,6 +98,11 @@ namespace Nano.Security
             /// Admin Email Address.
             /// </summary>
             public virtual string AdminEmailAddress { get; set; } = "admin@nobody.com";
+
+            /// <summary>
+            /// Default Roles.
+            /// </summary>
+            public virtual string[] DefaultRoles { get; set; } = { BuiltInUserRoles.Reader, BuiltInUserRoles.Writer, BuiltInUserRoles.Service };
         }
 
         /// <summary>

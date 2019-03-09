@@ -357,10 +357,10 @@
         <member name="M:Nano.Data.Models.Mappings.DefaultEntitySpatialMapping`1.Map(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{`0})">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Data.Models.Mappings.DefaultIdentityUserMapping`1">
+        <member name="T:Nano.Data.Models.Mappings.DefaultEntityUserMapping`1">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Data.Models.Mappings.DefaultIdentityUserMapping`1.Map(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{`0})">
+        <member name="M:Nano.Data.Models.Mappings.DefaultEntityUserMapping`1.Map(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{`0})">
             <inheritdoc />
         </member>
         <member name="T:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions">

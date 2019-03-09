@@ -1,4 +1,4 @@
-namespace Nano.Data
+namespace Nano.Security.Const
 {
     /// <summary>
     /// Built-In User Roles.

@@ -67,27 +67,27 @@
             <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
             <returns>The <see cref="T:Nano.Models.Auth.AccessToken"/>.</returns>
         </member>
-        <member name="T:Nano.Security.Models.DefaultIdentityUser">
+        <member name="T:Nano.Security.Models.DefaultEntityUser">
             <summary>
             Default Identity User.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.DefaultIdentityUser.IdentityUserId">
+        <member name="P:Nano.Security.Models.DefaultEntityUser.IdentityUserId">
             <summary>
             Identity User Id.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.DefaultIdentityUser.IdentityUser">
+        <member name="P:Nano.Security.Models.DefaultEntityUser.IdentityUser">
             <summary>
             Identity User.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.DefaultIdentityUser.Password">
+        <member name="P:Nano.Security.Models.DefaultEntityUser.Password">
             <summary>
             Name.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.DefaultIdentityUser.EmailAddress">
+        <member name="P:Nano.Security.Models.DefaultEntityUser.EmailAddress">
             <summary>
             Email Address.
             </summary>

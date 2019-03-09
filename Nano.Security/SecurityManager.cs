@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Nano.Models.Auth;
 using Nano.Security.Exceptions;
 using Nano.Security.Extensions;
+using Nano.Security.Models;
 
 namespace Nano.Security
 {
@@ -99,7 +100,7 @@ namespace Nano.Security
             var user = new IdentityUser
             {
                 Email = signUp.Email,
-                UserName = signUp.Username 
+                UserName = signUp.Username
             };
 
             var result = await this.UserManager
@@ -109,7 +110,7 @@ namespace Nano.Security
                 .FindByNameAsync(signUp.Username);
 
             await this.UserManager
-                .AddToRolesAsync(user, new [] { "service", "writer", "reader"});
+                .AddToRolesAsync(user, this.Options.User.DefaultRoles);
 
             if (!result.Succeeded)
                 this.ThrowErrors(result.Errors);

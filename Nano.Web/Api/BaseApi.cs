@@ -186,6 +186,8 @@ namespace Nano.Web.Api
 
         private async Task AuthenticateAsync()
         {
+            // BUG: Api-Client: Pass jwt-token from Header. Remove login, just pass token along.
+
             if (this.accessToken != null && this.accessToken.IsExpired)
                 return;
 

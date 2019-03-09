@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Nano.Models;
 
-namespace Nano.Models.Auth
+namespace Nano.Security.Models
 {
     /// <summary>
     /// Sign Up.
@@ -33,6 +34,20 @@ namespace Nano.Models.Auth
         /// </summary>
         [Required]
         [MaxLength(128)]
+        [Compare("Password")]
         public virtual string ConfirmPassword { get; set; }
+    }
+
+    /// <summary>
+    /// Sign Up.
+    /// </summary>
+    /// <typeparam name="TUser">The user type</typeparam>
+    public class SignUp<TUser> : SignUp
+        where TUser : DefaultEntityUser
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual TUser User { get; set; }
     }
 }
