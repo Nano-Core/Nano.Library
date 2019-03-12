@@ -11,6 +11,9 @@ using Nano.Web.Hosting;
 
 namespace Nano.Web.Controllers
 {
+    // BUG: Consider anti forgery token.
+    // BUG: Consider Edit/{id} for security purposes. Then probably some currenctStamp is needed to control its the edited version of what was send back with "Details" or????.
+
     /// <summary>
     /// Base controller.
     /// </summary>

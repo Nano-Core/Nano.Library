@@ -9,7 +9,7 @@
             Unauthorized Email Exception.
             </summary>
         </member>
-        <member name="T:Nano.Security.Exceptions.UnauthorizedLockoutException">
+        <member name="T:Nano.Security.Exceptions.UnauthorizedLockedOutException">
             <summary>
             Unauthorized Lockout Exception.
             </summary>

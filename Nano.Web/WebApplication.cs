@@ -71,6 +71,7 @@ namespace Nano.Web
                     x.AllowAnyMethod();
                     x.AllowCredentials();
                 })
+                .UseHttpContextAccessor()
                 .UseStaticFiles()
                 .UseHttpsRedirect()
                 .UseCookiePolicy(new CookiePolicyOptions

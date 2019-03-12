@@ -1,4 +1,4 @@
-namespace Nano.Models.Auth
+namespace Nano.Security.Models
 {
     /// <summary>
     /// External Login Provider.

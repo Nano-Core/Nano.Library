@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.Web.Hosting.Exceptions
+namespace Nano.Models.Exceptions
 {
     /// <summary>
     /// Translation Exception.
@@ -8,19 +8,13 @@ namespace Nano.Web.Hosting.Exceptions
     public class TranslationException : Exception
     {
         /// <summary>
-        /// Code.
-        /// </summary>
-        public virtual long Code { get; protected set; }
-
-        /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="code">The code.</param>
         /// <param name="message">The message.</param>
-        public TranslationException(long code, string message)
+        public TranslationException(string message)
             : base(message)
         {
-            this.Code = code;
+
         }
     }
 }

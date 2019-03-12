@@ -4,6 +4,7 @@ using System.Linq;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.App;
@@ -168,6 +169,24 @@ namespace Nano.Web.Hosting.Extensions
                     x.SupportedCultures = appOptions.Cultures.Supported.Select(y => new CultureInfo(y)).ToArray();
                     x.SupportedUICultures = appOptions.Cultures.Supported.Select(y => new CultureInfo(y)).ToArray();
                 });
+
+            return applicationBuilder;
+        }
+
+        /// <summary>
+        /// Adds the <see cref="IHttpContextAccessor"/> middleware, and initializes the current <see cref="HttpContext"/>.
+        /// </summary>
+        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+        internal static IApplicationBuilder UseHttpContextAccessor(this IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            var httpContextAccessor = applicationBuilder.ApplicationServices
+                .GetRequiredService<IHttpContextAccessor>();
+            
+            HttpContextAccess.Configure(httpContextAccessor);
 
             return applicationBuilder;
         }

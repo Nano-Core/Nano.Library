@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.Models.Auth
+namespace Nano.Security.Models
 {
     /// <summary>
     /// Access Token.

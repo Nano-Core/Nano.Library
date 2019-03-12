@@ -113,9 +113,12 @@ namespace Nano.Repository
             if (where == null)
                 throw new ArgumentNullException(nameof(where));
 
+            var indent = this.Context.Options.QueryIncludeDepth;
+
             try
             {
                 return await this.GetEntitySet<TEntity>()
+                    .IncludeAnnotations(indent)
                     .Where(where)
                     .FirstOrDefaultAsync(cancellationToken);
             }
@@ -125,6 +128,7 @@ namespace Nano.Repository
                     throw;
 
                 return await this.GetEntityQuery<TEntity>()
+                    .IncludeAnnotations(indent)
                     .Where(where)
                     .FirstOrDefaultAsync(cancellationToken);
             }    
@@ -138,9 +142,12 @@ namespace Nano.Repository
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
+            var indent = this.Context.Options.QueryIncludeDepth;
+
             try
             {
                 return await this.GetEntitySet<TEntity>()
+                    .IncludeAnnotations(indent)
                     .Where(query.Criteria)
                     .Order(query.Order)
                     .Limit(query.Paging)
@@ -152,6 +159,7 @@ namespace Nano.Repository
                     throw;
 
                 return await this.GetEntityQuery<TEntity>()
+                    .IncludeAnnotations(indent)
                     .Where(query.Criteria)
                     .Order(query.Order)
                     .Limit(query.Paging)

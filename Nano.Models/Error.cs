@@ -24,9 +24,9 @@ namespace Nano.Models
         public virtual int StatusCode { get; set; } = 500;
 
         /// <summary>
-        /// Translation Code.
+        /// Is Translated.
         /// </summary>
-        public virtual long TranslationCode { get; set; } = -1;
+        public virtual bool IsTranslated { get; set; } = false;
 
         /// <inheritdoc />
         public override string ToString()

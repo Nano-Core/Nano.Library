@@ -17,7 +17,7 @@ using Nano.Web.Hosting;
 namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
-    public class DefaultUserController<TEntity, TCriteria> : DefaultControllerUpdatable<TEntity, TCriteria>
+    public class IdentityController<TEntity, TCriteria> : DefaultControllerUpdatable<TEntity, TCriteria>
         where TEntity : DefaultEntityUser
         where TCriteria : class, IQueryCriteria, new()
     {
@@ -27,7 +27,7 @@ namespace Nano.Web.Controllers
         protected virtual SecurityManager SecurityManager { get; }
 
         /// <inheritdoc />
-        protected DefaultUserController(ILogger logger, IRepository repository, IEventing eventing, SecurityManager securityManager) 
+        protected IdentityController(ILogger logger, IRepository repository, IEventing eventing, SecurityManager securityManager) 
             : base(logger, repository, eventing)
         {
             this.SecurityManager = securityManager ?? throw new ArgumentNullException(nameof(securityManager));
@@ -58,7 +58,6 @@ namespace Nano.Web.Controllers
             var identityUser = await this.SecurityManager
                 .SignUpAsync(signUp, cancellationToken);
 
-            // BUG: See if it can be mapped as Foreign key, so we dont need the extra property IdentiyUserId, as well as these lines of code.
             signUp.User.Id = Guid.Parse(identityUser.Id); 
             signUp.User.IdentityUserId = identityUser.Id;
 

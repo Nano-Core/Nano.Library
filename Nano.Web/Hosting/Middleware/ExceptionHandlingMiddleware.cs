@@ -1,11 +1,12 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Nano.Models;
-using Nano.Web.Hosting.Exceptions;
+using Nano.Models.Exceptions;
 using Nano.Web.Hosting.Extensions;
 using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
@@ -52,7 +53,7 @@ namespace Nano.Web.Hosting.Middleware
             }
             catch (Exception ex)
             {
-                exception = ex.GetBaseException();
+                exception = ex.GetBaseException();    
 
                 if (response.HasStarted)
                     response.Clear();
@@ -63,11 +64,16 @@ namespace Nano.Web.Hosting.Middleware
                 var error = new Error
                 {
                     Summary = "Internal Server Error",
-                    Exceptions = new[] { exception.Message },
+                    Exceptions = ex is AggregateException aggregateException
+                        ? aggregateException.InnerException is TranslationException
+                            ? aggregateException.InnerExceptions
+                                .Where(x => x is TranslationException)
+                                .Select(x => x.Message)
+                                .ToArray()
+                            : new[] { exception.Message }
+                        : new[] { exception.Message },
                     StatusCode = (int)HttpStatusCode.InternalServerError,
-                    TranslationCode = ex is TranslationException translationException 
-                        ? translationException.Code 
-                        : -1
+                    IsTranslated = exception is TranslationException
                 };
 
                 var result =

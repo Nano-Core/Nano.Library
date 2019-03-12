@@ -1,4 +1,4 @@
-﻿using Nano.Models.Auth;
+﻿using Nano.Security.Models;
 
 namespace Nano.Web.Api.Requests.Auth
 {

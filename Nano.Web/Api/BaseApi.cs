@@ -8,12 +8,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.Models;
-using Nano.Models.Auth;
+using Nano.Models.Exceptions;
 using Nano.Models.Interfaces;
+using Nano.Security.Models;
 using Nano.Web.Api.Requests.Auth;
 using Nano.Web.Api.Requests.Interfaces;
 using Nano.Web.Hosting;
-using Nano.Web.Hosting.Exceptions;
 using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -44,11 +44,11 @@ namespace Nano.Web.Api
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="apiOptions">The <see cref="Api.ApiOptions"/>.</param>
+        /// <param name="apiOptions">The <see cref="ApiOptions"/>.</param>
         protected BaseApi(ApiOptions apiOptions)
         {
             this.apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
-
+ 
             this.httpClient = new HttpClient(this.httpClientHandler)
             {
                 Timeout = this.httpTimeout
@@ -186,9 +186,7 @@ namespace Nano.Web.Api
 
         private async Task AuthenticateAsync()
         {
-            // BUG: Api-Client: Pass jwt-token from Header. Remove login, just pass token along.
-
-            if (this.accessToken != null && this.accessToken.IsExpired)
+            if (this.accessToken != null && !this.accessToken.IsExpired)
                 return;
 
             var loginRequest = new LogInRequest
@@ -216,6 +214,23 @@ namespace Nano.Web.Api
 
             this.httpClient.DefaultRequestHeaders.AcceptLanguage.Clear();
             this.httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
+
+
+            // BUG: NRE
+            //var token = HttpContextAccess.Current.GetJwtToken();
+            //if (token != null)
+            //{
+            //    this.accessToken = new AccessToken
+            //    {
+            //        Token = token,
+            //        ExpireAt = DateTime.MaxValue
+            //    };
+
+            //    this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this.accessToken.Token);
+            //}
+
+
+
 
             switch (request)
             {
@@ -273,9 +288,9 @@ namespace Nano.Web.Api
                         var error = JsonConvert.DeserializeObject<Error>(rawJson);
                         var message = error.Exceptions.FirstOrDefault() ?? error.Summary;
 
-                        if (error.TranslationCode > 0)
+                        if (error.IsTranslated)
                         {
-                            throw new TranslationException(error.TranslationCode, message);
+                            throw new TranslationException(message);
                         }
                         else if (this.apiOptions.UseExposeErrors)
                         {

@@ -1,6 +1,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
 namespace Nano.Security.Extensions
@@ -10,6 +11,23 @@ namespace Nano.Security.Extensions
     /// </summary>
     public static class HttpContextExtensions
     {
+        /// <summary>
+        /// Get Jwt Token.
+        /// </summary>
+        /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
+        /// <returns>The token.</returns>
+        public static string GetJwtToken(this HttpContext httpContext)
+        {
+            if (httpContext == null)
+                throw new ArgumentNullException(nameof(httpContext));
+
+            var value = httpContext
+                .GetTokenAsync("access_token")
+                .Result;
+
+            return value;
+        }
+
         /// <summary>
         /// Get Jwt User Id.
         /// </summary>

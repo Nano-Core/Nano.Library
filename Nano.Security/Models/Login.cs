@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Nano.Models.Auth
+namespace Nano.Security.Models
 {
     /// <summary>
     /// Login.

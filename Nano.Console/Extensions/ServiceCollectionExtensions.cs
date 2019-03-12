@@ -25,12 +25,14 @@ namespace Nano.Console.Extensions
 
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
+            
+            services
+                .AddConfigOptions<ConsoleOptions>(configuration, ConsoleOptions.SectionName, out _);
 
             services
                 .AddScoped<IRepository, DefaultRepository>()
-                .AddScoped<IRepositorySpatial, DefaultRepositorySpatial>()
-                .AddConfigOptions<ConsoleOptions>(configuration, ConsoleOptions.SectionName, out _);
-
+                .AddScoped<IRepositorySpatial, DefaultRepositorySpatial>();
+            
             return services;
         }
     }

@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Nano.Models.Auth;
+using Nano.Models.Exceptions;
 using Nano.Security.Exceptions;
 using Nano.Security.Extensions;
 using Nano.Security.Models;
+using IdentityError = Microsoft.AspNetCore.Identity.IdentityError;
 
 namespace Nano.Security
 {
@@ -70,8 +71,11 @@ namespace Nano.Security
             }
 
             if (result.IsLockedOut)
-                throw new UnauthorizedLockoutException();
-            
+                throw new UnauthorizedLockedOutException();
+
+            if (result.RequiresTwoFactor)
+                throw new UnauthorizedTwoFactorRequiredException();
+
             throw new UnauthorizedAccessException();
         }
 
@@ -106,6 +110,9 @@ namespace Nano.Security
             var result = await this.UserManager
                 .CreateAsync(user, signUp.Password);
 
+            if (!result.Succeeded)
+                this.ThrowIdentityExceptions(result.Errors);
+
             user = await this.UserManager
                 .FindByNameAsync(signUp.Username);
 
@@ -113,7 +120,7 @@ namespace Nano.Security
                 .AddToRolesAsync(user, this.Options.User.DefaultRoles);
 
             if (!result.Succeeded)
-                this.ThrowErrors(result.Errors);
+                this.ThrowIdentityExceptions(result.Errors);
 
             return user;
         }
@@ -136,13 +143,13 @@ namespace Nano.Security
                 });
         }
 
-        private void ThrowErrors(IEnumerable<IdentityError> errors)
+        private void ThrowIdentityExceptions(IEnumerable<IdentityError> errors)
         {
             if (errors == null) 
                 throw new ArgumentNullException(nameof(errors));
             
             var exceptions = errors
-                .Select(x => new InvalidOperationException($"{x.Code}: {x.Description}"));
+                .Select(x => new TranslationException(x.Description));
 
             throw new AggregateException(exceptions);
         }

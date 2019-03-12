@@ -80,8 +80,8 @@ namespace Nano.Data.Extensions
 
             services
                 .AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<BaseDbContext>()
-                .AddDefaultTokenProviders();
+                    .AddEntityFrameworkStores<BaseDbContext>()
+                    .AddDefaultTokenProviders();
 
             services
                 .AddAudit(options)
@@ -107,11 +107,12 @@ namespace Nano.Data.Extensions
                 AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
                 AuditManager.DefaultConfiguration.AutoSavePreAction = (dbContext, audit) =>
                 {
-                    var httpContextAccessor = services.BuildServiceProvider().GetService<IHttpContextAccessor>();
-                    var httpContext = httpContextAccessor?.HttpContext;
+                    var httpContextAccessor = services
+                        .BuildServiceProvider()
+                        .GetService<IHttpContextAccessor>();
 
-                    var createdBy = httpContext?.GetJwtUserId().ToString();
-                    var requestId = httpContext?.TraceIdentifier;
+                    var requestId = httpContextAccessor?.HttpContext?.TraceIdentifier;
+                    var createdBy = httpContextAccessor?.HttpContext?.GetJwtUserId().ToString();
 
                     var customAuditEntries = audit.Entries
                         .Select(x =>

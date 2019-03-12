@@ -4,7 +4,7 @@ using Nano.Security.Models;
 namespace Nano.Web.Api.Requests.User
 {
     /// <inheritdoc />
-    public class SingUpRequest<TUser> : CreateRequest
+    public class SingUpRequest<TUser> : BaseRequestPost
         where TUser : DefaultEntityUser
     {
         /// <summary>
