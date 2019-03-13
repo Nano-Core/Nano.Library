@@ -1,12 +1,9 @@
 using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Nano.Models;
-using Nano.Models.Exceptions;
 using Nano.Web.Hosting.Extensions;
 using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
@@ -61,20 +58,7 @@ namespace Nano.Web.Hosting.Middleware
                 response.StatusCode = 500;
                 response.ContentType = request.ContentType;
 
-                var error = new Error
-                {
-                    Summary = "Internal Server Error",
-                    Exceptions = ex is AggregateException aggregateException
-                        ? aggregateException.InnerException is TranslationException
-                            ? aggregateException.InnerExceptions
-                                .Where(x => x is TranslationException)
-                                .Select(x => x.Message)
-                                .ToArray()
-                            : new[] { exception.Message }
-                        : new[] { exception.Message },
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    IsTranslated = exception is TranslationException
-                };
+                var error = new Error(ex);
 
                 var result =
                     request.IsContentTypeJson()

@@ -5,7 +5,7 @@ using Nano.Models;
 namespace Nano.Data.Models.Mappings
 {
     /// <inheritdoc />
-    public class DefaultUserMapping<TEntity> : DefaultEntityMapping<TEntity> 
+    public class DefaultEntityUserMapping<TEntity> : DefaultEntityMapping<TEntity> 
         where TEntity : DefaultEntityUser
     {
         /// <inheritdoc />

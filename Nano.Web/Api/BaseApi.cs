@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Nano.Models;
 using Nano.Models.Exceptions;
 using Nano.Models.Interfaces;
+using Nano.Security.Extensions;
 using Nano.Security.Models;
 using Nano.Web.Api.Requests.Auth;
 using Nano.Web.Api.Requests.Interfaces;
@@ -186,23 +187,34 @@ namespace Nano.Web.Api
 
         private async Task AuthenticateAsync()
         {
-            if (this.accessToken != null && !this.accessToken.IsExpired)
-                return;
-
-            var loginRequest = new LogInRequest
+            var token = HttpContextAccess.Current.GetJwtToken();
+            if (token != null)
             {
-                Login = this.apiOptions.Login
-            };
+                this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+            else
+            {
+                if (this.apiOptions.Login == null)
+                    return;
 
-            await this.ProcessRequestAsync<LogInRequest, AccessToken>(loginRequest)
-                .ContinueWith(async x =>
+                if (this.accessToken != null && !this.accessToken.IsExpired)
+                    return;
+
+                var loginRequest = new LogInRequest
                 {
-                    var result = await x;
-                    var accessToken = await this.ProcessResponseAsync<AccessToken>(result);
+                    Login = this.apiOptions.Login
+                };
 
-                    this.accessToken = accessToken;
-                    this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this.accessToken.Token);
-                });
+                await this.ProcessRequestAsync<LogInRequest, AccessToken>(loginRequest)
+                    .ContinueWith(async x =>
+                    {
+                        var result = await x;
+                        var accessToken = await this.ProcessResponseAsync<AccessToken>(result);
+
+                        this.accessToken = accessToken;
+                        this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this.accessToken.Token);
+                    });
+            }
         }
         private async Task<HttpResponseMessage> ProcessRequestAsync<TRequest, TResponse>(TRequest request)
             where TRequest : class, IRequest
@@ -214,23 +226,6 @@ namespace Nano.Web.Api
 
             this.httpClient.DefaultRequestHeaders.AcceptLanguage.Clear();
             this.httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
-
-
-            // BUG: NRE
-            //var token = HttpContextAccess.Current.GetJwtToken();
-            //if (token != null)
-            //{
-            //    this.accessToken = new AccessToken
-            //    {
-            //        Token = token,
-            //        ExpireAt = DateTime.MaxValue
-            //    };
-
-            //    this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this.accessToken.Token);
-            //}
-
-
-
 
             switch (request)
             {
@@ -286,15 +281,16 @@ namespace Nano.Web.Api
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.InternalServerError:
                         var error = JsonConvert.DeserializeObject<Error>(rawJson);
-                        var message = error.Exceptions.FirstOrDefault() ?? error.Summary;
-
+                        
                         if (error.IsTranslated)
                         {
-                            throw new TranslationException(message);
+                            throw new AggregateException(
+                                error.Exceptions.Select(x => new TranslationException(x)));
                         }
                         else if (this.apiOptions.UseExposeErrors)
                         {
-                            throw new InvalidOperationException(message);
+                            throw new AggregateException(
+                                error.Exceptions.Select(x => new InvalidOperationException(x)));
                         }
                         break;
                 }
