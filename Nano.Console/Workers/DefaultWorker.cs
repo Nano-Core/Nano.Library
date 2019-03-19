@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
 using Nano.Repository.Interfaces;
@@ -12,8 +13,8 @@ namespace Nano.Console.Workers
     public class DefaultWorker : BaseWorker<IRepository>
     {
         /// <inheritdoc />
-        public DefaultWorker(ILogger logger, IRepository repository, IEventing eventing)
-            : base(logger, repository, eventing)
+        public DefaultWorker(ILogger logger, IRepository repository, IEventing eventing, IApplicationLifetime applicationLifetime)
+            : base(logger, repository, eventing, applicationLifetime)
         {
 
         }
@@ -27,6 +28,9 @@ namespace Nano.Console.Workers
         /// <inheritdoc />
         public override Task StopAsync(CancellationToken cancellationToken = default)
         {
+            this.ApplicationLifetime
+                .StopApplication();
+
             return Task.CompletedTask;
         }
     }
