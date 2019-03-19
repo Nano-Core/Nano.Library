@@ -55,11 +55,8 @@ namespace Nano.Web
             applicationBuilder
                 .UseHttpLocalization()
                 .UseExceptionHandling()
-                .UseHttpNoCacheHeader()
                 .UseHttpXRobotsTagHeaders()
                 .UseHttpXForwardedHeaders()
-                .UseHttpXDownloadOptionsHeader()
-                .UseHttpXContentTypeOptionsHeader()
                 .UseHttpXFrameOptionsPolicyHeader()
                 .UseHttpXXssProtectionPolicyHeader()
                 .UseHttpReferrerPolicyHeader()
@@ -82,6 +79,7 @@ namespace Nano.Web
                 .UseHttpSession()
                 .UseHttpRequestOptions()
                 .UseHttpRequestIdentifier()
+                .UseHttpResponseCaching()
                 .UseHttpResponseCompression()
                 .UseHealthChecks()
                 .UseMvc(x =>

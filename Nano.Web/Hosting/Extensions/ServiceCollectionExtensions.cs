@@ -76,6 +76,7 @@ namespace Nano.Web.Hosting.Extensions
             services
                 .AddCors()
                 .AddSession()
+                .AddCaching()
                 .AddSecurity()
                 .AddRepository()
                 .AddVersioning()
@@ -146,7 +147,9 @@ namespace Nano.Web.Hosting.Extensions
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+            var configuration = services
+                .BuildServiceProvider()
+                .GetRequiredService<IConfiguration>();
 
             AppDomain.CurrentDomain
                 .GetAssemblies()
@@ -168,6 +171,24 @@ namespace Nano.Web.Hosting.Extensions
                         .AddSingleton(x, Activator.CreateInstance(x, options))
                         .AddHealthChecks()
                             .AddTcpHealthCheck(y => y.AddHost(options.Host, options.Port), options.Host);
+                });
+
+            return services;
+        }
+        private static IServiceCollection AddCaching(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            var options = services
+                .BuildServiceProvider()
+                .GetService<WebOptions>() ?? new WebOptions();
+
+            services
+                .AddResponseCaching(x =>
+                {
+                    x.SizeLimit = options.Hosting.Cache.MaxSize * 1024;
+                    x.MaximumBodySize = options.Hosting.Cache.MaxBodySize * 1024;
                 });
 
             return services;

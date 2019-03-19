@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
 using Nano.App;
 using Nano.Config;
 using Nano.Web.Hosting.Enums;
@@ -204,17 +205,59 @@ namespace Nano.Web.Hosting.Extensions
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
-            applicationBuilder
-                .UseSession(new SessionOptions
-                {
-                    IdleTimeout = webOptions.Hosting.UseHttpSessionTimeout
-                });
+            if (webOptions.Hosting.Session.IsEnabled)
+            {
+                applicationBuilder
+                    .UseSession(new SessionOptions
+                    {
+                        IdleTimeout = webOptions.Hosting.Session.Timeout
+                    });
+            }
             
             return applicationBuilder;
         }
                 
         /// <summary>
-        /// Adds no cache middleware to the <see cref="IApplicationBuilder"/>.
+        /// Adds response caching middleware to the <see cref="IApplicationBuilder"/>.
+        /// </summary>
+        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+        internal static IApplicationBuilder UseHttpResponseCaching(this IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            var services = applicationBuilder.ApplicationServices;
+            var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
+
+            if (webOptions.Hosting.Cache.IsEnabled)
+            {
+                applicationBuilder
+                    .UseResponseCaching()
+                    .Use(async (context, next) =>
+                    {
+                        context.Response.GetTypedHeaders().CacheControl =
+                            new CacheControlHeaderValue
+                            {
+                                Public = true,
+                                MaxAge = webOptions.Hosting.Cache.MaxAge
+                            };
+                        context.Response.Headers[HeaderNames.Vary] = new[] { "Accept-Encoding" };
+
+                        await next();
+                    });
+            }
+            else
+            {
+                applicationBuilder
+                    .UseNoCacheHttpHeaders();
+            }
+
+            return applicationBuilder;
+        }
+
+        /// <summary>
+        /// Adds response compresssion middleware to the <see cref="IApplicationBuilder"/>.
         /// </summary>
         /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
         /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
@@ -226,32 +269,10 @@ namespace Nano.Web.Hosting.Extensions
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
-            if (webOptions.Hosting.UseHttpResponseCompression)
+            if (webOptions.Hosting.UseResponseCompression)
             {
                 applicationBuilder
                     .UseResponseCompression();
-            }
-
-            return applicationBuilder;
-        }
-
-        /// <summary>
-        /// Adds no cache middleware to the <see cref="IApplicationBuilder"/>.
-        /// </summary>
-        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
-        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
-        internal static IApplicationBuilder UseHttpNoCacheHeader(this IApplicationBuilder applicationBuilder)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            var services = applicationBuilder.ApplicationServices;
-            var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
-
-            if (webOptions.Hosting.UseHttpNoCacheHeader)
-            {
-                applicationBuilder
-                    .UseNoCacheHttpHeaders();
             }
 
             return applicationBuilder;
@@ -270,56 +291,12 @@ namespace Nano.Web.Hosting.Extensions
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
-            if (webOptions.Hosting.UseHttpXForwardedHeaders)
+            if (webOptions.Hosting.UseForwardHeaders)
             {
                 applicationBuilder
-                    .UseForwardedHeaders();
+                    .UseForwardedHeaders(); 
             }
 
-            return applicationBuilder;
-        }
-
-        /// <summary>
-        /// Adds x-download options middleware to the <see cref="IApplicationBuilder"/>.
-        /// </summary>
-        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
-        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
-        internal static IApplicationBuilder UseHttpXDownloadOptionsHeader(this IApplicationBuilder applicationBuilder)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            var services = applicationBuilder.ApplicationServices;
-            var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
-
-            if (webOptions.Hosting.UseHttpXDownloadOptionsHeader)
-            {
-                applicationBuilder
-                    .UseXDownloadOptions();
-            }
-            
-            return applicationBuilder;
-        }
-
-        /// <summary>
-        /// Adds x-content-type options middleware to the <see cref="IApplicationBuilder"/>.
-        /// </summary>
-        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
-        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
-        internal static IApplicationBuilder UseHttpXContentTypeOptionsHeader(this IApplicationBuilder applicationBuilder)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            var services = applicationBuilder.ApplicationServices;
-            var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
-
-            if (webOptions.Hosting.UseHttpXContentTypeOptionsHeader)
-            {
-                applicationBuilder
-                    .UseXContentTypeOptions();
-            }
-            
             return applicationBuilder;
         }
 
@@ -335,36 +312,33 @@ namespace Nano.Web.Hosting.Extensions
 
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
+            
+            var xRobotTags = webOptions.Hosting.Robots;
 
-            if (webOptions.Hosting.UseHttpXRobotsTagHeaders.IsEnabled)
-            {
-                var xRobotTags = webOptions.Hosting.UseHttpXRobotsTagHeaders;
+            applicationBuilder
+                .UseXRobotsTag(x =>
+                {
+                    if (xRobotTags.UseNoIndex)
+                        x.NoIndex();
 
-                applicationBuilder
-                    .UseXRobotsTag(x =>
-                    {
-                        if (xRobotTags.UseNoIndex)
-                            x.NoIndex();
+                    if (xRobotTags.UseNoFollow)
+                        x.NoFollow();
 
-                        if (xRobotTags.UseNoFollow)
-                            x.NoFollow();
+                    if (xRobotTags.UseNoSnippet)
+                        x.NoSnippet();
 
-                        if (xRobotTags.UseNoSnippet)
-                            x.NoSnippet();
+                    if (xRobotTags.UseNoArchive)
+                        x.NoArchive();
 
-                        if (xRobotTags.UseNoArchive)
-                            x.NoArchive();
+                    if (xRobotTags.UseNoOdp)
+                        x.NoOdp();
 
-                        if (xRobotTags.UseNoOdp)
-                            x.NoOdp();
+                    if (xRobotTags.UseNoTranslate)
+                        x.NoTranslate();
 
-                        if (xRobotTags.UseNoTranslate)
-                            x.NoTranslate();
-
-                        if (xRobotTags.UseNoImageIndex)
-                            x.NoImageIndex();
-                    });
-            }
+                    if (xRobotTags.UseNoImageIndex)
+                        x.NoImageIndex();
+                });
             
             return applicationBuilder;
         }
@@ -382,12 +356,12 @@ namespace Nano.Web.Hosting.Extensions
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
-            if (webOptions.Hosting.UseHttpReferrerPolicyHeader != ReferrerPolicy.Disabled)
+            if (webOptions.Hosting.HttpReferrerPolicyHeader != ReferrerPolicy.Disabled)
             {
                 applicationBuilder
                     .UseReferrerPolicy(x =>
                     {
-                        switch (webOptions.Hosting.UseHttpReferrerPolicyHeader)
+                        switch (webOptions.Hosting.HttpReferrerPolicyHeader)
                         {
                             case ReferrerPolicy.NoReferrer:
                                 x.NoReferrer();
@@ -440,12 +414,12 @@ namespace Nano.Web.Hosting.Extensions
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
-            if (webOptions.Hosting.UseHttpXFrameOptionsPolicyHeader != XFrameOptionsPolicy.Disabled)
+            if (webOptions.Hosting.HttpXFrameOptionsPolicyHeader != XFrameOptionsPolicy.Disabled)
             {
                 applicationBuilder
                     .UseXfo(x =>
                     {
-                        switch (webOptions.Hosting.UseHttpXFrameOptionsPolicyHeader)
+                        switch (webOptions.Hosting.HttpXFrameOptionsPolicyHeader)
                         {
                             case XFrameOptionsPolicy.Deny:
                                 x.Deny();
@@ -474,12 +448,12 @@ namespace Nano.Web.Hosting.Extensions
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
-            if (webOptions.Hosting.UseHttpXXssProtectionPolicyHeader != XXssProtectionPolicyBlockMode.Disabled)
+            if (webOptions.Hosting.HttpXXssProtectionPolicyHeader != XXssProtectionPolicyBlockMode.Disabled)
             {
                 applicationBuilder
                     .UseXXssProtection(x =>
                     {
-                        switch (webOptions.Hosting.UseHttpXXssProtectionPolicyHeader)
+                        switch (webOptions.Hosting.HttpXXssProtectionPolicyHeader)
                         {
                             case XXssProtectionPolicyBlockMode.FilterDisabled:
                                 x.Disabled();
@@ -557,7 +531,7 @@ namespace Nano.Web.Hosting.Extensions
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
-            if (webOptions.Hosting.UseHttpsRedirect)
+            if (webOptions.Hosting.UseHttpsRewrite)
             {
                 applicationBuilder
                     .UseCsp(x => x.UpgradeInsecureRequests());

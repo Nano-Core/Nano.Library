@@ -53,66 +53,71 @@ namespace Nano.Web
             public virtual int[] PortsHttps { get; set; } = new int[0];
 
             /// <summary>
+            /// Use Https Rewrite.
+            /// Enables middleware for automatically rewrite http requests to https.
+            /// </summary>
+            public virtual bool UseHttpsRewrite { get; set; } = false;
+
+            /// <summary>
             /// Use Https Redirect.
             /// Forces https for all requests.
             /// </summary>
             public virtual bool UseHttpsRequired { get; set; } = false;
 
             /// <summary>
-            /// Use Https Redirect.
-            /// Enables middleware for automatically redirect http requests to https.
-            /// </summary>
-            public virtual bool UseHttpsRedirect { get; set; } = false;
-
-            /// <summary>
-            /// Use Http Response Compression.
-            /// Enables middleware for dynamic compression of http responses.
-            /// </summary>
-            public virtual bool UseHttpResponseCompression { get; set; } = true;
-
-            /// <summary>
-            /// Use Http No Cache Header.
-            /// Setting these headers will make the browser reload every page in the browsing history when the user navigates with the “Back” and “Forward” buttons.
-            /// This will affect the load on your server(s) — and also the user experience.
-            /// </summary>
-            public virtual bool UseHttpNoCacheHeader { get; set; } = false;
-
-            /// <summary>
-            /// Use Http Forwarded Headers.
+            /// Use Forwarded Headers.
             /// Enables forwarded headers, when application is behind a proxy.
             /// </summary>
-            public virtual bool UseHttpXForwardedHeaders { get; set; } = true;
+            public virtual bool UseForwardHeaders { get; set; } = true;
 
             /// <summary>
-            /// Use Http X-Download Options.
+            /// Use Response Compression.
+            /// Enables middleware for dynamic compression of http responses.
             /// </summary>
-            public virtual bool UseHttpXDownloadOptionsHeader { get; set; } = false;
+            public virtual bool UseResponseCompression { get; set; } = true;
 
             /// <summary>
-            /// Use Http X-Content Type Options Header.
+            /// Use Hsts.
+            /// Settings for Strict-Transport-Security.
             /// </summary>
-            public virtual bool UseHttpXContentTypeOptionsHeader { get; set; } = false;
+            public virtual HstsOptions Hsts { get; set; } = new HstsOptions();
+
+            /// <summary>
+            /// Cache.
+            /// </summary>
+            public virtual CacheOptions Cache { get; set; } = new CacheOptions();
+
+            /// <summary>
+            /// Robots.
+            /// Settings for robots (search engines) behavior.
+            /// </summary>
+            public virtual RobotOptions Robots { get; set; } = new RobotOptions();
+
+            /// <summary>
+            /// Session.
+            /// Settings for session behavior.
+            /// </summary>
+            public virtual SessionOptions Session { get; set; } = new SessionOptions();
+
+            /// <summary>
+            /// Certificate (ssl)
+            /// </summary>
+            public virtual CertificateOptions Certificate { get; set; } = new CertificateOptions();
 
             /// <summary>
             /// Use Http Referrer Policy Header.
             /// </summary>
-            public virtual ReferrerPolicy UseHttpReferrerPolicyHeader { get; set; } = ReferrerPolicy.Disabled;
+            public virtual ReferrerPolicy HttpReferrerPolicyHeader { get; set; } = ReferrerPolicy.Disabled;
 
             /// <summary>
             /// Use Http X-Frame Options Policy Header.
             /// </summary>
-            public virtual XFrameOptionsPolicy UseHttpXFrameOptionsPolicyHeader { get; set; } = XFrameOptionsPolicy.Disabled;
+            public virtual XFrameOptionsPolicy HttpXFrameOptionsPolicyHeader { get; set; } = XFrameOptionsPolicy.Disabled;
 
             /// <summary>
             /// Use Http XXss Protection Policy Header.
             /// </summary>
-            public virtual XXssProtectionPolicyBlockMode UseHttpXXssProtectionPolicyHeader { get; set; } = XXssProtectionPolicyBlockMode.Disabled;
-
-            /// <summary>
-            /// Use Http Session Timeout.
-            /// Enables middleware for session context middleware, and sets the session timeout to the value.
-            /// </summary>
-            public virtual TimeSpan UseHttpSessionTimeout { get; set; } = TimeSpan.FromMinutes(20);
+            public virtual XXssProtectionPolicyBlockMode HttpXXssProtectionPolicyHeader { get; set; } = XXssProtectionPolicyBlockMode.Disabled;
 
             /// <summary>
             /// Use Health Check.
@@ -124,23 +129,6 @@ namespace Nano.Web
             /// </summary>
             public virtual bool UseHealthCheckUI { get; set; } = true;
 
-            /// <summary>
-            /// Use Hsts.
-            /// Settings for Strict-Transport-Security.
-            /// </summary>
-            public virtual HstsOptions Hsts { get; set; } = new HstsOptions();
-
-            /// <summary>
-            /// Robots.
-            /// Settings for robots (search engines) behavior.
-            /// </summary>
-            public virtual RobotOptions UseHttpXRobotsTagHeaders { get; set; } = new RobotOptions();
-
-            /// <summary>
-            /// Certificate (ssl)
-            /// </summary>
-            public virtual CertificateOptions Certificate { get; set; } = new CertificateOptions();
-            
             /// <summary>
             /// Hsts Options
             /// </summary>
@@ -170,6 +158,36 @@ namespace Nano.Web
                 /// Adds includeSubDomains in the header, defaults to false
                 /// </summary>
                 public virtual bool IncludeSubdomains { get; set; } = false;
+            }
+
+            /// <summary>
+            /// Cache Options.
+            /// </summary>
+            public class CacheOptions
+            {
+                /// <summary>
+                /// Is Enabled.
+                /// Enables Hsts (Strict transport security) policies.
+                /// </summary>
+                public virtual bool IsEnabled { get; set; } = true;
+
+                /// <summary>
+                /// Max Size.
+                /// Default 1 MB.
+                /// </summary>
+                public virtual int MaxSize { get; set; } = 1024;
+
+                /// <summary>
+                /// Max Body Size.
+                /// Default 100 MB.
+                /// </summary>
+                public virtual int MaxBodySize { get; set; } = 100 * 1024;
+
+                /// <summary>
+                /// Max Age.
+                /// Default 20 minutes.
+                /// </summary>
+                public virtual TimeSpan MaxAge { get; set; } = TimeSpan.FromMinutes(20);
             }
 
             /// <summary>
@@ -224,6 +242,40 @@ namespace Nano.Web
                 /// </summary>
                 public virtual bool UseNoImageIndex { get; set; } = false;
             }
+
+            /// <summary>
+            /// Session Options.
+            /// </summary>
+            public class SessionOptions
+            {
+                /// <summary>
+                /// Is Enabled.
+                /// Enables session.
+                /// </summary>
+                public virtual bool IsEnabled { get; set; } = true;
+
+                /// <summary>
+                /// Timeout.
+                /// The session timeout.
+                /// </summary>
+                public virtual TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(20);
+            }
+
+            /// <summary>
+            /// Certificate Options.
+            /// </summary>
+            public class CertificateOptions
+            {
+                /// <summary>
+                /// Path.
+                /// </summary>
+                public virtual string Path { get; set; } = string.Empty;
+            
+                /// <summary>
+                /// Password
+                /// </summary>
+                public virtual string Password { get; set; } = null;
+            }
         }
 
         /// <summary>
@@ -240,22 +292,6 @@ namespace Nano.Web
             /// License.
             /// </summary>
             public virtual License License { get; set; } = new License();
-        }
-
-        /// <summary>
-        /// Certificate Options.
-        /// </summary>
-        public class CertificateOptions
-        {
-            /// <summary>
-            /// Path.
-            /// </summary>
-            public virtual string Path { get; set; } = string.Empty;
-            
-            /// <summary>
-            /// Password
-            /// </summary>
-            public virtual string Password { get; set; } = null;
         }
     }
 }

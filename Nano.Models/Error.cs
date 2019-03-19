@@ -52,21 +52,24 @@ namespace Nano.Models
             this.Exceptions = new[] { exception.GetBaseException().Message };
             this.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            if (exception is AggregateException aggregateException)
+            switch (exception)
             {
-                if (aggregateException.InnerException is TranslationException)
+                case AggregateException aggregateException:
                 {
-                    this.Exceptions = aggregateException.InnerExceptions
-                        .Where(x => x is TranslationException)
-                        .Select(x => x.Message)
-                        .ToArray();
+                    if (aggregateException.InnerException is TranslationException)
+                    {
+                        this.Exceptions = aggregateException.InnerExceptions
+                            .Where(x => x is TranslationException)
+                            .Select(x => x.Message)
+                            .ToArray();
 
-                    this.IsTranslated = true;
+                        this.IsTranslated = true;
+                    }
+                    break;
                 }
-            }
-            else if (exception is TranslationException)
-            {
-                this.IsTranslated = true;
+                case TranslationException _:
+                    this.IsTranslated = true;
+                    break;
             }
         }
 
