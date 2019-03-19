@@ -68,7 +68,7 @@ namespace Nano.Web
             /// Use Forwarded Headers.
             /// Enables forwarded headers, when application is behind a proxy.
             /// </summary>
-            public virtual bool UseForwardHeaders { get; set; } = true;
+            public virtual bool UseForwardedHeaders { get; set; } = true;
 
             /// <summary>
             /// Use Response Compression.
@@ -84,6 +84,7 @@ namespace Nano.Web
 
             /// <summary>
             /// Cache.
+            /// Options for caching responses.
             /// </summary>
             public virtual CacheOptions Cache { get; set; } = new CacheOptions();
 
@@ -105,19 +106,19 @@ namespace Nano.Web
             public virtual CertificateOptions Certificate { get; set; } = new CertificateOptions();
 
             /// <summary>
-            /// Use Http Referrer Policy Header.
+            /// Use Referrer Policy Header.
             /// </summary>
-            public virtual ReferrerPolicy HttpReferrerPolicyHeader { get; set; } = ReferrerPolicy.Disabled;
+            public virtual ReferrerPolicy ReferrerPolicyHeader { get; set; } = ReferrerPolicy.Disabled;
 
             /// <summary>
-            /// Use Http X-Frame Options Policy Header.
+            /// Use Frame Options Policy Header.
             /// </summary>
-            public virtual XFrameOptionsPolicy HttpXFrameOptionsPolicyHeader { get; set; } = XFrameOptionsPolicy.Disabled;
+            public virtual XFrameOptionsPolicy FrameOptionsPolicyHeader { get; set; } = XFrameOptionsPolicy.Disabled;
 
             /// <summary>
-            /// Use Http XXss Protection Policy Header.
+            /// Use Xss Protection Policy Header.
             /// </summary>
-            public virtual XXssProtectionPolicyBlockMode HttpXXssProtectionPolicyHeader { get; set; } = XXssProtectionPolicyBlockMode.Disabled;
+            public virtual XXssProtectionPolicyBlockMode XssProtectionPolicyHeader { get; set; } = XXssProtectionPolicyBlockMode.Disabled;
 
             /// <summary>
             /// Use Health Check.
@@ -197,7 +198,6 @@ namespace Nano.Web
             {
                 /// <summary>
                 /// Is Enabled.
-                /// Enables Robots header.
                 /// </summary>
                 public virtual bool IsEnabled { get; set; } = false;
 

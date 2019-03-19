@@ -291,7 +291,7 @@ namespace Nano.Web.Hosting.Extensions
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
-            if (webOptions.Hosting.UseForwardHeaders)
+            if (webOptions.Hosting.UseForwardedHeaders)
             {
                 applicationBuilder
                     .UseForwardedHeaders(); 
@@ -312,34 +312,36 @@ namespace Nano.Web.Hosting.Extensions
 
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
-            
             var xRobotTags = webOptions.Hosting.Robots;
 
-            applicationBuilder
-                .UseXRobotsTag(x =>
-                {
-                    if (xRobotTags.UseNoIndex)
-                        x.NoIndex();
+            if (xRobotTags.IsEnabled)
+            {
+                applicationBuilder
+                    .UseXRobotsTag(x =>
+                    {
+                        if (xRobotTags.UseNoIndex)
+                            x.NoIndex();
 
-                    if (xRobotTags.UseNoFollow)
-                        x.NoFollow();
+                        if (xRobotTags.UseNoFollow)
+                            x.NoFollow();
 
-                    if (xRobotTags.UseNoSnippet)
-                        x.NoSnippet();
+                        if (xRobotTags.UseNoSnippet)
+                            x.NoSnippet();
 
-                    if (xRobotTags.UseNoArchive)
-                        x.NoArchive();
+                        if (xRobotTags.UseNoArchive)
+                            x.NoArchive();
 
-                    if (xRobotTags.UseNoOdp)
-                        x.NoOdp();
+                        if (xRobotTags.UseNoOdp)
+                            x.NoOdp();
 
-                    if (xRobotTags.UseNoTranslate)
-                        x.NoTranslate();
+                        if (xRobotTags.UseNoTranslate)
+                            x.NoTranslate();
 
-                    if (xRobotTags.UseNoImageIndex)
-                        x.NoImageIndex();
-                });
-            
+                        if (xRobotTags.UseNoImageIndex)
+                            x.NoImageIndex();
+                    });
+            }
+
             return applicationBuilder;
         }
 
@@ -356,12 +358,12 @@ namespace Nano.Web.Hosting.Extensions
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
-            if (webOptions.Hosting.HttpReferrerPolicyHeader != ReferrerPolicy.Disabled)
+            if (webOptions.Hosting.ReferrerPolicyHeader != ReferrerPolicy.Disabled)
             {
                 applicationBuilder
                     .UseReferrerPolicy(x =>
                     {
-                        switch (webOptions.Hosting.HttpReferrerPolicyHeader)
+                        switch (webOptions.Hosting.ReferrerPolicyHeader)
                         {
                             case ReferrerPolicy.NoReferrer:
                                 x.NoReferrer();
@@ -414,12 +416,12 @@ namespace Nano.Web.Hosting.Extensions
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
-            if (webOptions.Hosting.HttpXFrameOptionsPolicyHeader != XFrameOptionsPolicy.Disabled)
+            if (webOptions.Hosting.FrameOptionsPolicyHeader != XFrameOptionsPolicy.Disabled)
             {
                 applicationBuilder
                     .UseXfo(x =>
                     {
-                        switch (webOptions.Hosting.HttpXFrameOptionsPolicyHeader)
+                        switch (webOptions.Hosting.FrameOptionsPolicyHeader)
                         {
                             case XFrameOptionsPolicy.Deny:
                                 x.Deny();
@@ -448,12 +450,12 @@ namespace Nano.Web.Hosting.Extensions
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
-            if (webOptions.Hosting.HttpXXssProtectionPolicyHeader != XXssProtectionPolicyBlockMode.Disabled)
+            if (webOptions.Hosting.XssProtectionPolicyHeader != XXssProtectionPolicyBlockMode.Disabled)
             {
                 applicationBuilder
                     .UseXXssProtection(x =>
                     {
-                        switch (webOptions.Hosting.HttpXXssProtectionPolicyHeader)
+                        switch (webOptions.Hosting.XssProtectionPolicyHeader)
                         {
                             case XXssProtectionPolicyBlockMode.FilterDisabled:
                                 x.Disabled();

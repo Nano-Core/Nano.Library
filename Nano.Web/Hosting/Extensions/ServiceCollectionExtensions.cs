@@ -244,6 +244,7 @@ namespace Nano.Web.Hosting.Extensions
                 })
                 .AddCookie(x =>
                 {
+                    // TODO: Add Cookie as option, and Read jwt token from it on incoming requests.
                     x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                     x.Cookie.Expiration = TimeSpan.FromDays(options.Jwt.ExpirationInHours);
                 });

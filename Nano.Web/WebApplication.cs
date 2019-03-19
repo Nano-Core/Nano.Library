@@ -55,8 +55,8 @@ namespace Nano.Web
             applicationBuilder
                 .UseHttpLocalization()
                 .UseExceptionHandling()
-                .UseHttpXRobotsTagHeaders()
                 .UseHttpXForwardedHeaders()
+                .UseHttpXRobotsTagHeaders()
                 .UseHttpXFrameOptionsPolicyHeader()
                 .UseHttpXXssProtectionPolicyHeader()
                 .UseHttpReferrerPolicyHeader()
