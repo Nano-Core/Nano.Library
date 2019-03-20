@@ -89,9 +89,9 @@ namespace Nano.Eventing.Extensions
 
                     var provider = services.BuildServiceProvider();
                     var eventing = provider.GetRequiredService<IEventing>();
-                    var eventHandler = provider.GetRequiredService(genericHandlerType);
+                    var eventHandler = provider.GetRequiredService(genericHandlerType); 
 
-                    var callback = handlerType.GetMethod("CallbackAsync") ?? new Action(() => { }).GetMethodInfo();
+                    var callback = handlerType.GetMethod("CallbackAsync") ?? new Action<object>(y => { }).GetMethodInfo();
                     var action = typeof(Action<>).MakeGenericType(eventType);
                     var @delegate = Delegate.CreateDelegate(action, eventHandler, callback);
 
@@ -129,7 +129,7 @@ namespace Nano.Eventing.Extensions
                     var eventing = provider.GetRequiredService<IEventing>();
                     var eventHandler = provider.GetRequiredService(genericHandlerType);
 
-                    var callback = handlerType.GetMethod("CallbackAsync") ?? new Action(() => { }).GetMethodInfo();
+                    var callback = handlerType.GetMethod("CallbackAsync") ?? new Action<object>(y => { }).GetMethodInfo();
                     var action = typeof(Action<>).MakeGenericType(eventType);
                     var @delegate = Delegate.CreateDelegate(action, eventHandler, callback);
 
