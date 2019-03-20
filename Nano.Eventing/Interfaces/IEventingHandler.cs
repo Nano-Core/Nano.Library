@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace Nano.Eventing.Interfaces
 {
     /// <summary>
@@ -11,6 +13,7 @@ namespace Nano.Eventing.Interfaces
         /// Invoked when recieving a publshed message.
         /// </summary>
         /// <param name="event">The instance of type <typeparamref name="TEvent"/>.</param>
-        void CallbackAsync(TEvent @event);
+        /// <returns>Void.</returns>
+        Task CallbackAsync(TEvent @event);
     }
 }

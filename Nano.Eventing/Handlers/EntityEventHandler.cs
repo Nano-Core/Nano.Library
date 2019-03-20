@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
@@ -36,7 +37,7 @@ namespace Nano.Eventing.Handlers
         }
 
         /// <inheritdoc />
-        public virtual async void CallbackAsync(EntityEvent @event)
+        public virtual async Task CallbackAsync(EntityEvent @event)
         {
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));
