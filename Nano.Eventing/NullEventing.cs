@@ -13,14 +13,14 @@ namespace Nano.Eventing
         public virtual Task PublishAsync<TMessage>(TMessage body, string routing = "") 
             where TMessage : class
         {
-            return Task.Run(() => { });
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc />
         public virtual Task SubscribeAsync<TMessage>(IServiceProvider serviceProvider, string routing = "") 
             where TMessage : class
         {
-            return Task.Run(() => { });
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc />
