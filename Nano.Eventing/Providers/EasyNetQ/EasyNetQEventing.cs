@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using EasyNetQ;
 using EasyNetQ.Topology;
+using Microsoft.Extensions.DependencyInjection;
 using Nano.Eventing.Interfaces;
 
 namespace Nano.Eventing.Providers.EasyNetQ
@@ -42,11 +43,11 @@ namespace Nano.Eventing.Providers.EasyNetQ
         }
 
         /// <inheritdoc />
-        public virtual async Task SubscribeAsync<TMessage>(Action<TMessage> callback, string routing = "")
+        public virtual async Task SubscribeAsync<TMessage>(IServiceProvider serviceProvider, string routing = "")
             where TMessage : class
         {
-            if (callback == null)
-                throw new ArgumentNullException(nameof(callback));
+            if (serviceProvider == null)
+                throw new ArgumentNullException(nameof(serviceProvider));
 
             var type = typeof(TMessage);
             var appName = Assembly.GetEntryAssembly().GetName().Name;
@@ -56,7 +57,24 @@ namespace Nano.Eventing.Providers.EasyNetQ
                 .QueueDeclareAsync($"{queueName}");
 
             this.Bus.Advanced
-                .Consume<TMessage>(queue, (message, info) => callback(message.Body));
+                .Consume<TMessage>(queue, (message, info) =>
+                {
+                    var eventType = message.MessageType;
+                    var genericType = typeof(IEventingHandler<>).MakeGenericType(eventType);
+                    var eventHandler = serviceProvider.GetRequiredService(genericType);
+
+                    var method = eventHandler
+                        .GetType()
+                        .GetMethod("CallbackAsync");
+
+                    if (method == null)
+                        throw new NullReferenceException(nameof(method));
+
+                    var task = (Task)method
+                        .Invoke(eventHandler, new object[] { message.Body });
+
+                    task.Wait();
+                });
 
             var exchangeName = type.FullName;
             var exchange = await this.Bus.Advanced

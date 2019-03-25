@@ -36,7 +36,7 @@ namespace Nano.Eventing.Extensions
 
             services
                 .AddSingleton<IEventingProvider, TProvider>()
-                .AddSingleton(x => x
+                .AddScoped(x => x
                     .GetRequiredService<IEventingProvider>()
                     .Configure())
                 .AddEventingHandlers()
@@ -89,17 +89,12 @@ namespace Nano.Eventing.Extensions
 
                     var provider = services.BuildServiceProvider();
                     var eventing = provider.GetRequiredService<IEventing>();
-                    var eventHandler = provider.GetRequiredService(genericHandlerType); 
-
-                    var callback = handlerType.GetMethod("CallbackAsync") ?? new Action<object>(y => { }).GetMethodInfo();
-                    var action = typeof(Action<>).MakeGenericType(eventType);
-                    var @delegate = Delegate.CreateDelegate(action, eventHandler, callback);
 
                     eventing
                         .GetType()
                         .GetMethod("SubscribeAsync")?
                         .MakeGenericMethod(eventType)
-                        .Invoke(eventing, new object[] { @delegate, string.Empty });
+                        .Invoke(eventing, new object[] { provider, string.Empty });
                 });
 
             return services;
@@ -127,17 +122,12 @@ namespace Nano.Eventing.Extensions
 
                     var provider = services.BuildServiceProvider();
                     var eventing = provider.GetRequiredService<IEventing>();
-                    var eventHandler = provider.GetRequiredService(genericHandlerType);
-
-                    var callback = handlerType.GetMethod("CallbackAsync") ?? new Action<object>(y => { }).GetMethodInfo();
-                    var action = typeof(Action<>).MakeGenericType(eventType);
-                    var @delegate = Delegate.CreateDelegate(action, eventHandler, callback);
 
                     eventing
                         .GetType()
                         .GetMethod("SubscribeAsync")?
                         .MakeGenericMethod(eventType)
-                        .Invoke(eventing, new object[] { @delegate, x.Name });
+                        .Invoke(eventing, new object[] { provider, x.Name });
                 });
 
             return services;

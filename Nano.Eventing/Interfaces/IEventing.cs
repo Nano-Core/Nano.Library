@@ -19,13 +19,13 @@ namespace Nano.Eventing.Interfaces
             where TMessage : class;
 
         /// <summary>
-        /// Consumes messages invoking the passed <paramref name="callback"/> to handle the event.
+        /// Consumes messages.
         /// </summary>
         /// <typeparam name="TMessage">The type of response body.</typeparam>
-        /// <param name="callback">The callback to invoke.</param>
+        /// <param name="serviceProvider">The <see cref="IServiceProvider"/>.</param>
         /// <param name="routing">The routing key (if any).</param>
         /// <returns>A <see cref="Task"/> (void).</returns>
-        Task SubscribeAsync<TMessage>(Action<TMessage> callback, string routing = "")
+        Task SubscribeAsync<TMessage>(IServiceProvider serviceProvider, string routing = "")
             where TMessage : class;
     }
 }
