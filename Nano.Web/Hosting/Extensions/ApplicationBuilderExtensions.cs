@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Nano.App;
@@ -242,7 +243,24 @@ namespace Nano.Web.Hosting.Extensions
                                 Public = true,
                                 MaxAge = webOptions.Hosting.Cache.MaxAge
                             };
-                        context.Response.Headers[HeaderNames.Vary] = new[] { "Accept-Encoding" };
+                        
+                        context.Response.Headers[HeaderNames.Vary] = 
+                            new[]
+                            {
+                                HeaderNames.AcceptEncoding, 
+                                HeaderNames.AcceptLanguage
+                            };
+
+                        var responseCachingFeature = context.Features
+                            .Get<IResponseCachingFeature>();
+
+                        if (responseCachingFeature != null)
+                        {
+                            responseCachingFeature.VaryByQueryKeys = new[]
+                            {
+                                "*"
+                            };
+                        }
 
                         await next();
                     });
