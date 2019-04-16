@@ -17,6 +17,7 @@ namespace Nano.Security.Models
         /// User Id.
         /// </summary>
         [Required]
-        public virtual string UserId { get; set; }
+        [EmailAddress]
+        public virtual string EmailAddress { get; set; }
     }
 }

@@ -8,15 +8,16 @@ namespace Nano.Security.Models
     public class ConfirmEmailToken
     {
         /// <summary>
-        /// User Id.
-        /// </summary>
-        [Required]
-        public virtual string UserId { get; set; }
-
-        /// <summary>
         /// Token.
         /// </summary>
         [Required]
         public virtual string Token { get; set; }
+
+        /// <summary>
+        /// Email Address.
+        /// </summary>
+        [Required]
+        [EmailAddress]
+        public virtual string EmailAddress { get; set; }
     }
 }

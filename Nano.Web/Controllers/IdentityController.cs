@@ -50,6 +50,7 @@ namespace Nano.Web.Controllers
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> SignUpAsync([FromBody][Required]SignUp<TEntity> signUp, CancellationToken cancellationToken = default)
@@ -82,6 +83,7 @@ namespace Nano.Web.Controllers
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> SignUpExternalAsync([FromBody][Required]SignUpExternal<TEntity> signUpExternal, CancellationToken cancellationToken = default)
@@ -112,7 +114,8 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("username/set")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -141,6 +144,7 @@ namespace Nano.Web.Controllers
         [Route("password/set")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -165,8 +169,10 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpPost]
         [Route("password/reset")]
+        [AllowAnonymous]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -181,7 +187,7 @@ namespace Nano.Web.Controllers
         /// <summary>
         /// Gets the password reset token, used to change the password of a user.
         /// </summary>
-        /// <param name="userId">The user id.</param>
+        /// <param name="emailAddress">The email address.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Void.</returns>
         /// <response code="200">Success.</response>
@@ -190,16 +196,18 @@ namespace Nano.Web.Controllers
         /// <response code="404">Not Found.</response>
         /// <response code="500">Error occured.</response>
         [HttpGet]
-        [Route("password/reset/token/{userId}")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [Route("password/reset/token")]
+        [AllowAnonymous]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(ResetPasswordToken), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> GetResetPasswordTokenAsync([FromRoute][Required]string userId, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> GetResetPasswordTokenAsync([FromQuery][Required]string emailAddress, CancellationToken cancellationToken = default)
         {
             var resetPasswordToken = await this.IdentityManager
-                .GenerateResetPasswordTokenAsync(userId, cancellationToken);
+                .GenerateResetPasswordTokenAsync(emailAddress, cancellationToken);
 
             return this.Ok(resetPasswordToken);
         }
@@ -219,6 +227,7 @@ namespace Nano.Web.Controllers
         [Route("password/change")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -245,6 +254,7 @@ namespace Nano.Web.Controllers
         [Route("email/change")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -259,8 +269,8 @@ namespace Nano.Web.Controllers
         /// <summary>
         /// Gets the change email token, used to change the email address of a user.
         /// </summary>
-        /// <param name="userId">The user id.</param>
-        /// <param name="newEmail">The new email.</param>
+        /// <param name="emailAddress">The email address.</param>
+        /// <param name="newEmailAddress">The new email.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Void.</returns>
         /// <response code="200">Success.</response>
@@ -268,17 +278,18 @@ namespace Nano.Web.Controllers
         /// <response code="401">Unauthorized.</response>
         /// <response code="404">Not Found.</response>
         /// <response code="500">Error occured.</response>
-        [HttpPost]
-        [Route("email/change/token/{userId}")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [HttpGet]
+        [Route("email/change/token")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(ChangeEmailToken), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> GetChangeEmailTokenAsync([FromRoute][Required]string userId, [Required][FromQuery]string newEmail, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> GetChangeEmailTokenAsync([FromQuery][Required]string emailAddress, [Required][FromQuery]string newEmailAddress, CancellationToken cancellationToken = default)
         {
             var changeEmailToken = await this.IdentityManager
-                .GenerateChangeEmailTokenAsync(userId, newEmail, cancellationToken);
+                .GenerateChangeEmailTokenAsync(emailAddress, newEmailAddress, cancellationToken);
 
             return this.Ok(changeEmailToken);
         }
@@ -296,8 +307,10 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpPost]
         [Route("email/confirm")]
+        [AllowAnonymous]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -312,25 +325,27 @@ namespace Nano.Web.Controllers
         /// <summary>
         /// Gets the confirm email token, used to confirm the email address of a user.
         /// </summary>
-        /// <param name="userId">The user id.</param>
+        /// <param name="emailAddress">The email address.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>Void.</returns>
+        /// <returns>The confirm email token.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
         /// <response code="404">Not Found.</response>
         /// <response code="500">Error occured.</response>
-        [HttpPost]
-        [Route("email/confirm/token/{userId}")]
+        [HttpGet]
+        [Route("email/confirm/token")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(ConfirmEmailToken), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> GetConfirmEmailTokenAsync([FromRoute][Required]string userId, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> GetConfirmEmailTokenAsync([FromQuery][Required]string emailAddress, CancellationToken cancellationToken = default)
         {
             var resetPasswordToken = await this.IdentityManager
-                .GenerateResetPasswordTokenAsync(userId, cancellationToken);
+                .GenerateConfirmEmailTokenAsync(emailAddress, cancellationToken);
 
             return this.Ok(resetPasswordToken);
         }
@@ -343,12 +358,15 @@ namespace Nano.Web.Controllers
         /// <returns>Void.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
         /// <response code="404">Not Found.</response>
         /// <response code="500">Error occured.</response>
         [HttpPost]
         [Route("external/login/remove")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> RemoveExternalLoginAsync(LoginExternal externalLogin, CancellationToken cancellationToken = default)
@@ -358,6 +376,5 @@ namespace Nano.Web.Controllers
 
             return this.Ok();
         }
-
     }
 }

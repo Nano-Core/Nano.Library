@@ -250,7 +250,7 @@
             <summary>
             Generates an email confirmation token for a user.
             </summary>
-            <param name="userId">The user id.</param>
+            <param name="emailAddress">The user id.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ConfirmEmailToken"/>.</returns>
         </member>
@@ -258,7 +258,7 @@
             <summary>
             Generates an reset password token for a user.
             </summary>
-            <param name="userId">The user id.</param>
+            <param name="emailAddress">The user id.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ResetPasswordToken"/>.</returns>
         </member>
@@ -266,8 +266,8 @@
             <summary>
             Generates an change email token for a user.
             </summary>
-            <param name="userId">The user id.</param>
-            <param name="newEmail">The new email.</param>
+            <param name="emailAddress">The user id.</param>
+            <param name="newEmailAddressAddress">The new email.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ResetPasswordToken"/>.</returns>
         </member>

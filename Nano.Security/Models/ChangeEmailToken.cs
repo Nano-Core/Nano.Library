@@ -8,22 +8,23 @@ namespace Nano.Security.Models
     public class ChangeEmailToken
     {
         /// <summary>
-        /// User Id.
-        /// </summary>
-        [Required]
-        public virtual string UserId { get; set; }
-
-        /// <summary>
         /// Token.
         /// </summary>
         [Required]
         public virtual string Token { get; set; }
 
         /// <summary>
-        /// New Email.
+        /// Email Address.
         /// </summary>
         [Required]
         [EmailAddress]
-        public virtual string NewEmail { get; set; }
+        public virtual string EmailAddress { get; set; }
+
+        /// <summary>
+        /// New Email Address.
+        /// </summary>
+        [Required]
+        [EmailAddress]
+        public virtual string NewEmailAddress { get; set; }
     }
 }

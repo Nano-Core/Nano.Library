@@ -8,10 +8,10 @@ namespace Nano.Security.Models
     public class ResetPassword
     {
         /// <summary>
-        /// User Id.
+        /// Token.
         /// </summary>
         [Required]
-        public virtual string UserId { get; set; }
+        public virtual string Token { get; set; }
 
         /// <summary>
         /// Password.
@@ -21,9 +21,10 @@ namespace Nano.Security.Models
         public virtual string Password { get; set; }
 
         /// <summary>
-        /// Token.
+        /// Email Address.
         /// </summary>
         [Required]
-        public virtual string Token { get; set; }
+        [EmailAddress]
+        public virtual string EmailAddress { get; set; }
     }
 }

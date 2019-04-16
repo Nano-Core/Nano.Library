@@ -6,14 +6,14 @@ namespace Nano.Web.Api.Requests.Identity
     public class GetChangeEmailTokenRequest : BaseRequestGet
     {
         /// <summary>
-        /// User Id.
+        /// Email Address.
         /// </summary>
-        public virtual string UserId { get; set; }
+        public virtual string EmailAddress { get; set; }
 
         /// <summary>
-        /// New Email.
+        /// New Email Address.
         /// </summary>
-        public virtual string NewEmail { get; set; }
+        public virtual string NewEmailAddress { get; set; }
 
         /// <summary>
         /// Constructor.
@@ -24,23 +24,15 @@ namespace Nano.Web.Api.Requests.Identity
         }
 
         /// <inheritdoc />
-        public override IList<string> GetRouteParameters()
-        {
-            var parameters = base.GetRouteParameters();
-
-            parameters
-                .Add(this.UserId);
-
-            return parameters;
-        }
-
-        /// <inheritdoc />
         public override IList<KeyValuePair<string, string>> GetQueryStringParameters()
         {
             var parameters = base.GetQueryStringParameters();
 
             parameters
-                .Add(new KeyValuePair<string, string>("newEmail", this.NewEmail));
+                .Add(new KeyValuePair<string, string>("EmailAddress", this.EmailAddress));
+
+            parameters
+                .Add(new KeyValuePair<string, string>("NewEmailAddress", this.NewEmailAddress));
 
             return parameters;
         }

@@ -1722,7 +1722,7 @@
             <summary>
             Gets the password reset token, used to change the password of a user.
             </summary>
-            <param name="userId">The user id.</param>
+            <param name="emailAddress">The user id.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>Void.</returns>
             <response code="200">Success.</response>
@@ -1761,8 +1761,8 @@
             <summary>
             Gets the change email token, used to change the email address of a user.
             </summary>
-            <param name="userId">The user id.</param>
-            <param name="newEmail">The new email.</param>
+            <param name="emailAddress">The user id.</param>
+            <param name="newEmailAddressAddress">The new email.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>Void.</returns>
             <response code="200">Success.</response>
@@ -1788,7 +1788,7 @@
             <summary>
             Gets the confirm email token, used to confirm the email address of a user.
             </summary>
-            <param name="userId">The user id.</param>
+            <param name="emailAddress">The user id.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>Void.</returns>
             <response code="200">Success.</response>

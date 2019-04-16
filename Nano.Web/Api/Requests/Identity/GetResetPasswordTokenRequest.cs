@@ -6,9 +6,9 @@ namespace Nano.Web.Api.Requests.Identity
     public class GetResetPasswordTokenRequest : BaseRequestGet
     {
         /// <summary>
-        /// User Id.
+        /// Email Address.
         /// </summary>
-        public virtual string UserId { get; set; }
+        public virtual string EmailAddress { get; set; }
 
         /// <summary>
         /// Constructor.
@@ -19,12 +19,12 @@ namespace Nano.Web.Api.Requests.Identity
         }
 
         /// <inheritdoc />
-        public override IList<string> GetRouteParameters()
+        public override IList<KeyValuePair<string, string>> GetQueryStringParameters()
         {
-            var parameters = base.GetRouteParameters();
+            var parameters = base.GetQueryStringParameters();
 
             parameters
-                .Add(this.UserId);
+                .Add(new KeyValuePair<string, string>("emailAddress", this.EmailAddress));
 
             return parameters;
         }

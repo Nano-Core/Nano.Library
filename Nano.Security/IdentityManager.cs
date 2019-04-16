@@ -276,7 +276,7 @@ namespace Nano.Security
                 throw new ArgumentNullException(nameof(resetPassword));
 
             var user = await this.UserManager
-                .FindByIdAsync(resetPassword.UserId);
+                .FindByEmailAsync(resetPassword.EmailAddress);
 
             if (user == null)
                 throw new NullReferenceException(nameof(user));
@@ -351,7 +351,7 @@ namespace Nano.Security
                 throw new ArgumentNullException(nameof(confirmEmail));
 
             var user = await this.UserManager
-                .FindByIdAsync(confirmEmail.UserId);
+                .FindByEmailAsync(confirmEmail.EmailAddress);
 
             if (user == null)
                 throw new NullReferenceException(nameof(user));
@@ -366,45 +366,18 @@ namespace Nano.Security
         }
 
         /// <summary>
-        /// Generates an email confirmation token for a user.
-        /// </summary>
-        /// <param name="userId">The user id.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The <see cref="ConfirmEmailToken"/>.</returns>
-        public virtual async Task<ConfirmEmailToken> GenerateConfirmEmailTokenAsync(string userId, CancellationToken cancellationToken = default)
-        {
-            if (userId == null)
-                throw new ArgumentNullException(nameof(userId));
-
-            var user = await this.UserManager
-                .FindByIdAsync(userId);
-
-            if (user == null)
-                throw new NullReferenceException(nameof(user));
-
-            var token = await this.UserManager
-                .GenerateEmailConfirmationTokenAsync(user);
-
-            return new ConfirmEmailToken
-            {
-                UserId = userId,
-                Token = token
-            };
-        }
-
-        /// <summary>
         /// Generates an reset password token for a user.
         /// </summary>
-        /// <param name="userId">The user id.</param>
+        /// <param name="emailAddress">The user id.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="ResetPasswordToken"/>.</returns>
-        public virtual async Task<ResetPasswordToken> GenerateResetPasswordTokenAsync(string userId, CancellationToken cancellationToken = default)
+        public virtual async Task<ResetPasswordToken> GenerateResetPasswordTokenAsync(string emailAddress, CancellationToken cancellationToken = default)
         {
-            if (userId == null)
-                throw new ArgumentNullException(nameof(userId));
+            if (emailAddress == null)
+                throw new ArgumentNullException(nameof(emailAddress));
 
             var user = await this.UserManager
-                .FindByIdAsync(userId);
+                .FindByEmailAsync(emailAddress);
 
             if (user == null)
                 throw new NullReferenceException(nameof(user));
@@ -414,37 +387,64 @@ namespace Nano.Security
 
             return new ResetPasswordToken
             {
-                UserId = userId,
-                Token = token
+                Token = token,
+                EmailAddress = emailAddress
+            };
+        }
+
+        /// <summary>
+        /// Generates an email confirmation token for a user.
+        /// </summary>
+        /// <param name="emailAddress">The user id.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="ConfirmEmailToken"/>.</returns>
+        public virtual async Task<ConfirmEmailToken> GenerateConfirmEmailTokenAsync(string emailAddress, CancellationToken cancellationToken = default)
+        {
+            if (emailAddress == null)
+                throw new ArgumentNullException(nameof(emailAddress));
+
+            var user = await this.UserManager
+                .FindByEmailAsync(emailAddress);
+
+            if (user == null)
+                throw new NullReferenceException(nameof(user));
+
+            var token = await this.UserManager
+                .GenerateEmailConfirmationTokenAsync(user);
+
+            return new ConfirmEmailToken
+            {
+                Token = token,
+                EmailAddress = emailAddress
             };
         }
 
         /// <summary>
         /// Generates an change email token for a user.
         /// </summary>
-        /// <param name="userId">The user id.</param>
-        /// <param name="newEmail">The new email.</param>
+        /// <param name="emailAddress">The user id.</param>
+        /// <param name="newEmailAddress">The new email.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="ResetPasswordToken"/>.</returns>
-        public virtual async Task<ChangeEmailToken> GenerateChangeEmailTokenAsync(string userId, string newEmail, CancellationToken cancellationToken = default)
+        public virtual async Task<ChangeEmailToken> GenerateChangeEmailTokenAsync(string emailAddress, string newEmailAddress, CancellationToken cancellationToken = default)
         {
-            if (userId == null)
-                throw new ArgumentNullException(nameof(userId));
+            if (emailAddress == null)
+                throw new ArgumentNullException(nameof(emailAddress));
 
             var user = await this.UserManager
-                .FindByIdAsync(userId);
+                .FindByEmailAsync(emailAddress);
 
             if (user == null)
                 throw new NullReferenceException(nameof(user));
 
             var token = await this.UserManager
-                .GenerateChangeEmailTokenAsync(user, newEmail);
+                .GenerateChangeEmailTokenAsync(user, newEmailAddress);
 
             return new ChangeEmailToken
             {
-                UserId = userId,
                 Token = token,
-                NewEmail = newEmail
+                EmailAddress = emailAddress,
+                NewEmailAddress = newEmailAddress
             };
         }
 

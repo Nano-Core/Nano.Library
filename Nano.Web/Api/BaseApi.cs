@@ -281,16 +281,14 @@ namespace Nano.Web.Api
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.InternalServerError:
                         var error = JsonConvert.DeserializeObject<Error>(rawJson);
-                        
+                        // BUG: Pass through statusCode for 401, etc.
                         if (error.IsTranslated)
                         {
-                            throw new AggregateException(
-                                error.Exceptions.Select(x => new TranslationException(x)));
+                            throw new AggregateException(error.Exceptions.Select(x => new TranslationException(x)));
                         }
                         else if (this.apiOptions.UseExposeErrors)
                         {
-                            throw new AggregateException(
-                                error.Exceptions.Select(x => new InvalidOperationException(x)));
+                            throw new AggregateException(error.Exceptions.Select(x => new InvalidOperationException(x)));
                         }
                         break;
                 }
