@@ -59,6 +59,9 @@ namespace Nano.Eventing.Providers.EasyNetQ
             this.Bus.Advanced
                 .Consume<TMessage>(queue, (message, info) =>
                 {
+                    if (info.RoutingKey != routing)
+                        return;
+
                     var eventType = message.MessageType;
                     var genericType = typeof(IEventingHandler<>).MakeGenericType(eventType);
                     var eventHandler = serviceProvider.GetRequiredService(genericType);

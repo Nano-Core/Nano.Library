@@ -9,7 +9,6 @@ using Nano.Eventing.Handlers;
 using Nano.Eventing.Interfaces;
 using Nano.Eventing.Providers.EasyNetQ;
 using Nano.Models;
-using Nano.Models.Extensions;
 
 namespace Nano.Eventing.Extensions
 {
@@ -76,7 +75,7 @@ namespace Nano.Eventing.Extensions
                 .SelectMany(x => x.GetInterfaces(), (x, y) => new { Type = x, GenericType = y })
                 .Where(x =>
                     !x.Type.IsAbstract &&
-                    x.Type.IsTypeDef(typeof(IEventingHandler<>)) &&
+                    x.GenericType == typeof(IEventingHandler<>) &&
                     x.Type != typeof(EntityEventHandler))
                 .ToList()
                 .ForEach(x =>
@@ -86,7 +85,7 @@ namespace Nano.Eventing.Extensions
                     var eventType = x.GenericType.GetGenericArguments()[0];
 
                     services
-                        .AddScoped(genericHandlerType, handlerType);
+                        .AddScoped(genericHandlerType, handlerType); 
 
                     var provider = services.BuildServiceProvider();
                     var eventing = provider.GetRequiredService<IEventing>();
@@ -95,7 +94,11 @@ namespace Nano.Eventing.Extensions
                         .GetType()
                         .GetMethod("SubscribeAsync")?
                         .MakeGenericMethod(eventType)
-                        .Invoke(eventing, new object[] { provider, string.Empty });
+                        .Invoke(eventing, new object[]
+                        {
+                            provider, 
+                            string.Empty
+                        });
                 });
 
             return services;
@@ -109,6 +112,7 @@ namespace Nano.Eventing.Extensions
                 .GetAssemblies()
                 .SelectMany(x => x.GetTypes())
                 .Where(x =>
+                    !x.IsAbstract &&
                     !x.Name.EndsWith("Proxy") &&
                     x.GetCustomAttributes<SubscribeAttribute>().Any())
                 .ToList()
