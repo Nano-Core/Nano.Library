@@ -137,12 +137,12 @@
             <param name="routing">The routing key (if any).</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>
-        <member name="M:Nano.Eventing.Interfaces.IEventing.SubscribeAsync``1(System.Action{``0},System.String)">
+        <member name="M:Nano.Eventing.Interfaces.IEventing.SubscribeAsync``1(System.IServiceProvider,System.String)">
             <summary>
-            Consumes messages invoking the passed <paramref name="callback"/> to handle the event.
+            Consumes messages.
             </summary>
             <typeparam name="TMessage">The type of response body.</typeparam>
-            <param name="callback">The callback to invoke.</param>
+            <param name="serviceProvider">The <see cref="T:System.IServiceProvider"/>.</param>
             <param name="routing">The routing key (if any).</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>
@@ -157,6 +157,7 @@
             Invoked when recieving a publshed message.
             </summary>
             <param name="event">The instance of type <typeparamref name="TEvent"/>.</param>
+            <returns>Void.</returns>
         </member>
         <member name="T:Nano.Eventing.Interfaces.IEventingProvider">
             <summary>
@@ -178,7 +179,7 @@
         <member name="M:Nano.Eventing.NullEventing.PublishAsync``1(``0,System.String)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Eventing.NullEventing.SubscribeAsync``1(System.Action{``0},System.String)">
+        <member name="M:Nano.Eventing.NullEventing.SubscribeAsync``1(System.IServiceProvider,System.String)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Eventing.NullEventing.Dispose">
@@ -201,7 +202,7 @@
         <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.PublishAsync``1(``0,System.String)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.SubscribeAsync``1(System.Action{``0},System.String)">
+        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.SubscribeAsync``1(System.IServiceProvider,System.String)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.Dispose">

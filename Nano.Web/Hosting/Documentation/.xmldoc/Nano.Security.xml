@@ -4,20 +4,67 @@
         <name>Nano.Security</name>
     </assembly>
     <members>
-        <member name="T:Nano.Security.Exceptions.UnauthorizedEmailException">
+        <member name="T:Nano.Security.Const.BuiltInUserRoles">
             <summary>
-            Unauthorized Email Exception.
+            Built-In User Roles.
+            </summary>
+        </member>
+        <member name="F:Nano.Security.Const.BuiltInUserRoles.Guest">
+            <summary>
+            Guest.
+            </summary>
+        </member>
+        <member name="F:Nano.Security.Const.BuiltInUserRoles.Reader">
+            <summary>
+            Reader.
+            </summary>
+        </member>
+        <member name="F:Nano.Security.Const.BuiltInUserRoles.Writer">
+            <summary>
+            Writer.
+            </summary>
+        </member>
+        <member name="F:Nano.Security.Const.BuiltInUserRoles.Service">
+            <summary>
+            Service.
+            </summary>
+        </member>
+        <member name="F:Nano.Security.Const.BuiltInUserRoles.Administrator">
+            <summary>
+            Administrator.
             </summary>
         </member>
         <member name="T:Nano.Security.Exceptions.UnauthorizedLockedOutException">
             <summary>
-            Unauthorized Lockout Exception.
+            Unauthorized Locked Out Exception.
+            </summary>
+        </member>
+        <member name="M:Nano.Security.Exceptions.UnauthorizedLockedOutException.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Exceptions.UnauthorizedTwoFactorRequiredException">
+            <summary>
+            Unauthorized Two-Factor Required Exception.
+            </summary>
+        </member>
+        <member name="M:Nano.Security.Exceptions.UnauthorizedTwoFactorRequiredException.#ctor">
+            <summary>
+            Constructor.
             </summary>
         </member>
         <member name="T:Nano.Security.Extensions.HttpContextExtensions">
             <summary>
             Http Context Extensions.
             </summary>
+        </member>
+        <member name="M:Nano.Security.Extensions.HttpContextExtensions.GetJwtToken(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Get Jwt Token.
+            </summary>
+            <param name="httpContext">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.</param>
+            <returns>The token.</returns>
         </member>
         <member name="M:Nano.Security.Extensions.HttpContextExtensions.GetJwtUserId(Microsoft.AspNetCore.Http.HttpContext)">
             <summary>
@@ -65,32 +112,7 @@
             <param name="userManager">The <see cref="T:Microsoft.AspNetCore.Identity.UserManager`1"/></param>
             <param name="user">The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/></param>
             <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
-            <returns>The <see cref="T:Nano.Models.Auth.AccessToken"/>.</returns>
-        </member>
-        <member name="T:Nano.Security.Models.DefaultEntityUser">
-            <summary>
-            Default Identity User.
-            </summary>
-        </member>
-        <member name="P:Nano.Security.Models.DefaultEntityUser.IdentityUserId">
-            <summary>
-            Identity User Id.
-            </summary>
-        </member>
-        <member name="P:Nano.Security.Models.DefaultEntityUser.IdentityUser">
-            <summary>
-            Identity User.
-            </summary>
-        </member>
-        <member name="P:Nano.Security.Models.DefaultEntityUser.Password">
-            <summary>
-            Name.
-            </summary>
-        </member>
-        <member name="P:Nano.Security.Models.DefaultEntityUser.EmailAddress">
-            <summary>
-            Email Address.
-            </summary>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
         <member name="T:Nano.Security.IdentityManager">
             <summary>
@@ -120,15 +142,23 @@
             <param name="userManager">The <see cref="T:Microsoft.AspNetCore.Identity.UserManager`1"/>.</param>
             <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
         </member>
-        <member name="M:Nano.Security.IdentityManager.SignInAsync(Nano.Models.Auth.Login,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.IdentityManager.SignInAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
             <summary>
             The user authenticates, and on success recieves a jwt token for use with auhtorization.
             If two-factor authentication is enabled, a indicating flag is returned, and no access token is generated.
             If the user is locked out, or sign-in is unsuccessful, an exception is thrown.
             </summary>
-            <param name="login">The <see cref="T:Nano.Models.Auth.Login"/>.</param>
+            <param name="login">The <see cref="T:Nano.Security.Models.Login"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Models.Auth.AccessToken"/>.</returns>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.SignInExternalAsync(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
+            <summary>
+            The user authenticates, using external login info.
+            </summary>
+            <param name="loginExternal">The external logn (optional).</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
         <member name="M:Nano.Security.IdentityManager.SignOutAsync(System.Threading.CancellationToken)">
             <summary>
@@ -136,21 +166,414 @@
             </summary>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.IdentityManager.SignUpAsync(Nano.Models.Auth.SignUp,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.IdentityManager.SignUpAsync(Nano.Security.Models.SignUp,System.Threading.CancellationToken)">
             <summary>
             Registers a new user.
-            The new user is signed in as well, and an email confirmation is sent, if enabled. 
             </summary>
-            <param name="signUp">The <see cref="T:Nano.Models.Auth.SignUp"/>.</param>
+            <param name="signUp">The <see cref="T:Nano.Security.Models.SignUp"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.SignUpExternalAsync(Nano.Security.Models.SignUpExternal,System.Threading.CancellationToken)">
+            <summary>
+            Registers a new user using an external login provider.
+            </summary>
+            <param name="signUpExternal">The <see cref="T:Nano.Security.Models.SignUpExternal"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.</returns>
         </member>
         <member name="M:Nano.Security.IdentityManager.GetExternalSchemesAsync(System.Threading.CancellationToken)">
             <summary>
-            Gets all the external login schemes, configured for authentication.
+            Gets all the configured external logins.
             </summary>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The collection of <see cref="T:Nano.Models.Auth.ExternalScheme"/>.</returns>
+            <returns>The collection of <see cref="T:Nano.Security.Models.LoginProvider"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.RemoveExternalLoginAsync(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
+            <summary>
+            Removes the extenral login of a user.
+            </summary>
+            <param name="externalLogin">The <see cref="T:Nano.Security.Models.LoginExternal"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.SetUsernameAsync(Nano.Security.Models.SetUsername,System.Threading.CancellationToken)">
+            <summary>
+            Changes the username of a user.
+            </summary>
+            <param name="setUsername">The <see cref="T:Nano.Security.Models.SetUsername"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.SetPasswordAsync(Nano.Security.Models.SetPassword,System.Threading.CancellationToken)">
+            <summary>
+            Createa a password for a user.
+            Used when logged in using external login provider, and no password has been created for the user.
+            </summary>
+            <param name="setPassword">The <see cref="T:Nano.Security.Models.SetPassword"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.ResetPasswordAsync(Nano.Security.Models.ResetPassword,System.Threading.CancellationToken)">
+            <summary>
+            Resets the password of a user.
+            </summary>
+            <param name="resetPassword">The <see cref="T:Nano.Security.Models.ResetPassword"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.ChangePasswordAsync(Nano.Security.Models.ChangePassword,System.Threading.CancellationToken)">
+            <summary>
+            Changes the password of a user.
+            </summary>
+            <param name="changePassword">The <see cref="T:Nano.Security.Models.ChangePassword"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.ChangeEmailAsync(Nano.Security.Models.ChangeEmail,System.Threading.CancellationToken)">
+            <summary>
+            Changes the password of a user.
+            </summary>
+            <param name="changeEmail">The <see cref="T:Nano.Security.Models.ChangePassword"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.ConfirmEmailAsync(Nano.Security.Models.ConfirmEmail,System.Threading.CancellationToken)">
+            <summary>
+            Confirms the email of a user.
+            </summary>
+            <param name="confirmEmail">The <see cref="T:Nano.Security.Models.ConfirmEmail"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.GenerateConfirmEmailTokenAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Generates an email confirmation token for a user.
+            </summary>
+            <param name="userId">The user id.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.ConfirmEmailToken"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.GenerateResetPasswordTokenAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Generates an reset password token for a user.
+            </summary>
+            <param name="userId">The user id.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.ResetPasswordToken"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.GenerateChangeEmailTokenAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Generates an change email token for a user.
+            </summary>
+            <param name="userId">The user id.</param>
+            <param name="newEmail">The new email.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.ResetPasswordToken"/>.</returns>
+        </member>
+        <member name="T:Nano.Security.Models.AccessToken">
+            <summary>
+            Access Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.AccessToken.Token">
+            <summary>
+            Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.AccessToken.ExpireAt">
+            <summary>
+            Expire At.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.AccessToken.IsExpired">
+            <summary>
+            Is Expired.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.ChangeEmail">
+            <summary>
+            Change Email.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangeEmail.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangeEmail.Token">
+            <summary>
+            Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangeEmail.NewEmail">
+            <summary>
+            New Email.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.ChangeEmailToken">
+            <summary>
+            Change Email Token
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangeEmailToken.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangeEmailToken.Token">
+            <summary>
+            Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangeEmailToken.NewEmail">
+            <summary>
+            New Email.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.ChangePassword">
+            <summary>
+            Change Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangePassword.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangePassword.OldPassword">
+            <summary>
+            Old Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangePassword.NewPassword">
+            <summary>
+            New Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangePassword.ConfirmNewPassword">
+            <summary>
+            Confirm New Passowrd.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.ConfirmEmail">
+            <summary>
+            Confirm Email.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ConfirmEmail.Token">
+            <summary>
+            Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ConfirmEmail.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.ConfirmEmailToken">
+            <summary>
+            Confirm Email Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ConfirmEmailToken.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ConfirmEmailToken.Token">
+            <summary>
+            Token.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.Login">
+            <summary>
+            Login.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.Login.Username">
+            <summary>
+            Username.
+            The username of the user to sign-in.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.Login.Password">
+            <summary>
+            Password.
+            The password of the user to sign-in.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.Login.IsRememerMe">
+            <summary>
+            Is Remember Me.
+            Flag indicating whether the sign-in cookie should persist after the browser is closed.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.LoginExternal">
+            <summary>
+            Login External.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.LoginExternal.ProviderKey">
+            <summary>
+            Provider Key.
+            The unique key for the user provided by the login provider.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.LoginExternal.LoginProvider">
+            <summary>
+            Login Provider.
+            The name of the login provider.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.LoginProvider">
+            <summary>
+            Login Provider.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.LoginProvider.Name">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.LoginProvider.DisplayName">
+            <summary>
+            Display Name.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.ResetPassword">
+            <summary>
+            Reset Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ResetPassword.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ResetPassword.Password">
+            <summary>
+            Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ResetPassword.Token">
+            <summary>
+            Token.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.ResetPasswordToken">
+            <summary>
+            Reset Password Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ResetPasswordToken.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ResetPasswordToken.Token">
+            <summary>
+            Token.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.SetPassword">
+            <summary>
+            Set Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.SetPassword.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.SetPassword.NewPassword">
+            <summary>
+            New Password.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.SetUsername">
+            <summary>
+            Change Username.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.SetUsername.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.SetUsername.NewUsername">
+            <summary>
+            Username.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.SignUp">
+            <summary>
+            Sign Up.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.SignUp.Email">
+            <summary>
+            Email.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.SignUp.Username">
+            <summary>
+            Username.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.SignUp.Password">
+            <summary>
+            Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.SignUp.ConfirmPassword">
+            <summary>
+            Confirm Password. 
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.SignUp`1">
+            <summary>
+            Sign Up.
+            </summary>
+            <typeparam name="TUser">The user type</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.SignUp`1.User">
+            <summary>
+            User.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.SignUpExternal">
+            <summary>
+            Sign Up External.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.SignUpExternal.Email">
+            <summary>
+            Email.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.SignUpExternal.ProviderKey">
+            <summary>
+            Provider Key.
+            The unique key for the user provided by the login provider.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.SignUpExternal.LoginProvider">
+            <summary>
+            Login Provider.
+            The name of the login provider.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.SignUpExternal`1">
+            <summary>
+            Sign Up External.
+            </summary>
+            <typeparam name="TUser">The user type</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.SignUpExternal`1.User">
+            <summary>
+            
+            </summary>
         </member>
         <member name="T:Nano.Security.SecurityOptions">
             <summary>
@@ -190,6 +613,11 @@
         <member name="P:Nano.Security.SecurityOptions.Password">
             <summary>
             Password Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.ExternalLogins">
+            <summary>
+            External Logins.
             </summary>
         </member>
         <member name="T:Nano.Security.SecurityOptions.JwtOptions">
@@ -245,6 +673,11 @@
         <member name="P:Nano.Security.SecurityOptions.UserOptions.AdminEmailAddress">
             <summary>
             Admin Email Address.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.UserOptions.DefaultRoles">
+            <summary>
+            Default Roles.
             </summary>
         </member>
         <member name="T:Nano.Security.SecurityOptions.SignInOptions">
@@ -315,6 +748,26 @@
         <member name="P:Nano.Security.SecurityOptions.PasswordOptions.RequiredUniqueCharecters">
             <summary>
             Required Unique Characters.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.SecurityOptions.ExternalLoginOptions">
+            <summary>
+            External Login Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.ExternalLoginOptions.Name">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.ExternalLoginOptions.Id">
+            <summary>
+            Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.ExternalLoginOptions.Secret">
+            <summary>
+            Secret.
             </summary>
         </member>
     </members>

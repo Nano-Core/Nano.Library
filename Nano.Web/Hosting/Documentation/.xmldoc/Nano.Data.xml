@@ -128,36 +128,6 @@
         <member name="M:Nano.Data.BaseDbContextFactory`2.CreateDbContext(System.String[])">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Data.BuiltInUserRoles">
-            <summary>
-            Built-In User Roles.
-            </summary>
-        </member>
-        <member name="F:Nano.Data.BuiltInUserRoles.Guest">
-            <summary>
-            Guest.
-            </summary>
-        </member>
-        <member name="F:Nano.Data.BuiltInUserRoles.Reader">
-            <summary>
-            Reader.
-            </summary>
-        </member>
-        <member name="F:Nano.Data.BuiltInUserRoles.Writer">
-            <summary>
-            Writer.
-            </summary>
-        </member>
-        <member name="F:Nano.Data.BuiltInUserRoles.Service">
-            <summary>
-            Service.
-            </summary>
-        </member>
-        <member name="F:Nano.Data.BuiltInUserRoles.Administrator">
-            <summary>
-            Administrator.
-            </summary>
-        </member>
         <member name="T:Nano.Data.DataOptions">
             <summary>
             Data Options.

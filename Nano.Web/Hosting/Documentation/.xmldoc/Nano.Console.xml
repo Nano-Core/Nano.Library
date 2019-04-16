@@ -70,13 +70,19 @@
             Repository.
             </summary>
         </member>
-        <member name="M:Nano.Console.Workers.BaseWorker`1.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
+        <member name="P:Nano.Console.Workers.BaseWorker`1.ApplicationLifetime">
+            <summary>
+            Application Lifetime.
+            </summary>
+        </member>
+        <member name="M:Nano.Console.Workers.BaseWorker`1.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing,Microsoft.Extensions.Hosting.IApplicationLifetime)">
             <summary>
             Constructor.
             </summary>
             <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
             <param name="repository">The <see cref="T:Nano.Repository.Interfaces.IRepository"/>.</param>
             <param name="eventing">The <see cref="T:Nano.Eventing.Interfaces.IEventingProvider"/>.</param>
+            <param name="applicationLifetime">The <see cref="T:Microsoft.Extensions.Hosting.IApplicationLifetime"/>.</param>
         </member>
         <member name="M:Nano.Console.Workers.BaseWorker`1.StartAsync(System.Threading.CancellationToken)">
             <inheritdoc />
@@ -92,7 +98,7 @@
             Default Worker.
             </summary>
         </member>
-        <member name="M:Nano.Console.Workers.DefaultWorker.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
+        <member name="M:Nano.Console.Workers.DefaultWorker.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing,Microsoft.Extensions.Hosting.IApplicationLifetime)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Console.Workers.DefaultWorker.StartAsync(System.Threading.CancellationToken)">

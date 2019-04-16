@@ -4,89 +4,6 @@
         <name>Nano.Models</name>
     </assembly>
     <members>
-        <member name="T:Nano.Models.Auth.AccessToken">
-            <summary>
-            Access Token.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.AccessToken.Token">
-            <summary>
-            Token.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.AccessToken.ExpireAt">
-            <summary>
-            Expire At.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.AccessToken.IsExpired">
-            <summary>
-            Is Expired.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Auth.ExternalScheme">
-            <summary>
-            External Login Provider.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.ExternalScheme.Name">
-            <summary>
-            Name.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.ExternalScheme.DisplayName">
-            <summary>
-            Display Name.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Auth.Login">
-            <summary>
-            Login.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.Login.Username">
-            <summary>
-            Username.
-            The username of the user to sign-in.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.Login.Password">
-            <summary>
-            Password.
-            The password of the user to sign-in.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.Login.IsRememerMe">
-            <summary>
-            Is Remember Me.
-            Flag indicating whether the sign-in cookie should persist after the browser is closed.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Auth.SignUp">
-            <summary>
-            Sign Up.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.SignUp.Email">
-            <summary>
-            Email
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.SignUp.Username">
-            <summary>
-            Username.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.SignUp.Password">
-            <summary>
-            Password.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Auth.SignUp.ConfirmPassword">
-            <summary>
-            Confirm Password. 
-            </summary>
-        </member>
         <member name="T:Nano.Models.BaseEntity">
             <inheritdoc />
         </member>
@@ -267,6 +184,21 @@
         <member name="P:Nano.Models.DefaultEntitySpatial.Geometry">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Models.DefaultEntityUser">
+            <summary>
+            Default Entity User.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.DefaultEntityUser.IdentityUserId">
+            <summary>
+            Identity User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.DefaultEntityUser.IdentityUser">
+            <summary>
+            Identity User.
+            </summary>
+        </member>
         <member name="T:Nano.Models.EntityEvent">
             <summary>
             Entity Event.
@@ -315,13 +247,35 @@
             Status Code.
             </summary>
         </member>
-        <member name="P:Nano.Models.Error.TranslationCode">
+        <member name="P:Nano.Models.Error.IsTranslated">
             <summary>
-            Translation Code.
+            Is Translated.
             </summary>
+        </member>
+        <member name="M:Nano.Models.Error.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Error.#ctor(System.Exception)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="exception">The <see cref="T:System.Exception"/>.</param>
         </member>
         <member name="M:Nano.Models.Error.ToString">
             <inheritdoc />
+        </member>
+        <member name="T:Nano.Models.Exceptions.TranslationException">
+            <summary>
+            Translation Exception.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Exceptions.TranslationException.#ctor(System.String)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="message">The message.</param>
         </member>
         <member name="T:Nano.Models.Extensions.DateTimeOffsetExtensions">
             <summary>

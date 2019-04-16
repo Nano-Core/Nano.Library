@@ -39,38 +39,6 @@
             Login.
             </summary>
         </member>
-        <member name="T:Nano.Web.Api.AuthApi">
-            <summary>
-            Auth Api.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Api.AuthApi.#ctor(Nano.Web.Api.ApiOptions)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Api.AuthApi.LogInAsync(Nano.Web.Api.Requests.Auth.LogInRequest,System.Threading.CancellationToken)">
-            <summary>
-            Log In Async.
-            </summary>
-            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.LogInRequest"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Models.Auth.AccessToken"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Api.AuthApi.LogOutAsync(Nano.Web.Api.Requests.Auth.LogOutRequest,System.Threading.CancellationToken)">
-            <summary>
-            Log Out Async.
-            </summary>
-            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.LogOutRequest"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>Void..</returns>
-        </member>
-        <member name="M:Nano.Web.Api.AuthApi.GetExternalSchemesAsync(Nano.Web.Api.Requests.Auth.ExternalSchemesRequest,System.Threading.CancellationToken)">
-            <summary>
-            Get External Schemes Async.
-            </summary>
-            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.ExternalSchemesRequest"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>A collection of <see cref="T:Nano.Models.Auth.ExternalScheme"/>'s.</returns>
-        </member>
         <member name="T:Nano.Web.Api.BaseApi">
             <summary>
             Base Api (abstract).
@@ -132,6 +100,38 @@
             Constructor.
             </summary>
             <param name="apiOptions">The <see cref="T:Nano.Web.Api.ApiOptions"/>.</param>
+        </member>
+        <member name="M:Nano.Web.Api.DefaultApi.LogInAsync(Nano.Web.Api.Requests.Auth.LogInRequest,System.Threading.CancellationToken)">
+            <summary>
+            Log In Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.LogInRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.DefaultApi.LogInExternalAsync(Nano.Web.Api.Requests.Auth.LogInExternalRequest,System.Threading.CancellationToken)">
+            <summary>
+            Log In External Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.LogInExternalRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.DefaultApi.LogOutAsync(Nano.Web.Api.Requests.Auth.LogOutRequest,System.Threading.CancellationToken)">
+            <summary>
+            Log Out Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.LogOutRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void..</returns>
+        </member>
+        <member name="M:Nano.Web.Api.DefaultApi.GetExternalSchemesAsync(Nano.Web.Api.Requests.Auth.ExternalSchemesRequest,System.Threading.CancellationToken)">
+            <summary>
+            Get External Schemes Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.ExternalSchemesRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>A collection of <see cref="T:Nano.Security.Models.LoginProvider"/>'s.</returns>
         </member>
         <member name="M:Nano.Web.Api.DefaultApi.IndexAsync``1(Nano.Web.Api.Requests.IndexRequest,System.Threading.CancellationToken)">
             <summary>
@@ -276,6 +276,113 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Nothing.</returns>
         </member>
+        <member name="T:Nano.Web.Api.IdentityApi">
+            <summary>
+            Default Identity Api.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.IdentityApi.#ctor(Nano.Web.Api.ApiOptions)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="apiOptions">The <see cref="T:Nano.Web.Api.ApiOptions"/>.</param>
+        </member>
+        <member name="M:Nano.Web.Api.IdentityApi.SignUpAsync``1(Nano.Web.Api.Requests.Identity.SingUpRequest{``0},System.Threading.CancellationToken)">
+            <summary>
+            Sign Up Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.SingUpRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The instance of <typeparamref name="TUser"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.IdentityApi.SignUpExternalAsync``1(Nano.Web.Api.Requests.Identity.SingUpExternalRequest{``0},System.Threading.CancellationToken)">
+            <summary>
+            Sign Up External Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.SingUpExternalRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The instance of <typeparamref name="TUser"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.IdentityApi.SetUsernameAsync(Nano.Web.Api.Requests.Identity.SetUsernameRequest,System.Threading.CancellationToken)">
+            <summary>
+            Set Username Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.SetUsernameRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.IdentityApi.SetPasswordAsync(Nano.Web.Api.Requests.Identity.SetPasswordRequest,System.Threading.CancellationToken)">
+            <summary>
+            Set Password Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.SetPasswordRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.IdentityApi.ResetPasswordAsync(Nano.Web.Api.Requests.Identity.ResetPasswordRequest,System.Threading.CancellationToken)">
+            <summary>
+            Reset Password Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.ResetPasswordRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.IdentityApi.ChangePasswordAsync(Nano.Web.Api.Requests.Identity.ChangePasswordRequest,System.Threading.CancellationToken)">
+            <summary>
+            Change Password Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.ChangePasswordRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.IdentityApi.ChangeEmailAsync(Nano.Web.Api.Requests.Identity.ChangeEmailRequest,System.Threading.CancellationToken)">
+            <summary>
+            Change Email Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.ChangeEmailRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.IdentityApi.ConfirmEmailAsync(Nano.Web.Api.Requests.Identity.ConfirmEmailRequest,System.Threading.CancellationToken)">
+            <summary>
+            Confirm Email Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.ConfirmEmailRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.IdentityApi.GetChangeEmailTokenAsync(Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest,System.Threading.CancellationToken)">
+            <summary>
+            Get Change Email Token Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.IdentityApi.GetConfirmEmailTokenAsync(Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest,System.Threading.CancellationToken)">
+            <summary>
+            Get Confirm Email Token Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.IdentityApi.GetResetPasswordTokenAsync(Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest,System.Threading.CancellationToken)">
+            <summary>
+            Get Reset Password Token Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.IdentityApi.RemoveExternalLoginAsync(Nano.Web.Api.Requests.Identity.LogInExternalRemoveRequest,System.Threading.CancellationToken)">
+            <summary>
+            Remove External Login Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.LogInExternalRemoveRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
         <member name="T:Nano.Web.Api.Requests.Auth.ExternalSchemesRequest">
             <inheritdoc />
         </member>
@@ -283,6 +390,22 @@
             <summary>
             Constructor.
             </summary>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Auth.LogInExternalRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Auth.LogInExternalRequest.LoginExternal">
+            <summary>
+            Login.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.LogInExternalRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.LogInExternalRequest.GetBody">
+            <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Auth.LogInRequest">
             <inheritdoc />
@@ -552,6 +675,206 @@
         <member name="M:Nano.Web.Api.Requests.EditRequest.GetBody">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.ChangeEmailRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.ChangeEmailRequest.ChangeEmail">
+            <summary>
+            Change Password.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.ChangeEmailRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.ChangeEmailRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.ChangePasswordRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.ChangePasswordRequest.ChangePassword">
+            <summary>
+            Change Password.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.ChangePasswordRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.ChangePasswordRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.ConfirmEmailRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.ConfirmEmailRequest.ConfirmEmail">
+            <summary>
+            Confirm Email.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.ConfirmEmailRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.ConfirmEmailRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest.NewEmail">
+            <summary>
+            New Email.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest.GetRouteParameters">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest.GetQueryStringParameters">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest.GetRouteParameters">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest.GetRouteParameters">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.LogInExternalRemoveRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.LogInExternalRemoveRequest.LoginExternal">
+            <summary>
+            Login.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.LogInExternalRemoveRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.LogInExternalRemoveRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.ResetPasswordRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.ResetPasswordRequest.ResetPassword">
+            <summary>
+            Set Username.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.ResetPasswordRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.ResetPasswordRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.SetPasswordRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.SetPasswordRequest.SetPassword">
+            <summary>
+            Set Password.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.SetPasswordRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.SetPasswordRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.SetUsernameRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.SetUsernameRequest.SetUsername">
+            <summary>
+            Set Username.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.SetUsernameRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.SetUsernameRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.SingUpExternalRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.SingUpExternalRequest`1.SignUpExternal">
+            <summary>
+            Sign Up.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.SingUpExternalRequest`1.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.SingUpExternalRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.SingUpRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.SingUpRequest`1.SignUp">
+            <summary>
+            Sign Up.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.SingUpRequest`1.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.SingUpRequest`1.GetBody">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Web.Api.Requests.IndexRequest">
             <summary>
             Index Request.
@@ -695,7 +1018,7 @@
             </summary>
             <param name="identityManager">The <see cref="P:Nano.Web.Controllers.AuthController.IdentityManager"/>.</param>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.LogIn(Nano.Models.Auth.Login,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.AuthController.LogIn(Nano.Security.Models.Login,System.Threading.CancellationToken)">
             <summary>
             Authenticates and signs in a user.
             On success a jwt-token is created and returned, for later use with auhtorization.
@@ -715,6 +1038,19 @@
             </summary>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>Nothing.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.AuthController.LogInExternal(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
+            <summary>
+            Authenticates and signs in a user with external login.
+            On success a jwt-token is created and returned, for later use with auhtorization.
+            </summary>
+            <param name="loginExternal">The login external request.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The access token.</returns>
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
             <response code="401">Unauthorized.</response>
@@ -1282,53 +1618,6 @@
         <member name="M:Nano.Web.Controllers.DefaultControllerUpdatable`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Controllers.DefaultUserController`2">
-            <inheritdoc />
-        </member>
-        <member name="P:Nano.Web.Controllers.DefaultUserController`2.IdentityManager">
-            <summary>
-            Security Manager.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Controllers.DefaultUserController`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing,Nano.Security.IdentityManager)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Controllers.DefaultUserController`2.SignUp(`0,System.Threading.CancellationToken)">
-            <summary>
-            Creates the passed model.
-            </summary>
-            <param name="entity">The model to create.</param>
-            <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>The created model.</returns>
-            <response code="201">Created.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occured.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.DefaultUserController`2.CreateConfirm(`0,System.Threading.CancellationToken)">
-            <summary>
-            Creates the passed model.
-            </summary>
-            <param name="entity">The model to create.</param>
-            <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>The created model.</returns>
-            <response code="201">Created.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occured.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.DefaultUserController`2.CreateConfirms(System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
-            <summary>
-            Creates the passed models.
-            </summary>
-            <param name="entities">The models to create.</param>
-            <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>Void.</returns>
-            <response code="200">Ok.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occured.</response>
-        </member>
         <member name="T:Nano.Web.Controllers.HomeController">
             <summary>
             Home Controller.
@@ -1351,6 +1640,174 @@
             <param name="returnUrl">The return url (if any).</param>
             <param name="cancellationToken">The cancellationToken.</param>
             <returns>Nothing (void).</returns>
+        </member>
+        <member name="T:Nano.Web.Controllers.IdentityController`2">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Controllers.IdentityController`2.IdentityManager">
+            <summary>
+            Security Manager.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Controllers.IdentityController`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing,Nano.Security.IdentityManager)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.IdentityController`2.SignUpAsync(Nano.Security.Models.SignUp{`0},System.Threading.CancellationToken)">
+            <summary>
+            Signup.
+            Registers a new user.
+            </summary>
+            <param name="signUp">The signuo request.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>The created user.</returns>
+            <response code="201">Created.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.IdentityController`2.SignUpExternalAsync(Nano.Security.Models.SignUpExternal{`0},System.Threading.CancellationToken)">
+            <summary>
+            Registers a user with external login info.
+            </summary>
+            <param name="signUpExternal">The signup.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The user.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.IdentityController`2.SetUsernameAsync(Nano.Security.Models.SetUsername,System.Threading.CancellationToken)">
+            <summary>
+            Sets the username of a user.
+            </summary>
+            <param name="setUsername">The set username.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.IdentityController`2.SetPasswordAsync(Nano.Security.Models.SetPassword,System.Threading.CancellationToken)">
+            <summary>
+            Sets the password of a user.
+            Only use to set a password for a user without one.
+            Users authenticated with external login providers, doesn't initially have a password.
+            </summary>
+            <param name="setPassword">The set password.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.IdentityController`2.ResetPasswordAsync(Nano.Security.Models.ResetPassword,System.Threading.CancellationToken)">
+            <summary>
+            Resets the password of a user.
+            </summary>
+            <param name="resetPassword">The reset password.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.IdentityController`2.GetResetPasswordTokenAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Gets the password reset token, used to change the password of a user.
+            </summary>
+            <param name="userId">The user id.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.IdentityController`2.ChangePasswordAsync(Nano.Security.Models.ChangePassword,System.Threading.CancellationToken)">
+            <summary>
+            Changes the password of a user.
+            </summary>
+            <param name="changePassword">The change password.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.IdentityController`2.ChangeEmailAsync(Nano.Security.Models.ChangeEmail,System.Threading.CancellationToken)">
+            <summary>
+            Changes the email of a user.
+            </summary>
+            <param name="changeEmail">The change email.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.IdentityController`2.GetChangeEmailTokenAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Gets the change email token, used to change the email address of a user.
+            </summary>
+            <param name="userId">The user id.</param>
+            <param name="newEmail">The new email.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.IdentityController`2.ConfirmEmailAsync(Nano.Security.Models.ConfirmEmail,System.Threading.CancellationToken)">
+            <summary>
+            Confirms the email address of a user.
+            </summary>
+            <param name="confirmEmail">The confirm email.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.IdentityController`2.GetConfirmEmailTokenAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Gets the confirm email token, used to confirm the email address of a user.
+            </summary>
+            <param name="userId">The user id.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.IdentityController`2.RemoveExternalLoginAsync(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
+            <summary>
+            Removes an external login for a user.
+            </summary>
+            <param name="externalLogin">The external login.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
         </member>
         <member name="T:Nano.Web.Hosting.Conventions.AduitControllerDisabledConvention">
             <inheritdoc />
@@ -1412,23 +1869,6 @@
             BlockMode is set to true.
             </summary>
         </member>
-        <member name="T:Nano.Web.Hosting.Exceptions.TranslationException">
-            <summary>
-            Translation Exception.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.Hosting.Exceptions.TranslationException.Code">
-            <summary>
-            Code.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Hosting.Exceptions.TranslationException.#ctor(System.Int64,System.String)">
-            <summary>
-            Constructor.
-            </summary>
-            <param name="code">The code.</param>
-            <param name="message">The message.</param>
-        </member>
         <member name="T:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions">
             <summary>
             Application Builder Extensions.
@@ -1476,6 +1916,13 @@
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpContextAccessor(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds the <see cref="T:Microsoft.AspNetCore.Http.IHttpContextAccessor"/> middleware, and initializes the current <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
         <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpSession(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
             Adds http session middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
@@ -1483,16 +1930,16 @@
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpResponseCompression(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpResponseCaching(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
-            Adds no cache middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            Adds response caching middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpNoCacheHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpResponseCompression(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
-            Adds no cache middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            Adds response compresssion middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
@@ -1500,20 +1947,6 @@
         <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpXForwardedHeaders(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
             Adds no cache middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpXDownloadOptionsHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds x-download options middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpXContentTypeOptionsHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds x-content-type options middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
@@ -1559,6 +1992,19 @@
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="T:Nano.Web.Hosting.Extensions.AuthenticationBuilderExtensions">
+            <summary>
+            Service Collection Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.Extensions.AuthenticationBuilderExtensions.AddExternalLogins(Microsoft.AspNetCore.Authentication.AuthenticationBuilder,Nano.Security.SecurityOptions)">
+            <summary>
+            Adds external logins to the <see cref="T:Microsoft.AspNetCore.Authentication.AuthenticationBuilder"/>.
+            </summary>
+            <param name="builder">The <see cref="T:Microsoft.AspNetCore.Authentication.AuthenticationBuilder"/>.</param>
+            <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Authentication.AuthenticationBuilder"/>.</returns>
         </member>
         <member name="T:Nano.Web.Hosting.Extensions.HttpRequestExtensions">
             <summary>
@@ -1686,6 +2132,23 @@
             <summary>
             Form ("application/x-www-form-urlencoded").
             </summary>
+        </member>
+        <member name="T:Nano.Web.Hosting.HttpContextAccess">
+            <summary>
+            Http Context Access (Static)
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Hosting.HttpContextAccess.Current">
+            <summary>
+            Current.
+            The current <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>, fetched through the <see cref="T:Microsoft.AspNetCore.Http.IHttpContextAccessor"/>.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.HttpContextAccess.Configure(Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Configure.
+            </summary>
+            <param name="httpContextAccessor">The <inheritdoc cref="T:Microsoft.AspNetCore.Http.IHttpContextAccessor"/>.</param>
         </member>
         <member name="T:Nano.Web.Hosting.Middleware.ExceptionHandlingMiddleware">
             <inheritdoc />
@@ -1898,66 +2361,72 @@
             Ports Https.
             </summary>
         </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpsRewrite">
+            <summary>
+            Use Https Rewrite.
+            Enables middleware for automatically rewrite http requests to https.
+            </summary>
+        </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpsRequired">
             <summary>
             Use Https Redirect.
             Forces https for all requests.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpsRedirect">
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseForwardedHeaders">
             <summary>
-            Use Https Redirect.
-            Enables middleware for automatically redirect http requests to https.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpResponseCompression">
-            <summary>
-            Use Http Response Compression.
-            Enables middleware for dynamic compression of http responses.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpNoCacheHeader">
-            <summary>
-            Use Http No Cache Header.
-            Setting these headers will make the browser reload every page in the browsing history when the user navigates with the “Back” and “Forward” buttons.
-            This will affect the load on your server(s) — and also the user experience.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpXForwardedHeaders">
-            <summary>
-            Use Http Forwarded Headers.
+            Use Forwarded Headers.
             Enables forwarded headers, when application is behind a proxy.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpXDownloadOptionsHeader">
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseResponseCompression">
             <summary>
-            Use Http X-Download Options.
+            Use Response Compression.
+            Enables middleware for dynamic compression of http responses.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpXContentTypeOptionsHeader">
+        <member name="P:Nano.Web.WebOptions.HostingOptions.Hsts">
             <summary>
-            Use Http X-Content Type Options Header.
+            Use Hsts.
+            Settings for Strict-Transport-Security.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpReferrerPolicyHeader">
+        <member name="P:Nano.Web.WebOptions.HostingOptions.Cache">
             <summary>
-            Use Http Referrer Policy Header.
+            Cache.
+            Options for caching responses.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpXFrameOptionsPolicyHeader">
+        <member name="P:Nano.Web.WebOptions.HostingOptions.Robots">
             <summary>
-            Use Http X-Frame Options Policy Header.
+            Robots.
+            Settings for robots (search engines) behavior.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpXXssProtectionPolicyHeader">
+        <member name="P:Nano.Web.WebOptions.HostingOptions.Session">
             <summary>
-            Use Http XXss Protection Policy Header.
+            Session.
+            Settings for session behavior.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpSessionTimeout">
+        <member name="P:Nano.Web.WebOptions.HostingOptions.Certificate">
             <summary>
-            Use Http Session Timeout.
-            Enables middleware for session context middleware, and sets the session timeout to the value.
+            Certificate (ssl)
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.ReferrerPolicyHeader">
+            <summary>
+            Use Referrer Policy Header.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.FrameOptionsPolicyHeader">
+            <summary>
+            Use Frame Options Policy Header.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.XssProtectionPolicyHeader">
+            <summary>
+            Use Xss Protection Policy Header.
             </summary>
         </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.UseHealthCheck">
@@ -1968,23 +2437,6 @@
         <member name="P:Nano.Web.WebOptions.HostingOptions.UseHealthCheckUI">
             <summary>
             Use Health Check UI.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.Hsts">
-            <summary>
-            Use Hsts.
-            Settings for Strict-Transport-Security.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpXRobotsTagHeaders">
-            <summary>
-            Robots.
-            Settings for robots (search engines) behavior.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.Certificate">
-            <summary>
-            Certificate (ssl)
             </summary>
         </member>
         <member name="T:Nano.Web.WebOptions.HostingOptions.HstsOptions">
@@ -2017,6 +2469,35 @@
             Adds includeSubDomains in the header, defaults to false
             </summary>
         </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CacheOptions">
+            <summary>
+            Cache Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CacheOptions.IsEnabled">
+            <summary>
+            Is Enabled.
+            Enables Hsts (Strict transport security) policies.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CacheOptions.MaxSize">
+            <summary>
+            Max Size.
+            Default 1 MB.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CacheOptions.MaxBodySize">
+            <summary>
+            Max Body Size.
+            Default 100 MB.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CacheOptions.MaxAge">
+            <summary>
+            Max Age.
+            Default 20 minutes.
+            </summary>
+        </member>
         <member name="T:Nano.Web.WebOptions.HostingOptions.RobotOptions">
             <summary>
             Robot Options.
@@ -2025,7 +2506,6 @@
         <member name="P:Nano.Web.WebOptions.HostingOptions.RobotOptions.IsEnabled">
             <summary>
             Is Enabled.
-            Enables Robots header.
             </summary>
         </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.RobotOptions.UseNoIndex">
@@ -2069,6 +2549,38 @@
             Instructs search engines to not index images on the page (Google only)
             </summary>
         </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.SessionOptions">
+            <summary>
+            Session Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.SessionOptions.IsEnabled">
+            <summary>
+            Is Enabled.
+            Enables session.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.SessionOptions.Timeout">
+            <summary>
+            Timeout.
+            The session timeout.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CertificateOptions">
+            <summary>
+            Certificate Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CertificateOptions.Path">
+            <summary>
+            Path.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CertificateOptions.Password">
+            <summary>
+            Password
+            </summary>
+        </member>
         <member name="T:Nano.Web.WebOptions.DocumentationOptions">
             <summary>
             Documentation Options.
@@ -2082,21 +2594,6 @@
         <member name="P:Nano.Web.WebOptions.DocumentationOptions.License">
             <summary>
             License.
-            </summary>
-        </member>
-        <member name="T:Nano.Web.WebOptions.CertificateOptions">
-            <summary>
-            Certificate Options.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.WebOptions.CertificateOptions.Path">
-            <summary>
-            Path.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.WebOptions.CertificateOptions.Password">
-            <summary>
-            Password
             </summary>
         </member>
     </members>
