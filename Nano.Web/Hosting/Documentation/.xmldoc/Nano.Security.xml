@@ -92,27 +92,27 @@
             Email Address.
             </summary>
         </member>
-        <member name="T:Nano.Security.SecurityManager">
+        <member name="T:Nano.Security.IdentityManager">
             <summary>
             Security Manager.
             </summary>
         </member>
-        <member name="P:Nano.Security.SecurityManager.Options">
+        <member name="P:Nano.Security.IdentityManager.Options">
             <summary>
             Options.
             </summary>
         </member>
-        <member name="P:Nano.Security.SecurityManager.UserManager">
+        <member name="P:Nano.Security.IdentityManager.UserManager">
             <summary>
             User Manager.
             </summary>
         </member>
-        <member name="P:Nano.Security.SecurityManager.SignInManager">
+        <member name="P:Nano.Security.IdentityManager.SignInManager">
             <summary>
             Sign In Manager.
             </summary>
         </member>
-        <member name="M:Nano.Security.SecurityManager.#ctor(Microsoft.AspNetCore.Identity.SignInManager{Microsoft.AspNetCore.Identity.IdentityUser},Microsoft.AspNetCore.Identity.UserManager{Microsoft.AspNetCore.Identity.IdentityUser},Nano.Security.SecurityOptions)">
+        <member name="M:Nano.Security.IdentityManager.#ctor(Microsoft.AspNetCore.Identity.SignInManager{Microsoft.AspNetCore.Identity.IdentityUser},Microsoft.AspNetCore.Identity.UserManager{Microsoft.AspNetCore.Identity.IdentityUser},Nano.Security.SecurityOptions)">
             <summary>
             The user authenticates and on success recieves a jwt token for use with auhtorization.
             </summary>
@@ -120,7 +120,7 @@
             <param name="userManager">The <see cref="T:Microsoft.AspNetCore.Identity.UserManager`1"/>.</param>
             <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
         </member>
-        <member name="M:Nano.Security.SecurityManager.SignInAsync(Nano.Models.Auth.Login,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.IdentityManager.SignInAsync(Nano.Models.Auth.Login,System.Threading.CancellationToken)">
             <summary>
             The user authenticates, and on success recieves a jwt token for use with auhtorization.
             If two-factor authentication is enabled, a indicating flag is returned, and no access token is generated.
@@ -130,13 +130,13 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Models.Auth.AccessToken"/>.</returns>
         </member>
-        <member name="M:Nano.Security.SecurityManager.SignOutAsync(System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.IdentityManager.SignOutAsync(System.Threading.CancellationToken)">
             <summary>
             The user is logged out, and the token is invalidated.
             </summary>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.SecurityManager.SignUpAsync(Nano.Models.Auth.SignUp,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.IdentityManager.SignUpAsync(Nano.Models.Auth.SignUp,System.Threading.CancellationToken)">
             <summary>
             Registers a new user.
             The new user is signed in as well, and an email confirmation is sent, if enabled. 
@@ -145,7 +145,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.</returns>
         </member>
-        <member name="M:Nano.Security.SecurityManager.GetExternalSchemesAsync(System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.IdentityManager.GetExternalSchemesAsync(System.Threading.CancellationToken)">
             <summary>
             Gets all the external login schemes, configured for authentication.
             </summary>

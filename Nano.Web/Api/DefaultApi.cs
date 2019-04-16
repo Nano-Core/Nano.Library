@@ -39,6 +39,20 @@ namespace Nano.Web.Api
         }
 
         /// <summary>
+        /// Log In External Async.
+        /// </summary>
+        /// <param name="request">The <see cref="LogInExternalRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="AccessToken"/>.</returns>
+        public virtual async Task<AccessToken> LogInExternalAsync(LogInExternalRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.CustomAsync<LogInExternalRequest, AccessToken>(request, cancellationToken);
+        }
+
+        /// <summary>
         /// Log Out Async.
         /// </summary>
         /// <param name="request">The <see cref="LogOutRequest"/>.</param>
@@ -57,13 +71,13 @@ namespace Nano.Web.Api
         /// </summary>
         /// <param name="request">The <see cref="ExternalSchemesRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>A collection of <see cref="ExternalScheme"/>'s.</returns>
-        public virtual async Task<IEnumerable<ExternalScheme>> GetExternalSchemesAsync(ExternalSchemesRequest request, CancellationToken cancellationToken = default)
+        /// <returns>A collection of <see cref="LoginProvider"/>'s.</returns>
+        public virtual async Task<IEnumerable<LoginProvider>> GetExternalSchemesAsync(ExternalSchemesRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.CustomAsync<ExternalSchemesRequest, IEnumerable<ExternalScheme>>(request, cancellationToken);
+            return await this.CustomAsync<ExternalSchemesRequest, IEnumerable<LoginProvider>>(request, cancellationToken);
         }
 
         /// <summary>

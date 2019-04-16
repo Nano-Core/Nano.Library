@@ -1,29 +1,29 @@
 ﻿using Nano.Models;
 using Nano.Security.Models;
 
-namespace Nano.Web.Api.Requests.User
+namespace Nano.Web.Api.Requests.Identity
 {
     /// <inheritdoc />
-    public class SingUpRequest<TUser> : BaseRequestPost
+    public class SingUpExternalRequest<TUser> : BaseRequestPost
         where TUser : DefaultEntityUser
     {
         /// <summary>
         /// Sign Up.
         /// </summary>
-        public virtual SignUp<TUser> SignUp { get; set; }
+        public virtual SignUpExternal<TUser> SignUpExternal { get; set; }
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public SingUpRequest()
+        public SingUpExternalRequest()
         {
-            this.Action = "signup";
+            this.Action = "external/signup";
         }
 
         /// <inheritdoc />
         public override object GetBody()
         {
-            return this.SignUp;
+            return this.SignUpExternal;
         }
     }
 }

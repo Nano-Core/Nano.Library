@@ -1,18 +1,22 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Nano.Security.Models
 {
     /// <summary>
-    /// External Login Provider.
+    /// Login Provider.
     /// </summary>
-    public class ExternalScheme
+    public class LoginProvider
     {
         /// <summary>
         /// Name.
         /// </summary>
+        [Required]
         public virtual string Name { get; set; }
         
         /// <summary>
         /// Display Name.
         /// </summary>
+        [Required]
         public virtual string DisplayName { get; set; }
     }
 }

@@ -684,16 +684,16 @@
             Auth Controller.
             </summary>
         </member>
-        <member name="P:Nano.Web.Controllers.AuthController.SecurityManager">
+        <member name="P:Nano.Web.Controllers.AuthController.IdentityManager">
             <summary>
             Security Manager.
             </summary>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.#ctor(Nano.Security.SecurityManager)">
+        <member name="M:Nano.Web.Controllers.AuthController.#ctor(Nano.Security.IdentityManager)">
             <summary>
             Constructor.
             </summary>
-            <param name="securityManager">The <see cref="P:Nano.Web.Controllers.AuthController.SecurityManager"/>.</param>
+            <param name="identityManager">The <see cref="P:Nano.Web.Controllers.AuthController.IdentityManager"/>.</param>
         </member>
         <member name="M:Nano.Web.Controllers.AuthController.LogIn(Nano.Models.Auth.Login,System.Threading.CancellationToken)">
             <summary>
@@ -1285,12 +1285,12 @@
         <member name="T:Nano.Web.Controllers.DefaultUserController`2">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Controllers.DefaultUserController`2.SecurityManager">
+        <member name="P:Nano.Web.Controllers.DefaultUserController`2.IdentityManager">
             <summary>
             Security Manager.
             </summary>
         </member>
-        <member name="M:Nano.Web.Controllers.DefaultUserController`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing,Nano.Security.SecurityManager)">
+        <member name="M:Nano.Web.Controllers.DefaultUserController`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing,Nano.Security.IdentityManager)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.DefaultUserController`2.SignUp(`0,System.Threading.CancellationToken)">

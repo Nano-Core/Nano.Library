@@ -1,12 +1,11 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models
 {
     /// <summary>
-    /// Access Token.
+    /// Confirm Email.
     /// </summary>
-    public class AccessToken
+    public class ConfirmEmail
     {
         /// <summary>
         /// Token.
@@ -15,14 +14,9 @@ namespace Nano.Security.Models
         public virtual string Token { get; set; }
 
         /// <summary>
-        /// Expire At.
+        /// User Id.
         /// </summary>
         [Required]
-        public virtual DateTime ExpireAt { get; set; }
-
-        /// <summary>
-        /// Is Expired.
-        /// </summary>
-        public virtual bool IsExpired => this.Token != null && this.ExpireAt > DateTimeOffset.UtcNow;
+        public virtual string UserId { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Nano.Security.Const;
 
 namespace Nano.Security
@@ -42,6 +43,11 @@ namespace Nano.Security
         /// Password Options.
         /// </summary>
         public virtual PasswordOptions Password { get; set; } = new PasswordOptions();
+
+        /// <summary>
+        /// External Logins.
+        /// </summary>
+        public virtual IEnumerable<ExternalLoginOptions> ExternalLogins { get; set; } = new List<ExternalLoginOptions>();
 
         /// <summary>
         /// Jwt Options (nested class)
@@ -176,6 +182,27 @@ namespace Nano.Security
             /// Required Unique Characters.
             /// </summary>
             public virtual int RequiredUniqueCharecters { get; set; } = 0;
+        }
+
+        /// <summary>
+        /// External Login Options.
+        /// </summary>
+        public class ExternalLoginOptions
+        {
+            /// <summary>
+            /// Name.
+            /// </summary>
+            public virtual string Name { get; set; }
+
+            /// <summary>
+            /// Id.
+            /// </summary>
+            public virtual string Id { get; set; }
+
+            /// <summary>
+            /// Secret.
+            /// </summary>
+            public virtual string Secret { get; set; }
         }
     }
 }

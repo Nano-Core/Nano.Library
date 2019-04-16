@@ -4,9 +4,9 @@ using Nano.Models;
 namespace Nano.Security.Models
 {
     /// <summary>
-    /// Sign Up.
+    /// Sign Up External.
     /// </summary>
-    public class SignUp
+    public class SignUpExternal
     {
         /// <summary>
         /// Email.
@@ -16,38 +16,31 @@ namespace Nano.Security.Models
         public virtual string Email { get; set; }
 
         /// <summary>
-        /// Username.
+        /// Provider Key.
+        /// The unique key for the user provided by the login provider.
         /// </summary>
         [Required]
-        [MaxLength(256)]
-        public virtual string Username { get; set; }
+        public virtual string ProviderKey { get; set; }
 
         /// <summary>
-        /// Password.
+        /// Login Provider.
+        /// The name of the login provider.
         /// </summary>
         [Required]
-        [MaxLength(128)]
-        public virtual string Password { get; set; }
-
-        /// <summary>
-        /// Confirm Password. 
-        /// </summary>
-        [Required]
-        [MaxLength(128)]
-        [Compare("Password")]
-        public virtual string ConfirmPassword { get; set; }
+        public virtual string LoginProvider { get; set; }
     }
 
     /// <summary>
-    /// Sign Up.
+    /// Sign Up External.
     /// </summary>
     /// <typeparam name="TUser">The user type</typeparam>
-    public class SignUp<TUser> : SignUp
+    public class SignUpExternal<TUser> : SignUpExternal
         where TUser : DefaultEntityUser
     {
         /// <summary>
-        /// User.
+        /// 
         /// </summary>
         public virtual TUser User { get; set; }
     }
+
 }

@@ -24,13 +24,13 @@ namespace Nano.Web.Controllers
         /// <summary>
         /// Security Manager.
         /// </summary>
-        protected virtual SecurityManager SecurityManager { get; }
+        protected virtual IdentityManager IdentityManager { get; }
 
         /// <inheritdoc />
-        protected IdentityController(ILogger logger, IRepository repository, IEventing eventing, SecurityManager securityManager) 
+        protected IdentityController(ILogger logger, IRepository repository, IEventing eventing, IdentityManager identityManager) 
             : base(logger, repository, eventing)
         {
-            this.SecurityManager = securityManager ?? throw new ArgumentNullException(nameof(securityManager));
+            this.IdentityManager = identityManager ?? throw new ArgumentNullException(nameof(identityManager));
         }
 
         /// <summary>
@@ -49,13 +49,12 @@ namespace Nano.Web.Controllers
         [AllowAnonymous]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> SignUp([FromBody][Required]SignUp<TEntity> signUp, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> SignUpAsync([FromBody][Required]SignUp<TEntity> signUp, CancellationToken cancellationToken = default)
         {
-            var identityUser = await this.SecurityManager
+            var identityUser = await this.IdentityManager
                 .SignUpAsync(signUp, cancellationToken);
 
             signUp.User.Id = Guid.Parse(identityUser.Id); 
@@ -66,5 +65,299 @@ namespace Nano.Web.Controllers
 
             return this.Created("signup", result);
         }
+        
+        /// <summary>
+        /// Registers a user with external login info.
+        /// </summary>
+        /// <param name="signUpExternal">The signup.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The user.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("external/signup")]
+        [AllowAnonymous]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> SignUpExternalAsync([FromBody][Required]SignUpExternal<TEntity> signUpExternal, CancellationToken cancellationToken = default)
+        {
+            var identityUser = await this.IdentityManager
+                .SignUpExternalAsync(signUpExternal, cancellationToken);
+
+            signUpExternal.User.Id = Guid.Parse(identityUser.Id); 
+            signUpExternal.User.IdentityUserId = identityUser.Id;
+
+            var result = await this.Repository
+                .AddAsync(signUpExternal.User, cancellationToken);
+
+            return this.Created("external/signup", result);
+        }
+
+        /// <summary>
+        /// Sets the username of a user.
+        /// </summary>
+        /// <param name="setUsername">The set username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("username/set")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> SetUsernameAsync([FromBody][Required]SetUsername setUsername, CancellationToken cancellationToken = default)
+        {
+            await this.IdentityManager
+                .SetUsernameAsync(setUsername, cancellationToken);
+
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Sets the password of a user.
+        /// Only use to set a password for a user without one.
+        /// Users authenticated with external login providers, doesn't initially have a password.
+        /// </summary>
+        /// <param name="setPassword">The set password.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("password/set")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> SetPasswordAsync([FromBody][Required]SetPassword setPassword, CancellationToken cancellationToken = default)
+        {
+            await this.IdentityManager
+                .SetPasswordAsync(setPassword, cancellationToken);
+
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Resets the password of a user.
+        /// </summary>
+        /// <param name="resetPassword">The reset password.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("password/reset")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> ResetPasswordAsync([FromBody][Required]ResetPassword resetPassword, CancellationToken cancellationToken = default)
+        {
+            await this.IdentityManager
+                .ResetPasswordAsync(resetPassword, cancellationToken);
+
+            return this.Ok();
+        }
+        
+        /// <summary>
+        /// Gets the password reset token, used to change the password of a user.
+        /// </summary>
+        /// <param name="userId">The user id.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpGet]
+        [Route("password/reset/token/{userId}")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(ResetPasswordToken), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> GetResetPasswordTokenAsync([FromRoute][Required]string userId, CancellationToken cancellationToken = default)
+        {
+            var resetPasswordToken = await this.IdentityManager
+                .GenerateResetPasswordTokenAsync(userId, cancellationToken);
+
+            return this.Ok(resetPasswordToken);
+        }
+
+        /// <summary>
+        /// Changes the password of a user.
+        /// </summary>
+        /// <param name="changePassword">The change password.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("password/change")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> ChangePasswordAsync([FromBody][Required]ChangePassword changePassword, CancellationToken cancellationToken = default)
+        {
+            await this.IdentityManager
+                .ChangePasswordAsync(changePassword, cancellationToken);
+
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Changes the email of a user.
+        /// </summary>
+        /// <param name="changeEmail">The change email.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("email/change")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> ChangeEmailAsync([FromBody][Required]ChangeEmail changeEmail, CancellationToken cancellationToken = default)
+        {
+            await this.IdentityManager
+                .ChangeEmailAsync(changeEmail, cancellationToken);
+
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Gets the change email token, used to change the email address of a user.
+        /// </summary>
+        /// <param name="userId">The user id.</param>
+        /// <param name="newEmail">The new email.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("email/change/token/{userId}")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(ChangeEmailToken), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> GetChangeEmailTokenAsync([FromRoute][Required]string userId, [Required][FromQuery]string newEmail, CancellationToken cancellationToken = default)
+        {
+            var changeEmailToken = await this.IdentityManager
+                .GenerateChangeEmailTokenAsync(userId, newEmail, cancellationToken);
+
+            return this.Ok(changeEmailToken);
+        }
+
+        /// <summary>
+        /// Confirms the email address of a user.
+        /// </summary>
+        /// <param name="confirmEmail">The confirm email.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("email/confirm")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> ConfirmEmailAsync([FromBody][Required]ConfirmEmail confirmEmail, CancellationToken cancellationToken = default)
+        {
+            await this.IdentityManager
+                .ConfirmEmailAsync(confirmEmail, cancellationToken);
+
+            return this.Ok();
+        }
+        
+        /// <summary>
+        /// Gets the confirm email token, used to confirm the email address of a user.
+        /// </summary>
+        /// <param name="userId">The user id.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("email/confirm/token/{userId}")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(ConfirmEmailToken), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> GetConfirmEmailTokenAsync([FromRoute][Required]string userId, CancellationToken cancellationToken = default)
+        {
+            var resetPasswordToken = await this.IdentityManager
+                .GenerateResetPasswordTokenAsync(userId, cancellationToken);
+
+            return this.Ok(resetPasswordToken);
+        }
+        
+        /// <summary>
+        /// Removes an external login for a user.
+        /// </summary>
+        /// <param name="externalLogin">The external login.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("external/login/remove")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> RemoveExternalLoginAsync(LoginExternal externalLogin, CancellationToken cancellationToken = default)
+        {
+            await this.IdentityManager
+                .RemoveExternalLoginAsync(externalLogin, cancellationToken);
+
+            return this.Ok();
+        }
+
     }
 }

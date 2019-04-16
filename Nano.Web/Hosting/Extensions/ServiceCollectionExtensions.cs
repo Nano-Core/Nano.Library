@@ -242,9 +242,9 @@ namespace Nano.Web.Hosting.Extensions
                         ClockSkew = TimeSpan.FromMinutes(5)
                     };
                 })
+                .AddExternalLogins(options)
                 .AddCookie(x =>
                 {
-                    // TODO: Add Cookie as option, and Read jwt token from it on incoming requests.
                     x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                     x.Cookie.Expiration = TimeSpan.FromDays(options.Jwt.ExpirationInHours);
                 });
@@ -351,7 +351,7 @@ namespace Nano.Web.Hosting.Extensions
                 services
                     .AddHealthChecksUI();
 
-                services.AddScoped<DbContextOptions, DbContextOptions<NullDbContext>>(); // BUG: Wihtout this line, EF-Core fails when no Data Provider / Context is registerd and 'NullDbContext' is used.
+                services.AddScoped<DbContextOptions, DbContextOptions<NullDbContext>>(); 
             }
 
             return services;
