@@ -6,13 +6,11 @@ namespace Nano.Web.Api.Requests.Identity
     public class ChangeEmailRequest : BaseRequestPost
     {
         /// <summary>
-        /// Change Password.
+        /// Change Email.
         /// </summary>
         public virtual ChangeEmail ChangeEmail { get; set; }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
+        /// <inheritdoc />
         public ChangeEmailRequest()
         {
             this.Action = "email/change";

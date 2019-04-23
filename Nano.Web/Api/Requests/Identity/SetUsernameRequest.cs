@@ -10,9 +10,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// </summary>
         public virtual SetUsername SetUsername { get; set; }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
+        /// <inheritdoc />
         public SetUsernameRequest()
         {
             this.Action = "username/set";

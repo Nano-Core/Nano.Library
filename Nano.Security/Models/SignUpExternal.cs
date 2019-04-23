@@ -9,11 +9,11 @@ namespace Nano.Security.Models
     public class SignUpExternal
     {
         /// <summary>
-        /// Email.
+        /// Email Address.
         /// </summary>
         [Required]
         [EmailAddress]
-        public virtual string Email { get; set; }
+        public virtual string EmailAddress { get; set; }
 
         /// <summary>
         /// Provider Key.
@@ -38,9 +38,8 @@ namespace Nano.Security.Models
         where TUser : DefaultEntityUser
     {
         /// <summary>
-        /// 
+        /// User.
         /// </summary>
         public virtual TUser User { get; set; }
     }
-
 }

@@ -41,6 +41,7 @@ namespace Tests.Nano
         /// </summary>
         protected virtual Mock<TController> MockController { get; set; }
 
+        /// <inheritdoc />
         protected BaseControllerTest()
         {
             this.MockController = new Mock<TController>(this.MockLogger.Object, this.MockRepository.Object, this.MockEventing.Object)

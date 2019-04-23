@@ -10,7 +10,6 @@ namespace Nano.Security.Models
     {
         /// <summary>
         /// Username.
-        /// The username of the user to sign-in.
         /// </summary>
         [Required]
         [MaxLength(256)]
@@ -18,7 +17,6 @@ namespace Nano.Security.Models
 
         /// <summary>
         /// Password.
-        /// The password of the user to sign-in.
         /// </summary>
         [Required]
         [MaxLength(256)]
@@ -26,7 +24,6 @@ namespace Nano.Security.Models
 
         /// <summary>
         /// Is Remember Me.
-        /// Flag indicating whether the sign-in cookie should persist after the browser is closed.
         /// </summary>
         [Required]
         [DefaultValue(false)]

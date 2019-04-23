@@ -33,7 +33,7 @@ namespace Nano.Web.Controllers
 
         /// <summary>
         /// Authenticates and signs in a user.
-        /// On success a jwt-token is created and returned, for later use with auhtorization.
+        /// On success a jwt-token is created and returned, for use with auhtorization.
         /// </summary>
         /// <param name="login">The login model.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -107,7 +107,6 @@ namespace Nano.Web.Controllers
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> LogInExternal(LoginExternal loginExternal, CancellationToken cancellationToken = default)

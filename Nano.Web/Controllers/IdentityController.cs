@@ -68,9 +68,9 @@ namespace Nano.Web.Controllers
         }
         
         /// <summary>
-        /// Registers a user with external login info.
+        /// Signs up a user, with an external login provider.
         /// </summary>
-        /// <param name="signUpExternal">The signup.</param>
+        /// <param name="signUpExternal">The signup external.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The user.</returns>
         /// <response code="200">Success.</response>
@@ -164,7 +164,6 @@ namespace Nano.Web.Controllers
         /// <returns>Void.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
-        /// <response code="401">Unauthorized.</response>
         /// <response code="404">Not Found.</response>
         /// <response code="500">Error occured.</response>
         [HttpPost]
@@ -173,7 +172,6 @@ namespace Nano.Web.Controllers
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> ResetPasswordAsync([FromBody][Required]ResetPassword resetPassword, CancellationToken cancellationToken = default)
@@ -189,7 +187,7 @@ namespace Nano.Web.Controllers
         /// </summary>
         /// <param name="emailAddress">The email address.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>Void.</returns>
+        /// <returns>The reset password token.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
@@ -270,9 +268,9 @@ namespace Nano.Web.Controllers
         /// Gets the change email token, used to change the email address of a user.
         /// </summary>
         /// <param name="emailAddress">The email address.</param>
-        /// <param name="newEmailAddress">The new email.</param>
+        /// <param name="newEmailAddress">The new email address.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>Void.</returns>
+        /// <returns>The change email token.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
@@ -302,7 +300,6 @@ namespace Nano.Web.Controllers
         /// <returns>Void.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
-        /// <response code="401">Unauthorized.</response>
         /// <response code="404">Not Found.</response>
         /// <response code="500">Error occured.</response>
         [HttpPost]
@@ -311,7 +308,6 @@ namespace Nano.Web.Controllers
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> ConfirmEmailAsync([FromBody][Required]ConfirmEmail confirmEmail, CancellationToken cancellationToken = default)
@@ -369,7 +365,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> RemoveExternalLoginAsync(LoginExternal externalLogin, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> RemoveExternalLoginAsync([FromBody][Required]LoginExternal externalLogin, CancellationToken cancellationToken = default)
         {
             await this.IdentityManager
                 .RemoveExternalLoginAsync(externalLogin, cancellationToken);

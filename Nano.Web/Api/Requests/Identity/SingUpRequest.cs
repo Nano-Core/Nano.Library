@@ -12,9 +12,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// </summary>
         public virtual SignUp<TUser> SignUp { get; set; }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
+        /// <inheritdoc />
         public SingUpRequest()
         {
             this.Action = "signup";

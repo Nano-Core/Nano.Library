@@ -10,9 +10,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// </summary>
         public virtual string EmailAddress { get; set; }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
+        /// <inheritdoc />
         public GetResetPasswordTokenRequest()
         {
             this.Action = "password/reset/token";

@@ -14,7 +14,7 @@ namespace Nano.Security.Models
         public virtual string Token { get; set; }
 
         /// <summary>
-        /// User Id.
+        /// Email Address.
         /// </summary>
         [Required]
         [EmailAddress]

@@ -69,15 +69,15 @@ namespace Nano.Web.Api
         /// <summary>
         /// Get External Schemes Async.
         /// </summary>
-        /// <param name="request">The <see cref="ExternalSchemesRequest"/>.</param>
+        /// <param name="request">The <see cref="GetExternalSchemesRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>A collection of <see cref="LoginProvider"/>'s.</returns>
-        public virtual async Task<IEnumerable<LoginProvider>> GetExternalSchemesAsync(ExternalSchemesRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<LoginProvider>> GetExternalSchemesAsync(GetExternalSchemesRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.CustomAsync<ExternalSchemesRequest, IEnumerable<LoginProvider>>(request, cancellationToken);
+            return await this.CustomAsync<GetExternalSchemesRequest, IEnumerable<LoginProvider>>(request, cancellationToken);
         }
 
         /// <summary>

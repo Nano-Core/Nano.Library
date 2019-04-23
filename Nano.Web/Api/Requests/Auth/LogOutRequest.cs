@@ -3,9 +3,7 @@
     /// <inheritdoc />
     public class LogOutRequest : BaseRequestGet
     {
-        /// <summary>
-        /// Constructor.
-        /// </summary>
+        /// <inheritdoc />
         public LogOutRequest()
         {
             this.Action = "logout";

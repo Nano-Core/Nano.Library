@@ -10,9 +10,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// </summary>
         public virtual ChangePassword ChangePassword { get; set; }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
+        /// <inheritdoc />
         public ChangePasswordRequest()
         {
             this.Action = "password/change";

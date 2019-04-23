@@ -144,9 +144,7 @@
         </member>
         <member name="M:Nano.Security.IdentityManager.SignInAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
             <summary>
-            The user authenticates, and on success recieves a jwt token for use with auhtorization.
-            If two-factor authentication is enabled, a indicating flag is returned, and no access token is generated.
-            If the user is locked out, or sign-in is unsuccessful, an exception is thrown.
+            Signs in the user.
             </summary>
             <param name="login">The <see cref="T:Nano.Security.Models.Login"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
@@ -154,7 +152,7 @@
         </member>
         <member name="M:Nano.Security.IdentityManager.SignInExternalAsync(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
             <summary>
-            The user authenticates, using external login info.
+            Signs in a use with external login info.
             </summary>
             <param name="loginExternal">The external logn (optional).</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
@@ -162,7 +160,7 @@
         </member>
         <member name="M:Nano.Security.IdentityManager.SignOutAsync(System.Threading.CancellationToken)">
             <summary>
-            The user is logged out, and the token is invalidated.
+            Logs out a user.
             </summary>
             <returns>Void.</returns>
         </member>
@@ -184,7 +182,7 @@
         </member>
         <member name="M:Nano.Security.IdentityManager.GetExternalSchemesAsync(System.Threading.CancellationToken)">
             <summary>
-            Gets all the configured external logins.
+            Gets all the configured external logins schemes.
             </summary>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The collection of <see cref="T:Nano.Security.Models.LoginProvider"/>.</returns>
@@ -199,7 +197,7 @@
         </member>
         <member name="M:Nano.Security.IdentityManager.SetUsernameAsync(Nano.Security.Models.SetUsername,System.Threading.CancellationToken)">
             <summary>
-            Changes the username of a user.
+            Sets a username for a user.
             </summary>
             <param name="setUsername">The <see cref="T:Nano.Security.Models.SetUsername"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
@@ -207,8 +205,7 @@
         </member>
         <member name="M:Nano.Security.IdentityManager.SetPasswordAsync(Nano.Security.Models.SetPassword,System.Threading.CancellationToken)">
             <summary>
-            Createa a password for a user.
-            Used when logged in using external login provider, and no password has been created for the user.
+            Sets a password for a user.
             </summary>
             <param name="setPassword">The <see cref="T:Nano.Security.Models.SetPassword"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
@@ -232,9 +229,9 @@
         </member>
         <member name="M:Nano.Security.IdentityManager.ChangeEmailAsync(Nano.Security.Models.ChangeEmail,System.Threading.CancellationToken)">
             <summary>
-            Changes the password of a user.
+            Changes the email address of a user.
             </summary>
-            <param name="changeEmail">The <see cref="T:Nano.Security.Models.ChangePassword"/>.</param>
+            <param name="changeEmail">The <see cref="T:Nano.Security.Models.ChangeEmail"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
@@ -246,28 +243,28 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.IdentityManager.GenerateConfirmEmailTokenAsync(System.String,System.Threading.CancellationToken)">
-            <summary>
-            Generates an email confirmation token for a user.
-            </summary>
-            <param name="emailAddress">The user id.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.ConfirmEmailToken"/>.</returns>
-        </member>
         <member name="M:Nano.Security.IdentityManager.GenerateResetPasswordTokenAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Generates an reset password token for a user.
             </summary>
-            <param name="emailAddress">The user id.</param>
+            <param name="emailAddress">The email address.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ResetPasswordToken"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.GenerateConfirmEmailTokenAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Generates an email confirmation token for a user.
+            </summary>
+            <param name="emailAddress">The email address.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.ConfirmEmailToken"/>.</returns>
         </member>
         <member name="M:Nano.Security.IdentityManager.GenerateChangeEmailTokenAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Generates an change email token for a user.
             </summary>
-            <param name="emailAddress">The user id.</param>
-            <param name="newEmailAddressAddress">The new email.</param>
+            <param name="emailAddress">The email address.</param>
+            <param name="newEmailAddress">The new email address.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ResetPasswordToken"/>.</returns>
         </member>
@@ -296,19 +293,19 @@
             Change Email.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ChangeEmail.UserId">
-            <summary>
-            User Id.
-            </summary>
-        </member>
         <member name="P:Nano.Security.Models.ChangeEmail.Token">
             <summary>
             Token.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ChangeEmail.NewEmail">
+        <member name="P:Nano.Security.Models.ChangeEmail.UserId">
             <summary>
-            New Email.
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangeEmail.NewEmailAddress">
+            <summary>
+            New Email Address.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.ChangeEmailToken">
@@ -316,19 +313,19 @@
             Change Email Token
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ChangeEmailToken.UserId">
-            <summary>
-            User Id.
-            </summary>
-        </member>
         <member name="P:Nano.Security.Models.ChangeEmailToken.Token">
             <summary>
             Token.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ChangeEmailToken.NewEmail">
+        <member name="P:Nano.Security.Models.ChangeEmailToken.EmailAddress">
             <summary>
-            New Email.
+            Email Address.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangeEmailToken.NewEmailAddress">
+            <summary>
+            New Email Address.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.ChangePassword">
@@ -366,9 +363,9 @@
             Token.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ConfirmEmail.UserId">
+        <member name="P:Nano.Security.Models.ConfirmEmail.EmailAddress">
             <summary>
-            User Id.
+            Email Address.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.ConfirmEmailToken">
@@ -376,14 +373,14 @@
             Confirm Email Token.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ConfirmEmailToken.UserId">
-            <summary>
-            User Id.
-            </summary>
-        </member>
         <member name="P:Nano.Security.Models.ConfirmEmailToken.Token">
             <summary>
             Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ConfirmEmailToken.EmailAddress">
+            <summary>
+            Email.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.Login">
@@ -394,19 +391,16 @@
         <member name="P:Nano.Security.Models.Login.Username">
             <summary>
             Username.
-            The username of the user to sign-in.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.Login.Password">
             <summary>
             Password.
-            The password of the user to sign-in.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.Login.IsRememerMe">
             <summary>
             Is Remember Me.
-            Flag indicating whether the sign-in cookie should persist after the browser is closed.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.LoginExternal">
@@ -446,9 +440,14 @@
             Reset Password.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ResetPassword.UserId">
+        <member name="P:Nano.Security.Models.ResetPassword.Token">
             <summary>
-            User Id.
+            Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ResetPassword.EmailAddress">
+            <summary>
+            Email Address.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.ResetPassword.Password">
@@ -456,24 +455,19 @@
             Password.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ResetPassword.Token">
-            <summary>
-            Token.
-            </summary>
-        </member>
         <member name="T:Nano.Security.Models.ResetPasswordToken">
             <summary>
             Reset Password Token.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ResetPasswordToken.UserId">
-            <summary>
-            User Id.
-            </summary>
-        </member>
         <member name="P:Nano.Security.Models.ResetPasswordToken.Token">
             <summary>
             Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ResetPasswordToken.EmailAddress">
+            <summary>
+            Email Address.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.SetPassword">
@@ -493,7 +487,7 @@
         </member>
         <member name="T:Nano.Security.Models.SetUsername">
             <summary>
-            Change Username.
+            Set Username.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.SetUsername.UserId">
@@ -503,7 +497,7 @@
         </member>
         <member name="P:Nano.Security.Models.SetUsername.NewUsername">
             <summary>
-            Username.
+            New Username.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.SignUp">
@@ -511,7 +505,7 @@
             Sign Up.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.SignUp.Email">
+        <member name="P:Nano.Security.Models.SignUp.EmailAddress">
             <summary>
             Email.
             </summary>
@@ -547,9 +541,9 @@
             Sign Up External.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.SignUpExternal.Email">
+        <member name="P:Nano.Security.Models.SignUpExternal.EmailAddress">
             <summary>
-            Email.
+            Email Address.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.SignUpExternal.ProviderKey">
@@ -572,7 +566,7 @@
         </member>
         <member name="P:Nano.Security.Models.SignUpExternal`1.User">
             <summary>
-            
+            User.
             </summary>
         </member>
         <member name="T:Nano.Security.SecurityOptions">

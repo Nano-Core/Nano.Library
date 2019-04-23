@@ -45,9 +45,7 @@ namespace Nano.Security
         }
 
         /// <summary>
-        /// The user authenticates, and on success recieves a jwt token for use with auhtorization.
-        /// If two-factor authentication is enabled, a indicating flag is returned, and no access token is generated.
-        /// If the user is locked out, or sign-in is unsuccessful, an exception is thrown.
+        /// Signs in the user.
         /// </summary>
         /// <param name="login">The <see cref="Login"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
@@ -79,7 +77,7 @@ namespace Nano.Security
         }
 
         /// <summary>
-        /// The user authenticates, using external login info.
+        /// Signs in a use with external login info.
         /// </summary>
         /// <param name="loginExternal">The external logn (optional).</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
@@ -103,7 +101,7 @@ namespace Nano.Security
         }
 
         /// <summary>
-        /// The user is logged out, and the token is invalidated.
+        /// Logs out a user.
         /// </summary>
         /// <returns>Void.</returns>
         public virtual async Task SignOutAsync(CancellationToken cancellationToken = default)
@@ -125,7 +123,7 @@ namespace Nano.Security
             
             var user = new IdentityUser
             {
-                Email = signUp.Email,
+                Email = signUp.EmailAddress,
                 UserName = signUp.Username
             };
 
@@ -160,8 +158,8 @@ namespace Nano.Security
             
             var identityUser = new IdentityUser
             {
-                Email = signUpExternal.Email,
-                UserName = signUpExternal.Email
+                Email = signUpExternal.EmailAddress,
+                UserName = signUpExternal.EmailAddress
             };
 
             var identityResult = await this.UserManager
@@ -183,7 +181,7 @@ namespace Nano.Security
         }
 
         /// <summary>
-        /// Gets all the configured external logins.
+        /// Gets all the configured external logins schemes.
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The collection of <see cref="LoginProvider"/>.</returns>
@@ -228,7 +226,7 @@ namespace Nano.Security
         }
 
         /// <summary>
-        /// Changes the username of a user.
+        /// Sets a username for a user.
         /// </summary>
         /// <param name="setUsername">The <see cref="SetUsername"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
@@ -246,8 +244,7 @@ namespace Nano.Security
         }
 
         /// <summary>
-        /// Createa a password for a user.
-        /// Used when logged in using external login provider, and no password has been created for the user.
+        /// Sets a password for a user.
         /// </summary>
         /// <param name="setPassword">The <see cref="SetPassword"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
@@ -316,9 +313,9 @@ namespace Nano.Security
         }
 
         /// <summary>
-        /// Changes the password of a user.
+        /// Changes the email address of a user.
         /// </summary>
-        /// <param name="changeEmail">The <see cref="ChangePassword"/>.</param>
+        /// <param name="changeEmail">The <see cref="ChangeEmail"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Void.</returns>
         public virtual async Task ChangeEmailAsync(ChangeEmail changeEmail, CancellationToken cancellationToken = default)
@@ -333,7 +330,7 @@ namespace Nano.Security
                 throw new NullReferenceException(nameof(user));
 
             var result = await this.UserManager
-                .ChangeEmailAsync(user, changeEmail.NewEmail, changeEmail.Token);
+                .ChangeEmailAsync(user, changeEmail.NewEmailAddress, changeEmail.Token);
 
             if (!result.Succeeded)
                 this.ThrowIdentityExceptions(result.Errors);
@@ -368,7 +365,7 @@ namespace Nano.Security
         /// <summary>
         /// Generates an reset password token for a user.
         /// </summary>
-        /// <param name="emailAddress">The user id.</param>
+        /// <param name="emailAddress">The email address.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="ResetPasswordToken"/>.</returns>
         public virtual async Task<ResetPasswordToken> GenerateResetPasswordTokenAsync(string emailAddress, CancellationToken cancellationToken = default)
@@ -395,7 +392,7 @@ namespace Nano.Security
         /// <summary>
         /// Generates an email confirmation token for a user.
         /// </summary>
-        /// <param name="emailAddress">The user id.</param>
+        /// <param name="emailAddress">The email address.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="ConfirmEmailToken"/>.</returns>
         public virtual async Task<ConfirmEmailToken> GenerateConfirmEmailTokenAsync(string emailAddress, CancellationToken cancellationToken = default)
@@ -422,14 +419,17 @@ namespace Nano.Security
         /// <summary>
         /// Generates an change email token for a user.
         /// </summary>
-        /// <param name="emailAddress">The user id.</param>
-        /// <param name="newEmailAddress">The new email.</param>
+        /// <param name="emailAddress">The email address.</param>
+        /// <param name="newEmailAddress">The new email address.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="ResetPasswordToken"/>.</returns>
         public virtual async Task<ChangeEmailToken> GenerateChangeEmailTokenAsync(string emailAddress, string newEmailAddress, CancellationToken cancellationToken = default)
         {
             if (emailAddress == null)
                 throw new ArgumentNullException(nameof(emailAddress));
+
+            if (newEmailAddress == null) 
+                throw new ArgumentNullException(nameof(newEmailAddress));
 
             var user = await this.UserManager
                 .FindByEmailAsync(emailAddress);

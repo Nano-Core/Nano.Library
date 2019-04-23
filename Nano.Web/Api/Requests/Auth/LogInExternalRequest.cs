@@ -6,13 +6,11 @@ namespace Nano.Web.Api.Requests.Auth
     public class LogInExternalRequest : BaseRequestPost
     {
         /// <summary>
-        /// Login.
+        /// Login External.
         /// </summary>
         public virtual LoginExternal LoginExternal { get; set; }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
+        /// <inheritdoc />
         public LogInExternalRequest()
         {
             this.Action = "external/login";

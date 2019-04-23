@@ -181,10 +181,10 @@ namespace Nano.Web.Api
         /// <summary>
         /// Remove External Login Async.
         /// </summary>
-        /// <param name="request">The <see cref="LogInExternalRemoveRequest"/>.</param>
+        /// <param name="request">The <see cref="RemoveExternalLogInRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Void.</returns>
-        public virtual async Task RemoveExternalLoginAsync(LogInExternalRemoveRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task RemoveExternalLoginAsync(RemoveExternalLogInRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));

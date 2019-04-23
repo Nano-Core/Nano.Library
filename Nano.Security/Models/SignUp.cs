@@ -13,7 +13,7 @@ namespace Nano.Security.Models
         /// </summary>
         [Required]
         [EmailAddress]
-        public virtual string Email { get; set; }
+        public virtual string EmailAddress { get; set; }
 
         /// <summary>
         /// Username.
@@ -26,14 +26,14 @@ namespace Nano.Security.Models
         /// Password.
         /// </summary>
         [Required]
-        [MaxLength(128)]
+        [MaxLength(256)]
         public virtual string Password { get; set; }
 
         /// <summary>
         /// Confirm Password. 
         /// </summary>
         [Required]
-        [MaxLength(128)]
+        [MaxLength(256)]
         [Compare("Password")]
         public virtual string ConfirmPassword { get; set; }
     }

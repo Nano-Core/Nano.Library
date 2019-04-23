@@ -8,13 +8,11 @@ namespace Nano.Web.Api.Requests.Identity
         where TUser : DefaultEntityUser
     {
         /// <summary>
-        /// Sign Up.
+        /// Sign Up External.
         /// </summary>
         public virtual SignUpExternal<TUser> SignUpExternal { get; set; }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
+        /// <inheritdoc />
         public SingUpExternalRequest()
         {
             this.Action = "external/signup";

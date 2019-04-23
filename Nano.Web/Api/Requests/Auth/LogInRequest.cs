@@ -10,9 +10,7 @@ namespace Nano.Web.Api.Requests.Auth
         /// </summary>
         public virtual Login Login { get; set; }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
+        /// <inheritdoc />
         public LogInRequest()
         {
             this.Action = "login";

@@ -125,11 +125,11 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void..</returns>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.GetExternalSchemesAsync(Nano.Web.Api.Requests.Auth.ExternalSchemesRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.DefaultApi.GetExternalSchemesAsync(Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest,System.Threading.CancellationToken)">
             <summary>
             Get External Schemes Async.
             </summary>
-            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.ExternalSchemesRequest"/>.</param>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>A collection of <see cref="T:Nano.Security.Models.LoginProvider"/>'s.</returns>
         </member>
@@ -375,34 +375,30 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Web.Api.IdentityApi.RemoveExternalLoginAsync(Nano.Web.Api.Requests.Identity.LogInExternalRemoveRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.IdentityApi.RemoveExternalLoginAsync(Nano.Web.Api.Requests.Identity.RemoveExternalLogInRequest,System.Threading.CancellationToken)">
             <summary>
             Remove External Login Async.
             </summary>
-            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.LogInExternalRemoveRequest"/>.</param>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.RemoveExternalLogInRequest"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="T:Nano.Web.Api.Requests.Auth.ExternalSchemesRequest">
+        <member name="T:Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.Requests.Auth.ExternalSchemesRequest.#ctor">
-            <summary>
-            Constructor.
-            </summary>
+        <member name="M:Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest.#ctor">
+            <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Auth.LogInExternalRequest">
             <inheritdoc />
         </member>
         <member name="P:Nano.Web.Api.Requests.Auth.LogInExternalRequest.LoginExternal">
             <summary>
-            Login.
+            Login External.
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Auth.LogInExternalRequest.#ctor">
-            <summary>
-            Constructor.
-            </summary>
+            <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Auth.LogInExternalRequest.GetBody">
             <inheritdoc />
@@ -416,9 +412,7 @@
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Auth.LogInRequest.#ctor">
-            <summary>
-            Constructor.
-            </summary>
+            <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Auth.LogInRequest.GetBody">
             <inheritdoc />
@@ -427,9 +421,7 @@
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Auth.LogOutRequest.#ctor">
-            <summary>
-            Constructor.
-            </summary>
+            <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.BaseRequest">
             <inheritdoc />
@@ -680,13 +672,11 @@
         </member>
         <member name="P:Nano.Web.Api.Requests.Identity.ChangeEmailRequest.ChangeEmail">
             <summary>
-            Change Password.
+            Change Email.
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.ChangeEmailRequest.#ctor">
-            <summary>
-            Constructor.
-            </summary>
+            <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.ChangeEmailRequest.GetBody">
             <inheritdoc />
@@ -700,9 +690,7 @@
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.ChangePasswordRequest.#ctor">
-            <summary>
-            Constructor.
-            </summary>
+            <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.ChangePasswordRequest.GetBody">
             <inheritdoc />
@@ -716,9 +704,7 @@
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.ConfirmEmailRequest.#ctor">
-            <summary>
-            Constructor.
-            </summary>
+            <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.ConfirmEmailRequest.GetBody">
             <inheritdoc />
@@ -726,22 +712,17 @@
         <member name="T:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest.UserId">
+        <member name="P:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest.EmailAddress">
             <summary>
-            User Id.
+            Email Address.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest.NewEmail">
+        <member name="P:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest.NewEmailAddress">
             <summary>
-            New Email.
+            New Email Address.
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest.#ctor">
-            <summary>
-            Constructor.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest.GetRouteParameters">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest.GetQueryStringParameters">
@@ -750,49 +731,43 @@
         <member name="T:Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest.UserId">
+        <member name="P:Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest.EmailAddress">
             <summary>
-            User Id.
+            Email Address.
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest.#ctor">
-            <summary>
-            Constructor.
-            </summary>
+            <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest.GetRouteParameters">
+        <member name="M:Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest.GetQueryStringParameters">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest.UserId">
+        <member name="P:Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest.EmailAddress">
             <summary>
-            User Id.
+            Email Address.
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest.#ctor">
-            <summary>
-            Constructor.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest.GetRouteParameters">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Api.Requests.Identity.LogInExternalRemoveRequest">
+        <member name="M:Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest.GetQueryStringParameters">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Api.Requests.Identity.LogInExternalRemoveRequest.LoginExternal">
+        <member name="T:Nano.Web.Api.Requests.Identity.RemoveExternalLogInRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.RemoveExternalLogInRequest.LoginExternal">
             <summary>
-            Login.
+            Login External.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.LogInExternalRemoveRequest.#ctor">
-            <summary>
-            Constructor.
-            </summary>
+        <member name="M:Nano.Web.Api.Requests.Identity.RemoveExternalLogInRequest.#ctor">
+            <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.LogInExternalRemoveRequest.GetBody">
+        <member name="M:Nano.Web.Api.Requests.Identity.RemoveExternalLogInRequest.GetBody">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Identity.ResetPasswordRequest">
@@ -800,13 +775,11 @@
         </member>
         <member name="P:Nano.Web.Api.Requests.Identity.ResetPasswordRequest.ResetPassword">
             <summary>
-            Set Username.
+            Reset Password.
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.ResetPasswordRequest.#ctor">
-            <summary>
-            Constructor.
-            </summary>
+            <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.ResetPasswordRequest.GetBody">
             <inheritdoc />
@@ -820,9 +793,7 @@
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.SetPasswordRequest.#ctor">
-            <summary>
-            Constructor.
-            </summary>
+            <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.SetPasswordRequest.GetBody">
             <inheritdoc />
@@ -836,9 +807,7 @@
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.SetUsernameRequest.#ctor">
-            <summary>
-            Constructor.
-            </summary>
+            <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.SetUsernameRequest.GetBody">
             <inheritdoc />
@@ -848,13 +817,11 @@
         </member>
         <member name="P:Nano.Web.Api.Requests.Identity.SingUpExternalRequest`1.SignUpExternal">
             <summary>
-            Sign Up.
+            Sign Up External.
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.SingUpExternalRequest`1.#ctor">
-            <summary>
-            Constructor.
-            </summary>
+            <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.SingUpExternalRequest`1.GetBody">
             <inheritdoc />
@@ -868,9 +835,7 @@
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.SingUpRequest`1.#ctor">
-            <summary>
-            Constructor.
-            </summary>
+            <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.SingUpRequest`1.GetBody">
             <inheritdoc />
@@ -1021,7 +986,7 @@
         <member name="M:Nano.Web.Controllers.AuthController.LogIn(Nano.Security.Models.Login,System.Threading.CancellationToken)">
             <summary>
             Authenticates and signs in a user.
-            On success a jwt-token is created and returned, for later use with auhtorization.
+            On success a jwt-token is created and returned, for use with auhtorization.
             </summary>
             <param name="login">The login model.</param>
             <param name="cancellationToken">The cancellation token.</param>
@@ -1714,7 +1679,6 @@
             <returns>Void.</returns>
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
@@ -1722,9 +1686,9 @@
             <summary>
             Gets the password reset token, used to change the password of a user.
             </summary>
-            <param name="emailAddress">The user id.</param>
+            <param name="emailAddress">The email address.</param>
             <param name="cancellationToken">The cancellation token.</param>
-            <returns>Void.</returns>
+            <returns>The reset password token.</returns>
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
             <response code="401">Unauthorized.</response>
@@ -1761,10 +1725,10 @@
             <summary>
             Gets the change email token, used to change the email address of a user.
             </summary>
-            <param name="emailAddress">The user id.</param>
-            <param name="newEmailAddressAddress">The new email.</param>
+            <param name="emailAddress">The email address.</param>
+            <param name="newEmailAddress">The new email address.</param>
             <param name="cancellationToken">The cancellation token.</param>
-            <returns>Void.</returns>
+            <returns>The change email token.</returns>
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
             <response code="401">Unauthorized.</response>
@@ -1780,7 +1744,6 @@
             <returns>Void.</returns>
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
@@ -1788,9 +1751,9 @@
             <summary>
             Gets the confirm email token, used to confirm the email address of a user.
             </summary>
-            <param name="emailAddress">The user id.</param>
+            <param name="emailAddress">The email address.</param>
             <param name="cancellationToken">The cancellation token.</param>
-            <returns>Void.</returns>
+            <returns>The confirm email token.</returns>
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
             <response code="401">Unauthorized.</response>
@@ -1806,6 +1769,7 @@
             <returns>Void.</returns>
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>

@@ -15,9 +15,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// </summary>
         public virtual string NewEmailAddress { get; set; }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
+        /// <inheritdoc />
         public GetChangeEmailTokenRequest()
         {
             this.Action = "email/change/token";

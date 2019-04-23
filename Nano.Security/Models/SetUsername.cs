@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models
 {
     /// <summary>
-    /// Change Username.
+    /// Set Username.
     /// </summary>
     public class SetUsername
     {
@@ -14,7 +14,7 @@ namespace Nano.Security.Models
         public virtual string UserId { get; set; }
 
         /// <summary>
-        /// Username.
+        /// New Username.
         /// </summary>
         [Required]
         [MaxLength(256)]

@@ -6,13 +6,11 @@ namespace Nano.Web.Api.Requests.Identity
     public class ResetPasswordRequest : BaseRequestPost
     {
         /// <summary>
-        /// Set Username.
+        /// Reset Password.
         /// </summary>
         public virtual ResetPassword ResetPassword { get; set; }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
+        /// <inheritdoc />
         public ResetPasswordRequest()
         {
             this.Action = "password/reset";

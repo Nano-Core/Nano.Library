@@ -20,10 +20,10 @@ namespace Nano.Security.Models
         public virtual string UserId { get; set; }
 
         /// <summary>
-        /// New Email.
+        /// New Email Address.
         /// </summary>
         [Required]
         [EmailAddress]
-        public virtual string NewEmail { get; set; }
+        public virtual string NewEmailAddress { get; set; }
     }
 }

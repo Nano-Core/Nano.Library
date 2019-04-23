@@ -14,17 +14,17 @@ namespace Nano.Security.Models
         public virtual string Token { get; set; }
 
         /// <summary>
-        /// Password.
-        /// </summary>
-        [Required]
-        [MaxLength(256)]
-        public virtual string Password { get; set; }
-
-        /// <summary>
         /// Email Address.
         /// </summary>
         [Required]
         [EmailAddress]
         public virtual string EmailAddress { get; set; }
+
+        /// <summary>
+        /// Password.
+        /// </summary>
+        [Required]
+        [MaxLength(256)]
+        public virtual string Password { get; set; }
     }
 }
