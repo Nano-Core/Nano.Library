@@ -9,6 +9,7 @@ using Nano.Eventing.Handlers;
 using Nano.Eventing.Interfaces;
 using Nano.Eventing.Providers.EasyNetQ;
 using Nano.Models;
+using Nano.Models.Extensions;
 
 namespace Nano.Eventing.Extensions
 {
@@ -75,7 +76,7 @@ namespace Nano.Eventing.Extensions
                 .SelectMany(x => x.GetInterfaces(), (x, y) => new { Type = x, GenericType = y })
                 .Where(x =>
                     !x.Type.IsAbstract &&
-                    x.GenericType == typeof(IEventingHandler<>) &&
+                    x.Type.IsTypeDef(typeof(IEventingHandler<>)) &&
                     x.Type != typeof(EntityEventHandler))
                 .ToList()
                 .ForEach(x =>
