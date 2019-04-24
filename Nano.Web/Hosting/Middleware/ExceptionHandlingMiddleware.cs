@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -43,6 +44,11 @@ namespace Nano.Web.Hosting.Middleware
             var request = httpContext.Request;
             var response = httpContext.Response;
 
+            var statusCode = response.StatusCode;
+            var logeLevel = statusCode >= 500 && statusCode <= 599 
+                ? LogLevel.Error 
+                : LogLevel.Information;
+
             Exception exception = default;
             try
             {
@@ -54,11 +60,16 @@ namespace Nano.Web.Hosting.Middleware
 
                 if (response.HasStarted)
                     response.Clear();
-
-                response.StatusCode = 500;
+                
                 response.ContentType = request.ContentType;
+                response.StatusCode = ex is UnauthorizedAccessException
+                    ? (int)HttpStatusCode.Unauthorized
+                    : (int)HttpStatusCode.InternalServerError;
 
                 var error = new Error(ex);
+
+                if (error.IsTranslated)
+                    logeLevel = LogLevel.Information;
 
                 var result =
                     request.IsContentTypeJson()
@@ -75,15 +86,10 @@ namespace Nano.Web.Hosting.Middleware
                 var method = request.Method;
                 var path = request.Path.Value;
                 var id = httpContext.TraceIdentifier;
-                var statusCode = response.StatusCode;
                 var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
                 var protocol = request.IsHttps ? request.Protocol.Replace("HTTP", "HTTPS") : request.Protocol;
                 var queryString = request.QueryString.HasValue ? $"{request.QueryString.Value}" : string.Empty;
                 
-                var logeLevel = statusCode >= 500 && statusCode <= 599 
-                    ? LogLevel.Error 
-                    : LogLevel.Information;
-
                 this.Logger
                     .Log(logeLevel, exception, MESSAGE_TEMPLATE, protocol, method, path, queryString, statusCode, elapsed, id);
             }

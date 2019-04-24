@@ -329,23 +329,25 @@ namespace Nano.Web.Hosting.Extensions
 
             if (options.Hosting.UseHealthCheckUI)
             {
-                var port = options.Hosting.Ports.FirstOrDefault();
+                // TODO: Healthz-UI: string.Concat("{\"HealthChecks\": [{\"Name\": \"app\",\"Uri\": \"http://localhost:", port, "/healthz\"}]}");
+                
+                //var port = options.Hosting.Ports.FirstOrDefault();
                 var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-                var appOptions = config.GetSection(AppOptions.SectionName).Get<AppOptions>();
+                //var appOptions = config.GetSection(AppOptions.SectionName).Get<AppOptions>();
 
-                var healthz = new
-                {
-                    HealthChecks = new[]
-                    {
-                        new
-                        {
-                            Name = appOptions.Name.ToLower(),
-                            Uri = $"http://localhost:{port}/healthz"
-                        }
-                    }
-                };
+                //var healthz = new
+                //{
+                //    HealthChecks = new[]
+                //    {
+                //        new
+                //        {
+                //            Name = appOptions.Name.ToLower(),
+                //            Uri = $"http://localhost:{port}/healthz"
+                //        }
+                //    }
+                //};
 
-                config["HealthChecks-UI"] = JsonConvert.SerializeObject(healthz); // BUG: string.Concat("{\"HealthChecks\": [{\"Name\": \"app\",\"Uri\": \"http://localhost:", port, "/healthz\"}]}");
+                //config["HealthChecks-UI"] = JsonConvert.SerializeObject(healthz);
                 config[HostDefaults.ContentRootKey] = Directory.GetCurrentDirectory();
                 
                 services

@@ -278,10 +278,12 @@ namespace Nano.Web.Api
                     case HttpStatusCode.NotFound:
                         return default;
 
+                    case HttpStatusCode.Unauthorized:
+                        throw new AggregateException(new UnauthorizedAccessException());
+
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.InternalServerError:
                         var error = JsonConvert.DeserializeObject<Error>(rawJson);
-                        // BUG: Pass through statusCode for 401, etc.
                         if (error.IsTranslated)
                         {
                             throw new AggregateException(error.Exceptions.Select(x => new TranslationException(x)));
