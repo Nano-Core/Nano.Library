@@ -331,7 +331,6 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpGet]
         [Route("email/confirm/token")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(ConfirmEmailToken), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -340,10 +339,10 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> GetConfirmEmailTokenAsync([FromQuery][Required]string emailAddress, CancellationToken cancellationToken = default)
         {
-            var resetPasswordToken = await this.IdentityManager
+            var confirmEmailToken = await this.IdentityManager
                 .GenerateConfirmEmailTokenAsync(emailAddress, cancellationToken);
 
-            return this.Ok(resetPasswordToken);
+            return this.Ok(confirmEmailToken);
         }
         
         /// <summary>

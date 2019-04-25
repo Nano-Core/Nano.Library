@@ -22,7 +22,7 @@ namespace Nano.Web.Api.Requests.Identity
             var parameters = base.GetQueryStringParameters();
 
             parameters
-                .Add(new KeyValuePair<string, string>("EmailAddress", this.EmailAddress));
+                .Add(new KeyValuePair<string, string>("emailAddress", this.EmailAddress));
 
             return parameters;
         }

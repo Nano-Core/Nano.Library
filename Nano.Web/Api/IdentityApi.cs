@@ -10,8 +10,14 @@ namespace Nano.Web.Api
     /// <summary>
     /// Default Identity Api.
     /// </summary>
-    public class IdentityApi : DefaultApi
+    public class IdentityApi<TUser> : DefaultApi
+        where TUser : DefaultEntityUser
     {
+        /// <summary>
+        /// Identity Controller.
+        /// </summary>
+        protected static string IdentityController => $"{typeof(TUser).Name.ToLower()}s";
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -28,8 +34,7 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="SingUpRequest{TUser}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The instance of <typeparamref name="TUser"/>.</returns>
-        public virtual async Task<TUser> SignUpAsync<TUser>(SingUpRequest<TUser> request, CancellationToken cancellationToken = default)
-            where TUser : DefaultEntityUser
+        public virtual async Task<TUser> SignUpAsync(SingUpRequest<TUser> request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -43,8 +48,7 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="SingUpExternalRequest{TUser}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The instance of <typeparamref name="TUser"/>.</returns>
-        public virtual async Task<TUser> SignUpExternalAsync<TUser>(SingUpExternalRequest<TUser> request, CancellationToken cancellationToken = default)
-            where TUser : DefaultEntityUser
+        public virtual async Task<TUser> SignUpExternalAsync(SingUpExternalRequest<TUser> request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -63,6 +67,8 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
+            request.Controller = IdentityController;
+            
             await this.CustomAsync(request, cancellationToken);
         }
 
@@ -77,6 +83,8 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
+            request.Controller = IdentityController;
+
             await this.CustomAsync(request, cancellationToken);
         }
 
@@ -90,6 +98,8 @@ namespace Nano.Web.Api
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
+            
+            request.Controller = IdentityController;
 
             await this.CustomAsync(request, cancellationToken);
         }
@@ -105,6 +115,8 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
+            request.Controller = IdentityController;
+            
             await this.CustomAsync(request, cancellationToken);
         }
 
@@ -119,6 +131,8 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
+            request.Controller = IdentityController;
+            
             await this.CustomAsync(request, cancellationToken);
         }
 
@@ -133,6 +147,8 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
+            request.Controller = IdentityController;
+            
             await this.CustomAsync(request, cancellationToken);
         }
         
@@ -146,6 +162,8 @@ namespace Nano.Web.Api
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
+
+            request.Controller = IdentityController;
 
             return await this.CustomAsync<GetChangeEmailTokenRequest, ChangeEmailToken>(request, cancellationToken);
         }
@@ -161,6 +179,8 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
+            request.Controller = IdentityController;
+
             return await this.CustomAsync<GetConfirmEmailTokenRequest, ConfirmEmailToken>(request, cancellationToken);
         }
 
@@ -175,6 +195,8 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
+            request.Controller = IdentityController;
+
             return await this.CustomAsync<GetResetPasswordTokenRequest, ResetPasswordToken>(request, cancellationToken);
         }
 
@@ -188,6 +210,8 @@ namespace Nano.Web.Api
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
+
+            request.Controller = IdentityController;
 
             await this.CustomAsync(request, cancellationToken);
         }
