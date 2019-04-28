@@ -59,11 +59,12 @@ namespace Nano.Web.Controllers
                 .SignUpAsync(signUp, cancellationToken);
 
             signUp.User.Id = Guid.Parse(identityUser.Id);
-            signUp.User.IdentityUser = identityUser;
             signUp.User.IdentityUserId = identityUser.Id;
 
             var result = await this.Repository
                 .AddAsync(signUp.User, cancellationToken);
+
+            result.IdentityUser = identityUser;
 
             return this.Created("signup", result);
         }
@@ -93,11 +94,12 @@ namespace Nano.Web.Controllers
                 .SignUpExternalAsync(signUpExternal, cancellationToken);
 
             signUpExternal.User.Id = Guid.Parse(identityUser.Id); 
-            signUpExternal.User.IdentityUser = identityUser;
             signUpExternal.User.IdentityUserId = identityUser.Id;
 
             var result = await this.Repository
                 .AddAsync(signUpExternal.User, cancellationToken);
+
+            result.IdentityUser = identityUser;
 
             return this.Created("external/signup", result);
         }
