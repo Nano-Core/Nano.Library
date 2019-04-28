@@ -58,7 +58,8 @@ namespace Nano.Web.Controllers
             var identityUser = await this.IdentityManager
                 .SignUpAsync(signUp, cancellationToken);
 
-            signUp.User.Id = Guid.Parse(identityUser.Id); 
+            signUp.User.Id = Guid.Parse(identityUser.Id);
+            signUp.User.IdentityUser = identityUser;
             signUp.User.IdentityUserId = identityUser.Id;
 
             var result = await this.Repository
@@ -92,6 +93,7 @@ namespace Nano.Web.Controllers
                 .SignUpExternalAsync(signUpExternal, cancellationToken);
 
             signUpExternal.User.Id = Guid.Parse(identityUser.Id); 
+            signUpExternal.User.IdentityUser = identityUser;
             signUpExternal.User.IdentityUserId = identityUser.Id;
 
             var result = await this.Repository
