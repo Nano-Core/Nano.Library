@@ -16,6 +16,8 @@ namespace Nano.Security.Extensions
     /// </summary>
     public static class UserManagerExtensions
     {
+        // TODO: Jwt-Token Refresh (and lower expiration of jwt-token)
+
         /// <summary>
         /// Generates the Jwt token.
         /// </summary>

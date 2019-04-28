@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Nano.Data.Attributes;
+using Nano.Models.Attributes;
 
 namespace Nano.Data.Extensions
 {

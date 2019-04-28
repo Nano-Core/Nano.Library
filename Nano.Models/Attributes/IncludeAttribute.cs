@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.Data.Attributes
+namespace Nano.Models.Attributes
 {
     /// <summary>
     /// Include Attribute.

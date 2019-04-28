@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json;
+using Nano.Models.Attributes;
 
 namespace Nano.Models
 {
@@ -12,14 +12,14 @@ namespace Nano.Models
         /// <summary>
         /// Identity User Id.
         /// </summary>
-        [JsonIgnore]
         [MaxLength(128)]
         public virtual string IdentityUserId { get; set; }
 
         /// <summary>
         /// Identity User.
+        /// Always included using <see cref="IncludeAttribute"/>.
         /// </summary>
-        [JsonIgnore]
+        [Include]
         public virtual IdentityUser IdentityUser { get; set; }
     }
 }
