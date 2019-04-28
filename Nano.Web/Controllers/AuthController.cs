@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nano.Models;
 using Nano.Security;
+using Nano.Security.Exceptions;
 using Nano.Security.Models;
 using Nano.Web.Hosting;
     
@@ -60,7 +61,7 @@ namespace Nano.Web.Controllers
 
                 return this.Ok(accessToken);
             }
-            catch (UnauthorizedAccessException ex)
+            catch (UnauthorizedException ex)
             {
                 return this.Unauthorized(ex.Message);
             }
@@ -118,7 +119,7 @@ namespace Nano.Web.Controllers
 
                 return this.Ok(accessToken);
             }
-            catch (UnauthorizedAccessException ex)
+            catch (UnauthorizedException ex)
             {
                 return this.Unauthorized(ex.Message);
             }

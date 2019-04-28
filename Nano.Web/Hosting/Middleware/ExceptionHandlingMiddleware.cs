@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Nano.Models;
+using Nano.Security.Exceptions;
 using Nano.Web.Hosting.Extensions;
 using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
@@ -60,26 +61,31 @@ namespace Nano.Web.Hosting.Middleware
 
                 if (response.HasStarted)
                     response.Clear();
-                
+
                 response.ContentType = request.ContentType;
-                response.StatusCode = ex is UnauthorizedAccessException
-                    ? (int)HttpStatusCode.Unauthorized
-                    : (int)HttpStatusCode.InternalServerError;
 
-                var error = new Error(ex);
+                if (exception is UnauthorizedException)
+                {
+                    response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                }
+                else
+                {
+                    response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-                if (error.IsTranslated)
-                    logeLevel = LogLevel.Information;
+                    var error = new Error(ex);
+                    if (error.IsTranslated)
+                        logeLevel = LogLevel.Information;
 
-                var result =
-                    request.IsContentTypeJson()
-                        ? JsonConvert.SerializeObject(error)
-                        : request.IsContentTypeXml()
-                            ? XmlConvert.SerializeObject(error)
-                            : error.ToString();
+                    var result =
+                        request.IsContentTypeJson()
+                            ? JsonConvert.SerializeObject(error)
+                            : request.IsContentTypeXml()
+                                ? XmlConvert.SerializeObject(error)
+                                : error.ToString();
 
                     await response
                         .WriteAsync(result);
+                }
             }
             finally
             {

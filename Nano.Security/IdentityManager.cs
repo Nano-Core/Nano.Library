@@ -73,7 +73,7 @@ namespace Nano.Security
             if (result.RequiresTwoFactor)
                 throw new UnauthorizedTwoFactorRequiredException();
 
-            throw new UnauthorizedAccessException();
+            throw new UnauthorizedException();
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Nano.Security
                 .ExternalLoginSignInAsync(loginExternal.LoginProvider, loginExternal.ProviderKey, false, true);
 
             if (!result.Succeeded)
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedException();
 
             var identityUser = await this.UserManager
                 .FindByLoginAsync(loginExternal.LoginProvider, loginExternal.ProviderKey);
