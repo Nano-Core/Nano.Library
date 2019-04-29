@@ -247,6 +247,7 @@ namespace Nano.Web.Hosting.Extensions
                         context.Response.Headers[HeaderNames.Vary] = 
                             new[]
                             {
+                                HeaderNames.Authorization,
                                 HeaderNames.AcceptEncoding, 
                                 HeaderNames.AcceptLanguage
                             };
