@@ -257,6 +257,12 @@ namespace Nano.Security
             var user = await this.UserManager
                 .FindByIdAsync(setPassword.UserId);
 
+            var hasPassword = await this.UserManager
+                .HasPasswordAsync(user);
+
+            if (hasPassword)
+                throw new UnauthorizedSetPasswordException();
+
             await this.UserManager
                 .AddPasswordAsync(user, setPassword.NewPassword);
         }
