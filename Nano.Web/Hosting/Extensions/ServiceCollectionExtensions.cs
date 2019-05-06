@@ -329,7 +329,7 @@ namespace Nano.Web.Hosting.Extensions
 
             if (options.Hosting.UseHealthCheckUI)
             {
-                // TODO: Healthz-UI: string.Concat("{\"HealthChecks\": [{\"Name\": \"app\",\"Uri\": \"http://localhost:", port, "/healthz\"}]}");
+                // TODO: Healthz-UI: string.Concat("{\"HealthChecks\": [{\"Name\": \"app\",\"Uri\": \"http://localhost:", port, "/healthz\"}]}"); Try Config.Bind(...)
                 
                 //var port = options.Hosting.Ports.FirstOrDefault();
                 var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
