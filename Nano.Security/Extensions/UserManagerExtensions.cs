@@ -16,8 +16,6 @@ namespace Nano.Security.Extensions
     /// </summary>
     public static class UserManagerExtensions
     {
-        // TODO: Jwt-Token Refresh (and lower expiration of jwt-token) https://www.blinkingcaret.com/2018/05/30/refresh-tokens-in-asp-net-core-web-api/
-
         /// <summary>
         /// Generates the Jwt token.
         /// </summary>
