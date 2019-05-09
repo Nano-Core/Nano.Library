@@ -4,18 +4,18 @@
         <name>Nano.Data</name>
     </assembly>
     <members>
-        <member name="T:Nano.Data.Attributes.DataImportAttribute">
+        <member name="T:Nano.Data.Attributes.ImportAttribute">
             <summary>
             Import Attribute.
-            Types with this annotation invokes an import of data returned by the <see cref="P:Nano.Data.Attributes.DataImportAttribute.Uri"/> during application startup.
+            Types with this annotation invokes an import of data returned by the <see cref="P:Nano.Data.Attributes.ImportAttribute.Uri"/> during application startup.
             </summary>
         </member>
-        <member name="P:Nano.Data.Attributes.DataImportAttribute.Uri">
+        <member name="P:Nano.Data.Attributes.ImportAttribute.Uri">
             <summary>
             Uri.
             </summary>
         </member>
-        <member name="M:Nano.Data.Attributes.DataImportAttribute.#ctor(System.String)">
+        <member name="M:Nano.Data.Attributes.ImportAttribute.#ctor(System.String)">
             <summary>
             Constructor.
             </summary>
@@ -52,14 +52,14 @@
         </member>
         <member name="M:Nano.Data.BaseDbContext.EnsureSeedAsync(System.Threading.CancellationToken)">
             <summary>
-            Imports data for all models annotated with <see cref="T:Nano.Data.Attributes.DataImportAttribute"/>.
+            Imports data for all models annotated with <see cref="T:Nano.Data.Attributes.ImportAttribute"/>.
             </summary>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>
         <member name="M:Nano.Data.BaseDbContext.EnsureImportAsync(System.Threading.CancellationToken)">
             <summary>
-            Imports data for all models annotated with <see cref="T:Nano.Data.Attributes.DataImportAttribute"/>.
+            Imports data for all models annotated with <see cref="T:Nano.Data.Attributes.ImportAttribute"/>.
             </summary>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>

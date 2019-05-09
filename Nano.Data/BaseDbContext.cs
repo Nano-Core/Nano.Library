@@ -103,7 +103,7 @@ namespace Nano.Data
         }
         
         /// <summary>
-        /// Imports data for all models annotated with <see cref="DataImportAttribute"/>.
+        /// Imports data for all models annotated with <see cref="ImportAttribute"/>.
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="Task"/> (void).</returns>
@@ -131,7 +131,7 @@ namespace Nano.Data
         }
 
         /// <summary>
-        /// Imports data for all models annotated with <see cref="DataImportAttribute"/>.
+        /// Imports data for all models annotated with <see cref="ImportAttribute"/>.
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="Task"/> (void).</returns>
@@ -145,11 +145,11 @@ namespace Nano.Data
                 AppDomain.CurrentDomain
                     .GetAssemblies()
                     .SelectMany(y => y.GetTypes())
-                    .Where(y => y.GetCustomAttributes<DataImportAttribute>().Any())
+                    .Where(y => y.GetCustomAttributes<ImportAttribute>().Any())
                     .ToList()
                     .ForEach(async y =>
                     {
-                        var attribute = y.GetCustomAttribute<DataImportAttribute>();
+                        var attribute = y.GetCustomAttribute<ImportAttribute>();
 
                         await this
                             .AddRangeAsync(attribute.Uri, y, cancellationToken);
