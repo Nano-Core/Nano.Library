@@ -23,6 +23,6 @@ namespace Nano.Security.Models
         /// <summary>
         /// Is Expired.
         /// </summary>
-        public virtual bool IsExpired => this.Token != null && this.ExpireAt > DateTimeOffset.UtcNow;
+        public virtual bool IsExpired => this.ExpireAt <= DateTimeOffset.UtcNow;
     }
 }
