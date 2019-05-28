@@ -61,13 +61,15 @@ namespace Nano.Web
                 .UseHttpXXssProtectionPolicyHeader()
                 .UseHttpReferrerPolicyHeader()
                 .UseHttpStrictTransportSecurityPolicyHeader()
-                .UseCors(x =>
-                {
-                    x.AllowAnyOrigin();
-                    x.AllowAnyHeader();
-                    x.AllowAnyMethod();
-                    x.AllowCredentials();
-                })
+                // BUG: Figure put CORS after 2.2. upgrade.
+                // The CORS protocol does not allow specifying a wildcard (any) origin and credentials at the same time. Configure the policy by listing individual origins if credentials needs to be supported.
+                //.UseCors(x =>
+                //{
+                //    x.AllowAnyOrigin();
+                //    x.AllowAnyHeader();
+                //    x.AllowAnyMethod();
+                //    x.AllowCredentials();
+                //})
                 .UseHttpContextAccessor()
                 .UseStaticFiles()
                 .UseHttpsRedirect()
