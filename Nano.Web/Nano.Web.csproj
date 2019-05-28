@@ -44,7 +44,7 @@
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.Network" Version="2.2.2" />
     <PackageReference Include="AspNetCore.HealthChecks.System" Version="2.2.1" />
-    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="2.2.27" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="2.2.28" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="2.2.2" />
