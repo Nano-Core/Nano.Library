@@ -329,29 +329,30 @@ namespace Nano.Web.Hosting.Extensions
 
             if (options.Hosting.UseHealthCheckUI)
             {
-                var port = options.Hosting.Ports.FirstOrDefault();
+                //var port = options.Hosting.Ports.FirstOrDefault();
                 var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-                var appOptions = config.GetSection(AppOptions.SectionName).Get<AppOptions>();
+                //var appOptions = config.GetSection(AppOptions.SectionName).Get<AppOptions>();
 
-                var healthz = new
-                {
-                    HealthChecks = new[]
-                    {
-                        new
-                        {
-                            Name = appOptions.Name.ToLower(),
-                            Uri = $"http://localhost:{port}/healthz"
-                        }
-                    }
-                };
+                //var healthz = new
+                //{
+                //    HealthChecks = new[]
+                //    {
+                //        new
+                //        {
+                //            Name = appOptions.Name.ToLower(),
+                //            Uri = $"http://localhost:{port}/healthz"
+                //        }
+                //    }
+                //};
 
-                config.Bind("HealthChecks-UI", healthz); // BUG: Try / Test
+                //config.Bind("HealthChecks-UI", healthz); // BUG: Doesn't work
                 config[HostDefaults.ContentRootKey] = Directory.GetCurrentDirectory();
                 
                 services
                     .AddHealthChecksUI();
 
-                services.AddScoped<DbContextOptions, DbContextOptions<NullDbContext>>(); 
+                services
+                    .AddScoped<DbContextOptions, DbContextOptions<NullDbContext>>(); 
             }
 
             return services;

@@ -566,5 +566,38 @@ namespace Nano.Web.Hosting.Extensions
             
             return applicationBuilder;
         }
+
+        /// <summary>
+        /// Adds CORS middleware to the <see cref="IApplicationBuilder"/>.
+        /// </summary>
+        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+        internal static IApplicationBuilder UseHttpCorsPolicy(this IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            var services = applicationBuilder.ApplicationServices;
+            var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
+
+            applicationBuilder
+                .UseCors(x =>
+                {
+                    if (webOptions.Hosting.AllowedOrigins.Any())
+                    {
+                        x.WithOrigins(webOptions.Hosting.AllowedOrigins);
+                    }
+                    else
+                    {
+                        x.AllowAnyOrigin();
+                    }
+
+                    x.SetIsOriginAllowedToAllowWildcardSubdomains();
+                    x.AllowAnyHeader();
+                    x.AllowAnyMethod();
+                });
+            
+            return applicationBuilder;
+        }
     }
 }

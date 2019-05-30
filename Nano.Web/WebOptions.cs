@@ -53,6 +53,11 @@ namespace Nano.Web
             public virtual int[] PortsHttps { get; set; } = new int[0];
 
             /// <summary>
+            /// Allowed Origins.
+            /// </summary>
+            public virtual string[] AllowedOrigins { get; set; } = new string[0];
+
+            /// <summary>
             /// Use Https Rewrite.
             /// Enables middleware for automatically rewrite http requests to https.
             /// </summary>
