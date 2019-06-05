@@ -336,7 +336,7 @@ namespace Nano.Web.Hosting.Extensions
                 config[HostDefaults.ContentRootKey] = Directory.GetCurrentDirectory();
                 
                 services
-                    .AddHealthChecksUI("healthcheckdb", x =>
+                    .AddHealthChecksUI("healthchecksdb", x =>
                         {
                             x.AddHealthCheckEndpoint(appOptions.Name.ToLower(), $"http://localhost:{port}/healthz");
                             x.SetEvaluationTimeInSeconds(10);
