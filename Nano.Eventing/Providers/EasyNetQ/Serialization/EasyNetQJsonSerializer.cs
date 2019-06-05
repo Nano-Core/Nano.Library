@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Text;
 using EasyNetQ;
 using Newtonsoft.Json;
@@ -14,7 +13,6 @@ namespace Nano.Eventing.Providers.EasyNetQ.Serialization
         private readonly JsonSerializerSettings serializerSettings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
-            Culture = CultureInfo.CurrentCulture,
             NullValueHandling = NullValueHandling.Ignore,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             PreserveReferencesHandling = PreserveReferencesHandling.None
