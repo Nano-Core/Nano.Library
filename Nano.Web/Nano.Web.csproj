@@ -68,6 +68,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\AspNetCore.TimeZone\AspNetCore.TimeZone.csproj" />
     <ProjectReference Include="..\Nano.App\Nano.App.csproj" />
   </ItemGroup>
 

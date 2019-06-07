@@ -11,7 +11,6 @@ using Nano.App;
 using Nano.Config.Extensions;
 using Nano.Web.Controllers;
 using Nano.Web.Hosting.Conventions;
-using Nano.Web.Hosting.Documentation;
 using Nano.Web.Hosting.ModelBinders;
 using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
@@ -25,6 +24,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml.XPath;
+using AspNetCore.TimeZone;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +36,7 @@ using Nano.Repository;
 using Nano.Repository.Interfaces;
 using Nano.Security;
 using Nano.Web.Api;
+using Nano.Web.Hosting.Documentation.Filters;
 using Nano.Web.Hosting.Filters;
 using Nano.Web.Hosting.HealthChecks;
 using Nano.Web.Hosting.Middleware;
@@ -70,6 +71,7 @@ namespace Nano.Web.Hosting.Extensions
                 .AddConfigOptions<WebOptions>(configuration, WebOptions.SectionName, out var options);
 
             var serviceProvider = services.BuildServiceProvider();
+            var appOptions = serviceProvider.GetService<AppOptions>();
             var dataOptions = serviceProvider.GetService<DataOptions>();
             var securityOptions = serviceProvider.GetService<SecurityOptions>();
 
@@ -82,6 +84,7 @@ namespace Nano.Web.Hosting.Extensions
                 .AddVersioning()
                 .AddDocumentation()
                 .AddLocalizations()
+                .AddRequestTimeZone(appOptions.DefaultTimeZone)
                 .AddCompression()
                 .AddContentTypeFormatters()
                 .AddSingleton<ExceptionHandlingMiddleware>()

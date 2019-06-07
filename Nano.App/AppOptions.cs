@@ -26,6 +26,11 @@ namespace Nano.App
         public virtual string TermsOfService { get; set; }
 
         /// <summary>
+        /// Default Time Zone.
+        /// </summary>
+        public virtual string DefaultTimeZone { get; set; } = "etc/UTC";
+
+        /// <summary>
         /// Version.
         /// </summary>
         public virtual string Version { get; set; } = "1.0.0";

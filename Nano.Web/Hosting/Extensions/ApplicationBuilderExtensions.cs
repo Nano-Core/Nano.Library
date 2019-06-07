@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using AspNetCore.TimeZone;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -171,6 +172,22 @@ namespace Nano.Web.Hosting.Extensions
                     x.SupportedCultures = appOptions.Cultures.Supported.Select(y => new CultureInfo(y)).ToArray();
                     x.SupportedUICultures = appOptions.Cultures.Supported.Select(y => new CultureInfo(y)).ToArray();
                 });
+
+            return applicationBuilder;
+        }
+
+        /// <summary>
+        /// Adds timezone middleware to the <see cref="IApplicationBuilder"/>.
+        /// </summary>
+        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+        internal static IApplicationBuilder UseHttpRequestTimeZone(this IApplicationBuilder applicationBuilder)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            applicationBuilder
+                .UseRequestTimeZone();
 
             return applicationBuilder;
         }
@@ -586,15 +603,16 @@ namespace Nano.Web.Hosting.Extensions
                     if (webOptions.Hosting.AllowedOrigins.Any())
                     {
                         x.WithOrigins(webOptions.Hosting.AllowedOrigins);
+                        x.SetIsOriginAllowedToAllowWildcardSubdomains();
                     }
                     else
                     {
                         x.AllowAnyOrigin();
                     }
 
-                    x.SetIsOriginAllowedToAllowWildcardSubdomains();
                     x.AllowAnyHeader();
                     x.AllowAnyMethod();
+                    x.WithExposedHeaders("RequestId", "TZ");
                 });
             
             return applicationBuilder;

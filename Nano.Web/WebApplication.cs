@@ -37,8 +37,8 @@ namespace Nano.Web
         /// Configures the application.
         /// </summary>
         /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
-        /// <param name="hostingEnvironment">The <see cref="Microsoft.AspNetCore.Hosting.IHostingEnvironment"/>.</param>
-        /// <param name="applicationLifetime">The <see cref="Microsoft.AspNetCore.Hosting.IApplicationLifetime"/>.</param>
+        /// <param name="hostingEnvironment">The <see cref="IHostingEnvironment"/>.</param>
+        /// <param name="applicationLifetime">The <see cref="IApplicationLifetime"/>.</param>
         public override void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime)
         {
             if (applicationBuilder == null)
@@ -53,7 +53,9 @@ namespace Nano.Web
             base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
 
             applicationBuilder
+                .UseHttpCorsPolicy()
                 .UseHttpLocalization()
+                .UseHttpRequestTimeZone()
                 .UseExceptionHandling()
                 .UseHttpXForwardedHeaders()
                 .UseHttpXRobotsTagHeaders()
@@ -61,7 +63,6 @@ namespace Nano.Web
                 .UseHttpXXssProtectionPolicyHeader()
                 .UseHttpReferrerPolicyHeader()
                 .UseHttpStrictTransportSecurityPolicyHeader()
-                .UseHttpCorsPolicy()
                 .UseHttpContextAccessor()
                 .UseStaticFiles()
                 .UseHttpsRedirect()

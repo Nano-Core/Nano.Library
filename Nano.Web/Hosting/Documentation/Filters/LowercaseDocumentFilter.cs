@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Nano.Web.Hosting.Documentation
+namespace Nano.Web.Hosting.Documentation.Filters
 {
     /// <inheritdoc />
     public class LowercaseDocumentFilter : IDocumentFilter

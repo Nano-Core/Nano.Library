@@ -50,7 +50,7 @@ namespace Nano.Eventing.Providers.EasyNetQ
                 throw new ArgumentNullException(nameof(serviceProvider));
 
             var type = typeof(TMessage);
-            var appName = Assembly.GetEntryAssembly().GetName().Name;
+            var appName = Assembly.GetEntryAssembly()?.GetName().Name;
             var queueName = $"{appName}:{type.Name}.{routing}";
 
             var queue = await this.Bus.Advanced

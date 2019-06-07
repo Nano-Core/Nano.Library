@@ -1,0 +1,242 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AspNetCore.TimeZone</name>
+    </assembly>
+    <members>
+        <member name="T:AspNetCore.TimeZone.ApplicationBuilderExtensions">
+            <summary>
+            Extension methods for adding the <see cref="T:AspNetCore.TimeZone.RequestTimeZoneMiddleware"/> to an application.
+            </summary>
+        </member>
+        <member name="M:AspNetCore.TimeZone.ApplicationBuilderExtensions.UseRequestTimeZone(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds the <see cref="T:AspNetCore.TimeZone.RequestTimeZoneMiddleware"/> to automatically set timezone information
+            for requests based on information provided by the client.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="T:AspNetCore.TimeZone.CookieRequestTimeZoneProvider">
+            <summary>
+            Determines the timezone information for a request via the value of a cookie.
+            </summary>
+        </member>
+        <member name="F:AspNetCore.TimeZone.CookieRequestTimeZoneProvider.DefaultCookieName">
+            <summary>
+            Represent the default cookie name used to track the user's preferred timezone information,
+            which is ".AspNetCore.TimeZone".
+            </summary>
+        </member>
+        <member name="P:AspNetCore.TimeZone.CookieRequestTimeZoneProvider.CookieName">
+            <summary>
+            The name of the cookie that contains the user's preferred timezone information.
+            Defaults to <see cref="F:AspNetCore.TimeZone.CookieRequestTimeZoneProvider.DefaultCookieName"/>.
+            </summary>
+        </member>
+        <member name="M:AspNetCore.TimeZone.CookieRequestTimeZoneProvider.DetermineProviderTimeZoneResult(Microsoft.AspNetCore.Http.HttpContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:AspNetCore.TimeZone.CookieRequestTimeZoneProvider.MakeCookieValue(AspNetCore.TimeZone.RequestTimeZone)">
+            <summary>
+            Creates a string representation of a <see cref="T:AspNetCore.TimeZone.RequestTimeZone"/> for placement in a cookie.
+            </summary>
+            <param name="requestCulture">The <see cref="T:AspNetCore.TimeZone.RequestTimeZone"/>.</param>
+            <returns>The cookie value.</returns>
+        </member>
+        <member name="T:AspNetCore.TimeZone.HeaderRequestTimeZoneProvider">
+            <summary>
+            Determines the timezone information for a request via the value of the 'tz' header.
+            </summary>
+        </member>
+        <member name="P:AspNetCore.TimeZone.HeaderRequestTimeZoneProvider.Headerkey">
+            <summary>
+            The header key that contains the timezone name.
+            </summary>
+        </member>
+        <member name="M:AspNetCore.TimeZone.HeaderRequestTimeZoneProvider.DetermineProviderTimeZoneResult(Microsoft.AspNetCore.Http.HttpContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:AspNetCore.TimeZone.HttpContextExtensions">
+            <summary>
+            Http Context Extensions.
+            </summary>
+        </member>
+        <member name="M:AspNetCore.TimeZone.HttpContextExtensions.GetUserTimeZone(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Get the <see cref="T:System.TimeZoneInfo"/>.
+            </summary>
+            <param name="httpContext">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.</param>
+            <returns>The token.</returns>
+        </member>
+        <member name="T:AspNetCore.TimeZone.IRequestTimeZoneFeature">
+            <summary>
+            Represents the feature that provides the current request's timezone information.
+            </summary>
+        </member>
+        <member name="P:AspNetCore.TimeZone.IRequestTimeZoneFeature.RequestTimeZone">
+            <summary>
+            The <see cref="P:AspNetCore.TimeZone.IRequestTimeZoneFeature.RequestTimeZone"/> of the request.
+            </summary>
+        </member>
+        <member name="P:AspNetCore.TimeZone.IRequestTimeZoneFeature.Provider">
+            <summary>
+            The <see cref="T:AspNetCore.TimeZone.IRequestTimeZoneProvider"/> that determined the request's timezone information.
+            If the value is <c>null</c> then no provider was used and the request's timezone was se to the value of <see cref="P:AspNetCore.TimeZone.RequestTimeZoneOptions.DefaultRequestTimeZone"/>.
+            </summary>
+        </member>
+        <member name="T:AspNetCore.TimeZone.IRequestTimeZoneProvider">
+            <summary>
+            Request TimeZone Provider interface.
+            </summary>
+        </member>
+        <member name="M:AspNetCore.TimeZone.IRequestTimeZoneProvider.DetermineProviderTimeZoneResult(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Determines the provider timezone result from the <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.
+            </summary>
+            <param name="httpContext">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.</param>
+            <returns>The <see cref="T:AspNetCore.TimeZone.ProviderTimeZoneResult"/>.</returns>
+        </member>
+        <member name="T:AspNetCore.TimeZone.ProviderTimeZoneResult">
+            <summary>
+            Details about the timezone obtained from <see cref="T:AspNetCore.TimeZone.IRequestTimeZoneProvider"/>.
+            </summary>
+        </member>
+        <member name="P:AspNetCore.TimeZone.ProviderTimeZoneResult.TimeZoneName">
+            <summary>
+            The timezone name.
+            </summary>
+        </member>
+        <member name="M:AspNetCore.TimeZone.ProviderTimeZoneResult.#ctor(System.String)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="name">The name of the timezone.</param>
+        </member>
+        <member name="T:AspNetCore.TimeZone.QueryStringRequestTimeZoneProvider">
+            <summary>
+            Determines the timezone information for a request via values in the query string.
+            </summary>
+        </member>
+        <member name="P:AspNetCore.TimeZone.QueryStringRequestTimeZoneProvider.QueryStringKey">
+            <summary>
+            The key that contains the timezone name.
+            </summary>
+        </member>
+        <member name="M:AspNetCore.TimeZone.QueryStringRequestTimeZoneProvider.DetermineProviderTimeZoneResult(Microsoft.AspNetCore.Http.HttpContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:AspNetCore.TimeZone.RequestTimeZone">
+            <summary>
+            Details about the timezone for an <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.
+            </summary>
+        </member>
+        <member name="P:AspNetCore.TimeZone.RequestTimeZone.TimeZone">
+            <summary>
+            The <see cref="T:System.TimeZoneInfo"/>.
+            </summary>
+        </member>
+        <member name="M:AspNetCore.TimeZone.RequestTimeZone.#ctor(System.String)">
+            <summary>
+            Construtor.
+            </summary>
+            <param name="name">The timezone name.</param>
+        </member>
+        <member name="M:AspNetCore.TimeZone.RequestTimeZone.#ctor(System.TimeZoneInfo)">
+            <summary>
+            Construtor.
+            </summary>
+            <param name="timeZoneInfo">The <see cref="T:System.TimeZoneInfo"/>.</param>
+        </member>
+        <member name="T:AspNetCore.TimeZone.RequestTimeZoneFeature">
+            <summary>
+            Provides the current request's timezone information.
+            </summary>
+        </member>
+        <member name="P:AspNetCore.TimeZone.RequestTimeZoneFeature.RequestTimeZone">
+            <inheritdoc />
+        </member>
+        <member name="P:AspNetCore.TimeZone.RequestTimeZoneFeature.Provider">
+            <inheritdoc />
+        </member>
+        <member name="M:AspNetCore.TimeZone.RequestTimeZoneFeature.#ctor(AspNetCore.TimeZone.RequestTimeZone,AspNetCore.TimeZone.IRequestTimeZoneProvider)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="requestTimeZone">The <see cref="P:AspNetCore.TimeZone.RequestTimeZoneFeature.RequestTimeZone"/>.</param>
+            <param name="provider">The <see cref="T:AspNetCore.TimeZone.IRequestTimeZoneProvider"/>.</param>
+        </member>
+        <member name="T:AspNetCore.TimeZone.RequestTimeZoneMiddleware">
+            <inheritdoc />
+        </member>
+        <member name="M:AspNetCore.TimeZone.RequestTimeZoneMiddleware.#ctor(AspNetCore.TimeZone.RequestTimeZoneOptions)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="options">The <see cref="T:AspNetCore.TimeZone.RequestTimeZoneOptions"/>.</param>
+        </member>
+        <member name="M:AspNetCore.TimeZone.RequestTimeZoneMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.Http.RequestDelegate)">
+            <inheritdoc />
+        </member>
+        <member name="T:AspNetCore.TimeZone.RequestTimeZoneOptions">
+            <summary>
+            Specifies options for the <see cref="T:AspNetCore.TimeZone.RequestTimeZoneMiddleware"/>.
+            </summary>
+        </member>
+        <member name="P:AspNetCore.TimeZone.RequestTimeZoneOptions.DefaultRequestTimeZone">
+            <summary>
+            Gets or sets the default timezone to use for requests.
+            </summary>
+        </member>
+        <member name="P:AspNetCore.TimeZone.RequestTimeZoneOptions.RequestTimeZoneProviders">
+            <summary>
+            An ordered list of providers used to determine a request's timezone information.
+            The first provider that returns a non-null result for a given request will be used.
+            Defaults to the following:
+            <list type="number">
+                <item><description><see cref="T:AspNetCore.TimeZone.QueryStringRequestTimeZoneProvider"/></description></item>
+                <item><description><see cref="T:AspNetCore.TimeZone.HeaderRequestTimeZoneProvider"/></description></item>
+                <item><description><see cref="T:AspNetCore.TimeZone.CookieRequestTimeZoneProvider"/></description></item>
+            </list>
+            </summary>
+        </member>
+        <member name="M:AspNetCore.TimeZone.RequestTimeZoneOptions.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="T:AspNetCore.TimeZone.RequestTimeZoneProvider">
+            <summary>
+            An abstract base class provider for determining the timezone information
+            of an <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.
+            </summary>
+        </member>
+        <member name="F:AspNetCore.TimeZone.RequestTimeZoneProvider.nullProviderTimeZoneResult">
+            <summary>
+            Result that indicates that this instance of <see cref="T:AspNetCore.TimeZone.RequestTimeZoneProvider" />
+            could not determine the request timezone.
+            </summary>
+        </member>
+        <member name="P:AspNetCore.TimeZone.RequestTimeZoneProvider.Options">
+            <summary>
+            The current options for the <see cref="T:AspNetCore.TimeZone.RequestTimeZoneMiddleware"/>.
+            </summary>
+        </member>
+        <member name="M:AspNetCore.TimeZone.RequestTimeZoneProvider.DetermineProviderTimeZoneResult(Microsoft.AspNetCore.Http.HttpContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:AspNetCore.TimeZone.ServiceCollectionExtensions">
+            <summary>
+            Service Collection Extensions.
+            </summary>
+        </member>
+        <member name="M:AspNetCore.TimeZone.ServiceCollectionExtensions.AddRequestTimeZone(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+            <summary>
+            Adds services to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>, required for request timezone support
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <param name="defaultTimeZone">The name of the time zone that should be used as default.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
+    </members>
+</doc>
