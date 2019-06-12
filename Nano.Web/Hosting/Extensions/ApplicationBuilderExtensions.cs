@@ -1,7 +1,6 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using AspNetCore.TimeZone;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -16,6 +15,7 @@ using Nano.Web.Hosting.Enums;
 using Nano.Web.Hosting.Middleware;
 using NWebsec.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using ReferrerPolicy = NWebsec.Core.Common.HttpHeaders.ReferrerPolicy;
 
 namespace Nano.Web.Hosting.Extensions

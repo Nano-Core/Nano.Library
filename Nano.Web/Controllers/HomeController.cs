@@ -2,13 +2,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
-using AspNetCore.TimeZone;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Nano.Models;
 using Nano.Web.Hosting;
+using Vivet.AspNetCore.RequestTimeZone.Models;
+using Vivet.AspNetCore.RequestTimeZone.Providers;
 
 namespace Nano.Web.Controllers
 {

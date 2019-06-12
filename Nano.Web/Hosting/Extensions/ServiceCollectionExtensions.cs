@@ -24,7 +24,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml.XPath;
-using AspNetCore.TimeZone;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +42,7 @@ using Nano.Web.Hosting.Middleware;
 using Nano.Web.Hosting.Startup;
 using Nano.Web.Hosting.Startup.Tasks;
 using Newtonsoft.Json.Converters;
+using Vivet.AspNetCore.RequestTimeZone.Extensions;
 
 namespace Nano.Web.Hosting.Extensions
 {

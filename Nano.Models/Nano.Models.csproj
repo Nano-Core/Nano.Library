@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DynamicExpression" Version="2.1.3.10" />
+    <PackageReference Include="DynamicExpression" Version="2.2.0" />
     <PackageReference Include="libphonenumber-csharp" Version="8.10.12" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="2.2.0" />

@@ -65,10 +65,10 @@
     <PackageReference Include="NWebsec.AspNetCore.Mvc" Version="2.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.2.0" />
+    <PackageReference Include="Vivet.AspNetCore.RequestTimeZone" Version="1.0.3" />
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\AspNetCore.TimeZone\AspNetCore.TimeZone.csproj" />
     <ProjectReference Include="..\Nano.App\Nano.App.csproj" />
   </ItemGroup>
 
