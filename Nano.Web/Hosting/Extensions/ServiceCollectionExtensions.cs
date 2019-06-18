@@ -84,7 +84,12 @@ namespace Nano.Web.Hosting.Extensions
                 .AddVersioning()
                 .AddDocumentation()
                 .AddLocalizations()
-                .AddRequestTimeZone(appOptions.DefaultTimeZone)
+                .AddRequestTimeZone(x =>
+                {
+                    x.Id = appOptions.DefaultTimeZone;
+                    x.EnableRequestToUtc = true;
+                    x.EnableResponseToLocal = true;
+                })
                 .AddCompression()
                 .AddContentTypeFormatters()
                 .AddSingleton<ExceptionHandlingMiddleware>()

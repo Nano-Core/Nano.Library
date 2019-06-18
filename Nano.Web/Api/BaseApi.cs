@@ -19,6 +19,7 @@ using Nano.Web.Hosting;
 using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Vivet.AspNetCore.RequestTimeZone;
 
 namespace Nano.Web.Api
 {
@@ -227,6 +228,7 @@ namespace Nano.Web.Api
 
             this.httpClient.DefaultRequestHeaders.AcceptLanguage.Clear();
             this.httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
+            this.httpClient.DefaultRequestHeaders.Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
 
             switch (request)
             {
