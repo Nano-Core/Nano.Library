@@ -8,8 +8,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Nano.Models;
 using Nano.Web.Hosting;
-using Vivet.AspNetCore.RequestTimeZone.Models;
-using Vivet.AspNetCore.RequestTimeZone.Providers;
+using Vivet.AspNetCore.RequestTimeZone;
 
 namespace Nano.Web.Controllers
 {
@@ -78,8 +77,8 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual IActionResult SetTimeZone([FromQuery][Required]string name, CancellationToken cancellationToken = default)
         {
-            var cookieName = CookieRequestTimeZoneProvider.DefaultCookieName;
-            var cookieValue = CookieRequestTimeZoneProvider.MakeCookieValue(new RequestTimeZone(name));
+            var cookieName = RequestTimeZoneCookieProvider.DefaultCookieName;
+            var cookieValue = RequestTimeZoneCookieProvider.MakeCookieValue(new RequestTimeZone(name));
             var cookieOptions = new CookieOptions
             {
                 Expires = DateTimeOffset.UtcNow.AddDays(14)
