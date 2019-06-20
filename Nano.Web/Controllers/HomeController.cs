@@ -87,7 +87,7 @@ namespace Nano.Web.Controllers
             this.Response.Cookies
                 .Append(cookieName, cookieValue, cookieOptions);
 
-            this.Response.Headers["TZ"] = name;
+            this.Response.Headers[RequestTimeZoneHeaderProvider.Headerkey] = name;
 
             return this.Ok();
         }

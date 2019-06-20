@@ -228,6 +228,8 @@ namespace Nano.Web.Api
 
             this.httpClient.DefaultRequestHeaders.AcceptLanguage.Clear();
             this.httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
+
+            this.httpClient.DefaultRequestHeaders.Remove(RequestTimeZoneHeaderProvider.Headerkey);
             this.httpClient.DefaultRequestHeaders.Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
 
             switch (request)

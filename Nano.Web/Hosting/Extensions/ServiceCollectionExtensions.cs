@@ -46,6 +46,8 @@ using Vivet.AspNetCore.RequestTimeZone.Extensions;
 
 namespace Nano.Web.Hosting.Extensions
 {
+    // BUG: Cleanup, Remove unnecessary used of BuildServiceProvider. Try aggregate UseMvc()
+
     /// <summary>
     /// Service Collection Extensions.
     /// </summary>
@@ -71,7 +73,6 @@ namespace Nano.Web.Hosting.Extensions
                 .AddConfigOptions<WebOptions>(configuration, WebOptions.SectionName, out var options);
 
             var serviceProvider = services.BuildServiceProvider();
-            var appOptions = serviceProvider.GetService<AppOptions>();
             var dataOptions = serviceProvider.GetService<DataOptions>();
             var securityOptions = serviceProvider.GetService<SecurityOptions>();
 
@@ -84,12 +85,7 @@ namespace Nano.Web.Hosting.Extensions
                 .AddVersioning()
                 .AddDocumentation()
                 .AddLocalizations()
-                .AddRequestTimeZone(x =>
-                {
-                    x.Id = appOptions.DefaultTimeZone;
-                    x.EnableRequestToUtc = true;
-                    x.EnableResponseToLocal = true;
-                })
+                .AddTimeZone()
                 .AddCompression()
                 .AddContentTypeFormatters()
                 .AddSingleton<ExceptionHandlingMiddleware>()
@@ -447,8 +443,27 @@ namespace Nano.Web.Hosting.Extensions
             services
                 .AddLocalization()
                 .AddMvc()
-                    .AddViewLocalization()
-                    .AddDataAnnotationsLocalization();
+                .AddViewLocalization()
+                .AddDataAnnotationsLocalization();
+
+            return services;
+        }
+        private static IServiceCollection AddTimeZone(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            var appOptions = services
+                .BuildServiceProvider()
+                .GetService<AppOptions>();
+
+            services
+                .AddRequestTimeZone(x =>
+                {
+                    x.Id = appOptions.DefaultTimeZone;
+                    x.EnableRequestToUtc = true;
+                    x.EnableResponseToLocal = true;
+                });
 
             return services;
         }
