@@ -55,7 +55,6 @@ namespace Nano.Web
             applicationBuilder
                 .UseHttpCorsPolicy()
                 .UseHttpLocalization()
-                .UseHttpRequestTimeZone()
                 .UseExceptionHandling()
                 .UseHttpXForwardedHeaders()
                 .UseHttpXRobotsTagHeaders()
@@ -73,6 +72,7 @@ namespace Nano.Web
                 .UseAuthentication()
                 .UseHttpSession()
                 .UseHttpRequestOptions()
+                .UseHttpRequestTimeZone()
                 .UseHttpRequestIdentifier()
                 .UseHttpResponseCaching()
                 .UseHttpResponseCompression()

@@ -15,6 +15,7 @@ using Nano.Web.Hosting.Enums;
 using Nano.Web.Hosting.Middleware;
 using NWebsec.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using Vivet.AspNetCore.RequestTimeZone;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using ReferrerPolicy = NWebsec.Core.Common.HttpHeaders.ReferrerPolicy;
 
@@ -266,7 +267,8 @@ namespace Nano.Web.Hosting.Extensions
                             {
                                 HeaderNames.Authorization,
                                 HeaderNames.AcceptEncoding, 
-                                HeaderNames.AcceptLanguage
+                                HeaderNames.AcceptLanguage,
+                                RequestTimeZoneHeaderProvider.Headerkey
                             };
 
                         var responseCachingFeature = context.Features
