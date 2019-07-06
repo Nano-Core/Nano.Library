@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Nano.Models;
 using Nano.Security.Models;
 using Nano.Web.Api.Requests.Identity;
@@ -48,14 +49,14 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="SignUpExternalRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task SignUpExternalAsync(SignUpExternalRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task<ChallengeResult> SignUpExternalAsync(SignUpExternalRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
       
             request.Controller = IdentityApi<TUser>.IdentityController;
 
-            await this.CustomAsync(request, cancellationToken);
+            return await this.CustomAsync<SignUpExternalRequest, ChallengeResult>(request, cancellationToken);
         }
 
         /// <summary>
@@ -64,14 +65,14 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="SignUpExternalRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<AccessToken> SignUpExternalCallbackAsync(SignUpExternalRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task<AccessToken> SignUpExternalCallbackAsync(SignUpExternalCallbackRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
       
             request.Controller = IdentityApi<TUser>.IdentityController;
 
-            return await this.CustomAsync<SignUpExternalRequest, AccessToken>(request, cancellationToken);
+            return await this.CustomAsync<SignUpExternalCallbackRequest, AccessToken>(request, cancellationToken);
         }
 
         /// <summary>
