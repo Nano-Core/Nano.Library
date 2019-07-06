@@ -39,20 +39,6 @@ namespace Nano.Web.Api
         }
 
         /// <summary>
-        /// Log In External Async.
-        /// </summary>
-        /// <param name="request">The <see cref="LogInExternalRequest"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<AccessToken> LogInExternalAsync(LogInExternalRequest request, CancellationToken cancellationToken = default)
-        {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-
-            return await this.CustomAsync<LogInExternalRequest, AccessToken>(request, cancellationToken);
-        }
-
-        /// <summary>
         /// Log Out Async.
         /// </summary>
         /// <param name="request">The <see cref="LogOutRequest"/>.</param>

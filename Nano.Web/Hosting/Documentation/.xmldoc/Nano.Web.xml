@@ -109,14 +109,6 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.LogInExternalAsync(Nano.Web.Api.Requests.Auth.LogInExternalRequest,System.Threading.CancellationToken)">
-            <summary>
-            Log In External Async.
-            </summary>
-            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.LogInExternalRequest"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
-        </member>
         <member name="M:Nano.Web.Api.DefaultApi.LogOutAsync(Nano.Web.Api.Requests.Auth.LogOutRequest,System.Threading.CancellationToken)">
             <summary>
             Log Out Async.
@@ -276,34 +268,39 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Nothing.</returns>
         </member>
-        <member name="T:Nano.Web.Api.IdentityApi">
+        <member name="T:Nano.Web.Api.IdentityApi`1">
             <summary>
             Default Identity Api.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.IdentityApi.#ctor(Nano.Web.Api.ApiOptions)">
+        <member name="P:Nano.Web.Api.IdentityApi`1.IdentityController">
+            <summary>
+            Identity Controller.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.IdentityApi`1.#ctor(Nano.Web.Api.ApiOptions)">
             <summary>
             Constructor.
             </summary>
             <param name="apiOptions">The <see cref="T:Nano.Web.Api.ApiOptions"/>.</param>
         </member>
-        <member name="M:Nano.Web.Api.IdentityApi.SignUpAsync``1(Nano.Web.Api.Requests.Identity.SingUpRequest{``0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.IdentityApi`1.SignUpAsync(Nano.Web.Api.Requests.Identity.SignUpRequest{`0},System.Threading.CancellationToken)">
             <summary>
             Sign Up Async.
             </summary>
-            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.SingUpRequest`1"/>.</param>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.SignUpRequest`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The instance of <typeparamref name="TUser"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Api.IdentityApi.SignUpExternalAsync``1(Nano.Web.Api.Requests.Identity.SingUpExternalRequest{``0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.IdentityApi`1.SignInExternalAsync(Nano.Web.Api.Requests.Identity.SignUpExternalRequest,System.Threading.CancellationToken)">
             <summary>
             Sign Up External Async.
             </summary>
-            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.SingUpExternalRequest`1"/>.</param>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.SignUpExternalRequest"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The instance of <typeparamref name="TUser"/>.</returns>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Api.IdentityApi.SetUsernameAsync(Nano.Web.Api.Requests.Identity.SetUsernameRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.IdentityApi`1.SetUsernameAsync(Nano.Web.Api.Requests.Identity.SetUsernameRequest,System.Threading.CancellationToken)">
             <summary>
             Set Username Async.
             </summary>
@@ -311,7 +308,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Web.Api.IdentityApi.SetPasswordAsync(Nano.Web.Api.Requests.Identity.SetPasswordRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.IdentityApi`1.SetPasswordAsync(Nano.Web.Api.Requests.Identity.SetPasswordRequest,System.Threading.CancellationToken)">
             <summary>
             Set Password Async.
             </summary>
@@ -319,7 +316,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Web.Api.IdentityApi.ResetPasswordAsync(Nano.Web.Api.Requests.Identity.ResetPasswordRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.IdentityApi`1.ResetPasswordAsync(Nano.Web.Api.Requests.Identity.ResetPasswordRequest,System.Threading.CancellationToken)">
             <summary>
             Reset Password Async.
             </summary>
@@ -327,7 +324,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Web.Api.IdentityApi.ChangePasswordAsync(Nano.Web.Api.Requests.Identity.ChangePasswordRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.IdentityApi`1.ChangePasswordAsync(Nano.Web.Api.Requests.Identity.ChangePasswordRequest,System.Threading.CancellationToken)">
             <summary>
             Change Password Async.
             </summary>
@@ -335,7 +332,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Web.Api.IdentityApi.ChangeEmailAsync(Nano.Web.Api.Requests.Identity.ChangeEmailRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.IdentityApi`1.ChangeEmailAsync(Nano.Web.Api.Requests.Identity.ChangeEmailRequest,System.Threading.CancellationToken)">
             <summary>
             Change Email Async.
             </summary>
@@ -343,7 +340,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Web.Api.IdentityApi.ConfirmEmailAsync(Nano.Web.Api.Requests.Identity.ConfirmEmailRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.IdentityApi`1.ConfirmEmailAsync(Nano.Web.Api.Requests.Identity.ConfirmEmailRequest,System.Threading.CancellationToken)">
             <summary>
             Confirm Email Async.
             </summary>
@@ -351,7 +348,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Web.Api.IdentityApi.GetChangeEmailTokenAsync(Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.IdentityApi`1.GetChangeEmailTokenAsync(Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest,System.Threading.CancellationToken)">
             <summary>
             Get Change Email Token Async.
             </summary>
@@ -359,7 +356,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Web.Api.IdentityApi.GetConfirmEmailTokenAsync(Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.IdentityApi`1.GetConfirmEmailTokenAsync(Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest,System.Threading.CancellationToken)">
             <summary>
             Get Confirm Email Token Async.
             </summary>
@@ -367,7 +364,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Web.Api.IdentityApi.GetResetPasswordTokenAsync(Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.IdentityApi`1.GetResetPasswordTokenAsync(Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest,System.Threading.CancellationToken)">
             <summary>
             Get Reset Password Token Async.
             </summary>
@@ -375,7 +372,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Web.Api.IdentityApi.RemoveExternalLoginAsync(Nano.Web.Api.Requests.Identity.RemoveExternalLogInRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.IdentityApi`1.RemoveExternalLoginAsync(Nano.Web.Api.Requests.Identity.RemoveExternalLogInRequest,System.Threading.CancellationToken)">
             <summary>
             Remove External Login Async.
             </summary>
@@ -387,20 +384,6 @@
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest.#ctor">
-            <inheritdoc />
-        </member>
-        <member name="T:Nano.Web.Api.Requests.Auth.LogInExternalRequest">
-            <inheritdoc />
-        </member>
-        <member name="P:Nano.Web.Api.Requests.Auth.LogInExternalRequest.LoginExternal">
-            <summary>
-            Login External.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Api.Requests.Auth.LogInExternalRequest.#ctor">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Api.Requests.Auth.LogInExternalRequest.GetBody">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Auth.LogInRequest">
@@ -421,6 +404,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Auth.LogOutRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.LogOutRequest.GetBody">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.BaseRequest">
@@ -759,11 +745,6 @@
         <member name="T:Nano.Web.Api.Requests.Identity.RemoveExternalLogInRequest">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Api.Requests.Identity.RemoveExternalLogInRequest.LoginExternal">
-            <summary>
-            Login External.
-            </summary>
-        </member>
         <member name="M:Nano.Web.Api.Requests.Identity.RemoveExternalLogInRequest.#ctor">
             <inheritdoc />
         </member>
@@ -812,32 +793,35 @@
         <member name="M:Nano.Web.Api.Requests.Identity.SetUsernameRequest.GetBody">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Api.Requests.Identity.SingUpExternalRequest`1">
+        <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalRequest">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Api.Requests.Identity.SingUpExternalRequest`1.SignUpExternal">
+        <member name="P:Nano.Web.Api.Requests.Identity.SignUpExternalRequest.LoginProvider">
             <summary>
-            Sign Up External.
+            Login Provider.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.SingUpExternalRequest`1.#ctor">
+        <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalRequest.#ctor">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.SingUpExternalRequest`1.GetBody">
+        <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalRequest.GetBody">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Api.Requests.Identity.SingUpRequest`1">
+        <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalRequest.GetQueryStringParameters">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Api.Requests.Identity.SingUpRequest`1.SignUp">
+        <member name="T:Nano.Web.Api.Requests.Identity.SignUpRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.SignUpRequest`1.SignUp">
             <summary>
             Sign Up.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.SingUpRequest`1.#ctor">
+        <member name="M:Nano.Web.Api.Requests.Identity.SignUpRequest`1.#ctor">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.SingUpRequest`1.GetBody">
+        <member name="M:Nano.Web.Api.Requests.Identity.SignUpRequest`1.GetBody">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.IndexRequest">
@@ -983,7 +967,7 @@
             </summary>
             <param name="identityManager">The <see cref="P:Nano.Web.Controllers.AuthController.IdentityManager"/>.</param>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.LogIn(Nano.Security.Models.Login,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.AuthController.LogInAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
             <summary>
             Authenticates and signs in a user.
             On success a jwt-token is created and returned, for use with auhtorization.
@@ -996,7 +980,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.LogOut(System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.AuthController.LogOutAsync(System.Threading.CancellationToken)">
             <summary>
             Logs out a user.
             The jwt-token and any external login is invalidated.
@@ -1008,20 +992,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.LogInExternal(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
-            <summary>
-            Authenticates and signs in a user with external login.
-            On success a jwt-token is created and returned, for later use with auhtorization.
-            </summary>
-            <param name="loginExternal">The login external request.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns>The access token.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occurred.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.AuthController.GetExternalSchemes(System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.AuthController.GetExternalSchemesAsync(System.Threading.CancellationToken)">
             <summary>
             Gets all the configured external login schemes.
             E.g. Google, Facebook, etc.
@@ -1591,20 +1562,31 @@
         </member>
         <member name="M:Nano.Web.Controllers.HomeController.Index">
             <summary>
-            Default action, returning an Ok (success) response.
+            Default action (ping).
             </summary>
             <returns>Void.</returns>
-            <response code="200">Success.</response>
-            <response code="401">Unauthorized.</response>
+            <response code="200">OK.</response>
+            <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.HomeController.SetLanguage(System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.HomeController.SetLanguage(System.String,System.Threading.CancellationToken)">
             <summary>
             Sets the language in a cookie, for use with following requests.
             </summary>
             <param name="code">The langauge code.</param>
-            <param name="returnUrl">The return url (if any).</param>
             <param name="cancellationToken">The cancellationToken.</param>
             <returns>Nothing (void).</returns>
+            <response code="200">OK.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.HomeController.SetTimeZone(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Sets the timezone in a cookie, for use with following requests.
+            </summary>
+            <param name="name">The timezone name.</param>
+            <param name="cancellationToken">The cancellationToken.</param>
+            <returns>Nothing (void).</returns>
+            <response code="200">OK.</response>
+            <response code="500">Error occured.</response>
         </member>
         <member name="T:Nano.Web.Controllers.IdentityController`2">
             <inheritdoc />
@@ -1630,17 +1612,30 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.IdentityController`2.SignUpExternalAsync(Nano.Security.Models.SignUpExternal{`0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.IdentityController`2.SignInExternalAsync(System.String,System.Threading.CancellationToken)">
             <summary>
-            Registers a user with external login info.
+            Authenticates an external login, and returns the result.
             </summary>
-            <param name="signUpExternal">The signup.</param>
+            <param name="loginProvider">The login provider request.</param>
             <param name="cancellationToken">The cancellation token.</param>
-            <returns>The user.</returns>
+            <returns>The authentication challange result of the extenal provider.</returns>
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
-            <response code="404">Not Found.</response>
-            <response code="500">Error occured.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.IdentityController`2.SignUpExternalCallbackAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Completes Authentication with external login.
+            On success a jwt-token is created and returned, for later use with authorization.
+            </summary>
+            <param name="remoteError">Error text from provider.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The access token.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occurred.</response>
         </member>
         <member name="M:Nano.Web.Controllers.IdentityController`2.SetUsernameAsync(Nano.Security.Models.SetUsername,System.Threading.CancellationToken)">
             <summary>
@@ -1760,11 +1755,10 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.IdentityController`2.RemoveExternalLoginAsync(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.IdentityController`2.RemoveExternalLoginAsync(System.Threading.CancellationToken)">
             <summary>
             Removes an external login for a user.
             </summary>
-            <param name="externalLogin">The external login.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>Void.</returns>
             <response code="200">Success.</response>
@@ -1797,10 +1791,10 @@
         <member name="M:Nano.Web.Hosting.Conventions.RoutePrefixConvention.Apply(Microsoft.AspNetCore.Mvc.ApplicationModels.ApplicationModel)">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Hosting.Documentation.LowercaseDocumentFilter">
+        <member name="T:Nano.Web.Hosting.Documentation.Filters.LowercaseDocumentFilter">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Hosting.Documentation.LowercaseDocumentFilter.Apply(Swashbuckle.AspNetCore.Swagger.SwaggerDocument,Swashbuckle.AspNetCore.SwaggerGen.DocumentFilterContext)">
+        <member name="M:Nano.Web.Hosting.Documentation.Filters.LowercaseDocumentFilter.Apply(Swashbuckle.AspNetCore.Swagger.SwaggerDocument,Swashbuckle.AspNetCore.SwaggerGen.DocumentFilterContext)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Hosting.Enums.XXssProtectionPolicyBlockMode">
@@ -1880,6 +1874,13 @@
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpRequestTimeZone(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds timezone middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
         <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpContextAccessor(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
             Adds the <see cref="T:Microsoft.AspNetCore.Http.IHttpContextAccessor"/> middleware, and initializes the current <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.
@@ -1953,6 +1954,13 @@
         <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpsRedirect(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
             Adds rerdirect valiation middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpCorsPolicy(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds CORS middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
@@ -2323,6 +2331,11 @@
         <member name="P:Nano.Web.WebOptions.HostingOptions.PortsHttps">
             <summary>
             Ports Https.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.AllowedOrigins">
+            <summary>
+            Allowed Origins.
             </summary>
         </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpsRewrite">

@@ -26,26 +26,32 @@ namespace Nano.Web.Hosting.Extensions
 
             foreach (var externalLogin in options.ExternalLogins)
             {
-                switch (externalLogin.Name.ToLower())
+                switch (externalLogin.Name)
                 {
-                    case "google":
+                    case "Google":
                     {
                         builder
                             .AddGoogle(x =>
                             {
                                 x.ClientId = externalLogin.Id;
                                 x.ClientSecret = externalLogin.Secret;
+
+                                x.Scope
+                                    .Add("profile");
                             });
                         break;
                     }
 
-                    case "facebook":
+                    case "Facebook":
                     {
                         builder
                             .AddFacebook(x =>
                             {
                                 x.AppId = externalLogin.Id;
                                 x.AppSecret = externalLogin.Secret;
+
+                                x.Scope
+                                    .Add("public_profile");
                             });
                         break;
                     }

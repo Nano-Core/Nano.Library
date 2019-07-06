@@ -4,6 +4,11 @@
         <name>Nano.Models</name>
     </assembly>
     <members>
+        <member name="T:Nano.Models.Attributes.IncludeAttribute">
+            <summary>
+            Include Attribute.
+            </summary>
+        </member>
         <member name="T:Nano.Models.BaseEntity">
             <inheritdoc />
         </member>
@@ -197,6 +202,7 @@
         <member name="P:Nano.Models.DefaultEntityUser.IdentityUser">
             <summary>
             Identity User.
+            Always included using <see cref="T:Nano.Models.Attributes.IncludeAttribute"/>.
             </summary>
         </member>
         <member name="T:Nano.Models.EntityEvent">

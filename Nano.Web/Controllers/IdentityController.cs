@@ -11,6 +11,7 @@ using Nano.Eventing.Interfaces;
 using Nano.Models;
 using Nano.Repository.Interfaces;
 using Nano.Security;
+using Nano.Security.Exceptions;
 using Nano.Security.Models;
 using Nano.Web.Hosting;
 
@@ -18,7 +19,7 @@ namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
     public class IdentityController<TEntity, TCriteria> : DefaultControllerUpdatable<TEntity, TCriteria>
-        where TEntity : DefaultEntityUser
+        where TEntity : DefaultEntityUser, new()
         where TCriteria : class, IQueryCriteria, new()
     {
         /// <summary>
@@ -70,38 +71,80 @@ namespace Nano.Web.Controllers
         }
         
         /// <summary>
-        /// Signs up a user, with an external login provider.
+        /// Authenticates an external login, and returns the result.
         /// </summary>
-        /// <param name="signUpExternal">The signup external.</param>
+        /// <param name="loginProvider">The login provider request.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The user.</returns>
+        /// <returns>The authentication challange result of the extenal provider.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
-        /// <response code="404">Not Found.</response>
-        /// <response code="500">Error occured.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="500">Error occurred.</response>
         [HttpPost]
         [Route("external/signup")]
         [AllowAnonymous]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [Consumes(HttpContentType.FORM, HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ChallengeResult), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> SignUpExternalAsync([FromBody][Required]SignUpExternal<TEntity> signUpExternal, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> SignUpExternalAsync([FromForm][FromQuery][Required]string loginProvider, CancellationToken cancellationToken = default)
         {
+            var controller = $"{typeof(TEntity).Name.ToLower()}s";
+            var redirectUrl = Url.Action(nameof(SignUpExternalCallbackAsync), controller);
+
+            return await this.IdentityManager
+                .SignInExternalAsync(loginProvider, redirectUrl, cancellationToken);
+        }
+
+        /// <summary>
+        /// Completes Authentication with external login.
+        /// On success a jwt-token is created and returned, for later use with authorization.
+        /// </summary>
+        /// <param name="remoteError">Error text from provider.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The access token.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="500">Error occurred.</response>
+        [HttpGet]
+        [Route("external/signup/callback")]
+        [AllowAnonymous]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> SignUpExternalCallbackAsync([FromQuery]string remoteError = null, CancellationToken cancellationToken = default)
+        {
+            if (remoteError != null)
+                throw new UnauthorizedException(remoteError);
+
             var identityUser = await this.IdentityManager
-                .SignUpExternalAsync(signUpExternal, cancellationToken);
+                .SignUpExternalCallbackAsync(cancellationToken);
 
-            signUpExternal.User.Id = Guid.Parse(identityUser.Id); 
-            signUpExternal.User.IdentityUserId = identityUser.Id;
+            var userId = Guid.Parse(identityUser.Id);
+            var user = await this.Repository
+                .GetAsync<TEntity>(userId, cancellationToken);
 
-            var result = await this.Repository
-                .AddAsync(signUpExternal.User, cancellationToken);
+            if (user == null)
+            {
+                user = new TEntity
+                {
+                    Id = userId,
+                    IdentityUserId = identityUser.Id
+                };
 
-            result.IdentityUser = identityUser;
+                await this.Repository
+                    .AddAsync(user, cancellationToken);
+            }
 
-            return this.Created("external/signup", result);
+            var accessToken = await this.IdentityManager
+                .GetJwtTokenAsync(identityUser, cancellationToken);
+
+            return this.Ok(accessToken);
         }
 
         /// <summary>
@@ -352,7 +395,6 @@ namespace Nano.Web.Controllers
         /// <summary>
         /// Removes an external login for a user.
         /// </summary>
-        /// <param name="externalLogin">The external login.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Void.</returns>
         /// <response code="200">Success.</response>
@@ -362,16 +404,15 @@ namespace Nano.Web.Controllers
         /// <response code="500">Error occured.</response>
         [HttpPost]
         [Route("external/login/remove")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> RemoveExternalLoginAsync([FromBody][Required]LoginExternal externalLogin, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> RemoveExternalLoginAsync(CancellationToken cancellationToken = default)
         {
             await this.IdentityManager
-                .RemoveExternalLoginAsync(externalLogin, cancellationToken);
+                .RemoveExternalLoginAsync(cancellationToken);
 
             return this.Ok();
         }

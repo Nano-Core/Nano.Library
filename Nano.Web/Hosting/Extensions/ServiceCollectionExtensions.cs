@@ -46,8 +46,6 @@ using Vivet.AspNetCore.RequestTimeZone.Extensions;
 
 namespace Nano.Web.Hosting.Extensions
 {
-    // BUG: Cleanup, Remove unnecessary used of BuildServiceProvider. Try aggregate UseMvc()
-
     /// <summary>
     /// Service Collection Extensions.
     /// </summary>
@@ -70,22 +68,23 @@ namespace Nano.Web.Hosting.Extensions
             var assembly = typeof(BaseController).GetTypeInfo().Assembly;
 
             services
-                .AddConfigOptions<WebOptions>(configuration, WebOptions.SectionName, out var options);
+                .AddConfigOptions<WebOptions>(configuration, WebOptions.SectionName, out var webOptions);
 
             var serviceProvider = services.BuildServiceProvider();
-            var dataOptions = serviceProvider.GetService<DataOptions>();
-            var securityOptions = serviceProvider.GetService<SecurityOptions>();
+            var appOptions = serviceProvider.GetService<AppOptions>() ?? new AppOptions();
+            var dataOptions = serviceProvider.GetService<DataOptions>() ?? new DataOptions();
+            var securityOptions = serviceProvider.GetService<SecurityOptions>() ?? new SecurityOptions();
 
             services
                 .AddCors()
                 .AddSession()
-                .AddCaching()
-                .AddSecurity()
+                .AddCaching(webOptions)
+                .AddSecurity(securityOptions)
                 .AddRepository()
-                .AddVersioning()
-                .AddDocumentation()
+                .AddVersioning(appOptions)
+                .AddDocumentation(appOptions, webOptions, securityOptions)
                 .AddLocalizations()
-                .AddTimeZone()
+                .AddTimeZone(appOptions)
                 .AddCompression()
                 .AddContentTypeFormatters()
                 .AddSingleton<ExceptionHandlingMiddleware>()
@@ -94,7 +93,7 @@ namespace Nano.Web.Hosting.Extensions
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddMvc(x =>
                 {
-                    var routeAttribute = new RouteAttribute(options.Hosting.Root);
+                    var routeAttribute = new RouteAttribute(webOptions.Hosting.Root);
                     var routePrefixConvention = new RoutePrefixConvention(routeAttribute);
                     var queryModelBinderProvider = new QueryModelBinderProvider();
 
@@ -107,7 +106,7 @@ namespace Nano.Web.Hosting.Extensions
                     if (dataOptions.ConnectionString == null || !securityOptions.IsEnabled)
                         x.Conventions.Insert(0, new AuthControllerDisabledConvention());
 
-                    if (options.Hosting.UseHttpsRequired)
+                    if (webOptions.Hosting.UseHttpsRequired)
                         x.Filters.Add<RequireHttpsAttribute>();
 
                     x.Filters.Add<ModelStateValidationFilter>();
@@ -129,7 +128,7 @@ namespace Nano.Web.Hosting.Extensions
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()
                 .AddApplicationPart(assembly)
-                .SetCompatibilityVersion(options.CompatabilityVersion);
+                .SetCompatibilityVersion(webOptions.CompatabilityVersion);
 
             services
                 .Configure<RazorViewEngineOptions>(x =>
@@ -141,7 +140,7 @@ namespace Nano.Web.Hosting.Extensions
             services
                 .AddApis()
                 .AddStartupTasks()
-                .AddHealthChecking(options);
+                .AddHealthChecking(appOptions, webOptions);
 
             return services;
         }
@@ -179,36 +178,35 @@ namespace Nano.Web.Hosting.Extensions
 
             return services;
         }
-        private static IServiceCollection AddCaching(this IServiceCollection services)
+        private static IServiceCollection AddCaching(this IServiceCollection services, WebOptions webOptions)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            var options = services
-                .BuildServiceProvider()
-                .GetService<WebOptions>() ?? new WebOptions();
+            if (webOptions == null) 
+                throw new ArgumentNullException(nameof(webOptions));
 
+            var cacheOptions = webOptions.Hosting.Cache;
+            
             services
                 .AddResponseCaching(x =>
                 {
-                    x.SizeLimit = options.Hosting.Cache.MaxSize * 1024;
-                    x.MaximumBodySize = options.Hosting.Cache.MaxBodySize * 1024;
+                    x.SizeLimit = cacheOptions.MaxSize * 1024;
+                    x.MaximumBodySize = cacheOptions.MaxBodySize * 1024;
                 });
 
             return services;
         }
-        private static IServiceCollection AddSecurity(this IServiceCollection services)
+        private static IServiceCollection AddSecurity(this IServiceCollection services, SecurityOptions securityOptions)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
-
-            var options = services
-                .BuildServiceProvider()
-                .GetService<SecurityOptions>() ?? new SecurityOptions();
+            if (securityOptions == null) 
+                throw new ArgumentNullException(nameof(securityOptions));
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-            if (!options.IsEnabled)
+            if (!securityOptions.IsEnabled)
             {
                 services.AddMvc(x =>
                 {
@@ -230,8 +228,8 @@ namespace Nano.Web.Hosting.Extensions
                     x.IncludeErrorDetails = true;
                     x.RequireHttpsMetadata = false;
 
-                    x.Audience = options.Jwt.Audience;
-                    x.ClaimsIssuer = options.Jwt.Issuer;
+                    x.Audience = securityOptions.Jwt.Audience;
+                    x.ClaimsIssuer = securityOptions.Jwt.Issuer;
 
                     x.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -240,17 +238,17 @@ namespace Nano.Web.Hosting.Extensions
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = options.Jwt.Issuer,
-                        ValidAudience = options.Jwt.Audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Jwt.SecretKey)),
+                        ValidIssuer = securityOptions.Jwt.Issuer,
+                        ValidAudience = securityOptions.Jwt.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityOptions.Jwt.SecretKey)),
                         ClockSkew = TimeSpan.FromMinutes(5)
                     };
                 })
-                .AddExternalLogins(options)
+                .AddExternalLogins(securityOptions)
                 .AddCookie(x =>
                 {
                     x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                    x.Cookie.Expiration = TimeSpan.FromDays(options.Jwt.ExpirationInHours);
+                    x.Cookie.Expiration = TimeSpan.FromDays(securityOptions.Jwt.ExpirationInHours);
                 });
 
             return services;
@@ -266,12 +264,13 @@ namespace Nano.Web.Hosting.Extensions
 
             return services;
         }
-        private static IServiceCollection AddVersioning(this IServiceCollection services)
+        private static IServiceCollection AddVersioning(this IServiceCollection services, AppOptions appOptions)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            var appOptions = services.BuildServiceProvider().GetService<AppOptions>() ?? new AppOptions();
+            if (appOptions == null) 
+                throw new ArgumentNullException(nameof(appOptions));
 
             var success = ApiVersion.TryParse(appOptions.Version, out var apiVersion);
 
@@ -316,7 +315,7 @@ namespace Nano.Web.Hosting.Extensions
 
             return services;
         }
-        private static IServiceCollection AddHealthChecking(this IServiceCollection services, WebOptions options)
+        private static IServiceCollection AddHealthChecking(this IServiceCollection services, AppOptions appOptions, WebOptions options)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
@@ -335,7 +334,6 @@ namespace Nano.Web.Hosting.Extensions
             {
                 var port = options.Hosting.Ports.FirstOrDefault();
                 var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-                var appOptions = config.GetSection(AppOptions.SectionName).Get<AppOptions>();
 
                 config[HostDefaults.ContentRootKey] = Directory.GetCurrentDirectory();
                 
@@ -353,16 +351,18 @@ namespace Nano.Web.Hosting.Extensions
 
             return services;
         }
-        private static IServiceCollection AddDocumentation(this IServiceCollection services)
+        private static IServiceCollection AddDocumentation(this IServiceCollection services, AppOptions appOptions, WebOptions webOptions, SecurityOptions securityOptions)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
-
-            var provider = services.BuildServiceProvider();
-
-            var appOptions = provider.GetService<AppOptions>();
-            var webOptions = provider.GetService<WebOptions>();
-            var securityOptions = provider.GetService<SecurityOptions>();
+            if (appOptions == null) 
+                throw new ArgumentNullException(nameof(appOptions));
+            
+            if (webOptions == null) 
+                throw new ArgumentNullException(nameof(webOptions));
+            
+            if (securityOptions == null) 
+                throw new ArgumentNullException(nameof(securityOptions));
 
             return services
                 .AddSwaggerGen(x =>
@@ -448,14 +448,13 @@ namespace Nano.Web.Hosting.Extensions
 
             return services;
         }
-        private static IServiceCollection AddTimeZone(this IServiceCollection services)
+        private static IServiceCollection AddTimeZone(this IServiceCollection services, AppOptions appOptions)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            var appOptions = services
-                .BuildServiceProvider()
-                .GetService<AppOptions>();
+            if (appOptions == null) 
+                throw new ArgumentNullException(nameof(appOptions));
 
             services
                 .AddRequestTimeZone(x =>

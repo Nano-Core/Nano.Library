@@ -29,6 +29,11 @@
             Terms Of Service.
             </summary>
         </member>
+        <member name="P:Nano.App.AppOptions.DefaultTimeZone">
+            <summary>
+            Default Time Zone.
+            </summary>
+        </member>
         <member name="P:Nano.App.AppOptions.Version">
             <summary>
             Version.

@@ -14,20 +14,6 @@ namespace Nano.Security.Models
         [Required]
         [EmailAddress]
         public virtual string EmailAddress { get; set; }
-
-        /// <summary>
-        /// Provider Key.
-        /// The unique key for the user provided by the login provider.
-        /// </summary>
-        [Required]
-        public virtual string ProviderKey { get; set; }
-
-        /// <summary>
-        /// Login Provider.
-        /// The name of the login provider.
-        /// </summary>
-        [Required]
-        public virtual string LoginProvider { get; set; }
     }
 
     /// <summary>

@@ -1,15 +1,8 @@
-﻿using Nano.Security.Models;
-
-namespace Nano.Web.Api.Requests.Identity
+﻿namespace Nano.Web.Api.Requests.Identity
 {
     /// <inheritdoc />
     public class RemoveExternalLogInRequest : BaseRequestPost
     {
-        /// <summary>
-        /// Login External.
-        /// </summary>
-        public virtual LoginExternal LoginExternal { get; set; }
-
         /// <inheritdoc />
         public RemoveExternalLogInRequest()
         {
@@ -19,7 +12,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// <inheritdoc />
         public override object GetBody()
         {
-            return this.LoginExternal;
+            return null;
         }
     }
 }

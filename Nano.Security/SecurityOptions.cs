@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Nano.Security.Const;
 
 namespace Nano.Security
@@ -45,9 +44,9 @@ namespace Nano.Security
         public virtual PasswordOptions Password { get; set; } = new PasswordOptions();
 
         /// <summary>
-        /// External Logins.
+        /// External Logins Options.
         /// </summary>
-        public virtual IEnumerable<ExternalLoginOptions> ExternalLogins { get; set; } = new List<ExternalLoginOptions>();
+        public virtual ExternalLoginOptions[] ExternalLogins { get; set; } = new ExternalLoginOptions[0];
 
         /// <summary>
         /// Jwt Options (nested class)

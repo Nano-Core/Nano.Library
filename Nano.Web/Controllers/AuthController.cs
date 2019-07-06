@@ -52,7 +52,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> LogIn([FromBody][Required]Login login, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> LogInAsync([FromBody][Required]Login login, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -83,46 +83,12 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> LogOut(CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> LogOutAsync(CancellationToken cancellationToken = default)
         {
             await this.IdentityManager
                 .SignOutAsync(cancellationToken);
 
             return this.Ok();
-        }
-
-        /// <summary>
-        /// Authenticates and signs in a user with external login.
-        /// On success a jwt-token is created and returned, for later use with auhtorization.
-        /// </summary>
-        /// <param name="loginExternal">The login external request.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The access token.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">Bad Request.</response>
-        /// <response code="401">Unauthorized.</response>
-        /// <response code="500">Error occurred.</response>
-        [HttpPost]
-        [Route("external/login")]
-        [AllowAnonymous]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> LogInExternal(LoginExternal loginExternal, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var accessToken = await this.IdentityManager
-                    .SignInExternalAsync(loginExternal, cancellationToken);
-
-                return this.Ok(accessToken);
-            }
-            catch (UnauthorizedException ex)
-            {
-                return this.Unauthorized(ex.Message);
-            }
         }
 
         /// <summary>
@@ -141,7 +107,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(LoginProvider), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> GetExternalSchemes(CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> GetExternalSchemesAsync(CancellationToken cancellationToken = default)
         {
             var externalLogins = await this.IdentityManager
                 .GetExternalSchemesAsync(cancellationToken);
