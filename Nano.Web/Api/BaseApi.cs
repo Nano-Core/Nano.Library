@@ -15,6 +15,7 @@ using Nano.Security.Extensions;
 using Nano.Security.Models;
 using Nano.Web.Api.Requests.Auth;
 using Nano.Web.Api.Requests.Interfaces;
+using Nano.Web.Api.Responses;
 using Nano.Web.Hosting;
 using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
@@ -34,6 +35,7 @@ namespace Nano.Web.Api
         private readonly TimeSpan httpTimeout = new TimeSpan(0, 0, 30);
         private readonly HttpClientHandler httpClientHandler = new HttpClientHandler
         {
+            AllowAutoRedirect = true,
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
         };
         private readonly JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings
@@ -225,12 +227,18 @@ namespace Nano.Web.Api
                 throw new ArgumentNullException(nameof(request));
 
             var uri = request.GetUri<TResponse>(this.apiOptions);
-
             this.httpClient.DefaultRequestHeaders.AcceptLanguage.Clear();
             this.httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
 
             this.httpClient.DefaultRequestHeaders.Remove(RequestTimeZoneHeaderProvider.Headerkey);
             this.httpClient.DefaultRequestHeaders.Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
+
+            var userAgent = HttpContextAccess.Current.Request.Headers["User-Agent"].FirstOrDefault();
+            if (userAgent != null)
+            {
+                this.httpClient.DefaultRequestHeaders.UserAgent.Clear();
+                this.httpClient.DefaultRequestHeaders.Add("User-Agent", userAgent);
+            }
 
             switch (request)
             {
@@ -256,7 +264,7 @@ namespace Nano.Web.Api
 
                 case IRequestPost requestPost:
                     var bodyPost = requestPost.GetBody();
-                    var content = JsonConvert.SerializeObject(bodyPost, this.jsonSerializerSettings);
+                    var content = bodyPost == null ? string.Empty : JsonConvert.SerializeObject(bodyPost, this.jsonSerializerSettings);
 
                     using (var stringContent = new StringContent(content, Encoding.UTF8, HttpContentType.JSON))
                     {
@@ -275,9 +283,6 @@ namespace Nano.Web.Api
 
             using (httpResponse)
             {
-                var rawJson = await httpResponse.Content
-                    .ReadAsStringAsync();
-
                 switch (httpResponse.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
@@ -288,7 +293,9 @@ namespace Nano.Web.Api
 
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.InternalServerError:
-                        var error = JsonConvert.DeserializeObject<Error>(rawJson);
+                        var errorContent = await httpResponse.Content.ReadAsStringAsync();
+                        var error = JsonConvert.DeserializeObject<Error>(errorContent);
+                        
                         if (error.IsTranslated)
                         {
                             throw new AggregateException(error.Exceptions.Select(x => new TranslationException(x)));
@@ -303,9 +310,25 @@ namespace Nano.Web.Api
                 httpResponse
                     .EnsureSuccessStatusCode();
 
-                var response = JsonConvert.DeserializeObject<TResponse>(rawJson);
+                if (typeof(TResponse) == typeof(object))
+                {
+                    return default;
+                }
+                
+                if (typeof(TResponse) == typeof(ResponseRedirect))
+                {
+                    var responseRedirect = new ResponseRedirect
+                    {
+                        RedirectUrl = httpResponse.RequestMessage.RequestUri.AbsoluteUri
+                    };
+                    var redirectContent = JsonConvert.SerializeObject(responseRedirect);
+                    return JsonConvert.DeserializeObject<TResponse>(redirectContent);
+                }
 
-                return response;
+                var successContent = await httpResponse.Content
+                    .ReadAsStringAsync();
+
+                return JsonConvert.DeserializeObject<TResponse>(successContent);
             }
         }
     }

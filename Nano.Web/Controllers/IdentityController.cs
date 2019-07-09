@@ -83,13 +83,13 @@ namespace Nano.Web.Controllers
         [HttpPost]
         [Route("external/signup")]
         [AllowAnonymous]
-        [Consumes(HttpContentType.FORM, HttpContentType.JSON, HttpContentType.XML)]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(ChallengeResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> SignUpExternalAsync([FromForm][FromQuery][Required]string loginProvider, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> SignUpExternalAsync([FromQuery][FromBody][Required]string loginProvider, CancellationToken cancellationToken = default)
         {
             var controller = $"{typeof(TEntity).Name.ToLower()}s";
             var redirectUrl = Url.Action(nameof(SignUpExternalCallbackAsync), controller);
