@@ -24,6 +24,10 @@ using Vivet.AspNetCore.RequestTimeZone;
 
 namespace Nano.Web.Api
 {
+    // BUG: Clean-Up External Provider stuff
+    // BUG: Refactor for better code
+    // BUG: COnsider removing identityApi methods for external auth (doesn't work). Also consider redirectResponse?
+
     /// <summary>
     /// Base Api (abstract).
     /// </summary>

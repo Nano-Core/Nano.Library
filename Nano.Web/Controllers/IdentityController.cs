@@ -80,19 +80,20 @@ namespace Nano.Web.Controllers
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
         /// <response code="500">Error occurred.</response>
+        [HttpGet]
         [HttpPost]
         [Route("external/signup")]
         [AllowAnonymous]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(ChallengeResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> SignUpExternalAsync([FromQuery][FromBody][Required]string loginProvider, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> SignUpExternalAsync([FromQuery][Required]string loginProvider, CancellationToken cancellationToken = default)
         {
             var controller = $"{typeof(TEntity).Name.ToLower()}s";
             var redirectUrl = Url.Action(nameof(SignUpExternalCallbackAsync), controller);
+
+            this.Logger.LogWarning("EXTERNAL_REDIRECT_URL: " + redirectUrl); // BUG: Logging
 
             return await this.IdentityManager
                 .SignInExternalAsync(loginProvider, redirectUrl, cancellationToken);
