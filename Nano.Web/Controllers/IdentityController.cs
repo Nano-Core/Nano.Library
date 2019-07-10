@@ -69,11 +69,12 @@ namespace Nano.Web.Controllers
 
             return this.Created("signup", result);
         }
-        
+
         /// <summary>
         /// Authenticates an external login, and returns the result.
         /// </summary>
         /// <param name="loginProvider">The login provider request.</param>
+        /// <param name="redirectUrl">The redirect url</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The authentication challange result of the extenal provider.</returns>
         /// <response code="200">Success.</response>
@@ -88,12 +89,10 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> SignUpExternalAsync([FromQuery][Required]string loginProvider, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> SignUpExternalAsync([FromQuery][Required]string loginProvider, [FromQuery]string redirectUrl = null, CancellationToken cancellationToken = default)
         {
             var controller = $"{typeof(TEntity).Name.ToLower()}s";
-            var redirectUrl = Url.Action(nameof(SignUpExternalCallbackAsync), controller);
-
-            this.Logger.LogWarning("EXTERNAL_REDIRECT_URL: " + redirectUrl); // BUG: Logging
+            redirectUrl = redirectUrl ?? Url.Action(nameof(SignUpExternalCallbackAsync), controller);
 
             return await this.IdentityManager
                 .SignInExternalAsync(loginProvider, redirectUrl, cancellationToken);
