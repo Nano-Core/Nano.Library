@@ -15,7 +15,6 @@ using Nano.Security.Extensions;
 using Nano.Security.Models;
 using Nano.Web.Api.Requests.Auth;
 using Nano.Web.Api.Requests.Interfaces;
-using Nano.Web.Api.Responses;
 using Nano.Web.Hosting;
 using Nano.Web.Hosting.Serialization;
 using Newtonsoft.Json;
@@ -24,10 +23,6 @@ using Vivet.AspNetCore.RequestTimeZone;
 
 namespace Nano.Web.Api
 {
-    // BUG: Clean-Up External Provider stuff
-    // BUG: Refactor for better code
-    // BUG: COnsider removing identityApi methods for external auth (doesn't work). Also consider redirectResponse?
-
     /// <summary>
     /// Base Api (abstract).
     /// </summary>
@@ -237,13 +232,6 @@ namespace Nano.Web.Api
             this.httpClient.DefaultRequestHeaders.Remove(RequestTimeZoneHeaderProvider.Headerkey);
             this.httpClient.DefaultRequestHeaders.Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
 
-            var userAgent = HttpContextAccess.Current.Request.Headers["User-Agent"].FirstOrDefault();
-            if (userAgent != null)
-            {
-                this.httpClient.DefaultRequestHeaders.UserAgent.Clear();
-                this.httpClient.DefaultRequestHeaders.Add("User-Agent", userAgent);
-            }
-
             switch (request)
             {
                 case IRequestGet _:
@@ -317,16 +305,6 @@ namespace Nano.Web.Api
                 if (typeof(TResponse) == typeof(object))
                 {
                     return default;
-                }
-                
-                if (typeof(TResponse) == typeof(ResponseRedirect))
-                {
-                    var responseRedirect = new ResponseRedirect
-                    {
-                        RedirectUrl = httpResponse.RequestMessage.RequestUri.AbsoluteUri
-                    };
-                    var redirectContent = JsonConvert.SerializeObject(responseRedirect);
-                    return JsonConvert.DeserializeObject<TResponse>(redirectContent);
                 }
 
                 var successContent = await httpResponse.Content

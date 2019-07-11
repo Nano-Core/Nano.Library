@@ -292,11 +292,11 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The instance of <typeparamref name="TUser"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Api.IdentityApi`1.SignInExternalAsync(Nano.Web.Api.Requests.Identity.SignUpExternalRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.IdentityApi`1.SignUpExternalCallbackAsync(Nano.Web.Api.Requests.Identity.SignUpExternalCallbackRequest,System.Threading.CancellationToken)">
             <summary>
-            Sign Up External Async.
+            Sign Up External Callback Async.
             </summary>
-            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.SignUpExternalRequest"/>.</param>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.SignUpExternalCallbackRequest"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
@@ -793,21 +793,18 @@
         <member name="M:Nano.Web.Api.Requests.Identity.SetUsernameRequest.GetBody">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalRequest">
+        <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalCallbackRequest">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Api.Requests.Identity.SignUpExternalRequest.LoginProvider">
+        <member name="P:Nano.Web.Api.Requests.Identity.SignUpExternalCallbackRequest.RemoteError">
             <summary>
-            Login Provider.
+            Remote Error.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalRequest.#ctor">
+        <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalCallbackRequest.#ctor">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalRequest.GetBody">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalRequest.GetQueryStringParameters">
+        <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalCallbackRequest.GetQueryStringParameters">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Identity.SignUpRequest`1">
@@ -1612,11 +1609,12 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.IdentityController`2.SignInExternalAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.IdentityController`2.SignUpExternalAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Authenticates an external login, and returns the result.
             </summary>
             <param name="loginProvider">The login provider request.</param>
+            <param name="redirectUrl">The redirect url</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The authentication challange result of the extenal provider.</returns>
             <response code="200">Success.</response>

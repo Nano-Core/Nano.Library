@@ -248,7 +248,7 @@ namespace Nano.Web.Hosting.Extensions
                 .AddCookie(x =>
                 {
                     x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                    x.Cookie.Expiration = TimeSpan.FromDays(securityOptions.Jwt.ExpirationInHours);
+                    x.Cookie.Expiration = TimeSpan.FromHours(securityOptions.Jwt.ExpirationInHours);
                 });
 
             return services;

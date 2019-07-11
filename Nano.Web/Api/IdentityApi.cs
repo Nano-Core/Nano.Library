@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Nano.Models;
 using Nano.Security.Models;
 using Nano.Web.Api.Requests.Identity;
-using Nano.Web.Api.Responses;
 
 namespace Nano.Web.Api
 {
@@ -44,25 +43,9 @@ namespace Nano.Web.Api
         }
 
         /// <summary>
-        /// Sign Up External Async.
-        /// </summary>
-        /// <param name="request">The <see cref="SignUpExternalRequest"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<ResponseRedirect> SignUpExternalAsync(SignUpExternalRequest request, CancellationToken cancellationToken = default)
-        {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-      
-            request.Controller = IdentityApi<TUser>.IdentityController;
-
-            return await this.CustomAsync<SignUpExternalRequest, ResponseRedirect>(request, cancellationToken);
-        }
-
-        /// <summary>
         /// Sign Up External Callback Async.
         /// </summary>
-        /// <param name="request">The <see cref="SignUpExternalRequest"/>.</param>
+        /// <param name="request">The <see cref="SignUpExternalCallbackRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
         public virtual async Task<AccessToken> SignUpExternalCallbackAsync(SignUpExternalCallbackRequest request, CancellationToken cancellationToken = default)

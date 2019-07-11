@@ -187,13 +187,6 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Mvc.ChallengeResult"/>.</returns>
         </member>
-        <member name="M:Nano.Security.IdentityManager.SignUpExternalCallbackAsync(System.Threading.CancellationToken)">
-            <summary>
-            Signs in a use with external login info.
-            </summary>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
-        </member>
         <member name="M:Nano.Security.IdentityManager.SignOutAsync(System.Threading.CancellationToken)">
             <summary>
             Logs out a user.
@@ -208,13 +201,20 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.</returns>
         </member>
-        <member name="M:Nano.Security.IdentityManager.SignInExternalAsync(Nano.Security.Models.SignUpExternal,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.IdentityManager.SignUpExternalAsync(Nano.Security.Models.SignUpExternal,System.Threading.CancellationToken)">
             <summary>
             Registers a new user using an external login provider.
             </summary>
             <param name="signUpExternal">The <see cref="T:Nano.Security.Models.SignUpExternal"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.SignUpExternalCallbackAsync(System.Threading.CancellationToken)">
+            <summary>
+            Signs in a use with external login info.
+            </summary>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
         <member name="M:Nano.Security.IdentityManager.GetExternalLoginInfoAsync(System.Threading.CancellationToken)">
             <summary>
