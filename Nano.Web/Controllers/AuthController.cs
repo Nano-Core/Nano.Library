@@ -70,6 +70,56 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
+        /// Sign-in a user from an external login and authentication.
+        /// </summary>
+        /// <param name="loginExternal">The external login.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The external login response.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="500">Error occurred.</response>
+        [HttpPost]
+        [Route("login/external")]
+        [AllowAnonymous]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(ExternalLoginResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> SignInExternalAsync([FromBody][Required]LoginExternal loginExternal, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var data = await this.IdentityManager
+                    .SignInExternalCallbackAsync(loginExternal, cancellationToken);
+
+                AccessToken accessToken = null;
+                if (data == null)
+                {
+                    accessToken = await this.IdentityManager
+                        .SignInExternalAsync(new LoginExternal
+                        {
+                            LoginProvider = loginExternal.LoginProvider,
+                            ProviderKey = loginExternal.ProviderKey
+                        }, cancellationToken);
+                }
+
+                var externalLoginResponse = new ExternalLoginResponse
+                {
+                    Data = data,
+                    AccessToken = accessToken
+                };
+
+                return this.Ok(externalLoginResponse);
+            }
+            catch (UnauthorizedException ex)
+            {
+                return this.Unauthorized(ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Logs out a user.
         /// The jwt-token and any external login is invalidated.
         /// </summary>
@@ -90,7 +140,7 @@ namespace Nano.Web.Controllers
             await this.IdentityManager
                 .SignOutAsync(cancellationToken);
 
-            await HttpContext
+            await this.HttpContext
                 .SignOutAsync(IdentityConstants.ExternalScheme);
 
             return this.Ok();

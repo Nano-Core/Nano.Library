@@ -162,23 +162,30 @@
             <param name="userManager">The <see cref="T:Microsoft.AspNetCore.Identity.UserManager`1"/>.</param>
             <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
         </member>
-        <member name="M:Nano.Security.IdentityManager.GetJwtTokenAsync(Microsoft.AspNetCore.Identity.IdentityUser,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.IdentityManager.GetExternalSchemesAsync(System.Threading.CancellationToken)">
             <summary>
-            Get the Jwt-token for an <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.
+            Gets all the configured external logins schemes.
             </summary>
-            <param name="identityUser">The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+            <returns>The collection of <see cref="T:Nano.Security.Models.LoginProvider"/>'s.</returns>
         </member>
         <member name="M:Nano.Security.IdentityManager.SignInAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
             <summary>
-            Signs in the user.
+            Signs in a user.
             </summary>
             <param name="login">The <see cref="T:Nano.Security.Models.Login"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
-        <member name="M:Nano.Security.IdentityManager.SignInExternalAsync(System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.IdentityManager.SignInExternalAsync(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
+            <summary>
+            Signs in a user, from external login.
+            </summary>
+            <param name="loginExternal">The <see cref="T:Nano.Security.Models.LoginExternal"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.SignInExternalChallangeAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Configures the external authentication properties and returns a <see cref="T:Microsoft.AspNetCore.Mvc.ChallengeResult"/>.
             </summary>
@@ -186,6 +193,23 @@
             <param name="redirectUrl">The redirect url.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Mvc.ChallengeResult"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.SignInExternalCallbackAsync(System.Threading.CancellationToken)">
+            <summary>
+            Callback for signing in a user with external login info,
+            from external login cookie data.
+            </summary>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.ExternalLoginData"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.SignInExternalCallbackAsync(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
+            <summary>
+            Callback for signing in a user with external login info,
+            from passed in <see cref="T:Nano.Security.Models.LoginExternal"/> data.
+            </summary>
+            <param name="loginExternal">The <see cref="T:Nano.Security.Models.LoginExternal"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.ExternalLoginData"/>.</returns>
         </member>
         <member name="M:Nano.Security.IdentityManager.SignOutAsync(System.Threading.CancellationToken)">
             <summary>
@@ -208,27 +232,6 @@
             <param name="signUpExternal">The <see cref="T:Nano.Security.Models.SignUpExternal"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.</returns>
-        </member>
-        <member name="M:Nano.Security.IdentityManager.SignUpExternalCallbackAsync(System.Threading.CancellationToken)">
-            <summary>
-            Signs in a use with external login info.
-            </summary>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
-        </member>
-        <member name="M:Nano.Security.IdentityManager.GetExternalLoginInfoAsync(System.Threading.CancellationToken)">
-            <summary>
-            Gets the external login information for an user logged in using a configured external provider.
-            </summary>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Identity.ExternalLoginInfo"/>.</returns>
-        </member>
-        <member name="M:Nano.Security.IdentityManager.GetExternalSchemesAsync(System.Threading.CancellationToken)">
-            <summary>
-            Gets all the configured external logins schemes.
-            </summary>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The collection of <see cref="T:Nano.Security.Models.LoginProvider"/>.</returns>
         </member>
         <member name="M:Nano.Security.IdentityManager.RemoveExternalLoginAsync(System.Threading.CancellationToken)">
             <summary>
@@ -425,6 +428,51 @@
             Email.
             </summary>
         </member>
+        <member name="T:Nano.Security.Models.ExternalLoginData">
+            <summary>
+            External Login Data.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ExternalLoginData.Id">
+            <summary>
+            Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ExternalLoginData.Name">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ExternalLoginData.Email">
+            <summary>
+            Email.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ExternalLoginData.Address">
+            <summary>
+            Address.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ExternalLoginData.BirthDay">
+            <summary>
+            Birth Day.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.ExternalLoginResponse">
+            <summary>
+            External Login Response.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ExternalLoginResponse.AccessToken">
+            <summary>
+            Access Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ExternalLoginResponse.Data">
+            <summary>
+            Data.
+            </summary>
+        </member>
         <member name="T:Nano.Security.Models.Login">
             <summary>
             Login.
@@ -441,6 +489,31 @@
             </summary>
         </member>
         <member name="P:Nano.Security.Models.Login.IsRememerMe">
+            <summary>
+            Is Remember Me.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.LoginExternal">
+            <summary>
+            Login External.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.LoginExternal.LoginProvider">
+            <summary>
+            Login Provider.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.LoginExternal.ProviderKey">
+            <summary>
+            Provider Key.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.LoginExternal.AccessToken">
+            <summary>
+            Access Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.LoginExternal.IsRememerMe">
             <summary>
             Is Remember Me.
             </summary>
@@ -569,6 +642,11 @@
         <member name="P:Nano.Security.Models.SignUpExternal.EmailAddress">
             <summary>
             Email Address.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.SignUpExternal.ExternalLogin">
+            <summary>
+            External Login.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.SignUpExternal`1">

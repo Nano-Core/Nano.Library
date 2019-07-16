@@ -14,6 +14,12 @@ namespace Nano.Security.Models
         [Required]
         [EmailAddress]
         public virtual string EmailAddress { get; set; }
+
+        /// <summary>
+        /// External Login.
+        /// </summary>
+        [Required]
+        public virtual LoginExternal ExternalLogin { get; set; } = new LoginExternal();
     }
 
     /// <summary>

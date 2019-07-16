@@ -25,7 +25,7 @@ namespace Nano.Web.Api
         }
 
         /// <summary>
-        /// Log In Async.
+        /// Log-In Async.
         /// </summary>
         /// <param name="request">The <see cref="LogInRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
@@ -39,7 +39,21 @@ namespace Nano.Web.Api
         }
 
         /// <summary>
-        /// Log Out Async.
+        /// Log-In External Async.
+        /// </summary>
+        /// <param name="request">The <see cref="LogInRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="AccessToken"/>.</returns>
+        public virtual async Task<ExternalLoginResponse> LogInExternalAsync(LogInExternalRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.CustomAsync<LogInExternalRequest, ExternalLoginResponse>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Log-Out Async.
         /// </summary>
         /// <param name="request">The <see cref="LogOutRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
