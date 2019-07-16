@@ -4,7 +4,9 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
@@ -74,7 +76,6 @@ namespace Nano.Web.Controllers
         /// Authenticates an external login, and returns the result.
         /// </summary>
         /// <param name="loginProvider">The login provider request.</param>
-        /// <param name="redirectUrl">The redirect url</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The authentication challange result of the extenal provider.</returns>
         /// <response code="200">Success.</response>
@@ -89,10 +90,15 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> SignUpExternalAsync([FromQuery][Required]string loginProvider, [FromQuery]string redirectUrl = null, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> SignUpExternalAsync([FromQuery][Required]string loginProvider, CancellationToken cancellationToken = default)
         {
+            this.HttpContext.Request.Scheme = "https";
+
+            await HttpContext
+                .SignOutAsync(IdentityConstants.ExternalScheme);
+
             var controller = $"{typeof(TEntity).Name.ToLower()}s";
-            redirectUrl = redirectUrl ?? Url.Action(nameof(SignUpExternalCallbackAsync), controller);
+            var redirectUrl = Url.Action(nameof(SignUpExternalCallbackAsync), controller);
 
             return await this.IdentityManager
                 .SignInExternalAsync(loginProvider, redirectUrl, cancellationToken);
@@ -134,7 +140,7 @@ namespace Nano.Web.Controllers
                 user = new TEntity
                 {
                     Id = userId,
-                    IdentityUserId = identityUser.Id
+                    IdentityUserId = identityUser.Id,
                 };
 
                 await this.Repository
@@ -411,6 +417,8 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> RemoveExternalLoginAsync(CancellationToken cancellationToken = default)
         {
+            this.HttpContext.Request.Scheme = "https";
+
             await this.IdentityManager
                 .RemoveExternalLoginAsync(cancellationToken);
 

@@ -18,8 +18,6 @@ using Nano.Eventing.Extensions;
 using Nano.Logging.Extensions;
 using Nano.Security.Extensions;
 using Nano.Web.Hosting.Extensions;
-using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Nano.Web
 {
@@ -53,6 +51,15 @@ namespace Nano.Web
             base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
 
             applicationBuilder
+                .Use((context, next) =>
+                {
+                    if (context.Request.Path == "/signin-facebook")
+                    {
+                        context.Request.Scheme = "https";
+                    }
+
+                    return next();
+                })
                 .UseHttpCorsPolicy()
                 .UseHttpLocalization()
                 .UseExceptionHandling()

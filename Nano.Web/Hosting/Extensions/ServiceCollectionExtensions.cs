@@ -25,6 +25,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml.XPath;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
@@ -87,6 +88,10 @@ namespace Nano.Web.Hosting.Extensions
                 .AddTimeZone(appOptions)
                 .AddCompression()
                 .AddContentTypeFormatters()
+                .Configure<ForwardedHeadersOptions>(options =>
+                {
+                    options.ForwardedHeaders = ForwardedHeaders.All;
+                })
                 .AddSingleton<ExceptionHandlingMiddleware>()
                 .AddSingleton<HttpRequestOptionsMiddleware>()
                 .AddSingleton<HttpRequestIdentifierMiddleware>()

@@ -3,7 +3,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Nano.Models;
 using Nano.Security;
@@ -87,6 +89,9 @@ namespace Nano.Web.Controllers
         {
             await this.IdentityManager
                 .SignOutAsync(cancellationToken);
+
+            await HttpContext
+                .SignOutAsync(IdentityConstants.ExternalScheme);
 
             return this.Ok();
         }

@@ -1,10 +1,7 @@
 using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Security;
-using Serilog;
 
 namespace Nano.Web.Hosting.Extensions
 {
@@ -55,20 +52,6 @@ namespace Nano.Web.Hosting.Extensions
 
                                 x.Scope
                                     .Add("public_profile");
-
-                                // BUG: Try / Test
-                                x.Events = new OAuthEvents();
-
-                                x.Events.OnRedirectToAuthorizationEndpoint += context =>
-                                {
-                                    Log.Logger.Warning("REDIRECT_URL: " + context.RedirectUri);
-
-                                    context.RedirectUri = context.RedirectUri.Replace("http://", "https://");
-
-                                    Log.Logger.Warning("REDIRECT_URL: " + context.RedirectUri);
-
-                                    return Task.FromResult(0);
-                                };
                             });
                         break;
                     }

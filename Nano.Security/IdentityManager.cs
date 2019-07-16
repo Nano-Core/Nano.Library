@@ -220,6 +220,14 @@ namespace Nano.Security
                 identityUser = await this.UserManager
                     .FindByLoginAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey);
             }
+            else if (result.IsLockedOut)
+            {
+                throw new UnauthorizedLockedOutException();
+            }
+            else if (result.RequiresTwoFactor)
+            {
+                throw new UnauthorizedTwoFactorRequiredException();
+            }
             else
             {
                 var emailAddress = externalLoginInfo.Principal
