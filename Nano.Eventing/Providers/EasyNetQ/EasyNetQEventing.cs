@@ -56,6 +56,13 @@ namespace Nano.Eventing.Providers.EasyNetQ
             var queue = await this.Bus.Advanced
                 .QueueDeclareAsync($"{queueName}");
 
+            var exchangeName = type.FullName;
+            var exchange = await this.Bus.Advanced
+                .ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout);
+
+            this.Bus.Advanced
+                .Bind(exchange, queue, routing);
+
             this.Bus.Advanced
                 .Consume<TMessage>(queue, (message, info) =>
                 {
@@ -78,13 +85,6 @@ namespace Nano.Eventing.Providers.EasyNetQ
 
                     task.Wait();
                 });
-
-            var exchangeName = type.FullName;
-            var exchange = await this.Bus.Advanced
-                .ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout);
-
-            this.Bus.Advanced
-                .Bind(exchange, queue, routing);
         }
 
         /// <inheritdoc />
