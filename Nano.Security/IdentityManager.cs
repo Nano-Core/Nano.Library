@@ -111,6 +111,11 @@ namespace Nano.Security
             var identityUser = await this.UserManager
                 .FindByLoginAsync(loginExternal.LoginProvider, loginExternal.ProviderKey);
 
+            var success = await this.ValidateExternalAccessToken(loginExternal, cancellationToken);
+            
+            if (!success)
+                throw new UnauthorizedException();
+            
             await this.SignInManager
                 .SignInAsync(identityUser, loginExternal.IsRememerMe);
 
@@ -582,19 +587,37 @@ namespace Nano.Security
                     {
                         const string HOST = "https://graph.facebook.com";
                         const string FIELDS = "id,name,address,email,birthday";
+                        
                         var url = $"{HOST}/{loginExternal.ProviderKey}/?fields={FIELDS}&access_token={loginExternal.AccessToken}";
                         var response = await client.GetAsync(url, cancellationToken);
                         var content = await response.Content.ReadAsStringAsync();
-                        var facebookResponse = JsonConvert.DeserializeObject<ExternalLoginData>(content);
 
-                        return new ExternalLoginData
-                        {
-                            Id = facebookResponse.Id,
-                            Name = facebookResponse.Name,
-                            Address = facebookResponse.Address,
-                            Email = facebookResponse.Email,
-                            BirthDay = facebookResponse.BirthDay
-                        };
+                        return JsonConvert.DeserializeObject<ExternalLoginData>(content);
+                    }
+                    
+                default:
+                    throw new NotSupportedException(loginExternal.LoginProvider);
+            }
+        }
+        private async Task<bool> ValidateExternalAccessToken(LoginExternal loginExternal, CancellationToken cancellationToken = default)
+        {
+            switch (loginExternal.LoginProvider)
+            {
+                case "Facebook":
+                    using (var client = new HttpClient())
+                    {
+                        const string HOST = "https://graph.facebook.com";
+                     
+                        var url = $"{HOST}/app?access_token={loginExternal.AccessToken}";
+                        var response = await client.GetAsync(url, cancellationToken);
+
+                        if (!response.IsSuccessStatusCode)
+                            return false;
+                        
+                        var content = await response.Content.ReadAsStringAsync();
+                        var validation = JsonConvert.DeserializeObject<dynamic>(content);
+
+                        return validation.id?.ToString() == loginExternal.ProviderKey;
                     }
 
                 default:
