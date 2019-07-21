@@ -158,7 +158,7 @@ namespace Nano.Web.Controllers
                 throw new UnauthorizedException(remoteError);
 
             var signUpExternalResponse = await this.IdentityManager
-                .SignInExternalCallbackAsync(cancellationToken);
+                .SignInExternalChallangeCallbackAsync(cancellationToken);
 
             var signUpExternal = new SignUpExternal
             {

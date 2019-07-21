@@ -45,8 +45,7 @@ namespace Nano.Web.Hosting.Middleware
             var request = httpContext.Request;
             var response = httpContext.Response;
 
-            var statusCode = response.StatusCode;
-            var logeLevel = statusCode >= 500 && statusCode <= 599 
+            var logeLevel = response.StatusCode >= 500 && response.StatusCode <= 599 
                 ? LogLevel.Error 
                 : LogLevel.Information;
 
@@ -97,7 +96,7 @@ namespace Nano.Web.Hosting.Middleware
                 var queryString = request.QueryString.HasValue ? $"{request.QueryString.Value}" : string.Empty;
                 
                 this.Logger
-                    .Log(logeLevel, exception, MESSAGE_TEMPLATE, protocol, method, path, queryString, statusCode, elapsed, id);
+                    .Log(logeLevel, exception, MESSAGE_TEMPLATE, protocol, method, path, queryString, response.StatusCode, elapsed, id);
             }
         }
     }

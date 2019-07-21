@@ -194,7 +194,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Mvc.ChallengeResult"/>.</returns>
         </member>
-        <member name="M:Nano.Security.IdentityManager.SignInExternalCallbackAsync(System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.IdentityManager.SignInExternalChallangeCallbackAsync(System.Threading.CancellationToken)">
             <summary>
             Callback for signing in a user with external login info,
             from external login cookie data.
@@ -202,7 +202,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ExternalLoginData"/>.</returns>
         </member>
-        <member name="M:Nano.Security.IdentityManager.SignInExternalCallbackAsync(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.IdentityManager.SignInExternalChallangeCallbackAsync(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
             <summary>
             Callback for signing in a user with external login info,
             from passed in <see cref="T:Nano.Security.Models.LoginExternal"/> data.

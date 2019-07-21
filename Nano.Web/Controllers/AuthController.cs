@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Nano.Models;
 using Nano.Security;
-using Nano.Security.Exceptions;
 using Nano.Security.Models;
 using Nano.Web.Hosting;
     
@@ -56,17 +55,10 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> LogInAsync([FromBody][Required]Login login, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var accessToken = await this.IdentityManager
-                    .SignInAsync(login, cancellationToken);
+            var accessToken = await this.IdentityManager
+                .SignInAsync(login, cancellationToken);
 
-                return this.Ok(accessToken);
-            }
-            catch (UnauthorizedException ex)
-            {
-                return this.Unauthorized(ex.Message);
-            }
+            return this.Ok(accessToken);
         }
 
         /// <summary>
@@ -89,34 +81,23 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> SignInExternalAsync([FromBody][Required]LoginExternal loginExternal, CancellationToken cancellationToken = default)
         {
-            try
+            var accessToken = await this.IdentityManager
+                .SignInExternalAsync(loginExternal, cancellationToken);
+
+            ExternalLoginData externalLoginData = null;
+            if (accessToken == null)
             {
-                var data = await this.IdentityManager
-                    .SignInExternalCallbackAsync(loginExternal, cancellationToken);
-
-                AccessToken accessToken = null;
-                if (data == null)
-                {
-                    accessToken = await this.IdentityManager
-                        .SignInExternalAsync(new LoginExternal
-                        {
-                            LoginProvider = loginExternal.LoginProvider,
-                            ProviderKey = loginExternal.ProviderKey
-                        }, cancellationToken);
-                }
-
-                var externalLoginResponse = new ExternalLoginResponse
-                {
-                    Data = data,
-                    AccessToken = accessToken
-                };
-
-                return this.Ok(externalLoginResponse);
+                externalLoginData = await this.IdentityManager
+                    .GetExternalProviderInfoAsync(loginExternal, cancellationToken);
             }
-            catch (UnauthorizedException ex)
+
+            var response = new ExternalLoginResponse
             {
-                return this.Unauthorized(ex.Message);
-            }
+                Data = externalLoginData,
+                AccessToken = accessToken
+            };
+
+            return this.Ok(response);
         }
 
         /// <summary>

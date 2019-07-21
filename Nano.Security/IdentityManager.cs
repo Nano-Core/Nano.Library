@@ -67,6 +67,34 @@ namespace Nano.Security
         }
 
         /// <summary>
+        /// Gets the external provider info.
+        /// </summary>
+        /// <param name="loginExternal">The <see cref="LoginExternal"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="ExternalLoginData"/></returns>
+        public virtual async Task<ExternalLoginData> GetExternalProviderInfoAsync(LoginExternal loginExternal, CancellationToken cancellationToken = default)
+        {
+            switch (loginExternal.LoginProvider)
+            {
+                case "Facebook":
+                    using (var client = new HttpClient())
+                    {
+                        const string HOST = "https://graph.facebook.com";
+                        const string FIELDS = "id,name,address,email,birthday";
+                        
+                        var url = $"{HOST}/{loginExternal.ProviderKey}/?fields={FIELDS}&access_token={loginExternal.AccessToken}";
+                        var response = await client.GetAsync(url, cancellationToken);
+                        var content = await response.Content.ReadAsStringAsync();
+
+                        return JsonConvert.DeserializeObject<ExternalLoginData>(content);
+                    }
+                    
+                default:
+                    throw new NotSupportedException(loginExternal.LoginProvider);
+            }
+        }
+
+        /// <summary>
         /// Signs in a user.
         /// </summary>
         /// <param name="login">The <see cref="Login"/>.</param>
@@ -82,10 +110,11 @@ namespace Nano.Security
 
             if (result.Succeeded)
             {
-                var user = await this.UserManager
+                var identityUser = await this.UserManager
                     .FindByNameAsync(login.Username);
 
-                return await this.GetJwtTokenAsync(user);
+                return await this.UserManager
+                    .GenerateJwtToken(identityUser, this.Options);
             }
 
             if (result.IsLockedOut)
@@ -111,6 +140,9 @@ namespace Nano.Security
             var identityUser = await this.UserManager
                 .FindByLoginAsync(loginExternal.LoginProvider, loginExternal.ProviderKey);
 
+            if (identityUser == null)
+                return null;
+
             var success = await this.ValidateExternalAccessToken(loginExternal, cancellationToken);
             
             if (!success)
@@ -119,7 +151,8 @@ namespace Nano.Security
             await this.SignInManager
                 .SignInAsync(identityUser, loginExternal.IsRememerMe);
 
-            return await this.GetJwtTokenAsync(identityUser);
+            return await this.UserManager
+                .GenerateJwtToken(identityUser, this.Options);
         }
 
         /// <summary>
@@ -153,7 +186,7 @@ namespace Nano.Security
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="ExternalLoginData"/>.</returns>
-        public virtual async Task<ExternalLoginData> SignInExternalCallbackAsync(CancellationToken cancellationToken = default)
+        public virtual async Task<ExternalLoginData> SignInExternalChallangeCallbackAsync(CancellationToken cancellationToken = default)
         {
             var externalLoginInfo = await this.SignInManager
                 .GetExternalLoginInfoAsync();
@@ -164,8 +197,8 @@ namespace Nano.Security
             var result = await this.SignInManager
                 .ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, false, true);
 
-            if (result.Succeeded)
-                return null;
+            if (!result.Succeeded)
+                throw new UnauthorizedException();
             
             if (result.IsLockedOut)
                 throw new UnauthorizedLockedOutException();
@@ -190,33 +223,6 @@ namespace Nano.Security
                 Email = emailAddress,
                 BirthDay = birthDay == null ? (DateTime?)null : DateTime.Parse(birthDay)
             };
-        }
-        
-        /// <summary>
-        /// Callback for signing in a user with external login info,
-        /// from passed in <see cref="LoginExternal"/> data.
-        /// </summary>
-        /// <param name="loginExternal">The <see cref="LoginExternal"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The <see cref="ExternalLoginData"/>.</returns>
-        public virtual async Task<ExternalLoginData> SignInExternalCallbackAsync(LoginExternal loginExternal, CancellationToken cancellationToken = default)
-        {
-            if (loginExternal == null) 
-                throw new ArgumentNullException(nameof(loginExternal));
-
-            var result = await this.SignInManager
-                .ExternalLoginSignInAsync(loginExternal.LoginProvider, loginExternal.ProviderKey, false, true);
-
-            if (result.Succeeded)
-                return null;
-            
-            if (result.IsLockedOut)
-                throw new UnauthorizedLockedOutException();
-
-            if (result.RequiresTwoFactor)
-                throw new UnauthorizedTwoFactorRequiredException();
-
-            return await this.GetExternalProviderInfo(loginExternal, cancellationToken);
         }
 
         /// <summary>
@@ -570,45 +576,25 @@ namespace Nano.Security
 
             throw new AggregateException(exceptions);
         }
-        private async Task<AccessToken> GetJwtTokenAsync(IdentityUser identityUser)
-        {
-            if (identityUser == null) 
-                throw new ArgumentNullException(nameof(identityUser));
-            
-            return await this.UserManager
-                .GenerateJwtToken(identityUser, this.Options);
-        }
-        private async Task<ExternalLoginData> GetExternalProviderInfo(LoginExternal loginExternal, CancellationToken cancellationToken = default)
-        {
-            switch (loginExternal.LoginProvider)
-            {
-                case "Facebook":
-                    using (var client = new HttpClient())
-                    {
-                        const string HOST = "https://graph.facebook.com";
-                        const string FIELDS = "id,name,address,email,birthday";
-                        
-                        var url = $"{HOST}/{loginExternal.ProviderKey}/?fields={FIELDS}&access_token={loginExternal.AccessToken}";
-                        var response = await client.GetAsync(url, cancellationToken);
-                        var content = await response.Content.ReadAsStringAsync();
-
-                        return JsonConvert.DeserializeObject<ExternalLoginData>(content);
-                    }
-                    
-                default:
-                    throw new NotSupportedException(loginExternal.LoginProvider);
-            }
-        }
         private async Task<bool> ValidateExternalAccessToken(LoginExternal loginExternal, CancellationToken cancellationToken = default)
         {
+            if (loginExternal == null) 
+                throw new ArgumentNullException(nameof(loginExternal));
+            
+            var externalLoginOption = this.Options.ExternalLogins
+                .FirstOrDefault(x => x.Name == loginExternal.LoginProvider);
+
+            if (externalLoginOption == null)
+                throw new NullReferenceException(nameof(externalLoginOption));
+            
             switch (loginExternal.LoginProvider)
             {
                 case "Facebook":
                     using (var client = new HttpClient())
                     {
                         const string HOST = "https://graph.facebook.com";
-                     
-                        var url = $"{HOST}/app?access_token={loginExternal.AccessToken}";
+
+                        var url = $"{HOST}/debug_token?input_token={loginExternal.AccessToken}&access_token={externalLoginOption.Id}|{externalLoginOption.Secret}";
                         var response = await client.GetAsync(url, cancellationToken);
 
                         if (!response.IsSuccessStatusCode)
@@ -617,7 +603,16 @@ namespace Nano.Security
                         var content = await response.Content.ReadAsStringAsync();
                         var validation = JsonConvert.DeserializeObject<dynamic>(content);
 
-                        return validation.id?.ToString() == loginExternal.ProviderKey;
+                        if (!(bool)validation.data.is_valid)
+                            return false;
+
+                        if (validation.data.app_id != externalLoginOption.Id)
+                            return false;
+
+                        if (validation.data.user_id != loginExternal.ProviderKey)
+                            return false;
+
+                        return true;
                     }
 
                 default:
