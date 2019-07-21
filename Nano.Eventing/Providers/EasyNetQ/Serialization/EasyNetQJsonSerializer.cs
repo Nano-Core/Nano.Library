@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using EasyNetQ;
 using Newtonsoft.Json;
@@ -21,23 +19,22 @@ namespace Nano.Eventing.Providers.EasyNetQ.Serialization
         };
 
         /// <inheritdoc />
+        public virtual byte[] MessageToBytes<T>(T message) 
+            where T : class
+        {
+            return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, serializerSettings));
+        }
+
+        /// <inheritdoc />
+        public virtual T BytesToMessage<T>(byte[] bytes)
+        {
+            return JsonConvert.DeserializeObject<T>(Encoding.UTF8.GetString(bytes), serializerSettings);
+        }
+
+        /// <inheritdoc />
         public virtual object BytesToMessage(Type type, byte[] bytes)
         {
             return JsonConvert.DeserializeObject(Encoding.UTF8.GetString(bytes), type, serializerSettings);
-        }
-        
-        /// <inheritdoc />
-        public virtual byte[] MessageToBytes(Type messageType, object message)
-        {
-            using (var memoryStream = new MemoryStream())
-            {
-                var formatter = new BinaryFormatter();
-
-                formatter
-                    .Serialize(memoryStream, message);
-
-                return memoryStream.ToArray();
-            }
         }
     }
 }

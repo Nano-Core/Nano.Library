@@ -52,11 +52,11 @@ namespace Nano.Eventing.Providers.EasyNetQ
             var type = typeof(TMessage);
             var appName = Assembly.GetEntryAssembly()?.GetName().Name;
             var queueName = $"{appName}:{type.Name}.{routing}";
+            var exchangeName = type.FullName;
 
             var queue = await this.Bus.Advanced
                 .QueueDeclareAsync($"{queueName}");
 
-            var exchangeName = type.FullName;
             var exchange = await this.Bus.Advanced
                 .ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout);
 
