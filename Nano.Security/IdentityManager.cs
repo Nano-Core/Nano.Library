@@ -693,7 +693,7 @@ namespace Nano.Security
                 RefreshToken = new RefreshToken
                 {
                     Token = refreshToken,
-                    ExpireAt = DateTime.UtcNow.AddDays(this.Options.Jwt.RefreshExpirationInHours)
+                    ExpireAt = DateTime.UtcNow.AddHours(this.Options.Jwt.RefreshExpirationInHours)
                 },
                 ExpireAt = expireAt
             };
