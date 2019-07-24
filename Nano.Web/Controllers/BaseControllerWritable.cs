@@ -13,6 +13,7 @@ using Nano.Eventing.Interfaces;
 using Nano.Models;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
+using Nano.Security.Const;
 using Nano.Web.Hosting;
 
 namespace Nano.Web.Controllers
@@ -24,7 +25,7 @@ namespace Nano.Web.Controllers
     /// <typeparam name="TEntity">The <see cref="IEntity"/> model the <see cref="IRepository"/> operates with.</typeparam>
     /// <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
     /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> implementation.</typeparam>
-    [Authorize(Roles = "administrator, service, writer")]
+    [Authorize(Roles = BuiltInUserRoles.Administrator + "," + BuiltInUserRoles.Service + "," + BuiltInUserRoles.Writer)]
     public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
         where TRepository : IRepository
         where TEntity : class, IEntityIdentity<TIdentity>, IEntityWritable

@@ -11,12 +11,13 @@ using Nano.Models;
 using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
+using Nano.Security.Const;
 using Nano.Web.Hosting;
 
 namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
-    [Authorize(Roles = "administrator, service, writer, reader")]
+    [Authorize(Roles = BuiltInUserRoles.Administrator + "," + BuiltInUserRoles.Service + "," + BuiltInUserRoles.Writer + "," + BuiltInUserRoles.Reader)]
     public abstract class BaseControllerSpatial<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerWritable<TRepository, TEntity, TIdentity, TCriteria>
         where TRepository : IRepositorySpatial
         where TEntity : class, IEntitySpatial, IEntityIdentity<TIdentity>, IEntityWritable

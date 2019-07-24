@@ -23,6 +23,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml.XPath;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -247,6 +248,22 @@ namespace Nano.Web.Hosting.Extensions
                         ValidAudience = securityOptions.Jwt.Audience,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityOptions.Jwt.SecretKey)),
                         ClockSkew = TimeSpan.FromMinutes(5)
+                    };
+
+                    x.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                            {
+                                const string KEY = "Token-Expired";
+
+                                context.Response.Headers
+                                    .Add(KEY, true.ToString());
+                            }
+
+                            return Task.CompletedTask;
+                        }
                     };
                 })
                 .AddExternalLogins(securityOptions)

@@ -11,12 +11,13 @@ using Nano.Eventing.Interfaces;
 using Nano.Models;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
+using Nano.Security.Const;
 using Nano.Web.Hosting;
 
 namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
-    [Authorize(Roles = "administrator, service, writer, reader")]
+    [Authorize(Roles = BuiltInUserRoles.Administrator + "," + BuiltInUserRoles.Service + "," + BuiltInUserRoles.Writer + "," + BuiltInUserRoles.Reader)]
     public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria> : BaseController<TRepository>
         where TRepository : IRepository
         where TEntity : class, IEntityIdentity<TIdentity>

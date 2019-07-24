@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Nano.Models;
+using Nano.Security.Const;
 using Nano.Web.Hosting;
 using Vivet.AspNetCore.RequestTimeZone;
 
@@ -16,7 +17,7 @@ namespace Nano.Web.Controllers
     /// Home Controller.
     /// Contains method for handling application level operations.
     /// </summary>
-    [Authorize(Roles = "administrator, service, writer, reader, guest")]
+    [Authorize(Roles = BuiltInUserRoles.Administrator + "," + BuiltInUserRoles.Service + "," + BuiltInUserRoles.Writer + "," + BuiltInUserRoles.Reader + "," + BuiltInUserRoles.Guest)]
     public class HomeController : BaseController
     {
         /// <summary>

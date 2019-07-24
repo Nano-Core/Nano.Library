@@ -12,6 +12,7 @@ using Nano.Models.Interfaces;
 using Nano.Security.Extensions;
 using System;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Nano.Data.Providers.Sqlite;
 using Z.EntityFramework.Plus;
 
@@ -80,8 +81,9 @@ namespace Nano.Data.Extensions
 
             services
                 .AddIdentity<IdentityUser, IdentityRole>()
-                    .AddEntityFrameworkStores<BaseDbContext>()
-                    .AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<BaseDbContext>()
+                .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>(JwtBearerDefaults.AuthenticationScheme)
+                .AddDefaultTokenProviders();
 
             services
                 .AddAudit(options)

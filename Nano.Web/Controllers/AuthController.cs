@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Nano.Models;
 using Nano.Security;
+using Nano.Security.Const;
+using Nano.Security.Extensions;
 using Nano.Security.Models;
 using Nano.Web.Hosting;
     
@@ -17,6 +19,7 @@ namespace Nano.Web.Controllers
     /// <summary>
     /// Auth Controller.
     /// </summary>
+    [Authorize(Roles = BuiltInUserRoles.Administrator + "," + BuiltInUserRoles.Service + "," + BuiltInUserRoles.Writer + "," + BuiltInUserRoles.Reader)]
     public class AuthController : BaseController
     {
         /// <summary>
@@ -57,6 +60,35 @@ namespace Nano.Web.Controllers
         {
             var accessToken = await this.IdentityManager
                 .SignInAsync(login, cancellationToken);
+
+            return this.Ok(accessToken);
+        }
+
+        /// <summary>
+        /// Refreshes a users authentication token.
+        /// </summary>
+        /// <param name="loginRefresh">The login refresh model.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The access token.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="500">Error occurred.</response>
+        [HttpPost]
+        [Route("login/refresh")]
+        [AllowAnonymous]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> LoginRefreshAsync([FromBody][Required]LoginRefresh loginRefresh, CancellationToken cancellationToken = default)
+        {
+            var jwtToken = this.HttpContext.GetJwtToken();
+
+            var accessToken = await this.IdentityManager
+                .SignInRefreshAsync(jwtToken, loginRefresh.RefreshToken, cancellationToken);
 
             return this.Ok(accessToken);
         }

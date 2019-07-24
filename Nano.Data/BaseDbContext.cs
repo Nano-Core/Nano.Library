@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Nano.Data.Attributes;
+using Nano.Data.Models;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
 using Nano.Eventing.Attributes;
@@ -27,7 +28,7 @@ using Z.EntityFramework.Plus;
 namespace Nano.Data
 {
     /// <inheritdoc />
-    public abstract class BaseDbContext : IdentityDbContext
+    public abstract class BaseDbContext : IdentityDbContext<IdentityUser, IdentityRole, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserTokenExpiry<string>>
     {
         private static readonly IEnumerable<string> builtInRoles = new[]
         {
@@ -81,9 +82,9 @@ namespace Nano.Data
                 .HasKey(x => new { x.UserId, x.RoleId });
 
             modelBuilder
-                .Entity<IdentityUserToken<string>>()
+                .Entity<IdentityUserTokenExpiry<string>>()
                 .ToTable("__EFAuthUserToken")
-                .HasKey(x => new { x.UserId, x.Value });
+                .HasKey(x => new { x.UserId, x.LoginProvider, x.Name });
 
             modelBuilder
                 .Entity<IdentityUserClaim<string>>()

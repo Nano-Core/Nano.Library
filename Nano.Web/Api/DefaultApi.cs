@@ -39,6 +39,20 @@ namespace Nano.Web.Api
         }
 
         /// <summary>
+        /// Log-In Refresh Async.
+        /// </summary>
+        /// <param name="request">The <see cref="LogInRefreshRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="AccessToken"/>.</returns>
+        public virtual async Task<AccessToken> LogInRefreshAsync(LogInRefreshRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.CustomAsync<LogInRefreshRequest, AccessToken>(request, cancellationToken);
+        }
+
+        /// <summary>
         /// Log-In External Async.
         /// </summary>
         /// <param name="request">The <see cref="LogInRequest"/>.</param>

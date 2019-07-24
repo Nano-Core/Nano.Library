@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models
 {
     /// <summary>
-    /// Access Token.
+    /// Refresh Token.
     /// </summary>
-    public class AccessToken
+    public class RefreshToken
     {
         /// <summary>
         /// Token.
@@ -24,10 +24,5 @@ namespace Nano.Security.Models
         /// Is Expired.
         /// </summary>
         public virtual bool IsExpired => this.ExpireAt <= DateTimeOffset.UtcNow;
-
-        /// <summary>
-        /// Refresh Token.
-        /// </summary>
-        public virtual RefreshToken RefreshToken { get; set; }
     }
 }
