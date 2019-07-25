@@ -18,7 +18,7 @@ namespace Nano.Security.Models
         /// Expire At.
         /// </summary>
         [Required]
-        public virtual DateTime ExpireAt { get; set; }
+        public virtual DateTimeOffset ExpireAt { get; set; }
 
         /// <summary>
         /// Is Expired.

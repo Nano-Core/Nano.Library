@@ -12,7 +12,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Nano.Models;
 using Nano.Models.Exceptions;
 using Nano.Security.Exceptions;
 using Nano.Security.Extensions;
@@ -27,6 +29,11 @@ namespace Nano.Security
     public class IdentityManager
     {
         private const string REFERSH_TOKEN_NAME = "Refresh";
+
+        /// <summary>
+        /// Db Context.
+        /// </summary>
+        protected virtual DbContext DbContext { get; }
 
         /// <summary>
         /// Options.
@@ -46,12 +53,14 @@ namespace Nano.Security
         /// <summary>
         /// The user authenticates and on success recieves a jwt token for use with auhtorization.
         /// </summary>
+        /// <param name="dbContext">The <see cref="SignInManager{T}"/>.</param>
         /// <param name="signInManager">The <see cref="SignInManager{T}"/>.</param>
         /// <param name="userManager">The <see cref="UserManager{T}"/>.</param>
         /// <param name="options">The <see cref="SecurityOptions"/>.</param>
-        public IdentityManager(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, SecurityOptions options)
+        public IdentityManager(DbContext dbContext, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, SecurityOptions options)
         {
-            this.UserManager = userManager?? throw new ArgumentNullException(nameof(userManager));
+            this.DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            this.UserManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             this.SignInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
             this.Options = options ?? throw new ArgumentNullException(nameof(options));
         }
@@ -166,18 +175,22 @@ namespace Nano.Security
             if (!(securityToken is JwtSecurityToken jwtSecurityToken) || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 throw new UnauthorizedException();
 
-            var user = await this.UserManager
+            var identityUser = await this.UserManager
                 .FindByNameAsync(principal.Identity.Name);
 
-            var savedRefreshToken = await this.UserManager
-                .GetAuthenticationTokenAsync(user, JwtBearerDefaults.AuthenticationScheme, IdentityManager.REFERSH_TOKEN_NAME);
+            var identityUserToken = this.DbContext
+                .Set<IdentityUserTokenExpiry<string>>()
+                .Where(x => x.UserId == identityUser.Id)
+                .AsNoTracking()
+                .FirstOrDefault();
 
-            // TODO: Check if Refresh Token is expired.
-
-            if (savedRefreshToken != refreshToken)
+            if (identityUserToken?.Value != refreshToken)
                 throw new UnauthorizedException();
 
-            return await this.GenerateJwtToken(user, this.Options);
+            if (identityUserToken.ExpireAt <= DateTimeOffset.UtcNow)
+                throw new UnauthorizedException();
+
+            return await this.GenerateJwtToken(identityUser, this.Options);
         }
 
         /// <summary>
@@ -681,11 +694,20 @@ namespace Nano.Security
             if (!removeResult.Succeeded)
                 this.ThrowIdentityExceptions(removeResult.Errors);
 
-            var setResult = await this.UserManager
-                .SetAuthenticationTokenAsync(identityUser, JwtBearerDefaults.AuthenticationScheme, IdentityManager.REFERSH_TOKEN_NAME, refreshToken);
+            var identityUserToken = new IdentityUserTokenExpiry<string>
+            {
+                UserId = identityUser.Id,
+                Name = IdentityManager.REFERSH_TOKEN_NAME,
+                Value = refreshToken,
+                LoginProvider = JwtBearerDefaults.AuthenticationScheme,
+                ExpireAt = DateTimeOffset.UtcNow.AddHours(this.Options.Jwt.RefreshExpirationInHours)
+            };
 
-            if (!setResult.Succeeded)
-                this.ThrowIdentityExceptions(setResult.Errors);
+            await this.DbContext
+                .AddAsync(identityUserToken);
+
+            await this.DbContext
+                .SaveChangesAsync();
 
             return new AccessToken
             {
@@ -693,7 +715,7 @@ namespace Nano.Security
                 RefreshToken = new RefreshToken
                 {
                     Token = refreshToken,
-                    ExpireAt = DateTime.UtcNow.AddHours(this.Options.Jwt.RefreshExpirationInHours)
+                    ExpireAt = identityUserToken.ExpireAt
                 },
                 ExpireAt = expireAt
             };
