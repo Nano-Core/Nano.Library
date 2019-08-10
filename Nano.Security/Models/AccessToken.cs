@@ -9,6 +9,12 @@ namespace Nano.Security.Models
     public class AccessToken
     {
         /// <summary>
+        /// App Id.
+        /// </summary>
+        [MaxLength(256)]
+        public virtual string AppId { get; set; }
+
+        /// <summary>
         /// Token.
         /// </summary>
         [Required]

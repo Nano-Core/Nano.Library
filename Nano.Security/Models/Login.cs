@@ -9,6 +9,12 @@ namespace Nano.Security.Models
     public class Login
     {
         /// <summary>
+        /// App Id.
+        /// </summary>
+        [MaxLength(256)]
+        public virtual string AppId { get; set; }
+
+        /// <summary>
         /// Username.
         /// </summary>
         [Required]

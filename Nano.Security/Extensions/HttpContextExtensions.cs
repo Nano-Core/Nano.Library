@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Nano.Security.Const;
 
 namespace Nano.Security.Extensions
 {
@@ -11,6 +12,22 @@ namespace Nano.Security.Extensions
     /// </summary>
     public static class HttpContextExtensions
     {
+        /// <summary>
+        /// Get Jwt App Id.
+        /// </summary>
+        /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
+        /// <returns>The app id.</returns>
+        public static string GetJwtAppId(this HttpContext httpContext)
+        {
+            if (httpContext == null)
+                throw new ArgumentNullException(nameof(httpContext));
+
+            var value = httpContext.User
+                .FindFirstValue(ClaimTypesExtended.AppId);
+
+            return value;
+        }
+
         /// <summary>
         /// Get Jwt Token.
         /// </summary>

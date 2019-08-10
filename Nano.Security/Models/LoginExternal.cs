@@ -9,6 +9,12 @@ namespace Nano.Security.Models
     public class LoginExternal
     {
         /// <summary>
+        /// App Id.
+        /// </summary>
+        [MaxLength(256)]
+        public virtual string AppId { get; set; }
+
+        /// <summary>
         /// Login Provider.
         /// </summary>
         [Required]

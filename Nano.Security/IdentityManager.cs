@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Nano.Models;
 using Nano.Models.Exceptions;
+using Nano.Security.Const;
 using Nano.Security.Exceptions;
 using Nano.Security.Extensions;
 using Nano.Security.Models;
@@ -28,7 +29,7 @@ namespace Nano.Security
     /// </summary>
     public class IdentityManager
     {
-        private const string REFERSH_TOKEN_NAME = "Refresh";
+        private const string DEFAULT_APP_ID = "Default";
 
         /// <summary>
         /// Db Context.
@@ -130,7 +131,7 @@ namespace Nano.Security
                 var identityUser = await this.UserManager
                     .FindByNameAsync(login.Username);
 
-                return await this.GenerateJwtToken(identityUser, this.Options);
+                return await this.GenerateJwtToken(identityUser, login.AppId);
             }
 
             if (result.IsLockedOut)
@@ -145,17 +146,16 @@ namespace Nano.Security
         /// <summary>
         /// Refresh the login of a user.
         /// </summary>
-        /// <param name="token">The jwt-token</param>
-        /// <param name="refreshToken">The refresh token .</param>
+        /// <param name="loginRefresh">The <see cref="LoginRefresh"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<AccessToken> SignInRefreshAsync(string token, string refreshToken, CancellationToken cancellationToken = default)
+        public virtual async Task<AccessToken> SignInRefreshAsync(LoginRefresh loginRefresh, CancellationToken cancellationToken = default)
         {
-            if (token == null) 
-                throw new ArgumentNullException(nameof(token));
-            
-            if (refreshToken == null) 
-                throw new ArgumentNullException(nameof(refreshToken));
+            if (loginRefresh == null) 
+                throw new ArgumentNullException(nameof(loginRefresh));
+
+            var accessToken = this.SignInManager.Context
+                .GetJwtToken();
 
             var validationParameters = new TokenValidationParameters
             {
@@ -170,7 +170,7 @@ namespace Nano.Security
             };
 
             var principal = new JwtSecurityTokenHandler()
-                .ValidateToken(token, validationParameters, out var securityToken);
+                .ValidateToken(accessToken, validationParameters, out var securityToken);
 
             if (!(securityToken is JwtSecurityToken jwtSecurityToken) || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 throw new UnauthorizedException();
@@ -184,13 +184,16 @@ namespace Nano.Security
                 .AsNoTracking()
                 .FirstOrDefault();
 
-            if (identityUserToken?.Value != refreshToken)
+            if (identityUserToken == null)
+                throw new UnauthorizedException();
+
+            if (identityUserToken.Value != loginRefresh.RefreshToken)
                 throw new UnauthorizedException();
 
             if (identityUserToken.ExpireAt <= DateTimeOffset.UtcNow)
                 throw new UnauthorizedException();
 
-            return await this.GenerateJwtToken(identityUser, this.Options);
+            return await this.GenerateJwtToken(identityUser, identityUserToken.Name);
         }
 
         /// <summary>
@@ -218,7 +221,7 @@ namespace Nano.Security
             await this.SignInManager
                 .SignInAsync(identityUser, loginExternal.IsRememerMe);
 
-            return await this.GenerateJwtToken(identityUser, this.Options);
+            return await this.GenerateJwtToken(identityUser, loginExternal.AppId);
         }
 
         /// <summary>
@@ -298,13 +301,17 @@ namespace Nano.Security
         /// <returns>Void.</returns>
         public virtual async Task SignOutAsync(CancellationToken cancellationToken = default)
         {
-            var username = this.SignInManager.Context.GetJwtUserName();
+            var appId = this.SignInManager.Context
+                .GetJwtAppId();
+
+            var username = this.SignInManager.Context
+                .GetJwtUserName();
 
             var identityUser = await this.UserManager
                 .FindByNameAsync(username);
 
             await this.UserManager
-                .RemoveAuthenticationTokenAsync(identityUser, JwtBearerDefaults.AuthenticationScheme, IdentityManager.REFERSH_TOKEN_NAME);
+                .RemoveAuthenticationTokenAsync(identityUser, JwtBearerDefaults.AuthenticationScheme, appId);
 
             await this.SignInManager
                 .SignOutAsync();
@@ -649,13 +656,14 @@ namespace Nano.Security
                     var bytes = new byte[32];
                     using (var generator = RandomNumberGenerator.Create())
                     {
-                        generator.GetBytes(bytes);
-                    
+                        generator
+                            .GetBytes(bytes);
+
                         return Convert.ToBase64String(bytes);
                     }
                 });
         }
-        private async Task<AccessToken> GenerateJwtToken(IdentityUser identityUser, SecurityOptions options)
+        private async Task<AccessToken> GenerateJwtToken(IdentityUser identityUser, string appId = null)
         {
             if (identityUser == null)
                 throw new ArgumentNullException(nameof(identityUser));
@@ -669,27 +677,30 @@ namespace Nano.Security
             var roleClaims = roles
                 .Select(y => new Claim(ClaimTypes.Role, y));
 
+            appId = appId ?? IdentityManager.DEFAULT_APP_ID;
+
             var claims = new Collection<Claim>
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, identityUser.Id),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Email, identityUser.Email),
                     new Claim(ClaimTypes.Name, identityUser.UserName),
-                    new Claim(ClaimTypes.NameIdentifier, identityUser.Id)
+                    new Claim(ClaimTypes.NameIdentifier, identityUser.Id),
+                    new Claim(ClaimTypesExtended.AppId, appId)
                 }
                 .Union(userClaims)
                 .Union(roleClaims);
 
             var notBeforeAt = DateTime.UtcNow;
-            var expireAt = DateTime.UtcNow.AddHours(options.Jwt.ExpirationInHours);
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Jwt.SecretKey));
+            var expireAt = DateTime.UtcNow.AddHours(this.Options.Jwt.ExpirationInHours);
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.Options.Jwt.SecretKey));
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var securityToken = new JwtSecurityToken(options.Jwt.Issuer, options.Jwt.Issuer, claims, notBeforeAt, expireAt, signingCredentials);
+            var securityToken = new JwtSecurityToken(this.Options.Jwt.Issuer, this.Options.Jwt.Issuer, claims, notBeforeAt, expireAt, signingCredentials);
             var token = new JwtSecurityTokenHandler().WriteToken(securityToken);
             var refreshToken = await this.GenerateRefreshToken();
 
             var removeResult = await this.UserManager
-                .RemoveAuthenticationTokenAsync(identityUser, JwtBearerDefaults.AuthenticationScheme, IdentityManager.REFERSH_TOKEN_NAME);
+                .RemoveAuthenticationTokenAsync(identityUser, JwtBearerDefaults.AuthenticationScheme, appId);
 
             if (!removeResult.Succeeded)
                 this.ThrowIdentityExceptions(removeResult.Errors);
@@ -697,7 +708,7 @@ namespace Nano.Security
             var identityUserToken = new IdentityUserTokenExpiry<string>
             {
                 UserId = identityUser.Id,
-                Name = IdentityManager.REFERSH_TOKEN_NAME,
+                Name = appId,
                 Value = refreshToken,
                 LoginProvider = JwtBearerDefaults.AuthenticationScheme,
                 ExpireAt = DateTimeOffset.UtcNow.AddHours(this.Options.Jwt.RefreshExpirationInHours)
@@ -711,6 +722,7 @@ namespace Nano.Security
 
             return new AccessToken
             {
+                AppId = appId,
                 Token = token,
                 RefreshToken = new RefreshToken
                 {

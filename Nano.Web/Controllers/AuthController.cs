@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Nano.Models;
 using Nano.Security;
 using Nano.Security.Const;
-using Nano.Security.Extensions;
 using Nano.Security.Models;
 using Nano.Web.Hosting;
     
@@ -85,10 +84,8 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> LoginRefreshAsync([FromBody][Required]LoginRefresh loginRefresh, CancellationToken cancellationToken = default)
         {
-            var jwtToken = this.HttpContext.GetJwtToken();
-
             var accessToken = await this.IdentityManager
-                .SignInRefreshAsync(jwtToken, loginRefresh.RefreshToken, cancellationToken);
+                .SignInRefreshAsync(loginRefresh, cancellationToken);
 
             return this.Ok(accessToken);
         }
