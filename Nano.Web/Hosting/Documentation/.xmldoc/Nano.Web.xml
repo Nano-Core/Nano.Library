@@ -1806,10 +1806,10 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="T:Nano.Web.Hosting.Conventions.AduitControllerDisabledConvention">
+        <member name="T:Nano.Web.Hosting.Conventions.AuditControllerDisabledConvention">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Hosting.Conventions.AduitControllerDisabledConvention.Apply(Microsoft.AspNetCore.Mvc.ApplicationModels.ApplicationModel)">
+        <member name="M:Nano.Web.Hosting.Conventions.AuditControllerDisabledConvention.Apply(Microsoft.AspNetCore.Mvc.ApplicationModels.ApplicationModel)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Hosting.Conventions.AuthControllerDisabledConvention">

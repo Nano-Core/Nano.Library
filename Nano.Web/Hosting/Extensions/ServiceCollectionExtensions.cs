@@ -107,7 +107,7 @@ namespace Nano.Web.Hosting.Extensions
                     x.ModelBinderProviders.Insert(0, queryModelBinderProvider);
 
                     if (dataOptions.ConnectionString == null)
-                        x.Conventions.Insert(1, new AduitControllerDisabledConvention());
+                        x.Conventions.Insert(1, new AuditControllerDisabledConvention());
 
                     if (dataOptions.ConnectionString == null || !securityOptions.IsEnabled)
                         x.Conventions.Insert(0, new AuthControllerDisabledConvention());

@@ -4,7 +4,7 @@ using Nano.Web.Controllers;
 namespace Nano.Web.Hosting.Conventions
 {
     /// <inheritdoc />
-    public class AduitControllerDisabledConvention : IApplicationModelConvention
+    public class AuditControllerDisabledConvention : IApplicationModelConvention
     {
         /// <inheritdoc />
         public void Apply(ApplicationModel application)
