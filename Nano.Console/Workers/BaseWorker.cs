@@ -11,9 +11,8 @@ namespace Nano.Console.Workers
     /// <summary>
     /// Base .
     /// </summary>
-    /// <typeparam name="TRepository">The <see cref="IRepository"/>.</typeparam>
     public abstract class BaseWorker<TRepository> : IHostedService, IDisposable
-        where TRepository : class, IRepository
+        where TRepository : IRepository
     {
         /// <summary>
         /// Logger.
@@ -45,7 +44,7 @@ namespace Nano.Console.Workers
         protected BaseWorker(ILogger logger, TRepository repository, IEventing eventing, IApplicationLifetime applicationLifetime)
         {
             this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            this.Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            this.Repository = repository;
             this.Eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
             this.ApplicationLifetime = applicationLifetime ?? throw new ArgumentNullException(nameof(applicationLifetime));
         }

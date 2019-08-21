@@ -18,15 +18,10 @@ namespace Nano.Models.Extensions
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            stream.Position = 0;
-
-            string body;
             using (var streamReader = new StreamReader(stream))
             {
-                body = streamReader.ReadToEnd();
+                return streamReader.ReadToEnd();
             }
-
-            return body;
         }
     }
 }

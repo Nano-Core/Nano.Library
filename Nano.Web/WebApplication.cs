@@ -31,12 +31,7 @@ namespace Nano.Web
 
         }
 
-        /// <summary>
-        /// Configures the application.
-        /// </summary>
-        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
-        /// <param name="hostingEnvironment">The <see cref="IHostingEnvironment"/>.</param>
-        /// <param name="applicationLifetime">The <see cref="IApplicationLifetime"/>.</param>
+        /// <inheritdoc />
         public override void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime)
         {
             if (applicationBuilder == null)
