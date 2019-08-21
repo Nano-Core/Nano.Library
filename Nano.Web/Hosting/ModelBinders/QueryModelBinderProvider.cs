@@ -2,7 +2,6 @@ using System;
 using DynamicExpression.Entities;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Nano.Models.Criterias;
 
 namespace Nano.Web.Hosting.ModelBinders
 {
@@ -27,7 +26,7 @@ namespace Nano.Web.Hosting.ModelBinders
 
             if (modelType == typeof(IQuery) || modelType == typeof(Query))
             {
-                var genericType = typeof(QueryModelBinder<DefaultQueryCriteria>);
+                var genericType = typeof(QueryModelBinder);
 
                 return (IModelBinder)Activator.CreateInstance(genericType);
             }

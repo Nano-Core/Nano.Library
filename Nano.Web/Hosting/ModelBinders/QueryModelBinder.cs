@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -8,13 +7,13 @@ using DynamicExpression.Enums;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Nano.Models.Extensions;
 using Newtonsoft.Json;
 
 namespace Nano.Web.Hosting.ModelBinders
 {
     /// <inheritdoc />
-    public class QueryModelBinder<TCriteria> : IModelBinder
-        where TCriteria : class, IQueryCriteria, new()
+    public class QueryModelBinder : IModelBinder
     { 
         /// <inheritdoc />
         public virtual Task BindModelAsync(ModelBindingContext bindingContext)
@@ -23,27 +22,138 @@ namespace Nano.Web.Hosting.ModelBinders
                 throw new ArgumentNullException(nameof(bindingContext));
 
             var request = bindingContext.ActionContext.HttpContext.Request;
+            var body = request.Body.ReadAll();
 
-            string body;
-            using (var sr = new StreamReader(request.Body))
-            {
-                body = sr.ReadToEnd();
-            }
-
-            var model = string.IsNullOrEmpty(body) 
-                ? new Query<TCriteria>()
-                : JsonConvert.DeserializeObject<Query<TCriteria>>(body);
-
-            model.Order = model.Order ?? this.GetOrdering(request);
-            model.Paging = model.Paging ?? this.GetPagination(request);
-            model.Criteria = model.Criteria ?? this.GetCriteria(request);
+            var model = string.IsNullOrEmpty(body)
+                ? new Query
+                    {
+                        Order = this.GetOrdering(request),
+                        Paging = this.GetPagination(request)
+                    }
+                : JsonConvert.DeserializeObject<Query>(body);
 
             bindingContext.Result = ModelBindingResult.Success(model);
 
             return Task.CompletedTask;
         }
 
-        private TCriteria GetCriteria(HttpRequest request)
+        /// <summary>
+        /// Returns the <see cref="IOrdering"/> from the <see cref="HttpRequest.Query"/>.
+        /// </summary>
+        /// <param name="request">The <see cref="HttpRequest"/>.</param>
+        /// <returns>The <see cref="IOrdering"/>.</returns>
+        protected virtual IOrdering GetOrdering(HttpRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var by = this.GetOrderingBy(request);
+            var direction = this.GetOrderingDirection(request);
+
+            return new Ordering
+            {
+                By = by,
+                Direction = direction
+            };
+        }
+
+        /// <summary>
+        /// Returns the <see cref="IPagination"/> from the <see cref="HttpRequest.Query"/>.
+        /// </summary>
+        /// <param name="request">The <see cref="HttpRequest"/>.</param>
+        /// <returns>The <see cref="IPagination"/>.</returns>
+        protected virtual IPagination GetPagination(HttpRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var count = this.GetPaginationCount(request);
+            var number = this.GetPaginationNumber(request);
+
+            return new Pagination
+            {
+                Count = count,
+                Number = number
+            };
+        }
+
+        private string GetOrderingBy(HttpRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var orderBy = request.Query["Order.By"].FirstOrDefault() ?? "Id";
+
+            return orderBy;
+        }
+        private int GetPaginationCount(HttpRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var success = int.TryParse(request.Query["Paging.Count"].FirstOrDefault(), out var count);
+            if (!success)
+                count = 25;
+
+            return count;
+        }
+        private int GetPaginationNumber(HttpRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var success = int.TryParse(request.Query["Paging.Number"].FirstOrDefault(), out var number);
+            if (!success)
+                number = 1;
+
+            return number;
+        }
+        private OrderingDirection GetOrderingDirection(HttpRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var success = Enum.TryParse<OrderingDirection>(request.Query["Order.Direction"].FirstOrDefault(), true, out var direction);
+            if (!success)
+                direction = OrderingDirection.Asc;
+
+            return direction;
+        }
+    }
+
+    /// <inheritdoc />
+    public class QueryModelBinder<TCriteria> : QueryModelBinder
+        where TCriteria : class, IQueryCriteria, new()
+    { 
+        /// <inheritdoc />
+        public override Task BindModelAsync(ModelBindingContext bindingContext)
+        {
+            if (bindingContext == null)
+                throw new ArgumentNullException(nameof(bindingContext));
+
+            var request = bindingContext.ActionContext.HttpContext.Request;
+            var body = request.Body.ReadAll();
+
+            var model = string.IsNullOrEmpty(body)
+                ? new Query<TCriteria>
+                {
+                    Order = this.GetOrdering(request),
+                    Paging = this.GetPagination(request),
+                    Criteria = this.GetCriteria(request)
+                }
+                : JsonConvert.DeserializeObject<Query<TCriteria>>(body);
+
+            bindingContext.Result = ModelBindingResult.Success(model);
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Returns the Criteria of type <typeparamref name="TCriteria"/>, from the <see cref="HttpRequest.Query"/>.
+        /// </summary>
+        /// <param name="request">The <see cref="HttpRequest"/>.</param>
+        /// <returns>The Criteria of type <typeparamref name="TCriteria"/>.</returns>
+        protected virtual TCriteria GetCriteria(HttpRequest request)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -75,6 +185,10 @@ namespace Nano.Web.Hosting.ModelBinders
                     {
                         x.SetValue(criteria, DateTimeOffset.Parse(value));
                     }
+                    else if (x.PropertyType == typeof(Guid) || x.PropertyType == typeof(Guid?))
+                    {
+                        x.SetValue(criteria, Guid.Parse(value));
+                    }
                     else
                     {
                         x.SetValue(criteria, value);
@@ -82,78 +196,6 @@ namespace Nano.Web.Hosting.ModelBinders
                 });
 
             return criteria;
-        }
-
-        private IOrdering GetOrdering(HttpRequest request)
-        {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-
-            var by = this.GetOrderingBy(request);
-            var direction = this.GetOrderingDirection(request);
-
-            return new Ordering
-            {
-                By = by,
-                Direction = direction
-            };
-        }
-        private string GetOrderingBy(HttpRequest request)
-        {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-
-            var orderBy = request.Query["Order.By"].FirstOrDefault() ?? "Id";
-
-            return orderBy;
-        }
-        private OrderingDirection GetOrderingDirection(HttpRequest request)
-        {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-
-            var success = Enum.TryParse<OrderingDirection>(request.Query["Order.Direction"].FirstOrDefault(), true, out var direction);
-            if (!success)
-                direction = OrderingDirection.Asc;
-
-            return direction;
-        }
-
-        private IPagination GetPagination(HttpRequest request)
-        {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-
-            var count = this.GetPaginationCount(request);
-            var number = this.GetPaginationNumber(request);
-
-            return new Pagination
-            {
-                Count = count,
-                Number = number
-            };
-        }
-        private int GetPaginationCount(HttpRequest request)
-        {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-
-            var success = int.TryParse(request.Query["Paging.Count"].FirstOrDefault(), out var count);
-            if (!success)
-                count = 25;
-
-            return count;
-        }
-        private int GetPaginationNumber(HttpRequest request)
-        {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-
-            var success = int.TryParse(request.Query["Paging.Number"].FirstOrDefault(), out var number);
-            if (!success)
-                number = 1;
-
-            return number;
         }
     }
 }
