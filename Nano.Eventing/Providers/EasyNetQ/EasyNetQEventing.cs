@@ -5,6 +5,7 @@ using EasyNetQ;
 using EasyNetQ.Topology;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Eventing.Interfaces;
+using Nano.Models.Extensions;
 
 namespace Nano.Eventing.Providers.EasyNetQ
 {
@@ -32,7 +33,7 @@ namespace Nano.Eventing.Providers.EasyNetQ
             if (body == null)
                 throw new ArgumentNullException(nameof(body));
 
-            var name = typeof(TMessage).FullName;
+            var name = typeof(TMessage).GetFriendlyName();
             var message = new Message<TMessage>(body);
 
             var exchange = await this.Bus.Advanced
@@ -49,10 +50,11 @@ namespace Nano.Eventing.Providers.EasyNetQ
             if (serviceProvider == null)
                 throw new ArgumentNullException(nameof(serviceProvider));
 
-            var type = typeof(TMessage);
+            var name = typeof(TMessage).GetFriendlyName();
+            var route = string.IsNullOrEmpty(routing) ? string.Empty : $".{routing}";
             var appName = Assembly.GetEntryAssembly()?.GetName().Name;
-            var queueName = $"{appName}:{type.Name}.{routing}";
-            var exchangeName = type.FullName;
+            var queueName = $"{appName}:{name}{route}";
+            var exchangeName = name;
 
             var queue = await this.Bus.Advanced
                 .QueueDeclareAsync($"{queueName}");

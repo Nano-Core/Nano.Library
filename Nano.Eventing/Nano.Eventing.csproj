@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="2.2.1" />
-    <PackageReference Include="EasyNetQ" Version="3.3.6" />
+    <PackageReference Include="EasyNetQ" Version="3.6.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
   </ItemGroup>
 

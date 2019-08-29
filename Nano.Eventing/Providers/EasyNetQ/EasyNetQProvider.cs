@@ -1,7 +1,6 @@
 using System;
 using EasyNetQ;
 using Nano.Eventing.Interfaces;
-using Nano.Eventing.Providers.EasyNetQ.Serialization;
 
 namespace Nano.Eventing.Providers.EasyNetQ
 {
@@ -27,8 +26,7 @@ namespace Nano.Eventing.Providers.EasyNetQ
         /// <inheritdoc />
         public virtual IEventing Configure()
         {
-            var bus = RabbitHutch.CreateBus(this.Options.ConnectionString, x => 
-                x.Register<ISerializer, EasyNetQJsonSerializer>());
+            var bus = RabbitHutch.CreateBus(this.Options.ConnectionString);
 
             return new EasyNetQEventing(bus);
         }
