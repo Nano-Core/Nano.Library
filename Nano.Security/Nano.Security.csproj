@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Nano.Config\Nano.Config.csproj" />
+    <ProjectReference Include="..\Nano.Logging\Nano.Logging.csproj" />
     <ProjectReference Include="..\Nano.Models\Nano.Models.csproj" />
   </ItemGroup>
 

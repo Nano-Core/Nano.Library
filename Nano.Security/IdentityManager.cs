@@ -154,9 +154,6 @@ namespace Nano.Security
             if (loginRefresh == null) 
                 throw new ArgumentNullException(nameof(loginRefresh));
 
-            var accessToken = this.SignInManager.Context
-                .GetJwtToken();
-
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -169,6 +166,12 @@ namespace Nano.Security
                 ClockSkew = TimeSpan.FromMinutes(5)
             };
 
+            var appId = this.SignInManager.Context
+                .GetJwtAppId();
+
+            var accessToken = this.SignInManager.Context
+                .GetJwtToken();
+
             var principal = new JwtSecurityTokenHandler()
                 .ValidateToken(accessToken, validationParameters, out var securityToken);
 
@@ -180,7 +183,7 @@ namespace Nano.Security
 
             var identityUserToken = this.DbContext
                 .Set<IdentityUserTokenExpiry<string>>()
-                .Where(x => x.UserId == identityUser.Id)
+                .Where(x => x.UserId == identityUser.Id && x.Name == appId)
                 .AsNoTracking()
                 .FirstOrDefault();
 
