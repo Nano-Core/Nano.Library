@@ -60,7 +60,7 @@ namespace Nano.App.Extensions
             var logger = services.BuildServiceProvider().GetService<ILogger>();
 
             var servicesStr = list
-                .Aggregate(string.Empty, (x, y) => x + $"{y.ServiceType.FullName} => {y.ImplementationType?.FullName ?? "None"} ({y.Lifetime}){Environment.NewLine}");
+                .Aggregate(string.Empty, (x, y) => x + $"{y.ServiceType.GetFriendlyName() } => {y.ImplementationType?.GetFriendlyName() ?? "None"} ({y.Lifetime}){Environment.NewLine}");
 
             logger.LogDebug($"Total services registered: {list.Count}");
             logger.LogDebug(servicesStr);
