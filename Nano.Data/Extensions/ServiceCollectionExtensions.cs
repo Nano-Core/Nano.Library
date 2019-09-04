@@ -13,6 +13,7 @@ using Nano.Security.Extensions;
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Nano.Config;
 using Nano.Data.Providers.Sqlite;
 using Z.EntityFramework.Plus;
 
@@ -52,6 +53,8 @@ namespace Nano.Data.Extensions
                         .Configure(builder);
                 })
                 .AddDataHealthChecks<TProvider>(options);
+
+            ConfigManager.HasDbContext = true;
 
             return services;
         }

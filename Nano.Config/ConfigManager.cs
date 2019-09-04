@@ -19,6 +19,11 @@ namespace Nano.Config
         public static string Environment { get; }
 
         /// <summary>
+        /// Has Db-Context.
+        /// </summary>
+        public static bool HasDbContext { get; set; }
+
+        /// <summary>
         /// Constructor (static).
         /// </summary>
         static ConfigManager()

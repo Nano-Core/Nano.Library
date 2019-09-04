@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Nano.Config;
 using Nano.Models;
 using Nano.Models.Exceptions;
 using Nano.Security.Const;
@@ -44,7 +45,7 @@ namespace Nano.Security
         /// <summary>
         /// User Manager.
         /// </summary>
-        public virtual UserManager<IdentityUser> UserManager { get; }
+        protected virtual UserManager<IdentityUser> UserManager { get; }
 
         /// <summary>
         /// Sign In Manager.
@@ -122,23 +123,66 @@ namespace Nano.Security
         {
             if (login == null) 
                 throw new ArgumentNullException(nameof(login));
-            
-            var result = await this.SignInManager
-                .PasswordSignInAsync(login.Username, login.Password, login.IsRememerMe, this.Options.Lockout.AllowedForNewUsers);
 
-            if (result.Succeeded)
+            if (ConfigManager.HasDbContext)   
             {
-                var identityUser = await this.UserManager
-                    .FindByNameAsync(login.Username);
+                var result = await this.SignInManager
+                    .PasswordSignInAsync(login.Username, login.Password, login.IsRememerMe, this.Options.Lockout.AllowedForNewUsers);
 
-                return await this.GenerateJwtToken(identityUser, login.AppId);
+                if (result.Succeeded)
+                {
+                    var appId = login.AppId ?? IdentityManager.DEFAULT_APP_ID;
+
+                    var identityUser = await this.UserManager
+                        .FindByNameAsync(login.Username);
+
+                    return await this.GenerateJwtToken(identityUser, appId);
+                }
+
+                if (result.IsLockedOut)
+                    throw new UnauthorizedLockedOutException();
+
+                if (result.RequiresTwoFactor)
+                    throw new UnauthorizedTwoFactorRequiredException();
+            }
+            else
+            {
+                return await this.SignInAdminAsync(login, cancellationToken);
             }
 
-            if (result.IsLockedOut)
-                throw new UnauthorizedLockedOutException();
+            throw new UnauthorizedException();
+        }
 
-            if (result.RequiresTwoFactor)
-                throw new UnauthorizedTwoFactorRequiredException();
+        /// <summary>
+        /// Signs in the admin user statically.
+        /// </summary>
+        /// <param name="login">The <see cref="Login"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="AccessToken"/>.</returns>
+        public virtual async Task<AccessToken> SignInAdminAsync(Login login, CancellationToken cancellationToken = new CancellationToken())
+        {
+            if (login == null) 
+                throw new ArgumentNullException(nameof(login));
+
+            if (login.Username == this.Options.User.AdminUsername && login.Password == this.Options.User.AdminPassword)
+            {
+                var id = Guid.Empty.ToString();
+                var claims = new Collection<Claim>
+                    {
+                        new Claim(JwtRegisteredClaimNames.Sub, id),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(JwtRegisteredClaimNames.Email, this.Options.User.AdminEmailAddress),
+                        new Claim(ClaimTypes.Name, this.Options.User.AdminUsername),
+                        new Claim(ClaimTypes.NameIdentifier, id),
+                        new Claim(ClaimTypesExtended.AppId, "Default")
+                    }
+                    .Union(new[]
+                    {
+                        new Claim(ClaimTypes.Role, BuiltInUserRoles.Administrator)
+                    });
+
+                return await this.GenerateJwtToken(claims);
+            }            
 
             throw new UnauthorizedException();
         }
@@ -651,21 +695,6 @@ namespace Nano.Security
             };
         }
 
-        private async Task<string> GenerateRefreshToken()
-        {
-            return await Task.Factory
-                .StartNew(() =>
-                {
-                    var bytes = new byte[32];
-                    using (var generator = RandomNumberGenerator.Create())
-                    {
-                        generator
-                            .GetBytes(bytes);
-
-                        return Convert.ToBase64String(bytes);
-                    }
-                });
-        }
         private async Task<AccessToken> GenerateJwtToken(IdentityUser identityUser, string appId = null)
         {
             if (identityUser == null)
@@ -679,8 +708,6 @@ namespace Nano.Security
             
             var roleClaims = roles
                 .Select(y => new Claim(ClaimTypes.Role, y));
-
-            appId = appId ?? IdentityManager.DEFAULT_APP_ID;
 
             var claims = new Collection<Claim>
                 {
@@ -700,7 +727,54 @@ namespace Nano.Security
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var securityToken = new JwtSecurityToken(this.Options.Jwt.Issuer, this.Options.Jwt.Issuer, claims, notBeforeAt, expireAt, signingCredentials);
             var token = new JwtSecurityTokenHandler().WriteToken(securityToken);
-            var refreshToken = await this.GenerateRefreshToken();
+
+            var refreshToken = await this.GenerateJwtRefreshToken(identityUser, appId);
+            
+            return new AccessToken
+            {
+                AppId = appId,
+                Token = token,
+                RefreshToken = refreshToken,
+                ExpireAt = expireAt
+            };
+        }
+        private async Task<AccessToken> GenerateJwtToken(IEnumerable<Claim> claims, string appId = null)
+        {
+            if (claims == null)
+                throw new ArgumentNullException(nameof(claims));
+
+            return await Task.Factory
+                .StartNew(() =>
+                {
+                    var notBeforeAt = DateTime.UtcNow;
+                    var expireAt = DateTime.UtcNow.AddHours(this.Options.Jwt.ExpirationInHours);
+                    var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.Options.Jwt.SecretKey));
+                    var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+                    var securityToken = new JwtSecurityToken(this.Options.Jwt.Issuer, this.Options.Jwt.Issuer, claims, notBeforeAt, expireAt, signingCredentials);
+                    var token = new JwtSecurityTokenHandler().WriteToken(securityToken);
+            
+                    return new AccessToken
+                    {
+                        AppId = appId,
+                        Token = token,
+                        ExpireAt = expireAt
+                    };
+                });
+        }
+        private async Task<RefreshToken> GenerateJwtRefreshToken(IdentityUser identityUser, string appId)
+        {
+            if (appId == null)
+                return null;
+
+            string token;
+            var bytes = new byte[32];
+            using (var generator = RandomNumberGenerator.Create())
+            {
+                generator
+                    .GetBytes(bytes);
+
+                token = Convert.ToBase64String(bytes);
+            }
 
             var removeResult = await this.UserManager
                 .RemoveAuthenticationTokenAsync(identityUser, JwtBearerDefaults.AuthenticationScheme, appId);
@@ -712,7 +786,7 @@ namespace Nano.Security
             {
                 UserId = identityUser.Id,
                 Name = appId,
-                Value = refreshToken,
+                Value = token,
                 LoginProvider = JwtBearerDefaults.AuthenticationScheme,
                 ExpireAt = DateTimeOffset.UtcNow.AddHours(this.Options.Jwt.RefreshExpirationInHours)
             };
@@ -723,16 +797,10 @@ namespace Nano.Security
             await this.DbContext
                 .SaveChangesAsync();
 
-            return new AccessToken
+            return new RefreshToken
             {
-                AppId = appId,
                 Token = token,
-                RefreshToken = new RefreshToken
-                {
-                    Token = refreshToken,
-                    ExpireAt = identityUserToken.ExpireAt
-                },
-                ExpireAt = expireAt
+                ExpireAt = identityUserToken.ExpireAt
             };
         }
         private async Task<bool> ValidateExternalAccessToken(LoginExternal loginExternal, CancellationToken cancellationToken = default)

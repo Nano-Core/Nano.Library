@@ -106,11 +106,11 @@ namespace Nano.Web.Hosting.Extensions
                     x.Conventions.Insert(0, routePrefixConvention);
                     x.ModelBinderProviders.Insert(0, queryModelBinderProvider);
 
-                    if (dataOptions.ConnectionString == null)
-                        x.Conventions.Insert(1, new AuditControllerDisabledConvention());
+                    if (!securityOptions.IsEnabled)
+                        x.Conventions.Insert(1, new AuthControllerDisabledConvention());
 
-                    if (dataOptions.ConnectionString == null || !securityOptions.IsEnabled)
-                        x.Conventions.Insert(0, new AuthControllerDisabledConvention());
+                    if (dataOptions.ConnectionString == null)
+                        x.Conventions.Insert(2, new AuditControllerDisabledConvention());
 
                     if (webOptions.Hosting.UseHttpsRequired)
                         x.Filters.Add<RequireHttpsAttribute>();
