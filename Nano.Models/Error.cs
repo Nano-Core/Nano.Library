@@ -48,9 +48,14 @@ namespace Nano.Models
             if (exception == null) 
                 throw new ArgumentNullException(nameof(exception));
 
+            var baseException = exception.GetBaseException();
+
             this.Summary = "Internal Server Error";
-            this.Exceptions = new[] { exception.GetBaseException().Message };
             this.StatusCode = (int)HttpStatusCode.InternalServerError;
+            this.Exceptions = new[]
+            {
+                $"{baseException.GetType().Name} - {baseException.Message}"
+            };
 
             switch (exception)
             {

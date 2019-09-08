@@ -581,6 +581,14 @@ namespace Nano.Security
 
             if (!result.Succeeded)
                 this.ThrowIdentityExceptions(result.Errors);
+
+            user.EmailConfirmed = false;
+ 
+            this.DbContext
+                .Update(user);
+
+            await this.DbContext
+                .SaveChangesAsync(cancellationToken);
         }
 
         /// <summary>
@@ -683,6 +691,15 @@ namespace Nano.Security
 
             if (user == null)
                 throw new NullReferenceException(nameof(user));
+
+            var userNew = await this.UserManager
+                .FindByEmailAsync(newEmailAddress);
+
+            if (userNew != null)
+            {
+                var duplicateEmail = new IdentityErrorDescriber().DuplicateEmail(newEmailAddress);
+                throw new TranslationException(duplicateEmail.Description);
+            }
 
             var token = await this.UserManager
                 .GenerateChangeEmailTokenAsync(user, newEmailAddress);
