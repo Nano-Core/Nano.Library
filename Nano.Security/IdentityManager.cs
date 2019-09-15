@@ -523,7 +523,10 @@ namespace Nano.Security
                 .FindByEmailAsync(resetPassword.EmailAddress);
 
             if (user == null)
-                throw new NullReferenceException(nameof(user));
+            {
+                var invalidEmail = new IdentityErrorDescriber().InvalidEmail(resetPassword.EmailAddress);
+                throw new TranslationException(invalidEmail.Description);
+            }
 
             var result = await this.UserManager
                 .ResetPasswordAsync(user, resetPassword.Token, resetPassword.Password);
@@ -606,7 +609,10 @@ namespace Nano.Security
                 .FindByEmailAsync(confirmEmail.EmailAddress);
 
             if (user == null)
-                throw new NullReferenceException(nameof(user));
+            {
+                var invalidEmail = new IdentityErrorDescriber().InvalidEmail(confirmEmail.EmailAddress);
+                throw new TranslationException(invalidEmail.Description);
+            }
 
             var result = await this.UserManager
                 .ConfirmEmailAsync(user, confirmEmail.Token);
@@ -632,7 +638,10 @@ namespace Nano.Security
                 .FindByEmailAsync(emailAddress);
 
             if (user == null)
-                throw new NullReferenceException(nameof(user));
+            {
+                var invalidEmail = new IdentityErrorDescriber().InvalidEmail(emailAddress);
+                throw new TranslationException(invalidEmail.Description);
+            }
 
             var token = await this.UserManager
                 .GeneratePasswordResetTokenAsync(user);
@@ -659,7 +668,10 @@ namespace Nano.Security
                 .FindByEmailAsync(emailAddress);
 
             if (user == null)
-                throw new NullReferenceException(nameof(user));
+            {
+                var invalidEmail = new IdentityErrorDescriber().InvalidEmail(emailAddress);
+                throw new TranslationException(invalidEmail.Description);
+            }
 
             var token = await this.UserManager
                 .GenerateEmailConfirmationTokenAsync(user);
@@ -690,7 +702,10 @@ namespace Nano.Security
                 .FindByEmailAsync(emailAddress);
 
             if (user == null)
-                throw new NullReferenceException(nameof(user));
+            {
+                var invalidEmail = new IdentityErrorDescriber().InvalidEmail(emailAddress);
+                throw new TranslationException(invalidEmail.Description);
+            }
 
             var userNew = await this.UserManager
                 .FindByEmailAsync(newEmailAddress);
