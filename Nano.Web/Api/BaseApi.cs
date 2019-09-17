@@ -11,7 +11,6 @@ using Nano.Models;
 using Nano.Models.Exceptions;
 using Nano.Models.Interfaces;
 using Nano.Security.Exceptions;
-using Nano.Security.Extensions;
 using Nano.Security.Models;
 using Nano.Web.Api.Requests.Auth;
 using Nano.Web.Api.Requests.Interfaces;
@@ -190,13 +189,16 @@ namespace Nano.Web.Api
 
         private async Task AuthenticateAsync()
         {
-            var token = HttpContextAccess.Current.GetJwtToken();
+            var authorizationHeader = HttpContextAccess.Current.Request.Headers["Authorization"].FirstOrDefault();
+            var token = authorizationHeader?.Replace("Bearer ", string.Empty);
+            
             if (token != null)
             {
                 this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
             else
             {
+                // TODO: Remove this.
                 if (this.apiOptions.Login == null)
                     return;
 

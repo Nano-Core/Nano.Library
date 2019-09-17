@@ -219,14 +219,14 @@ namespace Nano.Security
                     ValidIssuer = this.Options.Jwt.Issuer,
                     ValidAudience = this.Options.Jwt.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.Options.Jwt.SecretKey)),
-                    ClockSkew = TimeSpan.FromMinutes(5)
+                    ClockSkew = TimeSpan.FromMinutes(0) // BUG: Change back to 5
                 };
 
-                var appId = this.SignInManager.Context
-                    .GetJwtAppId();
+                var authorizationHeader = this.SignInManager.Context.Request.Headers["Authorization"].FirstOrDefault();
+                var accessToken = authorizationHeader?.Replace("Bearer ", string.Empty);
 
-                var accessToken = this.SignInManager.Context
-                    .GetJwtToken();
+                if (accessToken == null)
+                    throw new NullReferenceException(nameof(accessToken));
 
                 var principal = new JwtSecurityTokenHandler()
                     .ValidateToken(accessToken, validationParameters, out var securityToken);
@@ -237,9 +237,14 @@ namespace Nano.Security
                 var identityUser = await this.UserManager
                     .FindByNameAsync(principal.Identity.Name);
 
+                var appClaim = principal.Claims.FirstOrDefault(x => x.Type == ClaimTypesExtended.AppId);
+
+                if (appClaim == null)
+                    throw new NullReferenceException(nameof(appClaim));
+
                 var identityUserToken = this.DbContext
                     .Set<IdentityUserTokenExpiry<string>>()
-                    .Where(x => x.UserId == identityUser.Id && x.Name == appId)
+                    .Where(x => x.UserId == identityUser.Id && x.Name == appClaim.Value)
                     .AsNoTracking()
                     .FirstOrDefault();
 
