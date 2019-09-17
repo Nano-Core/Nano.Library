@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Nano.Config;
 using Nano.Models;
@@ -98,14 +99,23 @@ namespace Nano.Security
                 case "Facebook":
                     using (var client = new HttpClient())
                     {
-                        const string HOST = "https://graph.facebook.com";
-                        const string FIELDS = "id,name,address,email,birthday";
+                        try
+                        {
+                            const string HOST = "https://graph.facebook.com";
+                            const string FIELDS = "id,name,address,email,birthday";
                         
-                        var url = $"{HOST}/{loginExternal.ProviderKey}/?fields={FIELDS}&access_token={loginExternal.AccessToken}";
-                        var response = await client.GetAsync(url, cancellationToken);
-                        var content = await response.Content.ReadAsStringAsync();
+                            var url = $"{HOST}/{loginExternal.ProviderKey}/?fields={FIELDS}&access_token={loginExternal.AccessToken}";
+                            var response = await client.GetAsync(url, cancellationToken);
+                            var content = await response.Content.ReadAsStringAsync();
 
-                        return JsonConvert.DeserializeObject<ExternalLoginData>(content);
+                            return JsonConvert.DeserializeObject<ExternalLoginData>(content);
+                        }
+                        catch (Exception ex)
+                        {
+                            this.UserManager.Logger.LogWarning(ex, ex.Message);
+
+                            throw new UnauthorizedException();
+                        }
                     }
                     
                 default:
@@ -174,7 +184,7 @@ namespace Nano.Security
                         new Claim(JwtRegisteredClaimNames.Email, this.Options.User.AdminEmailAddress),
                         new Claim(ClaimTypes.Name, this.Options.User.AdminUsername),
                         new Claim(ClaimTypes.NameIdentifier, id),
-                        new Claim(ClaimTypesExtended.AppId, "Default")
+                        new Claim(ClaimTypesExtended.AppId, IdentityManager.DEFAULT_APP_ID)
                     }
                     .Union(new[]
                     {
@@ -198,49 +208,58 @@ namespace Nano.Security
             if (loginRefresh == null) 
                 throw new ArgumentNullException(nameof(loginRefresh));
 
-            var validationParameters = new TokenValidationParameters
+            try
             {
-                ValidateIssuer = true,
-                ValidateAudience = true, 
-                ValidateLifetime = false, 
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = this.Options.Jwt.Issuer,
-                ValidAudience = this.Options.Jwt.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.Options.Jwt.SecretKey)),
-                ClockSkew = TimeSpan.FromMinutes(5)
-            };
+                var validationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true, 
+                    ValidateLifetime = false, 
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = this.Options.Jwt.Issuer,
+                    ValidAudience = this.Options.Jwt.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.Options.Jwt.SecretKey)),
+                    ClockSkew = TimeSpan.FromMinutes(5)
+                };
 
-            var appId = this.SignInManager.Context
-                .GetJwtAppId();
+                var appId = this.SignInManager.Context
+                    .GetJwtAppId();
 
-            var accessToken = this.SignInManager.Context
-                .GetJwtToken();
+                var accessToken = this.SignInManager.Context
+                    .GetJwtToken();
 
-            var principal = new JwtSecurityTokenHandler()
-                .ValidateToken(accessToken, validationParameters, out var securityToken);
+                var principal = new JwtSecurityTokenHandler()
+                    .ValidateToken(accessToken, validationParameters, out var securityToken);
 
-            if (!(securityToken is JwtSecurityToken jwtSecurityToken) || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                if (!(securityToken is JwtSecurityToken jwtSecurityToken) || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                    throw new InvalidOperationException();
+
+                var identityUser = await this.UserManager
+                    .FindByNameAsync(principal.Identity.Name);
+
+                var identityUserToken = this.DbContext
+                    .Set<IdentityUserTokenExpiry<string>>()
+                    .Where(x => x.UserId == identityUser.Id && x.Name == appId)
+                    .AsNoTracking()
+                    .FirstOrDefault();
+
+                if (identityUserToken == null)
+                    throw new NullReferenceException(nameof(identityUserToken));
+
+                if (identityUserToken.Value != loginRefresh.RefreshToken)
+                    throw new InvalidOperationException("identityUserToken.Value != loginRefresh.RefreshToken");
+
+                if (identityUserToken.ExpireAt <= DateTimeOffset.UtcNow)
+                    throw new InvalidOperationException("identityUserToken.ExpireAt <= DateTimeOffset.UtcNow");
+
+                return await this.GenerateJwtToken(identityUser, identityUserToken.Name);
+            }
+            catch (Exception ex)
+            {
+                this.UserManager.Logger.LogWarning(ex, ex.Message);
+
                 throw new UnauthorizedException();
-
-            var identityUser = await this.UserManager
-                .FindByNameAsync(principal.Identity.Name);
-
-            var identityUserToken = this.DbContext
-                .Set<IdentityUserTokenExpiry<string>>()
-                .Where(x => x.UserId == identityUser.Id && x.Name == appId)
-                .AsNoTracking()
-                .FirstOrDefault();
-
-            if (identityUserToken == null)
-                throw new UnauthorizedException();
-
-            if (identityUserToken.Value != loginRefresh.RefreshToken)
-                throw new UnauthorizedException();
-
-            if (identityUserToken.ExpireAt <= DateTimeOffset.UtcNow)
-                throw new UnauthorizedException();
-
-            return await this.GenerateJwtToken(identityUser, identityUserToken.Name);
+            }
         }
 
         /// <summary>
