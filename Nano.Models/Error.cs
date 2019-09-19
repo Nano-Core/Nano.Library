@@ -73,6 +73,10 @@ namespace Nano.Models
                     break;
                 }
                 case TranslationException _:
+                    this.Exceptions = new[]
+                    {
+                        baseException.Message
+                    };
                     this.IsTranslated = true;
                     break;
             }
