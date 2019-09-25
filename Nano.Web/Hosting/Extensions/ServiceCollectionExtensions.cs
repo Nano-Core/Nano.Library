@@ -106,7 +106,7 @@ namespace Nano.Web.Hosting.Extensions
                     x.Conventions.Insert(0, routePrefixConvention);
                     x.ModelBinderProviders.Insert(0, queryModelBinderProvider);
 
-                    if (!securityOptions.IsEnabled)
+                    if (!securityOptions.IsAuthControllerEnabled)
                         x.Conventions.Insert(1, new AuthControllerDisabledConvention());
 
                     if (dataOptions.ConnectionString == null)

@@ -19,6 +19,11 @@ namespace Nano.Security
         public virtual bool IsEnabled { get; set; } = false;
 
         /// <summary>
+        /// Is Auth Controller Enabled.
+        /// </summary>
+        public virtual bool IsAuthControllerEnabled { get; set; } = false;
+
+        /// <summary>
         /// Jwt Options.
         /// </summary>
         public virtual JwtOptions Jwt { get; set; } = new JwtOptions();

@@ -95,6 +95,23 @@ namespace Nano.Web.Api
         }
 
         /// <summary>
+        /// Details.
+        /// Invokes the 'details' endpoint of the api.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <param name="id">The id.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The matching entity.</returns>
+        public virtual async Task<TEntity> GetAsync<TEntity>(Guid id, CancellationToken cancellationToken = default)
+            where TEntity : class
+        {
+            return await this.DetailsAsync<TEntity>(new DetailsRequest
+            {
+                Id = id
+            } , cancellationToken);
+        }
+
+        /// <summary>
         /// Index.
         /// Invokes the 'index' endpoint of the api.
         /// </summary>
@@ -103,6 +120,7 @@ namespace Nano.Web.Api
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The matching entities.</returns>
         public virtual async Task<IEnumerable<TEntity>> IndexAsync<TEntity>(IndexRequest request, CancellationToken cancellationToken = default)
+            where TEntity : class
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -119,7 +137,7 @@ namespace Nano.Web.Api
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The matching entity.</returns>
         public virtual async Task<TEntity> DetailsAsync<TEntity>(DetailsRequest request, CancellationToken cancellationToken = default)
-            where TEntity: class
+            where TEntity : class
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));

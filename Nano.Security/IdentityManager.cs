@@ -134,7 +134,7 @@ namespace Nano.Security
             if (login == null) 
                 throw new ArgumentNullException(nameof(login));
 
-            if (ConfigManager.HasDbContext)   
+            if (ConfigManager.HasDbContext)
             {
                 var result = await this.SignInManager
                     .PasswordSignInAsync(login.Username, login.Password, login.IsRememerMe, this.Options.Lockout.AllowedForNewUsers);
@@ -219,7 +219,7 @@ namespace Nano.Security
                     ValidIssuer = this.Options.Jwt.Issuer,
                     ValidAudience = this.Options.Jwt.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.Options.Jwt.SecretKey)),
-                    ClockSkew = TimeSpan.FromMinutes(0) // BUG: Change back to 5
+                    ClockSkew = TimeSpan.FromMinutes(5)
                 };
 
                 var authorizationHeader = this.SignInManager.Context.Request.Headers["Authorization"].FirstOrDefault();
