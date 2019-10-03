@@ -292,7 +292,9 @@ namespace Nano.Security
             await this.SignInManager
                 .SignInAsync(identityUser, loginExternal.IsRememerMe);
 
-            return await this.GenerateJwtToken(identityUser, loginExternal.AppId);
+            var appId = loginExternal.AppId ?? IdentityManager.DEFAULT_APP_ID;
+
+            return await this.GenerateJwtToken(identityUser, appId);
         }
 
         /// <summary>
@@ -751,10 +753,13 @@ namespace Nano.Security
             };
         }
 
-        private async Task<AccessToken> GenerateJwtToken(IdentityUser identityUser, string appId = null)
+        private async Task<AccessToken> GenerateJwtToken(IdentityUser identityUser, string appId)
         {
             if (identityUser == null)
                 throw new ArgumentNullException(nameof(identityUser));
+
+            if (appId == null)
+                throw new ArgumentNullException(nameof(appId));
 
             var roles = await this.UserManager
                 .GetRolesAsync(identityUser);
