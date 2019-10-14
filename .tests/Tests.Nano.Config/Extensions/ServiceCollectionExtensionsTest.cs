@@ -6,7 +6,25 @@ namespace Tests.Nano.Config.Extensions
     public class ServiceCollectionExtensionsTest
     {
         [TestMethod]
-        public void Test()
+        public void AddConfigTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void AddConfigOptionsTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void AddConfigOptionsOutTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void AddConfigOptionsWithConfigurationOutTest()
         {
             Assert.Inconclusive();
         }

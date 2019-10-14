@@ -1,18 +1,18 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.App.Extensions
+namespace Tests.Nano.Console.Extensions.Workers
 {
     [TestClass]
-    public class ServiceCollectionExtensionsTest
+    public class DefaultWorkerTest
     {
         [TestMethod]
-        public void AddAppTest()
+        public void StartAsyncTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void LogServicesTest()
+        public void StopAsyncTest()
         {
             Assert.Inconclusive();
         }

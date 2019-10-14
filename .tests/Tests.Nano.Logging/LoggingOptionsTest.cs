@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Nano.Logging;
+using Serilog.Events;
 
 namespace Tests.Nano.Logging
 {
@@ -15,7 +16,10 @@ namespace Tests.Nano.Logging
         [TestMethod]
         public void DefaultValuesTest()
         {
-            Assert.Inconclusive();
+            var options = new LoggingOptions();
+
+            Assert.AreEqual(LogEventLevel.Information, options.LogLevel);
+            Assert.IsNotNull(options.LogLevelOverrides);
         }
     }
 }

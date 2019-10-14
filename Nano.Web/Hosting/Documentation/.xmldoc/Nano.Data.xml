@@ -45,7 +45,7 @@
         <member name="M:Nano.Data.BaseDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Data.BaseDbContext.EnsureSeedAsync(System.Threading.CancellationToken)">
+        <member name="M:Nano.Data.BaseDbContext.EnsureIdentityAsync(System.Threading.CancellationToken)">
             <summary>
             Imports data for all models annotated with <see cref="T:Nano.Data.Attributes.ImportAttribute"/>.
             </summary>

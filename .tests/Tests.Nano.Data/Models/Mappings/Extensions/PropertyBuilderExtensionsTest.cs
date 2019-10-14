@@ -1,18 +1,18 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.App.Extensions
+namespace Tests.Nano.Data.Models.Mappings.Extensions
 {
     [TestClass]
-    public class ServiceCollectionExtensionsTest
+    public class PropertyBuilderExtensionsTest
     {
         [TestMethod]
-        public void AddAppTest()
+        public void HasPrecisionTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void LogServicesTest()
+        public void HasPrecisionNullableTest()
         {
             Assert.Inconclusive();
         }

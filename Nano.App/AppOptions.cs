@@ -33,7 +33,7 @@ namespace Nano.App
         /// <summary>
         /// Version.
         /// </summary>
-        public virtual string Version { get; set; } = "1.0.0";
+        public virtual string Version { get; set; } = "1.0.0.0";
 
         /// <summary>
         /// Cultures.

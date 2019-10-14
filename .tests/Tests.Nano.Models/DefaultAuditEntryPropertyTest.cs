@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Models.Types
+namespace Tests.Nano.Models
 {
     [TestClass]
-    public class AngleTest
+    public class DefaultAuditEntryPropertyTest
     {
         [TestMethod]
-        public void Test()
+        public void ConstructorTest()
         {
             Assert.Inconclusive();
         }

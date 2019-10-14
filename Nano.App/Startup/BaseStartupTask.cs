@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace Nano.Web.Hosting.Startup
+namespace Nano.App.Startup
 {
     /// <inheritdoc />
     public abstract class BaseStartupTask : IHostedService

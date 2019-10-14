@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Tests.Nano.Data
 {
     [TestClass]
-    public class DefaultDbContextTest
+    public class NullDbContextTest
     {
         [TestMethod]
         public void ConstructorTest()

@@ -1,18 +1,18 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.App.Extensions
+namespace Tests.Nano.Data.Extensions
 {
     [TestClass]
-    public class ServiceCollectionExtensionsTest
+    public class QueryableExtensionsTest
     {
         [TestMethod]
-        public void AddAppTest()
+        public void IncludeAnnotationsTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void LogServicesTest()
+        public void IncludeAnnotationsInternalTest()
         {
             Assert.Inconclusive();
         }

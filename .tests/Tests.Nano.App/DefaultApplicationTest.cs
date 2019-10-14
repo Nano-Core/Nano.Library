@@ -22,17 +22,5 @@ namespace Tests.Nano.App
         {
             Assert.Inconclusive();
         }
-
-        [TestMethod]
-        public void ConfigureAppTest()
-        {
-            Assert.Inconclusive();
-        }
-
-        [TestMethod]
-        public void ConfigureAppWhenGenericTypeTest()
-        {
-            Assert.Inconclusive();
-        }
     }
 }

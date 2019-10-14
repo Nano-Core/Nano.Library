@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Nano.Web.Hosting.Startup.Tasks
+namespace Nano.App.Startup.Tasks
 {
     /// <inheritdoc />
     public class InitializeApplicationStartupTask : BaseStartupTask

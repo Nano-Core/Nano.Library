@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Models.Attributes.Helpers
+namespace Tests.Nano.Models
 {
     [TestClass]
-    public class PhoneNumberPrefixesTest
+    public class AuditEntryTest
     {
         [TestMethod]
-        public void FindTest()
+        public void ConstructorTest()
         {
             Assert.Inconclusive();
         }

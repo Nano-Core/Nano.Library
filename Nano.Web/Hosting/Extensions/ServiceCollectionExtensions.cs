@@ -41,7 +41,6 @@ using Nano.Web.Hosting.Documentation.Filters;
 using Nano.Web.Hosting.Filters;
 using Nano.Web.Hosting.HealthChecks;
 using Nano.Web.Hosting.Middleware;
-using Nano.Web.Hosting.Startup;
 using Nano.Web.Hosting.Startup.Tasks;
 using Newtonsoft.Json.Converters;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
@@ -331,9 +330,7 @@ namespace Nano.Web.Hosting.Extensions
                 throw new ArgumentNullException(nameof(services));
 
             services
-                .AddSingleton<StartupTaskContext>()
-                .AddHostedService<InitializeDatabaseStartupTask>()
-                .AddHostedService<InitializeApplicationStartupTask>();
+                .AddHostedService<InitializeDatabaseStartupTask>();
 
             return services;
         }

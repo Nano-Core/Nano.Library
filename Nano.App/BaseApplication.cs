@@ -34,7 +34,8 @@ namespace Nano.App
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            var provider = services.BuildServiceProvider();
+            var provider = services
+                .BuildServiceProvider();
 
             services
                 .LogServices();

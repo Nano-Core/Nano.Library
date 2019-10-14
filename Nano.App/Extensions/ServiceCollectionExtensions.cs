@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Nano.App.Startup;
+using Nano.App.Startup.Tasks;
 using Nano.Config.Extensions;
 using Nano.Models.Extensions;
 
@@ -36,12 +38,17 @@ namespace Nano.App.Extensions
                 .SelectMany(x => x.GetTypes())
                 .Where(x =>
                     !x.IsAbstract &&
-                    x.IsTypeDef(typeof(IHostedService)))
+                    x.IsTypeDef(typeof(BaseStartupTask)))
                 .ToList()
                 .ForEach(x =>
                 {
-                    services.AddSingleton(typeof(IHostedService), x);
+                    services
+                        .AddSingleton(typeof(IHostedService), x);
                 });
+
+            services
+                .AddSingleton<StartupTaskContext>()
+                .AddHostedService<InitializeApplicationStartupTask>();
 
             return services;
         }
@@ -60,7 +67,8 @@ namespace Nano.App.Extensions
             var logger = services.BuildServiceProvider().GetService<ILogger>();
 
             var servicesStr = list
-                .Aggregate(string.Empty, (x, y) => x + $"{y.ServiceType.GetFriendlyName() } => {y.ImplementationType?.GetFriendlyName() ?? "None"} ({y.Lifetime}){Environment.NewLine}");
+                .Aggregate(string.Empty, (x, y) => 
+                    x + $"{y.ServiceType.GetFriendlyName() } => {y.ImplementationType?.GetFriendlyName() ?? "None"} ({y.Lifetime}){Environment.NewLine}");
 
             logger.LogDebug($"Total services registered: {list.Count}");
             logger.LogDebug(servicesStr);

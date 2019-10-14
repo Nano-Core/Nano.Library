@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Data.Models
+namespace Tests.Nano.Models
 {
     [TestClass]
-    public class AuditEntryTest
+    public class DefaultAuditEntryTest
     {
         [TestMethod]
         public void ConstructorTest()

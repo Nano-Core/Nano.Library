@@ -13,9 +13,18 @@ namespace Tests.Nano.App
         }
 
         [TestMethod]
-        public void DefaultValuesTest()
+        public void ConstructorDefaultValuesTest()
         {
-            Assert.Inconclusive();
+            var options = new AppOptions();
+
+            Assert.AreEqual("Application", options.Name);
+            Assert.IsNull(options.Description);
+            Assert.IsNull(options.TermsOfService);
+            Assert.AreEqual("UTC", options.DefaultTimeZone);
+            Assert.AreEqual("1.0.0.0", options.Version);
+            Assert.IsNotNull(options.Cultures);
+            Assert.AreEqual("en-US", options.Cultures.Default);
+            Assert.IsNotNull(options.Cultures.Supported);
         }
     }
 }

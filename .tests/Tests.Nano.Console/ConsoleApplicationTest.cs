@@ -1,24 +1,24 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Models.Attributes
+namespace Tests.Nano.Console
 {
     [TestClass]
-    public class PhoneNumberAttributeTest
+    public class ConsoleApplicationTest
     {
         [TestMethod]
-        public void IsValidTest()
+        public void ConstructorTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void IsValidWhenPrefixIsNotFoundTest()
+        public void ConfigureAppTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void IsValidWhenNumberIsNotFoundTest()
+        public void ConfigureAppGenericTest()
         {
             Assert.Inconclusive();
         }

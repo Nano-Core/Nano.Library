@@ -1,12 +1,18 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Data.Models
+namespace Tests.Nano.Data.Providers.Sqlite
 {
     [TestClass]
-    public class DefaultAuditEntryTest
+    public class SqliteProviderTest
     {
         [TestMethod]
         public void ConstructorTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void ConfigureTest()
         {
             Assert.Inconclusive();
         }

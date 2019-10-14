@@ -1,6 +1,6 @@
 using System.Threading;
 
-namespace Nano.Web.Hosting.Startup
+namespace Nano.App.Startup
 {
     /// <summary>
     /// Startup Task Context.

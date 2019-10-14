@@ -6,6 +6,12 @@ namespace Tests.Nano.Eventing.Providers.EasyNetQ
     public class EasyNetQEventingTest
     {
         [TestMethod]
+        public void ConstructorTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
         public void PublishAsyncTest()
         {
             Assert.Inconclusive();
