@@ -16,7 +16,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Nano.Config;
-using Nano.Models;
 using Nano.Models.Exceptions;
 using Nano.Security.Const;
 using Nano.Security.Exceptions;

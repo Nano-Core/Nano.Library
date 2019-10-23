@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Security;
 
-namespace Nano.Web.Hosting.Extensions
+namespace Nano.Web.Extensions
 {
     /// <summary>
     /// Service Collection Extensions.

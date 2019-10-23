@@ -17,7 +17,7 @@ using Nano.Data.Extensions;
 using Nano.Eventing.Extensions;
 using Nano.Logging.Extensions;
 using Nano.Security.Extensions;
-using Nano.Web.Hosting.Extensions;
+using Nano.Web.Extensions;
 
 namespace Nano.Web
 {

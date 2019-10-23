@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using DynamicExpression;
+using Nano.Models.Criterias;
 
-namespace Nano.Models.Criterias
+namespace Nano.Data.Models.Criterias
 {
     /// <inheritdoc />
     public class AuditEntryQueryCriteria : BaseQueryCriteria

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using Nano.Models.Exceptions;
 
-namespace Nano.Models
+namespace Nano.Web.Models
 {
     /// <summary>
     /// Error.

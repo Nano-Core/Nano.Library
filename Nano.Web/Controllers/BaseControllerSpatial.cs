@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
-using Nano.Models;
 using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security.Const;
-using Nano.Web.Hosting;
+using Nano.Web.Const;
+using Nano.Web.Models;
 
 namespace Nano.Web.Controllers
 {

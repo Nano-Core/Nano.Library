@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.Models
+namespace Nano.Eventing
 {
     /// <summary>
     /// Entity Event.

@@ -1,7 +1,8 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Nano.Models;
 
-namespace Nano.Models
+namespace Nano.Data.Models
 {
     /// <summary>
     /// Default Audit Entry Property.

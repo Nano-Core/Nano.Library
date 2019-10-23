@@ -1,4 +1,4 @@
-namespace Nano.Web.Hosting
+namespace Nano.Web.Const
 {
     /// <summary>
     /// Http Content Type.

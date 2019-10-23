@@ -4,10 +4,10 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Nano.Models;
 using Nano.Security.Exceptions;
 using Nano.Web.Hosting.Extensions;
 using Nano.Web.Hosting.Serialization;
+using Nano.Web.Models;
 using Newtonsoft.Json;
 
 namespace Nano.Web.Hosting.Middleware

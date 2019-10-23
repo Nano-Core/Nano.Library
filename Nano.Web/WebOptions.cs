@@ -1,6 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
-using Nano.Web.Hosting.Enums;
+using Nano.Web.Enums;
 using NWebsec.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Swagger;
 using ReferrerPolicy = NWebsec.Core.Common.HttpHeaders.ReferrerPolicy;

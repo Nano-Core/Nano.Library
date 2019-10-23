@@ -7,7 +7,7 @@ using Nano.Eventing.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security.Const;
 using Nano.Security.Extensions;
-using Nano.Web.Hosting;
+using Nano.Web.Const;
 
 namespace Nano.Web.Controllers
 {

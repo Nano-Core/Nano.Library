@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using Nano.Models;
 
-namespace Nano.Models
+namespace Nano.Data.Models
 {
     /// <summary>
     /// Default Audit Entry.

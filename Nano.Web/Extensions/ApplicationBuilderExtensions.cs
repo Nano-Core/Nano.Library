@@ -11,7 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Nano.App;
 using Nano.Config;
-using Nano.Web.Hosting.Enums;
+using Nano.Web.Enums;
+using Nano.Web.Hosting;
 using Nano.Web.Hosting.Middleware;
 using NWebsec.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -19,7 +20,7 @@ using Vivet.AspNetCore.RequestTimeZone;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using ReferrerPolicy = NWebsec.Core.Common.HttpHeaders.ReferrerPolicy;
 
-namespace Nano.Web.Hosting.Extensions
+namespace Nano.Web.Extensions
 {
     /// <summary>
     /// Application Builder Extensions.

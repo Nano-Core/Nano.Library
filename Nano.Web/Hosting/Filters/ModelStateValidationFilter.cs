@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Nano.Models;
+using Nano.Web.Models;
 
 namespace Nano.Web.Hosting.Filters
 {

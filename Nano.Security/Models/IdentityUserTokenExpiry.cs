@@ -2,7 +2,7 @@ using System;
 using Microsoft.AspNetCore.Identity;
 using Nano.Models.Interfaces;
 
-namespace Nano.Models
+namespace Nano.Security.Models
 {
     /// <summary>
     /// Identity User Token Expiry.

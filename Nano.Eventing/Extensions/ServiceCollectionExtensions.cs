@@ -8,7 +8,6 @@ using Nano.Eventing.Attributes;
 using Nano.Eventing.Handlers;
 using Nano.Eventing.Interfaces;
 using Nano.Eventing.Providers.EasyNetQ;
-using Nano.Models;
 using Nano.Models.Extensions;
 
 namespace Nano.Eventing.Extensions

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
-using Nano.Models;
 using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 

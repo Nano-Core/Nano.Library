@@ -1,4 +1,4 @@
-namespace Nano.Web.Hosting.Enums
+namespace Nano.Web.Enums
 {
     /// <summary>
     /// X-Xss Protection Policy BlockMode.
