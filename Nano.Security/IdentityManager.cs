@@ -23,6 +23,8 @@ using Nano.Security.Exceptions;
 using Nano.Security.Extensions;
 using Nano.Security.Models;
 using Newtonsoft.Json;
+using Google.Apis.Auth;
+using Google.Apis.Auth.OAuth2;
 
 namespace Nano.Security
 {
@@ -118,6 +120,25 @@ namespace Nano.Security
                         }
                     }
                     
+                case "Google":
+                    try
+                    {
+                        var payload = await GoogleJsonWebSignature.ValidateAsync(loginExternal.AccessToken);
+
+                        return new ExternalLoginData
+                        {
+                            Email = payload.Email,
+                            Name = payload.Name,
+                            Id = payload.Subject
+                        };
+                    }
+                    catch (Exception ex)
+                    {
+                        this.UserManager.Logger.LogWarning(ex, ex.Message);
+
+                        throw new UnauthorizedException();
+                    }
+
                 default:
                     throw new NotSupportedException(loginExternal.LoginProvider);
             }
@@ -901,6 +922,26 @@ namespace Nano.Security
                             return false;
 
                         return true;
+                    }
+
+                case "Google":
+                    try
+                    {
+                        var payload = await GoogleJsonWebSignature.ValidateAsync(loginExternal.AccessToken, new GoogleJsonWebSignature.ValidationSettings
+                        {
+                            Audience = new string[] { externalLoginOption.Id },
+                        });
+
+                        if (payload.Subject != loginExternal.ProviderKey)
+                            return false;
+
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        this.UserManager.Logger.LogWarning(ex, ex.Message);
+
+                        return false;
                     }
 
                 default:
