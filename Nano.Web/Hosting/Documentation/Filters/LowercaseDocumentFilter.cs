@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Nano.Web.Hosting.Documentation.Filters
@@ -8,25 +8,25 @@ namespace Nano.Web.Hosting.Documentation.Filters
     public class LowercaseDocumentFilter : IDocumentFilter
     {
         /// <inheritdoc />
-        public void Apply(SwaggerDocument swaggerDoc, DocumentFilterContext context)
+        public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
             var paths = swaggerDoc.Paths;
 
-            var newPaths = new Dictionary<string, PathItem>();
+            var newPaths = new Dictionary<string, OpenApiPathItem>();
             var removeKeys = new List<string>();
-            foreach (var path in paths)
+            foreach (var (key, value) in paths)
             {
-                var newKey = path.Key.ToLower();
-                if (newKey != path.Key)
+                var newKey = key.ToLower();
+                if (newKey != key)
                 {
-                    removeKeys.Add(path.Key);
-                    newPaths.Add(newKey, path.Value);
+                    removeKeys.Add(key);
+                    newPaths.Add(newKey, value);
                 }
             }
 
-            foreach (var path in newPaths)
+            foreach (var (key, value) in newPaths)
             {
-                swaggerDoc.Paths.Add(path.Key, path.Value);
+                swaggerDoc.Paths.Add(key, value);
             }
 
             foreach (var key in removeKeys)

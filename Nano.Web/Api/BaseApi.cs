@@ -20,6 +20,7 @@ using Nano.Web.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Vivet.AspNetCore.RequestTimeZone;
+using Vivet.AspNetCore.RequestTimeZone.Providers;
 
 namespace Nano.Web.Api
 {

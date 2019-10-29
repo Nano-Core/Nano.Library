@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Nano.App;
 using Nano.App.Extensions;
 using Nano.App.Interfaces;
@@ -32,7 +33,7 @@ namespace Nano.Web
         }
 
         /// <inheritdoc />
-        public override void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime)
+        public override void Configure(IApplicationBuilder applicationBuilder, IHostEnvironment hostingEnvironment, IHostApplicationLifetime applicationLifetime)
         {
             if (applicationBuilder == null)
                 throw new ArgumentNullException(nameof(applicationBuilder));
@@ -46,6 +47,37 @@ namespace Nano.Web
             base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
 
             applicationBuilder
+                .UseExceptionHandling()
+                .UseHttpCorsPolicy()
+                .UseHttpXForwardedHeaders()
+                .UseHttpXRobotsTagHeaders()
+                .UseHttpXFrameOptionsPolicyHeader()
+                .UseHttpXXssProtectionPolicyHeader()
+                .UseHttpReferrerPolicyHeader()
+                .UseHttpStrictTransportSecurityPolicyHeader()
+                .UseHttpsRedirect()
+                .UseStaticFiles()
+                .UseCookiePolicy(new CookiePolicyOptions
+                {
+                    Secure = CookieSecurePolicy.SameAsRequest
+                })
+                .UseRouting()
+                .UseAuthentication()
+                .UseAuthorization()
+                .UseHttpSession()
+                .UseHttpContextAccessor()
+                .UseHttpRequestOptions()
+                .UseHttpRequestIdentifier()
+                .UseHttpLocalization()
+                .UseHttpRequestTimeZone()
+                .UseHttpResponseCaching()
+                .UseHttpResponseCompression()
+                .UseEndpoints(x =>
+                {
+                    x.MapControllers();
+                    x.MapDefaultControllerRoute();
+                    x.MapRazorPages();
+                })
                 .Use((context, next) =>
                 {
                     if (context.Request.Path == "/signin-facebook")
@@ -55,35 +87,8 @@ namespace Nano.Web
 
                     return next();
                 })
-                .UseHttpCorsPolicy()
-                .UseHttpLocalization()
-                .UseExceptionHandling()
-                .UseHttpXForwardedHeaders()
-                .UseHttpXRobotsTagHeaders()
-                .UseHttpXFrameOptionsPolicyHeader()
-                .UseHttpXXssProtectionPolicyHeader()
-                .UseHttpReferrerPolicyHeader()
-                .UseHttpStrictTransportSecurityPolicyHeader()
-                .UseHttpContextAccessor()
-                .UseStaticFiles()
-                .UseHttpsRedirect()
-                .UseCookiePolicy(new CookiePolicyOptions
-                {
-                    Secure = CookieSecurePolicy.SameAsRequest
-                })
-                .UseAuthentication()
-                .UseHttpSession()
-                .UseHttpRequestOptions()
-                .UseHttpRequestTimeZone()
-                .UseHttpRequestIdentifier()
-                .UseHttpResponseCaching()
-                .UseHttpResponseCompression()
-                .UseHealthChecks()
-                .UseMvc(x =>
-                {
-                    x.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                })
-                .UseHttpDocumentataion();
+                .UseHttpDocumentataion()
+                .UseHealthChecks();
         }
 
         /// <summary>
@@ -129,7 +134,6 @@ namespace Nano.Web
                         {
                             x.ListenAnyIP(y, z =>
                             {
-                                z.NoDelay = true;
                                 z.Protocols = HttpProtocols.Http1AndHttp2;
                             });
                         });
@@ -142,7 +146,6 @@ namespace Nano.Web
                         {
                             x.ListenAnyIP(y, z =>
                             {
-                                z.NoDelay = true;
                                 z.Protocols = HttpProtocols.Http1AndHttp2;
 
                                 if (certificate.Path != null)

@@ -435,7 +435,7 @@ namespace Nano.Data
             return this.ChangeTracker
                 .Entries<IEntity>()
                 .Where(x =>
-                    x.Entity.GetType().IsTypeDef(typeof(IEntityIdentity<>)) &&
+                    x.Entity.GetType().IsTypeOf(typeof(IEntityIdentity<>)) &&
                     x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
                     (x.State == EntityState.Added || x.State == EntityState.Deleted))
                 .Select(x =>

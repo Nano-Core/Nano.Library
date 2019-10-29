@@ -53,7 +53,6 @@
             <summary>
             Base .
             </summary>
-            <typeparam name="TRepository">The <see cref="T:Nano.Repository.Interfaces.IRepository"/>.</typeparam>
         </member>
         <member name="P:Nano.Console.Workers.BaseWorker`1.Logger">
             <summary>
@@ -75,7 +74,7 @@
             Application Lifetime.
             </summary>
         </member>
-        <member name="M:Nano.Console.Workers.BaseWorker`1.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing,Microsoft.Extensions.Hosting.IApplicationLifetime)">
+        <member name="M:Nano.Console.Workers.BaseWorker`1.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing,Microsoft.Extensions.Hosting.IHostApplicationLifetime)">
             <summary>
             Constructor.
             </summary>
@@ -98,7 +97,7 @@
             Default Worker.
             </summary>
         </member>
-        <member name="M:Nano.Console.Workers.DefaultWorker.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing,Microsoft.Extensions.Hosting.IApplicationLifetime)">
+        <member name="M:Nano.Console.Workers.DefaultWorker.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing,Microsoft.Extensions.Hosting.IHostApplicationLifetime)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Console.Workers.DefaultWorker.StartAsync(System.Threading.CancellationToken)">

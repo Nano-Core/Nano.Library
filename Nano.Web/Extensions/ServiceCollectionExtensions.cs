@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
@@ -14,15 +13,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Nano.App;
 using Nano.Config.Extensions;
 using Nano.Data;
@@ -43,7 +41,6 @@ using Nano.Web.Hosting.Serialization;
 using Nano.Web.Hosting.Startup.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Swashbuckle.AspNetCore.Swagger;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 
 namespace Nano.Web.Extensions
@@ -89,14 +86,12 @@ namespace Nano.Web.Extensions
                 .AddTimeZone(appOptions)
                 .AddCompression()
                 .AddContentTypeFormatters()
-                .Configure<ForwardedHeadersOptions>(options =>
-                {
-                    options.ForwardedHeaders = ForwardedHeaders.All;
-                })
+                .Configure<ForwardedHeadersOptions>(options => { options.ForwardedHeaders = ForwardedHeaders.All; })
                 .AddSingleton<ExceptionHandlingMiddleware>()
                 .AddSingleton<HttpRequestOptionsMiddleware>()
                 .AddSingleton<HttpRequestIdentifierMiddleware>()
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+                .AddRouting()
                 .AddMvc(x =>
                 {
                     var routeAttribute = new RouteAttribute(webOptions.Hosting.Root);
@@ -118,7 +113,7 @@ namespace Nano.Web.Extensions
                     x.Filters.Add<ModelStateValidationFilter>();
                     x.Filters.Add<DisableLazyLoadingResultFilterAttribute>();
                 })
-                .AddJsonOptions(x =>
+                .AddNewtonsoftJson(x =>
                 {
                     x.AllowInputFormatterExceptionMessages = true;
 
@@ -135,13 +130,6 @@ namespace Nano.Web.Extensions
                 .AddViewComponentsAsServices()
                 .AddApplicationPart(assembly)
                 .SetCompatibilityVersion(webOptions.CompatabilityVersion);
-
-            services
-                .Configure<RazorViewEngineOptions>(x =>
-                {
-                    x.FileProviders
-                        .Add(new EmbeddedFileProvider(assembly));
-                });
 
             services
                 .AddApis()
@@ -165,7 +153,7 @@ namespace Nano.Web.Extensions
                 .SelectMany(x => x.GetTypes())
                 .Where(x =>
                     !x.IsAbstract &&
-                    x.IsTypeDef(typeof(BaseApi)))
+                    x.IsTypeOf(typeof(BaseApi)))
                 .Distinct()
                 .ToList()
                 .ForEach(x =>
@@ -387,43 +375,46 @@ namespace Nano.Web.Extensions
             return services
                 .AddSwaggerGen(x =>
                 {
-                    x.IgnoreObsoleteActions();
-                    x.IgnoreObsoleteProperties();
-                    x.DescribeAllEnumsAsStrings();
-                    x.CustomSchemaIds(y => y.FullName);
-                    x.OrderActionsBy(y => y.RelativePath);
-                    x.DocumentFilter<LowercaseDocumentFilter>();
-
-                    x.SwaggerDoc(appOptions.Version, new Info
+                    var info = new OpenApiInfo
                     {
                         Title = appOptions.Name,
                         Description = appOptions.Description,
                         Version = appOptions.Version,
-                        TermsOfService = appOptions.TermsOfService,
                         Contact = webOptions.Documentation.Contact,
                         License = webOptions.Documentation.License
-                    });
+                    };
+
+                    if (!string.IsNullOrEmpty(appOptions.TermsOfService))
+                        info.TermsOfService = new Uri(appOptions.TermsOfService); 
+
+                    x.SwaggerDoc(appOptions.Version, info);
+                    x.IgnoreObsoleteActions();
+                    x.IgnoreObsoleteProperties();
+                    x.CustomSchemaIds(y => y.FullName);
+                    x.OrderActionsBy(y => y.RelativePath);
+                    x.DocumentFilter<LowercaseDocumentFilter>();
 
                     if (securityOptions.IsEnabled)
                     {
-                        x.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                        var securityScheme = new OpenApiSecurityScheme
                         {
-                            In = "header",
-                            Type = "apiKey",
+                            In = ParameterLocation.Header,
+                            Type = SecuritySchemeType.ApiKey,
                             Name = "Authorization",
                             Description = "JWT Authorization header using the Bearer scheme. Format: Authorization: Bearer [token]"
-                        });
+                        };
 
-                        x.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                        x.AddSecurityDefinition("Bearer", securityScheme);
+                        x.AddSecurityRequirement(new OpenApiSecurityRequirement
                         {
-                            { "Bearer", new string[] { } }
+                            { securityScheme, new string[] { } }
                         });
                     }
 
                     AppDomain.CurrentDomain
                          .GetAssemblies()
                          .SelectMany(y => y.GetTypes())
-                         .Where(y => y.IsTypeDef(typeof(BaseController)))
+                         .Where(y => y.IsTypeOf(typeof(BaseController)))
                          .Select(y => y.Module)
                          .Distinct()
                          .ToList()

@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Models
+namespace Tests.Nano.Security.Exceptions
 {
     [TestClass]
-    public class DefaultAuditEntryPropertyTest
+    public class UnauthorizedExceptionTest
     {
         [TestMethod]
         public void ConstructorTest()

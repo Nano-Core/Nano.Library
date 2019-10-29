@@ -3,16 +3,16 @@
 namespace Tests.Nano.Models.Extensions
 {
     [TestClass]
-    public class ObjectExtensionsTest
+    public class StringExtensionsTest
     {
         [TestMethod]
-        public void GetShortIdTest()
+        public void SubstringTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void GetShortIdWhenObjectIsNullTest()
+        public void TrySubstringTest()
         {
             Assert.Inconclusive();
         }

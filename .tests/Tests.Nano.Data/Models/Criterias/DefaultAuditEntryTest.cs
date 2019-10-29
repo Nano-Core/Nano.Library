@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Models
+namespace Tests.Nano.Data.Models.Criterias
 {
     [TestClass]
-    public class DefaultAuditEntryTest
+    public class AuditEntryQueryCriteriaTest
     {
         [TestMethod]
-        public void ConstructorTest()
+        public void GetExpressionsTest()
         {
             Assert.Inconclusive();
         }

@@ -1,9 +1,9 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Models
+namespace Tests.Nano.Models.Exceptions
 {
     [TestClass]
-    public class EntityEventTest
+    public class TranslationExceptionTest
     {
         [TestMethod]
         public void ConstructorTest()

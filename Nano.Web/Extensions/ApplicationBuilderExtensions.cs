@@ -16,8 +16,8 @@ using Nano.Web.Hosting;
 using Nano.Web.Hosting.Middleware;
 using NWebsec.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using Vivet.AspNetCore.RequestTimeZone;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
+using Vivet.AspNetCore.RequestTimeZone.Providers;
 using ReferrerPolicy = NWebsec.Core.Common.HttpHeaders.ReferrerPolicy;
 
 namespace Nano.Web.Extensions

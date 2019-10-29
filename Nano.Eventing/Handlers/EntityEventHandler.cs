@@ -46,10 +46,10 @@ namespace Nano.Eventing.Handlers
                 var type = AppDomain.CurrentDomain
                     .GetAssemblies()
                     .SelectMany(x => x.GetTypes())
-                    .Where(x => x.IsTypeDef(typeof(IEntityIdentity<>)))
+                    .Where(x => x.IsTypeOf(typeof(IEntityIdentity<>)))
                     .First(x => x.Name == @event.Type);
 
-                var id = type.IsTypeDef(typeof(IEntityIdentity<Guid>))
+                var id = type.IsTypeOf(typeof(IEntityIdentity<Guid>))
                     ? new Guid(@event.Id.ToString())
                     : @event.Id;
 

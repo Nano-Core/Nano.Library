@@ -39,7 +39,7 @@ namespace Nano.App.Extensions
                 .SelectMany(x => x.GetTypes())
                 .Where(x =>
                     !x.IsAbstract &&
-                    x.IsTypeDef(typeof(BaseStartupTask)))
+                    x.IsTypeOf(typeof(BaseStartupTask)))
                 .ToList()
                 .ForEach(x =>
                 {

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <ApplicationIcon>..\icon.ico</ApplicationIcon>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.0\Nano.Eventing.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netcoreapp3.0\Nano.Eventing.xml</DocumentationFile>
     <WarningsAsErrors />
     <NoWarn />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -17,7 +17,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard2.0\Nano.Eventing.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netcoreapp3.0\Nano.Eventing.xml</DocumentationFile>
     <WarningsAsErrors />
     <NoWarn />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -29,9 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="2.2.1" />
-    <PackageReference Include="EasyNetQ" Version="3.6.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
+    <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="3.0.0" />
+    <PackageReference Include="EasyNetQ" Version="3.7.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>

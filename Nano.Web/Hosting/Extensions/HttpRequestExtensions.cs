@@ -1,6 +1,6 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Internal;
 using Nano.Models.Extensions;
 using Nano.Web.Const;
 
@@ -69,8 +69,8 @@ namespace Nano.Web.Hosting.Extensions
 
             var headers = httpRequest.Headers;
             var queryString = httpRequest.QueryString.HasValue ? httpRequest.QueryString.Value : string.Empty;
-            var accept = headers["Accept"].Join();
-            var contentType = headers["Content-Type"].Join();
+            var accept = headers["Accept"];
+            var contentType = headers["Content-Type"];
 
             match.TrySubstring("/", out var format);
 

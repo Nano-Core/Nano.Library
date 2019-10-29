@@ -13,7 +13,7 @@ namespace Nano.Console.Workers
     public class DefaultWorker : BaseWorker<IRepository>
     {
         /// <inheritdoc />
-        public DefaultWorker(ILogger logger, IRepository repository, IEventing eventing, IApplicationLifetime applicationLifetime)
+        public DefaultWorker(ILogger logger, IRepository repository, IEventing eventing, IHostApplicationLifetime applicationLifetime)
             : base(logger, repository, eventing, applicationLifetime)
         {
 

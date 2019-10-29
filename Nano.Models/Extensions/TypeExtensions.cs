@@ -37,7 +37,7 @@ namespace Nano.Models.Extensions
         /// <param name="type">The <see cref="Type"/> from which to determine, if the passed <paramref name="baseType"/> is parent.</param>
         /// <param name="baseType">The <see cref="Type"/> that be inherited or implemented by the passed <paramref name="type"/>.</param>
         /// <returns>True or false, depending on whehter the <paramref name="type"/> implements or derives from <paramref name="baseType"/>.</returns>
-        public static bool IsTypeDef(this Type type, Type baseType)
+        public static bool IsTypeOf(this Type type, Type baseType)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
@@ -50,43 +50,6 @@ namespace Nano.Models.Extensions
                 .Any(x =>
                     x == baseType ||
                     x.IsGenericType && x.GetGenericTypeDefinition() == baseType);
-        }
-
-        /// <summary>
-        /// Gets all <see cref="Type"/>'s derived by the passed <paramref name="type"/>.
-        /// </summary>
-        /// <param name="type">The <see cref="Type"/> from which to get all parent types.</param>
-        /// <returns>The <see cref="IEnumerable{T}"/> containing all parent <see cref="Type"/>'s.</returns>
-        public static IEnumerable<Type> GetBaseTypes(this Type type)
-        {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-
-            var types = new List<Type>();
-
-            while (type.BaseType != null)
-            {
-                types.Add(type);
-
-                type = type.BaseType;
-            }
-
-            return types;
-        }
-
-        /// <summary>
-        /// Gets all <see cref="Type"/>'s derived or implemeneted by the passed <paramref name="type"/>.
-        /// </summary>
-        /// <param name="type">The <see cref="Type"/> from which to get all parent types.</param>
-        /// <returns>The <see cref="IEnumerable{T}"/> containing all parent <see cref="Type"/>'s.</returns>
-        public static IEnumerable<Type> GetParentTypes(this Type type)
-        {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-
-            return type
-                .GetInterfaces()
-                .Concat(type.GetBaseTypes());
         }
 
         private static string GetTypeString(this Type type)
@@ -107,6 +70,31 @@ namespace Nano.Models.Extensions
 
             output.Append($"<{string.Join(",", typeStrings)}>");
             return output.ToString();
+        }
+        private static IEnumerable<Type> GetBaseTypes(this Type type)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
+            var types = new List<Type>();
+
+            while (type.BaseType != null)
+            {
+                types.Add(type);
+
+                type = type.BaseType;
+            }
+
+            return types;
+        }
+        private static IEnumerable<Type> GetParentTypes(this Type type)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
+            return type
+                .GetInterfaces()
+                .Concat(type.GetBaseTypes());
         }
     }
 }

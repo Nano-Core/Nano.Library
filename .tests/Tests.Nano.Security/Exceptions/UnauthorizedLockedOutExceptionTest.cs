@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano.Models
+namespace Tests.Nano.Security.Exceptions
 {
     [TestClass]
-    public class AuditEntryTest
+    public class UnauthorizedLockedOutExceptionTest
     {
         [TestMethod]
         public void ConstructorTest()

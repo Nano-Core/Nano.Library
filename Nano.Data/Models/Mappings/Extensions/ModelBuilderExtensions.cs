@@ -37,32 +37,6 @@ namespace Nano.Data.Models.Mappings.Extensions
             return builder;
         }
 
-        /// <summary>
-        /// Adds a view mapping for the type <typeparamref name="TEntity"/> using the <typeparamref name="TMapping"/> implementation.
-        /// </summary>
-        /// <typeparam name="TEntity">The <see cref="IEntity"/>.</typeparam>
-        /// <typeparam name="TMapping">The <see cref="BaseEntityQueryMapping{TEntity}"/>.</typeparam>
-        /// <param name="builder">The <see cref="ModelBuilder"/>.</param>
-        /// <returns>The <see cref="ModelBuilder"/>.</returns>
-        public static ModelBuilder AddMappingView<TEntity, TMapping>(this ModelBuilder builder)
-            where TEntity : class, IEntity
-            where TMapping : BaseEntityQueryMapping<TEntity>, new()
-        {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-
-            var mapping = new TMapping();
-
-            builder
-                .Query<TEntity>()
-                .ToView(typeof(TEntity).Name);
-
-            mapping
-                .Map(builder.Query<TEntity>());
-
-            return builder;
-        }
-
         private static ModelBuilder UpdateUniuqeIndexes<TEntity>(this ModelBuilder builder)
             where TEntity : class, IEntity
         {
@@ -104,7 +78,7 @@ namespace Nano.Data.Models.Mappings.Extensions
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            var isDeletableSoft = typeof(TEntity).IsTypeDef(typeof(IEntityDeletableSoft));
+            var isDeletableSoft = typeof(TEntity).IsTypeOf(typeof(IEntityDeletableSoft));
 
             if (isDeletableSoft)
             {

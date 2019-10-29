@@ -19,6 +19,8 @@ namespace Nano.Data
             if (optionsBuilder == null) 
                 throw new ArgumentNullException(nameof(optionsBuilder));
 
+            optionsBuilder
+                .UseInMemoryDatabase("nulldb");
         }
     }
 }

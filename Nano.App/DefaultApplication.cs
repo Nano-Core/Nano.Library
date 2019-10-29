@@ -2,8 +2,7 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using Microsoft.Extensions.Hosting;
 
 namespace Nano.App
 {
@@ -24,14 +23,14 @@ namespace Nano.App
                 throw new ArgumentNullException(nameof(applicationBuilder));
 
             var services = applicationBuilder.ApplicationServices;
-            var hostingEnvironment = services.GetService<IHostingEnvironment>();
-            var applicationLifetime = services.GetService<IApplicationLifetime>();
+            var hostingEnvironment = services.GetService<IHostEnvironment>();
+            var applicationLifetime = services.GetService<IHostApplicationLifetime>();
 
             this.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
         }
 
         /// <inheritdoc />
-        public override void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime)
+        public override void Configure(IApplicationBuilder applicationBuilder, IHostEnvironment hostingEnvironment, IHostApplicationLifetime applicationLifetime)
         {
             if (applicationBuilder == null)
                 throw new ArgumentNullException(nameof(applicationBuilder));

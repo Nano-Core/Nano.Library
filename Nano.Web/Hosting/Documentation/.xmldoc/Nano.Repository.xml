@@ -24,9 +24,6 @@
         <member name="M:Nano.Repository.BaseRepository`1.GetEntitySet``1">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetEntityQuery``1">
-            <inheritdoc />
-        </member>
         <member name="M:Nano.Repository.BaseRepository`1.GetAsync``2(``1,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
@@ -184,13 +181,6 @@
             </summary>
             <typeparam name="TEntity">The type</typeparam>
             <returns>The <see cref="T:Microsoft.EntityFrameworkCore.DbSet`1"/>.</returns>
-        </member>
-        <member name="M:Nano.Repository.Interfaces.IRepository.GetEntityQuery``1">
-            <summary>
-            Gets the <see cref="T:Microsoft.EntityFrameworkCore.DbQuery`1"/> mathcing the type of <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">The type</typeparam>
-            <returns>The <see cref="T:Microsoft.EntityFrameworkCore.DbQuery`1"/>.</returns>
         </member>
         <member name="M:Nano.Repository.Interfaces.IRepository.GetAsync``2(``1,System.Threading.CancellationToken)">
             <summary>

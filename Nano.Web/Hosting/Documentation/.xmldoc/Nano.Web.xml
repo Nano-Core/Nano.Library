@@ -109,6 +109,14 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
+        <member name="M:Nano.Web.Api.DefaultApi.LogInRefreshAsync(Nano.Web.Api.Requests.Auth.LogInRefreshRequest,System.Threading.CancellationToken)">
+            <summary>
+            Log-In Refresh Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.LogInRefreshRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+        </member>
         <member name="M:Nano.Web.Api.DefaultApi.LogInExternalAsync(Nano.Web.Api.Requests.Auth.LogInExternalRequest,System.Threading.CancellationToken)">
             <summary>
             Log-In External Async.
@@ -132,6 +140,16 @@
             <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>A collection of <see cref="T:Nano.Security.Models.LoginProvider"/>'s.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.DefaultApi.GetAsync``1(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Details.
+            Invokes the 'details' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="id">The id.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entity.</returns>
         </member>
         <member name="M:Nano.Web.Api.DefaultApi.IndexAsync``1(Nano.Web.Api.Requests.IndexRequest,System.Threading.CancellationToken)">
             <summary>
@@ -406,6 +424,20 @@
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Auth.LogInExternalRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Auth.LogInRefreshRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Auth.LogInRefreshRequest.LoginRefresh">
+            <summary>
+            Login.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.LogInRefreshRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.LogInRefreshRequest.GetBody">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Auth.LogInRequest">
@@ -964,6 +996,36 @@
         <member name="M:Nano.Web.Api.Requests.QueryRequest`1.GetBody">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Web.Const.HttpContentType">
+            <summary>
+            Http Content Type.
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Const.HttpContentType.XML">
+            <summary>
+            Xml ("application/xml").
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Const.HttpContentType.JSON">
+            <summary>
+            Json ("application/json").
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Const.HttpContentType.HTML">
+            <summary>
+            Html ("text/html").
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Const.HttpContentType.TEXT">
+            <summary>
+            Text ("text/plain").
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Const.HttpContentType.FORM">
+            <summary>
+            Form ("application/x-www-form-urlencoded").
+            </summary>
+        </member>
         <member name="T:Nano.Web.Controllers.AuditController">
             <inheritdoc />
         </member>
@@ -992,6 +1054,18 @@
             On success a jwt-token is created and returned, for use with auhtorization.
             </summary>
             <param name="login">The login model.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The access token.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.AuthController.LoginRefreshAsync(Nano.Security.Models.LoginRefresh,System.Threading.CancellationToken)">
+            <summary>
+            Refreshes a users authentication token.
+            </summary>
+            <param name="loginRefresh">The login refresh model.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The access token.</returns>
             <response code="200">Success.</response>
@@ -1806,6 +1880,200 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
+        <member name="T:Nano.Web.Enums.XXssProtectionPolicyBlockMode">
+            <summary>
+            X-Xss Protection Policy BlockMode.
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Enums.XXssProtectionPolicyBlockMode.Disabled">
+            <summary>
+            Disabled.
+            Specifies that the X-Xss-Protection header should not be set in the HTTP response.
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Enums.XXssProtectionPolicyBlockMode.FilterDisabled">
+            <summary>
+            Filter Disabled.
+            Specifies that the X-Xss-Protection header should be set in the HTTP response, explicitly disabling the IE XSS filter.
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Enums.XXssProtectionPolicyBlockMode.FilterEnabled">
+            <summary>
+            Filter Enabled.
+            Specifies that the X-Xss-Protection header should be set in the HTTP response, explicitly enabling the IE XSS filter.
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Enums.XXssProtectionPolicyBlockMode.FilterEnabledBlockMode">
+            <summary>
+            Filter Enabled Block Mode.
+            Specifies that the X-Xss-Protection header should be set in the HTTP response, explicitly enabling the IE XSS filter.
+            BlockMode is set to true.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.Extensions.ApplicationBuilderExtensions">
+            <summary>
+            Application Builder Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHealthChecks(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds health checks middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseExceptionHandling(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds exception handling middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpRequestOptions(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds options action middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpRequestIdentifier(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds request identifier middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpDocumentataion(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds documentation middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpLocalization(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds localization middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpRequestTimeZone(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds timezone middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpContextAccessor(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds the <see cref="T:Microsoft.AspNetCore.Http.IHttpContextAccessor"/> middleware, and initializes the current <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpSession(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds http session middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpResponseCaching(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds response caching middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpResponseCompression(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds response compresssion middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpXForwardedHeaders(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds no cache middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpXRobotsTagHeaders(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds x-Robots tag middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpReferrerPolicyHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds referrer policy middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpXFrameOptionsPolicyHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds X-frame options policy middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpXXssProtectionPolicyHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds XXss protection policy middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpStrictTransportSecurityPolicyHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds Hsts middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpsRedirect(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds rerdirect valiation middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpCorsPolicy(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds CORS middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
+        <member name="T:Nano.Web.Extensions.AuthenticationBuilderExtensions">
+            <summary>
+            Service Collection Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Extensions.AuthenticationBuilderExtensions.AddExternalLogins(Microsoft.AspNetCore.Authentication.AuthenticationBuilder,Nano.Security.SecurityOptions)">
+            <summary>
+            Adds external logins to the <see cref="T:Microsoft.AspNetCore.Authentication.AuthenticationBuilder"/>.
+            </summary>
+            <param name="builder">The <see cref="T:Microsoft.AspNetCore.Authentication.AuthenticationBuilder"/>.</param>
+            <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Authentication.AuthenticationBuilder"/>.</returns>
+        </member>
+        <member name="T:Nano.Web.Extensions.ServiceCollectionExtensions">
+            <summary>
+            Service Collection Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Extensions.ServiceCollectionExtensions.AddWeb(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds <see cref="T:Nano.Web.WebOptions"/> and services to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
         <member name="T:Nano.Web.Hosting.Conventions.AuditControllerDisabledConvention">
             <inheritdoc />
         </member>
@@ -1833,201 +2101,13 @@
         <member name="T:Nano.Web.Hosting.Documentation.Filters.LowercaseDocumentFilter">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Hosting.Documentation.Filters.LowercaseDocumentFilter.Apply(Swashbuckle.AspNetCore.Swagger.SwaggerDocument,Swashbuckle.AspNetCore.SwaggerGen.DocumentFilterContext)">
+        <member name="M:Nano.Web.Hosting.Documentation.Filters.LowercaseDocumentFilter.Apply(Microsoft.OpenApi.Models.OpenApiDocument,Swashbuckle.AspNetCore.SwaggerGen.DocumentFilterContext)">
             <inheritdoc />
-        </member>
-        <member name="T:Nano.Web.Hosting.Enums.XXssProtectionPolicyBlockMode">
-            <summary>
-            X-Xss Protection Policy BlockMode.
-            </summary>
-        </member>
-        <member name="F:Nano.Web.Hosting.Enums.XXssProtectionPolicyBlockMode.Disabled">
-            <summary>
-            Disabled.
-            Specifies that the X-Xss-Protection header should not be set in the HTTP response.
-            </summary>
-        </member>
-        <member name="F:Nano.Web.Hosting.Enums.XXssProtectionPolicyBlockMode.FilterDisabled">
-            <summary>
-            Filter Disabled.
-            Specifies that the X-Xss-Protection header should be set in the HTTP response, explicitly disabling the IE XSS filter.
-            </summary>
-        </member>
-        <member name="F:Nano.Web.Hosting.Enums.XXssProtectionPolicyBlockMode.FilterEnabled">
-            <summary>
-            Filter Enabled.
-            Specifies that the X-Xss-Protection header should be set in the HTTP response, explicitly enabling the IE XSS filter.
-            </summary>
-        </member>
-        <member name="F:Nano.Web.Hosting.Enums.XXssProtectionPolicyBlockMode.FilterEnabledBlockMode">
-            <summary>
-            Filter Enabled Block Mode.
-            Specifies that the X-Xss-Protection header should be set in the HTTP response, explicitly enabling the IE XSS filter.
-            BlockMode is set to true.
-            </summary>
-        </member>
-        <member name="T:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions">
-            <summary>
-            Application Builder Extensions.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHealthChecks(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds health checks middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseExceptionHandling(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds exception handling middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpRequestOptions(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds options action middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpRequestIdentifier(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds request identifier middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpDocumentataion(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds documentation middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpLocalization(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds localization middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpRequestTimeZone(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds timezone middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpContextAccessor(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds the <see cref="T:Microsoft.AspNetCore.Http.IHttpContextAccessor"/> middleware, and initializes the current <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpSession(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds http session middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpResponseCaching(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds response caching middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpResponseCompression(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds response compresssion middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpXForwardedHeaders(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds no cache middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpXRobotsTagHeaders(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds x-Robots tag middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpReferrerPolicyHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds referrer policy middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpXFrameOptionsPolicyHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds X-frame options policy middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpXXssProtectionPolicyHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds XXss protection policy middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpStrictTransportSecurityPolicyHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds Hsts middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpsRedirect(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds rerdirect valiation middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ApplicationBuilderExtensions.UseHttpCorsPolicy(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Adds CORS middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
-        </member>
-        <member name="T:Nano.Web.Hosting.Extensions.AuthenticationBuilderExtensions">
-            <summary>
-            Service Collection Extensions.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.AuthenticationBuilderExtensions.AddExternalLogins(Microsoft.AspNetCore.Authentication.AuthenticationBuilder,Nano.Security.SecurityOptions)">
-            <summary>
-            Adds external logins to the <see cref="T:Microsoft.AspNetCore.Authentication.AuthenticationBuilder"/>.
-            </summary>
-            <param name="builder">The <see cref="T:Microsoft.AspNetCore.Authentication.AuthenticationBuilder"/>.</param>
-            <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Authentication.AuthenticationBuilder"/>.</returns>
         </member>
         <member name="T:Nano.Web.Hosting.Extensions.HttpRequestExtensions">
             <summary>
             Http Request Extensions.
             </summary>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.HttpRequestExtensions.ReadBody(Microsoft.AspNetCore.Http.HttpRequest)">
-            <summary>
-            Gets the <see cref="P:Microsoft.AspNetCore.Http.HttpRequest.Body"/> as a raw string.
-            </summary>
-            <param name="httpRequest">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
-            <returns>A <see cref="T:System.String"/> read from the <see cref="T:System.IO.Stream"/> of <see cref="P:Microsoft.AspNetCore.Http.HttpRequest.Body"/>.</returns>
         </member>
         <member name="M:Nano.Web.Hosting.Extensions.HttpRequestExtensions.IsContentTypeJson(Microsoft.AspNetCore.Http.HttpRequest)">
             <summary>
@@ -2060,19 +2140,6 @@
             <param name="httpRequest">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
             <param name="match">The <see cref="T:System.String"/> content-type.</param>
             <returns>A <see cref="T:System.Boolean"/>.</returns>
-        </member>
-        <member name="T:Nano.Web.Hosting.Extensions.ServiceCollectionExtensions">
-            <summary>
-            Service Collection Extensions.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.ServiceCollectionExtensions.AddWeb(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
-            <summary>
-            Adds <see cref="T:Nano.Web.WebOptions"/> and services to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
-            </summary>
-            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
-            <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
-            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
         </member>
         <member name="T:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute">
             <summary>
@@ -2108,41 +2175,11 @@
         <member name="T:Nano.Web.Hosting.HealthChecks.StartupHealthCheck">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Hosting.HealthChecks.StartupHealthCheck.#ctor(Nano.Web.Hosting.Startup.StartupTaskContext)">
+        <member name="M:Nano.Web.Hosting.HealthChecks.StartupHealthCheck.#ctor(Nano.App.Startup.StartupTaskContext)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Hosting.HealthChecks.StartupHealthCheck.CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext,System.Threading.CancellationToken)">
             <inheritdoc />
-        </member>
-        <member name="T:Nano.Web.Hosting.HttpContentType">
-            <summary>
-            Http Content Type.
-            </summary>
-        </member>
-        <member name="F:Nano.Web.Hosting.HttpContentType.XML">
-            <summary>
-            Xml ("application/xml").
-            </summary>
-        </member>
-        <member name="F:Nano.Web.Hosting.HttpContentType.JSON">
-            <summary>
-            Json ("application/json").
-            </summary>
-        </member>
-        <member name="F:Nano.Web.Hosting.HttpContentType.HTML">
-            <summary>
-            Html ("text/html").
-            </summary>
-        </member>
-        <member name="F:Nano.Web.Hosting.HttpContentType.TEXT">
-            <summary>
-            Text ("text/plain").
-            </summary>
-        </member>
-        <member name="F:Nano.Web.Hosting.HttpContentType.FORM">
-            <summary>
-            Form ("application/x-www-form-urlencoded").
-            </summary>
         </member>
         <member name="T:Nano.Web.Hosting.HttpContextAccess">
             <summary>
@@ -2190,11 +2227,38 @@
         <member name="M:Nano.Web.Hosting.Middleware.HttpRequestOptionsMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.Http.RequestDelegate)">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Web.Hosting.ModelBinders.QueryModelBinder">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.ModelBinders.QueryModelBinder.BindModelAsync(Microsoft.AspNetCore.Mvc.ModelBinding.ModelBindingContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.ModelBinders.QueryModelBinder.GetOrdering(Microsoft.AspNetCore.Http.HttpRequest)">
+            <summary>
+            Returns the <see cref="T:DynamicExpression.Interfaces.IOrdering"/> from the <see cref="P:Microsoft.AspNetCore.Http.HttpRequest.Query"/>.
+            </summary>
+            <param name="request">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
+            <returns>The <see cref="T:DynamicExpression.Interfaces.IOrdering"/>.</returns>
+        </member>
+        <member name="M:Nano.Web.Hosting.ModelBinders.QueryModelBinder.GetPagination(Microsoft.AspNetCore.Http.HttpRequest)">
+            <summary>
+            Returns the <see cref="T:DynamicExpression.Interfaces.IPagination"/> from the <see cref="P:Microsoft.AspNetCore.Http.HttpRequest.Query"/>.
+            </summary>
+            <param name="request">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
+            <returns>The <see cref="T:DynamicExpression.Interfaces.IPagination"/>.</returns>
+        </member>
         <member name="T:Nano.Web.Hosting.ModelBinders.QueryModelBinder`1">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Hosting.ModelBinders.QueryModelBinder`1.BindModelAsync(Microsoft.AspNetCore.Mvc.ModelBinding.ModelBindingContext)">
             <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Hosting.ModelBinders.QueryModelBinder`1.GetCriteria(Microsoft.AspNetCore.Http.HttpRequest)">
+            <summary>
+            Returns the Criteria of type <typeparamref name="TCriteria"/>, from the <see cref="P:Microsoft.AspNetCore.Http.HttpRequest.Query"/>.
+            </summary>
+            <param name="request">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
+            <returns>The Criteria of type <typeparamref name="TCriteria"/>.</returns>
         </member>
         <member name="T:Nano.Web.Hosting.ModelBinders.QueryModelBinderProvider">
             <inheritdoc />
@@ -2241,59 +2305,52 @@
             <param name="knownTypes">The known types.</param>
             <returns>The instance of type <typeparamref name="T"/>.</returns>
         </member>
-        <member name="T:Nano.Web.Hosting.Startup.BaseStartupTask">
-            <inheritdoc />
-        </member>
-        <member name="P:Nano.Web.Hosting.Startup.BaseStartupTask.StartupTaskContext">
-            <summary>
-            Startup Task Context.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Hosting.Startup.BaseStartupTask.#ctor(Nano.Web.Hosting.Startup.StartupTaskContext)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Hosting.Startup.BaseStartupTask.StartAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Hosting.Startup.BaseStartupTask.StopAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="T:Nano.Web.Hosting.Startup.StartupTaskContext">
-            <summary>
-            Startup Task Context.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.Hosting.Startup.StartupTaskContext.IsDone">
-            <summary>
-            Is Complete.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Hosting.Startup.StartupTaskContext.Increment">
-            <summary>
-            Increment
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Hosting.Startup.StartupTaskContext.Decrement">
-            <summary>
-            Decrement.
-            </summary>
-        </member>
-        <member name="T:Nano.Web.Hosting.Startup.Tasks.InitializeApplicationStartupTask">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Hosting.Startup.Tasks.InitializeApplicationStartupTask.#ctor(Nano.Web.Hosting.Startup.StartupTaskContext)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Hosting.Startup.Tasks.InitializeApplicationStartupTask.StartAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
         <member name="T:Nano.Web.Hosting.Startup.Tasks.InitializeDatabaseStartupTask">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Hosting.Startup.Tasks.InitializeDatabaseStartupTask.#ctor(Nano.Web.Hosting.Startup.StartupTaskContext,Nano.Data.BaseDbContext)">
+        <member name="M:Nano.Web.Hosting.Startup.Tasks.InitializeDatabaseStartupTask.#ctor(Nano.App.Startup.StartupTaskContext,Nano.Data.BaseDbContext)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Hosting.Startup.Tasks.InitializeDatabaseStartupTask.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Models.Error">
+            <summary>
+            Error.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Models.Error.Summary">
+            <summary>
+            Message.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Models.Error.Exceptions">
+            <summary>
+            Description.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Models.Error.StatusCode">
+            <summary>
+            Status Code.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Models.Error.IsTranslated">
+            <summary>
+            Is Translated.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Models.Error.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Models.Error.#ctor(System.Exception)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="exception">The <see cref="T:System.Exception"/>.</param>
+        </member>
+        <member name="M:Nano.Web.Models.Error.ToString">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.WebApplication">
@@ -2302,13 +2359,8 @@
         <member name="M:Nano.Web.WebApplication.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.WebApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.AspNetCore.Hosting.IApplicationLifetime)">
-            <summary>
-            Configures the application.
-            </summary>
-            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
-            <param name="hostingEnvironment">The <see cref="T:Microsoft.AspNetCore.Hosting.IHostingEnvironment"/>.</param>
-            <param name="applicationLifetime">The <see cref="T:Microsoft.AspNetCore.Hosting.IApplicationLifetime"/>.</param>
+        <member name="M:Nano.Web.WebApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.Extensions.Hosting.IHostEnvironment,Microsoft.Extensions.Hosting.IHostApplicationLifetime)">
+            <inheritdoc />
         </member>
         <member name="M:Nano.Web.WebApplication.ConfigureApp(System.String[])">
             <summary>

@@ -34,6 +34,16 @@
             Administrator.
             </summary>
         </member>
+        <member name="T:Nano.Security.Const.ClaimTypesExtended">
+            <summary>
+            Claim Types Extended.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Const.ClaimTypesExtended.AppId">
+            <summary>
+            App Id.
+            </summary>
+        </member>
         <member name="T:Nano.Security.Exceptions.UnauthorizedEmailAddressNotFoundException">
             <summary>
             Unauthorized Unauthorized Email Address Not Found Exception.
@@ -79,6 +89,13 @@
             Http Context Extensions.
             </summary>
         </member>
+        <member name="M:Nano.Security.Extensions.HttpContextExtensions.GetJwtAppId(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Get Jwt App Id.
+            </summary>
+            <param name="httpContext">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.</param>
+            <returns>The app id.</returns>
+        </member>
         <member name="M:Nano.Security.Extensions.HttpContextExtensions.GetJwtToken(Microsoft.AspNetCore.Http.HttpContext)">
             <summary>
             Get Jwt Token.
@@ -120,23 +137,14 @@
             <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
             <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
         </member>
-        <member name="T:Nano.Security.Extensions.UserManagerExtensions">
-            <summary>
-            User Manager Extensions.
-            </summary>
-        </member>
-        <member name="M:Nano.Security.Extensions.UserManagerExtensions.GenerateJwtToken``1(Microsoft.AspNetCore.Identity.UserManager{``0},``0,Nano.Security.SecurityOptions)">
-            <summary>
-            Generates the Jwt token.
-            </summary>
-            <param name="userManager">The <see cref="T:Microsoft.AspNetCore.Identity.UserManager`1"/></param>
-            <param name="user">The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/></param>
-            <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
-        </member>
         <member name="T:Nano.Security.IdentityManager">
             <summary>
             Security Manager.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.IdentityManager.DbContext">
+            <summary>
+            Db Context.
             </summary>
         </member>
         <member name="P:Nano.Security.IdentityManager.Options">
@@ -154,10 +162,11 @@
             Sign In Manager.
             </summary>
         </member>
-        <member name="M:Nano.Security.IdentityManager.#ctor(Microsoft.AspNetCore.Identity.SignInManager{Microsoft.AspNetCore.Identity.IdentityUser},Microsoft.AspNetCore.Identity.UserManager{Microsoft.AspNetCore.Identity.IdentityUser},Nano.Security.SecurityOptions)">
+        <member name="M:Nano.Security.IdentityManager.#ctor(Microsoft.EntityFrameworkCore.DbContext,Microsoft.AspNetCore.Identity.SignInManager{Microsoft.AspNetCore.Identity.IdentityUser},Microsoft.AspNetCore.Identity.UserManager{Microsoft.AspNetCore.Identity.IdentityUser},Nano.Security.SecurityOptions)">
             <summary>
             The user authenticates and on success recieves a jwt token for use with auhtorization.
             </summary>
+            <param name="dbContext">The <see cref="T:Microsoft.AspNetCore.Identity.SignInManager`1"/>.</param>
             <param name="signInManager">The <see cref="T:Microsoft.AspNetCore.Identity.SignInManager`1"/>.</param>
             <param name="userManager">The <see cref="T:Microsoft.AspNetCore.Identity.UserManager`1"/>.</param>
             <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
@@ -169,11 +178,35 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The collection of <see cref="T:Nano.Security.Models.LoginProvider"/>'s.</returns>
         </member>
+        <member name="M:Nano.Security.IdentityManager.GetExternalProviderInfoAsync(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
+            <summary>
+            Gets the external provider info.
+            </summary>
+            <param name="loginExternal">The <see cref="T:Nano.Security.Models.LoginExternal"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.ExternalLoginData"/></returns>
+        </member>
         <member name="M:Nano.Security.IdentityManager.SignInAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
             <summary>
             Signs in a user.
             </summary>
             <param name="login">The <see cref="T:Nano.Security.Models.Login"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.SignInAdminAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
+            <summary>
+            Signs in the admin user statically.
+            </summary>
+            <param name="login">The <see cref="T:Nano.Security.Models.Login"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.IdentityManager.SignInRefreshAsync(Nano.Security.Models.LoginRefresh,System.Threading.CancellationToken)">
+            <summary>
+            Refresh the login of a user.
+            </summary>
+            <param name="loginRefresh">The <see cref="T:Nano.Security.Models.LoginRefresh"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
@@ -202,19 +235,11 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ExternalLoginData"/>.</returns>
         </member>
-        <member name="M:Nano.Security.IdentityManager.SignInExternalChallangeCallbackAsync(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
-            <summary>
-            Callback for signing in a user with external login info,
-            from passed in <see cref="T:Nano.Security.Models.LoginExternal"/> data.
-            </summary>
-            <param name="loginExternal">The <see cref="T:Nano.Security.Models.LoginExternal"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.ExternalLoginData"/>.</returns>
-        </member>
         <member name="M:Nano.Security.IdentityManager.SignOutAsync(System.Threading.CancellationToken)">
             <summary>
             Logs out a user.
             </summary>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
         <member name="M:Nano.Security.IdentityManager.SignUpAsync(Nano.Security.Models.SignUp,System.Threading.CancellationToken)">
@@ -318,6 +343,11 @@
             Access Token.
             </summary>
         </member>
+        <member name="P:Nano.Security.Models.AccessToken.AppId">
+            <summary>
+            App Id.
+            </summary>
+        </member>
         <member name="P:Nano.Security.Models.AccessToken.Token">
             <summary>
             Token.
@@ -331,6 +361,11 @@
         <member name="P:Nano.Security.Models.AccessToken.IsExpired">
             <summary>
             Is Expired.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.AccessToken.RefreshToken">
+            <summary>
+            Refresh Token.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.ChangeEmail">
@@ -473,9 +508,25 @@
             Data.
             </summary>
         </member>
+        <member name="T:Nano.Security.Models.IdentityUserTokenExpiry`1">
+            <summary>
+            Identity User Token Expiry.
+            </summary>
+            <typeparam name="TKey"></typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.IdentityUserTokenExpiry`1.ExpireAt">
+            <summary>
+            Expire At.
+            </summary>
+        </member>
         <member name="T:Nano.Security.Models.Login">
             <summary>
             Login.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.Login.AppId">
+            <summary>
+            App Id.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.Login.Username">
@@ -496,6 +547,11 @@
         <member name="T:Nano.Security.Models.LoginExternal">
             <summary>
             Login External.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.LoginExternal.AppId">
+            <summary>
+            App Id.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.LoginExternal.LoginProvider">
@@ -531,6 +587,36 @@
         <member name="P:Nano.Security.Models.LoginProvider.DisplayName">
             <summary>
             Display Name.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.LoginRefresh">
+            <summary>
+            Login Refresh.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.LoginRefresh.RefreshToken">
+            <summary>
+            Refresh Token.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.RefreshToken">
+            <summary>
+            Refresh Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.RefreshToken.Token">
+            <summary>
+            Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.RefreshToken.ExpireAt">
+            <summary>
+            Expire At.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.RefreshToken.IsExpired">
+            <summary>
+            Is Expired.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.ResetPassword">
@@ -675,6 +761,11 @@
             Is Enabled.
             </summary>
         </member>
+        <member name="P:Nano.Security.SecurityOptions.IsAuthControllerEnabled">
+            <summary>
+            Is Auth Controller Enabled.
+            </summary>
+        </member>
         <member name="P:Nano.Security.SecurityOptions.Jwt">
             <summary>
             Jwt Options.
@@ -728,6 +819,11 @@
         <member name="P:Nano.Security.SecurityOptions.JwtOptions.ExpirationInHours">
             <summary>
             Expiration In Hours.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.JwtOptions.RefreshExpirationInHours">
+            <summary>
+            Refresh Expiration In Hours.
             </summary>
         </member>
         <member name="T:Nano.Security.SecurityOptions.UserOptions">
