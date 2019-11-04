@@ -6,25 +6,7 @@ namespace Tests.Nano.Data
     public class DefaultDbContextTest
     {
         [TestMethod]
-        public void SaveChangesTest()
-        {
-            Assert.Inconclusive();
-        }
-
-        [TestMethod]
-        public void SaveChangesWhenAcceptAllChangesOnSuccessTest()
-        {
-            Assert.Inconclusive();
-        }
-
-        [TestMethod]
-        public void SaveChangesAsyncTest()
-        {
-            Assert.Inconclusive();
-        }
-
-        [TestMethod]
-        public void SaveChangesAsyncWhenAcceptAllChangesOnSuccessTest()
+        public void ConstructorTest()
         {
             Assert.Inconclusive();
         }

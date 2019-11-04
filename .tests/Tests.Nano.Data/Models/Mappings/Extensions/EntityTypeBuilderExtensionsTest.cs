@@ -6,25 +6,37 @@ namespace Tests.Nano.Data.Models.Mappings.Extensions
     public class EntityTypeBuilderExtensionsTest
     {
         [TestMethod]
-        public void MapTypeWhenAngleTest()
+        public void OnInsertedTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void MapTypeWhenAddress()
+        public void OnInsertingTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void MapTypeWhenContactTest()
+        public void OnUpdatedTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void MapTypeWhenPeriodTest()
+        public void OnUpdatingTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void OnDeletedTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void OnDeletingTest()
         {
             Assert.Inconclusive();
         }
@@ -42,13 +54,13 @@ namespace Tests.Nano.Data.Models.Mappings.Extensions
         }
 
         [TestMethod]
-        public void MapTypeWhenLocationTest()
+        public void MapTypeWhenEmailAddressTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void MapTypeWhenPhoneNumberTest()
+        public void MapTypeWhenLocationTest()
         {
             Assert.Inconclusive();
         }
@@ -60,13 +72,7 @@ namespace Tests.Nano.Data.Models.Mappings.Extensions
         }
 
         [TestMethod]
-        public void MapTypeWhenEmailAddressTest()
-        {
-            Assert.Inconclusive();
-        }
-
-        [TestMethod]
-        public void MapTypeWhenAuthenticationCredentialTest()
+        public void MapTypeWhenPhoneNumberTest()
         {
             Assert.Inconclusive();
         }

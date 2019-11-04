@@ -45,7 +45,6 @@ namespace Nano.Data.Providers.MySql
                 {
                     x.Ignore(RelationalEventId.BoolWithDefaultWarning);
                     x.Log(
-                        RelationalEventId.QueryClientEvaluationWarning,
                         RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
                 })
                 .UseLazyLoadingProxies(useLazyLoading)

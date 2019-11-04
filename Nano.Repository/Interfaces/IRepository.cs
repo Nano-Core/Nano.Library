@@ -30,14 +30,6 @@ namespace Nano.Repository.Interfaces
             where TEntity : class, IEntity;
 
         /// <summary>
-        /// Gets the <see cref="DbQuery{TEntity}"/> mathcing the type of <typeparamref name="TEntity"/>.
-        /// </summary>
-        /// <typeparam name="TEntity">The type</typeparam>
-        /// <returns>The <see cref="DbQuery{TEntity}"/>.</returns>
-        DbQuery<TEntity> GetEntityQuery<TEntity>()
-            where TEntity : class, IEntity;
-
-        /// <summary>
         /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>

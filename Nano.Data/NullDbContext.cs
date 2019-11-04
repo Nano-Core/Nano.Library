@@ -20,7 +20,7 @@ namespace Nano.Data
                 throw new ArgumentNullException(nameof(optionsBuilder));
 
             optionsBuilder
-                .UseInMemoryDatabase("nullDb");
+                .UseInMemoryDatabase("nulldb");
         }
     }
 }

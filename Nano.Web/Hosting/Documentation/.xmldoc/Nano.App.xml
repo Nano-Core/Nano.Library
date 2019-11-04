@@ -82,7 +82,7 @@
         <member name="M:Nano.App.BaseApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.App.BaseApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.AspNetCore.Hosting.IApplicationLifetime)">
+        <member name="M:Nano.App.BaseApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.Extensions.Hosting.IHostEnvironment,Microsoft.Extensions.Hosting.IHostApplicationLifetime)">
             <inheritdoc />
         </member>
         <member name="T:Nano.App.DefaultApplication">
@@ -94,7 +94,7 @@
         <member name="M:Nano.App.DefaultApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.App.DefaultApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.AspNetCore.Hosting.IApplicationLifetime)">
+        <member name="M:Nano.App.DefaultApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.Extensions.Hosting.IHostEnvironment,Microsoft.Extensions.Hosting.IHostApplicationLifetime)">
             <inheritdoc />
         </member>
         <member name="T:Nano.App.Extensions.ServiceCollectionExtensions">
@@ -110,6 +110,14 @@
             <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
             <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
         </member>
+        <member name="M:Nano.App.Extensions.ServiceCollectionExtensions.GetServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
+            <summary>
+            Gets a colletion of dependencies registered in the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <param name="isUnique">Bool indicating if only unique service dependencies should be returned.</param>
+            <returns>The <see cref="T:System.Collections.Generic.IEnumerator`1"/> of <see cref="T:Microsoft.Extensions.DependencyInjection.ServiceDescriptor"/> items.</returns>
+        </member>
         <member name="M:Nano.App.Extensions.ServiceCollectionExtensions.LogServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             Outputs the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to log.
@@ -122,13 +130,59 @@
             Application.
             </summary>
         </member>
-        <member name="M:Nano.App.Interfaces.IApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.AspNetCore.Hosting.IApplicationLifetime)">
+        <member name="M:Nano.App.Interfaces.IApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.Extensions.Hosting.IHostEnvironment,Microsoft.Extensions.Hosting.IHostApplicationLifetime)">
             <summary>
             Configures the application.
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <param name="hostingEnvironment">The <see cref="T:Microsoft.AspNetCore.Hosting.IHostingEnvironment"/>.</param>
             <param name="applicationLifetime">The <see cref="T:Microsoft.AspNetCore.Hosting.IApplicationLifetime"/>.</param>
+        </member>
+        <member name="T:Nano.App.Startup.BaseStartupTask">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Startup.BaseStartupTask.StartupTaskContext">
+            <summary>
+            Startup Task Context.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Startup.BaseStartupTask.#ctor(Nano.App.Startup.StartupTaskContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Startup.BaseStartupTask.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Startup.BaseStartupTask.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Startup.StartupTaskContext">
+            <summary>
+            Startup Task Context.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Startup.StartupTaskContext.IsDone">
+            <summary>
+            Is Complete.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Startup.StartupTaskContext.Increment">
+            <summary>
+            Increment
+            </summary>
+        </member>
+        <member name="M:Nano.App.Startup.StartupTaskContext.Decrement">
+            <summary>
+            Decrement.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Startup.Tasks.InitializeApplicationStartupTask">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Startup.Tasks.InitializeApplicationStartupTask.#ctor(Nano.App.Startup.StartupTaskContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Startup.Tasks.InitializeApplicationStartupTask.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
         </member>
     </members>
 </doc>

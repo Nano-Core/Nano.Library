@@ -15,7 +15,8 @@ using Nano.Repository.Interfaces;
 using Nano.Security;
 using Nano.Security.Exceptions;
 using Nano.Security.Models;
-using Nano.Web.Hosting;
+using Nano.Web.Const;
+using Nano.Web.Models;
 
 namespace Nano.Web.Controllers
 {

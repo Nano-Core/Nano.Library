@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Nano.Web.Hosting.Startup;
+using Nano.App.Startup;
 
 namespace Nano.Web.Hosting.HealthChecks
 {

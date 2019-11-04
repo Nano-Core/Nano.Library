@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Nano.Models;
 using Nano.Security;
 using Nano.Security.Const;
 using Nano.Security.Models;
-using Nano.Web.Hosting;
-    
+using Nano.Web.Const;
+using Nano.Web.Models;
+
 namespace Nano.Web.Controllers
 {
     /// <summary>

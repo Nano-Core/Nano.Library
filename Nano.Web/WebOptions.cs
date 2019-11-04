@@ -1,8 +1,8 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
-using Nano.Web.Hosting.Enums;
+using Microsoft.OpenApi.Models;
+using Nano.Web.Enums;
 using NWebsec.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Swagger;
 using ReferrerPolicy = NWebsec.Core.Common.HttpHeaders.ReferrerPolicy;
 
 namespace Nano.Web
@@ -30,7 +30,7 @@ namespace Nano.Web
         /// <summary>
         /// Compatibility Version.
         /// </summary>
-        public virtual CompatibilityVersion CompatabilityVersion { get; set; } = CompatibilityVersion.Version_2_2;
+        public virtual CompatibilityVersion CompatabilityVersion { get; set; } = CompatibilityVersion.Version_3_0;
 
         /// <summary>
         /// Hosting Options.
@@ -291,12 +291,12 @@ namespace Nano.Web
             /// <summary>
             /// Contact.
             /// </summary>
-            public virtual Contact Contact { get; set; } = new Contact();
+            public virtual OpenApiContact Contact { get; set; } = new OpenApiContact();
 
             /// <summary>
             /// License.
             /// </summary>
-            public virtual License License { get; set; } = new License();
+            public virtual OpenApiLicense License { get; set; } = new OpenApiLicense();
         }
     }
 }

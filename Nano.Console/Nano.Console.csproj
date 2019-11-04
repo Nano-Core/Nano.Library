@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <ApplicationIcon>..\icon.ico</ApplicationIcon>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.0</Version>
@@ -11,7 +11,7 @@
     <NoWarn />
     <WarningsAsErrors />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Release\netstandard2.0\Nano.Console.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netcoreapp3.0\Nano.Console.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -19,7 +19,7 @@
     <NoWarn />
     <WarningsAsErrors />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Debug\netstandard2.0\Nano.Console.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netcoreapp3.0\Nano.Console.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 

@@ -10,5 +10,11 @@ namespace Tests.Nano.Data.Models.Mappings.Extensions
         {
             Assert.Inconclusive();
         }
+
+        [TestMethod]
+        public void AddMappingViewTest()
+        {
+            Assert.Inconclusive();
+        }
     }
 }

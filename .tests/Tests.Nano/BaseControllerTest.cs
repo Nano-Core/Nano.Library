@@ -5,8 +5,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Nano.Eventing.Interfaces;
 using Nano.Repository.Interfaces;
+using Nano.Web.Const;
 using Nano.Web.Controllers;
-using Nano.Web.Hosting;
 
 namespace Tests.Nano
 {

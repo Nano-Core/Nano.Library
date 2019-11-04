@@ -51,13 +51,6 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
-        public virtual DbQuery<TEntity> GetEntityQuery<TEntity>()
-            where TEntity : class, IEntity
-        {
-            return this.Context.Query<TEntity>();
-        }
-
-        /// <inheritdoc />
         public virtual async Task<TEntity> GetAsync<TEntity, TIdentity>(TIdentity key, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityIdentity<TIdentity>
         {
@@ -115,23 +108,10 @@ namespace Nano.Repository
 
             var indent = this.Context.Options.QueryIncludeDepth;
 
-            try
-            {
-                return await this.GetEntitySet<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Where(where)
-                    .FirstOrDefaultAsync(cancellationToken);
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
-                    throw;
-
-                return await this.GetEntityQuery<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Where(where)
-                    .FirstOrDefaultAsync(cancellationToken);
-            }    
+            return await this.GetEntitySet<TEntity>()
+                .IncludeAnnotations(indent)
+                .Where(where)
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -144,27 +124,12 @@ namespace Nano.Repository
 
             var indent = this.Context.Options.QueryIncludeDepth;
 
-            try
-            {
-                return await this.GetEntitySet<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Where(query.Criteria)
-                    .Order(query.Order)
-                    .Limit(query.Paging)
-                    .FirstOrDefaultAsync(cancellationToken);
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
-                    throw;
-
-                return await this.GetEntityQuery<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Where(query.Criteria)
-                    .Order(query.Order)
-                    .Limit(query.Paging)
-                    .FirstOrDefaultAsync(cancellationToken);
-            }    
+            return await this.GetEntitySet<TEntity>()
+                .IncludeAnnotations(indent)
+                .Where(query.Criteria)
+                .Order(query.Order)
+                .Limit(query.Paging)
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -176,23 +141,10 @@ namespace Nano.Repository
 
             var indent = this.Context.Options.QueryIncludeDepth;
 
-            try
-            {
-                return await this.GetEntitySet<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Where(x => keys.Any(y => y.Equals(x.Id)))
-                    .ToArrayAsync(cancellationToken);
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
-                    throw;
-
-                return await this.GetEntityQuery<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Where(x => keys.Any(y => y.Equals(x.Id)))
-                    .ToArrayAsync(cancellationToken);
-            }    
+            return await this.GetEntitySet<TEntity>()
+                .IncludeAnnotations(indent)
+                .Where(x => keys.Any(y => y.Equals(x.Id)))
+                .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -204,25 +156,11 @@ namespace Nano.Repository
 
             var indent = this.Context.Options.QueryIncludeDepth;
             
-            try
-            {
-                return await this.GetEntitySet<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Order(query.Order)
-                    .Limit(query.Paging)
-                    .ToArrayAsync(cancellationToken);
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
-                    throw;
-
-                return await this.GetEntityQuery<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Order(query.Order)
-                    .Limit(query.Paging)
-                    .ToArrayAsync(cancellationToken);
-            }    
+            return await this.GetEntitySet<TEntity>()
+                .IncludeAnnotations(indent)
+                .Order(query.Order)
+                .Limit(query.Paging)
+                .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -235,27 +173,12 @@ namespace Nano.Repository
 
             var indent = this.Context.Options.QueryIncludeDepth;
             
-            try
-            {
-                return await this.GetEntitySet<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Where(query.Criteria)
-                    .Order(query.Order)
-                    .Limit(query.Paging)
-                    .ToArrayAsync(cancellationToken);
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
-                    throw;
-
-                return await this.GetEntityQuery<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Where(query.Criteria)
-                    .Order(query.Order)
-                    .Limit(query.Paging)
-                    .ToArrayAsync(cancellationToken);
-            }    
+            return await this.GetEntitySet<TEntity>()
+                .IncludeAnnotations(indent)
+                .Where(query.Criteria)
+                .Order(query.Order)
+                .Limit(query.Paging)
+                .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -267,23 +190,10 @@ namespace Nano.Repository
 
             var indent = this.Context.Options.QueryIncludeDepth;
             
-            try
-            {
-                return await this.GetEntitySet<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Where(where)
-                    .ToArrayAsync(cancellationToken);
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
-                    throw;
-
-                return await this.GetEntityQuery<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Where(where)
-                    .ToArrayAsync(cancellationToken);
-            }    
+            return await this.GetEntitySet<TEntity>()
+                .IncludeAnnotations(indent)
+                .Where(where)
+                .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -298,25 +208,11 @@ namespace Nano.Repository
 
             var indent = this.Context.Options.QueryIncludeDepth;
             
-            try
-            {
-                return await this.GetEntitySet<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Where(where)
-                    .Limit(pagination)
-                    .ToArrayAsync(cancellationToken);
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
-                    throw;
-
-                return await this.GetEntityQuery<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Where(where)
-                    .Limit(pagination)
-                    .ToArrayAsync(cancellationToken);
-            }    
+            return await this.GetEntitySet<TEntity>()
+                .IncludeAnnotations(indent)
+                .Where(where)
+                .Limit(pagination)
+                .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -331,27 +227,12 @@ namespace Nano.Repository
 
             var indent = this.Context.Options.QueryIncludeDepth;
             
-            try
-            {
-                return await this.GetEntitySet<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Where(where)
-                    .Limit(pagination)
-                    .Order(ordering)
-                    .ToArrayAsync(cancellationToken);
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (ex.Message != $"Cannot create a DbSet for '{typeof(TEntity).Name}' because it is a query type. Use the DbContext.Query method to create a DbQuery instead.")
-                    throw;
-
-                return await this.GetEntityQuery<TEntity>()
-                    .IncludeAnnotations(indent)
-                    .Where(where)
-                    .Limit(pagination)
-                    .Order(ordering)
-                    .ToArrayAsync(cancellationToken);
-            }    
+            return await this.GetEntitySet<TEntity>()
+                .IncludeAnnotations(indent)
+                .Where(where)
+                .Limit(pagination)
+                .Order(ordering)
+                .ToArrayAsync(cancellationToken);
         }
 
         /// <inheritdoc />

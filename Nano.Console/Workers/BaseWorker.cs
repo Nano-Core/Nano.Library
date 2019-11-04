@@ -32,7 +32,7 @@ namespace Nano.Console.Workers
         /// <summary>
         /// Application Lifetime.
         /// </summary>
-        protected IApplicationLifetime ApplicationLifetime { get; }
+        protected IHostApplicationLifetime ApplicationLifetime { get; }
 
         /// <summary>
         /// Constructor.
@@ -41,7 +41,7 @@ namespace Nano.Console.Workers
         /// <param name="repository">The <see cref="IRepository"/>.</param>
         /// <param name="eventing">The <see cref="IEventingProvider"/>.</param>
         /// <param name="applicationLifetime">The <see cref="IApplicationLifetime"/>.</param>
-        protected BaseWorker(ILogger logger, TRepository repository, IEventing eventing, IApplicationLifetime applicationLifetime)
+        protected BaseWorker(ILogger logger, TRepository repository, IEventing eventing, IHostApplicationLifetime applicationLifetime)
         {
             this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.Repository = repository;

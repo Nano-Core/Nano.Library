@@ -12,7 +12,43 @@ namespace Tests.Nano.Repository
         }
 
         [TestMethod]
-        public void GetManyAsyncTest()
+        public void GetAsyncWhenKeyIsIntegerTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void GetAsyncWhenKeyIsLongTest()
+        {
+            Assert.Inconclusive();
+        }
+        
+        [TestMethod]
+        public void GetAsyncWhenKeyIsStringTest()
+        {
+            Assert.Inconclusive();
+        }
+        
+        [TestMethod]
+        public void GetAsyncWhenKeyIsGuidTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void GetFirstAsyncTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void GetFirstAsyncWhenCriteriaTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void GetManyAsyncWhenCollectionTest()
         {
             Assert.Inconclusive();
         }
@@ -24,13 +60,7 @@ namespace Tests.Nano.Repository
         }
 
         [TestMethod]
-        public void GetManyAsyncWhenQueryableExpressionTest()
-        {
-            Assert.Inconclusive();
-        }
-
-        [TestMethod]
-        public void GetAllAsyncTest()
+        public void GetManyAsyncWhenExpressionTest()
         {
             Assert.Inconclusive();
         }
@@ -60,13 +90,13 @@ namespace Tests.Nano.Repository
         }
 
         [TestMethod]
-        public void UpdateManyAsyncWhenQueryableExpressionTest()
+        public void UpdateManyAsyncWhenExpressionTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void UpdateManyAsyncWhenQueryableExpressionSelectAndUpdateTest()
+        public void UpdateManyAsyncWhenExpressionSelectAndUpdateTest()
         {
             Assert.Inconclusive();
         }
@@ -102,7 +132,31 @@ namespace Tests.Nano.Repository
         }
 
         [TestMethod]
-        public void DeleteManyAsyncWhenQueryableExpressionTest()
+        public void DeleteManyAsyncWhenExpressionTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void CountAsyncWhenCriteriaTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void CountAsyncWhenExpressionTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void SumAsyncTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void AverageAsyncTest()
         {
             Assert.Inconclusive();
         }

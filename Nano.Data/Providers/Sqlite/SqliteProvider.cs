@@ -44,7 +44,6 @@ namespace Nano.Data.Providers.Sqlite
                 {
                     x.Ignore(RelationalEventId.BoolWithDefaultWarning);
                     x.Log(
-                        RelationalEventId.QueryClientEvaluationWarning,
                         RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
                 })
                 .UseLazyLoadingProxies(useLazyLoading)

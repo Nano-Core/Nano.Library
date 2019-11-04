@@ -6,7 +6,13 @@ namespace Tests.Nano.App.Extensions
     public class ServiceCollectionExtensionsTest
     {
         [TestMethod]
-        public void Test()
+        public void AddAppTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void LogServicesTest()
         {
             Assert.Inconclusive();
         }

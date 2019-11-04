@@ -11,16 +11,17 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Nano.Data.Attributes;
+using Nano.Data.Models;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
+using Nano.Eventing;
 using Nano.Eventing.Attributes;
 using Nano.Eventing.Interfaces;
-using Nano.Models;
 using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Security;
 using Nano.Security.Const;
+using Nano.Security.Models;
 using Newtonsoft.Json;
 using Z.EntityFramework.Plus;
 
@@ -101,61 +102,6 @@ namespace Nano.Data
                 .Entity<IdentityRole>()
                 .ToTable("__EFAuthRole");
         }
-        
-        /// <summary>
-        /// Imports data for all models annotated with <see cref="ImportAttribute"/>.
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The <see cref="Task"/> (void).</returns>
-        public virtual async Task EnsureSeedAsync(CancellationToken cancellationToken = default)
-        {
-            if (this.Options.ConnectionString == null)
-                return;
-
-            var securityOptions = this.GetService<SecurityOptions>() ?? new SecurityOptions();
-            var adminUsername = securityOptions.User.AdminUsername ?? "username";
-            var adminPassword = securityOptions.User.AdminPassword ?? "password";
-            var adminEmailAddress = securityOptions.User.AdminEmailAddress ?? "admin@admin.com";
-
-            foreach (var builtInRole in BaseDbContext.builtInRoles)
-            {
-                await this.AddRole(builtInRole);
-            }
-
-            var adminUser = await this.AddUser(adminUsername, adminPassword, adminEmailAddress);
-
-            await this.AddUserToRole(adminUser, BuiltInUserRoles.Service);
-            await this.AddUserToRole(adminUser, BuiltInUserRoles.Administrator);
-
-            await this.SaveChangesAsync(cancellationToken);
-        }
-
-        /// <summary>
-        /// Imports data for all models annotated with <see cref="ImportAttribute"/>.
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The <see cref="Task"/> (void).</returns>
-        public virtual async Task EnsureImportAsync(CancellationToken cancellationToken = default)
-        {
-            if (this.Options.ConnectionString == null)
-                return;
-
-            await Task.Factory.StartNew(() =>
-            {
-                AppDomain.CurrentDomain
-                    .GetAssemblies()
-                    .SelectMany(y => y.GetTypes())
-                    .Where(y => y.GetCustomAttributes<ImportAttribute>().Any())
-                    .ToList()
-                    .ForEach(async y =>
-                    {
-                        var attribute = y.GetCustomAttribute<ImportAttribute>();
-
-                        await this
-                            .AddRangeAsync(attribute.Uri, y, cancellationToken);
-                    });
-            }, cancellationToken);
-        }
 
         /// <summary>
         /// Create database.
@@ -189,6 +135,34 @@ namespace Nano.Data
 
             await this.Database
                 .MigrateAsync(cancellationToken);
+        }
+        
+        /// <summary>
+        /// Creates users and roles.
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="Task"/> (void).</returns>
+        public virtual async Task EnsureIdentityAsync(CancellationToken cancellationToken = default)
+        {
+            if (this.Options.ConnectionString == null)
+                return;
+
+            var securityOptions = this.GetService<SecurityOptions>() ?? new SecurityOptions();
+            var adminUsername = securityOptions.User.AdminUsername ?? "username";
+            var adminPassword = securityOptions.User.AdminPassword ?? "password";
+            var adminEmailAddress = securityOptions.User.AdminEmailAddress ?? "admin@admin.com";
+
+            foreach (var builtInRole in BaseDbContext.builtInRoles)
+            {
+                await this.AddRole(builtInRole);
+            }
+
+            var adminUser = await this.AddUser(adminUsername, adminPassword, adminEmailAddress);
+
+            await this.AddUserToRole(adminUser, BuiltInUserRoles.Service);
+            await this.AddUserToRole(adminUser, BuiltInUserRoles.Administrator);
+
+            await this.SaveChangesAsync(cancellationToken);
         }
         
         /// <summary>
@@ -461,7 +435,7 @@ namespace Nano.Data
             return this.ChangeTracker
                 .Entries<IEntity>()
                 .Where(x =>
-                    x.Entity.GetType().IsTypeDef(typeof(IEntityIdentity<>)) &&
+                    x.Entity.GetType().IsTypeOf(typeof(IEntityIdentity<>)) &&
                     x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
                     (x.State == EntityState.Added || x.State == EntityState.Deleted))
                 .Select(x =>

@@ -6,7 +6,7 @@ namespace Tests.Nano.Security.Extensions
     public class ServiceCollectionExtensionsTest
     {
         [TestMethod]
-        public void Test()
+        public void AddSecurityTest()
         {
             Assert.Inconclusive();
         }

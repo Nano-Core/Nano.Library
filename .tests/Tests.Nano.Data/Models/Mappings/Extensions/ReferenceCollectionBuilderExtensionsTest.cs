@@ -6,29 +6,11 @@ namespace Tests.Nano.Data.Models.Mappings.Extensions
     public class ReferenceCollectionBuilderExtensionsTest
     {
         [TestMethod]
-        public void MapTypeWhenAngleTest()
-        {
-            Assert.Inconclusive();
-        }
-
-        [TestMethod]
         public void MapTypeWhenAddress()
         {
             Assert.Inconclusive();
         }
-
-        [TestMethod]
-        public void MapTypeWhenContactTest()
-        {
-            Assert.Inconclusive();
-        }
-
-        [TestMethod]
-        public void MapTypeWhenPeriodTest()
-        {
-            Assert.Inconclusive();
-        }
-
+        
         [TestMethod]
         public void MapTypeWhenDistanceTest()
         {
@@ -42,13 +24,13 @@ namespace Tests.Nano.Data.Models.Mappings.Extensions
         }
 
         [TestMethod]
-        public void MapTypeWhenLocationTest()
+        public void MapTypeWhenEmailAddressTest()
         {
             Assert.Inconclusive();
         }
 
         [TestMethod]
-        public void MapTypeWhenPhoneNumberTest()
+        public void MapTypeWhenLocationTest()
         {
             Assert.Inconclusive();
         }
@@ -60,13 +42,7 @@ namespace Tests.Nano.Data.Models.Mappings.Extensions
         }
 
         [TestMethod]
-        public void MapTypeWhenEmailAddressTest()
-        {
-            Assert.Inconclusive();
-        }
-
-        [TestMethod]
-        public void MapTypeWhenAuthenticationCredentialTest()
+        public void MapTypeWhenPhoneNumberTest()
         {
             Assert.Inconclusive();
         }

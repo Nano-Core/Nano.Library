@@ -18,42 +18,6 @@
         <member name="P:Nano.Models.BaseEntityIdentity`1.Id">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Models.Criterias.AuditEntryQueryCriteria">
-            <inheritdoc />
-        </member>
-        <member name="P:Nano.Models.Criterias.AuditEntryQueryCriteria.CreatedBy">
-            <summary>
-            Created By.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Criterias.AuditEntryQueryCriteria.CreatedDateTo">
-            <summary>
-            Create Date To.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Criterias.AuditEntryQueryCriteria.CreatedDateFrom">
-            <summary>
-            Create Date From.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Criterias.AuditEntryQueryCriteria.EntityTypeName">
-            <summary>
-            Entity Type Name.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Criterias.AuditEntryQueryCriteria.State">
-            <summary>
-            State.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Criterias.AuditEntryQueryCriteria.RequestId">
-            <summary>
-            Request Id.
-            </summary>
-        </member>
-        <member name="M:Nano.Models.Criterias.AuditEntryQueryCriteria.GetExpressions">
-            <inheritdoc />
-        </member>
         <member name="T:Nano.Models.Criterias.BaseQueryCriteria">
             <inheritdoc />
         </member>
@@ -90,81 +54,6 @@
         <member name="P:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial.Geometry">
             <summary>
             Geometry.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.DefaultAuditEntry">
-            <summary>
-            Default Audit Entry.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.DefaultAuditEntry.CreatedBy">
-            <summary>
-            Created By.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.DefaultAuditEntry.EntitySetName">
-            <summary>
-            Entity Set Name.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.DefaultAuditEntry.EntityTypeName">
-            <summary>
-            Entity Type Name.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.DefaultAuditEntry.State">
-            <summary>
-            State.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.DefaultAuditEntry.StateName">
-            <summary>
-            State Name.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.DefaultAuditEntry.RequestId">
-            <summary>
-            Request Id.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.DefaultAuditEntry.Properties">
-            <summary>
-            Gets or sets the properties.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.DefaultAuditEntryProperty">
-            <summary>
-            Default Audit Entry Property.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.DefaultAuditEntryProperty.ParentId">
-            <summary>
-            Gets or sets the identifier of the parent audit entry.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.DefaultAuditEntryProperty.Parent">
-            <summary>
-            Gets or sets the parent.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.DefaultAuditEntryProperty.PropertyName">
-            <summary>
-            Gets or sets the name of the property audited.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.DefaultAuditEntryProperty.RelationName">
-            <summary>
-            Gets or sets the name of the relation audited.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.DefaultAuditEntryProperty.NewValue">
-            <summary>
-            Gets or sets the new value audited formatted.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.DefaultAuditEntryProperty.OldValue">
-            <summary>
-            Gets or sets the old value audited formatted.
             </summary>
         </member>
         <member name="T:Nano.Models.DefaultEntity">
@@ -205,73 +94,6 @@
             Always included using <see cref="T:Nano.Models.Attributes.IncludeAttribute"/>.
             </summary>
         </member>
-        <member name="T:Nano.Models.EntityEvent">
-            <summary>
-            Entity Event.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.EntityEvent.Id">
-            <summary>
-            Id.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.EntityEvent.Type">
-            <summary>
-            Type.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.EntityEvent.State">
-            <summary>
-            State.
-            </summary>
-        </member>
-        <member name="M:Nano.Models.EntityEvent.#ctor(System.Object,System.String,System.String)">
-            <summary>
-            Constructor.
-            </summary>
-            <param name="id"></param>
-            <param name="type"></param>
-            <param name="state"></param>
-        </member>
-        <member name="T:Nano.Models.Error">
-            <summary>
-            Error.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Error.Summary">
-            <summary>
-            Message.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Error.Exceptions">
-            <summary>
-            Description.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Error.StatusCode">
-            <summary>
-            Status Code.
-            </summary>
-        </member>
-        <member name="P:Nano.Models.Error.IsTranslated">
-            <summary>
-            Is Translated.
-            </summary>
-        </member>
-        <member name="M:Nano.Models.Error.#ctor">
-            <summary>
-            Constructor.
-            </summary>
-        </member>
-        <member name="M:Nano.Models.Error.#ctor(System.Exception)">
-            <summary>
-            Constructor.
-            </summary>
-            <param name="exception">The <see cref="T:System.Exception"/>.</param>
-        </member>
-        <member name="M:Nano.Models.Error.ToString">
-            <inheritdoc />
-        </member>
         <member name="T:Nano.Models.Exceptions.TranslationException">
             <summary>
             Translation Exception.
@@ -294,99 +116,6 @@
             </summary>
             <param name="at">The <see cref="T:System.DateTimeOffset"/>.</param>
             <returns>The number of seconds</returns>
-        </member>
-        <member name="M:Nano.Models.Extensions.DateTimeOffsetExtensions.GetWeekNumber(System.DateTimeOffset)">
-            <summary>
-            Gets the week number.
-            </summary>
-            <param name="at">The <see cref="T:System.DateTimeOffset"/>.</param>
-            <returns>The week number if the passe <see cref="T:System.DateTimeOffset"/>.</returns>
-        </member>
-        <member name="M:Nano.Models.Extensions.DateTimeOffsetExtensions.GetDayDates(System.DateTimeOffset)">
-            <summary>
-            Get the start and end date of the day, matching the passed <see cref="T:System.DateTimeOffset"/>.
-            </summary>
-            <param name="at">The <see cref="T:System.DateTimeOffset"/>.</param>
-            <returns>The start and end date.</returns>
-        </member>
-        <member name="M:Nano.Models.Extensions.DateTimeOffsetExtensions.GetWeekDates(System.DateTimeOffset)">
-            <summary>
-            Get the start and end date of the week, matching the passed <see cref="T:System.DateTimeOffset"/>.
-            </summary>
-            <param name="at">The <see cref="T:System.DateTimeOffset"/>.</param>
-            <returns>The start and end date.</returns>
-        </member>
-        <member name="M:Nano.Models.Extensions.DateTimeOffsetExtensions.GetMonthDates(System.DateTimeOffset)">
-            <summary>
-            Gets the start and end date of the month, matching the passed <see cref="T:System.DateTimeOffset"/> instance.
-            </summary>
-            <param name="at">The <see cref="T:System.DateTimeOffset"/>.</param>
-            <returns>The start and end dates.</returns>
-        </member>
-        <member name="M:Nano.Models.Extensions.DateTimeOffsetExtensions.GetYearDates(System.DateTimeOffset)">
-            <summary>
-            Gets the start and end date of the year, matching the passed <see cref="T:System.DateTimeOffset"/> instance.
-            </summary>
-            <param name="at">The <see cref="T:System.DateTimeOffset"/>.</param>
-            <returns>The start and end date.</returns>
-        </member>
-        <member name="M:Nano.Models.Extensions.DateTimeOffsetExtensions.GetDates(System.DateTimeOffset,Nano.Models.Extensions.Enums.DateInterval)">
-            <summary>
-            Gets the start and end date of the <see cref="T:Nano.Models.Extensions.Enums.DateInterval"/> passed, matching the passed <see cref="T:System.DateTimeOffset"/>.
-            </summary>
-            <param name="dateInterval">The <see cref="T:Nano.Models.Extensions.Enums.DateInterval"/>.</param>
-            <param name="at">The <see cref="T:System.DateTimeOffset"/>.</param>
-            <returns>The start and end date.</returns>
-        </member>
-        <member name="T:Nano.Models.Extensions.Enums.DateInterval">
-            <summary>
-            Date Interval.
-            </summary>
-        </member>
-        <member name="F:Nano.Models.Extensions.Enums.DateInterval.Dayly">
-            <summary>
-            Daily.
-            </summary>
-        </member>
-        <member name="F:Nano.Models.Extensions.Enums.DateInterval.Weekly">
-            <summary>
-            Weekly.
-            </summary>
-        </member>
-        <member name="F:Nano.Models.Extensions.Enums.DateInterval.Monthly">
-            <summary>
-            Monthly.
-            </summary>
-        </member>
-        <member name="F:Nano.Models.Extensions.Enums.DateInterval.Yearly">
-            <summary>
-            Yearly.
-            </summary>
-        </member>
-        <member name="T:Nano.Models.Extensions.ObjectExtensions">
-            <summary>
-            Object Extensions.
-            </summary>
-        </member>
-        <member name="M:Nano.Models.Extensions.ObjectExtensions.GetShortId(System.Object)">
-            <summary>
-            Generates a short unique identifier for the passed an <see cref="T:System.Object"/>.
-            </summary>
-            <param name="object">The <see cref="T:System.Object"/>.</param>
-            <returns>The <see cref="T:System.String"/>.</returns>
-        </member>
-        <member name="T:Nano.Models.Extensions.ServiceCollectionExtensions">
-            <summary>
-            Service Collection Extensions.
-            </summary>
-        </member>
-        <member name="M:Nano.Models.Extensions.ServiceCollectionExtensions.GetServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
-            <summary>
-            Gets a colletion of dependencies registered in the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
-            </summary>
-            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
-            <param name="isUnique">Bool indicating if only unique service dependencies should be returned.</param>
-            <returns>The <see cref="T:System.Collections.Generic.IEnumerator`1"/> of <see cref="T:Microsoft.Extensions.DependencyInjection.ServiceDescriptor"/> items.</returns>
         </member>
         <member name="T:Nano.Models.Extensions.StreamExtensions">
             <summary>
@@ -424,26 +153,19 @@
             <param name="result">The sustring.</param>
             <returns>A <see cref="T:System.Boolean"/> indicating success or not.</returns>
         </member>
-        <member name="T:Nano.Models.Extensions.TimeSpanExtensions">
-            <summary>
-            TimeSpan Extensions.
-            </summary>
-        </member>
-        <member name="M:Nano.Models.Extensions.TimeSpanExtensions.IsWithinPeriod(System.TimeSpan,System.TimeSpan,System.TimeSpan)">
-            <summary>
-            Is Within.
-            </summary>
-            <param name="timeSpan">The <see cref="T:System.TimeSpan"/>.</param>
-            <param name="timeBegin">The <see cref="T:System.TimeSpan"/> begin.</param>
-            <param name="timeEnd">The <see cref="T:System.TimeSpan"/> end.</param>
-            <returns>A boolean whether the instance waas within begin and end.</returns>
-        </member>
         <member name="T:Nano.Models.Extensions.TypeExtensions">
             <summary>
             Type Extensions.
             </summary>
         </member>
-        <member name="M:Nano.Models.Extensions.TypeExtensions.IsTypeDef(System.Type,System.Type)">
+        <member name="M:Nano.Models.Extensions.TypeExtensions.GetFriendlyName(System.Type)">
+            <summary>
+            Gets a friendly display name for the <see cref="T:System.Type"/>.
+            </summary>
+            <param name="type">The <see cref="T:System.Type"/> from which to get all parent types.</param>
+            <returns>A friendly display name.</returns>
+        </member>
+        <member name="M:Nano.Models.Extensions.TypeExtensions.IsTypeOf(System.Type,System.Type)">
             <summary>
             Gets whehter the passed <paramref name="type"/> derives or implements the passed <paramref name="baseType"/>.
             All base classes and interfaces are inspected.
@@ -451,20 +173,6 @@
             <param name="type">The <see cref="T:System.Type"/> from which to determine, if the passed <paramref name="baseType"/> is parent.</param>
             <param name="baseType">The <see cref="T:System.Type"/> that be inherited or implemented by the passed <paramref name="type"/>.</param>
             <returns>True or false, depending on whehter the <paramref name="type"/> implements or derives from <paramref name="baseType"/>.</returns>
-        </member>
-        <member name="M:Nano.Models.Extensions.TypeExtensions.GetBaseTypes(System.Type)">
-            <summary>
-            Gets all <see cref="T:System.Type"/>'s derived by the passed <paramref name="type"/>.
-            </summary>
-            <param name="type">The <see cref="T:System.Type"/> from which to get all parent types.</param>
-            <returns>The <see cref="T:System.Collections.Generic.IEnumerable`1"/> containing all parent <see cref="T:System.Type"/>'s.</returns>
-        </member>
-        <member name="M:Nano.Models.Extensions.TypeExtensions.GetParentTypes(System.Type)">
-            <summary>
-            Gets all <see cref="T:System.Type"/>'s derived or implemeneted by the passed <paramref name="type"/>.
-            </summary>
-            <param name="type">The <see cref="T:System.Type"/> from which to get all parent types.</param>
-            <returns>The <see cref="T:System.Collections.Generic.IEnumerable`1"/> containing all parent <see cref="T:System.Type"/>'s.</returns>
         </member>
         <member name="T:Nano.Models.Interfaces.IEntity">
             <summary>
@@ -689,7 +397,7 @@
         </member>
         <member name="P:Nano.Models.Types.PhoneNumber.Number">
             <summary>
-            Number (E164).
+            Number (E164 format).
             </summary>
         </member>
     </members>

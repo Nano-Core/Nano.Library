@@ -45,7 +45,6 @@ namespace Nano.Data.Providers.SqlServer
                 {
                     x.Ignore(RelationalEventId.BoolWithDefaultWarning);
                     x.Log(
-                        RelationalEventId.QueryClientEvaluationWarning,
                         RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
                 })
                 .UseLazyLoadingProxies(useLazyLoading)

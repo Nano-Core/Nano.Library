@@ -16,13 +16,13 @@ namespace Nano.Web.Hosting.ModelBinders
     public class QueryModelBinder : IModelBinder
     { 
         /// <inheritdoc />
-        public virtual Task BindModelAsync(ModelBindingContext bindingContext)
+        public virtual async Task BindModelAsync(ModelBindingContext bindingContext)
         {
             if (bindingContext == null)
                 throw new ArgumentNullException(nameof(bindingContext));
 
             var request = bindingContext.ActionContext.HttpContext.Request;
-            var body = request.Body.ReadAll();
+            var body = await request.Body.ReadAll();
 
             var model = string.IsNullOrEmpty(body)
                 ? new Query
@@ -33,8 +33,6 @@ namespace Nano.Web.Hosting.ModelBinders
                 : JsonConvert.DeserializeObject<Query>(body);
 
             bindingContext.Result = ModelBindingResult.Success(model);
-
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -126,13 +124,13 @@ namespace Nano.Web.Hosting.ModelBinders
         where TCriteria : class, IQueryCriteria, new()
     { 
         /// <inheritdoc />
-        public override Task BindModelAsync(ModelBindingContext bindingContext)
+        public override async Task BindModelAsync(ModelBindingContext bindingContext)
         {
             if (bindingContext == null)
                 throw new ArgumentNullException(nameof(bindingContext));
 
             var request = bindingContext.ActionContext.HttpContext.Request;
-            var body = request.Body.ReadAll();
+            var body = await request.Body.ReadAll();
 
             var model = string.IsNullOrEmpty(body)
                 ? new Query<TCriteria>
@@ -144,8 +142,6 @@ namespace Nano.Web.Hosting.ModelBinders
                 : JsonConvert.DeserializeObject<Query<TCriteria>>(body);
 
             bindingContext.Result = ModelBindingResult.Success(model);
-
-            return Task.CompletedTask;
         }
 
         /// <summary>

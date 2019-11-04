@@ -1,9 +1,8 @@
 using System;
-using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.EntityFrameworkCore.Internal;
 using Nano.Models.Extensions;
+using Nano.Web.Const;
 
 namespace Nano.Web.Hosting.Extensions
 {
@@ -12,28 +11,6 @@ namespace Nano.Web.Hosting.Extensions
     /// </summary>
     public static class HttpRequestExtensions
     {
-        /// <summary>
-        /// Gets the <see cref="HttpRequest.Body"/> as a raw string.
-        /// </summary>
-        /// <param name="httpRequest">The <see cref="HttpRequest"/>.</param>
-        /// <returns>A <see cref="string"/> read from the <see cref="Stream"/> of <see cref="HttpRequest.Body"/>.</returns>
-        public static string ReadBody(this HttpRequest httpRequest)
-        {
-            if (httpRequest == null)
-                throw new ArgumentNullException(nameof(httpRequest));
-
-            httpRequest.EnableRewind();
-
-            try
-            {
-                return new StreamReader(httpRequest.Body).ReadToEnd();
-            }
-            finally
-            {
-                httpRequest.Body.Position = 0;
-            }
-        }
-
         /// <summary>
         /// Returns whether the <see cref="HttpRequest"/> headers contains a content-type of 'application/json', 'application/javascript' or 
         /// the <see cref="HttpRequest.QueryString"/> contains a 'format=json' parameter.
@@ -92,8 +69,8 @@ namespace Nano.Web.Hosting.Extensions
 
             var headers = httpRequest.Headers;
             var queryString = httpRequest.QueryString.HasValue ? httpRequest.QueryString.Value : string.Empty;
-            var accept = headers["Accept"].Join();
-            var contentType = headers["Content-Type"].Join();
+            var accept = headers["Accept"];
+            var contentType = headers["Content-Type"];
 
             match.TrySubstring("/", out var format);
 

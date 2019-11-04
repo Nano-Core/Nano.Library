@@ -6,7 +6,13 @@ namespace Tests.Nano.Logging.Extensions
     public class ServiceCollectionExtensionsTest
     {
         [TestMethod]
-        public void Test()
+        public void AddLoggingTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void AddLoggingInternalTest()
         {
             Assert.Inconclusive();
         }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Nano.Web.Hosting;
+using Nano.Web.Const;
 
 namespace Tests.Nano.Web.Hosting
 {

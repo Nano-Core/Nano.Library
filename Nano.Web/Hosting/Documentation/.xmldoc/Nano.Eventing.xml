@@ -16,6 +16,34 @@
             Types with this annotation, subscribes to events of the declaring type. 
             </summary>
         </member>
+        <member name="T:Nano.Eventing.EntityEvent">
+            <summary>
+            Entity Event.
+            </summary>
+        </member>
+        <member name="P:Nano.Eventing.EntityEvent.Id">
+            <summary>
+            Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Eventing.EntityEvent.Type">
+            <summary>
+            Type.
+            </summary>
+        </member>
+        <member name="P:Nano.Eventing.EntityEvent.State">
+            <summary>
+            State.
+            </summary>
+        </member>
+        <member name="M:Nano.Eventing.EntityEvent.#ctor(System.Object,System.String,System.String)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="id"></param>
+            <param name="type"></param>
+            <param name="state"></param>
+        </member>
         <member name="T:Nano.Eventing.EventingOptions">
             <summary>
             Eventing Options.
@@ -120,7 +148,7 @@
             <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
             <param name="context">The <see cref="T:Microsoft.EntityFrameworkCore.DbContext"/>.</param>
         </member>
-        <member name="M:Nano.Eventing.Handlers.EntityEventHandler.CallbackAsync(Nano.Models.EntityEvent)">
+        <member name="M:Nano.Eventing.Handlers.EntityEventHandler.CallbackAsync(Nano.Eventing.EntityEvent)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Eventing.Interfaces.IEventing">
@@ -233,35 +261,6 @@
         </member>
         <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.Configure">
             <inheritdoc />
-        </member>
-        <member name="T:Nano.Eventing.Providers.EasyNetQ.Serialization.EasyNetQJsonSerializer">
-            <summary>
-            EasyNetQ Json Serializer.
-            </summary>
-        </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.Serialization.EasyNetQJsonSerializer.MessageToBytes``1(``0)">
-            <summary>
-            
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="message"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.Serialization.EasyNetQJsonSerializer.BytesToMessage``1(System.Byte[])">
-            <summary>
-            
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="bytes"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.Serialization.EasyNetQJsonSerializer.BytesToMessage(System.Type,System.Byte[])">
-            <summary>
-            
-            </summary>
-            <param name="type"></param>
-            <param name="bytes"></param>
-            <returns></returns>
         </member>
     </members>
 </doc>

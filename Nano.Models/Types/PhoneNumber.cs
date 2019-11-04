@@ -8,7 +8,7 @@ namespace Nano.Models.Types
     public class PhoneNumber
     {
         /// <summary>
-        /// Number (E164).
+        /// Number (E164 format).
         /// </summary>
         [Phone]
         [MaxLength(20)]

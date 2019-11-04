@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
+using Nano.Data.Models;
+using Nano.Data.Models.Criterias;
 using Nano.Eventing.Interfaces;
-using Nano.Models;
-using Nano.Models.Criterias;
 using Nano.Repository.Interfaces;
 
 namespace Nano.Web.Controllers

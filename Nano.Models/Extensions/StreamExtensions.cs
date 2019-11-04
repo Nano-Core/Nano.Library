@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Nano.Models.Extensions
 {
@@ -13,14 +14,14 @@ namespace Nano.Models.Extensions
         /// </summary>
         /// <param name="stream">The <see cref="Stream"/>.</param>
         /// <returns>The content as string.</returns>
-        public static string ReadAll(this Stream stream)
+        public static async Task<string> ReadAll(this Stream stream)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
             using (var streamReader = new StreamReader(stream))
             {
-                return streamReader.ReadToEnd();
+                return await streamReader.ReadToEndAsync();
             }
         }
     }

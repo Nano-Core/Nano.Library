@@ -1,8 +1,8 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Nano.App.Extensions;
 using Nano.App.Interfaces;
 
@@ -34,7 +34,8 @@ namespace Nano.App
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            var provider = services.BuildServiceProvider();
+            var provider = services
+                .BuildServiceProvider();
 
             services
                 .LogServices();
@@ -46,6 +47,6 @@ namespace Nano.App
         public abstract void Configure(IApplicationBuilder applicationBuilder);
 
         /// <inheritdoc />
-        public abstract void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, IApplicationLifetime applicationLifetime);
+        public abstract void Configure(IApplicationBuilder applicationBuilder, IHostEnvironment hostingEnvironment, IHostApplicationLifetime applicationLifetime);
     }
 }

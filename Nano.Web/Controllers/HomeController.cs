@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-using Nano.Models;
 using Nano.Security.Const;
-using Nano.Web.Hosting;
+using Nano.Web.Const;
+using Nano.Web.Models;
 using Vivet.AspNetCore.RequestTimeZone;
+using Vivet.AspNetCore.RequestTimeZone.Providers;
 
 namespace Nano.Web.Controllers
 {

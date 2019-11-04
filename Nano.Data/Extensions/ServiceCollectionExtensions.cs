@@ -7,13 +7,13 @@ using Nano.Config.Extensions;
 using Nano.Data.Interfaces;
 using Nano.Data.Providers.MySql;
 using Nano.Data.Providers.SqlServer;
-using Nano.Models;
 using Nano.Models.Interfaces;
 using Nano.Security.Extensions;
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Nano.Config;
+using Nano.Data.Models;
 using Nano.Data.Providers.Sqlite;
 using Z.EntityFramework.Plus;
 

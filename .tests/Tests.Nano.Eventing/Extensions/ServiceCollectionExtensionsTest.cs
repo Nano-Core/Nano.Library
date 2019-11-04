@@ -6,7 +6,13 @@ namespace Tests.Nano.Eventing.Extensions
     public class ServiceCollectionExtensionsTest
     {
         [TestMethod]
-        public void Test()
+        public void AddEventingTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void AddEventingInternalTest()
         {
             Assert.Inconclusive();
         }

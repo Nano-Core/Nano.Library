@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.App.Startup;
 using Nano.Data;
 
 namespace Nano.Web.Hosting.Startup.Tasks
@@ -31,10 +32,10 @@ namespace Nano.Web.Hosting.Startup.Tasks
                     .EnsureMigratedAsync(cancellationToken);
 
                 await this.dbContext
-                    .EnsureSeedAsync(cancellationToken);
+                    .EnsureIdentityAsync(cancellationToken);
 
                 await this.dbContext
-                    .EnsureSeedAsync(cancellationToken);
+                    .EnsureIdentityAsync(cancellationToken);
             }
 
             this.StartupTaskContext

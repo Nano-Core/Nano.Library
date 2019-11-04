@@ -6,12 +6,6 @@ namespace Tests.Nano.Data
     public class BaseDbContextTest
     {
         [TestMethod]
-        public void EnsureImportAsyncTest()
-        {
-            Assert.Inconclusive();
-        }
-
-        [TestMethod]
         public void EnsureCreatedAsyncTest()
         {
             Assert.Inconclusive();
@@ -19,6 +13,12 @@ namespace Tests.Nano.Data
 
         [TestMethod]
         public void EnsureMigratedAsyncTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void EnsureIdentityAsyncTest()
         {
             Assert.Inconclusive();
         }
@@ -43,6 +43,30 @@ namespace Tests.Nano.Data
 
         [TestMethod]
         public void AddOrUpdateManyTest()
+        {
+            Assert.Inconclusive();
+        }
+        
+        [TestMethod]
+        public void SaveChangesTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void SaveChangesWhenAcceptAllChangesOnSuccessTest()
+        {
+            Assert.Inconclusive();
+        }
+        
+        [TestMethod]
+        public void SaveChangesAsyncTest()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void SaveChangesAsyncWhenAcceptAllChangesOnSuccessTest()
         {
             Assert.Inconclusive();
         }
