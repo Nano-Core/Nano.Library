@@ -1,4 +1,4 @@
-using GeoAPI.Geometries;
+using NetTopologySuite.Geometries;
 
 namespace Nano.Models.Interfaces
 {
@@ -11,6 +11,6 @@ namespace Nano.Models.Interfaces
         /// <summary>
         /// Geometry.
         /// </summary>
-        IGeometry Geometry { get; set; }
+        Geometry Geometry { get; set; }
     }
 }

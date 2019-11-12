@@ -1,5 +1,5 @@
-using GeoAPI.Geometries;
 using Nano.Models.Criterias.Interfaces;
+using NetTopologySuite.Geometries;
 
 namespace Nano.Models.Criterias
 {
@@ -7,6 +7,6 @@ namespace Nano.Models.Criterias
     public class DefaultQueryCriteriaSpatial : DefaultQueryCriteria, IQueryCriteriaSpatial
     {
         /// <inheritdoc />
-        public virtual IGeometry Geometry { get; set; }
+        public virtual Geometry Geometry { get; set; }
     }
 }
