@@ -34,7 +34,7 @@ namespace Nano.Web.Extensions
                             .AddGoogle(x =>
                             {
                                 x.ClientId = externalLogin.Id;
-                                x.ClientSecret = externalLogin.Secret;
+                                x.ClientSecret = externalLogin.Secret ?? "N/A";
 
                                 x.Scope
                                     .Add("profile");

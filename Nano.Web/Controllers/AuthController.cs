@@ -130,6 +130,38 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
+        /// Sign-in a user transiently from an external login and authentication.
+        /// No Identity backing-store is used.
+        /// </summary>
+        /// <param name="loginExternalTransient">The external login transient.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The external login response.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="500">Error occurred.</response>
+        [HttpPost]
+        [Route("login/external")]
+        [AllowAnonymous]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(ExternalLoginResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> SignInExternalTransientAsync([FromBody][Required]LoginExternalTransient loginExternalTransient, CancellationToken cancellationToken = default)
+        {
+            var accessToken = await this.IdentityManager
+                .SignInExternalTransientAsync(loginExternalTransient, cancellationToken);
+
+            var response = new ExternalLoginResponse
+            {
+                AccessToken = accessToken
+            };
+
+            return this.Ok(response);
+        }
+
+        /// <summary>
         /// Logs out a user.
         /// The jwt-token and any external login is invalidated.
         /// </summary>
@@ -175,7 +207,7 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> GetExternalSchemesAsync(CancellationToken cancellationToken = default)
         {
             var externalLogins = await this.IdentityManager
-                .GetExternalSchemesAsync(cancellationToken);
+                .GetExternalProvidersAsync(cancellationToken);
 
             return this.Ok(externalLogins);
         }

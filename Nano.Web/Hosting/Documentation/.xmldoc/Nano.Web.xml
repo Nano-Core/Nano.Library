@@ -1085,6 +1085,19 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occurred.</response>
         </member>
+        <member name="M:Nano.Web.Controllers.AuthController.SignInExternalTransientAsync(Nano.Security.Models.LoginExternalTransient,System.Threading.CancellationToken)">
+            <summary>
+            Sign-in a user transiently from an external login and authentication.
+            No Identity backing-store is used.
+            </summary>
+            <param name="loginExternalTransient">The external login transient.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The external login response.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="500">Error occurred.</response>
+        </member>
         <member name="M:Nano.Web.Controllers.AuthController.LogOutAsync(System.Threading.CancellationToken)">
             <summary>
             Logs out a user.

@@ -403,6 +403,12 @@
         <member name="M:Nano.Data.Models.Mappings.DefaultEntityUserMapping`1.Map(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{`0})">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Data.Models.Mappings.DefaultEntityViewMapping`1">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.Models.Mappings.DefaultEntityViewMapping`1.Map(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{`0})">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions">
             <summary>
             Entity Type Builder Extensions.

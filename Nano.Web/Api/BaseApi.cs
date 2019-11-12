@@ -10,8 +10,7 @@ using System.Threading.Tasks;
 using Nano.Models.Exceptions;
 using Nano.Models.Interfaces;
 using Nano.Security.Exceptions;
-using Nano.Security.Models;
-using Nano.Web.Api.Requests.Auth;
+using Nano.Security.Extensions;
 using Nano.Web.Api.Requests.Interfaces;
 using Nano.Web.Const;
 using Nano.Web.Hosting;
@@ -29,7 +28,6 @@ namespace Nano.Web.Api
     /// </summary>
     public abstract class BaseApi
     {
-        private AccessToken accessToken;
         private readonly HttpClient httpClient;
         private readonly ApiOptions apiOptions;
         private readonly TimeSpan httpTimeout = new TimeSpan(0, 0, 30);
@@ -113,11 +111,9 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            await this.AuthenticateAsync();
-
             var taskCompletion = new TaskCompletionSource<TResponse>();
 
-            await this.ProcessRequestAsync<TRequest, TResponse>(request)
+            await this.ProcessRequestAsync<TRequest, TResponse>(request, cancellationToken)
                 .ContinueWith(async x =>
                 {
                     if (x.IsFaulted)
@@ -159,11 +155,9 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            await this.AuthenticateAsync();
-
             var taskCompletion = new TaskCompletionSource<TResponse>();
 
-            await this.ProcessRequestAsync<TRequest, TEntity>(request)
+            await this.ProcessRequestAsync<TRequest, TEntity>(request, cancellationToken)
                 .ContinueWith(async x =>
                 {
                     if (x.IsFaulted)
@@ -189,132 +183,99 @@ namespace Nano.Web.Api
             return await taskCompletion.Task;
         }
 
-        private async Task AuthenticateAsync()
+        private HttpMethod GetMethod<TRequest>(TRequest request)
         {
-            var authorizationHeader = HttpContextAccess.Current.Request.Headers["Authorization"].FirstOrDefault();
-            var token = authorizationHeader?.Replace("Bearer ", string.Empty);
-            
-            if (token != null)
+            switch (request)
             {
-                this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                case IRequestGet _:
+                    return HttpMethod.Get;
+
+                case IRequestPost _:
+                    return HttpMethod.Post;
+
+                case IRequestDelete _:
+                    return HttpMethod.Delete;
             }
-            else
-            {
-                // TODO: Remove this.
-                if (this.apiOptions.Login == null)
-                    return;
 
-                if (this.accessToken != null && !this.accessToken.IsExpired)
-                    return;
-
-                var loginRequest = new LogInRequest
-                {
-                    Login = this.apiOptions.Login
-                };
-
-                await this.ProcessRequestAsync<LogInRequest, AccessToken>(loginRequest)
-                    .ContinueWith(async x =>
-                    {
-                        var result = await x;
-                        var accessToken = await this.ProcessResponseAsync<AccessToken>(result);
-
-                        this.accessToken = accessToken;
-                        this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this.accessToken.Token);
-                    });
-            }
+            throw new NotSupportedException();
         }
-        private async Task<HttpResponseMessage> ProcessRequestAsync<TRequest, TResponse>(TRequest request)
+        private async Task<HttpResponseMessage> ProcessRequestAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
             where TRequest : class, IRequest
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
             var uri = request.GetUri<TResponse>(this.apiOptions);
-            this.httpClient.DefaultRequestHeaders.AcceptLanguage.Clear();
-            this.httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
+            var method = this.GetMethod(request);
+            var jwtToken = HttpContextAccess.Current.GetJwtToken();
+            var httpRequst = new HttpRequestMessage(method, uri);
 
-            this.httpClient.DefaultRequestHeaders.Remove(RequestTimeZoneHeaderProvider.Headerkey);
-            this.httpClient.DefaultRequestHeaders.Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
+            httpRequst.Headers.Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
+            httpRequst.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
+            httpRequst.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
 
-            switch (request)
+            if (request is IRequestPost requestPost)
             {
-                case IRequestGet _:
-                    return await this.httpClient
-                        .GetAsync(uri);
+                var body = requestPost.GetBody();
+                var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, this.jsonSerializerSettings);
+                var stringContent = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
-                case IRequestDelete _:
-                    var bodyDelete = string.Empty;
-                    using (var stringContent = new StringContent(bodyDelete, Encoding.UTF8, HttpContentType.JSON))
-                    {
-                        var httpDeleteMessage = new HttpRequestMessage(HttpMethod.Delete, uri)
-                        {
-                            Content = stringContent
-                        };
-
-                        using (httpDeleteMessage)
-                        {
-                            return await this.httpClient
-                                .SendAsync(httpDeleteMessage);
-                        }
-                    }
-
-                case IRequestPost requestPost:
-                    var bodyPost = requestPost.GetBody();
-                    var content = bodyPost == null ? string.Empty : JsonConvert.SerializeObject(bodyPost, this.jsonSerializerSettings);
-
-                    using (var stringContent = new StringContent(content, Encoding.UTF8, HttpContentType.JSON))
-                    {
-                        return await this.httpClient
-                            .PostAsync(uri, stringContent);
-                    }
-                    
-                default:
-                    throw new NotSupportedException();
+                httpRequst.Content = stringContent;
             }
+
+            return await this.httpClient
+                .SendAsync(httpRequst, cancellationToken);
         }
         private async Task<TResponse> ProcessResponseAsync<TResponse>(HttpResponseMessage httpResponse)
         {
             if (httpResponse == null)
                 throw new ArgumentNullException(nameof(httpResponse));
 
-            using (httpResponse)
+            try
             {
-                switch (httpResponse.StatusCode)
+                using (httpResponse)
                 {
-                    case HttpStatusCode.NotFound:
+                    switch (httpResponse.StatusCode)
+                    {
+                        case HttpStatusCode.NotFound:
+                            return default;
+
+                        case HttpStatusCode.Unauthorized:
+                            throw new AggregateException(new UnauthorizedException());
+
+                        case HttpStatusCode.BadRequest:
+                        case HttpStatusCode.InternalServerError:
+                            var errorContent = await httpResponse.Content.ReadAsStringAsync();
+                            var error = JsonConvert.DeserializeObject<Error>(errorContent);
+                            
+                            if (error.IsTranslated)
+                            {
+                                throw new AggregateException(error.Exceptions.Select(x => new TranslationException(x)));
+                            }
+                            else if (this.apiOptions.UseExposeErrors)
+                            {
+                                throw new AggregateException(error.Exceptions.Select(x => new InvalidOperationException(x)));
+                            }
+                            break;
+                    }
+
+                    httpResponse
+                        .EnsureSuccessStatusCode();
+
+                    if (typeof(TResponse) == typeof(object))
+                    {
                         return default;
+                    }
 
-                    case HttpStatusCode.Unauthorized:
-                        throw new AggregateException(new UnauthorizedException());
+                    var successContent = await httpResponse.Content
+                        .ReadAsStringAsync();
 
-                    case HttpStatusCode.BadRequest:
-                    case HttpStatusCode.InternalServerError:
-                        var errorContent = await httpResponse.Content.ReadAsStringAsync();
-                        var error = JsonConvert.DeserializeObject<Error>(errorContent);
-                        
-                        if (error.IsTranslated)
-                        {
-                            throw new AggregateException(error.Exceptions.Select(x => new TranslationException(x)));
-                        }
-                        else if (this.apiOptions.UseExposeErrors)
-                        {
-                            throw new AggregateException(error.Exceptions.Select(x => new InvalidOperationException(x)));
-                        }
-                        break;
+                    return JsonConvert.DeserializeObject<TResponse>(successContent);
                 }
-
-                httpResponse
-                    .EnsureSuccessStatusCode();
-
-                if (typeof(TResponse) == typeof(object))
-                {
-                    return default;
-                }
-
-                var successContent = await httpResponse.Content
-                    .ReadAsStringAsync();
-
-                return JsonConvert.DeserializeObject<TResponse>(successContent);
+            }
+            finally
+            {
+                httpResponse.Dispose();
             }
         }
     }
