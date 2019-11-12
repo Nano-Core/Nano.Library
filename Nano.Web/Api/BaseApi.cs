@@ -54,7 +54,8 @@ namespace Nano.Web.Api
  
             this.httpClient = new HttpClient(this.httpClientHandler)
             {
-                Timeout = this.httpTimeout
+                Timeout = this.httpTimeout,
+                DefaultRequestVersion = new Version(2, 0)
             };
 
             this.httpClient.DefaultRequestHeaders.Accept
