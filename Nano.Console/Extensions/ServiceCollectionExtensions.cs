@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Nano.Config.Extensions;
+using Nano.Console.Workers;
+using Nano.Models.Extensions;
 using Nano.Repository;
 using Nano.Repository.Interfaces;
 
@@ -32,7 +36,20 @@ namespace Nano.Console.Extensions
             services
                 .AddScoped<IRepository, DefaultRepository>()
                 .AddScoped<IRepositorySpatial, DefaultRepositorySpatial>();
-            
+
+            AppDomain.CurrentDomain
+                .GetAssemblies()
+                .SelectMany(x => x.GetTypes())
+                .Where(x =>
+                    !x.IsAbstract &&
+                    x.IsTypeOf(typeof(BaseWorker<>)))
+                .ToList()
+                .ForEach(x =>
+                {
+                    services
+                        .AddSingleton(typeof(IHostedService), x);
+                });
+
             return services;
         }
     }
