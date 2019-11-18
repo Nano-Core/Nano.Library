@@ -11,6 +11,8 @@ using Nano.Models.Exceptions;
 using Nano.Models.Interfaces;
 using Nano.Security.Exceptions;
 using Nano.Security.Extensions;
+using Nano.Security.Models;
+using Nano.Web.Api.Requests.Auth;
 using Nano.Web.Api.Requests.Interfaces;
 using Nano.Web.Const;
 using Nano.Web.Hosting;
@@ -28,6 +30,7 @@ namespace Nano.Web.Api
     /// </summary>
     public abstract class BaseApi
     {
+        private AccessToken accessToken;
         private readonly HttpClient httpClient;
         private readonly ApiOptions apiOptions;
         private readonly TimeSpan httpTimeout = new TimeSpan(0, 0, 30);
@@ -112,6 +115,8 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
+            await this.AuthenticateAsync(cancellationToken);
+
             var taskCompletion = new TaskCompletionSource<TResponse>();
 
             await this.ProcessRequestAsync<TRequest, TResponse>(request, cancellationToken)
@@ -155,6 +160,8 @@ namespace Nano.Web.Api
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
+
+            await this.AuthenticateAsync(cancellationToken);
 
             var taskCompletion = new TaskCompletionSource<TResponse>();
 
@@ -200,6 +207,30 @@ namespace Nano.Web.Api
 
             throw new NotSupportedException();
         }
+        private async Task AuthenticateAsync(CancellationToken cancellationToken = default)
+        {
+            var jwtToken = HttpContextAccess.Current
+                .GetJwtToken();
+
+            if (jwtToken != null)
+                return;
+
+            if (this.apiOptions.Login == null)
+                return;
+
+            if (this.accessToken != null && !this.accessToken.IsExpired)	
+                return;
+               
+            var loginRequest = new LogInRequest
+            {
+                Login = this.apiOptions.Login
+            };
+
+            using (var httpResponse = await this.ProcessRequestAsync<LogInRequest, AccessToken>(loginRequest, cancellationToken))
+            {
+                this.accessToken = await this.ProcessResponseAsync<AccessToken>(httpResponse);	
+            }
+        }
         private async Task<HttpResponseMessage> ProcessRequestAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
             where TRequest : class, IRequest
         {
@@ -208,9 +239,9 @@ namespace Nano.Web.Api
 
             var uri = request.GetUri<TResponse>(this.apiOptions);
             var method = this.GetMethod(request);
-            var jwtToken = HttpContextAccess.Current.GetJwtToken();
-            var httpRequst = new HttpRequestMessage(method, uri);
+            var jwtToken = HttpContextAccess.Current.GetJwtToken() ?? this.accessToken?.Token;
 
+            var httpRequst = new HttpRequestMessage(method, uri);
             httpRequst.Headers.Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
             httpRequst.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
             httpRequst.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
