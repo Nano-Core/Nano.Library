@@ -2,13 +2,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using Nano.Models;
+using Nano.Models.Interfaces;
 
 namespace Nano.Data.Models
 {
     /// <summary>
     /// Default Audit Entry.
     /// </summary>
-    public class DefaultAuditEntry : DefaultEntity
+    public class DefaultAuditEntry : DefaultEntity, IEntityAuditableNegated
     {
         /// <summary>
         /// Created By.
