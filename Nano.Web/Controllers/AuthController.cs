@@ -141,7 +141,7 @@ namespace Nano.Web.Controllers
         /// <response code="401">Unauthorized.</response>
         /// <response code="500">Error occurred.</response>
         [HttpPost]
-        [Route("login/external")]
+        [Route("login/external/transient")]
         [AllowAnonymous]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(ExternalLoginResponse), (int)HttpStatusCode.OK)]
