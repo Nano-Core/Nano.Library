@@ -137,10 +137,10 @@ namespace Nano.Data.Extensions
                                     .Select(y => new DefaultAuditEntryProperty
                                     {
                                         ParentId = id,
-                                        NewValue = y.NewValueFormatted,
-                                        OldValue = y.OldValueFormatted,
                                         PropertyName = y.PropertyName,
-                                        RelationName = y.RelationName
+                                        RelationName = y.RelationName,
+                                        NewValue = y.NewValueFormatted,
+                                        OldValue = y.OldValueFormatted
                                     })
                                     .ToArray()
                             };

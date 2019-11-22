@@ -1,11 +1,12 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Nano.Security.Exceptions;
-using Nano.Web.Hosting.Extensions;
+using Nano.Web.Const;
 using Nano.Web.Hosting.Serialization;
 using Nano.Web.Models;
 using Newtonsoft.Json;
@@ -72,15 +73,34 @@ namespace Nano.Web.Hosting.Middleware
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
                     var error = new Error(ex);
-                    if (error.IsTranslated)
-                        logeLevel = LogLevel.Information;
+                    
+                    logeLevel = error.IsTranslated
+                        ? LogLevel.Information
+                        : LogLevel.Error;
 
-                    var result =
-                        request.IsContentTypeJson()
+                    var acceptHheader = request.Headers["Accept"];
+                    var contentTypeHeader = request.Headers["Content-Type"];
+                    var queryString = request.QueryString.HasValue 
+                        ? request.QueryString.Value 
+                        : string.Empty;
+
+                    var result = acceptHheader.Any()
+                        ? acceptHheader.Contains(HttpContentType.JSON)
                             ? JsonConvert.SerializeObject(error)
-                            : request.IsContentTypeXml()
+                            : acceptHheader.Contains(HttpContentType.XML)
                                 ? XmlConvert.SerializeObject(error)
-                                : error.ToString();
+                                : error.ToString()
+                        : contentTypeHeader.Any()
+                            ? contentTypeHeader.Contains(HttpContentType.JSON)
+                                ? JsonConvert.SerializeObject(error)
+                                : contentTypeHeader.Contains(HttpContentType.XML)
+                                    ? XmlConvert.SerializeObject(error)
+                                    : error.ToString()
+                            : queryString.Contains($"format={HttpContentType.JSON}")
+                                ? JsonConvert.SerializeObject(error)
+                                : queryString.Contains($"format={HttpContentType.XML}")
+                                    ? XmlConvert.SerializeObject(error)
+                                    : error.ToString();
 
                     await response
                         .WriteAsync(result);

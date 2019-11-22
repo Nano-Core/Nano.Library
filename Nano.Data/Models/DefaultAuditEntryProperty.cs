@@ -1,13 +1,14 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using Nano.Models;
+using Nano.Models.Interfaces;
 
 namespace Nano.Data.Models
 {
     /// <summary>
     /// Default Audit Entry Property.
     /// </summary>
-    public class DefaultAuditEntryProperty : DefaultEntity
+    public class DefaultAuditEntryProperty : DefaultEntity, IEntityAuditableNegated
     {
         /// <summary>
         /// Gets or sets the identifier of the parent audit entry.
