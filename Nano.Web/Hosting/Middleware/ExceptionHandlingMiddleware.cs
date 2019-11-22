@@ -74,8 +74,9 @@ namespace Nano.Web.Hosting.Middleware
 
                     var error = new Error(ex);
                     
-                    if (error.IsTranslated)
-                        logeLevel = LogLevel.Information;
+                    logeLevel = error.IsTranslated
+                        ? LogLevel.Information
+                        : LogLevel.Error;
 
                     var acceptHheader = request.Headers["Accept"];
                     var contentTypeHeader = request.Headers["Content-Type"];
