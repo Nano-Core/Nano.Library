@@ -150,7 +150,7 @@ namespace Nano.Eventing.Extensions
             {
                 services
                     .AddHealthChecks()
-                    .AddRabbitMQ(options.ConnectionString);
+                    .AddRabbitMQ(rabbitMQConnectionString: options.ConnectionString);
             }
 
             return services;
