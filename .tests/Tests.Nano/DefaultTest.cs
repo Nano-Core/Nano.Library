@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Tests.Nano
 {
     /// <summary>
-    /// Default Test
+    /// Default Tests
     /// </summary>
     public abstract class DefaultTest : BaseTest
     {
