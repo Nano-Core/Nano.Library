@@ -3,9 +3,9 @@
 namespace Nano.Security.Models
 {
     /// <summary>
-    /// Login External Transient.
+    /// Base Sign-Up (abstract).
     /// </summary>
-    public class LoginExternalTransient : LoginExternalProvider
+    public abstract class BaseSignUp
     {
         /// <summary>
         /// Roles.

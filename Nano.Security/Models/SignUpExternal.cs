@@ -6,7 +6,7 @@ namespace Nano.Security.Models
     /// <summary>
     /// Sign Up External.
     /// </summary>
-    public class SignUpExternal
+    public class SignUpExternal : BaseSignUp
     {
         /// <summary>
         /// Email Address.
