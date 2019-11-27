@@ -239,7 +239,8 @@ namespace Nano.Web.Api
 
             var uri = request.GetUri<TResponse>(this.apiOptions);
             var method = this.GetMethod(request);
-            var jwtToken = HttpContextAccess.Current.GetJwtToken() ?? this.accessToken?.Token;
+            var authorizationHeader = HttpContextAccess.Current.Request.Headers["Authorization"].FirstOrDefault();
+            var jwtToken = authorizationHeader?.Replace("Bearer ", string.Empty) ?? this.accessToken?.Token;;
 
             var httpRequst = new HttpRequestMessage(method, uri);
             httpRequst.Headers.Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
