@@ -239,8 +239,8 @@ namespace Nano.Web.Api
 
             var uri = request.GetUri<TResponse>(this.apiOptions);
             var method = this.GetMethod(request);
-            var authorizationHeader = HttpContextAccess.Current.Request.Headers["Authorization"].FirstOrDefault();
-            var jwtToken = authorizationHeader?.Replace("Bearer ", string.Empty) ?? this.accessToken?.Token;;
+            var isAnonymous = HttpContextAccess.Current.GetIsAnonymous();
+            var jwtToken = isAnonymous ? this.accessToken?.Token : HttpContextAccess.Current.GetJwtToken();
 
             var httpRequst = new HttpRequestMessage(method, uri);
             httpRequst.Headers.Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
@@ -251,9 +251,8 @@ namespace Nano.Web.Api
             {
                 var body = requestPost.GetBody();
                 var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, this.jsonSerializerSettings);
-                var stringContent = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
-                httpRequst.Content = stringContent;
+                httpRequst.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
             }
 
             return await this.httpClient

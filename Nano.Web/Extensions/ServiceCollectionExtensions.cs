@@ -110,6 +110,7 @@ namespace Nano.Web.Extensions
                     if (webOptions.Hosting.UseHttpsRequired)
                         x.Filters.Add<RequireHttpsAttribute>();
 
+                    x.Filters.Add<IsAnonymousFilter>();
                     x.Filters.Add<ModelStateValidationFilter>();
                     x.Filters.Add<DisableLazyLoadingResultFilterAttribute>();
                 })

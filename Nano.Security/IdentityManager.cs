@@ -320,14 +320,8 @@ namespace Nano.Security
                     ClockSkew = TimeSpan.FromMinutes(5)
                 };
 
-                var authorizationHeader = this.SignInManager.Context.Request.Headers["Authorization"].FirstOrDefault();
-                var accessToken = authorizationHeader?.Replace("Bearer ", string.Empty);
-
-                if (accessToken == null)
-                    throw new NullReferenceException(nameof(accessToken));
-
                 var principal = new JwtSecurityTokenHandler()
-                    .ValidateToken(accessToken, validationParameters, out var securityToken);
+                    .ValidateToken(loginRefresh.Token, validationParameters, out var securityToken);
 
                 if (!(securityToken is JwtSecurityToken jwtSecurityToken) || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                     throw new InvalidOperationException();
@@ -335,7 +329,8 @@ namespace Nano.Security
                 var identityUser = await this.UserManager
                     .FindByNameAsync(principal.Identity.Name);
 
-                var appClaim = principal.Claims.FirstOrDefault(x => x.Type == ClaimTypesExtended.AppId);
+                var appClaim = principal.Claims
+                    .FirstOrDefault(x => x.Type == ClaimTypesExtended.AppId);
 
                 if (appClaim == null)
                     throw new NullReferenceException(nameof(appClaim));
@@ -350,7 +345,7 @@ namespace Nano.Security
                     throw new NullReferenceException(nameof(identityUserToken));
 
                 if (identityUserToken.Value != loginRefresh.RefreshToken)
-                    throw new InvalidOperationException("identityUserToken.Value != loginRefresh.RefreshToken");
+                    throw new InvalidOperationException($"identityUserToken.Value ({identityUserToken.Value}) != loginRefresh.RefreshToken ({loginRefresh.RefreshToken})");
 
                 if (identityUserToken.ExpireAt <= DateTimeOffset.UtcNow)
                     throw new InvalidOperationException("identityUserToken.ExpireAt <= DateTimeOffset.UtcNow");
