@@ -8,6 +8,12 @@ namespace Nano.Security.Models
     public class LoginRefresh
     {
         /// <summary>
+        /// Token.
+        /// </summary>
+        [Required]
+        public virtual string Token { get; set; }
+
+        /// <summary>
         /// Refresh Token.
         /// </summary>
         [Required]
