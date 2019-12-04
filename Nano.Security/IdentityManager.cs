@@ -48,6 +48,11 @@ namespace Nano.Security
         protected virtual UserManager<IdentityUser> UserManager { get; }
 
         /// <summary>
+        /// Role Manager.
+        /// </summary>
+        protected virtual RoleManager<IdentityRole> RoleManager { get; }
+
+        /// <summary>
         /// Sign In Manager.
         /// </summary>
         protected virtual SignInManager<IdentityUser> SignInManager { get; }
@@ -58,11 +63,13 @@ namespace Nano.Security
         /// <param name="dbContext">The <see cref="SignInManager{T}"/>.</param>
         /// <param name="signInManager">The <see cref="SignInManager{T}"/>.</param>
         /// <param name="userManager">The <see cref="UserManager{T}"/>.</param>
+        /// <param name="roleManager">The <see cref="RoleManager{T}"/></param>
         /// <param name="options">The <see cref="SecurityOptions"/>.</param>
-        public IdentityManager(DbContext dbContext, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, SecurityOptions options)
+        public IdentityManager(DbContext dbContext, SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager, SecurityOptions options)
         {
             this.DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             this.UserManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            this.RoleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
             this.SignInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
             this.Options = options ?? throw new ArgumentNullException(nameof(options));
         }
@@ -408,13 +415,19 @@ namespace Nano.Security
             if (externalLoginData == null)
                 throw new UnauthorizedException();
 
+            var claims = loginExternalTransient.Claims
+                .Select(x => new Claim(x.Key, x.Value));
+
+            var roleClaims = loginExternalTransient.Roles
+                .Select(x => new Claim(ClaimTypes.Role, x));
+
             var tokenData = new AccessTokenData
             {
                 UserId = externalLoginData.Id,
                 UserName = externalLoginData.Name,
                 UserEmail = externalLoginData.Email,
-                Claims = loginExternalTransient.Roles
-                    .Select(x => new Claim(ClaimTypes.Role, x))
+                Claims = claims
+                    .Union(roleClaims)
             };
 
             return await this.GenerateJwtToken(tokenData, cancellationToken);
@@ -539,8 +552,7 @@ namespace Nano.Security
             identityUser = await this.UserManager
                 .FindByNameAsync(signUp.Username);
 
-            await this.UserManager
-                .AddToRolesAsync(identityUser, this.Options.User.DefaultRoles);
+            await this.AddRolesAndClaims(identityUser, signUp); // TEST: QA
 
             if (!result.Succeeded)
                 this.ThrowIdentityExceptions(result.Errors);
@@ -577,8 +589,7 @@ namespace Nano.Security
             if (!addLoginResult.Succeeded)
                 this.ThrowIdentityExceptions(createResult.Errors);
 
-            await this.UserManager
-                .AddToRolesAsync(identityUser, this.Options.User.DefaultRoles);
+            await this.AddRolesAndClaims(identityUser, signUpExternal); // TEST: QA
 
             await this.SignInManager
                 .SignInAsync(identityUser, signUpExternal.ExternalLogin.IsRememerMe);
@@ -876,6 +887,44 @@ namespace Nano.Security
             };
         }
 
+        private async Task AddRolesAndClaims(IdentityUser identityUser, BaseSignUp signUp)
+        {
+            if (identityUser == null) 
+                throw new ArgumentNullException(nameof(identityUser));
+            
+            if (signUp == null) 
+                throw new ArgumentNullException(nameof(signUp));
+
+            foreach (var role in signUp.Roles)
+            {
+                var exists = await this.RoleManager
+                    .RoleExistsAsync(role);
+
+                if (!exists)
+                {
+                    var identityRole = new IdentityRole(role);
+
+                    await this.RoleManager
+                        .CreateAsync(identityRole);
+                }
+            }
+
+            var roles = signUp.Roles
+                .Union(this.Options.User.DefaultRoles)
+                .Distinct();
+
+            await this.UserManager
+                .AddToRolesAsync(identityUser, roles);
+
+            if (signUp.Claims.Any())
+            {
+                var claims = signUp.Claims
+                    .Select(x => new Claim(x.Key, x.Value));
+
+                await this.UserManager
+                    .AddClaimsAsync(identityUser, claims);
+            }
+        }
         private async Task<AccessToken> GenerateJwtToken(AccessTokenData tokenData, CancellationToken cancellationToken = default)
         {
             if (tokenData == null) 

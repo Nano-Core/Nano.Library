@@ -340,11 +340,15 @@ namespace Nano.Data
 
             var roleManager = this.GetService<RoleManager<IdentityRole>>();
 
-            var exists = await roleManager.RoleExistsAsync(role);
+            var exists = await roleManager
+                .RoleExistsAsync(role);
+            
             if (!exists)
             {
                 var identityRole = new IdentityRole(role);
-                await roleManager.CreateAsync(identityRole);
+
+                await roleManager
+                    .CreateAsync(identityRole);
 
                 return identityRole;
             }

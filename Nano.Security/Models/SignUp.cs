@@ -6,7 +6,7 @@ namespace Nano.Security.Models
     /// <summary>
     /// Sign Up.
     /// </summary>
-    public class SignUp
+    public class SignUp : BaseSignUp
     {
         /// <summary>
         /// Email.
