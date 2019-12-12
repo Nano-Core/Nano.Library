@@ -20,5 +20,12 @@ namespace Nano.Security.Models
         [Required]
         [DefaultValue(false)]
         public virtual bool IsRememerMe { get; set; } = false;
+
+        /// <summary>
+        /// Is Refreshable.
+        /// </summary>
+        [Required]
+        [DefaultValue(true)]
+        public virtual bool IsRefreshable { get; set; } = true;
     }
 }

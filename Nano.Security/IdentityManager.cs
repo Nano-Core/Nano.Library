@@ -254,7 +254,7 @@ namespace Nano.Security
                     var identityUser = await this.UserManager
                         .FindByNameAsync(login.Username);
 
-                    return await this.GenerateJwtToken(identityUser, appId, cancellationToken);
+                    return await this.GenerateJwtToken(identityUser, appId, login.IsRefreshable, cancellationToken);
                 }
 
                 if (result.IsLockedOut)
@@ -357,7 +357,7 @@ namespace Nano.Security
                 if (identityUserToken.ExpireAt <= DateTimeOffset.UtcNow)
                     throw new InvalidOperationException("identityUserToken.ExpireAt <= DateTimeOffset.UtcNow");
 
-                return await this.GenerateJwtToken(identityUser, identityUserToken.Name, cancellationToken);
+                return await this.GenerateJwtToken(identityUser, identityUserToken.Name, true, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -394,7 +394,7 @@ namespace Nano.Security
             await this.SignInManager
                 .SignInAsync(identityUser, loginExternal.IsRememerMe);
 
-            return await this.GenerateJwtToken(identityUser, appId, cancellationToken);
+            return await this.GenerateJwtToken(identityUser, appId, loginExternal.IsRefreshable, cancellationToken);
         }
 
         /// <summary>
@@ -552,7 +552,7 @@ namespace Nano.Security
             identityUser = await this.UserManager
                 .FindByNameAsync(signUp.Username);
 
-            await this.AddRolesAndClaims(identityUser, signUp); // TEST: QA
+            await this.AddRolesAndClaims(identityUser, signUp);
 
             if (!result.Succeeded)
                 this.ThrowIdentityExceptions(result.Errors);
@@ -589,7 +589,7 @@ namespace Nano.Security
             if (!addLoginResult.Succeeded)
                 this.ThrowIdentityExceptions(createResult.Errors);
 
-            await this.AddRolesAndClaims(identityUser, signUpExternal); // TEST: QA
+            await this.AddRolesAndClaims(identityUser, signUpExternal);
 
             await this.SignInManager
                 .SignInAsync(identityUser, signUpExternal.ExternalLogin.IsRememerMe);
@@ -960,7 +960,7 @@ namespace Nano.Security
                     };
                 }, cancellationToken);
         }
-        private async Task<AccessToken> GenerateJwtToken(IdentityUser identityUser, string appId, CancellationToken cancellationToken = default)
+        private async Task<AccessToken> GenerateJwtToken(IdentityUser identityUser, string appId, bool isRefreshable, CancellationToken cancellationToken = default)
         {
             if (identityUser == null)
                 throw new ArgumentNullException(nameof(identityUser));
@@ -990,9 +990,13 @@ namespace Nano.Security
             };
 
             var token = await this.GenerateJwtToken(tokenData, cancellationToken);
-            var refreshToken = await this.GenerateJwtRefreshToken(identityUser, appId);
 
-            token.RefreshToken = refreshToken;
+            if (isRefreshable)
+            {
+                var refreshToken = await this.GenerateJwtRefreshToken(identityUser, appId);
+
+                token.RefreshToken = refreshToken;
+            }
 
             return token;
         }
