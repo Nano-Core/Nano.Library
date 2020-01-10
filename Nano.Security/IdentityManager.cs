@@ -536,7 +536,7 @@ namespace Nano.Security
         {
             if (signUp == null) 
                 throw new ArgumentNullException(nameof(signUp));
-            
+
             var identityUser = new IdentityUser
             {
                 Email = signUp.EmailAddress,
@@ -549,13 +549,7 @@ namespace Nano.Security
             if (!result.Succeeded)
                 this.ThrowIdentityExceptions(result.Errors);
 
-            identityUser = await this.UserManager
-                .FindByNameAsync(signUp.Username);
-
             await this.AddRolesAndClaims(identityUser, signUp);
-
-            if (!result.Succeeded)
-                this.ThrowIdentityExceptions(result.Errors);
 
             return identityUser;
         }
@@ -587,7 +581,7 @@ namespace Nano.Security
                 .AddLoginAsync(identityUser, new UserLoginInfo(signUpExternal.ExternalLogin.LoginProvider, signUpExternal.ExternalLogin.ProviderKey, signUpExternal.ExternalLogin.LoginProvider));
 
             if (!addLoginResult.Succeeded)
-                this.ThrowIdentityExceptions(createResult.Errors);
+                this.ThrowIdentityExceptions(addLoginResult.Errors);
 
             await this.AddRolesAndClaims(identityUser, signUpExternal);
 
@@ -904,8 +898,12 @@ namespace Nano.Security
                 {
                     var identityRole = new IdentityRole(role);
 
-                    await this.RoleManager
+                    var roleCreateResult = await this.RoleManager
                         .CreateAsync(identityRole);
+
+                    if (!roleCreateResult.Succeeded)
+                        this.ThrowIdentityExceptions(roleCreateResult.Errors);
+
                 }
             }
 
@@ -913,16 +911,22 @@ namespace Nano.Security
                 .Union(this.Options.User.DefaultRoles)
                 .Distinct();
 
-            await this.UserManager
+            var userRoleCreateResult = await this.UserManager
                 .AddToRolesAsync(identityUser, roles);
+
+            if (!userRoleCreateResult.Succeeded)
+                this.ThrowIdentityExceptions(userRoleCreateResult.Errors);
 
             if (signUp.Claims.Any())
             {
                 var claims = signUp.Claims
                     .Select(x => new Claim(x.Key, x.Value));
 
-                await this.UserManager
+                var claimCreateResult = await this.UserManager
                     .AddClaimsAsync(identityUser, claims);
+
+                if (!claimCreateResult.Succeeded)
+                    this.ThrowIdentityExceptions(claimCreateResult.Errors);
             }
         }
         private async Task<AccessToken> GenerateJwtToken(AccessTokenData tokenData, CancellationToken cancellationToken = default)

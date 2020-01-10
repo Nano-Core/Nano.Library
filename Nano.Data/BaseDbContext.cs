@@ -67,24 +67,23 @@ namespace Nano.Data
             if (modelBuilder == null)
                 throw new ArgumentNullException(nameof(modelBuilder));
 
+            base.OnModelCreating(modelBuilder); 
+
             modelBuilder
                 .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()
                 .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>();
 
             modelBuilder
                 .Entity<IdentityUserLogin<string>>()
-                .ToTable("__EFAuthUserLogin")
-                .HasKey(x => new { x.UserId, x.ProviderKey });
+                .ToTable("__EFAuthUserLogin");
 
             modelBuilder
                 .Entity<IdentityUserRole<string>>()
-                .ToTable("__EFAuthUserRole")
-                .HasKey(x => new { x.UserId, x.RoleId });
+                .ToTable("__EFAuthUserRole");
 
             modelBuilder
                 .Entity<IdentityUserTokenExpiry<string>>()
-                .ToTable("__EFAuthUserToken")
-                .HasKey(x => new { x.UserId, x.LoginProvider, x.Name });
+                .ToTable("__EFAuthUserToken");
 
             modelBuilder
                 .Entity<IdentityUserClaim<string>>()
