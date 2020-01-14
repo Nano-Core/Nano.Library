@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Nano.Web.Enums;
 using NWebsec.AspNetCore.Mvc;
@@ -26,11 +25,6 @@ namespace Nano.Web
         /// Documentation.
         /// </summary>
         public virtual DocumentationOptions Documentation { get; set; } = new DocumentationOptions();
-
-        /// <summary>
-        /// Compatibility Version.
-        /// </summary>
-        public virtual CompatibilityVersion CompatabilityVersion { get; set; } = CompatibilityVersion.Version_3_0;
 
         /// <summary>
         /// Hosting Options.

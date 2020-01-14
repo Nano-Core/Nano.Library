@@ -129,8 +129,7 @@ namespace Nano.Web.Extensions
                 })
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()
-                .AddApplicationPart(assembly)
-                .SetCompatibilityVersion(webOptions.CompatabilityVersion);
+                .AddApplicationPart(assembly);
 
             services
                 .AddApis()
