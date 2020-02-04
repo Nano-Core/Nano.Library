@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>3.1.0</version>
+    <version>3.1.1</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -16,70 +16,70 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
     <releaseNotes></releaseNotes>
     <dependencies>
       <group targetFramework=".NETCoreApp3.0">
-        <dependency id="Microsoft.Extensions.Hosting" version="3.1.0" />
-        <dependency id="DynamicExpression" version="2.2.0" />
-        <dependency id="Microsoft.Extensions.DependencyInjection" version="3.1.0" />
-        <dependency id="Microsoft.Extensions.Identity.Stores" version="3.1.0" />
+        <dependency id="Microsoft.Extensions.Hosting" version="3.1.1" />
+        <dependency id="DynamicExpression" version="2.2.1" />
+        <dependency id="Microsoft.Extensions.DependencyInjection" version="3.1.1" />
+        <dependency id="Microsoft.Extensions.Identity.Stores" version="3.1.1" />
         <dependency id="Newtonsoft.Json" version="12.0.3" />
         <dependency id="System.ComponentModel.Annotations" version="4.7.0" />
-        <dependency id="Microsoft.Extensions.Logging" version="3.1.0" />
+        <dependency id="Microsoft.Extensions.Logging" version="3.1.1" />
         <dependency id="Serilog" version="2.9.0" />
         <dependency id="Serilog.Extensions.Logging" version="3.0.1" />
         <dependency id="Serilog.Sinks.Console" version="3.1.1" />
         <dependency id="AspNetCore.HealthChecks.MySql" version="3.0.0" />
         <dependency id="AspNetCore.HealthChecks.Sqlite" version="3.0.0" />
         <dependency id="Microsoft.AspNetCore.Identity" version="2.2.0" />
-        <dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="3.1.0" />
-        <dependency id="Microsoft.EntityFrameworkCore" version="3.1.0" />
-        <dependency id="Microsoft.EntityFrameworkCore.Design" version="3.1.0" />
-        <dependency id="Microsoft.EntityFrameworkCore.InMemory" version="3.1.0" />
-        <dependency id="Microsoft.EntityFrameworkCore.Proxies" version="3.1.0" />
-        <dependency id="Microsoft.EntityFrameworkCore.Relational" version="3.1.0" />
-        <dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="3.1.0" />
-        <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="3.1.0" />
-        <dependency id="Microsoft.EntityFrameworkCore.Tools" version="3.1.0" />
-        <dependency id="Microsoft.Extensions.Configuration" version="3.1.0" />
-        <dependency id="Microsoft.Extensions.Configuration.Binder" version="3.1.0" />
-        <dependency id="Microsoft.Extensions.Configuration.CommandLine" version="3.1.0" />
-        <dependency id="Microsoft.Extensions.Configuration.EnvironmentVariables" version="3.1.0" />
-        <dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="3.1.0" />
-        <dependency id="Microsoft.Extensions.Configuration.Json" version="3.1.0" />
-        <dependency id="Microsoft.Extensions.Options" version="3.1.0" />
-        <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="3.1.0" />
+        <dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="3.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore" version="3.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore.Design" version="3.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore.InMemory" version="3.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore.Proxies" version="3.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore.Relational" version="3.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="3.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="3.1.1" />
+        <dependency id="Microsoft.EntityFrameworkCore.Tools" version="3.1.1" />
+        <dependency id="Microsoft.Extensions.Configuration" version="3.1.1" />
+        <dependency id="Microsoft.Extensions.Configuration.Binder" version="3.1.1" />
+        <dependency id="Microsoft.Extensions.Configuration.CommandLine" version="3.1.1" />
+        <dependency id="Microsoft.Extensions.Configuration.EnvironmentVariables" version="3.1.1" />
+        <dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="3.1.1" />
+        <dependency id="Microsoft.Extensions.Configuration.Json" version="3.1.1" />
+        <dependency id="Microsoft.Extensions.Options" version="3.1.1" />
+        <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="3.1.1" />
         <dependency id="Microsoft.AspNetCore.Authentication" version="2.2.0" />
         <dependency id="Microsoft.AspNetCore.Authentication.Cookies" version="2.2.0" />
-        <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="3.1.0" />
-        <dependency id="AspNetCore.HealthChecks.Rabbitmq" version="3.0.3" />
+        <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="3.1.1" />
+        <dependency id="AspNetCore.HealthChecks.Rabbitmq" version="3.0.4" />
         <dependency id="EasyNetQ" version="3.7.1" />
         <dependency id="AspNetCore.HealthChecks.Network" version="3.0.1" />
         <dependency id="AspNetCore.HealthChecks.System" version="3.0.3" />
         <dependency id="AspNetCore.HealthChecks.UI" version="3.0.9" />
         <dependency id="Microsoft.AspNetCore" version="2.2.0" />
-        <dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="3.1.0" />
-        <dependency id="Microsoft.AspNetCore.Authentication.Google" version="3.1.0" />
-        <dependency id="Microsoft.AspNetCore.Authorization" version="3.1.0" />
+        <dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="3.1.1" />
+        <dependency id="Microsoft.AspNetCore.Authentication.Google" version="3.1.1" />
+        <dependency id="Microsoft.AspNetCore.Authorization" version="3.1.1" />
         <dependency id="Microsoft.AspNetCore.CookiePolicy" version="2.2.8" />
         <dependency id="Microsoft.AspNetCore.Diagnostics.HealthChecks" version="2.2.0" />
         <dependency id="Microsoft.AspNetCore.HttpsPolicy" version="2.2.0" />
         <dependency id="Microsoft.AspNetCore.Mvc" version="2.2.0" />
         <dependency id="Microsoft.AspNetCore.Mvc.Formatters.Json" version="2.2.0" />
         <dependency id="Microsoft.AspNetCore.Mvc.Formatters.Xml" version="2.2.0" />
-        <dependency id="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="3.1.0" />
+        <dependency id="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="3.1.1" />
         <dependency id="Microsoft.AspNetCore.ResponseCaching" version="2.2.0" />
         <dependency id="Microsoft.AspNetCore.ResponseCompression" version="2.2.0" />
         <dependency id="Microsoft.AspNetCore.Session" version="2.2.0" />
         <dependency id="Microsoft.AspNetCore.StaticFiles" version="2.2.0" />
         <dependency id="NWebsec.AspNetCore.Middleware" version="3.0.0" />
         <dependency id="NWebsec.AspNetCore.Mvc" version="3.0.0" />
-        <dependency id="Swashbuckle.AspNetCore" version="5.0.0-rc5" />
+        <dependency id="Swashbuckle.AspNetCore" version="5.0.0" />
         <dependency id="Microsoft.AspNetCore.Rewrite" version="2.2.0" />
         <dependency id="AspNetCore.HealthChecks.SqlServer" version="3.0.0" />
         <dependency id="Vivet.AspNetCore.RequestTimeZone" version="3.1.0" />
         <dependency id="Microsoft.AspNetCore.Mvc.Versioning" version="4.1.1" />
         <dependency id="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" version="4.1.1" />
-        <dependency id="Z.EntityFramework.Plus.EFCore" version="3.0.32" />
+        <dependency id="Z.EntityFramework.Plus.EFCore" version="3.0.35" />
         <dependency id="EntityFrameworkCore.Triggers" version="1.2.2" />
-        <dependency id="Pomelo.EntityFrameworkCore.MySql" version="3.1.0" />
+        <dependency id="Pomelo.EntityFrameworkCore.MySql" version="3.1.1" />
         <dependency id="NetTopologySuite" version="2.0.0" />
         <dependency id="Google.Apis.Auth" version="1.43.0" />
       </group>
