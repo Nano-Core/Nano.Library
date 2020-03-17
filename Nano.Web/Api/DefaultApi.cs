@@ -95,7 +95,7 @@ namespace Nano.Web.Api
         }
 
         /// <summary>
-        /// Details.
+        /// Get.
         /// Invokes the 'details' endpoint of the api.
         /// </summary>
         /// <typeparam name="TEntity">The entity type.</typeparam>

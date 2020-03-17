@@ -1,13 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Nano.Models.Exceptions;
+﻿using Nano.Models.Exceptions;
 using Nano.Models.Interfaces;
 using Nano.Security.Exceptions;
 using Nano.Security.Extensions;
@@ -20,6 +11,15 @@ using Nano.Web.Hosting.Serialization;
 using Nano.Web.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Globalization;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Vivet.AspNetCore.RequestTimeZone;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 
@@ -209,28 +209,28 @@ namespace Nano.Web.Api
         }
         private async Task AuthenticateAsync(CancellationToken cancellationToken = default)
         {
-            var jwtToken = HttpContextAccess.Current
-                .GetJwtToken();
+            var isAnonymous = HttpContextAccess.Current
+                .GetIsAnonymous();
 
-            if (jwtToken != null)
-                return;
-
-            if (this.apiOptions.Login == null)
-                return;
-
-            if (this.accessToken != null && !this.accessToken.IsExpired)	
-                return;
-
-            this.apiOptions.Login.IsRefreshable = false;
-
-            var loginRequest = new LogInRequest
+            if (isAnonymous)
             {
-                Login = this.apiOptions.Login
-            };
+                if (this.apiOptions.Login == null)
+                    return;
 
-            using (var httpResponse = await this.ProcessRequestAsync<LogInRequest, AccessToken>(loginRequest, cancellationToken))
-            {
-                this.accessToken = await this.ProcessResponseAsync<AccessToken>(httpResponse);	
+                if (this.accessToken != null && !this.accessToken.IsExpired)
+                    return;
+
+                this.apiOptions.Login.IsRefreshable = false;
+
+                var loginRequest = new LogInRequest
+                {
+                    Login = this.apiOptions.Login
+                };
+
+                using (var httpResponse = await this.ProcessRequestAsync<LogInRequest, AccessToken>(loginRequest, cancellationToken))
+                {
+                    this.accessToken = await this.ProcessResponseAsync<AccessToken>(httpResponse);
+                }
             }
         }
         private async Task<HttpResponseMessage> ProcessRequestAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
@@ -242,7 +242,10 @@ namespace Nano.Web.Api
             var uri = request.GetUri<TResponse>(this.apiOptions);
             var method = this.GetMethod(request);
             var isAnonymous = HttpContextAccess.Current.GetIsAnonymous();
-            var jwtToken = isAnonymous ? this.accessToken?.Token : HttpContextAccess.Current.GetJwtToken();
+
+            var jwtToken = isAnonymous 
+                ? this.accessToken?.Token 
+                : HttpContextAccess.Current.GetJwtToken();
 
             var httpRequst = new HttpRequestMessage(method, uri);
             httpRequst.Headers.Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
