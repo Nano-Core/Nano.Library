@@ -167,11 +167,13 @@ namespace Nano.Web.Extensions
                     if (options == null)
                         return;
 
+                    services
+                        .AddSingleton(x, Activator.CreateInstance(x, options));
+
                     if (hosts.Contains(options.Host))
                         return;
 
                     services
-                        .AddSingleton(x, Activator.CreateInstance(x, options))
                         .AddHealthChecks()
                             .AddTcpHealthCheck(y => y.AddHost(options.Host, options.Port), options.Host);
 
