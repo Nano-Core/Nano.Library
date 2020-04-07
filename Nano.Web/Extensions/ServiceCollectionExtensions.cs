@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
@@ -144,6 +145,8 @@ namespace Nano.Web.Extensions
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
+            var hosts = new List<string>();
+
             var configuration = services
                 .BuildServiceProvider()
                 .GetRequiredService<IConfiguration>();
@@ -164,10 +167,16 @@ namespace Nano.Web.Extensions
                     if (options == null)
                         return;
 
+                    if (hosts.Contains(options.Host))
+                        return;
+
                     services
                         .AddSingleton(x, Activator.CreateInstance(x, options))
                         .AddHealthChecks()
                             .AddTcpHealthCheck(y => y.AddHost(options.Host, options.Port), options.Host);
+
+                    hosts
+                        .Add(options.Host);
                 });
 
             return services;
