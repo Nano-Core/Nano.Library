@@ -275,14 +275,19 @@ namespace Nano.Data
 
             this.ChangeTracker.LazyLoadingEnabled = false;
 
-            foreach (var @event in pendingEvents)
+            try
             {
-                eventing
-                    .PublishAsync(@event, @event.Type)
-                    .ConfigureAwait(false);
+                foreach (var @event in pendingEvents)
+                {
+                    eventing
+                        .PublishAsync(@event, @event.Type)
+                        .ConfigureAwait(false);
+                }
             }
-
-            this.ChangeTracker.LazyLoadingEnabled = true;
+            finally
+            {
+                this.ChangeTracker.LazyLoadingEnabled = true;
+            }
 
             return success;
         }
@@ -433,7 +438,7 @@ namespace Nano.Data
                     x.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
                 });
         }
-        private IEnumerable<EntityEvent> GetPendingEntityEvents()
+        private EntityEvent[] GetPendingEntityEvents()
         {
             return this.ChangeTracker
                 .Entries<IEntity>()
@@ -443,8 +448,9 @@ namespace Nano.Data
                     (x.State == EntityState.Added || x.State == EntityState.Deleted))
                 .Select(x =>
                 {
-                    var name = x.Entity.GetType().Name.Replace("Proxy", "");
+                    var type = x.Entity.GetType();
                     var state = x.State.ToString();
+                    var name = type.Name.Replace("Proxy", string.Empty);
 
                     switch (x.Entity)
                     {
