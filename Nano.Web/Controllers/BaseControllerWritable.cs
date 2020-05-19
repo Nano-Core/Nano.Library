@@ -136,36 +136,10 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> EditConfirms([FromBody][Required]TEntity[] entities, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> EditConfirms([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         {
             await this.Repository
                 .UpdateManyAsync(entities.AsEnumerable(), cancellationToken);
-
-            return this.Ok();
-        }
-
-        /// <summary>
-        /// Edits the models, changing all entities returned by the passed 'select' criteria, with the values of the passed 'update'.
-        /// </summary>
-        /// <param name="criteria">The criteria for selecting models to edit, and the model containing values to be changed for all matching entities.</param>
-        /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>Void.</returns>
-        /// <response code="200">Ok.</response>
-        /// <response code="400">Bad Request.</response>
-        /// <response code="401">Unauthorized.</response>
-        /// <response code="500">Error occured.</response>
-        [HttpPut]
-        [Route("edit/query")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> EditConfirmsQuery([FromBody][Required](TCriteria select, TEntity update) criteria, CancellationToken cancellationToken = default)
-        {
-            await this.Repository
-                .UpdateManyAsync(criteria.select, criteria.update, cancellationToken);
 
             return this.Ok();
         }
@@ -226,7 +200,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> DeleteConfirms([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> DeleteConfirms([FromBody][Required]IEnumerable<TIdentity> ids, CancellationToken cancellationToken = default)
         {
             var paging = new Pagination
             {

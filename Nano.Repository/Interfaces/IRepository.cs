@@ -184,8 +184,8 @@ namespace Nano.Repository.Interfaces
         /// <typeparam name="TEntity">The <see cref="IEntityCreatable"/> type.</typeparam>
         /// <param name="entities">The instances of <see cref="IEntityCreatable"/>'s.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
-        /// <returns>The <see cref="Task"/> (void).</returns>
-        Task AddManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        /// <returns>The added entities.</returns>
+        Task<IEnumerable<TEntity>> AddManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityCreatable;
 
         /// <summary>
@@ -204,37 +204,9 @@ namespace Nano.Repository.Interfaces
         /// <typeparam name="TEntity">The <see cref="IEntityUpdatable"/> type.</typeparam>
         /// <param name="entities">The instances of <see cref="IEntityUpdatable"/>'s.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
-        /// <returns>The <see cref="Task"/> (void).</returns>
-        Task UpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        /// <returns>The updated entities.</returns>
+        Task<IEnumerable<TEntity>> UpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityUpdatable;
-
-        /// <summary>
-        /// Updates all instances of <typeparamref name="TEntity"/> with value from <paramref name="update"/>, 
-        /// matching the criteria of the passed <paramref name="criteria"/>.
-        /// </summary>
-        /// <typeparam name="TEntity">The <see cref="IEntityUpdatable"/> type.</typeparam>
-        /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> type.</typeparam>
-        /// <param name="criteria">The <see cref="IQueryCriteria"/>.</param>
-        /// <param name="update">The <see cref="IEntityUpdatable"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
-        /// <returns>A <see cref="Task"/> (void).</returns>
-        Task UpdateManyAsync<TEntity, TCriteria>(TCriteria criteria, TEntity update, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityUpdatable
-            where TCriteria : class, IQueryCriteria, new();
-
-        /// <summary>
-        /// Updates all instances of <typeparamref name="TEntity"/> with value from <paramref name="update"/>, 
-        /// matching the expression of the passed <paramref name="expression"/>.
-        /// </summary>
-        /// <typeparam name="TEntity">The <see cref="IEntityUpdatable"/> type.</typeparam>
-        /// <typeparam name="TCriteria"></typeparam>
-        /// <param name="expression">The <see cref="Expression"/>.</param>
-        /// <param name="update">The <see cref="IEntityUpdatable"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
-        /// <returns>A <see cref="Task"/> (void).</returns>
-        Task UpdateManyAsync<TEntity, TCriteria>(Expression<Func<TEntity, bool>> expression, TEntity update, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityUpdatable
-            where TCriteria : class, IQueryCriteria, new();
 
         /// <summary>
         /// Adds or Updates the instance of the passed <see cref="IEntityCreatableAndUpdatable"/>.
@@ -253,7 +225,7 @@ namespace Nano.Repository.Interfaces
         /// <param name="entities">The instances of <see cref="IEntityCreatableAndUpdatable"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The <see cref="Task"/> (void).</returns>
-        Task AddOrUpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> AddOrUpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityCreatableAndUpdatable;
 
         /// <summary>

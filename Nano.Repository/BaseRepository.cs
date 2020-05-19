@@ -252,17 +252,25 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
-        public virtual async Task AddManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> AddManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityCreatable
         {
             if (entities == null)
                 throw new ArgumentNullException(nameof(entities));
 
-            await this.Context
-                .AddRangeAsync(entities, cancellationToken);
+            entities = entities
+                .Select(x =>
+                {
+                    var entry = this.Context
+                        .Add(x);
+
+                    return entry.Entity;
+                });
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
+
+            return entities;
         }
 
         /// <inheritdoc />
@@ -282,55 +290,25 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
-        public virtual async Task UpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> UpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityUpdatable
         {
             if (entities == null)
                 throw new ArgumentNullException(nameof(entities));
 
-            this.Context
-                .UpdateRange(entities);
+            entities = entities
+                .Select(x =>
+                {
+                    var entry = this.Context
+                        .Update(x);
+
+                    return entry.Entity;
+                });
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
-        }
 
-        /// <inheritdoc />
-        public virtual async Task UpdateManyAsync<TEntity, TCriteria>(TCriteria criteria, TEntity update, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityUpdatable
-            where TCriteria : class, IQueryCriteria, new()
-        {
-            if (criteria == null)
-                throw new ArgumentNullException(nameof(criteria));
-
-            if (update == null)
-                throw new ArgumentNullException(nameof(update));
-
-            await this.GetEntitySet<TEntity>()
-                .Where(criteria)
-                .UpdateAsync(x => update, cancellationToken);
-
-            await this.Context
-                .SaveChangesAsync(cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public virtual async Task UpdateManyAsync<TEntity, TCriteria>(Expression<Func<TEntity, bool>> expression, TEntity update, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityUpdatable
-            where TCriteria : class, IQueryCriteria, new()
-        {
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
-
-            if (update == null)
-                throw new ArgumentNullException(nameof(update));
-
-            await this.GetEntitySet<TEntity>()
-                .Where(expression)
-                .UpdateAsync(x => update, cancellationToken);
-
-            await this.Context
-                .SaveChangesAsync(cancellationToken);
+            return entities;
         }
 
         /// <inheritdoc />
@@ -350,17 +328,25 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
-        public virtual async Task AddOrUpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> AddOrUpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityCreatableAndUpdatable
         {
             if (entities == null)
                 throw new ArgumentNullException(nameof(entities));
 
-            this.Context
-                .AddOrUpdateMany(entities);
+            entities = entities
+                .Select(x =>
+                {
+                    var entry = this.Context
+                        .AddOrUpdate(x);
+
+                    return entry.Entity;
+                });
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
+
+            return entities;
         }
 
         /// <inheritdoc />

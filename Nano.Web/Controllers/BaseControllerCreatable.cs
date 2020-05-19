@@ -82,10 +82,10 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> CreateConfirms([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         {
-            await this.Repository
+            var results = await this.Repository
                 .AddManyAsync(entities, cancellationToken);
 
-            return this.Ok();
+            return this.Ok(results);
         }
     }
 }

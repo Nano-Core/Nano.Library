@@ -34,7 +34,6 @@ using Nano.Web.Api;
 using Nano.Web.Const;
 using Nano.Web.Controllers;
 using Nano.Web.Hosting.Conventions;
-using Nano.Web.Hosting.Documentation.Filters;
 using Nano.Web.Hosting.Filters;
 using Nano.Web.Hosting.HealthChecks;
 using Nano.Web.Hosting.Middleware;
@@ -404,7 +403,6 @@ namespace Nano.Web.Extensions
                     x.IgnoreObsoleteProperties();
                     x.CustomSchemaIds(y => y.FullName);
                     x.OrderActionsBy(y => y.RelativePath);
-                    x.DocumentFilter<LowercaseDocumentFilter>();
 
                     if (securityOptions.IsEnabled)
                     {
@@ -456,7 +454,8 @@ namespace Nano.Web.Extensions
                                          x.IncludeXmlComments(() => new XPathDocument(resource));
                                  });
                          });
-                });
+                })
+                .AddSwaggerGenNewtonsoftSupport();
         }
         private static IServiceCollection AddLocalizations(this IServiceCollection services)
         {
