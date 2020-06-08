@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +21,6 @@ using Nano.Models.Interfaces;
 using Nano.Security;
 using Nano.Security.Const;
 using Nano.Security.Models;
-using Newtonsoft.Json;
 using Z.EntityFramework.Plus;
 
 namespace Nano.Data
@@ -203,51 +201,6 @@ namespace Nano.Data
             foreach (var entity in entities)
             {
                 this.AddOrUpdate(entity);
-            }
-        }
-
-        /// <summary>
-        /// Import data from the passed <paramref name="uri"/>, deserilaized into the type of the generic argument <typeparamref name="TEntity"/>.
-        /// </summary>
-        /// <typeparam name="TEntity">The <see cref="IEntityCreatable"/> type, used for deserialization.</typeparam>
-        /// <param name="uri">The <see cref="Uri"/> of the data to import.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        public virtual async Task AddRangeAsync<TEntity>(Uri uri, CancellationToken cancellationToken = default)
-            where TEntity : class
-        {
-            if (uri == null)
-                throw new ArgumentNullException(nameof(uri));
-
-            await this.AddRangeAsync(uri, typeof(TEntity), cancellationToken);
-        }
-
-        /// <summary>
-        /// Import data from the passed <paramref name="uri"/>, deserilaized into the passed <paramref name="type"/>.
-        /// </summary>
-        /// <param name="uri">The <see cref="Uri"/> of the data to import.</param>
-        /// <param name="type">The <see cref="Type"/> used when deserializing.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        public virtual async Task AddRangeAsync(Uri uri, Type type, CancellationToken cancellationToken = default)
-        {
-            if (uri == null)
-                throw new ArgumentNullException(nameof(uri));
-
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-
-            using (var httpClient = new HttpClient())
-            {
-                await httpClient
-                    .GetAsync(uri, cancellationToken)
-                    .ContinueWith(async x =>
-                    {
-                        var result = await x;
-                        var json = await result.Content.ReadAsStringAsync();
-                        var collectionType = typeof(IEnumerable<>).MakeGenericType(type);
-                        var entities = (IEnumerable<object>)JsonConvert.DeserializeObject(json, collectionType);
-
-                        await this.AddRangeAsync(entities, cancellationToken);
-                    }, cancellationToken);
             }
         }
 

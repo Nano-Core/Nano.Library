@@ -46,7 +46,7 @@ namespace Nano.Web.Hosting.Middleware
             var request = httpContext.Request;
             var response = httpContext.Response;
 
-            var logeLevel = response.StatusCode >= 500 && response.StatusCode <= 599 
+            var logLevel = response.StatusCode >= 500 && response.StatusCode <= 599 
                 ? LogLevel.Error 
                 : LogLevel.Information;
 
@@ -74,7 +74,7 @@ namespace Nano.Web.Hosting.Middleware
 
                     var error = new Error(ex);
                     
-                    logeLevel = error.IsTranslated
+                    logLevel = error.IsTranslated
                         ? LogLevel.Information
                         : LogLevel.Error;
 
@@ -116,7 +116,7 @@ namespace Nano.Web.Hosting.Middleware
                 var queryString = request.QueryString.HasValue ? $"{request.QueryString.Value}" : string.Empty;
                 
                 this.Logger
-                    .Log(logeLevel, exception, MESSAGE_TEMPLATE, protocol, method, path, queryString, response.StatusCode, elapsed, id);
+                    .Log(logLevel, exception, MESSAGE_TEMPLATE, protocol, method, path, queryString, response.StatusCode, elapsed, id);
             }
         }
     }

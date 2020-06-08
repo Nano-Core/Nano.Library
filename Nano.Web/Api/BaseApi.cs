@@ -217,7 +217,7 @@ namespace Nano.Web.Api
                 if (this.apiOptions.Login == null)
                     return;
 
-                if (this.accessToken != null && !this.accessToken.IsExpired)
+                if (!string.IsNullOrEmpty(this.accessToken?.Token) && !this.accessToken.IsExpired)
                     return;
 
                 this.apiOptions.Login.IsRefreshable = false;

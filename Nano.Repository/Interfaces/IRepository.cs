@@ -146,6 +146,17 @@ namespace Nano.Repository.Interfaces
             where TEntity : class, IEntity;
 
         /// <summary>
+        /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause, ordering by the passed <paramref name="ordering"/>
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="where">The where clause</param>
+        /// <param name="ordering">The order by clause</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The instances, matching the passed parameters.</returns>
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IOrdering ordering, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity;
+
+        /// <summary>
         /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>

@@ -197,6 +197,22 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IOrdering ordering, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+        {
+            if (where == null)
+                throw new ArgumentNullException(nameof(where));
+
+            var indent = this.Context.Options.QueryIncludeDepth;
+            
+            return await this.GetEntitySet<TEntity>()
+                .IncludeAnnotations(indent)
+                .Where(where)
+                .Order(ordering)
+                .ToArrayAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
         public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IPagination pagination, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
         {
@@ -242,8 +258,8 @@ namespace Nano.Repository
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            var entry = this.Context
-                .Add(entity);
+            var entry = await this.Context
+                .AddAsync(entity, cancellationToken);
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
@@ -259,14 +275,10 @@ namespace Nano.Repository
                 throw new ArgumentNullException(nameof(entities));
 
             entities = entities
-                .Select(x =>
-                {
-                    var entry = this.Context
-                        .Add(x);
-
-                    return entry.Entity;
-                });
-
+                .Select(x => this.Context.Add(x))
+                .Select(x => x.Entity)
+                .ToArray();
+                
             await this.Context
                 .SaveChangesAsync(cancellationToken);
 
@@ -297,13 +309,9 @@ namespace Nano.Repository
                 throw new ArgumentNullException(nameof(entities));
 
             entities = entities
-                .Select(x =>
-                {
-                    var entry = this.Context
-                        .Update(x);
-
-                    return entry.Entity;
-                });
+                .Select(x => this.Context.Update(x))
+                .Select(x => x.Entity)
+                .ToArray();
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);
@@ -333,15 +341,11 @@ namespace Nano.Repository
         {
             if (entities == null)
                 throw new ArgumentNullException(nameof(entities));
-
+            
             entities = entities
-                .Select(x =>
-                {
-                    var entry = this.Context
-                        .AddOrUpdate(x);
-
-                    return entry.Entity;
-                });
+                .Select(x => this.Context.AddOrUpdate(x))
+                .Select(x => x.Entity)
+                .ToArray();
 
             await this.Context
                 .SaveChangesAsync(cancellationToken);

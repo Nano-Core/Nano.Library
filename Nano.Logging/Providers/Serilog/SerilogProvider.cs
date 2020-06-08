@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Nano.Logging.Interfaces;
@@ -31,7 +32,9 @@ namespace Nano.Logging.Providers.Serilog
                 .Enrich.FromLogContext()
                 .MinimumLevel.Is(this.Options.LogLevel);
 
-            var console = this.Options.Sinks?.FirstOrDefault(x => x?.Name?.ToLower() == "console");
+            var console = this.Options.Sinks?
+                .FirstOrDefault(x => x?.Name?.ToLower() == "console");
+            
             if (console != null)
             {
                 loggerConfiguration
