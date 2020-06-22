@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>3.1.8</version>
+    <version>3.1.9</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -54,7 +54,7 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
         <dependency id="Microsoft.AspNetCore.Authentication" version="2.2.0" />
         <dependency id="Microsoft.AspNetCore.Authentication.Cookies" version="2.2.0" />
         <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="3.1.4" />
-        <dependency id="EasyNetQ" version="3.7.1" />
+        <dependency id="EasyNetQ" version="5.2.0" />
         <dependency id="Microsoft.AspNetCore" version="2.2.0" />
         <dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="3.1.4" />
         <dependency id="Microsoft.AspNetCore.Authentication.Google" version="3.1.4" />
