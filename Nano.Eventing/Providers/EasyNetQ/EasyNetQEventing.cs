@@ -71,21 +71,24 @@ namespace Nano.Eventing.Providers.EasyNetQ
                     if (info.RoutingKey != routing)
                         return;
 
-                    var eventType = message.MessageType;
-                    var genericType = typeof(IEventingHandler<>).MakeGenericType(eventType);
-                    var eventHandler = serviceProvider.GetRequiredService(genericType);
+                    using (var serviceScope = serviceProvider.CreateScope())
+                    {
+                        var eventType = message.MessageType;
+                        var genericType = typeof(IEventingHandler<>).MakeGenericType(eventType);
+                        var eventHandler = serviceScope.ServiceProvider.GetRequiredService(genericType);
 
-                    var method = eventHandler
-                        .GetType()
-                        .GetMethod("CallbackAsync");
+                        var method = eventHandler
+                            .GetType()
+                            .GetMethod("CallbackAsync");
 
-                    if (method == null)
-                        throw new NullReferenceException(nameof(method));
+                        if (method == null)
+                            throw new NullReferenceException(nameof(method));
 
-                    var task = (Task)method
-                        .Invoke(eventHandler, new object[] { message.Body });
+                        var task = (Task)method
+                            .Invoke(eventHandler, new object[] { message.Body });
 
-                    task.Wait();
+                        task.Wait();
+                    }
                 });
         }
 
