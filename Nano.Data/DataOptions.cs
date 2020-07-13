@@ -39,6 +39,11 @@ namespace Nano.Data
         /// Use Audit.
         /// </summary>
         public virtual bool UseAudit { get; set; } = true;
+        
+        /// <summary>
+        /// Use Auto Save.
+        /// </summary>
+        public virtual bool UseAutoSave { get; set; } = true;
 
         /// <summary>
         /// Use Lazy Loading.

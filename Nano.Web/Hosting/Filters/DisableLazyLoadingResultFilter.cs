@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Nano.Data;
 using Nano.Repository.Interfaces;
 
 namespace Nano.Web.Hosting.Filters
@@ -12,14 +13,14 @@ namespace Nano.Web.Hosting.Filters
         /// <summary>
         /// The <see cref="IRepository"/>.
         /// </summary>
-        protected virtual IRepository Repository { get; }
+        protected virtual BaseDbContext Repository { get; }
 
         /// <summary>
         /// Constructor.
         /// Initialzing the <see cref="IRepository"/> with the passed <paramref name="repository"/>.
         /// </summary>
         /// <param name="repository">The <see cref="IRepository"/>.</param>
-        public DisableLazyLoadingResultFilterAttribute(IRepository repository)
+        public DisableLazyLoadingResultFilterAttribute(BaseDbContext repository)
         {
             this.Repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }

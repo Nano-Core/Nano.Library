@@ -52,6 +52,23 @@ namespace Nano.Data
         /// </summary>
         public virtual DbSet<DefaultAuditEntryProperty> AuditProperties { get; set; }
 
+        /// <summary>
+        /// Auto Save.
+        /// </summary>
+        public virtual bool AutoSave => this.Options.UseAutoSave;
+
+        /// <summary>
+        /// Is Lazy-Loading Enabled.
+        /// </summary>
+        public virtual bool IsLazyLoadingEnabled
+        {
+            get => this.ChangeTracker.LazyLoadingEnabled;
+            set
+            {
+                this.ChangeTracker.LazyLoadingEnabled = value;
+            }
+        }
+
         /// <inheritdoc />
         protected BaseDbContext(DbContextOptions contextOptions, DataOptions dataOptions)
             : base(contextOptions)
@@ -167,7 +184,7 @@ namespace Nano.Data
         /// </summary>
         /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
         /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
-        /// <returns>A <see cref="EntityEntry{TEntity}"/>.</returns>
+        /// <returns>A <see cref="EntityEntry"/>.</returns>
         public virtual EntityEntry<TEntity> AddOrUpdate<TEntity>(TEntity entity)
             where TEntity : class
         {
@@ -230,12 +247,14 @@ namespace Nano.Data
 
             try
             {
-                foreach (var @event in pendingEvents)
-                {
-                    eventing
-                        .PublishAsync(@event, @event.Type)
-                        .ConfigureAwait(false);
-                }
+                pendingEvents
+                    .ForEach(x =>
+                    {
+                        eventing
+                            .PublishAsync(x, x.Type)
+                            .ConfigureAwait(false);
+
+                    });
             }
             finally
             {
@@ -372,8 +391,11 @@ namespace Nano.Data
                 return;
 
             var audit = new Audit();
+            
             audit.PreSaveChanges(this);
+
             audit.Configuration.AutoSavePreAction?.Invoke(this, audit);
+            
             audit.PostSaveChanges();
         }
         private void SaveSoftDeletion()
@@ -391,7 +413,7 @@ namespace Nano.Data
                     x.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
                 });
         }
-        private EntityEvent[] GetPendingEntityEvents()
+        private List<EntityEvent> GetPendingEntityEvents()
         {
             return this.ChangeTracker
                 .Entries<IEntity>()
@@ -407,6 +429,15 @@ namespace Nano.Data
 
                     switch (x.Entity)
                     {
+                        case IEntityIdentity<int> @int:
+                            return new EntityEvent(@int.Id, name, state);
+
+                        case IEntityIdentity<long> @long:
+                            return new EntityEvent(@long.Id, name, state);
+
+                        case IEntityIdentity<string> @string:
+                            return new EntityEvent(@string.Id, name, state);
+
                         case IEntityIdentity<Guid> guid:
                             return new EntityEvent(guid.Id, name, state);
 
@@ -418,7 +449,7 @@ namespace Nano.Data
                     }
                 })
                 .Where(x => x != null)
-                .ToArray();
+                .ToList();
         }
     }
 }

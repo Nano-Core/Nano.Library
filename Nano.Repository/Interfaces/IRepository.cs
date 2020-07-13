@@ -17,11 +17,6 @@ namespace Nano.Repository.Interfaces
     public interface IRepository : IDisposable
     {
         /// <summary>
-        /// Is Lazy Loading Enabled.
-        /// </summary>
-        bool IsLazyLoadingEnabled { get; set; }
-
-        /// <summary>
         /// Gets the <see cref="DbSet{TEntity}"/> mathcing the type of <typeparamref name="TEntity"/>.
         /// </summary>
         /// <typeparam name="TEntity">The type</typeparam>
@@ -69,7 +64,7 @@ namespace Nano.Repository.Interfaces
         /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
         Task<TEntity> GetAsync<TEntity>(string key, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityIdentity<string>;
-        
+
         /// <summary>
         /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
         /// </summary>
@@ -106,12 +101,52 @@ namespace Nano.Repository.Interfaces
         /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
-        /// <typeparam name="TIdentity">The identity type.</typeparam>
-        /// <param name="keys">The <typeparamref name="TIdentity"/> type, uniquely identifying the <see cref="IEntity"/>.</param>
+        /// <typeparam name="TIdentity">The type of the key.</typeparam>
+        /// <param name="keys">The keys uniquely identifying the <see cref="IEntity"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
         Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TIdentity>(IEnumerable<TIdentity> keys, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityIdentity<TIdentity>;
+
+        /// <summary>
+        /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="keys">The keys uniquely identifying the <see cref="IEntity"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<int> keys, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<int>;
+
+        /// <summary>
+        /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="keys">The keys uniquely identifying the <see cref="IEntity"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<long> keys, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<long>;
+
+        /// <summary>
+        /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="keys">The keys uniquely identifying the <see cref="IEntity"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<string> keys, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<string>;
+
+        /// <summary>
+        /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="keys">The keys uniquely identifying the <see cref="IEntity"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<Guid> keys, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<Guid>;
 
         /// <summary>
         /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="query"/>.
@@ -172,11 +207,23 @@ namespace Nano.Repository.Interfaces
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
         /// <param name="where">The where clause</param>
+        /// <param name="pagination">The <see cref="IPagination"/>.</param>
+        /// <param name="ordering">The order by clause</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The instances, matching the passed parameters.</returns>
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IPagination pagination, IOrdering ordering, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity;
+
+        /// <summary>
+        /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause, ordering by the passed <paramref name="ordering"/>
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+        /// <param name="where">The where clause</param>
         /// <param name="ordering">The order by clause</param>
         /// <param name="pagination">The <see cref="IPagination"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The instances, matching the passed parameters.</returns>
-        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IPagination pagination, IOrdering ordering, CancellationToken cancellationToken = default)
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IOrdering ordering, IPagination pagination, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity;
 
         /// <summary>
@@ -200,6 +247,16 @@ namespace Nano.Repository.Interfaces
             where TEntity : class, IEntityCreatable;
 
         /// <summary>
+        /// Bulk adds all instances of the passed <see cref="IEntityCreatable"/>'s.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityCreatable"/> type.</typeparam>
+        /// <param name="entities">The instances of <see cref="IEntityCreatable"/>'s.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The added entities.</returns>
+        Task AddManyBulkAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityCreatable;
+
+        /// <summary>
         /// Updates the instance of the passed <see cref="IEntityUpdatable"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntityUpdatable"/> type.</typeparam>
@@ -217,6 +274,16 @@ namespace Nano.Repository.Interfaces
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The updated entities.</returns>
         Task<IEnumerable<TEntity>> UpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityUpdatable;
+
+        /// <summary>
+        /// Bulk updates all instances of the passed <see cref="IEntityUpdatable"/>'s.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityUpdatable"/> type.</typeparam>
+        /// <param name="entities">The instances of <see cref="IEntityUpdatable"/>'s.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The updated entities.</returns>
+        Task UpdateManyBulkAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityUpdatable;
 
         /// <summary>
@@ -282,6 +349,16 @@ namespace Nano.Repository.Interfaces
             where TEntity : class, IEntityDeletable;
 
         /// <summary>
+        /// Bulk deletes all instances of the passed <see cref="IEntityDeletable"/>'s.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
+        /// <param name="entities">The instances of <see cref="IEntityDeletable"/>'s.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The <see cref="Task"/> (void).</returns>
+        Task DeleteManyBulkAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable;
+
+        /// <summary>
         /// Returns the count (long) of elements satisfying the passed criteria.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
@@ -324,5 +401,13 @@ namespace Nano.Repository.Interfaces
         /// <returns>The average.</returns>
         Task<decimal> AverageAsync<TEntity>(Expression<Func<TEntity, bool>> whereExpr, Expression<Func<TEntity, decimal>> avgExpr, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity;
+
+        /// <summary>
+        /// Save Changes.
+        /// Commits the changes to the database.
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>Task (Void).</returns>
+        Task<int> SaveChanges(CancellationToken cancellationToken = default);
     }
 }
