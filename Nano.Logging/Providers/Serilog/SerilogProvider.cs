@@ -1,7 +1,7 @@
 using System;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using Nano.Logging.Interfaces;
+using Nano.Logging.Providers.Serilog.Extensions;
 using Serilog;
 using Serilog.Extensions.Logging;
 
@@ -29,21 +29,15 @@ namespace Nano.Logging.Providers.Serilog
         {
             var loggerConfiguration = new LoggerConfiguration()
                 .Enrich.FromLogContext()
-                .MinimumLevel.Is(this.Options.LogLevel);
+                .MinimumLevel.Is(this.Options.LogLevel.GetLogLevel());
 
-            var console = this.Options.Sinks?
-                .FirstOrDefault(x => x?.Name?.ToLower() == "console");
-            
-            if (console != null)
-            {
-                loggerConfiguration
-                    .WriteTo.Console();
-            }
+            loggerConfiguration
+                .WriteTo.Console(outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss.fff} [{Level:u3}] {Message}{NewLine}{Exception}");
 
             foreach (var @override in this.Options.LogLevelOverrides)
             {
                 loggerConfiguration
-                    .MinimumLevel.Override(@override.Namespace, @override.LogLevel);
+                    .MinimumLevel.Override(@override.Namespace, @override.LogLevel.GetLogLevel());
             }
             
             Log.Logger = loggerConfiguration

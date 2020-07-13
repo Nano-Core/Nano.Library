@@ -1,4 +1,3 @@
-using Serilog.Events;
 
 namespace Nano.Logging
 {
@@ -15,33 +14,12 @@ namespace Nano.Logging
         /// <summary>
         /// Log Level.
         /// </summary>
-        public virtual LogEventLevel LogLevel { get; set; } = LogEventLevel.Information;
-
-        /// <summary>
-        /// Sinks.
-        /// </summary>
-        public virtual Sink[] Sinks { get; set; } = new Sink[0];
+        public virtual LogLevel LogLevel { get; set; } = LogLevel.Information;
 
         /// <summary>
         /// Log Level Overrides.
         /// </summary>
         public virtual LogLevelOverride[] LogLevelOverrides { get; set; } = new LogLevelOverride[0];
-
-        /// <summary>
-        /// Sink (nested class).
-        /// </summary>
-        public class Sink
-        {
-            /// <summary>
-            /// Name.
-            /// </summary>
-            public virtual string Name { get; set; }
-
-            /// <summary>
-            /// Connection String.
-            /// </summary>
-            public virtual string ConnectionString { get; set; }
-        }
 
         /// <summary>
         /// Log Level Override (nested class).
@@ -56,7 +34,7 @@ namespace Nano.Logging
             /// <summary>
             /// Log Level.
             /// </summary>
-            public virtual LogEventLevel LogLevel { get; set; } = LogEventLevel.Warning;
+            public virtual LogLevel LogLevel { get; set; } = LogLevel.Warning;
         }
     }
 }
