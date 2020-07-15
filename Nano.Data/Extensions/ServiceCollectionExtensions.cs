@@ -38,7 +38,8 @@ namespace Nano.Data.Extensions
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            var options = services.BuildServiceProvider().GetService<DataOptions>();
+            var options = services.BuildServiceProvider()
+                .GetRequiredService<DataOptions>();
 
             services
                 .AddScoped<DbContext, TContext>()
@@ -117,7 +118,7 @@ namespace Nano.Data.Extensions
                         .GetService<IHttpContextAccessor>();
 
                     var requestId = httpContextAccessor?.HttpContext?.TraceIdentifier;
-                    var createdBy = httpContextAccessor?.HttpContext?.GetJwtUserId().ToString();
+                    var createdBy = httpContextAccessor?.HttpContext?.GetJwtUserId()?.ToString();
 
                     var customAuditEntries = audit.Entries
                         .Select(x =>

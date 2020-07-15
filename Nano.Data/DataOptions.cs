@@ -43,7 +43,7 @@ namespace Nano.Data
         /// <summary>
         /// Use Auto Save.
         /// </summary>
-        public virtual bool UseAutoSave { get; set; } = true;
+        public virtual bool UseAutoSave { get; set; } = false;
 
         /// <summary>
         /// Use Lazy Loading.
