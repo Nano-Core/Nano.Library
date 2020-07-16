@@ -57,18 +57,6 @@ namespace Nano.Data
         /// </summary>
         public virtual bool AutoSave => this.Options.UseAutoSave;
 
-        /// <summary>
-        /// Is Lazy-Loading Enabled.
-        /// </summary>
-        public virtual bool IsLazyLoadingEnabled
-        {
-            get => this.ChangeTracker.LazyLoadingEnabled;
-            set
-            {
-                this.ChangeTracker.LazyLoadingEnabled = value;
-            }
-        }
-
         /// <inheritdoc />
         protected BaseDbContext(DbContextOptions contextOptions, DataOptions dataOptions)
             : base(contextOptions)

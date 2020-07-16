@@ -24,6 +24,16 @@ namespace Nano.Repository
         /// </summary>
         internal virtual TContext Context { get; }
 
+        /// <inheritdoc />
+        public virtual bool IsLazyLoadingEnabled
+        {
+            get => this.Context.ChangeTracker.LazyLoadingEnabled;
+            set
+            {
+                this.Context.ChangeTracker.LazyLoadingEnabled = value;
+            }
+        }
+
         /// <summary>
         /// Constructor.
         /// </summary>
