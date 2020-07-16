@@ -110,21 +110,6 @@
             <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
             <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
         </member>
-        <member name="M:Nano.App.Extensions.ServiceCollectionExtensions.GetServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
-            <summary>
-            Gets a colletion of dependencies registered in the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
-            </summary>
-            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
-            <param name="isUnique">Bool indicating if only unique service dependencies should be returned.</param>
-            <returns>The <see cref="T:System.Collections.Generic.IEnumerator`1"/> of <see cref="T:Microsoft.Extensions.DependencyInjection.ServiceDescriptor"/> items.</returns>
-        </member>
-        <member name="M:Nano.App.Extensions.ServiceCollectionExtensions.LogServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            Outputs the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to log.
-            </summary>
-            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
-            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
-        </member>
         <member name="T:Nano.App.Interfaces.IApplication">
             <summary>
             Application.

@@ -143,7 +143,7 @@
         </member>
         <member name="M:Nano.Web.Api.DefaultApi.GetAsync``1(System.Guid,System.Threading.CancellationToken)">
             <summary>
-            Details.
+            Get.
             Invokes the 'details' endpoint of the api.
             </summary>
             <typeparam name="TEntity">The entity type.</typeparam>
@@ -1502,25 +1502,13 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerUpdatable`4.EditConfirms(`1[],System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerUpdatable`4.EditConfirms(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
             <summary>
             Edits the passed models.
             </summary>
             <param name="entities">The models to edit.</param>
             <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>Void.</returns>
-            <response code="200">Ok.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occured.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerUpdatable`4.EditConfirmsQuery(System.ValueTuple{`3,`1},System.Threading.CancellationToken)">
-            <summary>
-            Edits the models, changing all entities returned by the passed 'select' criteria, with the values of the passed 'update'.
-            </summary>
-            <param name="criteria">The criteria for selecting models to edit, and the model containing values to be changed for all matching entities.</param>
-            <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>Void.</returns>
+            <returns>The edited models.</returns>
             <response code="200">Ok.</response>
             <response code="400">Bad Request.</response>
             <response code="401">Unauthorized.</response>
@@ -1574,23 +1562,11 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.EditConfirms(`1[],System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.EditConfirms(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
             <summary>
             Edits the passed models.
             </summary>
             <param name="entities">The models to edit.</param>
-            <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>Void.</returns>
-            <response code="200">Ok.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occured.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.EditConfirmsQuery(System.ValueTuple{`3,`1},System.Threading.CancellationToken)">
-            <summary>
-            Edits the models, changing all entities returned by the passed 'select' criteria, with the values of the passed 'update'.
-            </summary>
-            <param name="criteria">The criteria for selecting models to edit, and the model containing values to be changed for all matching entities.</param>
             <param name="cancellationToken">The token used when request is cancelled.</param>
             <returns>Void.</returns>
             <response code="200">Ok.</response>
@@ -1611,7 +1587,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.DeleteConfirms(`2[],System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.DeleteConfirms(System.Collections.Generic.IEnumerable{`2},System.Threading.CancellationToken)">
             <summary>
             Deletes the models with the passed identifier's.
             </summary>
@@ -1678,12 +1654,40 @@
             Contains method for handling application level operations.
             </summary>
         </member>
-        <member name="M:Nano.Web.Controllers.HomeController.Index">
+        <member name="P:Nano.Web.Controllers.HomeController.Logger">
+            <summary>
+            Logger.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Controllers.HomeController.Services">
+            <summary>
+            Services.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Controllers.HomeController.#ctor(Microsoft.Extensions.Logging.ILogger,Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+        </member>
+        <member name="M:Nano.Web.Controllers.HomeController.Ping">
             <summary>
             Default action (ping).
             </summary>
             <returns>Void.</returns>
             <response code="200">OK.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.HomeController.GetServices(System.String)">
+            <summary>
+            Get registered 
+            </summary>
+            <param name="filter">The filter on service or implementation name.</param>
+            <returns>Void.</returns>
+            <response code="200">OK.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
         <member name="M:Nano.Web.Controllers.HomeController.SetLanguage(System.String,System.Threading.CancellationToken)">
@@ -2117,43 +2121,6 @@
         <member name="M:Nano.Web.Hosting.Documentation.Filters.LowercaseDocumentFilter.Apply(Microsoft.OpenApi.Models.OpenApiDocument,Swashbuckle.AspNetCore.SwaggerGen.DocumentFilterContext)">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Hosting.Extensions.HttpRequestExtensions">
-            <summary>
-            Http Request Extensions.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.HttpRequestExtensions.IsContentTypeJson(Microsoft.AspNetCore.Http.HttpRequest)">
-            <summary>
-            Returns whether the <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/> headers contains a content-type of 'application/json', 'application/javascript' or 
-            the <see cref="P:Microsoft.AspNetCore.Http.HttpRequest.QueryString"/> contains a 'format=json' parameter.
-            </summary>
-            <param name="httpRequest">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
-            <returns>A <see cref="T:System.Boolean"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.HttpRequestExtensions.IsContentTypeXml(Microsoft.AspNetCore.Http.HttpRequest)">
-            <summary>
-            Returns whether the <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/> headers contains a content-type of 'application/xml' or  
-            the <see cref="P:Microsoft.AspNetCore.Http.HttpRequest.QueryString"/> contains a 'format=xml' parameter.
-            </summary>
-            <param name="httpRequest">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
-            <returns>A <see cref="T:System.Boolean"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.HttpRequestExtensions.IsContentTypeHtml(Microsoft.AspNetCore.Http.HttpRequest)">
-            <summary>
-            Returns whether the <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/> headers contains a content-type of 'text/html' or
-            the <see cref="P:Microsoft.AspNetCore.Http.HttpRequest.QueryString"/> contains a 'format=html' parameter.
-            </summary>
-            <param name="httpRequest">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
-            <returns>A <see cref="T:System.Boolean"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Hosting.Extensions.HttpRequestExtensions.IsContentType(Microsoft.AspNetCore.Http.HttpRequest,System.String)">
-            <summary>
-            Returns whether the <see cref="P:Microsoft.AspNetCore.Http.HttpRequest.ContentType"/> matches the passed <see cref="T:System.String"/>.
-            </summary>
-            <param name="httpRequest">The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/>.</param>
-            <param name="match">The <see cref="T:System.String"/> content-type.</param>
-            <returns>A <see cref="T:System.Boolean"/>.</returns>
-        </member>
         <member name="T:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute">
             <summary>
             A <see cref="T:Microsoft.AspNetCore.Mvc.Filters.ResultFilterAttribute"/> that disables lazy loading before serialzing the response.
@@ -2173,6 +2140,17 @@
         </member>
         <member name="M:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute.OnResultExecuting(Microsoft.AspNetCore.Mvc.Filters.ResultExecutingContext)">
             <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Hosting.Filters.IsAnonymousFilter">
+            <summary>
+            Is Anonymous Filter.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.Filters.IsAnonymousFilter.OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext)">
+            <summary>
+            Add IsAnonymous key/value pair to <see cref="P:Microsoft.AspNetCore.Http.HttpContext.Items"/>.
+            </summary>
+            <param name="context">The <see cref="T:Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext"/>.</param>
         </member>
         <member name="T:Nano.Web.Hosting.Filters.ModelStateValidationFilter">
             <summary>
@@ -2366,6 +2344,26 @@
         <member name="M:Nano.Web.Models.Error.ToString">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Web.Models.ServiceDependency">
+            <summary>
+            Service Dependency.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Models.ServiceDependency.Service">
+            <summary>
+            Service.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Models.ServiceDependency.Implementation">
+            <summary>
+            Implementation.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Models.ServiceDependency.LifeTime">
+            <summary>
+            Life Time.
+            </summary>
+        </member>
         <member name="T:Nano.Web.WebApplication">
             <inheritdoc />
         </member>
@@ -2410,11 +2408,6 @@
         <member name="P:Nano.Web.WebOptions.Documentation">
             <summary>
             Documentation.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.WebOptions.CompatabilityVersion">
-            <summary>
-            Compatibility Version.
             </summary>
         </member>
         <member name="T:Nano.Web.WebOptions.HostingOptions">

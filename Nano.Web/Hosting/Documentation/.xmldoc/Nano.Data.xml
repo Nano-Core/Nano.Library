@@ -22,6 +22,11 @@
             Audit Entry Properties.
             </summary>
         </member>
+        <member name="P:Nano.Data.BaseDbContext.AutoSave">
+            <summary>
+            Auto Save.
+            </summary>
+        </member>
         <member name="M:Nano.Data.BaseDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions,Nano.Data.DataOptions)">
             <inheritdoc />
         </member>
@@ -55,7 +60,7 @@
             </summary>
             <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
             <param name="entity">The <see cref="T:System.Object"/> of type <typeparamref name="TEntity"/>.</param>
-            <returns>A <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry`1"/>.</returns>
+            <returns>A <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry"/>.</returns>
         </member>
         <member name="M:Nano.Data.BaseDbContext.AddOrUpdateMany``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
@@ -64,22 +69,6 @@
             <typeparam name="TEntity">The type of <paramref name="entities"/>.</typeparam>
             <param name="entities">The <see cref="T:System.Object"/>'s of type <typeparamref name="TEntity"/>.</param>
             <returns>A <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry`1"/>.</returns>
-        </member>
-        <member name="M:Nano.Data.BaseDbContext.AddRangeAsync``1(System.Uri,System.Threading.CancellationToken)">
-            <summary>
-            Import data from the passed <paramref name="uri"/>, deserilaized into the type of the generic argument <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/> type, used for deserialization.</typeparam>
-            <param name="uri">The <see cref="T:System.Uri"/> of the data to import.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-        </member>
-        <member name="M:Nano.Data.BaseDbContext.AddRangeAsync(System.Uri,System.Type,System.Threading.CancellationToken)">
-            <summary>
-            Import data from the passed <paramref name="uri"/>, deserilaized into the passed <paramref name="type"/>.
-            </summary>
-            <param name="uri">The <see cref="T:System.Uri"/> of the data to import.</param>
-            <param name="type">The <see cref="T:System.Type"/> used when deserializing.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
         </member>
         <member name="M:Nano.Data.BaseDbContext.SaveChanges">
             <inheritdoc />
@@ -137,6 +126,11 @@
         <member name="P:Nano.Data.DataOptions.UseAudit">
             <summary>
             Use Audit.
+            </summary>
+        </member>
+        <member name="P:Nano.Data.DataOptions.UseAutoSave">
+            <summary>
+            Use Auto Save.
             </summary>
         </member>
         <member name="P:Nano.Data.DataOptions.UseLazyLoading">
