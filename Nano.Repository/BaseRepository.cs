@@ -476,7 +476,7 @@ namespace Nano.Repository
                 throw new ArgumentNullException(nameof(entities));
 
             this.Context
-                .RemoveRange(entities, cancellationToken);
+                .RemoveRange(entities);
 
             if (this.Context.AutoSave)
                 await this.SaveChanges(cancellationToken);

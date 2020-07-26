@@ -219,17 +219,8 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> DeleteMany([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
         {
-            var paging = new Pagination
-            {
-                Count = 1,
-                Number = int.MaxValue
-            };
-
-            var entities = await this
-                .Repository.GetManyAsync<TEntity>(x => ids.Contains(x.Id), paging, cancellationToken);
-
-            if (entities == null)
-                return this.NotFound();
+            var entities = await this.Repository
+                .GetManyAsync<TEntity, TIdentity>(ids, cancellationToken);
 
             await this.Repository
                 .DeleteManyAsync(entities, cancellationToken);
