@@ -51,7 +51,7 @@ namespace Nano.Data.Extensions
 
             type
                 .GetProperties()
-                .Where(x => x.GetCustomAttributes<IncludeAttribute>().Any())
+                .Where(x => x.GetCustomAttributes<IncludeAttribute>().Any()) // Test: is it working when defined on interface property.
                 .ToList()
                 .ForEach(x =>
                 {

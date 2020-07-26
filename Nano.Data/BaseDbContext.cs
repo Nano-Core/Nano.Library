@@ -415,26 +415,15 @@ namespace Nano.Data
                     var state = x.State.ToString();
                     var name = type.Name.Replace("Proxy", string.Empty);
 
-                    switch (x.Entity)
+                    return x.Entity switch
                     {
-                        case IEntityIdentity<int> @int:
-                            return new EntityEvent(@int.Id, name, state);
-
-                        case IEntityIdentity<long> @long:
-                            return new EntityEvent(@long.Id, name, state);
-
-                        case IEntityIdentity<string> @string:
-                            return new EntityEvent(@string.Id, name, state);
-
-                        case IEntityIdentity<Guid> guid:
-                            return new EntityEvent(guid.Id, name, state);
-
-                        case IEntityIdentity<dynamic> dynamic:
-                            return new EntityEvent(dynamic.Id, name, state);
-
-                        default:
-                            return null;
-                    }
+                        IEntityIdentity<int> @int => new EntityEvent(@int.Id, name, state),
+                        IEntityIdentity<long> @long => new EntityEvent(@long.Id, name, state),
+                        IEntityIdentity<string> @string => new EntityEvent(@string.Id, name, state),
+                        IEntityIdentity<Guid> guid => new EntityEvent(guid.Id, name, state),
+                        IEntityIdentity<dynamic> dynamic => new EntityEvent(dynamic.Id, name, state),
+                        _ => null,
+                    };
                 })
                 .Where(x => x != null)
                 .ToList();
