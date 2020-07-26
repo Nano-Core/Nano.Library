@@ -89,18 +89,18 @@ namespace Nano.Web.Hosting.Middleware
                             ? JsonConvert.SerializeObject(error)
                             : acceptHheader.Contains(HttpContentType.XML)
                                 ? XmlConvert.SerializeObject(error)
-                                : error.ToString()
+                                : error.Summary
                         : contentTypeHeader.Any()
                             ? contentTypeHeader.Contains(HttpContentType.JSON)
                                 ? JsonConvert.SerializeObject(error)
                                 : contentTypeHeader.Contains(HttpContentType.XML)
                                     ? XmlConvert.SerializeObject(error)
-                                    : error.ToString()
+                                    : error.Summary
                             : queryString.Contains($"format={HttpContentType.JSON}")
                                 ? JsonConvert.SerializeObject(error)
                                 : queryString.Contains($"format={HttpContentType.XML}")
                                     ? XmlConvert.SerializeObject(error)
-                                    : error.ToString();
+                                    : error.Summary;
 
                     await response
                         .WriteAsync(result);
