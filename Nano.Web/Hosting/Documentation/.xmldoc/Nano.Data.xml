@@ -367,6 +367,12 @@
             </summary>
             <param name="builder">The <see cref="T:Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1"/>.</param>
         </member>
+        <member name="T:Nano.Data.Models.Mappings.BaseEntityViewMapping`1">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.Models.Mappings.BaseEntityViewMapping`1.Map(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{`0})">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Data.Models.Mappings.DefaultAuditEntryMapping">
             <inheritdoc />
         </member>

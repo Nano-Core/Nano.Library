@@ -39,10 +39,10 @@
         <member name="M:Nano.Repository.BaseRepository`1.GetAsync``1(System.Guid,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetFirstAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`1.GetFirstAsync``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetFirstAsync``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`1.GetFirstAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IOrdering,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``2(System.Collections.Generic.IEnumerable{``1},System.Threading.CancellationToken)">
@@ -252,15 +252,6 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
             <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
         </member>
-        <member name="M:Nano.Repository.Interfaces.IRepository.GetFirstAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
-            <summary>
-            Gets the fist or default instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> of the <see cref="T:Nano.Models.Interfaces.IEntity"/>
-            </summary>
-            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> type.</typeparam>
-            <param name="where">The where clause.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
-            <returns>The fist instance matching the passed <paramref name="where"/> clause.</returns>
-        </member>
         <member name="M:Nano.Repository.Interfaces.IRepository.GetFirstAsync``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
             <summary>
             Gets the first instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="query"/>.
@@ -270,6 +261,16 @@
             <param name="query">The <see cref="T:DynamicExpression.Interfaces.IQuery`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
             <returns>The instances, matching the passed <paramref name="query"/>.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.GetFirstAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IOrdering,System.Threading.CancellationToken)">
+            <summary>
+            Gets the fist or default instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> of the <see cref="T:Nano.Models.Interfaces.IEntity"/>
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> type.</typeparam>
+            <param name="where">The where clause.</param>
+            <param name="ordering">The order by clause</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The fist instance matching the passed <paramref name="where"/> clause.</returns>
         </member>
         <member name="M:Nano.Repository.Interfaces.IRepository.GetManyAsync``2(System.Collections.Generic.IEnumerable{``1},System.Threading.CancellationToken)">
             <summary>

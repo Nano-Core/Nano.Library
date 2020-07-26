@@ -850,9 +850,16 @@
             <summary>
             Sign Up.
             </summary>
-            <typeparam name="TUser">The user type</typeparam>
+            <typeparam name="TUser">The user type.</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.SignUp`1.User">
+        <member name="T:Nano.Security.Models.SignUp`2">
+            <summary>
+            Sign Up.
+            </summary>
+            <typeparam name="TUser">The user type.</typeparam>
+            <typeparam name="TIdentity">The identity type.</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.SignUp`2.User">
             <summary>
             User.
             </summary>
@@ -878,7 +885,14 @@
             </summary>
             <typeparam name="TUser">The user type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.SignUpExternal`1.User">
+        <member name="T:Nano.Security.Models.SignUpExternal`2">
+            <summary>
+            Sign Up External.
+            </summary>
+            <typeparam name="TUser">The user type.</typeparam>
+            <typeparam name="TIdentity">The identity type.</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.SignUpExternal`2.User">
             <summary>
             User.
             </summary>
@@ -893,14 +907,14 @@
             Section Name.
             </summary>
         </member>
-        <member name="P:Nano.Security.SecurityOptions.IsEnabled">
+        <member name="P:Nano.Security.SecurityOptions.IsAuth">
             <summary>
-            Is Enabled.
+            Is Auth.
             </summary>
         </member>
-        <member name="P:Nano.Security.SecurityOptions.IsAuthControllerEnabled">
+        <member name="P:Nano.Security.SecurityOptions.IsAnonymous">
             <summary>
-            Is Auth Controller Enabled.
+            Is Anonymous.
             </summary>
         </member>
         <member name="P:Nano.Security.SecurityOptions.Jwt">
