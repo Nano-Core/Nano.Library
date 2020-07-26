@@ -31,7 +31,7 @@ namespace Nano.Logging.Providers.Log4Net
         {
             var patternLayout = new PatternLayout
             {
-                ConversionPattern = "%utcdate{dd-MM-yyyy HH:mm:ss.fff} [%level] %message%newline"
+                ConversionPattern = "%utcdate{dd-MM-yyyy HH:mm:ss.ffffff} [%level] %message%newline"
             };
             patternLayout.ActivateOptions();
 

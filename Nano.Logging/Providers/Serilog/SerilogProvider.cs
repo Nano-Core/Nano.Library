@@ -32,7 +32,7 @@ namespace Nano.Logging.Providers.Serilog
                 .MinimumLevel.Is(this.Options.LogLevel.GetLogLevel());
 
             loggerConfiguration
-                .WriteTo.Console(outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss.fff} [{Level:u3}] {Message}{NewLine}{Exception}");
+                .WriteTo.Console(outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss.ffffff} [{Level:u3}] {Message}{NewLine}{Exception}");
 
             foreach (var @override in this.Options.LogLevelOverrides)
             {
