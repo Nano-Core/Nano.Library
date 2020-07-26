@@ -44,14 +44,14 @@ namespace Nano.Data.Providers.SqlServer
                 .ConfigureWarnings(x =>
                 {
                     x.Ignore(RelationalEventId.BoolWithDefaultWarning);
-                    x.Log(
-                        RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
+                    x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
                 })
                 .UseLazyLoadingProxies(useLazyLoading)
                 .UseSqlServer(connectionString, x =>
                 {
                     x.MaxBatchSize(batchSize);
                     x.EnableRetryOnFailure(retryCount);
+                    x.UseNetTopologySuite();
                 });
         }
     }
