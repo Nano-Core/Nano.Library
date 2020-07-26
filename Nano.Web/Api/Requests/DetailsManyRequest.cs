@@ -3,22 +3,28 @@ using System.Collections.Generic;
 
 namespace Nano.Web.Api.Requests
 {
+    /// <inheritdoc />
+    public class DetailsManyRequest : DetailsManyRequest<Guid>
+    {
+
+    }
+
     /// <summary>
     /// Details Many Request.
     /// </summary>
-    public class DetailsManyRequest : BaseRequestPost
+    public class DetailsManyRequest<TIdentity> : BaseRequestPost
     {
         /// <summary>
         /// Ids.
         /// </summary>
-        public virtual ICollection<Guid> Ids { get; set; }
+        public virtual ICollection<TIdentity> Ids { get; set; }
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public DetailsManyRequest()
         {
-            this.Action = "details";
+            this.Action = "details/many";
         }
 
         /// <inheritdoc />

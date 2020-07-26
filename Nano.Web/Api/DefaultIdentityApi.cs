@@ -2,20 +2,41 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.Models.Interfaces;
 using Nano.Web.Api.Requests;
+using Nano.Web.Api.Requests.Identity;
 
 namespace Nano.Web.Api
 {
     /// <summary>
-    /// Default Api.
+    /// Default Identity Api.
     /// </summary>
-    public class DefaultApi : BaseApi<Guid>
+    public class DefaultIdentityApi<TUser> : BaseIdentityApi<TUser, Guid>
+        where TUser : IEntityUser<Guid>
     {
         /// <inheritdoc />
-        public DefaultApi(ApiOptions apiOptions)
+        public DefaultIdentityApi(ApiOptions apiOptions)
             : base(apiOptions)
         {
 
+        }
+
+        /// <inheritdoc />
+        public override async Task<TUser> SignUpAsync(SignUpRequest<TUser, Guid> request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await base.SignUpAsync(request, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public override async Task<TUser> SignUpExternalAsync(SignUpExternalRequest<TUser, Guid> request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await base.SignUpExternalAsync(request, cancellationToken);
         }
 
         /// <inheritdoc />

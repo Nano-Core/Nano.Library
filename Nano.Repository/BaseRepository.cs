@@ -100,21 +100,6 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
-        public virtual async Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntity
-        {
-            if (where == null)
-                throw new ArgumentNullException(nameof(where));
-
-            var indent = this.Context.Options.QueryIncludeDepth;
-
-            return await this.GetEntitySet<TEntity>()
-                .IncludeAnnotations(indent)
-                .Where(where)
-                .FirstOrDefaultAsync(cancellationToken);
-        }
-
-        /// <inheritdoc />
         public virtual async Task<TEntity> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
             where TCriteria : class, IQueryCriteria, new()
@@ -129,6 +114,24 @@ namespace Nano.Repository
                 .Where(query.Criteria)
                 .Order(query.Order)
                 .Limit(query.Paging)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, IOrdering ordering, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+        {
+            if (where == null)
+                throw new ArgumentNullException(nameof(where));
+
+            if (ordering == null)
+                throw new ArgumentNullException(nameof(ordering));
+
+            var indent = this.Context.Options.QueryIncludeDepth;
+
+            return await this.GetEntitySet<TEntity>()
+                .IncludeAnnotations(indent)
+                .Where(where)
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
@@ -243,6 +246,9 @@ namespace Nano.Repository
             if (where == null)
                 throw new ArgumentNullException(nameof(where));
 
+            if (ordering == null)
+                throw new ArgumentNullException(nameof(ordering));
+
             var indent = this.Context.Options.QueryIncludeDepth;
             
             return await this.GetEntitySet<TEntity>()
@@ -281,6 +287,9 @@ namespace Nano.Repository
             if (pagination == null)
                 throw new ArgumentNullException(nameof(pagination));
 
+            if (ordering == null)
+                throw new ArgumentNullException(nameof(ordering));
+
             var indent = this.Context.Options.QueryIncludeDepth;
             
             return await this.GetEntitySet<TEntity>()
@@ -297,6 +306,9 @@ namespace Nano.Repository
         {
             if (where == null)
                 throw new ArgumentNullException(nameof(where));
+
+            if (ordering == null)
+                throw new ArgumentNullException(nameof(ordering));
 
             if (pagination == null)
                 throw new ArgumentNullException(nameof(pagination));
@@ -570,9 +582,9 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
-        public virtual async Task<int> SaveChanges(CancellationToken cancellationToken = default)
+        public virtual async Task SaveChanges(CancellationToken cancellationToken = default)
         {
-            return await this.Context
+            await this.Context
                 .SaveChangesAsync(cancellationToken); 
         }
 

@@ -3,15 +3,21 @@ using System.Collections.Generic;
 
 namespace Nano.Web.Api.Requests
 {
+    /// <inheritdoc />
+    public class DetailsRequest : DetailsRequest<Guid>
+    {
+
+    }
+
     /// <summary>
     /// Details Request.
     /// </summary>
-    public class DetailsRequest : BaseRequestGet
+    public class DetailsRequest<TIdentity> : BaseRequestGet
     {
         /// <summary>
         /// Id.
         /// </summary>
-        public virtual Guid Id { get; set; }
+        public virtual TIdentity Id { get; set; }
 
         /// <summary>
         /// Constructor.

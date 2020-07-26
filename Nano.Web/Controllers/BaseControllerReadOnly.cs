@@ -32,11 +32,10 @@ namespace Nano.Web.Controllers
 
         /// <summary>
         /// Gets all models.
-        /// Filtered by the parameters in the passed query (pagination and ordering).
         /// </summary>
         /// <param name="query">The query.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>A collection of models, matching the passed query.</returns>
+        /// <returns>the models, matching the passed query.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
@@ -45,14 +44,14 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [Route("index")]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Index([FromQuery][Required]IQuery query, CancellationToken cancellationToken = default)
         {
-            query = query ?? new Query();
+            query ??= new Query();
 
             var result = await this.Repository
                 .GetManyAsync<TEntity>(query, cancellationToken);
@@ -65,11 +64,10 @@ namespace Nano.Web.Controllers
 
         /// <summary>
         /// Gets all models.
-        /// Filtered by the parameters in the passed query (pagination and ordering).
         /// </summary>
         /// <param name="query">The query.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>A collection of models, matching the passed query.</returns>
+        /// <returns>the models, matching the passed query.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
@@ -79,14 +77,14 @@ namespace Nano.Web.Controllers
         [Route("index")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> IndexPost([FromBody][Required]IQuery query, CancellationToken cancellationToken = default)
         {
-            query = query ?? new Query();
+            query ??= new Query();
 
             var result = await this.Repository
                 .GetManyAsync<TEntity>(query, cancellationToken);
@@ -99,7 +97,6 @@ namespace Nano.Web.Controllers
 
         /// <summary>
         /// Gets the model.
-        /// Uniquely identified by the passed id.
         /// </summary>
         /// <param name="id">The identifier, that uniquely identifies the model.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
@@ -112,9 +109,9 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [Route("details/{id}")]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Details([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
@@ -130,26 +127,24 @@ namespace Nano.Web.Controllers
 
         /// <summary>
         /// Gets the models.
-        /// Uniquely identified by the passed id's.
         /// </summary>
         /// <param name="ids">The identifiers, that uniquely identifies the models.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The model.</returns>
+        /// <returns>The models.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
         /// <response code="404">Not Found.</response>
         /// <response code="500">Error occured.</response>
-        [HttpPost]
-        [Route("details")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [HttpGet]
+        [Route("details/many")]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> DetailsPost([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> DetailsMany([FromQuery][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
         {
             var result = await this.Repository
                 .GetManyAsync<TEntity, TIdentity>(ids, cancellationToken);
@@ -161,12 +156,42 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Gets all models.
-        /// Filtered by the parameters in the passed query (criteria, pagination and ordering).
+        /// Gets the models.
+        /// </summary>
+        /// <param name="ids">The identifiers, that uniquely identifies the models.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
+        /// <returns>The models.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("details/many")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> DetailsManyPost([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
+        {
+            var result = await this.Repository
+                .GetManyAsync<TEntity, TIdentity>(ids, cancellationToken);
+
+            if (result == null)
+                return this.NotFound();
+
+            return this.Ok(result);
+        }
+
+        /// <summary>
+        /// Query models.
         /// </summary>
         /// <param name="query">The query model, containing filters used in the query.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>A collection of models, matching the passed query.</returns>
+        /// <returns>The models.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
@@ -175,14 +200,14 @@ namespace Nano.Web.Controllers
         [HttpGet]
         [Route("query")]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Query([FromQuery][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         {
-            query = query ?? new Query<TCriteria>();
+            query ??= new Query<TCriteria>();
 
             var result = await this.Repository
                 .GetManyAsync<TEntity, TCriteria>(query, cancellationToken);
@@ -194,12 +219,11 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Gets all models.
-        /// Filtered by the parameters in the passed query (criteria, pagination and ordering).
+        /// Query models.
         /// </summary>
         /// <param name="query">The query model, containing filters used in the query.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>A collection of models, matching the passed query.</returns>
+        /// <returns>The models.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
@@ -216,7 +240,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> QueryPost([FromBody][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         {
-            query = query ?? new Query<TCriteria>();
+            query ??= new Query<TCriteria>();
 
             var result = await this.Repository
                 .GetManyAsync<TEntity, TCriteria>(query, cancellationToken);
@@ -228,11 +252,11 @@ namespace Nano.Web.Controllers
         }
         
         /// <summary>
-        /// Gets first entity mathcing the passed query (criteria, pagination and ordering).
+        /// Query the first mathcing entity.
         /// </summary>
         /// <param name="query">The query model, containing filters used in the query.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The model, matching the passed query.</returns>
+        /// <returns>The model.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
@@ -248,7 +272,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> QueryFirst([FromQuery][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         {
-            query = query ?? new Query<TCriteria>();
+            query ??= new Query<TCriteria>();
 
             var result = await this.Repository
                 .GetFirstAsync<TEntity, TCriteria>(query, cancellationToken);
@@ -260,11 +284,11 @@ namespace Nano.Web.Controllers
         }
         
         /// <summary>
-        /// Gets first entity mathcing the passed query (criteria, pagination and ordering).
+        /// Query the first mathcing entity.
         /// </summary>
         /// <param name="query">The query model, containing filters used in the query.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The model, matching the passed query.</returns>
+        /// <returns>The model.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
@@ -279,9 +303,9 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> QueryFirstPost([FromQuery][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> QueryFirstPost([FromBody][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         {
-            query = query ?? new Query<TCriteria>();
+            query ??= new Query<TCriteria>();
 
             var result = await this.Repository
                 .GetFirstAsync<TEntity, TCriteria>(query, cancellationToken);
@@ -297,7 +321,7 @@ namespace Nano.Web.Controllers
         /// </summary>
         /// <param name="criteria">The criteria model, containing filters used in the criteria.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The count of models, matching the passed query.</returns>
+        /// <returns>The count of models..</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
@@ -322,9 +346,9 @@ namespace Nano.Web.Controllers
         /// <summary>
         /// Gets the number of models (Count).
         /// </summary>
-        /// <param name="criteria">The criteria model, containing filters used in the query.</param>
+        /// <param name="criteria">The criteria model, containing filters used in the criteria.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The count of models, matching the passed query.</returns>
+        /// <returns>The count of models..</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>

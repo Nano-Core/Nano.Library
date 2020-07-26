@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
+using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security.Const;
@@ -16,21 +16,15 @@ using Nano.Web.Models;
 
 namespace Nano.Web.Controllers
 {
-    /// <summary>
-    /// Base abstract <see cref="Controller"/>, implementing  methods for instances of <typeparamref name="TEntity"/>.
-    /// </summary>
-    /// <typeparam name="TRepository">The <see cref="IRepository"/> inheriting from <see cref="BaseControllerReadOnly{TRepository,TEntity,TIdentity,TCriteria}"/>.</typeparam>
-    /// <typeparam name="TEntity">The <see cref="IEntity"/> model the <see cref="IRepository"/> operates with.</typeparam>
-    /// <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
-    /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> implementation.</typeparam>
-    [Authorize(Roles = BuiltInUserRoles.Administrator + "," + BuiltInUserRoles.Service + "," + BuiltInUserRoles.Writer)]
-    public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
-        where TRepository : IRepository
-        where TEntity : class, IEntityIdentity<TIdentity>, IEntityCreatable
-        where TCriteria : class, IQueryCriteria, new()
+    /// <inheritdoc />
+    [Authorize(Roles = BuiltInUserRoles.Administrator + "," + BuiltInUserRoles.Service + "," + BuiltInUserRoles.Writer + "," + BuiltInUserRoles.Reader)]
+    public abstract class BaseControllerSpatialCreatable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerSpatialReadOnly<TRepository, TEntity, TIdentity, TCriteria>
+        where TRepository : IRepositorySpatial
+        where TEntity : class, IEntityIdentity<TIdentity>, IEntitySpatial, IEntityCreatable
+        where TCriteria : class, IQueryCriteriaSpatial, new()
     {
         /// <inheritdoc />
-        protected BaseControllerCreatable(ILogger logger, TRepository repository, IEventing eventing)
+        protected BaseControllerSpatialCreatable(ILogger logger, TRepository repository, IEventing eventing)
             : base(logger, repository, eventing)
         {
 
