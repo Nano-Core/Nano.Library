@@ -14,14 +14,14 @@ namespace Nano.Security
         public static string SectionName => "Security";
 
         /// <summary>
-        /// Is Enabled.
+        /// Is Auth.
         /// </summary>
-        public virtual bool IsEnabled { get; set; } = false;
+        public virtual bool IsAuth { get; set; } = false;
 
         /// <summary>
-        /// Is Auth Controller Enabled.
+        /// Is Anonymous.
         /// </summary>
-        public virtual bool IsAuthControllerEnabled { get; set; } = false;
+        public virtual bool IsAnonymous { get; set; } = false;
 
         /// <summary>
         /// Jwt Options.
