@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -11,9 +12,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nano.Security.Const;
+using Nano.Security.Extensions;
 using Nano.Web.Const;
 using Nano.Web.Models;
 using Vivet.AspNetCore.RequestTimeZone;
+using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 
 namespace Nano.Web.Controllers
@@ -26,11 +29,6 @@ namespace Nano.Web.Controllers
     public class HomeController : BaseController
     {
         /// <summary>
-        /// Logger.
-        /// </summary>
-        protected virtual ILogger Logger { get; }
-
-        /// <summary>
         /// Services.
         /// </summary>
         protected virtual IServiceCollection Services { get; }
@@ -41,13 +39,13 @@ namespace Nano.Web.Controllers
         /// <param name="logger">The <see cref="ILogger"/>.</param>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         public HomeController(ILogger logger, IServiceCollection services)
+            : base(logger)
         {
-            this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.Services = services ?? throw new ArgumentNullException(nameof(services));
         }
 
         /// <summary>
-        /// Default action (ping).
+        /// Ping.
         /// </summary>
         /// <returns>Void.</returns>
         /// <response code="200">OK.</response>
@@ -63,10 +61,49 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Get registered 
+        /// Get information about the current user.
+        /// </summary>
+        /// <returns>The user information.</returns>
+        /// <response code="200">OK.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpGet]
+        [Route("user")]
+        [AllowAnonymous]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(IEnumerable<UserInformation>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual IActionResult GetUser()
+        {
+            var id = this.HttpContext.GetJwtUserId();
+            var appId = this.HttpContext.GetJwtAppId();
+            var name = this.HttpContext.GetJwtUserName();
+            var email = this.HttpContext.GetJwtUserEmail();
+            var jwtToken = this.HttpContext.GetJwtToken();
+            var timezone = this.HttpContext.GetUserTimeZone();
+            var culture = CultureInfo.CurrentCulture.Name;
+
+            var userInfo = new UserInformation
+            {
+                Id = id,
+                AppId = appId,
+                Name = name,
+                Email = email,
+                JwtToken = jwtToken,
+                TimeZone = timezone?.Id,
+                Culture = culture
+            };
+
+            return this.Ok(userInfo);
+        }
+
+        /// <summary>
+        /// Get Services.
+        /// The services dependencies registerd during application start-up.
         /// </summary>
         /// <param name="filter">The filter on service or implementation name.</param>
-        /// <returns>Void.</returns>
+        /// <returns>The services.</returns>
         /// <response code="200">OK.</response>
         /// <response code="401">Unauthorized.</response>
         /// <response code="404">Not Found.</response>
@@ -82,8 +119,8 @@ namespace Nano.Web.Controllers
         {
             var serviceDescriptors = this.Services
                 .Where(x => 
-                    x.ServiceType?.FullName != null && x.ServiceType.FullName.Contains(filter) ||
-                    x.ImplementationType?.FullName != null && x.ImplementationType.FullName.Contains(filter))
+                    x.ServiceType?.FullName != null && x.ServiceType?.FullName?.IndexOf(filter) >= 0 ||
+                    x.ImplementationType?.FullName != null && x.ImplementationType?.FullName?.IndexOf(filter) >= 0)
                 .Select(x => new ServiceDependency
                 {
                     Service = x.ServiceType.FullName, 
