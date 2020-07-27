@@ -490,9 +490,11 @@ namespace Nano.Repository
             if (criteria == null)
                 throw new ArgumentNullException(nameof(criteria));
 
-            await this.GetEntitySet<TEntity>()
-                .Where(criteria)
-                .DeleteAsync(cancellationToken);
+            var entities = this.GetEntitySet<TEntity>()
+                .Where(criteria);
+
+            this.Context
+                .RemoveRange(entities);
 
             if (this.Context.AutoSave)
                 await this.SaveChanges(cancellationToken);
@@ -505,9 +507,11 @@ namespace Nano.Repository
             if (expression == null)
                 throw new ArgumentNullException(nameof(expression));
 
-            await this.GetEntitySet<TEntity>()
-                .Where(expression)
-                .DeleteAsync(cancellationToken);
+            var entities = this.GetEntitySet<TEntity>()
+                .Where(expression);
+
+            this.Context
+                .RemoveRange(entities);
 
             if (this.Context.AutoSave)
                 await this.SaveChanges(cancellationToken);
@@ -522,6 +526,43 @@ namespace Nano.Repository
 
             await this.GetEntitySet<TEntity>()
                 .BulkDeleteAsync(entities, cancellationToken);
+
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteManyBulkAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable
+            where TCriteria : class, IQueryCriteria, new()
+        {
+            if (criteria == null)
+                throw new ArgumentNullException(nameof(criteria));
+
+            var entities = this.GetEntitySet<TEntity>()
+                .Where(criteria);
+
+            this.Context
+                .RemoveRange(entities);
+
+            await this.GetEntitySet<TEntity>()
+                .Where(criteria)
+                .DeleteAsync(cancellationToken);
+
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteManyBulkAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable
+        {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            await this.GetEntitySet<TEntity>()
+                .Where(expression)
+                .DeleteAsync(cancellationToken);
 
             if (this.Context.AutoSave)
                 await this.SaveChanges(cancellationToken);

@@ -365,6 +365,28 @@ namespace Nano.Repository.Interfaces
             where TEntity : class, IEntityDeletable;
 
         /// <summary>
+        /// Bulk deletes all instances of <typeparamref name="TEntity"/>, matching the criterias of the passed <paramref name="criteria"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
+        /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> type.</typeparam>
+        /// <param name="criteria">The <see cref="IQueryCriteria"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The <see cref="Task"/> (void).</returns>
+        Task DeleteManyBulkAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable
+            where TCriteria : class, IQueryCriteria, new();
+
+        /// <summary>
+        /// Bulk deletes all instances matching the passed criteria <see cref="Expression"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityUpdatable"/> type.</typeparam>
+        /// <param name="expression">The <see cref="Expression"/> to evaulate entities to be deleted.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The <see cref="Task"/> (void).</returns>
+        Task DeleteManyBulkAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable;
+
+        /// <summary>
         /// Returns the count (long) of elements satisfying the passed criteria.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
