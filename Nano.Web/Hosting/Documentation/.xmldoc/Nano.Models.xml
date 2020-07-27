@@ -18,32 +18,19 @@
         <member name="P:Nano.Models.BaseEntityIdentity`1.Id">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Models.BaseEntityUser">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Models.BaseEntityUser.#ctor">
-            <summary>
-            Constructor.
-            </summary>
-        </member>
         <member name="T:Nano.Models.BaseEntityUser`1">
             <summary>
             Base Entity User (abstract).
             </summary>
+        </member>
+        <member name="P:Nano.Models.BaseEntityUser`1.IsDeleted">
+            <inheritdoc />
         </member>
         <member name="P:Nano.Models.BaseEntityUser`1.IdentityUserId">
             <inheritdoc />
         </member>
         <member name="P:Nano.Models.BaseEntityUser`1.IdentityUser">
             <inheritdoc />
-        </member>
-        <member name="P:Nano.Models.BaseEntityUser`1.IsDeleted">
-            <inheritdoc />
-        </member>
-        <member name="P:Nano.Models.BaseEntityUser`1.CreatedAt">
-            <summary>
-            Created At.
-            </summary>
         </member>
         <member name="T:Nano.Models.Criterias.BaseQueryCriteria">
             <inheritdoc />
@@ -114,6 +101,17 @@
         <member name="T:Nano.Models.DefaultEntityUser">
             <summary>
             Default Entity User.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.DefaultEntityUser.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Models.DefaultEntityUser`1">
+            <inheritdoc cref="T:Nano.Models.Interfaces.IEntityWritable"/>
+        </member>
+        <member name="P:Nano.Models.DefaultEntityUser`1.CreatedAt">
+            <summary>
+            Created At.
             </summary>
         </member>
         <member name="T:Nano.Models.Exceptions.TranslationException">

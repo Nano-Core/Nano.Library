@@ -53,7 +53,7 @@ namespace Nano.Data.Providers.MySql
                     x.MaxBatchSize(batchSize);
                     x.EnableRetryOnFailure(retryCount);
                     x.CharSet(CharSet.Utf8Mb4);
-                    // x.UseNetTopologySuite(); // BUG: Waiting for stable release of Pomelo.
+                    // x.UseNetTopologySuite();  TODO: Waiting for stable release of Pomelo.
                 });
         }
     }
