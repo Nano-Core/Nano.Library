@@ -16,7 +16,7 @@ namespace Nano.Security
         /// <summary>
         /// Is Auth.
         /// </summary>
-        public virtual bool IsAuth { get; set; } = false;
+        public virtual bool IsAuth { get; set; } = true;
 
         /// <summary>
         /// Is Anonymous.

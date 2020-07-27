@@ -102,7 +102,7 @@ namespace Nano.Web.Extensions
                     x.Conventions.Insert(0, routePrefixConvention);
                     x.ModelBinderProviders.Insert(0, queryModelBinderProvider);
 
-                    if (!securityOptions.IsAnonymous || !securityOptions.IsAuth)
+                    if (securityOptions.IsAnonymous || !securityOptions.IsAuth)
                         x.Conventions.Insert(1, new AuthControllerDisabledConvention());
 
                     if (dataOptions.ConnectionString == null)
@@ -131,7 +131,7 @@ namespace Nano.Web.Extensions
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()
                 .AddApplicationPart(assembly);
-
+            
             services
                 .AddApis()
                 .AddStartupTasks()
@@ -211,7 +211,7 @@ namespace Nano.Web.Extensions
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-            if (!securityOptions.IsAnonymous)
+            if (securityOptions.IsAnonymous)
             {
                 services.AddMvc(x =>
                 {
@@ -408,7 +408,7 @@ namespace Nano.Web.Extensions
                     x.CustomSchemaIds(y => y.FullName);
                     x.OrderActionsBy(y => y.RelativePath);
 
-                    if (securityOptions.IsAnonymous)
+                    if (!securityOptions.IsAnonymous)
                     {
                         var securityScheme = new OpenApiSecurityScheme
                         {
