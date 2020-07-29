@@ -121,23 +121,20 @@ namespace Nano.Data.Extensions
                     var createdBy = httpContextAccessor?.HttpContext?.GetJwtUserId()?.ToString();
 
                     var customAuditEntries = audit.Entries
+                        .Where(x => x.AuditEntryID == 0)
                         .Select(x =>
                         {
-                            var id = Guid.NewGuid();
-
                             return new DefaultAuditEntry
                             {
-                                Id = id,
                                 CreatedBy = createdBy ?? x.CreatedBy,
                                 EntitySetName = x.EntitySetName,
                                 EntityTypeName = x.EntityTypeName,
-                                State = (int) x.State,
+                                State = (int)x.State,
                                 StateName = x.StateName,
                                 RequestId = requestId,
                                 Properties = x.Properties
                                     .Select(y => new DefaultAuditEntryProperty
                                     {
-                                        ParentId = id,
                                         PropertyName = y.PropertyName,
                                         RelationName = y.RelationName,
                                         NewValue = y.NewValueFormatted,
