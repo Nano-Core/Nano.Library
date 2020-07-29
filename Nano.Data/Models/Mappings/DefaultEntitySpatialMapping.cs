@@ -17,7 +17,7 @@ namespace Nano.Data.Models.Mappings
             base.Map(builder);
 
             builder
-                .Property(x => x.Geometry); // Test: Spatial mapping.
+                .Property(x => x.Geometry);
         }
     }
 }

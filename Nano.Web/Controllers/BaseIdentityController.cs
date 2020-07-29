@@ -81,6 +81,9 @@ namespace Nano.Web.Controllers
             var result = await this.Repository
                 .AddAsync(signUp.User, cancellationToken);
 
+            await this.Repository
+                .SaveChanges(cancellationToken);
+
             result.IdentityUser = identityUser;
 
             return this.Created("signup", result);
@@ -114,6 +117,9 @@ namespace Nano.Web.Controllers
             var result = await this.Repository
                 .AddAsync(signUpExternal.User, cancellationToken);
            
+            await this.Repository
+                .SaveChanges(cancellationToken);
+
             result.IdentityUser = identityUser;
 
             return this.Created("signup/external", result);
@@ -200,6 +206,9 @@ namespace Nano.Web.Controllers
 
                 var result = await this.Repository
                     .AddAsync(user, cancellationToken);
+
+                await this.Repository
+                    .SaveChanges(cancellationToken);
 
                 result.IdentityUser = identityUser;
 
