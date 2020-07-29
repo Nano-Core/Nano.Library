@@ -16,9 +16,7 @@ namespace Nano.Models.Interfaces
 
         /// <summary>
         /// Identity User.
-        /// Always included using <see cref="IncludeAttribute"/>.
         /// </summary>
-        [Include]
         IdentityUser IdentityUser { get; set; }
     }
 }

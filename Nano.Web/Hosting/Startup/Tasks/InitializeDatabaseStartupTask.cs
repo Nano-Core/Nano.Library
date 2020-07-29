@@ -33,9 +33,6 @@ namespace Nano.Web.Hosting.Startup.Tasks
 
                 await this.dbContext
                     .EnsureIdentityAsync(cancellationToken);
-
-                await this.dbContext
-                    .EnsureIdentityAsync(cancellationToken);
             }
 
             this.StartupTaskContext
