@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>3.1.10</version>
+    <version>3.1.12</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -14,23 +14,6 @@
     <summary>Rapidly built and deploy rich NET Core 3.1+ applications. 
 Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <releaseNotes>
-      - Fixed issue with Delete many.
-      - Refined project files and updated Nugets for all projects.
-      - Added full length of milliseconds for logging providers.
-      - Refactored SecurityOptions (IsEnabled => IsAnonymous, IsAuthControllerEnabled => IsAuth)
-      - Updated xml-doc file for all projects.
-      - Updated breaking changes for Health-checks.
-      - Added 'get user information' endpoint to HomeController
-      - Added 'get services' to HomeController
-      - Removed logging registered service dependencies, during start-up.
-      - Expanded repository delete methods (bulk, query and id)
-      - Added Log4Net logging provider.
-      - Updated Controllers, Repository, Models and Mappings to support generic Identifier type. Auth-, Identity-, Spatial- and regular controllers conformed.
-      - Added BaseEntityViewMapping, for convention to be like BaseEntityMapping vs DefaultEntityMapping.
-      - Updated Data Providers for spatial queries (still in dev / test).
-      - Changed error text to return only error summary and not the entire error object, when no accept header has been sent
-      - Improved Serilog logging implementation.
-      - Ohter minor and cosmetic improvements.
     </releaseNotes>
     <dependencies>
       <group targetFramework=".NETCoreApp3.1">
@@ -76,7 +59,7 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
         <dependency id="Microsoft.AspNetCore.Authentication" version="2.2.0" />
         <dependency id="Microsoft.AspNetCore.Authentication.Cookies" version="2.2.0" />
         <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="3.1.6" />
-        <dependency id="EasyNetQ" version="5.2.0" />
+        <dependency id="EasyNetQ" version="3.7.1" />
         <dependency id="Microsoft.AspNetCore" version="2.2.0" />
         <dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="3.1.6" />
         <dependency id="Microsoft.AspNetCore.Authentication.Google" version="3.1.6" />
