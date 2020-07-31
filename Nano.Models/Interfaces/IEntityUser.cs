@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Nano.Models.Attributes;
 
 namespace Nano.Models.Interfaces
 {
