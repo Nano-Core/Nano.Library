@@ -5,22 +5,12 @@ using Nano.Models.Criterias;
 namespace Nano.Data.Models.Criterias
 {
     /// <inheritdoc />
-    public class AuditEntryQueryCriteria : BaseQueryCriteria
+    public class AuditEntryQueryCriteria : DefaultQueryCriteria
     {
         /// <summary>
         /// Created By.
         /// </summary>
         public virtual string CreatedBy { get; set; }
-
-        /// <summary>
-        /// Create Date To.
-        /// </summary>
-        public virtual string CreatedDateTo { get; set; }
-
-        /// <summary>
-        /// Create Date From.
-        /// </summary>
-        public virtual string CreatedDateFrom { get; set; }
 
         /// <summary>
         /// Entity Type Name.
@@ -46,12 +36,6 @@ namespace Nano.Data.Models.Criterias
 
             if (this.CreatedBy != null)
                 expression.Equal("CreatedBy", this.CreatedBy);
-
-            if (this.CreatedDateTo != null)
-                expression.LessThanOrEqual("CreatedDate", this.CreatedDateTo);
-
-            if (this.CreatedDateFrom != null)
-                expression.GreaterThanOrEqual("CreatedDate", this.CreatedDateFrom);
 
             if (this.EntityTypeName != null)
                 expression.Equal("EntityTypeName", this.EntityTypeName);

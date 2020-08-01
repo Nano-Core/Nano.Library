@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Nano.Models;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.Models.Interfaces;
 
 namespace Nano.Security.Models
 {
@@ -26,8 +27,19 @@ namespace Nano.Security.Models
     /// Sign Up External.
     /// </summary>
     /// <typeparam name="TUser">The user type</typeparam>
-    public class SignUpExternal<TUser> : SignUpExternal
-        where TUser : DefaultEntityUser
+    public class SignUpExternal<TUser> : SignUpExternal<TUser, Guid>
+        where TUser : IEntityUser<Guid>
+    {
+
+    }
+
+    /// <summary>
+    /// Sign Up External.
+    /// </summary>
+    /// <typeparam name="TUser">The user type.</typeparam>
+    /// <typeparam name="TIdentity">The identity type.</typeparam>
+    public class SignUpExternal<TUser, TIdentity> : SignUpExternal
+        where TUser : IEntityUser<TIdentity>
     {
         /// <summary>
         /// User.

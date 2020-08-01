@@ -21,7 +21,6 @@ using Nano.Models.Interfaces;
 using Nano.Security;
 using Nano.Security.Const;
 using Nano.Security.Models;
-using Z.EntityFramework.Plus;
 
 namespace Nano.Data
 {
@@ -51,6 +50,11 @@ namespace Nano.Data
         /// Audit Entry Properties.
         /// </summary>
         public virtual DbSet<DefaultAuditEntryProperty> AuditProperties { get; set; }
+
+        /// <summary>
+        /// Auto Save.
+        /// </summary>
+        public virtual bool AutoSave => this.Options.UseAutoSave;
 
         /// <inheritdoc />
         protected BaseDbContext(DbContextOptions contextOptions, DataOptions dataOptions)
@@ -147,7 +151,7 @@ namespace Nano.Data
             var securityOptions = this.GetService<SecurityOptions>() ?? new SecurityOptions();
             var adminUsername = securityOptions.User.AdminUsername ?? "username";
             var adminPassword = securityOptions.User.AdminPassword ?? "password";
-            var adminEmailAddress = securityOptions.User.AdminEmailAddress ?? "admin@admin.com";
+            var adminEmailAddress = securityOptions.User.AdminEmailAddress ?? "admin@domain.com";
 
             foreach (var builtInRole in BaseDbContext.builtInRoles)
             {
@@ -159,7 +163,7 @@ namespace Nano.Data
             await this.AddUserToRole(adminUser, BuiltInUserRoles.Service);
             await this.AddUserToRole(adminUser, BuiltInUserRoles.Administrator);
 
-            await this.SaveChangesAsync(cancellationToken);
+            await base.SaveChangesAsync(cancellationToken);
         }
         
         /// <summary>
@@ -167,7 +171,7 @@ namespace Nano.Data
         /// </summary>
         /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
         /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
-        /// <returns>A <see cref="EntityEntry{TEntity}"/>.</returns>
+        /// <returns>A <see cref="EntityEntry"/>.</returns>
         public virtual EntityEntry<TEntity> AddOrUpdate<TEntity>(TEntity entity)
             where TEntity : class
         {
@@ -216,7 +220,12 @@ namespace Nano.Data
             var pendingEvents = this.GetPendingEntityEvents();
 
             this.SaveSoftDeletion();
-            this.SaveAudit();
+
+            // BUG: Fix Audit
+            //var audit = new Audit();
+            
+            //if (this.Options.UseAudit)
+            //    audit.PreSaveChanges(this);
 
             var success = base
                 .SaveChanges(acceptAllChangesOnSuccess);
@@ -230,17 +239,26 @@ namespace Nano.Data
 
             try
             {
-                foreach (var @event in pendingEvents)
-                {
-                    eventing
-                        .PublishAsync(@event, @event.Type)
-                        .ConfigureAwait(false);
-                }
+                pendingEvents
+                    .ForEach(x =>
+                    {
+                        eventing
+                            .PublishAsync(x, x.Type)
+                            .ConfigureAwait(false);
+                    });
             }
             finally
             {
                 this.ChangeTracker.LazyLoadingEnabled = true;
             }
+
+            //if (this.Options.UseAudit)
+            //{
+            //    audit.PostSaveChanges();
+            //    audit.Configuration.AutoSavePreAction?.Invoke(this, audit);
+
+            //    base.SaveChanges();
+            //}
 
             return success;
         }
@@ -257,35 +275,42 @@ namespace Nano.Data
             var pendingEvents = this.GetPendingEntityEvents();
 
             this.SaveSoftDeletion();
-            this.SaveAudit();
 
+            // BUG: Fix Audit
+            //var audit = new Audit();
+            
+            //if (this.Options.UseAudit)
+            //    audit.PreSaveChanges(this);
+    
             var success = await this
                 .SaveChangesWithTriggersAsync(base.SaveChangesAsync, acceptAllChangesOnSuccess, cancellationToken)
                 .ContinueWith(async x =>
-            {
-                if (x.IsFaulted)
-                    return await x;
-
-                if (x.IsCanceled)
-                    return await x;
-
-                var eventing = this.GetService<IEventing>();
-
-                if (eventing == null)
-                    return await x;
-
-                this.ChangeTracker.LazyLoadingEnabled = false;
-
-                foreach (var @event in pendingEvents)
                 {
-                    await eventing
-                        .PublishAsync(@event, @event.Type);
-                }
+                    var eventing = this.GetService<IEventing>();
 
-                this.ChangeTracker.LazyLoadingEnabled = true;
+                    if (eventing == null)
+                        return await x;
 
-                return await x;
-            }, cancellationToken);
+                    this.ChangeTracker.LazyLoadingEnabled = false;
+
+                        foreach (var @event in pendingEvents)
+                        {
+                            await eventing
+                                .PublishAsync(@event, @event.Type);
+                        }
+
+                    this.ChangeTracker.LazyLoadingEnabled = true;
+
+                    return await x;
+                }, cancellationToken);
+
+            //if (this.Options.UseAudit)
+            //{
+            //    audit.PostSaveChanges();
+            //    audit.Configuration.AutoSavePreAction?.Invoke(this, audit);
+                
+            //    await base.SaveChangesAsync(cancellationToken);
+            //}
 
             return await success;
         }
@@ -366,16 +391,6 @@ namespace Nano.Data
             }
         }
 
-        private void SaveAudit()
-        {
-            if (!this.Options.UseAudit)
-                return;
-
-            var audit = new Audit();
-            audit.PreSaveChanges(this);
-            audit.Configuration.AutoSavePreAction?.Invoke(this, audit);
-            audit.PostSaveChanges();
-        }
         private void SaveSoftDeletion()
         {
             if (!this.Options.UseSoftDeletetion)
@@ -391,7 +406,7 @@ namespace Nano.Data
                     x.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
                 });
         }
-        private EntityEvent[] GetPendingEntityEvents()
+        private List<EntityEvent> GetPendingEntityEvents()
         {
             return this.ChangeTracker
                 .Entries<IEntity>()
@@ -405,20 +420,18 @@ namespace Nano.Data
                     var state = x.State.ToString();
                     var name = type.Name.Replace("Proxy", string.Empty);
 
-                    switch (x.Entity)
+                    return x.Entity switch
                     {
-                        case IEntityIdentity<Guid> guid:
-                            return new EntityEvent(guid.Id, name, state);
-
-                        case IEntityIdentity<dynamic> dynamic:
-                            return new EntityEvent(dynamic.Id, name, state);
-
-                        default:
-                            return null;
-                    }
+                        IEntityIdentity<int> @int => new EntityEvent(@int.Id, name, state),
+                        IEntityIdentity<long> @long => new EntityEvent(@long.Id, name, state),
+                        IEntityIdentity<string> @string => new EntityEvent(@string.Id, name, state),
+                        IEntityIdentity<Guid> guid => new EntityEvent(guid.Id, name, state),
+                        IEntityIdentity<dynamic> dynamic => new EntityEvent(dynamic.Id, name, state),
+                        _ => null,
+                    };
                 })
                 .Where(x => x != null)
-                .ToArray();
+                .ToList();
         }
     }
 }

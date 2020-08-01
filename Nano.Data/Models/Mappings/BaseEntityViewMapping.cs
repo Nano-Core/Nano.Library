@@ -6,7 +6,7 @@ using Nano.Models;
 namespace Nano.Data.Models.Mappings
 {
     /// <inheritdoc />
-    public class DefaultEntityViewMapping<TEntity> : BaseEntityMapping<TEntity>
+    public abstract class BaseEntityViewMapping<TEntity> : BaseEntityMapping<TEntity>
         where TEntity : BaseEntity
     {
         /// <inheritdoc />

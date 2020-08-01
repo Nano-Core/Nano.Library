@@ -43,6 +43,7 @@ namespace Nano.Web.Controllers
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
         /// <returns>The edited model.</returns>
         /// <response code="200">Ok.</response>
+        /// <response code="404">Not Found.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
         /// <response code="500">Error occured.</response>
@@ -51,16 +52,23 @@ namespace Nano.Web.Controllers
         [Route("edit")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> EditConfirm([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> Edit([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
         {
-            var result = await this.Repository
+            entity = await this.Repository
                 .UpdateAsync(entity, cancellationToken);
 
-            return this.Ok(result);
+            if (entity == null)
+                return this.NotFound();
+
+            await this.Repository
+                .SaveChanges(cancellationToken);
+
+            return this.Ok(entity);
         }
 
         /// <summary>
@@ -78,16 +86,23 @@ namespace Nano.Web.Controllers
         [Route("edit/many")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> EditConfirms([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> EditMany([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         {
-            var results = await this.Repository
+            entities = await this.Repository
                 .UpdateManyAsync(entities, cancellationToken);
 
-            return this.Ok(results);
+            if (entities == null)
+                return this.NotFound();
+
+            await this.Repository
+                .SaveChanges(cancellationToken);
+
+            return this.Ok(entities);
         }
     }
 }

@@ -43,13 +43,13 @@ namespace Nano.Data.Providers.Sqlite
                 .ConfigureWarnings(x =>
                 {
                     x.Ignore(RelationalEventId.BoolWithDefaultWarning);
-                    x.Log(
-                        RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
+                    x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
                 })
                 .UseLazyLoadingProxies(useLazyLoading)
                 .UseSqlite(connectionString, x =>
                 {
                     x.MaxBatchSize(batchSize);
+                    x.UseNetTopologySuite();
                 });
         }
     }

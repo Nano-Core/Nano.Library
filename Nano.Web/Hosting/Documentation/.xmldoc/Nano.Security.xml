@@ -89,6 +89,13 @@
             Http Context Extensions.
             </summary>
         </member>
+        <member name="M:Nano.Security.Extensions.HttpContextExtensions.GetIsAnonymous(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Get Is Anonymous.
+            </summary>
+            <param name="httpContext">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.</param>
+            <returns>Whehter the current action is anonymous.</returns>
+        </member>
         <member name="M:Nano.Security.Extensions.HttpContextExtensions.GetJwtAppId(Microsoft.AspNetCore.Http.HttpContext)">
             <summary>
             Get Jwt App Id.
@@ -169,18 +176,24 @@
             User Manager.
             </summary>
         </member>
+        <member name="P:Nano.Security.IdentityManager.RoleManager">
+            <summary>
+            Role Manager.
+            </summary>
+        </member>
         <member name="P:Nano.Security.IdentityManager.SignInManager">
             <summary>
             Sign In Manager.
             </summary>
         </member>
-        <member name="M:Nano.Security.IdentityManager.#ctor(Microsoft.EntityFrameworkCore.DbContext,Microsoft.AspNetCore.Identity.SignInManager{Microsoft.AspNetCore.Identity.IdentityUser},Microsoft.AspNetCore.Identity.UserManager{Microsoft.AspNetCore.Identity.IdentityUser},Nano.Security.SecurityOptions)">
+        <member name="M:Nano.Security.IdentityManager.#ctor(Microsoft.EntityFrameworkCore.DbContext,Microsoft.AspNetCore.Identity.SignInManager{Microsoft.AspNetCore.Identity.IdentityUser},Microsoft.AspNetCore.Identity.RoleManager{Microsoft.AspNetCore.Identity.IdentityRole},Microsoft.AspNetCore.Identity.UserManager{Microsoft.AspNetCore.Identity.IdentityUser},Nano.Security.SecurityOptions)">
             <summary>
             The user authenticates and on success recieves a jwt token for use with auhtorization.
             </summary>
             <param name="dbContext">The <see cref="T:Microsoft.AspNetCore.Identity.SignInManager`1"/>.</param>
             <param name="signInManager">The <see cref="T:Microsoft.AspNetCore.Identity.SignInManager`1"/>.</param>
             <param name="userManager">The <see cref="T:Microsoft.AspNetCore.Identity.UserManager`1"/>.</param>
+            <param name="roleManager">The <see cref="T:Microsoft.AspNetCore.Identity.RoleManager`1"/></param>
             <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
         </member>
         <member name="M:Nano.Security.IdentityManager.GetJwtToken(Nano.Security.Models.AccessTokenData,System.Threading.CancellationToken)">
@@ -442,6 +455,21 @@
             Claims.
             </summary>
         </member>
+        <member name="T:Nano.Security.Models.BaseSignUp">
+            <summary>
+            Base Sign-Up (abstract).
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.BaseSignUp.Roles">
+            <summary>
+            Roles.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.BaseSignUp.Claims">
+            <summary>
+            Claims.
+            </summary>
+        </member>
         <member name="T:Nano.Security.Models.ChangeEmail">
             <summary>
             Change Email.
@@ -618,6 +646,11 @@
             Is Remember Me.
             </summary>
         </member>
+        <member name="P:Nano.Security.Models.Login.IsRefreshable">
+            <summary>
+            Is Refreshable.
+            </summary>
+        </member>
         <member name="T:Nano.Security.Models.LoginExternal">
             <summary>
             Login External.
@@ -631,6 +664,11 @@
         <member name="P:Nano.Security.Models.LoginExternal.IsRememerMe">
             <summary>
             Is Remember Me.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.LoginExternal.IsRefreshable">
+            <summary>
+            Is Refreshable.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.LoginExternalProvider">
@@ -663,6 +701,11 @@
             Roles.
             </summary>
         </member>
+        <member name="P:Nano.Security.Models.LoginExternalTransient.Claims">
+            <summary>
+            Claims.
+            </summary>
+        </member>
         <member name="T:Nano.Security.Models.LoginProvider">
             <summary>
             Login Provider.
@@ -681,6 +724,11 @@
         <member name="T:Nano.Security.Models.LoginRefresh">
             <summary>
             Login Refresh.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.LoginRefresh.Token">
+            <summary>
+            Token.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.LoginRefresh.RefreshToken">
@@ -802,9 +850,16 @@
             <summary>
             Sign Up.
             </summary>
-            <typeparam name="TUser">The user type</typeparam>
+            <typeparam name="TUser">The user type.</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.SignUp`1.User">
+        <member name="T:Nano.Security.Models.SignUp`2">
+            <summary>
+            Sign Up.
+            </summary>
+            <typeparam name="TUser">The user type.</typeparam>
+            <typeparam name="TIdentity">The identity type.</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.SignUp`2.User">
             <summary>
             User.
             </summary>
@@ -830,7 +885,14 @@
             </summary>
             <typeparam name="TUser">The user type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.SignUpExternal`1.User">
+        <member name="T:Nano.Security.Models.SignUpExternal`2">
+            <summary>
+            Sign Up External.
+            </summary>
+            <typeparam name="TUser">The user type.</typeparam>
+            <typeparam name="TIdentity">The identity type.</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.SignUpExternal`2.User">
             <summary>
             User.
             </summary>
@@ -845,14 +907,14 @@
             Section Name.
             </summary>
         </member>
-        <member name="P:Nano.Security.SecurityOptions.IsEnabled">
+        <member name="P:Nano.Security.SecurityOptions.IsAuth">
             <summary>
-            Is Enabled.
+            Is Auth.
             </summary>
         </member>
-        <member name="P:Nano.Security.SecurityOptions.IsAuthControllerEnabled">
+        <member name="P:Nano.Security.SecurityOptions.IsAnonymous">
             <summary>
-            Is Auth Controller Enabled.
+            Is Anonymous.
             </summary>
         </member>
         <member name="P:Nano.Security.SecurityOptions.Jwt">

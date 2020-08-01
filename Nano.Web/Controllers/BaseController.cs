@@ -19,6 +19,11 @@ namespace Nano.Web.Controllers
     public abstract class BaseController : Controller
     {
         /// <summary>
+        /// Logger.
+        /// </summary>
+        protected virtual ILogger Logger { get; }
+
+        /// <summary>
         /// User Id.
         /// </summary>
         public virtual Guid? UserId => this.HttpContext.GetJwtUserId();
@@ -34,7 +39,17 @@ namespace Nano.Web.Controllers
         public virtual string UserEmail => this.HttpContext.GetJwtUserEmail();
 
         /// <summary>
-        /// Options. Any route can be called with http options, to return options header information.
+        /// Constructor.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
+        protected BaseController(ILogger logger)
+        {
+            this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
+        /// <summary>
+        /// Options.
+        /// Any route can be called with http options, to return options header information.
         /// </summary>
         /// <returns>Void.</returns>
         /// <response code="200">Success.</response>
@@ -46,7 +61,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public virtual IActionResult Options()
         {
-            return this.Ok("OK");
+            return this.Ok();
         }
     }
 
@@ -58,11 +73,6 @@ namespace Nano.Web.Controllers
        where TRepository : IRepository
     {
         /// <summary>
-        /// Logger.
-        /// </summary>
-        protected virtual ILogger Logger { get; }
-
-        /// <summary>
         /// Eventing.
         /// </summary>
         protected virtual IEventing Eventing { get; }
@@ -73,14 +83,14 @@ namespace Nano.Web.Controllers
         protected virtual TRepository Repository { get; }
 
         /// <summary>
-        /// Constructor accepting an instance of <typeparamref name="TRepository"/> and initializing <see cref="Repository"/>
+        /// Constructor.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger"/>.</param>
         /// <param name="repository">The <see cref="IRepository"/>.</param>
         /// <param name="eventing">The <see cref="IEventingProvider"/>.</param>
         protected BaseController(ILogger logger, TRepository repository, IEventing eventing)
+            : base(logger)
         {
-            this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.Repository = repository;
             this.Eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
         }

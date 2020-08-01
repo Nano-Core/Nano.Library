@@ -38,7 +38,8 @@ namespace Nano.Data.Extensions
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
-            var options = services.BuildServiceProvider().GetService<DataOptions>();
+            var options = services.BuildServiceProvider()
+                .GetRequiredService<DataOptions>();
 
             services
                 .AddScoped<DbContext, TContext>()
@@ -117,26 +118,23 @@ namespace Nano.Data.Extensions
                         .GetService<IHttpContextAccessor>();
 
                     var requestId = httpContextAccessor?.HttpContext?.TraceIdentifier;
-                    var createdBy = httpContextAccessor?.HttpContext?.GetJwtUserId().ToString();
+                    var createdBy = httpContextAccessor?.HttpContext?.GetJwtUserId()?.ToString();
 
                     var customAuditEntries = audit.Entries
+                        .Where(x => x.AuditEntryID == 0)
                         .Select(x =>
                         {
-                            var id = Guid.NewGuid();
-
                             return new DefaultAuditEntry
                             {
-                                Id = id,
                                 CreatedBy = createdBy ?? x.CreatedBy,
                                 EntitySetName = x.EntitySetName,
                                 EntityTypeName = x.EntityTypeName,
-                                State = (int) x.State,
+                                State = (int)x.State,
                                 StateName = x.StateName,
                                 RequestId = requestId,
                                 Properties = x.Properties
                                     .Select(y => new DefaultAuditEntryProperty
                                     {
-                                        ParentId = id,
                                         PropertyName = y.PropertyName,
                                         RelationName = y.RelationName,
                                         NewValue = y.NewValueFormatted,

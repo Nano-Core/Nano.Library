@@ -102,7 +102,7 @@ namespace Nano.Web.Extensions
                     x.Conventions.Insert(0, routePrefixConvention);
                     x.ModelBinderProviders.Insert(0, queryModelBinderProvider);
 
-                    if (!securityOptions.IsAuthControllerEnabled)
+                    if (securityOptions.IsAnonymous || !securityOptions.IsAuth)
                         x.Conventions.Insert(1, new AuthControllerDisabledConvention());
 
                     if (dataOptions.ConnectionString == null)
@@ -131,7 +131,7 @@ namespace Nano.Web.Extensions
                 .AddControllersAsServices()
                 .AddViewComponentsAsServices()
                 .AddApplicationPart(assembly);
-
+            
             services
                 .AddApis()
                 .AddStartupTasks()
@@ -211,7 +211,7 @@ namespace Nano.Web.Extensions
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-            if (!securityOptions.IsEnabled)
+            if (securityOptions.IsAnonymous)
             {
                 services.AddMvc(x =>
                 {
@@ -355,14 +355,18 @@ namespace Nano.Web.Extensions
                 var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
                 config[HostDefaults.ContentRootKey] = Directory.GetCurrentDirectory();
-                
+
                 services
-                    .AddHealthChecksUI("healthchecksdb", x =>
+                    .AddHealthChecksUI(x =>
                         {
+                            // TODO: Add Webhook defined in config, for health notifications.
+
                             x.AddHealthCheckEndpoint(appOptions.Name.ToLower(), $"http://localhost:{port}/healthz");
+
                             x.SetEvaluationTimeInSeconds(10);
                             x.SetMinimumSecondsBetweenFailureNotifications(60);
-                        });
+                        })
+                        .AddInMemoryStorage();
 
                 services
                     .AddScoped<DbContextOptions, DbContextOptions<NullDbContext>>(); 
@@ -404,7 +408,7 @@ namespace Nano.Web.Extensions
                     x.CustomSchemaIds(y => y.FullName);
                     x.OrderActionsBy(y => y.RelativePath);
 
-                    if (securityOptions.IsEnabled)
+                    if (!securityOptions.IsAnonymous)
                     {
                         var securityScheme = new OpenApiSecurityScheme
                         {

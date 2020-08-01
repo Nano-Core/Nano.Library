@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Nano.Security;
 using Nano.Security.Const;
 using Nano.Security.Models;
@@ -22,15 +23,17 @@ namespace Nano.Web.Controllers
     public class AuthController : BaseController
     {
         /// <summary>
-        /// Security Manager.
+        /// Identity Manager.
         /// </summary>
         protected virtual IdentityManager IdentityManager { get; }
 
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
         /// <param name="identityManager">The <see cref="IdentityManager"/>.</param>
-        public AuthController(IdentityManager identityManager)
+        public AuthController(ILogger logger, IdentityManager identityManager)
+            : base(logger)
         {
             this.IdentityManager = identityManager ?? throw new ArgumentNullException(nameof(identityManager));
         }
@@ -45,6 +48,7 @@ namespace Nano.Web.Controllers
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
         /// <response code="500">Error occurred.</response>
         [HttpPost]
         [Route("login")]
@@ -52,6 +56,7 @@ namespace Nano.Web.Controllers
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -59,6 +64,9 @@ namespace Nano.Web.Controllers
         {
             var accessToken = await this.IdentityManager
                 .SignInAsync(login, cancellationToken);
+
+            if (accessToken == null)
+                this.NotFound();
 
             return this.Ok(accessToken);
         }
@@ -72,6 +80,7 @@ namespace Nano.Web.Controllers
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
         /// <response code="500">Error occurred.</response>
         [HttpPost]
         [Route("login/refresh")]
@@ -79,6 +88,7 @@ namespace Nano.Web.Controllers
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -86,6 +96,9 @@ namespace Nano.Web.Controllers
         {
             var accessToken = await this.IdentityManager
                 .SignInRefreshAsync(loginRefresh, cancellationToken);
+
+            if (accessToken == null)
+                this.NotFound();
 
             return this.Ok(accessToken);
         }
@@ -99,12 +112,14 @@ namespace Nano.Web.Controllers
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
         /// <response code="500">Error occurred.</response>
         [HttpPost]
         [Route("login/external")]
         [AllowAnonymous]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(ExternalLoginResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -118,6 +133,9 @@ namespace Nano.Web.Controllers
             {
                 externalLoginData = await this.IdentityManager
                     .GetExternalProviderInfoAsync(loginExternal, cancellationToken);
+
+                if (externalLoginData == null)
+                    return this.NotFound();
             }
 
             var response = new ExternalLoginResponse
@@ -139,12 +157,14 @@ namespace Nano.Web.Controllers
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
         /// <response code="500">Error occurred.</response>
         [HttpPost]
         [Route("login/external/transient")]
         [AllowAnonymous]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(ExternalLoginResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -152,6 +172,9 @@ namespace Nano.Web.Controllers
         {
             var accessToken = await this.IdentityManager
                 .SignInExternalTransientAsync(loginExternalTransient, cancellationToken);
+
+            if (accessToken == null)
+                return this.NotFound();
 
             var response = new ExternalLoginResponse
             {
@@ -162,11 +185,10 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Logs out a user.
-        /// The jwt-token and any external login is invalidated.
+        /// Logs out the user.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>Nothing.</returns>
+        /// <returns>Void.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
@@ -189,25 +211,30 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Gets all the configured external login schemes.
+        /// Gets all the configured external authentication schemes.
         /// E.g. Google, Facebook, etc.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The collection of external login providers.</returns>
+        /// <returns>The external authentication schemes.</returns>
         /// <response code="200">Success.</response>
         /// <response code="400">Bad Request.</response>
+        /// <response code="404">Not Found.</response>
         /// <response code="500">Error occurred.</response>
         [HttpGet]
         [Route("external/schemes")]
         [AllowAnonymous]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(LoginProvider), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> GetExternalSchemesAsync(CancellationToken cancellationToken = default)
         {
             var externalLogins = await this.IdentityManager
                 .GetExternalProvidersAsync(cancellationToken);
+
+            if (externalLogins == null)
+                this.NotFound();
 
             return this.Ok(externalLogins);
         }

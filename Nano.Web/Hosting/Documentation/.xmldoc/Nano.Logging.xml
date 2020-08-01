@@ -52,29 +52,9 @@
             Log Level.
             </summary>
         </member>
-        <member name="P:Nano.Logging.LoggingOptions.Sinks">
-            <summary>
-            Sinks.
-            </summary>
-        </member>
         <member name="P:Nano.Logging.LoggingOptions.LogLevelOverrides">
             <summary>
             Log Level Overrides.
-            </summary>
-        </member>
-        <member name="T:Nano.Logging.LoggingOptions.Sink">
-            <summary>
-            Sink (nested class).
-            </summary>
-        </member>
-        <member name="P:Nano.Logging.LoggingOptions.Sink.Name">
-            <summary>
-            Name.
-            </summary>
-        </member>
-        <member name="P:Nano.Logging.LoggingOptions.Sink.ConnectionString">
-            <summary>
-            Connection String.
             </summary>
         </member>
         <member name="T:Nano.Logging.LoggingOptions.LogLevelOverride">
@@ -91,6 +71,77 @@
             <summary>
             Log Level.
             </summary>
+        </member>
+        <member name="T:Nano.Logging.LogLevel">
+            <summary>
+            Log Level
+            </summary>
+        </member>
+        <member name="F:Nano.Logging.LogLevel.Debug">
+            <summary>
+            Debug.
+            </summary>
+        </member>
+        <member name="F:Nano.Logging.LogLevel.Information">
+            <summary>
+            Information.
+            </summary>
+        </member>
+        <member name="F:Nano.Logging.LogLevel.Warning">
+            <summary>
+            Warning.
+            </summary>
+        </member>
+        <member name="F:Nano.Logging.LogLevel.Error">
+            <summary>
+            Error.
+            </summary>
+        </member>
+        <member name="F:Nano.Logging.LogLevel.Fatal">
+            <summary>
+            Fatal.
+            </summary>
+        </member>
+        <member name="T:Nano.Logging.Providers.Log4Net.Extensions.Log4NetLogLevelExtensions">
+            <summary>
+            Log4Net Log-Level Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Logging.Providers.Log4Net.Extensions.Log4NetLogLevelExtensions.GetLogLevel(Nano.Logging.LogLevel)">
+            <summary>
+            Get Log-Level.
+            </summary>
+            <param name="logLevel">The <see cref="T:Nano.Logging.LogLevel"/>.</param>
+            <returns>The <see cref="T:log4net.Core.Level"/>.</returns>
+        </member>
+        <member name="T:Nano.Logging.Providers.Log4Net.Log4NetProvider">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Logging.Providers.Log4Net.Log4NetProvider.Options">
+            <summary>
+            Options.
+            </summary>
+        </member>
+        <member name="M:Nano.Logging.Providers.Log4Net.Log4NetProvider.#ctor(Nano.Logging.LoggingOptions)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="options">The <see cref="T:Nano.Logging.LoggingOptions"/>.</param>
+        </member>
+        <member name="M:Nano.Logging.Providers.Log4Net.Log4NetProvider.Configure">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Logging.Providers.Serilog.Extensions.SerilogLogLevelExtensions">
+            <summary>
+            Serilog Log-Level Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Logging.Providers.Serilog.Extensions.SerilogLogLevelExtensions.GetLogLevel(Nano.Logging.LogLevel)">
+            <summary>
+            Get Log-Level.
+            </summary>
+            <param name="logLevel">The <see cref="T:Nano.Logging.LogLevel"/>.</param>
+            <returns>The <see cref="T:Serilog.Events.LogEventLevel"/>.</returns>
         </member>
         <member name="T:Nano.Logging.Providers.Serilog.SerilogProvider">
             <inheritdoc />

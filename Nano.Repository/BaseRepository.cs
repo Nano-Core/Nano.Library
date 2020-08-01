@@ -63,7 +63,7 @@ namespace Nano.Repository
                 .IncludeAnnotations(indent)
                 .FirstOrDefaultAsync(x => x.Id.Equals(key), cancellationToken);
         }
-        
+
         /// <inheritdoc />
         public virtual async Task<TEntity> GetAsync<TEntity>(int key, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityIdentity<int>
@@ -87,7 +87,7 @@ namespace Nano.Repository
             return await this
                 .GetAsync<TEntity, string>(key, cancellationToken);
         }
-        
+
         /// <inheritdoc />
         public virtual async Task<TEntity> GetAsync<TEntity>(Guid key, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityIdentity<Guid>
@@ -97,21 +97,6 @@ namespace Nano.Repository
 
             return await this
                 .GetAsync<TEntity, Guid>(key, cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public virtual async Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntity
-        {
-            if (where == null)
-                throw new ArgumentNullException(nameof(where));
-
-            var indent = this.Context.Options.QueryIncludeDepth;
-
-            return await this.GetEntitySet<TEntity>()
-                .IncludeAnnotations(indent)
-                .Where(where)
-                .FirstOrDefaultAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -133,6 +118,24 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
+        public virtual async Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, IOrdering ordering, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+        {
+            if (where == null)
+                throw new ArgumentNullException(nameof(where));
+
+            if (ordering == null)
+                throw new ArgumentNullException(nameof(ordering));
+
+            var indent = this.Context.Options.QueryIncludeDepth;
+
+            return await this.GetEntitySet<TEntity>()
+                .IncludeAnnotations(indent)
+                .Where(where)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
         public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TIdentity>(IEnumerable<TIdentity> keys, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityIdentity<TIdentity>
         {
@@ -143,8 +146,48 @@ namespace Nano.Repository
 
             return await this.GetEntitySet<TEntity>()
                 .IncludeAnnotations(indent)
-                .Where(x => keys.Any(y => y.Equals(x.Id)))
+                .Where(x => keys.Contains(x.Id))
                 .ToArrayAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<int> keys, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<int>
+        {
+            if (keys == null)
+                throw new ArgumentNullException(nameof(keys));
+
+            return await this.GetManyAsync<TEntity, int>(keys, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<long> keys, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<long>
+        {
+            if (keys == null)
+                throw new ArgumentNullException(nameof(keys));
+
+            return await this.GetManyAsync<TEntity, long>(keys, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<string> keys, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<string>
+        {
+            if (keys == null)
+                throw new ArgumentNullException(nameof(keys));
+
+            return await this.GetManyAsync<TEntity, string>(keys, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<Guid> keys, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<Guid>
+        {
+            if (keys == null)
+                throw new ArgumentNullException(nameof(keys));
+
+            return await this.GetManyAsync<TEntity, Guid>(keys, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -203,6 +246,9 @@ namespace Nano.Repository
             if (where == null)
                 throw new ArgumentNullException(nameof(where));
 
+            if (ordering == null)
+                throw new ArgumentNullException(nameof(ordering));
+
             var indent = this.Context.Options.QueryIncludeDepth;
             
             return await this.GetEntitySet<TEntity>()
@@ -241,6 +287,9 @@ namespace Nano.Repository
             if (pagination == null)
                 throw new ArgumentNullException(nameof(pagination));
 
+            if (ordering == null)
+                throw new ArgumentNullException(nameof(ordering));
+
             var indent = this.Context.Options.QueryIncludeDepth;
             
             return await this.GetEntitySet<TEntity>()
@@ -249,6 +298,22 @@ namespace Nano.Repository
                 .Limit(pagination)
                 .Order(ordering)
                 .ToArrayAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IOrdering ordering, IPagination pagination, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
+        {
+            if (where == null)
+                throw new ArgumentNullException(nameof(where));
+
+            if (ordering == null)
+                throw new ArgumentNullException(nameof(ordering));
+
+            if (pagination == null)
+                throw new ArgumentNullException(nameof(pagination));
+
+            return await this.GetManyAsync(where, pagination, ordering, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -261,8 +326,8 @@ namespace Nano.Repository
             var entry = await this.Context
                 .AddAsync(entity, cancellationToken);
 
-            await this.Context
-                .SaveChangesAsync(cancellationToken);
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
 
             return entry.Entity;
         }
@@ -278,11 +343,29 @@ namespace Nano.Repository
                 .Select(x => this.Context.Add(x))
                 .Select(x => x.Entity)
                 .ToArray();
-                
-            await this.Context
-                .SaveChangesAsync(cancellationToken);
+
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
 
             return entities;
+        }
+
+        /// <inheritdoc />
+        public virtual async Task AddManyBulkAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityCreatable
+        {
+            if (entities == null)
+                throw new ArgumentNullException(nameof(entities));
+
+            await this.Context
+                .BulkInsertAsync(entities, x =>
+                {
+                    x.BatchSize = this.Context.Options.BulkBatchSize;
+                    x.BatchDelayInterval = this.Context.Options.BulkBatchDelay;
+                }, cancellationToken);
+                
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -295,8 +378,8 @@ namespace Nano.Repository
             var entry = this.Context
                 .Update(entity);
 
-            await this.Context
-                .SaveChangesAsync(cancellationToken);
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
 
             return entry.Entity;
         }
@@ -320,6 +403,24 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
+        public virtual async Task UpdateManyBulkAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityUpdatable
+        {
+            if (entities == null)
+                throw new ArgumentNullException(nameof(entities));
+
+            await this.Context
+                .BulkUpdateAsync(entities, x =>
+                {
+                    x.BatchSize = this.Context.Options.BulkBatchSize;
+                    x.BatchDelayInterval = this.Context.Options.BulkBatchDelay;
+                }, cancellationToken);
+
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
+        }
+
+        /// <inheritdoc />
         public virtual async Task<TEntity> AddOrUpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityCreatableAndUpdatable
         {
@@ -329,8 +430,8 @@ namespace Nano.Repository
             var entry = this.Context
                 .AddOrUpdate(entity);
 
-            await this.Context
-                .SaveChangesAsync(cancellationToken);
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
 
             return entry.Entity;
         }
@@ -347,8 +448,8 @@ namespace Nano.Repository
                 .Select(x => x.Entity)
                 .ToArray();
 
-            await this.Context
-                .SaveChangesAsync(cancellationToken);
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
 
             return entities;
         }
@@ -363,8 +464,8 @@ namespace Nano.Repository
             this.Context
                 .Remove(entity);
 
-            await this.Context
-                .SaveChangesAsync(cancellationToken);
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -375,10 +476,10 @@ namespace Nano.Repository
                 throw new ArgumentNullException(nameof(entities));
 
             this.Context
-                .RemoveRange(entities, cancellationToken);
+                .RemoveRange(entities);
 
-            await this.Context
-                .SaveChangesAsync(cancellationToken);
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -389,16 +490,14 @@ namespace Nano.Repository
             if (criteria == null)
                 throw new ArgumentNullException(nameof(criteria));
 
-            await this.GetEntitySet<TEntity>()
-                .Where(criteria)
-                .DeleteAsync(x =>
-                {
-                    x.BatchSize = this.Context.Options.BulkBatchSize;
-                    x.BatchDelayInterval = this.Context.Options.BulkBatchDelay;
-                }, cancellationToken);
+            var entities = this.GetEntitySet<TEntity>()
+                .Where(criteria);
 
-            await this.Context
-                .SaveChangesAsync(cancellationToken);
+            this.Context
+                .RemoveRange(entities);
+
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -408,16 +507,65 @@ namespace Nano.Repository
             if (expression == null)
                 throw new ArgumentNullException(nameof(expression));
 
+            var entities = this.GetEntitySet<TEntity>()
+                .Where(expression);
+
+            this.Context
+                .RemoveRange(entities);
+
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteManyBulkAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable
+        {
+            if (entities == null)
+                throw new ArgumentNullException(nameof(entities));
+
+            await this.GetEntitySet<TEntity>()
+                .BulkDeleteAsync(entities, cancellationToken);
+
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteManyBulkAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable
+            where TCriteria : class, IQueryCriteria, new()
+        {
+            if (criteria == null)
+                throw new ArgumentNullException(nameof(criteria));
+
+            var entities = this.GetEntitySet<TEntity>()
+                .Where(criteria);
+
+            this.Context
+                .RemoveRange(entities);
+
+            await this.GetEntitySet<TEntity>()
+                .Where(criteria)
+                .DeleteAsync(cancellationToken);
+
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteManyBulkAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable
+        {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
             await this.GetEntitySet<TEntity>()
                 .Where(expression)
-                .DeleteAsync(x =>
-                {
-                    x.BatchSize = this.Context.Options.BulkBatchSize;
-                    x.BatchDelayInterval = this.Context.Options.BulkBatchDelay;
-                }, cancellationToken);
+                .DeleteAsync(cancellationToken);
 
-            await this.Context
-                .SaveChangesAsync(cancellationToken);
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -472,6 +620,13 @@ namespace Nano.Repository
             return await this.GetEntitySet<TEntity>()
                 .Where(whereExpr)
                 .AverageAsync(avgExpr, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task SaveChanges(CancellationToken cancellationToken = default)
+        {
+            await this.Context
+                .SaveChangesAsync(cancellationToken); 
         }
 
         /// <inheritdoc />

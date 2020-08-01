@@ -42,8 +42,7 @@ namespace Nano.Data.Providers.Memory
                 .ConfigureWarnings(x =>
                 {
                     x.Ignore(RelationalEventId.BoolWithDefaultWarning);
-                    x.Log(
-                        RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
+                    x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
                 })
                 .UseLazyLoadingProxies(useLazyLoading)
                 .UseInMemoryDatabase(connectionString);

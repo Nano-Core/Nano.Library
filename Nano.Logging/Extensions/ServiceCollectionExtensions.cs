@@ -29,17 +29,17 @@ namespace Nano.Logging.Extensions
                 .AddSingleton(x => x
                     .GetRequiredService<ILoggingProvider>()
                     .Configure())
-                .AddSingleton(x =>
-                {
-                    var loggerProvider = x.GetRequiredService<ILoggerProvider>();
-
-                    return loggerProvider.CreateLogger(null);
-                })
                 .AddSingleton<ILoggerFactory>(x =>
                 {
                     var loggerProvider = x.GetRequiredService<ILoggerProvider>();
 
                     return new LoggerFactory(new[] { loggerProvider });
+                })
+                .AddSingleton(x =>
+                {
+                    var loggerProvider = x.GetRequiredService<ILoggerFactory>();
+
+                    return loggerProvider.CreateLogger(string.Empty);
                 });
 
             return services;

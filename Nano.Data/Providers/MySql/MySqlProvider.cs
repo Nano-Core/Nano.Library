@@ -2,6 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Nano.Data.Interfaces;
+using Pomelo.EntityFrameworkCore.MySql.Storage;
 
 namespace Nano.Data.Providers.MySql
 {
@@ -44,14 +45,15 @@ namespace Nano.Data.Providers.MySql
                 .ConfigureWarnings(x =>
                 {
                     x.Ignore(RelationalEventId.BoolWithDefaultWarning);
-                    x.Log(
-                        RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
+                    x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
                 })
                 .UseLazyLoadingProxies(useLazyLoading)
                 .UseMySql(connectionString, x =>
                 {
                     x.MaxBatchSize(batchSize);
                     x.EnableRetryOnFailure(retryCount);
+                    x.CharSet(CharSet.Utf8Mb4);
+                    // x.UseNetTopologySuite(); TODO: UseNetTopologySuite, Waiting for stable release of Pomelo.
                 });
         }
     }

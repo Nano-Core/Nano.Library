@@ -1,25 +1,26 @@
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
-using Nano.Models.Attributes;
+using System;
+using Nano.Models.Interfaces;
 
 namespace Nano.Models
 {
     /// <summary>
     /// Default Entity User.
     /// </summary>
-    public class DefaultEntityUser : DefaultEntity
+    public class DefaultEntityUser : DefaultEntityUser<Guid>
+    {
+        /// <inheritdoc />
+        protected DefaultEntityUser()
+        {
+            this.Id = Guid.NewGuid();
+        }
+    }
+
+    /// <inheritdoc cref="IEntityWritable"/>
+    public class DefaultEntityUser<TIdentity> : BaseEntityUser<TIdentity>
     {
         /// <summary>
-        /// Identity User Id.
+        /// Created At.
         /// </summary>
-        [MaxLength(128)]
-        public virtual string IdentityUserId { get; set; }
-
-        /// <summary>
-        /// Identity User.
-        /// Always included using <see cref="IncludeAttribute"/>.
-        /// </summary>
-        [Include]
-        public virtual IdentityUser IdentityUser { get; set; }
+        public virtual DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     }
 }

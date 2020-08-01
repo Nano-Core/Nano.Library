@@ -3,13 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Models;
-using Nano.Models.Interfaces;
 
 namespace Nano.Data.Models.Mappings
 {
     /// <inheritdoc />
     public class DefaultEntityMapping<TEntity> : BaseEntityIdentityMapping<TEntity, Guid>
-        where TEntity : DefaultEntity, IEntityIdentity<Guid>
+        where TEntity : DefaultEntity<Guid>
     {
         /// <inheritdoc />
         public override void Map(EntityTypeBuilder<TEntity> builder)

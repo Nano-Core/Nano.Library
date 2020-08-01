@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
 using Nano.Models;
+using Nano.Models.Extensions;
+using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security;
 using Nano.Security.Exceptions;
@@ -21,17 +23,31 @@ using Nano.Web.Models;
 namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
-    public class IdentityController<TEntity, TCriteria> : DefaultControllerUpdatable<TEntity, TCriteria>
-        where TEntity : DefaultEntityUser, new()
+    public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : BaseIdentityController<IRepository, TEntity, TIdentity, TCriteria>
+        where TEntity : BaseEntityUser<TIdentity>, IEntityUpdatable, IEntityIdentity<Guid>, new()
+        where TCriteria : class, IQueryCriteria, new()
+    {
+        /// <inheritdoc />
+        protected BaseIdentityController(ILogger logger, IRepository repository, IEventing eventing, IdentityManager identityManager) 
+            : base(logger, repository, eventing, identityManager)
+        {
+
+        }
+    }
+
+    /// <inheritdoc />
+    public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria>
+        where TRepository : IRepository
+        where TEntity : BaseEntityUser<TIdentity>, IEntityUpdatable, IEntityIdentity<TIdentity>, new()
         where TCriteria : class, IQueryCriteria, new()
     {
         /// <summary>
-        /// Security Manager.
+        /// Identity Manager.
         /// </summary>
         protected virtual IdentityManager IdentityManager { get; }
 
         /// <inheritdoc />
-        protected IdentityController(ILogger logger, IRepository repository, IEventing eventing, IdentityManager identityManager) 
+        protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, IdentityManager identityManager) 
             : base(logger, repository, eventing)
         {
             this.IdentityManager = identityManager ?? throw new ArgumentNullException(nameof(identityManager));
@@ -54,22 +70,25 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> SignUpAsync([FromBody][Required]SignUp<TEntity> signUp, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> SignUpAsync([FromBody][Required]SignUp<TEntity, TIdentity> signUp, CancellationToken cancellationToken = default)
         {
             var identityUser = await this.IdentityManager
                 .SignUpAsync(signUp, cancellationToken);
 
-            signUp.User.Id = Guid.Parse(identityUser.Id);
+            signUp.User.Id = identityUser.Id.Parse<TIdentity>();
             signUp.User.IdentityUserId = identityUser.Id;
 
             var result = await this.Repository
                 .AddAsync(signUp.User, cancellationToken);
 
+            await this.Repository
+                .SaveChanges(cancellationToken);
+
             result.IdentityUser = identityUser;
 
             return this.Created("signup", result);
         }
-           
+
         /// <summary>
         /// Sign-up a user based on external login provider.
         /// </summary>
@@ -87,24 +106,27 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> SignUpExternalAsync([FromBody][Required]SignUpExternal<TEntity> signUpExternal, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> SignUpExternalAsync([FromBody][Required]SignUpExternal<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
         {
             var identityUser = await this.IdentityManager
                 .SignUpExternalAsync(signUpExternal, cancellationToken);
 
-            signUpExternal.User.Id = Guid.Parse(identityUser.Id);
+            signUpExternal.User.Id = identityUser.Id.Parse<TIdentity>();
             signUpExternal.User.IdentityUserId = identityUser.Id;
 
             var result = await this.Repository
                 .AddAsync(signUpExternal.User, cancellationToken);
            
+            await this.Repository
+                .SaveChanges(cancellationToken);
+
             result.IdentityUser = identityUser;
 
             return this.Created("signup/external", result);
         }
         
         /// <summary>
-        /// Executes an external authentication challange for the external provider
+        /// Executes an external authentication challange for the external provider.
         /// </summary>
         /// <param name="loginProvider">The login provider request.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -169,20 +191,24 @@ namespace Nano.Web.Controllers
             var identityUser = await this.IdentityManager
                 .SignUpExternalAsync(signUpExternal, cancellationToken);
 
-            var userId = Guid.Parse(identityUser.Id);
+            var userId = identityUser.Id.Parse<TIdentity>();
+
             var user = await this.Repository
-                .GetAsync<TEntity>(userId, cancellationToken);
+                .GetAsync<TEntity, TIdentity>(userId, cancellationToken);
 
             if (user == null)
             {
                 user = new TEntity
                 {
-                    Id = userId,
+                    Id = userId.Parse<TIdentity>(),
                     IdentityUserId = identityUser.Id
                 };
 
                 var result = await this.Repository
                     .AddAsync(user, cancellationToken);
+
+                await this.Repository
+                    .SaveChanges(cancellationToken);
 
                 result.IdentityUser = identityUser;
 

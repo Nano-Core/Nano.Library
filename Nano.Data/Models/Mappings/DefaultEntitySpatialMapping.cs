@@ -1,13 +1,12 @@
 using System;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Models;
-using Nano.Models.Interfaces;
 
 namespace Nano.Data.Models.Mappings
 {
     /// <inheritdoc />
     public class DefaultEntitySpatialMapping<TEntity> : DefaultEntityMapping<TEntity>
-        where TEntity : DefaultEntitySpatial, IEntityIdentity<Guid>
+        where TEntity : DefaultEntitySpatial
     {
         /// <inheritdoc />
         public override void Map(EntityTypeBuilder<TEntity> builder)
@@ -18,7 +17,7 @@ namespace Nano.Data.Models.Mappings
             base.Map(builder);
 
             builder
-                .Ignore(x => x.Geometry); // TODO: Spatial actions (mapping is ignored) - awaiting EF.
+                .Property(x => x.Geometry);
         }
     }
 }

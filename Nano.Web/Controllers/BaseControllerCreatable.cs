@@ -37,7 +37,7 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Creates the passed model.
+        /// Create the passed model.
         /// </summary>
         /// <param name="entity">The model to create.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
@@ -50,16 +50,19 @@ namespace Nano.Web.Controllers
         [Route("create")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> CreateConfirm([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> Create([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
         {
-            var result = await this.Repository
+            entity = await this.Repository
                 .AddAsync(entity, cancellationToken);
 
-            return this.Created("create", result);
+            await this.Repository
+                .SaveChanges(cancellationToken);
+
+            return this.Created("create", entity);
         }
 
         /// <summary>
@@ -67,7 +70,7 @@ namespace Nano.Web.Controllers
         /// </summary>
         /// <param name="entities">The models to create.</param>
         /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>Void.</returns>
+        /// <returns>The created models.</returns>
         /// <response code="200">Ok.</response>
         /// <response code="400">Bad Request.</response>
         /// <response code="401">Unauthorized.</response>
@@ -76,16 +79,19 @@ namespace Nano.Web.Controllers
         [Route("create/Many")]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IEnumerable<object>), (int)HttpStatusCode.Created)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> CreateConfirms([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> Create([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         {
-            var results = await this.Repository
+            entities = await this.Repository
                 .AddManyAsync(entities, cancellationToken);
 
-            return this.Ok(results);
+            await this.Repository
+                .SaveChanges(cancellationToken);
+
+            return this.Created("create/many", entities);
         }
     }
 }
