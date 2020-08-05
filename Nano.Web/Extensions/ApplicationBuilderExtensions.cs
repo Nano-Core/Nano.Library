@@ -40,7 +40,7 @@ namespace Nano.Web.Extensions
             var services = applicationBuilder.ApplicationServices;
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
-            if (webOptions.Hosting.UseHealthCheck)
+            if (webOptions.Hosting.HealthCheck.UseHealthCheck)
             {
                 applicationBuilder
                     .UseHealthChecks("/healthz", new HealthCheckOptions
@@ -50,7 +50,7 @@ namespace Nano.Web.Extensions
                         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                     });
 
-                if (webOptions.Hosting.UseHealthCheckUI)
+                if (webOptions.Hosting.HealthCheck.UseHealthCheckUI)
                 {
                     applicationBuilder
                         .UseHealthChecksUI(x =>

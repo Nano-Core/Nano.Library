@@ -76,7 +76,7 @@ namespace Nano.Web
             public virtual bool UseResponseCompression { get; set; } = true;
 
             /// <summary>
-            /// Use Hsts.
+            /// Hsts.
             /// Settings for Strict-Transport-Security.
             /// </summary>
             public virtual HstsOptions Hsts { get; set; } = new HstsOptions();
@@ -105,6 +105,11 @@ namespace Nano.Web
             public virtual CertificateOptions Certificate { get; set; } = new CertificateOptions();
 
             /// <summary>
+            /// Health-Check.
+            /// </summary>
+            public virtual HealthCheckOptions HealthCheck { get; set; } = new HealthCheckOptions();
+
+            /// <summary>
             /// Use Referrer Policy Header.
             /// </summary>
             public virtual ReferrerPolicy ReferrerPolicyHeader { get; set; } = ReferrerPolicy.Disabled;
@@ -118,16 +123,6 @@ namespace Nano.Web
             /// Use Xss Protection Policy Header.
             /// </summary>
             public virtual XXssProtectionPolicyBlockMode XssProtectionPolicyHeader { get; set; } = XXssProtectionPolicyBlockMode.Disabled;
-
-            /// <summary>
-            /// Use Health Check.
-            /// </summary>
-            public virtual bool UseHealthCheck { get; set; } = true;
-
-            /// <summary>
-            /// Use Health Check UI.
-            /// </summary>
-            public virtual bool UseHealthCheckUI { get; set; } = true;
 
             /// <summary>
             /// Hsts Options
@@ -274,6 +269,60 @@ namespace Nano.Web
                 /// Password
                 /// </summary>
                 public virtual string Password { get; set; } = null;
+            }
+
+            /// <summary>
+            /// Health-Check Options
+            /// </summary>
+            public class HealthCheckOptions
+            {
+                /// <summary>
+                /// Use Health Check.
+                /// </summary>
+                public virtual bool UseHealthCheck { get; set; } = true;
+
+                /// <summary>
+                /// Use Health Check UI.
+                /// </summary>
+                public virtual bool UseHealthCheckUI { get; set; } = true;
+
+                /// <summary>
+                /// Evaluation Interval.
+                /// The interval between health-checks.
+                /// </summary>
+                public virtual int EvaluationInterval { get; set; } = 10;
+
+                /// <summary>
+                /// Failure Notification Timout.
+                /// The minimum number of secoends betweeen failure notificaitons.
+                /// </summary>
+                public virtual int FailureNotificationInterval { get; set; } = 60;
+
+                /// <summary>
+                /// Web-Hooks.
+                /// </summary>
+                public virtual HealthCheckWebHookOptions[] WebHooks { get; set; } = new HealthCheckWebHookOptions[0];
+
+                /// <summary>
+                /// Health-Check Web-Hook Options.
+                /// </summary>
+                public class HealthCheckWebHookOptions
+                {
+                    /// <summary>
+                    /// Name.
+                    /// </summary>
+                    public virtual string Name { get; set; }
+
+                    /// <summary>
+                    /// Uri.
+                    /// </summary>
+                    public virtual string Uri { get; set; }
+
+                    /// <summary>
+                    /// Payload.
+                    /// </summary>
+                    public virtual string Payload { get; set; }
+                }
             }
         }
 
