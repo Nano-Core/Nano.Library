@@ -221,7 +221,7 @@ namespace Nano.Data
 
             this.SaveSoftDeletion();
 
-            // BUG: Fix Audit
+            // TODO: Fix Audit
             //var audit = new Audit();
             
             //if (this.Options.UseAudit)
@@ -276,7 +276,7 @@ namespace Nano.Data
 
             this.SaveSoftDeletion();
 
-            // BUG: Fix Audit
+            // TODO: Fix Audit
             //var audit = new Audit();
             
             //if (this.Options.UseAudit)

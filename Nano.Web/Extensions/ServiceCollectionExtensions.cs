@@ -342,14 +342,14 @@ namespace Nano.Web.Extensions
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
 
-            if (!options.Hosting.UseHealthCheck)
+            if (!options.Hosting.HealthCheck.UseHealthCheck)
                 return services;
 
             services
                 .AddHealthChecks()
                     .AddCheck<StartupHealthCheck>("self");
 
-            if (options.Hosting.UseHealthCheckUI)
+            if (options.Hosting.HealthCheck.UseHealthCheckUI)
             {
                 var port = options.Hosting.Ports.FirstOrDefault();
                 var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
@@ -359,12 +359,15 @@ namespace Nano.Web.Extensions
                 services
                     .AddHealthChecksUI(x =>
                         {
-                            // TODO: Add Webhook defined in config, for health notifications.
-
                             x.AddHealthCheckEndpoint(appOptions.Name.ToLower(), $"http://localhost:{port}/healthz");
 
-                            x.SetEvaluationTimeInSeconds(10);
-                            x.SetMinimumSecondsBetweenFailureNotifications(60);
+                            x.SetEvaluationTimeInSeconds(options.Hosting.HealthCheck.EvaluationInterval);
+                            x.SetMinimumSecondsBetweenFailureNotifications(options.Hosting.HealthCheck.FailureNotificationInterval);
+
+                            foreach (var webHook in options.Hosting.HealthCheck.WebHooks)
+                            {
+                                x.AddWebhookNotification(webHook.Name, webHook.Uri, webHook.Payload);
+                            }
                         })
                         .AddInMemoryStorage();
 

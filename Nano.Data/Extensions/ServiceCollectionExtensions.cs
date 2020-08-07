@@ -169,10 +169,12 @@ namespace Nano.Data.Extensions
             if (!options.UseMemoryCache)
                 return services;
 
-            // TODO: Data cache (custom / distributed, e.g. redis) (https://github.com/VahidN/EFSecondLevelCache.Core/)
- 
             services
-                .AddMemoryCache(cacheOptions => cacheOptions.ExpirationScanFrequency = TimeSpan.FromMinutes(15));
+                .AddMemoryCache(x =>
+                {
+                    x.CompactionPercentage = 25;
+                    x.ExpirationScanFrequency = TimeSpan.FromMinutes(15);
+                });
 
             return services;
         }

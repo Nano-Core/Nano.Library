@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 using Nano.Models.Attributes;
 using Nano.Models.Interfaces;
@@ -14,7 +13,6 @@ namespace Nano.Models
         public virtual long IsDeleted { get; set; } = 0L;
 
         /// <inheritdoc />
-        [MaxLength(128)]
         public virtual string IdentityUserId { get; set; }
 
         /// <inheritdoc />
