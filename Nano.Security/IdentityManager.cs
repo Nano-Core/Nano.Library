@@ -448,8 +448,8 @@ namespace Nano.Security
             if (redirectUrl == null) 
                 throw new ArgumentNullException(nameof(redirectUrl));
 
-            return await Task.Factory
-                .StartNew(() =>
+            return await Task
+                .Run(() =>
                 {
                     var properties = this.SignInManager
                         .ConfigureExternalAuthenticationProperties(loginProvider, redirectUrl);
@@ -946,8 +946,8 @@ namespace Nano.Security
                 .Union(tokenData.Claims)
                 .Distinct();
 
-            return await Task.Factory
-                .StartNew(() =>
+            return await Task
+                .Run(() =>
                 {
                     var notBeforeAt = DateTime.UtcNow;
                     var expireAt = DateTime.UtcNow.AddHours(this.Options.Jwt.ExpirationInHours);

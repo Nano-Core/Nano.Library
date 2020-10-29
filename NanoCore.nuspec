@@ -16,6 +16,7 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
     <releaseNotes>
 		- Updated Swagger, and added annotations library.
 		- Fixed spelling mistake, SecurityOptions.RequiredUniqueCharecters
+        - Changed Task.Factory.StartNew() to Task.Run()
 	</releaseNotes>
     <dependencies>
       <group targetFramework=".NETCoreApp3.1">
