@@ -14,7 +14,8 @@
     <summary>Rapidly built and deploy rich NET Core 3.1+ applications. 
 Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <releaseNotes>
-    </releaseNotes>
+		- Updated Swagger, and added annotations library.
+	</releaseNotes>
     <dependencies>
       <group targetFramework=".NETCoreApp3.1">
         <dependency id="Microsoft.Extensions.Hosting" version="3.1.6" />
@@ -77,7 +78,7 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
         <dependency id="Microsoft.AspNetCore.StaticFiles" version="2.2.0" />
         <dependency id="NWebsec.AspNetCore.Middleware" version="3.0.0" />
         <dependency id="NWebsec.AspNetCore.Mvc" version="3.0.0" />
-        <dependency id="Swashbuckle.AspNetCore" version="5.5.1" />
+        <dependency id="Swashbuckle.AspNetCore" version="5.6.0" />
         <dependency id="Microsoft.AspNetCore.Rewrite" version="2.2.0" />
         <dependency id="Vivet.AspNetCore.RequestTimeZone" version="3.1.1" />
         <dependency id="Microsoft.AspNetCore.Mvc.Versioning" version="4.1.1" />
@@ -87,9 +88,10 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
         <dependency id="Pomelo.EntityFrameworkCore.MySql" version="3.1.2" />
         <dependency id="NetTopologySuite" version="2.0.0" />
         <dependency id="Google.Apis.Auth" version="1.48.0" />
-        <dependency id="Swashbuckle.AspNetCore.Newtonsoft" version="5.5.1" />
+        <dependency id="Swashbuckle.AspNetCore.Newtonsoft" version="5.6.0" />
         <dependency id="Microsoft.Extensions.Logging.Log4Net.AspNetCore" version="3.1.0" />
-      </group>
+        <dependency id="Swashbuckle.AspNetCore.Annotations" version="5.6.0" />
+	  </group>
     </dependencies>
   </metadata>
   <files>

@@ -408,6 +408,7 @@ namespace Nano.Web.Extensions
                     x.SwaggerDoc(appOptions.Version, info);
                     x.IgnoreObsoleteActions();
                     x.IgnoreObsoleteProperties();
+                    x.EnableAnnotations(true, true);
                     x.CustomSchemaIds(y => y.FullName);
                     x.OrderActionsBy(y => y.RelativePath);
 
