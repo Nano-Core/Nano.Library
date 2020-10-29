@@ -1077,7 +1077,7 @@
             Required Length.
             </summary>
         </member>
-        <member name="P:Nano.Security.SecurityOptions.PasswordOptions.RequiredUniqueCharecters">
+        <member name="P:Nano.Security.SecurityOptions.PasswordOptions.RequiredUniqueCharacters">
             <summary>
             Required Unique Characters.
             </summary>

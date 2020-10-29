@@ -15,6 +15,7 @@
 Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <releaseNotes>
 		- Updated Swagger, and added annotations library.
+		- Fixed spelling mistake, SecurityOptions.RequiredUniqueCharecters
 	</releaseNotes>
     <dependencies>
       <group targetFramework=".NETCoreApp3.1">

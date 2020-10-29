@@ -54,7 +54,7 @@ namespace Nano.Security.Extensions
                     x.Password.RequireNonAlphanumeric = options.Password.RequireNonAlphanumeric;
                     x.Password.RequireLowercase = options.Password.RequireLowercase;
                     x.Password.RequireUppercase = options.Password.RequireUppercase;
-                    x.Password.RequiredUniqueChars = options.Password.RequiredUniqueCharecters;
+                    x.Password.RequiredUniqueChars = options.Password.RequiredUniqueCharacters;
 
                     x.SignIn.RequireConfirmedEmail = options.SignIn.RequireConfirmedEmail;
                     x.SignIn.RequireConfirmedPhoneNumber = options.SignIn.RequireConfirmedPhoneNumber;
