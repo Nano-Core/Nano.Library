@@ -42,7 +42,7 @@ namespace Nano.Console.Extensions
                 .SelectMany(x => x.GetTypes())
                 .Where(x =>
                     !x.IsAbstract &&
-                    x.IsTypeOf(typeof(BaseWorker<>)))
+                    x.IsTypeOf(typeof(BaseWorker)))
                 .ToList()
                 .ForEach(x =>
                 {

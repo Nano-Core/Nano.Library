@@ -24,14 +24,5 @@ namespace Nano.Console.Workers
         {
             return Task.CompletedTask;
         }
-
-        /// <inheritdoc />
-        public override Task StopAsync(CancellationToken cancellationToken = default)
-        {
-            this.ApplicationLifetime
-                .StopApplication();
-
-            return Task.CompletedTask;
-        }
     }
 }
