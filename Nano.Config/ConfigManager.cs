@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 
 namespace Nano.Config
@@ -43,12 +44,20 @@ namespace Nano.Config
             var path = ConfigManager.Path;
             var environment = ConfigManager.Environment;
 
-            return new ConfigurationBuilder()
+            var configurationBuilder = new ConfigurationBuilder()
                 .SetBasePath(path)
                 .AddJsonFile($"{NAME}.json", false, true)
                 .AddJsonFile($"{NAME}.{environment}.json", true)
                 .AddEnvironmentVariables()
-                .AddCommandLine(args)
+                .AddCommandLine(args);
+
+            if (environment == "Development")
+            {
+                configurationBuilder
+                    .AddUserSecrets(Assembly.GetEntryAssembly());
+            }
+
+            return configurationBuilder
                 .Build();
         }
     }
