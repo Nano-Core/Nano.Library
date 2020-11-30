@@ -13,7 +13,10 @@ namespace Nano.App.Startup
         /// </summary>
         protected internal virtual StartupTaskContext StartupTaskContext { get; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="startupTaskContext">The <see cref="StartupTaskContext"/>.</param>
         protected BaseStartupTask(StartupTaskContext startupTaskContext)
         {
             this.StartupTaskContext = startupTaskContext ?? throw new ArgumentNullException(nameof(startupTaskContext));

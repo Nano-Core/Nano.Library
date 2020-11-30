@@ -10,17 +10,17 @@ namespace Nano.Eventing
         /// <summary>
         /// Id.
         /// </summary>
-        public virtual object Id { get; set; }
+        public object Id { get; set; }
 
         /// <summary>
         /// Type.
         /// </summary>
-        public virtual string Type { get; set; }
+        public string Type { get; set; }
 
         /// <summary>
         /// State.
         /// </summary>
-        public virtual string State { get; set; }
+        public string State { get; set; }
 
         /// <summary>
         /// Constructor.

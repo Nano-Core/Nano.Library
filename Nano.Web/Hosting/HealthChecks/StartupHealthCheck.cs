@@ -11,7 +11,10 @@ namespace Nano.Web.Hosting.HealthChecks
     {
         private readonly StartupTaskContext taskContext;
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="taskContext">The <see cref="StartupTaskContext"/>.</param>
         public StartupHealthCheck(StartupTaskContext taskContext)
         {
             this.taskContext = taskContext ?? throw new ArgumentNullException(nameof(taskContext));

@@ -62,8 +62,8 @@ namespace Nano.Eventing.Providers.EasyNetQ
             var exchange = await this.Bus.Advanced
                 .ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout);
 
-            this.Bus.Advanced
-                .Bind(exchange, queue, routing);
+            await this.Bus.Advanced
+                .BindAsync(exchange, queue, routing);
 
             this.Bus.Advanced
                 .Consume<TMessage>(queue, (message, info) =>
@@ -84,10 +84,11 @@ namespace Nano.Eventing.Providers.EasyNetQ
                         if (method == null)
                             throw new NullReferenceException(nameof(method));
 
-                        var task = (Task)method
+                        var callbackTask = (Task)method
                             .Invoke(eventHandler, new object[] { message.Body });
 
-                        task.Wait();
+                        callbackTask?
+                            .Wait();
                     }
                 });
         }

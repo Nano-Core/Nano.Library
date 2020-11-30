@@ -14,7 +14,7 @@ namespace Nano.Models.Types
         /// </summary>
         [Required]
         [DefaultValue(0.00)]
-        public virtual decimal AsDecimal { get; set; }
+        public decimal AsDecimal { get; set; }
 
         /// <summary>
         /// Constructor.

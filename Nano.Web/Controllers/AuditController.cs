@@ -9,7 +9,7 @@ using Nano.Security.Const;
 namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
-    [Authorize(Roles = BuiltInUserRoles.Administrator)]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     public class AuditController : DefaultControllerReadOnly<DefaultAuditEntry, AuditEntryQueryCriteria>
     {
         /// <inheritdoc />

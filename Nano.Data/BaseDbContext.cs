@@ -29,17 +29,17 @@ namespace Nano.Data
     {
         private static readonly IEnumerable<string> builtInRoles = new[]
         {
-            BuiltInUserRoles.Guest,
-            BuiltInUserRoles.Reader,
-            BuiltInUserRoles.Writer,
-            BuiltInUserRoles.Service,
-            BuiltInUserRoles.Administrator
+            BuiltInUserRoles.GUEST,
+            BuiltInUserRoles.READER,
+            BuiltInUserRoles.WRITER,
+            BuiltInUserRoles.SERVICE,
+            BuiltInUserRoles.ADMINISTRATOR
         };
         
         /// <summary>
         /// Options.
         /// </summary>
-        public virtual DataOptions Options { get; set; }
+        public DataOptions Options { get; set; }
 
         /// <summary>
         /// Audit Entries.
@@ -160,8 +160,8 @@ namespace Nano.Data
 
             var adminUser = await this.AddUser(adminUsername, adminPassword, adminEmailAddress);
 
-            await this.AddUserToRole(adminUser, BuiltInUserRoles.Service);
-            await this.AddUserToRole(adminUser, BuiltInUserRoles.Administrator);
+            await this.AddUserToRole(adminUser, BuiltInUserRoles.SERVICE);
+            await this.AddUserToRole(adminUser, BuiltInUserRoles.ADMINISTRATOR);
 
             await base.SaveChangesAsync(cancellationToken);
         }
@@ -427,7 +427,7 @@ namespace Nano.Data
                         IEntityIdentity<string> @string => new EntityEvent(@string.Id, name, state),
                         IEntityIdentity<Guid> guid => new EntityEvent(guid.Id, name, state),
                         IEntityIdentity<dynamic> dynamic => new EntityEvent(dynamic.Id, name, state),
-                        _ => null,
+                        _ => null
                     };
                 })
                 .Where(x => x != null)

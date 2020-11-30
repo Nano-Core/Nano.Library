@@ -28,10 +28,7 @@ namespace Nano.Repository
         public virtual bool IsLazyLoadingEnabled
         {
             get => this.Context.ChangeTracker.LazyLoadingEnabled;
-            set
-            {
-                this.Context.ChangeTracker.LazyLoadingEnabled = value;
-            }
+            set => this.Context.ChangeTracker.LazyLoadingEnabled = value;
         }
 
         /// <summary>

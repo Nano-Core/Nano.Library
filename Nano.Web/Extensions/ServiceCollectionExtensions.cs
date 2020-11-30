@@ -293,18 +293,13 @@ namespace Nano.Web.Extensions
             if (appOptions == null) 
                 throw new ArgumentNullException(nameof(appOptions));
 
-            var success = ApiVersion.TryParse(appOptions.Version, out var apiVersion);
-
-            if (!success)
-            {
-                apiVersion = new ApiVersion(1, 0);
-            }
+            ApiVersion.TryParse(appOptions.Version, out var apiVersion);
 
             return services
                 .AddApiVersioning(x =>
                 {
                     x.ReportApiVersions = true;
-                    x.DefaultApiVersion = apiVersion;
+                    x.DefaultApiVersion = apiVersion ?? new ApiVersion(1, 0);
                     x.AssumeDefaultVersionWhenUnspecified = true;
                     x.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
                 });

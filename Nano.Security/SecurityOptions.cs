@@ -117,7 +117,7 @@ namespace Nano.Security
             /// <summary>
             /// Default Roles.
             /// </summary>
-            public virtual string[] DefaultRoles { get; set; } = { BuiltInUserRoles.Reader, BuiltInUserRoles.Writer, BuiltInUserRoles.Service };
+            public virtual string[] DefaultRoles { get; set; } = { BuiltInUserRoles.READER, BuiltInUserRoles.WRITER, BuiltInUserRoles.SERVICE };
         }
 
         /// <summary>

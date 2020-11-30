@@ -23,7 +23,7 @@ namespace Nano.Web.Controllers
     /// <typeparam name="TEntity">The <see cref="IEntity"/> model the <see cref="IRepository"/> operates with.</typeparam>
     /// <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
     /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> implementation.</typeparam>
-    [Authorize(Roles = BuiltInUserRoles.Administrator + "," + BuiltInUserRoles.Service + "," + BuiltInUserRoles.Writer)]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE + "," + BuiltInUserRoles.WRITER)]
     public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
         where TRepository : IRepository
         where TEntity : class, IEntityIdentity<TIdentity>, IEntityCreatable

@@ -19,27 +19,27 @@ namespace Tests.Nano
         /// THe initialized controller of type <typeparamref name="TController"/>.
         /// All dependencies has been mocked and resolved, and is ready for invoking actions.
         /// </summary>
-        protected virtual TController Controller { get; set; }
+        protected TController Controller { get; set; }
 
         /// <summary>
         /// Logger.
         /// </summary>
-        protected virtual Mock<ILogger> MockLogger { get; set; } = new Mock<ILogger>();
+        protected Mock<ILogger> MockLogger { get; set; } = new Mock<ILogger>();
 
         /// <summary>
         /// Eventing.
         /// </summary>
-        protected virtual Mock<IEventing> MockEventing { get; set; } = new Mock<IEventing>();
+        protected Mock<IEventing> MockEventing { get; set; } = new Mock<IEventing>();
 
         /// <summary>
         /// Repository.
         /// </summary>
-        protected virtual Mock<IRepository> MockRepository { get; set; } = new Mock<IRepository>();
+        protected Mock<IRepository> MockRepository { get; set; } = new Mock<IRepository>();
 
         /// <summary>
         /// Controller.
         /// </summary>
-        protected virtual Mock<TController> MockController { get; set; }
+        protected Mock<TController> MockController { get; set; }
 
         /// <inheritdoc />
         protected BaseControllerTest()

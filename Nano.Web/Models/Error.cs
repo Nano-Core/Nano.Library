@@ -13,22 +13,22 @@ namespace Nano.Web.Models
         /// <summary>
         /// Message.
         /// </summary>
-        public virtual string Summary { get; set; }
+        public string Summary { get; set; }
 
         /// <summary>
         /// Description.
         /// </summary>
-        public virtual string[] Exceptions { get; set; } = new string[0];
+        public string[] Exceptions { get; set; } = new string[0];
 
         /// <summary>
         /// Status Code.
         /// </summary>
-        public virtual int StatusCode { get; set; } = 500;
+        public int StatusCode { get; set; } = 500;
 
         /// <summary>
         /// Is Translated.
         /// </summary>
-        public virtual bool IsTranslated { get; set; }
+        public bool IsTranslated { get; set; }
 
         /// <summary>
         /// Constructor.

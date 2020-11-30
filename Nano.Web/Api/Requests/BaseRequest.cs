@@ -11,12 +11,12 @@ namespace Nano.Web.Api.Requests
         /// <summary>
         /// Controller.
         /// </summary>
-        protected internal virtual string Action { get; set; }
+        protected internal string Action { get; set; }
 
         /// <summary>
         /// Controller.
         /// </summary>
-        protected internal virtual string Controller { get; set; }
+        protected internal string Controller { get; set; }
 
         /// <inheritdoc />
         public virtual Uri GetUri<TEntity>(ApiOptions apiOptions)

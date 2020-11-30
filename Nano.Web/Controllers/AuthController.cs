@@ -19,7 +19,7 @@ namespace Nano.Web.Controllers
     /// <summary>
     /// Auth Controller.
     /// </summary>
-    [Authorize(Roles = BuiltInUserRoles.Administrator + "," + BuiltInUserRoles.Service + "," + BuiltInUserRoles.Writer + "," + BuiltInUserRoles.Reader)]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.READER)]
     public class AuthController : BaseController
     {
         /// <summary>

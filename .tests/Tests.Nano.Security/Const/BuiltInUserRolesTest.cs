@@ -9,31 +9,31 @@ namespace Tests.Nano.Security.Const
         [TestMethod]
         public void GuestTest()
         {
-            Assert.AreEqual("guest", BuiltInUserRoles.Guest);
+            Assert.AreEqual("guest", BuiltInUserRoles.GUEST);
         }
 
         [TestMethod]
         public void ReaderTest()
         {
-            Assert.AreEqual("reader", BuiltInUserRoles.Reader);
+            Assert.AreEqual("reader", BuiltInUserRoles.READER);
         }
 
         [TestMethod]
         public void Writerest()
         {
-            Assert.AreEqual("writer", BuiltInUserRoles.Writer);
+            Assert.AreEqual("writer", BuiltInUserRoles.WRITER);
         }
 
         [TestMethod]
         public void ServiceTest()
         {
-            Assert.AreEqual("service", BuiltInUserRoles.Service);
+            Assert.AreEqual("service", BuiltInUserRoles.SERVICE);
         }
 
         [TestMethod]
         public void AdministratorTest()
         {
-            Assert.AreEqual("administrator", BuiltInUserRoles.Administrator);
+            Assert.AreEqual("administrator", BuiltInUserRoles.ADMINISTRATOR);
         }
     }
 }

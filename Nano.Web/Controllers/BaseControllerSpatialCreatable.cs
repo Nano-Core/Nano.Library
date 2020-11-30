@@ -17,7 +17,7 @@ using Nano.Web.Models;
 namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
-    [Authorize(Roles = BuiltInUserRoles.Administrator + "," + BuiltInUserRoles.Service + "," + BuiltInUserRoles.Writer + "," + BuiltInUserRoles.Reader)]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.READER)]
     public abstract class BaseControllerSpatialCreatable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerSpatialReadOnly<TRepository, TEntity, TIdentity, TCriteria>
         where TRepository : IRepositorySpatial
         where TEntity : class, IEntityIdentity<TIdentity>, IEntitySpatial, IEntityCreatable

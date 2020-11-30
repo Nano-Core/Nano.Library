@@ -25,7 +25,7 @@ namespace Nano.Web.Controllers
     /// Home Controller.
     /// Contains method for handling application level operations.
     /// </summary>
-    [Authorize(Roles = BuiltInUserRoles.Administrator + "," + BuiltInUserRoles.Service + "," + BuiltInUserRoles.Writer + "," + BuiltInUserRoles.Reader + "," + BuiltInUserRoles.Guest)]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.READER + "," + BuiltInUserRoles.GUEST)]
     public class HomeController : BaseController
     {
         /// <summary>

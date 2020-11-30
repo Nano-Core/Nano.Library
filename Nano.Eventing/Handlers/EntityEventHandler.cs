@@ -49,8 +49,10 @@ namespace Nano.Eventing.Handlers
                     .Where(x => x.IsTypeOf(typeof(IEntityIdentity<>)))
                     .First(x => x.Name == @event.Type);
 
+                Guid.TryParse(@event.Id.ToString(), out var guid);
+
                 var id = type.IsTypeOf(typeof(IEntityIdentity<Guid>))
-                    ? new Guid(@event.Id.ToString())
+                    ? guid
                     : @event.Id;
 
                 var entity = await this.Context
@@ -74,6 +76,10 @@ namespace Nano.Eventing.Handlers
                         }
 
                         entity = Activator.CreateInstance(type);
+
+                        if (entity == null)
+                            throw new NullReferenceException(nameof(entity));
+
                         property.SetValue(entity, id);
 
                         await this.Context

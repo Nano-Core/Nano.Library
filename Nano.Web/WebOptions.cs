@@ -284,7 +284,9 @@ namespace Nano.Web
                 /// <summary>
                 /// Use Health Check UI.
                 /// </summary>
+                // ReSharper disable InconsistentNaming
                 public virtual bool UseHealthCheckUI { get; set; } = true;
+                // ReSharper restore InconsistentNaming
 
                 /// <summary>
                 /// Evaluation Interval.

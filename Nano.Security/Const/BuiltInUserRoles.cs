@@ -8,26 +8,26 @@ namespace Nano.Security.Const
         /// <summary>
         /// Guest.
         /// </summary>
-        public const string Guest = "guest";
+        public const string GUEST = "guest";
 
         /// <summary>
         /// Reader.
         /// </summary>
-        public const string Reader = "reader";
+        public const string READER = "reader";
 
         /// <summary>
         /// Writer.
         /// </summary>
-        public const string Writer = "writer";
+        public const string WRITER = "writer";
 
         /// <summary>
         /// Service.
         /// </summary>
-        public const string Service = "service";
+        public const string SERVICE = "service";
 
         /// <summary>
         /// Administrator.
         /// </summary>
-        public const string Administrator = "administrator";
+        public const string ADMINISTRATOR = "administrator";
     }
 }

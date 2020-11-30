@@ -15,7 +15,7 @@ namespace Nano.Web.Controllers
     /// Base controller.
     /// </summary>
     [Route("[controller]")]
-    [Authorize(Roles = BuiltInUserRoles.Administrator + "," + BuiltInUserRoles.Service)]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE)]
     public abstract class BaseController : Controller
     {
         /// <summary>

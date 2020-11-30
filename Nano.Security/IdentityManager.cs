@@ -292,7 +292,7 @@ namespace Nano.Security
                     UserEmail = this.Options.User.AdminEmailAddress,
                     Claims = new[]
                     {
-                        new Claim(ClaimTypes.Role, BuiltInUserRoles.Administrator)
+                        new Claim(ClaimTypes.Role, BuiltInUserRoles.ADMINISTRATOR)
                     }
                 };
 
