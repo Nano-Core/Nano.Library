@@ -19,12 +19,17 @@ namespace Nano.Web.Const
         /// Html ("text/html").
         /// </summary>
         public const string HTML = "text/html";
-        
+
         /// <summary>
         /// Text ("text/plain").
         /// </summary>
         public const string TEXT = "text/plain";
-        
+
+        /// <summary>
+        /// Pdf ("application/pdf").
+        /// </summary>
+        public const string PDF = "application/pdf";
+
         /// <summary>
         /// Form ("application/x-www-form-urlencoded").
         /// </summary>
