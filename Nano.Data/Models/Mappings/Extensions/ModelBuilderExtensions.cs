@@ -66,7 +66,7 @@ namespace Nano.Data.Models.Mappings.Extensions
 
                     entity
                         .HasIndex(columns)
-                        .HasName(name)
+                        .HasDatabaseName(name)
                         .IsUnique();
                 });
 

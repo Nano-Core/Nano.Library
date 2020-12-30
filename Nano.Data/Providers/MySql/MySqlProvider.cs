@@ -1,7 +1,10 @@
 using System;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using MySqlConnector;
 using Nano.Data.Interfaces;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
 
 namespace Nano.Data.Providers.MySql
@@ -37,6 +40,9 @@ namespace Nano.Data.Providers.MySql
             var useSensitiveDataLogging = this.Options.UseSensitiveDataLogging;
             var connectionString = this.Options.ConnectionString;
 
+            var connection = new MySqlConnection(connectionString);
+            var serverVersion = ServerVersion.AutoDetect(connection);
+
             if (connectionString == null)
                 return;
 
@@ -48,12 +54,12 @@ namespace Nano.Data.Providers.MySql
                     x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
                 })
                 .UseLazyLoadingProxies(useLazyLoading)
-                .UseMySql(connectionString, x =>
+                .UseMySql(connection, serverVersion, x =>
                 {
                     x.MaxBatchSize(batchSize);
                     x.EnableRetryOnFailure(retryCount);
                     x.CharSet(CharSet.Utf8Mb4);
-                    // x.UseNetTopologySuite(); TODO: UseNetTopologySuite, Waiting for stable release of Pomelo.
+                    // x.UseNetTopologySuite(); // TODO: UseNetTopologySuite, Waiting for stable release of Pomelo.
                 });
         }
     }

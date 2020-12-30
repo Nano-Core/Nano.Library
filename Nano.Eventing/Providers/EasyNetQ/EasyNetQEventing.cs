@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using EasyNetQ;
 using EasyNetQ.Topology;
@@ -44,7 +45,7 @@ namespace Nano.Eventing.Providers.EasyNetQ
         }
 
         /// <inheritdoc />
-        public virtual async Task SubscribeAsync<TMessage>(IServiceProvider serviceProvider, string routing = "")
+        public virtual async Task SubscribeAsync<TMessage>(IServiceProvider serviceProvider, string routing = "", CancellationToken cancellationToken = default)
             where TMessage : class
         {
             if (serviceProvider == null)
@@ -57,13 +58,13 @@ namespace Nano.Eventing.Providers.EasyNetQ
             var exchangeName = name;
 
             var queue = await this.Bus.Advanced
-                .QueueDeclareAsync($"{queueName}");
+                .QueueDeclareAsync($"{queueName}", cancellationToken);
 
             var exchange = await this.Bus.Advanced
-                .ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout);
+                .ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout, cancellationToken: cancellationToken);
 
             await this.Bus.Advanced
-                .BindAsync(exchange, queue, routing);
+                .BindAsync(exchange, queue, routing, cancellationToken);
 
             this.Bus.Advanced
                 .Consume<TMessage>(queue, (message, info) =>
@@ -71,25 +72,24 @@ namespace Nano.Eventing.Providers.EasyNetQ
                     if (info.RoutingKey != routing)
                         return;
 
-                    using (var serviceScope = serviceProvider.CreateScope())
-                    {
-                        var eventType = message.MessageType;
-                        var genericType = typeof(IEventingHandler<>).MakeGenericType(eventType);
-                        var eventHandler = serviceScope.ServiceProvider.GetRequiredService(genericType);
+                    using var serviceScope = serviceProvider.CreateScope();
+                   
+                    var eventType = message.MessageType;
+                    var genericType = typeof(IEventingHandler<>).MakeGenericType(eventType);
+                    var eventHandler = serviceScope.ServiceProvider.GetRequiredService(genericType);
 
-                        var method = eventHandler
-                            .GetType()
-                            .GetMethod("CallbackAsync");
+                    var method = eventHandler
+                        .GetType()
+                        .GetMethod("CallbackAsync");
 
-                        if (method == null)
-                            throw new NullReferenceException(nameof(method));
+                    if (method == null)
+                        throw new NullReferenceException(nameof(method));
 
-                        var callbackTask = (Task)method
-                            .Invoke(eventHandler, new object[] { message.Body });
+                    var callbackTask = (Task)method
+                        .Invoke(eventHandler, new object[] { message.Body });
 
-                        callbackTask?
-                            .Wait();
-                    }
+                    callbackTask?
+                        .Wait(cancellationToken);
                 });
         }
 

@@ -89,9 +89,6 @@ namespace Nano.Repository
         public virtual async Task<TEntity> GetAsync<TEntity>(Guid key, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityIdentity<Guid>
         {
-            if (key == null)
-                throw new ArgumentNullException(nameof(key));
-
             return await this
                 .GetAsync<TEntity, Guid>(key, cancellationToken);
         }
