@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
@@ -82,7 +81,7 @@ namespace Nano.Web.Extensions
                 .AddSecurity(securityOptions)
                 .AddRepository()
                 .AddVersioning(appOptions)
-                .AddDocumentation(appOptions, webOptions, securityOptions)
+                .AddDocumentation(appOptions, webOptions)
                 .AddLocalizations()
                 .AddTimeZone(appOptions)
                 .AddCompression()
@@ -102,7 +101,7 @@ namespace Nano.Web.Extensions
                     x.Conventions.Insert(0, routePrefixConvention);
                     x.ModelBinderProviders.Insert(0, queryModelBinderProvider);
 
-                    if (securityOptions.IsAnonymous || !securityOptions.IsAuth)
+                    if (!securityOptions.IsAuth)
                         x.Conventions.Insert(1, new AuthControllerDisabledConvention());
 
                     if (dataOptions.ConnectionString == null)
@@ -167,8 +166,13 @@ namespace Nano.Web.Extensions
                     if (options == null)
                         return;
 
+                    var instance = Activator.CreateInstance(x, options);
+
+                    if (instance == null)
+                        return;
+
                     services
-                        .AddSingleton(x, Activator.CreateInstance(x, options));
+                        .AddSingleton(x, instance);
 
                     if (hosts.Contains(options.Host))
                         return;
@@ -210,14 +214,6 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(securityOptions));
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
-            if (securityOptions.IsAnonymous)
-            {
-                services.AddMvc(x =>
-                {
-                    x.Filters.Add<AllowAnonymousFilter>();
-                });
-            }
 
             services
                 .AddAuthorization()
@@ -372,18 +368,16 @@ namespace Nano.Web.Extensions
 
             return services;
         }
-        private static IServiceCollection AddDocumentation(this IServiceCollection services, AppOptions appOptions, WebOptions webOptions, SecurityOptions securityOptions)
+        private static IServiceCollection AddDocumentation(this IServiceCollection services, AppOptions appOptions, WebOptions webOptions)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
+
             if (appOptions == null) 
                 throw new ArgumentNullException(nameof(appOptions));
             
             if (webOptions == null) 
                 throw new ArgumentNullException(nameof(webOptions));
-            
-            if (securityOptions == null) 
-                throw new ArgumentNullException(nameof(securityOptions));
 
             return services
                 .AddSwaggerGen(x =>
@@ -407,22 +401,19 @@ namespace Nano.Web.Extensions
                     x.CustomSchemaIds(y => y.FullName);
                     x.OrderActionsBy(y => y.RelativePath);
 
-                    if (!securityOptions.IsAnonymous)
+                    var securityScheme = new OpenApiSecurityScheme
                     {
-                        var securityScheme = new OpenApiSecurityScheme
-                        {
-                            In = ParameterLocation.Header,
-                            Type = SecuritySchemeType.ApiKey,
-                            Name = "Authorization",
-                            Description = "JWT Authorization header using the Bearer scheme. Format: Authorization: Bearer [token]"
-                        };
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.ApiKey,
+                        Name = "Authorization",
+                        Description = "JWT Authorization header using the Bearer scheme. Format: Authorization: Bearer [token]"
+                    };
 
-                        x.AddSecurityDefinition("Bearer", securityScheme);
-                        x.AddSecurityRequirement(new OpenApiSecurityRequirement
-                        {
-                            { securityScheme, new string[] { } }
-                        });
-                    }
+                    x.AddSecurityDefinition("Bearer", securityScheme);
+                    x.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                        { securityScheme, new string[] { } }
+                    });
 
                     AppDomain.CurrentDomain
                          .GetAssemblies()

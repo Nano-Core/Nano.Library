@@ -19,11 +19,6 @@ namespace Nano.Security
         public virtual bool IsAuth { get; set; } = true;
 
         /// <summary>
-        /// Is Anonymous.
-        /// </summary>
-        public virtual bool IsAnonymous { get; set; } = false;
-
-        /// <summary>
         /// Jwt Options.
         /// </summary>
         public virtual JwtOptions Jwt { get; set; } = new JwtOptions();
