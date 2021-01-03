@@ -19,10 +19,9 @@ namespace Nano.Models.Extensions
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            using (var streamReader = new StreamReader(stream))
-            {
-                return await streamReader.ReadToEndAsync();
-            }
+            using var streamReader = new StreamReader(stream);
+            
+            return await streamReader.ReadToEndAsync();
         }
     }
 }

@@ -10,11 +10,5 @@ namespace Tests.Nano.App.Extensions
         {
             Assert.Inconclusive();
         }
-
-        [TestMethod]
-        public void LogServicesTest()
-        {
-            Assert.Inconclusive();
-        }
     }
 }

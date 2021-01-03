@@ -81,7 +81,7 @@ namespace Nano.Web.Hosting.Middleware
                     var acceptHheader = request.Headers["Accept"];
                     var contentTypeHeader = request.Headers["Content-Type"];
                     var queryString = request.QueryString.HasValue 
-                        ? request.QueryString.Value 
+                        ? request.QueryString.Value ?? string.Empty
                         : string.Empty;
 
                     var result = acceptHheader.Any()

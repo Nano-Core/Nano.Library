@@ -35,24 +35,18 @@ namespace Nano.Web.Hosting.Serialization
             {
                 property.ShouldSerialize = instance =>
                 {
-                    IEnumerable enumerable = null;
-
-                    switch (member.MemberType)
+                    var enumerable = member.MemberType switch
                     {
-                        case MemberTypes.Field:
-                            enumerable = instance
-                                .GetType()
-                                .GetField(member.Name)?
-                                .GetValue(instance) as IEnumerable;
-                            break;
+                        MemberTypes.Field => instance
+                            .GetType()
+                            .GetField(member.Name)?
+                            .GetValue(instance) as IEnumerable,
 
-                        case MemberTypes.Property:
-                            enumerable = instance
-                                .GetType()
-                                .GetProperty(member.Name)?
-                                .GetValue(instance, null) as IEnumerable;
-                            break;
-                    }
+                        MemberTypes.Property => instance.GetType().GetProperty(member.Name)?.GetValue(instance, null) as
+                            IEnumerable,
+
+                        _ => null
+                    };
 
                     return enumerable == null || enumerable.GetEnumerator().MoveNext();
                 };

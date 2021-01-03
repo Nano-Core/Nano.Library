@@ -435,6 +435,12 @@ namespace Nano.Web.Extensions
                             case ReferrerPolicy.UnsafeUrl:
                                 x.UnsafeUrl();
                                 break;
+
+                            case ReferrerPolicy.Disabled:
+                                break;
+                            
+                            default:
+                                throw new ArgumentOutOfRangeException();
                         }
                     });
             }
@@ -469,6 +475,12 @@ namespace Nano.Web.Extensions
                             case XFrameOptionsPolicy.SameOrigin:
                                 x.SameOrigin();
                                 break;
+
+                            case XFrameOptionsPolicy.Disabled:
+                                break;
+                            
+                            default:
+                                throw new ArgumentOutOfRangeException();
                         }
                     });
             }
@@ -507,6 +519,12 @@ namespace Nano.Web.Extensions
                             case XXssProtectionPolicyBlockMode.FilterEnabledBlockMode:
                                 x.EnabledWithBlockMode();
                                 break;
+
+                            case XXssProtectionPolicyBlockMode.Disabled:
+                                break;
+                            
+                            default:
+                                throw new ArgumentOutOfRangeException();
                         }
                     });
             }

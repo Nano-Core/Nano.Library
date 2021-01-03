@@ -14,26 +14,15 @@ namespace Nano.Logging.Providers.Log4Net.Extensions
         /// <returns>The <see cref="Level"/>.</returns>
         public static Level GetLogLevel(this LogLevel logLevel)
         {
-            switch (logLevel)
+            return logLevel switch
             {
-                case LogLevel.Debug:
-                    return Level.Debug;
-                
-                case LogLevel.Information:
-                    return Level.Info;
-                
-                case LogLevel.Warning:
-                    return Level.Warn;
-                
-                case LogLevel.Error:
-                    return Level.Error;
-
-                case LogLevel.Fatal:
-                    return Level.Fatal;
-
-                default:
-                    return Level.Debug;
-            }
+                LogLevel.Debug => Level.Debug,
+                LogLevel.Information => Level.Info,
+                LogLevel.Warning => Level.Warn,
+                LogLevel.Error => Level.Error,
+                LogLevel.Fatal => Level.Fatal,
+                _ => Level.Debug
+            };
         }
     }
 }

@@ -126,13 +126,12 @@ namespace Nano.Security
                         
                             var url = $"{HOST}/{loginExternal.ProviderKey}/?fields={FIELDS}&access_token={loginExternal.AccessToken}";
 
-                            using (var response = await client.GetAsync(url, cancellationToken))
-                            {
-                                var content = await response.Content
-                                    .ReadAsStringAsync();
+                            using var response = await client.GetAsync(url, cancellationToken);
+                            
+                            var content = await response.Content
+                                .ReadAsStringAsync(cancellationToken);
 
-                                return JsonConvert.DeserializeObject<ExternalLoginData>(content);
-                            }
+                            return JsonConvert.DeserializeObject<ExternalLoginData>(content);
                         }
                         catch (Exception ex)
                         {
@@ -197,7 +196,7 @@ namespace Nano.Security
                         if (!response.IsSuccessStatusCode)
                             return false;
                         
-                        var content = await response.Content.ReadAsStringAsync();
+                        var content = await response.Content.ReadAsStringAsync(cancellationToken);
                         var validation = JsonConvert.DeserializeObject<dynamic>(content);
 
                         if (!(bool)validation.data.is_valid)
@@ -206,10 +205,7 @@ namespace Nano.Security
                         if (validation.data.app_id != externalLoginOption.Id)
                             return false;
 
-                        if (validation.data.user_id != loginExternal.ProviderKey)
-                            return false;
-
-                        return true;
+                        return validation.data.user_id == loginExternal.ProviderKey;
                     }
                     
                 case "Google":
@@ -334,7 +330,7 @@ namespace Nano.Security
                     throw new InvalidOperationException();
 
                 var identityUser = await this.UserManager
-                    .FindByNameAsync(principal.Identity.Name);
+                    .FindByNameAsync(principal.Identity?.Name);
 
                 var appClaim = principal.Claims
                     .FirstOrDefault(x => x.Type == ClaimTypesExtended.AppId);

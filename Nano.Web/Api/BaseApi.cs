@@ -203,7 +203,7 @@ namespace Nano.Web.Api
                         try
                         {
                             var result = await x;
-                            var response = await this.ProcessResponseAsync<TResponse>(result);
+                            var response = await this.ProcessResponseAsync<TResponse>(result, cancellationToken);
 
                             taskCompletion.SetResult(response);
                         }
@@ -249,7 +249,7 @@ namespace Nano.Web.Api
                         try
                         {
                             var result = await x;
-                            var response = await this.ProcessResponseAsync<TResponse>(result);
+                            var response = await this.ProcessResponseAsync<TResponse>(result, cancellationToken);
 
                             taskCompletion.SetResult(response);
                         }
@@ -294,7 +294,7 @@ namespace Nano.Web.Api
                 };
 
                 using var httpResponse = await this.ProcessRequestAsync<LogInRequest, AccessToken>(loginRequest, cancellationToken);
-                this.accessToken = await this.ProcessResponseAsync<AccessToken>(httpResponse);
+                this.accessToken = await this.ProcessResponseAsync<AccessToken>(httpResponse, cancellationToken);
             }
         }
         private async Task<HttpResponseMessage> ProcessRequestAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
@@ -327,7 +327,7 @@ namespace Nano.Web.Api
             return await this.httpClient
                 .SendAsync(httpRequst, cancellationToken);
         }
-        private async Task<TResponse> ProcessResponseAsync<TResponse>(HttpResponseMessage httpResponse)
+        private async Task<TResponse> ProcessResponseAsync<TResponse>(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
         {
             if (httpResponse == null)
                 throw new ArgumentNullException(nameof(httpResponse));
@@ -346,7 +346,7 @@ namespace Nano.Web.Api
 
                         case HttpStatusCode.BadRequest:
                         case HttpStatusCode.InternalServerError:
-                            var errorContent = await httpResponse.Content.ReadAsStringAsync();
+                            var errorContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
                             var error = JsonConvert.DeserializeObject<Error>(errorContent);
                             
                             if (error.IsTranslated)
@@ -369,7 +369,7 @@ namespace Nano.Web.Api
                     }
 
                     var successContent = await httpResponse.Content
-                        .ReadAsStringAsync();
+                        .ReadAsStringAsync(cancellationToken);
 
                     return JsonConvert.DeserializeObject<TResponse>(successContent);
                 }

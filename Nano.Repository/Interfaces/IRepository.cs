@@ -81,14 +81,14 @@ namespace Nano.Repository.Interfaces
             where TEntity : class, IEntityIdentity<Guid>;
 
         /// <summary>
-        /// Gets the first instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="query"/>.
+        /// Gets the first instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="criteria"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
         /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/>.</typeparam>
-        /// <param name="query">The <see cref="IQuery{TCriteria}"/>.</param>
+        /// <param name="criteria">The <see cref="IQuery{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
-        /// <returns>The instances, matching the passed <paramref name="query"/>.</returns>
-        Task<TEntity> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        /// <returns>The instances, matching the passed <paramref name="criteria"/>.</returns>
+        Task<TEntity> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
             where TCriteria : class, IQueryCriteria, new();
 
@@ -165,14 +165,14 @@ namespace Nano.Repository.Interfaces
             where TEntity : class, IEntity;
 
         /// <summary>
-        /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="query"/>.
+        /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="criteria"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
         /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/>.</typeparam>
-        /// <param name="query">The <see cref="IQuery{TCriteria}"/>.</param>
+        /// <param name="criteria">The <see cref="IQuery{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
-        /// <returns>The instances, matching the passed <paramref name="query"/>.</returns>
-        Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        /// <returns>The instances, matching the passed <paramref name="criteria"/>.</returns>
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
             where TCriteria : class, IQueryCriteria, new();
 

@@ -25,11 +25,11 @@ namespace Nano.Web.Hosting.Serialization
 
             var xmlSerializer = new XmlSerializer(typeof(T), null, knownTypes ?? new Type[0], null, defaultNamespace);
 
-            using (var stringWriter = new StringWriter())
-            {
-                xmlSerializer.Serialize(stringWriter, @object, namespaces);
-                return stringWriter.ToString();
-            }
+            using var stringWriter = new StringWriter();
+            
+            xmlSerializer.Serialize(stringWriter, @object, namespaces);
+            
+            return stringWriter.ToString();
         }
 
         /// <summary>
@@ -47,10 +47,9 @@ namespace Nano.Web.Hosting.Serialization
 
             var xmlSerializer = new XmlSerializer(typeof(T), null, knownTypes ?? new Type[0], null, defaultNamespace);
 
-            using (var stringReader = new StringReader(xml))
-            {
-                return (T)xmlSerializer.Deserialize(stringReader);
-            }
+            using var stringReader = new StringReader(xml);
+            
+            return (T)xmlSerializer.Deserialize(stringReader);
         }
     }
 }

@@ -100,7 +100,7 @@ namespace Nano.Web.Controllers
 
         /// <summary>
         /// Get Services.
-        /// The services dependencies registerd during application start-up.
+        /// The services dependencies registered during application start-up.
         /// </summary>
         /// <param name="filter">The filter on service or implementation name.</param>
         /// <returns>The services.</returns>
@@ -119,7 +119,7 @@ namespace Nano.Web.Controllers
         {
             var serviceDescriptors = this.Services
                 .Where(x => 
-                    x.ServiceType?.FullName != null && x.ServiceType?.FullName?.IndexOf(filter) >= 0 ||
+                    x.ServiceType.FullName != null && x.ServiceType.FullName?.IndexOf(filter) >= 0 ||
                     x.ImplementationType?.FullName != null && x.ImplementationType?.FullName?.IndexOf(filter) >= 0)
                 .Select(x => new ServiceDependency
                 {

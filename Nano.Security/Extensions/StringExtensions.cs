@@ -15,15 +15,14 @@ namespace Nano.Security.Extensions
         /// <returns>A random base64 token.</returns>
         public static string GetRandomToken()
         {
-            string token;
             var bytes = new byte[32];
-            using (var generator = RandomNumberGenerator.Create())
-            {
-                generator
-                    .GetBytes(bytes);
+            
+            using var generator = RandomNumberGenerator.Create();
+           
+            generator
+                .GetBytes(bytes);
 
-                token = Convert.ToBase64String(bytes);
-            }
+            var token = Convert.ToBase64String(bytes);
 
             return token;
         }
