@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>5.0.2</version>
+    <version>5.0.3</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -15,7 +15,8 @@
 Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <releaseNotes>
 		- Cosmetics.
-		- Removed SecurityOptions.IsAnonymous and all related logic.
+		- Fixed incorrect error message for FORM responses.
+		- Added Content type for FORM.
     </releaseNotes>
     <dependencies>
       <group targetFramework="net5.0">
