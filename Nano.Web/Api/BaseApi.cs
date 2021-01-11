@@ -311,21 +311,21 @@ namespace Nano.Web.Api
                 ? this.accessToken?.Token 
                 : HttpContextAccess.Current.GetJwtToken();
 
-            var httpRequst = new HttpRequestMessage(method, uri);
-            httpRequst.Headers.Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
-            httpRequst.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
-            httpRequst.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
+            var httpRequest = new HttpRequestMessage(method, uri);
+            httpRequest.Headers.Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
+            httpRequest.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
 
             if (request is IRequestPost requestPost)
             {
                 var body = requestPost.GetBody();
                 var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, this.jsonSerializerSettings);
 
-                httpRequst.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
+                httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
             }
 
             return await this.httpClient
-                .SendAsync(httpRequst, cancellationToken);
+                .SendAsync(httpRequest, cancellationToken);
         }
         private async Task<TResponse> ProcessResponseAsync<TResponse>(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
         {
