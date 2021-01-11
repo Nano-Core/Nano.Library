@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -83,24 +84,30 @@ namespace Nano.Web.Hosting.Middleware
                     var queryString = request.QueryString.HasValue 
                         ? request.QueryString.Value ?? string.Empty
                         : string.Empty;
-
+                    // BUG: Test that form content type returns json error
                     var result = acceptHheader.Any()
                         ? acceptHheader.Contains(HttpContentType.JSON)
                             ? JsonConvert.SerializeObject(error)
                             : acceptHheader.Contains(HttpContentType.XML)
                                 ? XmlConvert.SerializeObject(error)
-                                : error.Summary
+                                : acceptHheader.Contains(HttpContentType.FORM) || acceptHheader.Contains(HttpContentType.FORM_ENCODED)
+                                    ? JsonConvert.SerializeObject(error)
+                                    : error.Summary
                         : contentTypeHeader.Any()
                             ? contentTypeHeader.Contains(HttpContentType.JSON)
                                 ? JsonConvert.SerializeObject(error)
                                 : contentTypeHeader.Contains(HttpContentType.XML)
                                     ? XmlConvert.SerializeObject(error)
-                                    : error.Summary
+                                    : acceptHheader.Contains(HttpContentType.FORM) || acceptHheader.Contains(HttpContentType.FORM_ENCODED)
+                                        ? JsonConvert.SerializeObject(error)
+                                        : error.Summary
                             : queryString.Contains($"format={HttpContentType.JSON}")
                                 ? JsonConvert.SerializeObject(error)
                                 : queryString.Contains($"format={HttpContentType.XML}")
                                     ? XmlConvert.SerializeObject(error)
-                                    : error.Summary;
+                                    : acceptHheader.Contains(HttpContentType.FORM) || acceptHheader.Contains(HttpContentType.FORM_ENCODED)
+                                        ? JsonConvert.SerializeObject(error)
+                                        : error.Summary;
 
                     await response
                         .WriteAsync(result);
