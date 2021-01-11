@@ -33,6 +33,11 @@ namespace Nano.Web.Const
         /// <summary>
         /// Form ("application/x-www-form-urlencoded").
         /// </summary>
-        public const string FORM = "application/x-www-form-urlencoded";
+        public const string FORM = "multipart/form-data";
+
+        /// <summary>
+        /// Form ("application/x-www-form-urlencoded").
+        /// </summary>
+        public const string FORM_ENCODED = "application/x-www-form-urlencoded";
     }
 }
