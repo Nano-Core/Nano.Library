@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>5.0.4</version>
+    <version>5.0.5-beta10</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -31,29 +31,14 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
 	      <dependency id="EasyNetQ" version="6.3.1" />
 	      <dependency id="EntityFrameworkCore.Triggers" version="1.2.2" />
 	      <dependency id="Google.Apis.Auth" version="1.49.0" />
-	      <dependency id="Microsoft.AspNetCore" version="2.2.0" />
-	      <dependency id="Microsoft.AspNetCore.Authentication" version="2.2.0" />
-	      <dependency id="Microsoft.AspNetCore.Authentication.Cookies" version="2.2.0" />
-	      <dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="5.0.2" />
-	      <dependency id="Microsoft.AspNetCore.Authentication.Google" version="5.0.2" />
-	      <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="5.0.2" />
+		  <dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="5.0.2" />
+		  <dependency id="Microsoft.AspNetCore.Authentication.Google" version="5.0.2" />
+		  <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="5.0.2" />
 		  <dependency id="Microsoft.AspNetCore.Authorization" version="5.0.2" />
-	      <dependency id="Microsoft.AspNetCore.CookiePolicy" version="2.2.8" />
-	      <dependency id="Microsoft.AspNetCore.Diagnostics.HealthChecks" version="2.2.0" />
-	      <dependency id="Microsoft.AspNetCore.HttpsPolicy" version="2.2.0" />
-	      <dependency id="Microsoft.AspNetCore.Identity" version="2.2.0" />
-	      <dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="5.0.2" />
-	      <dependency id="Microsoft.AspNetCore.Mvc" version="2.2.0" />
-	      <dependency id="Microsoft.AspNetCore.Mvc.Formatters.Json" version="2.2.0" />
-	      <dependency id="Microsoft.AspNetCore.Mvc.Formatters.Xml" version="2.2.0" />
-	      <dependency id="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="5.0.2" />
-	      <dependency id="Microsoft.AspNetCore.Mvc.Versioning" version="4.2.0" />
-	      <dependency id="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" version="4.2.0" />
-	      <dependency id="Microsoft.AspNetCore.ResponseCaching" version="2.2.0" />
-	      <dependency id="Microsoft.AspNetCore.ResponseCompression" version="2.2.0" />
-	      <dependency id="Microsoft.AspNetCore.Rewrite" version="2.2.0" />
-	      <dependency id="Microsoft.AspNetCore.Session" version="2.2.0" />
-		  <dependency id="Microsoft.AspNetCore.StaticFiles" version="2.2.0" />
+		  <dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="5.0.2" />
+		  <dependency id="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="5.0.2" />
+		  <dependency id="Microsoft.AspNetCore.Mvc.Versioning" version="4.2.0" />
+		  <dependency id="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" version="4.2.0" />
 	      <dependency id="Microsoft.EntityFrameworkCore" version="5.0.2" />
 	      <dependency id="Microsoft.EntityFrameworkCore.Design" version="5.0.2" />
 	      <dependency id="Microsoft.EntityFrameworkCore.InMemory" version="5.0.2" />
@@ -90,32 +75,32 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
 	      <dependency id="Swashbuckle.AspNetCore.Newtonsoft" version="5.6.3" />
 	      <dependency id="Swashbuckle.AspNetCore.Annotations" version="5.6.3" />
 	      <dependency id="System.ComponentModel.Annotations" version="5.0.0" />
-		  <dependency id="Vivet.AspNetCore.RequestTimeZone" version="3.1.1" />
+		  <dependency id="Vivet.AspNetCore.RequestTimeZone" version="5.0.0" />
 	      <dependency id="Z.EntityFramework.Plus.EFCore" version="5.1.13" />
 	  </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="Nano.App\bin\Release\net50\Nano.App.dll" target="lib\net50\Nano.App.dll" />
-    <file src="Nano.App\bin\Release\net50\Nano.App.xml" target="lib\net50\Nano.App.xml" />
-    <file src="Nano.Config\bin\Release\net50\Nano.Config.dll" target="lib\net50\Nano.Config.dll" />
-    <file src="Nano.Config\bin\Release\net50\Nano.Config.xml" target="lib\net50\Nano.Config.xml" />
-    <file src="Nano.Console\bin\Release\net50\Nano.Console.dll" target="lib\net50\Nano.Console.dll" />
-    <file src="Nano.Console\bin\Release\net50\Nano.Console.xml" target="lib\net50\Nano.Console.xml" />
-    <file src="Nano.Data\bin\Release\net50\Nano.Data.dll" target="lib\net50\Nano.Data.dll" />
-    <file src="Nano.Data\bin\Release\net50\Nano.Data.xml" target="lib\net50\Nano.Data.xml" />
-    <file src="Nano.Eventing\bin\Release\net50\Nano.Eventing.dll" target="lib\net50\Nano.Eventing.dll" />
-    <file src="Nano.Eventing\bin\Release\net50\Nano.Eventing.xml" target="lib\net50\Nano.Eventing.xml" />
-    <file src="Nano.Logging\bin\Release\net50\Nano.Logging.dll" target="lib\net50\Nano.Logging.dll" />
-    <file src="Nano.Logging\bin\Release\net50\Nano.Logging.xml" target="lib\net50\Nano.Logging.xml" />
-    <file src="Nano.Models\bin\Release\net50\Nano.Models.dll" target="lib\net50\Nano.Models.dll" />
-    <file src="Nano.Models\bin\Release\net50\Nano.Models.xml" target="lib\net50\Nano.Models.xml" />
-    <file src="Nano.Repository\bin\Release\net50\Nano.Repository.dll" target="lib\net50\Nano.Repository.dll" />
-    <file src="Nano.Repository\bin\Release\net50\Nano.Repository.xml" target="lib\net50\Nano.Repository.xml" />
-    <file src="Nano.Security\bin\Release\net50\Nano.Security.dll" target="lib\net50\Nano.Security.dll" />
-    <file src="Nano.Security\bin\Release\net50\Nano.Security.xml" target="lib\net50\Nano.Security.xml" />
-    <file src="Nano.Web\bin\Release\net50\Nano.Web.dll" target="lib\net50\Nano.Web.dll" />
-    <file src="Nano.Web\bin\Release\net50\Nano.Web.xml" target="lib\net50\Nano.Web.xml" />
+    <file src="Nano.App\bin\Release\net5.0\Nano.App.dll" target="lib\net5.0\Nano.App.dll" />
+    <file src="Nano.App\bin\Release\net5.0\Nano.App.xml" target="lib\net5.0\Nano.App.xml" />
+    <file src="Nano.Config\bin\Release\net5.0\Nano.Config.dll" target="lib\net5.0\Nano.Config.dll" />
+    <file src="Nano.Config\bin\Release\net5.0\Nano.Config.xml" target="lib\net5.0\Nano.Config.xml" />
+    <file src="Nano.Console\bin\Release\net5.0\Nano.Console.dll" target="lib\net5.0\Nano.Console.dll" />
+    <file src="Nano.Console\bin\Release\net5.0\Nano.Console.xml" target="lib\net5.0\Nano.Console.xml" />
+    <file src="Nano.Data\bin\Release\net5.0\Nano.Data.dll" target="lib\net5.0\Nano.Data.dll" />
+    <file src="Nano.Data\bin\Release\net5.0\Nano.Data.xml" target="lib\net5.0\Nano.Data.xml" />
+    <file src="Nano.Eventing\bin\Release\net5.0\Nano.Eventing.dll" target="lib\net5.0\Nano.Eventing.dll" />
+    <file src="Nano.Eventing\bin\Release\net5.0\Nano.Eventing.xml" target="lib\net5.0\Nano.Eventing.xml" />
+    <file src="Nano.Logging\bin\Release\net5.0\Nano.Logging.dll" target="lib\net5.0\Nano.Logging.dll" />
+    <file src="Nano.Logging\bin\Release\net5.0\Nano.Logging.xml" target="lib\net5.0\Nano.Logging.xml" />
+    <file src="Nano.Models\bin\Release\net5.0\Nano.Models.dll" target="lib\net5.0\Nano.Models.dll" />
+    <file src="Nano.Models\bin\Release\net5.0\Nano.Models.xml" target="lib\net5.0\Nano.Models.xml" />
+    <file src="Nano.Repository\bin\Release\net5.0\Nano.Repository.dll" target="lib\net5.0\Nano.Repository.dll" />
+    <file src="Nano.Repository\bin\Release\net5.0\Nano.Repository.xml" target="lib\net5.0\Nano.Repository.xml" />
+    <file src="Nano.Security\bin\Release\net5.0\Nano.Security.dll" target="lib\net5.0\Nano.Security.dll" />
+    <file src="Nano.Security\bin\Release\net5.0\Nano.Security.xml" target="lib\net5.0\Nano.Security.xml" />
+    <file src="Nano.Web\bin\Release\net5.0\Nano.Web.dll" target="lib\net5.0\Nano.Web.dll" />
+    <file src="Nano.Web\bin\Release\net5.0\Nano.Web.xml" target="lib\net5.0\Nano.Web.xml" />
     <file src="LICENSE" target="lib\LICENSE" />
   </files>
 </package>
