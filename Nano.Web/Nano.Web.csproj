@@ -40,22 +40,22 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="AspNetCore.HealthChecks.Network" Version="5.0.0" />
-    <PackageReference Include="AspNetCore.HealthChecks.System" Version="5.0.0" />
-    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="5.0.0" />
-    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="5.0.0" />
-    <PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="5.0.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.Network" Version="5.0.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.System" Version="5.0.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="5.0.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="5.0.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="5.0.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="5.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="5.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="5.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="5.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.CookiePolicy" Version="2.2.8" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Xml" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="2.2.0" />
