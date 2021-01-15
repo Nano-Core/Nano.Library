@@ -43,7 +43,7 @@ namespace Nano.Web.Extensions
             if (webOptions.Hosting.HealthCheck.UseHealthCheck)
             {
                 applicationBuilder
-                    .UseHealthChecks("healthz", new HealthCheckOptions
+                    .UseHealthChecks("/healthz", new HealthCheckOptions
                     {
                         Predicate = _ => true,
                         AllowCachingResponses = true,
@@ -55,10 +55,13 @@ namespace Nano.Web.Extensions
                     applicationBuilder
                         .UseHealthChecksUI(x =>
                         {
-                            x.UIPath = "healthz-ui";
-                            x.ApiPath = "healthz-api";
-                            x.ResourcesPath = "healthz-rex";
-                            x.ApiPath = "healthz-hooks";
+                            x.UIPath = "/healthz-ui";
+                            x.ApiPath = "/healthz-api";
+                            x.ResourcesPath = "/healthz-rex";
+                            x.WebhookPath = "/healthz-hooks";
+                            x.UseRelativeApiPath = true;
+                            x.UseRelativeResourcesPath = true;
+                            x.UseRelativeWebhookPath = true;
                         });
                 }
             }

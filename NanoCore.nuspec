@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>5.0.6</version>
+    <version>5.0.7</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -14,7 +14,7 @@
     <summary>Rapidly built and deploy rich .NET 5.0 applications. 
 Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <releaseNotes>
-		- Fixed absolute urls for health-checks and Swagger.
+		- Fixed Healthz-checks urls.
     </releaseNotes>
     <dependencies>
       <group targetFramework="net5.0">
