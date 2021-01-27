@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>5.0.8</version>
+    <version>5.0.9</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -47,7 +47,7 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
 	      <dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="5.0.2" />
 	      <dependency id="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" version="5.0.2" />
 	      <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="5.0.2" />
-	      <dependency id="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" version="5.0.1" />
+	      <dependency id="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" version="5.0.2" />
 	      <dependency id="Microsoft.EntityFrameworkCore.Tools" version="5.0.2" />
 	      <dependency id="Microsoft.Extensions.Configuration" version="5.0.0" />
 	      <dependency id="Microsoft.Extensions.Configuration.Binder" version="5.0.0" />
