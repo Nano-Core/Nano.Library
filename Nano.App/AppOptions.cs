@@ -16,6 +16,11 @@ namespace Nano.App
         public virtual string Name { get; set; } = "Application";
 
         /// <summary>
+        /// Entry Point.
+        /// </summary>
+        public virtual string EntryPoint { get; set; }
+
+        /// <summary>
         /// Description.
         /// </summary>
         public virtual string Description { get; set; }

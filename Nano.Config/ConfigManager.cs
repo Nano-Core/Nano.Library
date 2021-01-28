@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 
 namespace Nano.Config
@@ -49,6 +51,24 @@ namespace Nano.Config
                 .AddJsonFile($"{NAME}.{environment}.json", true)
                 .AddEnvironmentVariables()
                 .AddCommandLine(args);
+
+            if (environment == "Development")
+            {
+                var tempConfiguration = configurationBuilder.Build();
+                var entryPoint = tempConfiguration.GetValue<string>("App:EntryPoint");
+
+                if (entryPoint != null)
+                {
+                        var workDir = Directory.GetCurrentDirectory();
+                        var entryPointFile = Directory.GetFiles(workDir, entryPoint, SearchOption.AllDirectories).FirstOrDefault();
+
+                        if (entryPointFile != null)
+                        {
+                            configurationBuilder
+                                .AddUserSecrets(Assembly.LoadFile(entryPointFile));
+                        }
+                }
+            }
 
             return configurationBuilder
                 .Build();
