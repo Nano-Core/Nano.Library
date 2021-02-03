@@ -104,7 +104,7 @@ namespace Nano.Web.Extensions
                     if (!securityOptions.IsAuth)
                         x.Conventions.Insert(1, new AuthControllerDisabledConvention());
 
-                    if (dataOptions.ConnectionString == null)
+                    if (dataOptions.ConnectionString == null || !dataOptions.UseAudit)
                         x.Conventions.Insert(2, new AuditControllerDisabledConvention());
 
                     if (webOptions.Hosting.UseHttpsRequired)
