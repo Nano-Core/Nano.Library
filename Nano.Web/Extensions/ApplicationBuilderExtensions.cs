@@ -536,6 +536,30 @@ namespace Nano.Web.Extensions
         }
 
         /// <summary>
+        /// Adds https content type options policy header middleware to the <see cref="IApplicationBuilder"/>.
+        /// </summary>
+        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+        internal static IApplicationBuilder UseXHttpContentTypeOptionsPolicyHeader(this IApplicationBuilder applicationBuilder)
+        {
+            // https://docs.nwebsec.com/en/latest/nwebsec/Configuring-cto.html
+
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            var services = applicationBuilder.ApplicationServices;
+            var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
+
+            if (webOptions.Hosting.UseContentTypeOptions)
+            {
+                applicationBuilder
+                    .UseXContentTypeOptions();
+            }
+
+            return applicationBuilder;
+        }
+
+        /// <summary>
         /// Adds Hsts middleware to the <see cref="IApplicationBuilder"/>.
         /// </summary>
         /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
@@ -595,6 +619,8 @@ namespace Nano.Web.Extensions
 
             if (webOptions.Hosting.UseHttpsRewrite)
             {
+                // TODO: Implement CSP https://docs.nwebsec.com/en/latest/nwebsec/Configuring-csp.html
+
                 applicationBuilder
                     .UseCsp(x => x.UpgradeInsecureRequests());
 

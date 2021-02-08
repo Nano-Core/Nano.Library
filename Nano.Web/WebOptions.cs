@@ -76,6 +76,12 @@ namespace Nano.Web
             public virtual bool UseResponseCompression { get; set; } = true;
 
             /// <summary>
+            /// Use Content Type Options.
+            /// Added X-Content-Type Options header.
+            /// </summary>
+            public virtual bool UseContentTypeOptions { get; set; } = true;
+
+            /// <summary>
             /// Hsts.
             /// Settings for Strict-Transport-Security.
             /// </summary>

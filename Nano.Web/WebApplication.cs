@@ -53,6 +53,7 @@ namespace Nano.Web
                 .UseHttpXRobotsTagHeaders()
                 .UseHttpXFrameOptionsPolicyHeader()
                 .UseHttpXXssProtectionPolicyHeader()
+                .UseXHttpContentTypeOptionsPolicyHeader()
                 .UseHttpReferrerPolicyHeader()
                 .UseHttpStrictTransportSecurityPolicyHeader()
                 .UseHttpsRedirect()
