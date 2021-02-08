@@ -145,7 +145,7 @@ namespace Nano.Data
         /// <returns>The <see cref="Task"/> (void).</returns>
         public virtual async Task EnsureIdentityAsync(CancellationToken cancellationToken = default)
         {
-            if (this.Options.ConnectionString == null)
+            if (this.Options.ConnectionString == null) // TODO: Don't create admin user if SecurityOptions.IsAuth=false
                 return;
 
             var securityOptions = this.GetService<SecurityOptions>() ?? new SecurityOptions();

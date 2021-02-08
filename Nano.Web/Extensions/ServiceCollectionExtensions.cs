@@ -379,6 +379,8 @@ namespace Nano.Web.Extensions
             if (webOptions == null) 
                 throw new ArgumentNullException(nameof(webOptions));
 
+            // TODO: Swagger CSP https://purple.telstra.com/blog/locking-down-csp-with-aspnet-core-and-swashbuckle
+
             return services
                 .AddSwaggerGen(x =>
                 {
