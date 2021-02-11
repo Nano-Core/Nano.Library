@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using Nano.Models.Criterias.Interfaces;
+﻿using Nano.Models.Criterias.Interfaces;
+using Nano.Web.Api.Requests.Attributes;
 
 namespace Nano.Web.Api.Requests.Spatial
 {
@@ -14,23 +13,13 @@ namespace Nano.Web.Api.Requests.Spatial
         /// <summary>
         /// Distance.
         /// </summary>
+        [Query]
         public virtual int Distance { get; set; }
 
         /// <inheritdoc />
         public WithinRequest()
         {
             this.Action = "within";
-        }
-
-        /// <inheritdoc />
-        public override IList<KeyValuePair<string, string>> GetQueryStringParameters()
-        {
-            var parameters = base.GetQueryStringParameters();
-
-            parameters
-                .Add(new KeyValuePair<string, string>("distance", this.Distance.ToString(CultureInfo.InvariantCulture)));
-
-            return parameters;
         }
     }
 }

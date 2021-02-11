@@ -21,6 +21,11 @@ namespace Nano.Web.Const
         public const string HTML = "text/html";
 
         /// <summary>
+        /// Xhtml ("text/xhtml").
+        /// </summary>
+        public const string XHTML = "text/xhtml";
+
+        /// <summary>
         /// Text ("text/plain").
         /// </summary>
         public const string TEXT = "text/plain";
@@ -29,6 +34,11 @@ namespace Nano.Web.Const
         /// Pdf ("application/pdf").
         /// </summary>
         public const string PDF = "application/pdf";
+
+        /// <summary>
+        /// Pdf ("application/zip").
+        /// </summary>
+        public const string ZIP = "application/zip";
 
         /// <summary>
         /// Form ("application/x-www-form-urlencoded").

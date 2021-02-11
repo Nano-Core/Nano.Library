@@ -33,6 +33,11 @@ namespace Nano.Web.Api
         public virtual bool UseExposeErrors { get; set; } = false;
 
         /// <summary>
+        /// Timeout In Seconds.
+        /// </summary>
+        public virtual int TimeoutInSeconds { get; set; } = 30;
+
+        /// <summary>
         /// Login.
         /// </summary>
         public virtual Login Login { get; set; }

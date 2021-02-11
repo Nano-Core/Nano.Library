@@ -1,7 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Nano.Web.Api.Requests.Attributes;
 using Nano.Web.Api.Requests.Interfaces;
+using Newtonsoft.Json;
 
 namespace Nano.Web.Api.Requests
 {
@@ -11,50 +13,67 @@ namespace Nano.Web.Api.Requests
         /// <summary>
         /// Controller.
         /// </summary>
-        protected internal string Action { get; set; }
+        [JsonIgnore]
+        public string Action { get; set; }
 
         /// <summary>
         /// Controller.
         /// </summary>
-        protected internal string Controller { get; set; }
+        [JsonIgnore]
+        public string Controller { get; set; }
 
         /// <inheritdoc />
-        public virtual Uri GetUri<TEntity>(ApiOptions apiOptions)
+        public virtual string GetRoute()
         {
-            if (apiOptions == null)
-                throw new ArgumentNullException(nameof(apiOptions));
+            var parameters = this
+                .GetType()
+                .GetProperties()
+                .Select(x =>
+                {
+                    var property = x;
+                    var attribute = x.GetCustomAttribute<RouteAttribute>();
 
-            var type = typeof(TEntity);
-            var action = this.Action;
-            var protocol = apiOptions.UseSsl ? "https://" : "http://";
-            var controller = this.Controller ?? (type.IsGenericType
-                ? $"{type.GenericTypeArguments[0].Name}s"
-                : $"{type.Name.ToLower()}s");
-            var routeParameters = this.GetRouteParameters()
-                .Aggregate("", (x, y) => x + $"/{y}");
-            var queryParameters = this.GetQueryStringParameters()
-                .Select(x => x.Value == null 
-                    ? Uri.EscapeDataString(x.Key) 
-                    : Uri.EscapeDataString(x.Key) + "=" + Uri.EscapeDataString(x.Value));
-            var queryString = string.Join("&", queryParameters);
+                    return (property, attribute);
+                })
+                .Where(x => x.attribute != null)
+                .OrderBy(x => x.attribute.Order)
+                .Select(x =>
+                {
+                    var value = x.property.GetValue(this);
 
-            return new Uri($"{protocol}{apiOptions.Host}:{apiOptions.Port}/{apiOptions.Root}/{controller}/{action}{routeParameters}?{queryString}");
+                    return value ?? string.Empty;
+                });
+
+            return parameters
+                .Aggregate(string.Empty, (current, x) => current + $"{x}/");
         }
 
         /// <inheritdoc />
-        public virtual IList<string> GetRouteParameters()
+        public virtual string GetQuerystring()
         {
-            var parameters = new List<string>();
+            var parameters = this
+                .GetType()
+                .GetProperties()
+                .Select(x =>
+                {
+                    var property = x;
+                    var attribute = x.GetCustomAttribute<QueryAttribute>();
 
-            return parameters;
-        }
+                    return (property, attribute);
+                })
+                .Where(x => x.attribute != null)
+                .Select(x =>
+                {
+                    var key = x.attribute.Name ?? x.property.Name;
+                    var value = x.property.GetValue(this);
 
-        /// <inheritdoc />
-        public virtual IList<KeyValuePair<string, string>> GetQueryStringParameters()
-        {
-            var parameters = new List<KeyValuePair<string, string>>();
+                    if (value == null)
+                        return Uri.EscapeDataString(key);
 
-            return parameters;
+                    return Uri.EscapeDataString(key) + "=" + Uri.EscapeDataString(value.ToString() ?? string.Empty);
+                });
+
+            return string.Join("&", parameters);
         }
     }
 }

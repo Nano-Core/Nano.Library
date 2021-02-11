@@ -347,6 +347,8 @@ namespace Nano.Web.Extensions
 
                 config[HostDefaults.ContentRootKey] = Directory.GetCurrentDirectory();
 
+                // TODO: HealthChecksUI CSP 
+
                 services
                     .AddHealthChecksUI(x =>
                         {

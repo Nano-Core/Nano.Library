@@ -1,14 +1,13 @@
-namespace Nano.Web.Api.Requests.Interfaces
+﻿namespace Nano.Web.Api.Requests.Interfaces
 {
     /// <summary>
-    /// Base interface for requests (POST).
+    /// Base interface for post requests (POST).
     /// </summary>
     public interface IRequestPost : IRequest
     {
         /// <summary>
-        /// Gets the body of the request.
+        /// Get Body.
         /// </summary>
-        /// <returns>The body <see cref="object"/>.</returns>
         object GetBody();
     }
 }

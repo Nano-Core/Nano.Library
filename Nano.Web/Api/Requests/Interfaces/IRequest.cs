@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Nano.Web.Api.Requests.Attributes;
+using Newtonsoft.Json;
 
 namespace Nano.Web.Api.Requests.Interfaces
 {
@@ -9,23 +9,29 @@ namespace Nano.Web.Api.Requests.Interfaces
     public interface IRequest
     {
         /// <summary>
-        /// Returns the Uri for the request.
+        /// Action.
         /// </summary>
-        /// <typeparam name="TResponse">The type of response.</typeparam>
-        /// <param name="apiOptions">The <see cref="ApiOptions"/>.</param>
-        /// <returns>The <see cref="Uri"/>.</returns>
-        Uri GetUri<TResponse>(ApiOptions apiOptions);
+        [JsonIgnore]
+        string Action { get; set; }
 
         /// <summary>
-        /// Get the collection  querystring  key/values.
+        /// Controller.
         /// </summary>
-        /// <returns>The <see cref="IList{KeyValuePair}"/>.</returns>
-        IList<KeyValuePair<string, string>> GetQueryStringParameters();
+        [JsonIgnore]
+        string Controller { get; set; }
 
         /// <summary>
-        /// Get the collection  querystring  key/values.
+        /// Get Route.
+        /// Get the route parameters of the request, defined by properties having <see cref="RouteAttribute"/>.
         /// </summary>
-        /// <returns>The <see cref="IList{KeyValuePair}"/>.</returns>
-        IList<string> GetRouteParameters();
+        /// <returns>The route as string.</returns>
+        string GetRoute();
+
+        /// <summary>
+        /// Get Querystring.
+        /// Get the querystring parameters of the request, defined by properties having <see cref="QueryAttribute"/>.
+        /// </summary>
+        /// <returns></returns>
+        string GetQuerystring();
     }
 }

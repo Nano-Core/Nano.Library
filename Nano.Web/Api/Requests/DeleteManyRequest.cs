@@ -12,7 +12,7 @@ namespace Nano.Web.Api.Requests
     /// <summary>
     /// Delete Many Request.
     /// </summary>
-    public class DeleteManyRequest<TIdentity> : BaseRequestPost
+    public class DeleteManyRequest<TIdentity> : BaseRequestDelete
     {
         /// <summary>
         /// Ids.

@@ -7,6 +7,7 @@ namespace Nano.Web.Api.Requests
     /// </summary>
     public abstract class BaseRequestDelete : BaseRequest, IRequestDelete
     {
-
+        /// <inheritdoc />
+        public abstract object GetBody();
     }
 }

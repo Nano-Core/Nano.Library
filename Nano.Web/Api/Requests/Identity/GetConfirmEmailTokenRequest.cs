@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using Nano.Web.Api.Requests.Attributes;
 
 namespace Nano.Web.Api.Requests.Identity
 {
@@ -8,23 +8,13 @@ namespace Nano.Web.Api.Requests.Identity
         /// <summary>
         /// Email Address.
         /// </summary>
+        [Query]
         public virtual string EmailAddress { get; set; }
 
         /// <inheritdoc />
         public GetConfirmEmailTokenRequest()
         {
             this.Action = "email/confirm/token";
-        }
-
-        /// <inheritdoc />
-        public override IList<KeyValuePair<string, string>> GetQueryStringParameters()
-        {
-            var parameters = base.GetQueryStringParameters();
-
-            parameters
-                .Add(new KeyValuePair<string, string>("emailAddress", this.EmailAddress));
-
-            return parameters;
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿namespace Nano.Web.Api.Requests.Interfaces
 {
     /// <summary>
-    /// Base interface for delete requests (DELETE).
+    /// Base interface for put requests (PUT).
     /// </summary>
-    public interface IRequestDelete : IRequest
+    public interface IRequestPut : IRequest
     {
         /// <summary>
         /// Get Body.

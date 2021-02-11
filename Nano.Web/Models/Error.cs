@@ -45,7 +45,7 @@ namespace Nano.Web.Models
         public Error(Exception exception)
             : this()
         {
-            if (exception == null) 
+            if (exception == null)
                 throw new ArgumentNullException(nameof(exception));
 
             var baseException = exception.GetBaseException();
@@ -60,18 +60,18 @@ namespace Nano.Web.Models
             switch (exception)
             {
                 case AggregateException aggregateException:
-                {
-                    if (aggregateException.InnerException is TranslationException)
                     {
-                        this.Exceptions = aggregateException.InnerExceptions
-                            .Where(x => x is TranslationException)
-                            .Select(x => x.Message)
-                            .ToArray();
+                        if (aggregateException.InnerException is TranslationException)
+                        {
+                            this.Exceptions = aggregateException.InnerExceptions
+                                .Where(x => x is TranslationException)
+                                .Select(x => x.Message)
+                                .ToArray();
 
-                        this.IsTranslated = true;
+                            this.IsTranslated = true;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case TranslationException _:
                     this.Exceptions = new[]
                     {

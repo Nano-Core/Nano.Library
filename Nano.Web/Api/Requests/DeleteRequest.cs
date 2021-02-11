@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using Nano.Web.Api.Requests.Attributes;
 
 namespace Nano.Web.Api.Requests
 {
@@ -17,6 +17,7 @@ namespace Nano.Web.Api.Requests
         /// <summary>
         /// Id.
         /// </summary>
+        [Route]
         public virtual TIdentity Id { get; set; }
 
         /// <summary>
@@ -28,14 +29,9 @@ namespace Nano.Web.Api.Requests
         }
 
         /// <inheritdoc />
-        public override IList<string> GetRouteParameters()
+        public override object GetBody()
         {
-            var parameters = base.GetRouteParameters();
-
-            parameters
-                .Add(this.Id.ToString());
-
-            return parameters;
+            return null;
         }
     }
 }

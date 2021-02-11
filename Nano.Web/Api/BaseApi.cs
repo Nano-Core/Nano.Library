@@ -1,19 +1,10 @@
-﻿using Nano.Models.Exceptions;
-using Nano.Models.Interfaces;
-using Nano.Security.Exceptions;
-using Nano.Security.Extensions;
+﻿using Nano.Models.Interfaces;
 using Nano.Security.Models;
 using Nano.Web.Api.Requests.Auth;
-using Nano.Web.Api.Requests.Interfaces;
-using Nano.Web.Const;
-using Nano.Web.Hosting;
-using Nano.Web.Hosting.Serialization;
-using Nano.Web.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -23,8 +14,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
 using Nano.Models.Criterias.Interfaces;
+using Nano.Models.Exceptions;
+using Nano.Security.Extensions;
 using Nano.Web.Api.Requests;
+using Nano.Web.Api.Requests.Interfaces;
 using Nano.Web.Api.Requests.Spatial;
+using Nano.Web.Const;
+using Nano.Web.Hosting;
+using Nano.Web.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using Vivet.AspNetCore.RequestTimeZone;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 
@@ -33,23 +33,27 @@ namespace Nano.Web.Api
     /// <summary>
     /// Base Api (abstract).
     /// </summary>
-    public abstract class BaseApi
+    public abstract class BaseApi : IDisposable
     {
         private AccessToken accessToken;
-        private readonly HttpClient httpClient;
         private readonly ApiOptions apiOptions;
-        private readonly TimeSpan httpTimeout = new TimeSpan(0, 0, 30);
+        private readonly HttpClient httpClient;
         private readonly HttpClientHandler httpClientHandler = new HttpClientHandler
         {
             AllowAutoRedirect = true,
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
         };
-        private readonly JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings
+
+        private static readonly JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             PreserveReferencesHandling = PreserveReferencesHandling.None,
-            ContractResolver = new EntityContractResolver()
+            ContractResolver = new DefaultContractResolver(),
+            Converters = new List<JsonConverter>
+            {
+                new StringEnumConverter()
+            }
         };
 
         /// <summary>
@@ -59,18 +63,21 @@ namespace Nano.Web.Api
         protected BaseApi(ApiOptions apiOptions)
         {
             this.apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
- 
+
             this.httpClient = new HttpClient(this.httpClientHandler)
             {
-                Timeout = this.httpTimeout,
+                Timeout = new TimeSpan(0, 0, this.apiOptions.TimeoutInSeconds),
                 DefaultRequestVersion = new Version(2, 0)
             };
 
             this.httpClient.DefaultRequestHeaders.Accept
                 .Add(new MediaTypeWithQualityHeaderValue(HttpContentType.JSON));
 
-            this.jsonSerializerSettings.Converters
-                .Add(new StringEnumConverter());
+            this.httpClient.DefaultRequestHeaders.AcceptLanguage
+                .Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
+
+            this.httpClient.DefaultRequestHeaders
+                .Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
         }
 
         /// <summary>
@@ -81,7 +88,7 @@ namespace Nano.Web.Api
         /// <returns>The <see cref="AccessToken"/>.</returns>
         public virtual async Task<AccessToken> LogInAsync(LogInRequest request, CancellationToken cancellationToken = default)
         {
-            return await this.CustomAsync<LogInRequest, AccessToken>(request, cancellationToken);
+            return await this.InvokeAsync<LogInRequest, AccessToken>(request, cancellationToken);
         }
 
         /// <summary>
@@ -95,7 +102,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.CustomAsync<LogInRefreshRequest, AccessToken>(request, cancellationToken);
+            return await this.InvokeAsync<LogInRefreshRequest, AccessToken>(request, cancellationToken);
         }
 
         /// <summary>
@@ -109,7 +116,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.CustomAsync<LogInExternalRequest, ExternalLoginResponse>(request, cancellationToken);
+            return await this.InvokeAsync<LogInExternalRequest, ExternalLoginResponse>(request, cancellationToken);
         }
 
         /// <summary>
@@ -123,11 +130,11 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            await this.CustomAsync(request, cancellationToken);
+            await this.InvokeAsync(request, cancellationToken);
         }
 
         /// <summary>
-        /// Get External Schemes Async.
+        /// GetAsync External Schemes Async.
         /// </summary>
         /// <param name="request">The <see cref="GetExternalSchemesRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
@@ -137,51 +144,17 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.CustomAsync<GetExternalSchemesRequest, IEnumerable<LoginProvider>>(request, cancellationToken);
+            return await this.InvokeAsync<GetExternalSchemesRequest, IEnumerable<LoginProvider>>(request, cancellationToken);
         }
 
         /// <summary>
-        /// Invokes a custom request and returns void.
+        /// Invokes the request.
         /// </summary>
         /// <typeparam name="TRequest">The request type.</typeparam>
         /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>Nothing (void).</returns>
-        public virtual async Task CustomAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequest
-        {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-
-            await this.Invoke<TRequest, object>(request, cancellationToken);
-        }
-
-        /// <summary>
-        /// Invokes a custom request and returns a response.
-        /// </summary>
-        /// <typeparam name="TRequest">The request type.</typeparam>
-        /// <typeparam name="TResponse">The response type.</typeparam>
-        /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
-        public virtual async Task<TResponse> CustomAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequest
-        {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-
-            return await this.Invoke<TRequest, TResponse>(request, cancellationToken);
-        }
-
-        /// <summary>
-        /// Invokes the request, and returns the response.
-        /// </summary>
-        /// <typeparam name="TRequest">The request type.</typeparam>
-        /// <typeparam name="TResponse">The response type.</typeparam>
-        /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
-        protected virtual async Task<TResponse> Invoke<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+        /// <returns>Void.</returns>
+        protected virtual async Task InvokeAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
             where TRequest : class, IRequest
         {
             if (request == null)
@@ -189,198 +162,496 @@ namespace Nano.Web.Api
 
             await this.AuthenticateAsync(cancellationToken);
 
-            var taskCompletion = new TaskCompletionSource<TResponse>();
+            switch (request)
+            {
+                case IRequestGet requestGet:
+                    await this.GetAsync(requestGet, cancellationToken);
+                    break;
 
-            await this.ProcessRequestAsync<TRequest, TResponse>(request, cancellationToken)
-                .ContinueWith(async x =>
-                {
-                    if (x.IsFaulted)
-                    {
-                        taskCompletion.SetException(x.Exception ?? new Exception());
-                    }
-                    else
-                    {
-                        try
-                        {
-                            var result = await x;
-                            var response = await this.ProcessResponseAsync<TResponse>(result, cancellationToken);
+                case IRequestPut requestPut:
+                    await this.PutAsync(requestPut, cancellationToken);
+                    break;
 
-                            taskCompletion.SetResult(response);
-                        }
-                        catch (Exception ex)
-                        {
-                            taskCompletion.SetException(ex);
-                        }
-                    }
-                }, cancellationToken);
+                case IRequestPost requestPost:
+                    await this.PostAsync(requestPost, cancellationToken);
+                    break;
 
-            return await taskCompletion.Task;
+                case IRequestPostForm requestPostForm:
+                    await this.PostFormAsync(requestPostForm, cancellationToken);
+                    break;
+
+                case IRequestDelete requestDelete:
+                    await this.DeleteAsync(requestDelete, cancellationToken);
+                    break;
+
+                default:
+                    throw new NotSupportedException($"Not supported: {nameof(request)}");
+            }
         }
 
         /// <summary>
         /// Invokes the request, and returns the response.
         /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
         /// <typeparam name="TRequest">The request type.</typeparam>
         /// <typeparam name="TResponse">The response type.</typeparam>
         /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
-        protected virtual async Task<TResponse> Invoke<TEntity, TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+        protected virtual async Task<TResponse> InvokeAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : class, IRequest
+            where TResponse : class
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            await this.AuthenticateAsync(cancellationToken);
+
+            request.Controller ??= this.GetInferredController<TResponse>();
+
+            return request switch
+            {
+                IRequestGet requestGet => await this.GetAsync<IRequestGet, TResponse>(requestGet, cancellationToken),
+                IRequestPut requestPut => await this.PutAsync<IRequestPut, TResponse>(requestPut, cancellationToken),
+                IRequestPost requestPost => await this.PostAsync<IRequestPost, TResponse>(requestPost, cancellationToken),
+                IRequestPostForm requestPostForm => await this.PostFormAsync<IRequestPostForm, TResponse>(requestPostForm, cancellationToken),
+                IRequestDelete requestDelete => await this.DeleteAsync<IRequestDelete, TResponse>(requestDelete, cancellationToken),
+                _ => throw new NotSupportedException($"Not supported: {nameof(request)}")
+            };
+        }
+
+        /// <summary>
+        /// Invokes the request, and returns the response.
+        /// </summary>
+        /// <typeparam name="TEntity">The entity.</typeparam>
+        /// <typeparam name="TRequest">The request type.</typeparam>
+        /// <typeparam name="TResponse">The response type.</typeparam>
+        /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
+        protected virtual async Task<TResponse> InvokeAsync<TEntity, TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
             where TRequest : class, IRequest
+            where TResponse : class
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
             await this.AuthenticateAsync(cancellationToken);
 
-            var taskCompletion = new TaskCompletionSource<TResponse>();
+            request.Controller ??= this.GetInferredController<TEntity>();
 
-            await this.ProcessRequestAsync<TRequest, TEntity>(request, cancellationToken)
-                .ContinueWith(async x =>
-                {
-                    if (x.IsFaulted)
-                    {
-                        taskCompletion.SetException(x.Exception ?? new Exception());
-                    }
-                    else
-                    {
-                        try
-                        {
-                            var result = await x;
-                            var response = await this.ProcessResponseAsync<TResponse>(result, cancellationToken);
-
-                            taskCompletion.SetResult(response);
-                        }
-                        catch (Exception ex)
-                        {
-                            taskCompletion.SetException(ex);
-                        }
-                    }
-                }, cancellationToken);
-
-            return await taskCompletion.Task;
+            return request switch
+            {
+                IRequestGet requestGet => await this.GetAsync<IRequestGet, TResponse>(requestGet, cancellationToken),
+                IRequestPut requestPut => await this.PutAsync<IRequestPut, TResponse>(requestPut, cancellationToken),
+                IRequestPost requestPost => await this.PostAsync<IRequestPost, TResponse>(requestPost, cancellationToken),
+                IRequestPostForm requestPostForm => await this.PostFormAsync<IRequestPostForm, TResponse>(requestPostForm, cancellationToken),
+                IRequestDelete requestDelete => await this.DeleteAsync<IRequestDelete, TResponse>(requestDelete, cancellationToken),
+                _ => throw new NotSupportedException($"Not supported: {nameof(request)}")
+            };
         }
 
-        private HttpMethod GetMethod<TRequest>(TRequest request)
+        private async Task AuthenticateAsync(CancellationToken cancellationToken = default)
         {
+            var httpContextAccess = HttpContextAccess.Current;
+
+            if (httpContextAccess != null)
+            {
+                var isAnonymous = httpContextAccess
+                    .GetIsAnonymous();
+
+                if (isAnonymous)
+                {
+                    if (this.apiOptions.Login == null)
+                        return;
+
+                    if (!string.IsNullOrEmpty(this.accessToken?.Token) && !this.accessToken.IsExpired)
+                        return;
+
+                    this.apiOptions.Login.IsRefreshable = false;
+
+                    var loginRequest = new LogInRequest
+                    {
+                        Login = this.apiOptions.Login
+                    };
+
+                    this.accessToken = await this.InvokeAsync<LogInRequest, AccessToken>(loginRequest, cancellationToken);
+                }
+            }
+        }
+
+        private async Task GetAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : class, IRequestGet
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            using var httpRequest = this.GetHttpRequestMessage(request);
+            {
+                await this.httpClient
+                    .SendAsync(httpRequest, cancellationToken);
+            }
+        }
+        private async Task<TResponse> GetAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : class, IRequestGet
+            where TResponse : class
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            using var httpRequest = this.GetHttpRequestMessage(request);
+            {
+                var httpResponse = await this.httpClient
+                    .SendAsync(httpRequest, cancellationToken);
+
+                return await this.GetReponseAsync<TResponse>(httpResponse, cancellationToken);
+            }
+        }
+        private async Task PutAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : class, IRequestPut
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            using var httpRequest = this.GetHttpRequestMessage(request);
+            {
+                var body = request.GetBody();
+                var content = body == null
+                    ? string.Empty
+                    : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
+
+                httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
+
+                await this.httpClient
+                    .SendAsync(httpRequest, cancellationToken);
+            }
+        }
+        private async Task<TResponse> PutAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : class, IRequestPut
+            where TResponse : class
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            using var httpRequest = this.GetHttpRequestMessage(request);
+            {
+                var body = request.GetBody();
+                var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
+
+                httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
+
+                var httpResponse = await this.httpClient
+                    .SendAsync(httpRequest, cancellationToken);
+
+                return await this.GetReponseAsync<TResponse>(httpResponse, cancellationToken);
+            }
+        }
+        private async Task PostAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : class, IRequestPost
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            using var httpRequest = this.GetHttpRequestMessage(request);
+            {
+                var body = request.GetBody();
+                var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
+
+                httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
+
+                await this.httpClient
+                    .SendAsync(httpRequest, cancellationToken);
+            }
+        }
+        private async Task<TResponse> PostAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : class, IRequestPost
+            where TResponse : class
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            using var httpRequest = this.GetHttpRequestMessage(request);
+            {
+                var body = request.GetBody();
+                var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
+
+                httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
+
+                var httpResponse = await this.httpClient
+                    .SendAsync(httpRequest, cancellationToken);
+
+                return await this.GetReponseAsync<TResponse>(httpResponse, cancellationToken);
+            }
+        }
+        private async Task PostFormAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : class, IRequestPostForm
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            using var httpRequest = this.GetHttpRequestMessage(request);
+            {
+                using var formContent = new MultipartFormDataContent();
+                {
+                    foreach (var x in request.GetForm())
+                    {
+                        if (x.Type == typeof(FileInfo))
+                        {
+                            var value = x.Value as FileInfo;
+
+                            if (value == null)
+                                continue;
+
+                            var filename = value.FullName;
+
+                            if (!File.Exists(filename))
+                                throw new FileNotFoundException($"File: '{filename}' not found.");
+
+                            var bytes = await File.ReadAllBytesAsync(filename, cancellationToken);
+                            var fileContent = new ByteArrayContent(bytes);
+                            fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
+
+                            formContent
+                                .Add(fileContent, x.Name, Path.GetFileName(filename));
+                        }
+                        else
+                        {
+                            var value = x.Value.ToString() ?? string.Empty;
+
+                            formContent
+                                .Add(new StringContent(value), x.Name);
+                        }
+                    }
+
+                    httpRequest.Content = formContent;
+
+                    await this.httpClient
+                        .SendAsync(httpRequest, cancellationToken);
+                }
+            }
+        }
+        private async Task<TResponse> PostFormAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : class, IRequestPostForm
+            where TResponse : class
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            using var httpRequest = this.GetHttpRequestMessage(request);
+            {
+                using var formContent = new MultipartFormDataContent();
+                {
+                    foreach (var x in request.GetForm())
+                    {
+                        if (x.Type == typeof(FileInfo))
+                        {
+                            var value = x.Value as FileInfo;
+
+                            if (value == null)
+                                continue;
+
+                            var filename = value.FullName;
+
+                            if (!File.Exists(filename))
+                                throw new FileNotFoundException($"{filename}");
+
+                            var bytes = await File.ReadAllBytesAsync(filename, cancellationToken);
+                            var fileContent = new ByteArrayContent(bytes);
+                            fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
+
+                            formContent
+                                .Add(fileContent, x.Name, Path.GetFileName(filename));
+                        }
+                        else
+                        {
+                            var value = x.Value.ToString() ?? string.Empty;
+
+                            formContent
+                                .Add(new StringContent(value), x.Name);
+                        }
+                    }
+
+                    httpRequest.Content = formContent;
+
+                    var httpResponse = await this.httpClient
+                        .SendAsync(httpRequest, cancellationToken);
+
+                    return await this.GetReponseAsync<TResponse>(httpResponse, cancellationToken);
+                }
+            }
+        }
+        private async Task DeleteAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : class, IRequestDelete
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            using var httpRequest = this.GetHttpRequestMessage(request);
+            {
+                var body = request.GetBody();
+                var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
+
+                httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
+
+                await this.httpClient
+                    .SendAsync(httpRequest, cancellationToken);
+            }
+        }
+        private async Task<TResponse> DeleteAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : class, IRequestDelete
+            where TResponse : class
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            using var httpRequest = this.GetHttpRequestMessage(request);
+            {
+                var body = request.GetBody();
+                var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
+
+                httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
+
+                var httpResponse = await this.httpClient
+                    .SendAsync(httpRequest, cancellationToken);
+
+                return await this.GetReponseAsync<TResponse>(httpResponse, cancellationToken);
+            }
+        }
+
+        private Uri GetUri<TRequest>(TRequest request)
+            where TRequest : IRequest
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var protocol = this.apiOptions.UseSsl
+                ? "https://"
+                : "http://";
+            var host = this.apiOptions.Host.EndsWith("/")
+                ? this.apiOptions.Host.Substring(0, this.apiOptions.Host.Length - 1)
+                : this.apiOptions.Host;
+            var port = this.apiOptions.Port;
+            var root = this.apiOptions.Root.EndsWith("/")
+                ? this.apiOptions.Root.Substring(0, this.apiOptions.Root.Length - 1)
+                : this.apiOptions.Root;
+            var controller = request.Controller == null ? null : $"{request.Controller}/";
+            var action = request.Action == null ? null : $"{request.Action}/";
+            var route = request.GetRoute();
+            var queryString = request.GetQuerystring();
+            var uri = $"{protocol}{host}:{port}/{root}/{controller}{action}{route}?{queryString}";
+
+            return new Uri(uri);
+        }
+        private string GetInferredController<TResponse>()
+            where TResponse : class
+        {
+            var type = typeof(TResponse);
+
+            return type.IsGenericType
+                ? $"{type.GenericTypeArguments[0].Name}s"
+                : $"{type.Name.ToLower()}s";
+        }
+        private HttpMethod GetMethod<TRequest>(TRequest request)
+            where TRequest : IRequest
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
             return request switch
             {
                 IRequestGet _ => HttpMethod.Get,
+                IRequestPut _ => HttpMethod.Put,
                 IRequestPost _ => HttpMethod.Post,
+                IRequestPostForm _ => HttpMethod.Post,
                 IRequestDelete _ => HttpMethod.Delete,
+                IRequestOptions _ => HttpMethod.Options,
                 _ => throw new NotSupportedException()
             };
         }
-        private async Task AuthenticateAsync(CancellationToken cancellationToken = default)
-        {
-            var isAnonymous = HttpContextAccess.Current
-                .GetIsAnonymous();
-
-            if (isAnonymous)
-            {
-                if (this.apiOptions.Login == null)
-                    return;
-
-                if (!string.IsNullOrEmpty(this.accessToken?.Token) && !this.accessToken.IsExpired)
-                    return;
-
-                this.apiOptions.Login.IsRefreshable = false;
-
-                var loginRequest = new LogInRequest
-                {
-                    Login = this.apiOptions.Login
-                };
-
-                using var httpResponse = await this.ProcessRequestAsync<LogInRequest, AccessToken>(loginRequest, cancellationToken);
-                this.accessToken = await this.ProcessResponseAsync<AccessToken>(httpResponse, cancellationToken);
-            }
-        }
-        private async Task<HttpResponseMessage> ProcessRequestAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequest
+        private HttpRequestMessage GetHttpRequestMessage<TRequest>(TRequest request)
+            where TRequest : IRequest
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var uri = request.GetUri<TResponse>(this.apiOptions);
+            var uri = this.GetUri(request);
             var method = this.GetMethod(request);
-            var isAnonymous = HttpContextAccess.Current.GetIsAnonymous();
-
-            var jwtToken = isAnonymous 
-                ? this.accessToken?.Token 
-                : HttpContextAccess.Current.GetJwtToken();
-
             var httpRequest = new HttpRequestMessage(method, uri);
-            httpRequest.Headers.Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
-            httpRequest.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
 
-            if (request is IRequestPost requestPost)
+            if (accessToken?.Token != null)
             {
-                var body = requestPost.GetBody();
-                var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, this.jsonSerializerSettings);
-
-                httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
+                httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.accessToken.Token);
             }
 
-            return await this.httpClient
-                .SendAsync(httpRequest, cancellationToken);
+            return httpRequest;
         }
-        private async Task<TResponse> ProcessResponseAsync<TResponse>(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
+        private async Task<TResponse> GetReponseAsync<TResponse>(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
+            where TResponse : class
         {
             if (httpResponse == null)
                 throw new ArgumentNullException(nameof(httpResponse));
 
-            try
+            switch (httpResponse.StatusCode)
             {
-                using (httpResponse)
-                {
-                    switch (httpResponse.StatusCode)
+                case HttpStatusCode.NotFound:
+                    return default;
+
+                case HttpStatusCode.Unauthorized:
+                    throw new AggregateException(new UnauthorizedAccessException());
+
+                case HttpStatusCode.BadRequest:
+                case HttpStatusCode.InternalServerError:
+                    var errorContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
+                    var error = JsonConvert.DeserializeObject<Error>(errorContent);
+
+                    if (error.IsTranslated)
                     {
-                        case HttpStatusCode.NotFound:
-                            return default;
-
-                        case HttpStatusCode.Unauthorized:
-                            throw new AggregateException(new UnauthorizedException());
-
-                        case HttpStatusCode.BadRequest:
-                        case HttpStatusCode.InternalServerError:
-                            var errorContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
-                            var error = JsonConvert.DeserializeObject<Error>(errorContent);
-                            
-                            if (error.IsTranslated)
-                            {
-                                throw new AggregateException(error.Exceptions.Select(x => new TranslationException(x)));
-                            }
-                            else if (this.apiOptions.UseExposeErrors)
-                            {
-                                throw new AggregateException(error.Exceptions.Select(x => new InvalidOperationException(x)));
-                            }
-                            break;
+                        throw new AggregateException(error.Exceptions.Select(x => new TranslationException(x)));
+                    }
+                    if (this.apiOptions.UseExposeErrors)
+                    {
+                        throw new AggregateException(error.Exceptions.Select(x => new InvalidOperationException(x)));
                     }
 
-                    httpResponse
-                        .EnsureSuccessStatusCode();
+                    break;
+            }
 
-                    if (typeof(TResponse) == typeof(object))
-                    {
-                        return default;
-                    }
+            httpResponse
+                .EnsureSuccessStatusCode();
 
+            var contentType = httpResponse.Content.Headers.ContentType?.MediaType;
+
+            // TODO: Api-Client: Add all possible media types.
+            switch (contentType)
+            {
+                case HttpContentType.HTML:
+                case HttpContentType.XHTML:
+                case HttpContentType.PDF:
+                case HttpContentType.ZIP:
+                    return await httpResponse.Content.ReadAsStreamAsync(cancellationToken) as TResponse;
+
+                case HttpContentType.JSON:
                     var successContent = await httpResponse.Content
                         .ReadAsStringAsync(cancellationToken);
 
                     return JsonConvert.DeserializeObject<TResponse>(successContent);
-                }
-            }
-            finally
-            {
-                httpResponse.Dispose();
+
+                default:
+                    throw new NotSupportedException(contentType);
             }
         }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            this.httpClient?
+                .Dispose();
+
+            this.httpClientHandler?
+                .Dispose();
+        }
     }
-  
+
     /// <inheritdoc />
     public class BaseApi<TIdentity> : BaseApi
     {
@@ -439,7 +710,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.Invoke<IndexRequest, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.InvokeAsync<IndexRequest, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>
@@ -456,7 +727,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.Invoke<DetailsRequest<TIdentity>, TEntity>(request, cancellationToken);
+            return await this.InvokeAsync<DetailsRequest<TIdentity>, TEntity>(request, cancellationToken);
         }
 
         /// <summary>
@@ -473,7 +744,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.Invoke<DetailsManyRequest<TIdentity>, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.InvokeAsync<DetailsManyRequest<TIdentity>, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>
@@ -492,7 +763,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.Invoke<QueryRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.InvokeAsync<QueryRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>
@@ -511,7 +782,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.Invoke<QueryFirstRequest<TCriteria>, TEntity>(request, cancellationToken);
+            return await this.InvokeAsync<QueryFirstRequest<TCriteria>, TEntity>(request, cancellationToken);
         }
 
         /// <summary>
@@ -523,14 +794,18 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="QueryCountRequest{TCriteria}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The count of matching entities.</returns>
-        public virtual async Task<int> QueryCountAsync<TEntity, TCriteria>(QueryCountRequest<TCriteria> request, CancellationToken cancellationToken = default) 
-            where TEntity: class, IEntity
+        public virtual async Task<int> QueryCountAsync<TEntity, TCriteria>(QueryCountRequest<TCriteria> request, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntity
             where TCriteria : IQueryCriteria, new()
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.Invoke<TEntity, QueryCountRequest<TCriteria>, int>(request, cancellationToken);
+            var response = await this.InvokeAsync<TEntity, QueryCountRequest<TCriteria>, string>(request, cancellationToken);
+
+            int.TryParse(response, out var count);
+
+            return count;
         }
 
         /// <summary>
@@ -547,7 +822,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.Invoke<CreateRequest, TEntity>(request, cancellationToken);
+            return await this.InvokeAsync<CreateRequest, TEntity>(request, cancellationToken);
         }
 
         /// <summary>
@@ -564,7 +839,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.Invoke<CreateManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.InvokeAsync<CreateManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>
@@ -581,7 +856,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.Invoke<EditRequest, TEntity>(request, cancellationToken);
+            return await this.InvokeAsync<EditRequest, TEntity>(request, cancellationToken);
         }
 
         /// <summary>
@@ -598,7 +873,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.Invoke<EditManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.InvokeAsync<EditManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>
@@ -615,7 +890,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.Invoke<EditQueryRequest, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.InvokeAsync<EditQueryRequest, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>
@@ -632,7 +907,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            await this.Invoke<DeleteRequest<TIdentity>, TEntity>(request, cancellationToken);
+            await this.InvokeAsync<DeleteRequest<TIdentity>, TEntity>(request, cancellationToken);
         }
 
         /// <summary>
@@ -649,7 +924,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            await this.Invoke<DeleteManyRequest<TIdentity>, TEntity>(request, cancellationToken);
+            await this.InvokeAsync<DeleteManyRequest<TIdentity>, TEntity>(request, cancellationToken);
         }
 
         /// <summary>
@@ -666,7 +941,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            await this.Invoke<DeleteQueryRequest, TEntity>(request, cancellationToken);
+            await this.InvokeAsync<DeleteQueryRequest, TEntity>(request, cancellationToken);
         }
 
         /// <summary>
@@ -685,7 +960,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.CustomAsync<CoveredByRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.InvokeAsync<CoveredByRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>
@@ -704,7 +979,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.CustomAsync<CoversRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.InvokeAsync<CoversRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>
@@ -723,7 +998,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.CustomAsync<CrossesRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.InvokeAsync<CrossesRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>
@@ -742,7 +1017,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.CustomAsync<DisjointsRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.InvokeAsync<DisjointsRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>
@@ -761,7 +1036,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.CustomAsync<IntersectsRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.InvokeAsync<IntersectsRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>
@@ -780,7 +1055,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.CustomAsync<OverlapsRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.InvokeAsync<OverlapsRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>
@@ -799,7 +1074,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.CustomAsync<TouchesRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.InvokeAsync<TouchesRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
         }
 
         /// <summary>
@@ -818,7 +1093,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.CustomAsync<WithinRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
+            return await this.InvokeAsync<WithinRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
         }
     }
 }

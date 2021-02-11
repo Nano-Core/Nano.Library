@@ -5,7 +5,7 @@ namespace Nano.Web.Api.Requests
     /// <summary>
     /// Update Request.
     /// </summary>
-    public class EditRequest : BaseRequestPost
+    public class EditRequest : BaseRequestPut
     {
         /// <summary>
         /// Entity.

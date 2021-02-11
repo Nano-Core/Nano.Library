@@ -6,7 +6,7 @@ namespace Nano.Web.Api.Requests
     /// <summary>
     /// Update Many Request.
     /// </summary>
-    public class EditManyRequest : BaseRequestPost
+    public class EditManyRequest : BaseRequestPut
     {
         /// <summary>
         /// Entities.

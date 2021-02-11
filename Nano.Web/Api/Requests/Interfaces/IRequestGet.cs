@@ -1,4 +1,4 @@
-namespace Nano.Web.Api.Requests.Interfaces
+﻿namespace Nano.Web.Api.Requests.Interfaces
 {
     /// <summary>
     /// Base interface for querystring requests (GET).

@@ -4,37 +4,37 @@
         <name>Nano.Web</name>
     </assembly>
     <members>
-        <member name="T:Nano.Web.Api.ApiOptions">
+        <member name="T:Nano.Web.Api.ApiClientOptions">
             <summary>
             Api Options.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.ApiOptions.Host">
+        <member name="P:Nano.Web.Api.ApiClientOptions.Host">
             <summary>
             Host.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.ApiOptions.Root">
+        <member name="P:Nano.Web.Api.ApiClientOptions.Root">
             <summary>
             Root.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.ApiOptions.Port">
+        <member name="P:Nano.Web.Api.ApiClientOptions.Port">
             <summary>
             Port.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.ApiOptions.UseSsl">
+        <member name="P:Nano.Web.Api.ApiClientOptions.UseSsl">
             <summary>
             Use Ssl.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.ApiOptions.UseExposeErrors">
+        <member name="P:Nano.Web.Api.ApiClientOptions.UseExposeErrors">
             <summary>
             Use Expose Erros.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.ApiOptions.Login">
+        <member name="P:Nano.Web.Api.ApiClientOptions.Login">
             <summary>
             Login.
             </summary>
@@ -44,11 +44,11 @@
             Base Api (abstract).
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.BaseApi.#ctor(Nano.Web.Api.ApiOptions)">
+        <member name="M:Nano.Web.Api.BaseApi.#ctor(Nano.Web.Api.ApiClientOptions)">
             <summary>
             Constructor.
             </summary>
-            <param name="apiOptions">The <see cref="T:Nano.Web.Api.ApiOptions"/>.</param>
+            <param name="apiClientOptions">The <see cref="T:Nano.Web.Api.ApiClientOptions"/>.</param>
         </member>
         <member name="M:Nano.Web.Api.BaseApi.LogInAsync(Nano.Web.Api.Requests.Auth.LogInRequest,System.Threading.CancellationToken)">
             <summary>
@@ -109,7 +109,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The instance of <typeparamref name="TResponse"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Api.BaseApi.Invoke``2(``0,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.BaseApi.InvokeAsync``2(``0,System.Threading.CancellationToken)">
             <summary>
             Invokes the request, and returns the response.
             </summary>
@@ -119,7 +119,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The instance of <typeparamref name="TResponse"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Api.BaseApi.Invoke``3(``1,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.BaseApi.InvokeAsync``3(``1,System.Threading.CancellationToken)">
             <summary>
             Invokes the request, and returns the response.
             </summary>
@@ -133,7 +133,7 @@
         <member name="T:Nano.Web.Api.BaseApi`1">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.BaseApi`1.#ctor(Nano.Web.Api.ApiOptions)">
+        <member name="M:Nano.Web.Api.BaseApi`1.#ctor(Nano.Web.Api.ApiClientOptions)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.BaseApi`1.GetAsync``1(`0,System.Threading.CancellationToken)">
@@ -397,7 +397,7 @@
             Identity Controller.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.BaseIdentityApi`2.#ctor(Nano.Web.Api.ApiOptions)">
+        <member name="M:Nano.Web.Api.BaseIdentityApi`2.#ctor(Nano.Web.Api.ApiClientOptions)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.BaseIdentityApi`2.SignUpAsync(Nano.Web.Api.Requests.Identity.SignUpRequest{`0,`1},System.Threading.CancellationToken)">
@@ -501,7 +501,7 @@
             Default Api.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.#ctor(Nano.Web.Api.ApiOptions)">
+        <member name="M:Nano.Web.Api.DefaultApi.#ctor(Nano.Web.Api.ApiClientOptions)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.DefaultApi.DetailsAsync``1(Nano.Web.Api.Requests.DetailsRequest{System.Guid},System.Threading.CancellationToken)">
@@ -521,7 +521,7 @@
             Default Identity Api.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.DefaultIdentityApi`1.#ctor(Nano.Web.Api.ApiOptions)">
+        <member name="M:Nano.Web.Api.DefaultIdentityApi`1.#ctor(Nano.Web.Api.ApiClientOptions)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.DefaultIdentityApi`1.SignUpAsync(Nano.Web.Api.Requests.Identity.SignUpRequest{`0,System.Guid},System.Threading.CancellationToken)">
@@ -612,7 +612,7 @@
             Controller.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.Requests.BaseRequest.GetUri``1(Nano.Web.Api.ApiOptions)">
+        <member name="M:Nano.Web.Api.Requests.BaseRequest.GetUri``1(Nano.Web.Api.ApiClientOptions)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.BaseRequest.GetRouteParameters">
@@ -1052,12 +1052,12 @@
             Base interface for requests.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.Requests.Interfaces.IRequest.GetUri``1(Nano.Web.Api.ApiOptions)">
+        <member name="M:Nano.Web.Api.Requests.Interfaces.IRequest.GetUri``1(Nano.Web.Api.ApiClientOptions)">
             <summary>
             Returns the Uri for the request.
             </summary>
             <typeparam name="TResponse">The type of response.</typeparam>
-            <param name="apiOptions">The <see cref="T:Nano.Web.Api.ApiOptions"/>.</param>
+            <param name="apiClientOptions">The <see cref="T:Nano.Web.Api.ApiClientOptions"/>.</param>
             <returns>The <see cref="T:System.Uri"/>.</returns>
         </member>
         <member name="M:Nano.Web.Api.Requests.Interfaces.IRequest.GetQueryStringParameters">

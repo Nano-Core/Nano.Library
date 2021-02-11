@@ -12,7 +12,7 @@ namespace Nano.Web.Api
     /// Default Identity Api.
     /// </summary>
     public class DefaultIdentityApi<TUser> : BaseIdentityApi<TUser, Guid>
-        where TUser : IEntityUser<Guid>
+        where TUser : class, IEntityUser<Guid>
     {
         /// <inheritdoc />
         public DefaultIdentityApi(ApiOptions apiOptions)
