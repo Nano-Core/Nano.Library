@@ -14,7 +14,7 @@ namespace Nano.Web.Hosting
         /// Current.
         /// The current <see cref="HttpContext"/>, fetched through the <see cref="IHttpContextAccessor"/>.
         /// </summary>
-        internal static HttpContext Current => HttpContextAccess.accessor.HttpContext;
+        internal static HttpContext Current => HttpContextAccess.accessor?.HttpContext;
 
         /// <summary>
         /// Configure.
