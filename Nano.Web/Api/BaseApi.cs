@@ -72,12 +72,6 @@ namespace Nano.Web.Api
 
             this.httpClient.DefaultRequestHeaders.Accept
                 .Add(new MediaTypeWithQualityHeaderValue(HttpContentType.JSON));
-
-            this.httpClient.DefaultRequestHeaders.AcceptLanguage
-                .Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
-
-            this.httpClient.DefaultRequestHeaders
-                .Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
         }
 
         /// <summary>
@@ -577,6 +571,12 @@ namespace Nano.Web.Api
             var uri = this.GetUri(request);
             var method = this.GetMethod(request);
             var httpRequest = new HttpRequestMessage(method, uri);
+
+            httpRequest.Headers.AcceptLanguage
+                .Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
+
+            httpRequest.Headers
+                .Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
 
             if (accessToken?.Token != null)
             {
