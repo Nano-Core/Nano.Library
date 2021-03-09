@@ -2,27 +2,32 @@
 using System.Linq;
 using System.Reflection;
 using Nano.Web.Api.Requests.Attributes;
-using Nano.Web.Api.Requests.Interfaces;
 using Newtonsoft.Json;
 
 namespace Nano.Web.Api.Requests
 {
-    /// <inheritdoc />
-    public abstract class BaseRequest : IRequest
+    /// <summary>
+    /// Base request (abstract).
+    /// </summary>
+    public abstract class BaseRequest
     {
         /// <summary>
         /// Controller.
         /// </summary>
         [JsonIgnore]
-        public string Action { get; set; }
+        protected internal string Action { get; set; }
 
         /// <summary>
         /// Controller.
         /// </summary>
         [JsonIgnore]
-        public string Controller { get; set; }
+        protected internal string Controller { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Get Route.
+        /// Get the route parameters of the request, defined by properties having <see cref="RouteAttribute"/>.
+        /// </summary>
+        /// <returns>The route as string.</returns>
         public virtual string GetRoute()
         {
             var parameters = this
@@ -48,7 +53,11 @@ namespace Nano.Web.Api.Requests
                 .Aggregate(string.Empty, (current, x) => current + $"{x}/");
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Get Querystring.
+        /// Get the querystring parameters of the request, defined by properties having <see cref="QueryAttribute"/>.
+        /// </summary>
+        /// <returns>The querystring as string.</returns>
         public virtual string GetQuerystring()
         {
             var parameters = this

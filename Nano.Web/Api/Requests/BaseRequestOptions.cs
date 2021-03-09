@@ -1,9 +1,9 @@
 ﻿namespace Nano.Web.Api.Requests
 {
     /// <summary>
-    /// Base Request Get.
+    /// Base Request Delete.
     /// </summary>
-    public abstract class BaseRequestGet : BaseRequest
+    public abstract class BaseRequestOptions : BaseRequest
     {
 
     }

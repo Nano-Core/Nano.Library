@@ -17,7 +17,6 @@ using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Exceptions;
 using Nano.Security.Extensions;
 using Nano.Web.Api.Requests;
-using Nano.Web.Api.Requests.Interfaces;
 using Nano.Web.Api.Requests.Spatial;
 using Nano.Web.Const;
 using Nano.Web.Hosting;
@@ -149,7 +148,7 @@ namespace Nano.Web.Api
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Void.</returns>
         protected virtual async Task InvokeAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequest
+            where TRequest : BaseRequest
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -158,23 +157,23 @@ namespace Nano.Web.Api
 
             switch (request)
             {
-                case IRequestGet requestGet:
+                case BaseRequestGet requestGet:
                     await this.GetAsync(requestGet, cancellationToken);
                     break;
 
-                case IRequestPut requestPut:
+                case BaseRequestPut requestPut:
                     await this.PutAsync(requestPut, cancellationToken);
                     break;
 
-                case IRequestPost requestPost:
+                case BaseRequestPost requestPost:
                     await this.PostAsync(requestPost, cancellationToken);
                     break;
 
-                case IRequestPostForm requestPostForm:
+                case BaseRequestPostForm requestPostForm:
                     await this.PostFormAsync(requestPostForm, cancellationToken);
                     break;
 
-                case IRequestDelete requestDelete:
+                case BaseRequestDelete requestDelete:
                     await this.DeleteAsync(requestDelete, cancellationToken);
                     break;
 
@@ -192,7 +191,7 @@ namespace Nano.Web.Api
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
         protected virtual async Task<TResponse> InvokeAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequest
+            where TRequest : BaseRequest
             where TResponse : class
         {
             if (request == null)
@@ -204,11 +203,11 @@ namespace Nano.Web.Api
 
             return request switch
             {
-                IRequestGet requestGet => await this.GetAsync<IRequestGet, TResponse>(requestGet, cancellationToken),
-                IRequestPut requestPut => await this.PutAsync<IRequestPut, TResponse>(requestPut, cancellationToken),
-                IRequestPost requestPost => await this.PostAsync<IRequestPost, TResponse>(requestPost, cancellationToken),
-                IRequestPostForm requestPostForm => await this.PostFormAsync<IRequestPostForm, TResponse>(requestPostForm, cancellationToken),
-                IRequestDelete requestDelete => await this.DeleteAsync<IRequestDelete, TResponse>(requestDelete, cancellationToken),
+                BaseRequestGet requestGet => await this.GetAsync<BaseRequestGet, TResponse>(requestGet, cancellationToken),
+                BaseRequestPut requestPut => await this.PutAsync<BaseRequestPut, TResponse>(requestPut, cancellationToken),
+                BaseRequestPost requestPost => await this.PostAsync<BaseRequestPost, TResponse>(requestPost, cancellationToken),
+                BaseRequestPostForm requestPostForm => await this.PostFormAsync<BaseRequestPostForm, TResponse>(requestPostForm, cancellationToken),
+                BaseRequestDelete requestDelete => await this.DeleteAsync<BaseRequestDelete, TResponse>(requestDelete, cancellationToken),
                 _ => throw new NotSupportedException($"Not supported: {nameof(request)}")
             };
         }
@@ -224,7 +223,7 @@ namespace Nano.Web.Api
         /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
         protected virtual async Task<TResponse> InvokeAsync<TEntity, TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
             where TEntity : class, IEntity
-            where TRequest : class, IRequest
+            where TRequest : BaseRequest
             where TResponse : class
         {
             if (request == null)
@@ -236,11 +235,11 @@ namespace Nano.Web.Api
 
             return request switch
             {
-                IRequestGet requestGet => await this.GetAsync<IRequestGet, TResponse>(requestGet, cancellationToken),
-                IRequestPut requestPut => await this.PutAsync<IRequestPut, TResponse>(requestPut, cancellationToken),
-                IRequestPost requestPost => await this.PostAsync<IRequestPost, TResponse>(requestPost, cancellationToken),
-                IRequestPostForm requestPostForm => await this.PostFormAsync<IRequestPostForm, TResponse>(requestPostForm, cancellationToken),
-                IRequestDelete requestDelete => await this.DeleteAsync<IRequestDelete, TResponse>(requestDelete, cancellationToken),
+                BaseRequestGet requestGet => await this.GetAsync<BaseRequestGet, TResponse>(requestGet, cancellationToken),
+                BaseRequestPut requestPut => await this.PutAsync<BaseRequestPut, TResponse>(requestPut, cancellationToken),
+                BaseRequestPost requestPost => await this.PostAsync<BaseRequestPost, TResponse>(requestPost, cancellationToken),
+                BaseRequestPostForm requestPostForm => await this.PostFormAsync<BaseRequestPostForm, TResponse>(requestPostForm, cancellationToken),
+                BaseRequestDelete requestDelete => await this.DeleteAsync<BaseRequestDelete, TResponse>(requestDelete, cancellationToken),
                 _ => throw new NotSupportedException($"Not supported: {nameof(request)}")
             };
         }
@@ -275,7 +274,7 @@ namespace Nano.Web.Api
         }
 
         private async Task GetAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequestGet
+            where TRequest : BaseRequestGet
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -287,7 +286,7 @@ namespace Nano.Web.Api
             }
         }
         private async Task<TResponse> GetAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequestGet
+            where TRequest : BaseRequestGet
             where TResponse : class
         {
             if (request == null)
@@ -302,7 +301,7 @@ namespace Nano.Web.Api
             }
         }
         private async Task PutAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequestPut
+            where TRequest : BaseRequestPut
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -321,7 +320,7 @@ namespace Nano.Web.Api
             }
         }
         private async Task<TResponse> PutAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequestPut
+            where TRequest : BaseRequestPut
             where TResponse : class
         {
             if (request == null)
@@ -341,7 +340,7 @@ namespace Nano.Web.Api
             }
         }
         private async Task PostAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequestPost
+            where TRequest : BaseRequestPost
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -358,7 +357,7 @@ namespace Nano.Web.Api
             }
         }
         private async Task<TResponse> PostAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequestPost
+            where TRequest : BaseRequestPost
             where TResponse : class
         {
             if (request == null)
@@ -378,7 +377,7 @@ namespace Nano.Web.Api
             }
         }
         private async Task PostFormAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequestPostForm
+            where TRequest : BaseRequestPostForm
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -425,7 +424,7 @@ namespace Nano.Web.Api
             }
         }
         private async Task<TResponse> PostFormAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequestPostForm
+            where TRequest : BaseRequestPostForm
             where TResponse : class
         {
             if (request == null)
@@ -475,7 +474,7 @@ namespace Nano.Web.Api
             }
         }
         private async Task DeleteAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequestDelete
+            where TRequest : BaseRequestDelete
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -492,7 +491,7 @@ namespace Nano.Web.Api
             }
         }
         private async Task<TResponse> DeleteAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequestDelete
+            where TRequest : BaseRequestDelete
             where TResponse : class
         {
             if (request == null)
@@ -513,7 +512,7 @@ namespace Nano.Web.Api
         }
 
         private Uri GetUri<TRequest>(TRequest request)
-            where TRequest : IRequest
+            where TRequest : BaseRequest
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -546,24 +545,24 @@ namespace Nano.Web.Api
                 : $"{type.Name.ToLower()}s";
         }
         private HttpMethod GetMethod<TRequest>(TRequest request)
-            where TRequest : IRequest
+            where TRequest : BaseRequest
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
             return request switch
             {
-                IRequestGet _ => HttpMethod.Get,
-                IRequestPut _ => HttpMethod.Put,
-                IRequestPost _ => HttpMethod.Post,
-                IRequestPostForm _ => HttpMethod.Post,
-                IRequestDelete _ => HttpMethod.Delete,
-                IRequestOptions _ => HttpMethod.Options,
+                BaseRequestGet _ => HttpMethod.Get,
+                BaseRequestPut _ => HttpMethod.Put,
+                BaseRequestPost _ => HttpMethod.Post,
+                BaseRequestPostForm _ => HttpMethod.Post,
+                BaseRequestDelete _ => HttpMethod.Delete,
+                BaseRequestOptions _ => HttpMethod.Options,
                 _ => throw new NotSupportedException()
             };
         }
         private HttpRequestMessage GetHttpRequestMessage<TRequest>(TRequest request)
-            where TRequest : IRequest
+            where TRequest : BaseRequest
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));

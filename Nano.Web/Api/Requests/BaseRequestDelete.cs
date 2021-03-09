@@ -1,13 +1,13 @@
-﻿using Nano.Web.Api.Requests.Interfaces;
-
-namespace Nano.Web.Api.Requests
+﻿namespace Nano.Web.Api.Requests
 {
     /// <summary>
     /// Base Request Delete.
     /// </summary>
-    public abstract class BaseRequestDelete : BaseRequest, IRequestDelete
+    public abstract class BaseRequestDelete : BaseRequest
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Get Body.
+        /// </summary>
         public abstract object GetBody();
     }
 }
