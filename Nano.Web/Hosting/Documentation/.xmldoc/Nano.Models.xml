@@ -156,7 +156,7 @@
             Stream Extensions.
             </summary>
         </member>
-        <member name="M:Nano.Models.Extensions.StreamExtensions.ReadAll(System.IO.Stream)">
+        <member name="M:Nano.Models.Extensions.StreamExtensions.ReadAllAsync(System.IO.Stream)">
             <summary>
             Reads all bytes in the <see cref="T:System.IO.Stream"/> and returns the content as string.
             </summary>

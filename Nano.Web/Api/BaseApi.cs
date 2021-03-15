@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
 using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Exceptions;
+using Nano.Models.Extensions;
 using Nano.Security.Extensions;
 using Nano.Web.Api.Requests;
 using Nano.Web.Api.Requests.Spatial;
@@ -388,7 +389,20 @@ namespace Nano.Web.Api
                 {
                     foreach (var x in request.GetForm())
                     {
-                        if (x.Type == typeof(FileInfo))
+                        if (x.Type == typeof(Stream))
+                        {
+                            var value = x.Value as FileStream;
+
+                            var bytes = await value
+                                .ReadAllBytesAsync(cancellationToken);
+
+                            var fileContent = new ByteArrayContent(bytes);
+                            fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
+
+                            formContent
+                                .Add(fileContent, x.Name);
+                        }
+                        else if (x.Type == typeof(FileInfo))
                         {
                             var value = x.Value as FileInfo;
 
@@ -436,7 +450,19 @@ namespace Nano.Web.Api
                 {
                     foreach (var x in request.GetForm())
                     {
-                        if (x.Type == typeof(FileInfo))
+                        if (x.Type == typeof(Stream))
+                        {
+                            var value = x.Value as FileStream;
+
+                            var bytes = await value.ReadAllBytesAsync(cancellationToken);
+
+                            var fileContent = new ByteArrayContent(bytes);
+                            fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
+
+                            formContent
+                                .Add(fileContent, x.Name);
+                        }
+                        else if (x.Type == typeof(FileInfo))
                         {
                             var value = x.Value as FileInfo;
 

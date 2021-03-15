@@ -22,7 +22,7 @@ namespace Nano.Web.Hosting.ModelBinders
                 throw new ArgumentNullException(nameof(bindingContext));
 
             var request = bindingContext.ActionContext.HttpContext.Request;
-            var body = await request.Body.ReadAll();
+            var body = await request.Body.ReadAllAsync();
 
             var model = string.IsNullOrEmpty(body)
                 ? new Query
@@ -130,7 +130,7 @@ namespace Nano.Web.Hosting.ModelBinders
                 throw new ArgumentNullException(nameof(bindingContext));
 
             var request = bindingContext.ActionContext.HttpContext.Request;
-            var body = await request.Body.ReadAll();
+            var body = await request.Body.ReadAllAsync();
 
             var model = string.IsNullOrEmpty(body)
                 ? new Query<TCriteria>
