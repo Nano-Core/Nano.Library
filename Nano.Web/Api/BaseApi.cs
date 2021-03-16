@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Exceptions;
 using Nano.Models.Extensions;
@@ -450,17 +451,22 @@ namespace Nano.Web.Api
                 {
                     foreach (var x in request.GetForm())
                     {
-                        if (x.Type == typeof(Stream))
+                        if (x.Type == typeof(IFormFile))
                         {
-                            var value = x.Value as FileStream;
+                            var value = x.Value as IFormFile;
 
-                            var bytes = await value.ReadAllBytesAsync(cancellationToken);
+                            if (value == null)
+                                continue;
+
+                            var bytes = await value
+                                .OpenReadStream()
+                                .ReadAllBytesAsync(cancellationToken);
 
                             var fileContent = new ByteArrayContent(bytes);
                             fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
 
                             formContent
-                                .Add(fileContent, x.Name);
+                                .Add(fileContent, x.Name, value.FileName);
                         }
                         else if (x.Type == typeof(FileInfo))
                         {
