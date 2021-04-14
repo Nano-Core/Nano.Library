@@ -1,8 +1,8 @@
 using System;
+using System.Linq;
 using Microsoft.OpenApi.Models;
 using Nano.Web.Enums;
 using NWebsec.AspNetCore.Mvc;
-using ReferrerPolicy = NWebsec.Core.Common.HttpHeaders.ReferrerPolicy;
 
 namespace Nano.Web
 {
@@ -52,12 +52,6 @@ namespace Nano.Web
             public virtual string[] AllowedOrigins { get; set; } = new string[0];
 
             /// <summary>
-            /// Use Https Rewrite.
-            /// Enables middleware for automatically rewrite http requests to https.
-            /// </summary>
-            public virtual bool UseHttpsRewrite { get; set; } = false;
-
-            /// <summary>
             /// Use Https Redirect.
             /// Forces https for all requests.
             /// </summary>
@@ -80,6 +74,12 @@ namespace Nano.Web
             /// Added X-Content-Type Options header.
             /// </summary>
             public virtual bool UseContentTypeOptions { get; set; } = true;
+
+            /// <summary>
+            /// Csp.
+            /// Settings for Content-Security-Policy.
+            /// </summary>
+            public virtual CspOptions Csp { get; set; } = new CspOptions();
 
             /// <summary>
             /// Hsts.
@@ -129,6 +129,254 @@ namespace Nano.Web
             /// Use Xss Protection Policy Header.
             /// </summary>
             public virtual XXssProtectionPolicyBlockMode XssProtectionPolicyHeader { get; set; } = XXssProtectionPolicyBlockMode.Disabled;
+
+            /// <summary>
+            /// Csp Options.
+            /// </summary>
+            public class CspOptions
+            {
+                /// <summary>
+                /// Block All Mixed Content.
+                /// </summary>
+                public virtual bool BlockAllMixedContent { get; set; } = false;
+
+                /// <summary>
+                /// Upgrade Insecure Requests.
+                /// </summary>
+                public virtual bool UpgradeInsecureRequests { get; set; } = false;
+
+                /// <summary>
+                /// Defaults.
+                /// </summary>
+                public virtual CspDirective Defaults { get; set; } = new CspDirective();
+
+                /// <summary>
+                /// Styles.
+                /// </summary>
+                public virtual CspDirectiveStyles Styles { get; set; } = new CspDirectiveStyles();
+
+                /// <summary>
+                /// Scripts.
+                /// </summary>
+                public virtual CspDirectiveScripts Scripts { get; set; } = new CspDirectiveScripts();
+
+                /// <summary>
+                /// Objects.
+                /// </summary>
+                public virtual CspDirective Objects { get; set; } = new CspDirective();
+
+                /// <summary>
+                /// Images.
+                /// </summary>
+                public virtual CspDirective Images { get; set; } = new CspDirective();
+
+                /// <summary>
+                /// Media.
+                /// </summary>
+                public virtual CspDirective Media { get; set; } = new CspDirective();
+
+                /// <summary>
+                /// Frames.
+                /// </summary>
+                public virtual CspDirective Frames { get; set; } = new CspDirective();
+
+                /// <summary>
+                /// Frame Ancestors.
+                /// </summary>
+                public virtual CspDirective FrameAncestors { get; set; } = new CspDirective();
+
+                /// <summary>
+                /// Fonts.
+                /// </summary>
+                public virtual CspDirective Fonts { get; set; } = new CspDirective();
+
+                /// <summary>
+                /// Connections.
+                /// </summary>
+                public virtual CspDirective Connections { get; set; } = new CspDirective();
+
+                /// <summary>
+                /// Base Uri's.
+                /// </summary>
+                public virtual CspDirective BaseUris { get; set; } = new CspDirective();
+
+                /// <summary>
+                /// Children.
+                /// </summary>
+                public virtual CspDirective Children { get; set; } = new CspDirective();
+
+                /// <summary>
+                /// Forms.
+                /// </summary>
+                public virtual CspDirective Forms { get; set; } = new CspDirective();
+
+                /// <summary>
+                /// Manifests.
+                /// </summary>
+                public virtual CspDirective Manifests { get; set; } = new CspDirective();
+
+                /// <summary>
+                /// Workers.
+                /// </summary>
+                public virtual CspDirective Workers { get; set; } = new CspDirective();
+
+                /// <summary>
+                /// Sandbox.
+                /// </summary>
+                public virtual CspSandbox Sandbox { get; set; } = new CspSandbox();
+
+                /// <summary>
+                /// Report Uris.
+                /// </summary>
+                public virtual string[] ReportUris { get; set; } = new string[0];
+
+                /// <summary>
+                /// Plugin Types.
+                /// </summary>
+                public virtual string[] PluginTypes { get; set; } = new string[0];
+
+                /// <summary>
+                /// Csp Directive.
+                /// </summary>
+                public class CspDirective
+                {
+                    /// <summary>
+                    /// Is None.
+                    /// Adds the 'none' source.
+                    /// All other sources are ignored.
+                    /// </summary>
+                    public virtual bool IsNone { get; set; } = false;
+
+                    /// <summary>
+                    /// Is Self.
+                    /// Adds the 'self' source.
+                    /// </summary>
+                    public virtual bool IsSelf { get; set; } = false;
+
+                    /// <summary>
+                    /// Sources.
+                    /// Adds the array of custom sources.
+                    /// </summary>
+                    public virtual string[] Sources { get; set; } = new string[0];
+
+                    /// <summary>
+                    /// Is Enabled.
+                    /// </summary>
+                    internal virtual bool IsEnabled => this.IsNone || this.IsSelf || this.Sources.Any();
+                }
+
+                /// <summary>
+                /// Csp Directive Scripts.
+                /// </summary>
+                public class CspDirectiveScripts : CspDirective
+                {
+                    /// <summary>
+                    /// Is None.
+                    /// Adds the 'unsafe-eval' source.
+                    /// </summary>
+                    public virtual bool IsUnsafeEval { get; set; } = false;
+
+                    /// <summary>
+                    /// Is None.
+                    /// Adds the 'unsafe-inline' source.
+                    /// </summary>
+                    public virtual bool IsUnsafeInline { get; set; } = false;
+
+                    /// <summary>
+                    /// Is None.
+                    /// Adds the 'strict-dynamic' source.
+                    /// </summary>
+                    public virtual bool StrictDynamic { get; set; } = false;
+
+                    /// <inheritdoc />
+                    internal override bool IsEnabled => base.IsEnabled || this.IsUnsafeEval || this.IsUnsafeInline || this.StrictDynamic;
+                }
+
+                /// <summary>
+                /// Csp Directive Styles.
+                /// </summary>
+                public class CspDirectiveStyles : CspDirective
+                {
+                    /// <summary>
+                    /// Is None.
+                    /// Adds the 'unsafe-inline' source.
+                    /// </summary>
+                    public virtual bool IsUnsafeInline { get; set; } = false;
+
+                    /// <inheritdoc />
+                    internal override bool IsEnabled => base.IsEnabled || this.IsUnsafeInline;
+                }
+
+                /// <summary>
+                /// Sandbox.
+                /// </summary>
+                public class CspSandbox
+                {
+                    /// <summary>
+                    /// Allow Forms.
+                    /// Allows the page to submit forms. If this keyword is not used, this operation is not allowed.
+                    /// </summary>
+                    public virtual bool AllowForms { get; set; } = false;
+
+                    /// <summary>
+                    /// Allow Modals.
+                    /// Allows the page to open modal windows.
+                    /// </summary>
+                    public virtual bool AllowModals { get; set; } = false;
+
+                    /// <summary>
+                    /// Allow Orientation Lock.
+                    /// Allows the page to disable the ability to lock the screen orientation.
+                    /// </summary>
+                    public virtual bool AllowOrientationLock { get; set; } = false;
+
+                    /// <summary>
+                    /// Allow Pointer Lock.
+                    /// Allows the page to use the Pointer Lock API.
+                    /// </summary>
+                    public virtual bool AllowPointerLock { get; set; } = false;
+
+                    /// <summary>
+                    /// Allow Popups.
+                    /// Allows popups (like from window.open, target= "_blank", showModalDialog). If this keyword is not used, that functionality will silently fail.
+                    /// </summary>
+                    public virtual bool AllowPopups { get; set; } = false;
+
+                    /// <summary>
+                    /// Allow Popups To Escape Sandbox.
+                    /// Allows a sandboxed document to open new windows without forcing the sandboxing flags upon them.
+                    /// This will allow, for example, a third-party advertisement to be safely sandboxed without forcing the same restrictions upon a landing page.
+                    /// </summary>
+                    public virtual bool AllowPopupsToEscapeSandbox { get; set; } = false;
+
+                    /// <summary>
+                    /// Allow Presentation.
+                    /// Allows embedders to have control over whether an iframe can start a presentation session.
+                    /// </summary>
+                    public virtual bool AllowPresentation { get; set; } = false;
+
+                    /// <summary>
+                    /// Allow Same Origin.
+                    /// Allows the content to be treated as being from its normal origin.
+                    /// If this keyword is not used, the embedded content is treated as being from a unique origin.
+                    /// </summary>
+                    public virtual bool AllowSameOrigin { get; set; } = false;
+
+                    /// <summary>
+                    /// Allow Scripts.
+                    /// Allows the page to run scripts (but not create pop-up windows).
+                    /// If this keyword is not used, this operation is not allowed.
+                    /// </summary>
+                    public virtual bool AllowScripts { get; set; } = false;
+
+                    /// <summary>
+                    /// Allow Top Navigation.
+                    /// Allows the page to navigate (load) content to the top-level browsing context.
+                    /// If this keyword is not used, this operation is not allowed.
+                    /// </summary>
+                    public virtual bool AllowTopNavigation { get; set; } = false;
+                }
+            }
 
             /// <summary>
             /// Hsts Options

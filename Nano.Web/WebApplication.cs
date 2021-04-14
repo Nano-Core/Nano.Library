@@ -56,7 +56,7 @@ namespace Nano.Web
                 .UseXHttpContentTypeOptionsPolicyHeader()
                 .UseHttpReferrerPolicyHeader()
                 .UseHttpStrictTransportSecurityPolicyHeader()
-                .UseHttpsRedirect()
+                .UseContentSecurityPolicyHeader()
                 .UseStaticFiles()
                 .UseCookiePolicy(new CookiePolicyOptions
                 {
