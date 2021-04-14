@@ -41,6 +41,21 @@ namespace Nano.Web.Const
         public const string ZIP = "application/zip";
 
         /// <summary>
+        /// Png ("image/png").
+        /// </summary>
+        public const string PNG = "image/png";
+
+        /// <summary>
+        /// Bmp ("image/bmp").
+        /// </summary>
+        public const string BMP = "image/bmp";
+
+        /// <summary>
+        /// Jpeg / Jpg ("image/jpeg").
+        /// </summary>
+        public const string JPEG = "image/jpeg";
+
+        /// <summary>
         /// Form ("application/x-www-form-urlencoded").
         /// </summary>
         public const string FORM = "multipart/form-data";

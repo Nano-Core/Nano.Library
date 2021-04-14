@@ -652,14 +652,17 @@ namespace Nano.Web.Api
 
             var contentType = httpResponse.Content.Headers.ContentType?.MediaType;
 
-            // TODO: Api-Client: Add all possible media types.
             switch (contentType)
             {
                 case HttpContentType.HTML:
                 case HttpContentType.XHTML:
                 case HttpContentType.PDF:
+                case HttpContentType.BMP:
+                case HttpContentType.JPEG:
+                case HttpContentType.PNG:
                 case HttpContentType.ZIP:
-                    return await httpResponse.Content.ReadAsStreamAsync(cancellationToken) as TResponse;
+                    return await httpResponse.Content
+                        .ReadAsStreamAsync(cancellationToken) as TResponse;
 
                 case HttpContentType.JSON:
                     var successContent = await httpResponse.Content
