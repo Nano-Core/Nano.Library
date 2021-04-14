@@ -59,6 +59,9 @@ namespace Nano.Eventing
         /// <summary>
         /// ConnectionString.
         /// </summary>
-        public virtual string ConnectionString => $"amqp://{this.Username}:{this.Password}@{this.Host}:{this.Port}{this.VHost}";
+        public virtual string ConnectionString =>
+            string.IsNullOrEmpty(this.Username) || string.IsNullOrEmpty(this.Password)
+                ? $"amqp://{this.Host}:{this.Port}{this.VHost}"
+                : $"amqp://{this.Username}:{this.Password}@{this.Host}:{this.Port}{this.VHost}";
     }
 }
