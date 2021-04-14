@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -347,7 +346,7 @@ namespace Nano.Web.Extensions
 
                 config[HostDefaults.ContentRootKey] = Directory.GetCurrentDirectory();
 
-                // TODO: HealthChecksUI CSP 
+                // TODO: Doesn't poll: JS: Configured polling interval: NaN milliseconds (seems like knowm issue)
 
                 services
                     .AddHealthChecksUI(x =>
@@ -363,9 +362,6 @@ namespace Nano.Web.Extensions
                             }
                         })
                         .AddInMemoryStorage();
-
-                services
-                    .AddScoped<DbContextOptions, DbContextOptions<NullDbContext>>(); 
             }
 
             return services;
@@ -380,8 +376,6 @@ namespace Nano.Web.Extensions
             
             if (webOptions == null) 
                 throw new ArgumentNullException(nameof(webOptions));
-
-            // TODO: Swagger CSP https://purple.telstra.com/blog/locking-down-csp-with-aspnet-core-and-swashbuckle
 
             return services
                 .AddSwaggerGen(x =>
