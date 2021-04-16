@@ -223,7 +223,7 @@ namespace Nano.Web
                 /// <summary>
                 /// Sandbox.
                 /// </summary>
-                public virtual CspSandbox Sandbox { get; set; } = new CspSandbox();
+                public virtual CspDirectiveSandbox Sandbox { get; set; } = new CspDirectiveSandbox();
 
                 /// <summary>
                 /// Report Uris.
@@ -234,6 +234,11 @@ namespace Nano.Web
                 /// Plugin Types.
                 /// </summary>
                 public virtual string[] PluginTypes { get; set; } = new string[0];
+
+                /// <summary>
+                /// Is Enabled.
+                /// </summary>
+                internal virtual bool IsEnabled => this.BlockAllMixedContent || this.UpgradeInsecureRequests || this.Defaults.IsEnabled || this.Styles.IsEnabled || this.Scripts.IsEnabled || this.Objects.IsEnabled || this.Images.IsEnabled || this.Media.IsEnabled || this.Frames.IsEnabled || this.FrameAncestors.IsEnabled || this.Fonts.IsEnabled || this.Connections.IsEnabled || this.BaseUris.IsEnabled || this.Children.IsEnabled || this.Forms.IsEnabled || this.Manifests.IsEnabled || this.Workers.IsEnabled || this.Sandbox.IsEnabled;
 
                 /// <summary>
                 /// Csp Directive.
@@ -310,7 +315,7 @@ namespace Nano.Web
                 /// <summary>
                 /// Sandbox.
                 /// </summary>
-                public class CspSandbox
+                public class CspDirectiveSandbox
                 {
                     /// <summary>
                     /// Allow Forms.
@@ -375,6 +380,11 @@ namespace Nano.Web
                     /// If this keyword is not used, this operation is not allowed.
                     /// </summary>
                     public virtual bool AllowTopNavigation { get; set; } = false;
+
+                    /// <summary>
+                    /// Is Enabled.
+                    /// </summary>
+                    internal virtual bool IsEnabled => this.AllowForms || this.AllowModals || this.AllowOrientationLock || this.AllowPointerLock || this.AllowPopups || this.AllowPopupsToEscapeSandbox || this.AllowPresentation || this.AllowSameOrigin || this.AllowScripts || this.AllowTopNavigation;
                 }
             }
 

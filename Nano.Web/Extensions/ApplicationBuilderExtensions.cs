@@ -15,6 +15,7 @@ using Nano.Web.Enums;
 using Nano.Web.Hosting;
 using Nano.Web.Hosting.Middleware;
 using NWebsec.AspNetCore.Mvc;
+using NWebsec.Core.Common.Middleware.Options;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
@@ -631,68 +632,68 @@ namespace Nano.Web.Extensions
             var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
             var csp = webOptions.Hosting.Csp;
 
-            if (csp.BlockAllMixedContent)
-            {
-                applicationBuilder
-                    .UseCsp(x =>
-                        x.BlockAllMixedContent());
-            }
+            if (!csp.IsEnabled)
+                return applicationBuilder;
 
             if (csp.UpgradeInsecureRequests)
             {
                 applicationBuilder
-                    .UseCsp(x =>
+                    .UseRedirectValidation(x =>
                     {
                         if (webOptions.Hosting.PortsHttps.Any())
                         {
-                            x.UpgradeInsecureRequests(webOptions.Hosting.PortsHttps.FirstOrDefault());
+                            x.AllowSameHostRedirectsToHttps(webOptions.Hosting.PortsHttps);
                         }
                         else
                         {
-                            x.UpgradeInsecureRequests();
+                            x.AllowSameHostRedirectsToHttps();
                         }
-                    });
-
-                applicationBuilder
-                    .UseRedirectValidation(x =>
-                    {
-                        x.AllowSameHostRedirectsToHttps(webOptions.Hosting.PortsHttps);
                     });
             }
 
             applicationBuilder
-                .UseCspDefaults(csp.Defaults)
-                .UseCspScripts(csp.Scripts)
-                .UseCspStyles(csp.Styles)
-                .UseCspObjects(csp.Objects)
-                .UseCspImages(csp.Images)
-                .UseCspMedia(csp.Media)
-                .UseCspFrames(csp.Frames)
-                .UseCspFrameAncestors(csp.FrameAncestors)
-                .UseCspFonts(csp.Fonts)
-                .UseCspConnections(csp.Connections)
-                .UseCspBaseUris(csp.BaseUris)
-                .UseCspChildren(csp.Children)
-                .UseCspForms(csp.Forms)
-                .UseCspManifests(csp.Manifests)
-                .UseCspWorkers(csp.Workers)
-                .UseCspSandbox(csp.Sandbox);
+                .UseCsp(options =>
+                {
+                    if (csp.BlockAllMixedContent)
+                    {
+                        options
+                            .BlockAllMixedContent();
+                    }
 
-            if (csp.PluginTypes.Any())
-            {
-                applicationBuilder
-                    .UseCsp(x => 
-                        x.PluginTypes(y => 
-                            y.MediaTypes(csp.PluginTypes)));
-            }
+                    if (csp.UpgradeInsecureRequests)
+                    {
+                        if (webOptions.Hosting.PortsHttps.Any())
+                        {
+                            options
+                                .UpgradeInsecureRequests(webOptions.Hosting.PortsHttps.FirstOrDefault());
+                        }
+                        else
+                        {
+                            options
+                                .UpgradeInsecureRequests();
+                        }
+                    }
 
-            if (csp.ReportUris.Any())
-            {
-                applicationBuilder
-                    .UseCsp(x =>
-                        x.ReportUris(y => 
-                            y.Uris()));
-            }
+                    options
+                        .UseCspReportUris(csp.ReportUris)
+                        .UseCspPluginTypes(csp.PluginTypes)
+                        .UseCspDefaults(csp.Defaults)
+                        .UseCspStyles(csp.Styles)
+                        .UseCspScripts(csp.Scripts)
+                        .UseCspObjects(csp.Objects)
+                        .UseCspImages(csp.Images)
+                        .UseCspMedia(csp.Media)
+                        .UseCspFrames(csp.Frames)
+                        .UseCspFrameAncestors(csp.FrameAncestors)
+                        .UseCspFonts(csp.Fonts)
+                        .UseCspConnections(csp.Connections)
+                        .UseCspBaseUris(csp.BaseUris)
+                        .UseCspChildren(csp.Children)
+                        .UseCspForms(csp.Forms)
+                        .UseCspManifests(csp.Manifests)
+                        .UseCspWorkers(csp.Workers)
+                        .UseCspSandbox(csp.Sandbox);
+                });
 
             return applicationBuilder;
         }
@@ -731,615 +732,631 @@ namespace Nano.Web.Extensions
             return applicationBuilder;
         }
 
-        private static IApplicationBuilder UseCspDefaults(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
+        private static IFluentCspOptions UseCspReportUris(this IFluentCspOptions configurer, string[] reportUris)
         {
-            if (applicationBuilder == null) 
-                throw new ArgumentNullException(nameof(applicationBuilder));
+            if (configurer == null) 
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (!reportUris.Any())
+                return configurer;
+
+            configurer
+                .ReportUris(x => 
+                    x.Uris(reportUris));
+
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspPluginTypes(this IFluentCspOptions configurer, string[] pluginTypes)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (!pluginTypes.Any())
+                return configurer;
+
+            configurer
+                .PluginTypes(x =>
+                    x.MediaTypes(pluginTypes));
+
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspDefaults(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
+        {
+            if (configurer == null) 
+                throw new ArgumentNullException(nameof(configurer));
 
             if (cspDirective == null)
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
-                return applicationBuilder;
+                return configurer;
 
-            applicationBuilder
-                .UseCsp(x =>
+            configurer
+                .DefaultSources(x =>
                 {
                     if (cspDirective.IsNone)
                     {
-                        x.DefaultSources(y =>
-                            y.None());
+                        x.None();
                     }
                     else
                     {
-                        x.DefaultSources(y =>
+                        if (cspDirective.IsSelf)
                         {
-                            if (cspDirective.IsSelf)
-                            {
-                                y = y.Self();
-                            }
-
-                            y.CustomSources(cspDirective.Sources);
-                        });
-                    }
-                });
-            
-            return applicationBuilder;
-        }
-        private static IApplicationBuilder UseCspScripts(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirectiveScripts cspDirective)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            if (cspDirective == null)
-                throw new ArgumentNullException(nameof(cspDirective));
-
-            if (!cspDirective.IsEnabled)
-                return applicationBuilder;
-
-            applicationBuilder
-                .UseCsp(x =>
-                {
-                    if (cspDirective.IsNone)
-                    {
-                        x.ScriptSources(y =>
-                            y.None());
-                    }
-                    else
-                    {
-                        x.ScriptSources(y =>
-                        {
-                            if (cspDirective.IsSelf)
-                            {
-                                y = y.Self();
-                            }
-
-                            if (cspDirective.IsUnsafeEval)
-                            {
-                                y = y.UnsafeEval();
-                            }
-
-                            if (cspDirective.IsUnsafeInline)
-                            {
-                                y = y.UnsafeInline();
-                            }
-
-                            if (cspDirective.StrictDynamic)
-                            {
-                                y = y.StrictDynamic();
-                            }
-
-                            y.CustomSources(cspDirective.Sources);
-                        });
-                    }
-                });
-
-            return applicationBuilder;
-        }
-        private static IApplicationBuilder UseCspStyles(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirectiveStyles cspDirective)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            if (cspDirective == null)
-                throw new ArgumentNullException(nameof(cspDirective));
-
-            if (!cspDirective.IsEnabled)
-                return applicationBuilder;
-
-            applicationBuilder
-                .UseCsp(x =>
-                {
-                    if (cspDirective.IsNone)
-                    {
-                        x.StyleSources(y =>
-                            y.None());
-                    }
-                    else
-                    {
-                        x.StyleSources(y =>
-                        {
-                            if (cspDirective.IsSelf)
-                            {
-                                y = y.Self();
-                            }
-
-                            if (cspDirective.IsUnsafeInline)
-                            {
-                                y = y.UnsafeInline();
-                            }
-
-                            y.CustomSources(cspDirective.Sources);
-                        });
-                    }
-                });
-
-            return applicationBuilder;
-        }
-        private static IApplicationBuilder UseCspObjects(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            if (cspDirective == null)
-                throw new ArgumentNullException(nameof(cspDirective));
-
-            if (!cspDirective.IsEnabled)
-                return applicationBuilder;
-
-            applicationBuilder
-                .UseCsp(x =>
-                {
-                    if (cspDirective.IsNone)
-                    {
-                        x.ObjectSources(y =>
-                            y.None());
-                    }
-                    else
-                    {
-                        x.ObjectSources(y =>
-                        {
-                            if (cspDirective.IsSelf)
-                            {
-                                y = y.Self();
-                            }
-
-                            y.CustomSources(cspDirective.Sources);
-                        });
-                    }
-                });
-
-            return applicationBuilder;
-        }
-        private static IApplicationBuilder UseCspImages(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            if (cspDirective == null)
-                throw new ArgumentNullException(nameof(cspDirective));
-
-            if (!cspDirective.IsEnabled)
-                return applicationBuilder;
-
-            applicationBuilder
-                .UseCsp(x =>
-                {
-                    if (cspDirective.IsNone)
-                    {
-                        x.ImageSources(y =>
-                            y.None());
-                    }
-                    else
-                    {
-                        x.ImageSources(y =>
-                        {
-                            if (cspDirective.IsSelf)
-                            {
-                                y = y.Self();
-                            }
-
-                            y.CustomSources(cspDirective.Sources);
-                        });
-                    }
-                });
-
-            return applicationBuilder;
-        }
-        private static IApplicationBuilder UseCspMedia(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            if (cspDirective == null)
-                throw new ArgumentNullException(nameof(cspDirective));
-
-            if (!cspDirective.IsEnabled)
-                return applicationBuilder;
-
-            applicationBuilder
-                .UseCsp(x =>
-                {
-                    if (cspDirective.IsNone)
-                    {
-                        x.MediaSources(y =>
-                            y.None());
-                    }
-                    else
-                    {
-                        x.MediaSources(y =>
-                        {
-                            if (cspDirective.IsSelf)
-                            {
-                                y = y.Self();
-                            }
-
-                            y.CustomSources(cspDirective.Sources);
-                        });
-                    }
-                });
-
-            return applicationBuilder;
-        }
-        private static IApplicationBuilder UseCspFrames(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            if (cspDirective == null)
-                throw new ArgumentNullException(nameof(cspDirective));
-
-            if (!cspDirective.IsEnabled)
-                return applicationBuilder;
-
-            applicationBuilder
-                .UseCsp(x =>
-                {
-                    if (cspDirective.IsNone)
-                    {
-                        x.FrameSources(y =>
-                            y.None());
-                    }
-                    else
-                    {
-                        x.FrameSources(y =>
-                        {
-                            if (cspDirective.IsSelf)
-                            {
-                                y = y.Self();
-                            }
-
-                            y.CustomSources(cspDirective.Sources);
-                        });
-                    }
-                });
-
-            return applicationBuilder;
-        }
-        private static IApplicationBuilder UseCspFrameAncestors(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            if (cspDirective == null)
-                throw new ArgumentNullException(nameof(cspDirective));
-
-            if (!cspDirective.IsEnabled)
-                return applicationBuilder;
-
-            applicationBuilder
-                .UseCsp(x =>
-                {
-                    if (cspDirective.IsNone)
-                    {
-                        x.FrameAncestors(y =>
-                            y.None());
-                    }
-                    else
-                    {
-                        x.FrameAncestors(y =>
-                        {
-                            if (cspDirective.IsSelf)
-                            {
-                                y = y.Self();
-                            }
-
-                            y.CustomSources(cspDirective.Sources);
-                        });
-                    }
-                });
-
-            return applicationBuilder;
-        }
-        private static IApplicationBuilder UseCspFonts(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            if (cspDirective == null)
-                throw new ArgumentNullException(nameof(cspDirective));
-
-            if (!cspDirective.IsEnabled)
-                return applicationBuilder;
-
-            applicationBuilder
-                .UseCsp(x =>
-                {
-                    if (cspDirective.IsNone)
-                    {
-                        x.FontSources(y =>
-                            y.None());
-                    }
-                    else
-                    {
-                        x.FontSources(y =>
-                        {
-                            if (cspDirective.IsSelf)
-                            {
-                                y = y.Self();
-                            }
-
-                            y.CustomSources(cspDirective.Sources);
-                        });
-                    }
-                });
-
-            return applicationBuilder;
-        }
-        private static IApplicationBuilder UseCspConnections(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            if (cspDirective == null)
-                throw new ArgumentNullException(nameof(cspDirective));
-
-            if (!cspDirective.IsEnabled)
-                return applicationBuilder;
-
-            applicationBuilder
-                .UseCsp(x =>
-                {
-                    if (cspDirective.IsNone)
-                    {
-                        x.ConnectSources(y =>
-                            y.None());
-                    }
-                    else
-                    {
-                        x.ConnectSources(y =>
-                        {
-                            if (cspDirective.IsSelf)
-                            {
-                                y = y.Self();
-                            }
-
-                            y.CustomSources(cspDirective.Sources);
-                        });
-                    }
-                });
-
-            return applicationBuilder;
-        }
-        private static IApplicationBuilder UseCspBaseUris(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            if (cspDirective == null)
-                throw new ArgumentNullException(nameof(cspDirective));
-
-            if (!cspDirective.IsEnabled)
-                return applicationBuilder;
-
-            applicationBuilder
-                .UseCsp(x =>
-                {
-                    if (cspDirective.IsNone)
-                    {
-                        x.BaseUris(y =>
-                            y.None());
-                    }
-                    else
-                    {
-                        x.BaseUris(y =>
-                        {
-                            if (cspDirective.IsSelf)
-                            {
-                                y = y.Self();
-                            }
-
-                            y.CustomSources(cspDirective.Sources);
-                        });
-                    }
-                });
-
-            return applicationBuilder;
-        }
-        private static IApplicationBuilder UseCspChildren(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            if (cspDirective == null)
-                throw new ArgumentNullException(nameof(cspDirective));
-
-            if (!cspDirective.IsEnabled)
-                return applicationBuilder;
-
-            applicationBuilder
-                .UseCsp(x =>
-                {
-                    if (cspDirective.IsNone)
-                    {
-                        x.ChildSources(y =>
-                            y.None());
-                    }
-                    else
-                    {
-                        x.ChildSources(y =>
-                        {
-                            if (cspDirective.IsSelf)
-                            {
-                                y = y.Self();
-                            }
-
-                            y.CustomSources(cspDirective.Sources);
-                        });
-                    }
-                });
-
-            return applicationBuilder;
-        }
-        private static IApplicationBuilder UseCspForms(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            if (cspDirective == null)
-                throw new ArgumentNullException(nameof(cspDirective));
-
-            if (!cspDirective.IsEnabled)
-                return applicationBuilder;
-
-            applicationBuilder
-                .UseCsp(x =>
-                {
-                    if (cspDirective.IsNone)
-                    {
-                        x.FormActions(y =>
-                            y.None());
-                    }
-                    else
-                    {
-                        x.FormActions(y =>
-                        {
-                            if (cspDirective.IsSelf)
-                            {
-                                y = y.Self();
-                            }
-
-                            y.CustomSources(cspDirective.Sources);
-                        });
-                    }
-                });
-
-            return applicationBuilder;
-        }
-        private static IApplicationBuilder UseCspManifests(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            if (cspDirective == null)
-                throw new ArgumentNullException(nameof(cspDirective));
-
-            if (!cspDirective.IsEnabled)
-                return applicationBuilder;
-
-            applicationBuilder
-                .UseCsp(x =>
-                {
-                    if (cspDirective.IsNone)
-                    {
-                        x.ManifestSources(y =>
-                            y.None());
-                    }
-                    else
-                    {
-                        x.ManifestSources(y =>
-                        {
-                            if (cspDirective.IsSelf)
-                            {
-                                y = y.Self();
-                            }
-
-                            y.CustomSources(cspDirective.Sources);
-                        });
-                    }
-                });
-
-            return applicationBuilder;
-        }
-        private static IApplicationBuilder UseCspWorkers(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            if (cspDirective == null)
-                throw new ArgumentNullException(nameof(cspDirective));
-
-            if (!cspDirective.IsEnabled)
-                return applicationBuilder;
-
-            applicationBuilder
-                .UseCsp(x =>
-                {
-                    if (cspDirective.IsNone)
-                    {
-                        x.WorkerSources(y =>
-                            y.None());
-                    }
-                    else
-                    {
-                        x.WorkerSources(y =>
-                        {
-                            if (cspDirective.IsSelf)
-                            {
-                                y = y.Self();
-                            }
-
-                            y.CustomSources(cspDirective.Sources);
-                        });
-                    }
-                });
-
-            return applicationBuilder;
-        }
-        private static IApplicationBuilder UseCspSandbox(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspSandbox cspSandbox)
-        {
-            if (applicationBuilder == null)
-                throw new ArgumentNullException(nameof(applicationBuilder));
-
-            if (cspSandbox == null)
-                throw new ArgumentNullException(nameof(cspSandbox));
-
-            applicationBuilder
-                .UseCsp(x =>
-                    x.Sandbox(y =>
-                    {
-                        if (cspSandbox.AllowForms)
-                        {
-                            y = y.AllowForms();
+                            x.Self();
                         }
 
-                        if (cspSandbox.AllowModals)
+                        if (cspDirective.Sources.Any())
                         {
-                            y = y.AllowModals();
+                            x.CustomSources(cspDirective.Sources);
+                        }
+                    }
+                });
+
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspStyles(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirectiveStyles cspDirective)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (cspDirective == null)
+                throw new ArgumentNullException(nameof(cspDirective));
+
+            if (!cspDirective.IsEnabled)
+                return configurer;
+
+            configurer
+                .StyleSources(x =>
+                {
+                    if (cspDirective.IsNone)
+                    {
+                        x.None();
+                    }
+                    else
+                    {
+                        if (cspDirective.IsSelf)
+                        {
+                            x.Self();
                         }
 
-                        if (cspSandbox.AllowOrientationLock)
+                        if (cspDirective.IsUnsafeInline)
                         {
-                            y = y.AllowOrientationLock();
+                            x.UnsafeInline();
                         }
 
-                        if (cspSandbox.AllowPointerLock)
+                        if (cspDirective.Sources.Any())
                         {
-                            y = y.AllowPointerLock();
+                            x.CustomSources(cspDirective.Sources);
+                        }
+                    }
+                });
+
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspScripts(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirectiveScripts cspDirective)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (cspDirective == null)
+                throw new ArgumentNullException(nameof(cspDirective));
+
+            if (!cspDirective.IsEnabled)
+                return configurer;
+
+            configurer
+                .ScriptSources(x =>
+                {
+                    if (cspDirective.IsNone)
+                    {
+                        x.None();
+                    }
+                    else
+                    {
+                        if (cspDirective.IsSelf)
+                        {
+                            x.Self();
                         }
 
-                        if (cspSandbox.AllowPopups)
+                        if (cspDirective.IsUnsafeEval)
                         {
-                            y = y.AllowPopups();
+                            x.UnsafeEval();
                         }
 
-                        if (cspSandbox.AllowPopupsToEscapeSandbox)
+                        if (cspDirective.IsUnsafeInline)
                         {
-                            y = y.AllowPopupsToEscapeSandbox();
+                            x.UnsafeInline();
                         }
 
-                        if (cspSandbox.AllowPresentation)
+                        if (cspDirective.StrictDynamic)
                         {
-                            y = y.AllowPresentation();
+                            x.StrictDynamic();
                         }
 
-                        if (cspSandbox.AllowSameOrigin)
+                        if (cspDirective.Sources.Any())
                         {
-                            y = y.AllowSameOrigin();
+                            x.CustomSources(cspDirective.Sources);
+                        }
+                    }
+                });
+
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspObjects(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (cspDirective == null)
+                throw new ArgumentNullException(nameof(cspDirective));
+
+            if (!cspDirective.IsEnabled)
+                return configurer;
+
+            configurer
+                .ObjectSources(x =>
+                {
+                    if (cspDirective.IsNone)
+                    {
+                        x.None();
+                    }
+                    else
+                    {
+                        if (cspDirective.IsSelf)
+                        {
+                            x.Self();
                         }
 
-                        if (cspSandbox.AllowScripts)
+                        if (cspDirective.Sources.Any())
                         {
-                            y = y.AllowScripts();
+                            x.CustomSources(cspDirective.Sources);
+                        }
+                    }
+                });
+
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspImages(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (cspDirective == null)
+                throw new ArgumentNullException(nameof(cspDirective));
+
+            if (!cspDirective.IsEnabled)
+                return configurer;
+
+            configurer
+                .ImageSources(x =>
+                {
+                    if (cspDirective.IsNone)
+                    {
+                        x.None();
+                    }
+                    else
+                    {
+                        if (cspDirective.IsSelf)
+                        {
+                            x.Self();
                         }
 
-                        if (cspSandbox.AllowTopNavigation)
+                        if (cspDirective.Sources.Any())
                         {
-                            y.AllowTopNavigation();
+                            x.CustomSources(cspDirective.Sources);
                         }
-                    }));
+                    }
+                });
 
-            return applicationBuilder;
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspMedia(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (cspDirective == null)
+                throw new ArgumentNullException(nameof(cspDirective));
+
+            if (!cspDirective.IsEnabled)
+                return configurer;
+
+            configurer
+                .MediaSources(x =>
+                {
+                    if (cspDirective.IsNone)
+                    {
+                        x.None();
+                    }
+                    else
+                    {
+                        if (cspDirective.IsSelf)
+                        {
+                            x.Self();
+                        }
+
+                        if (cspDirective.Sources.Any())
+                        {
+                            x.CustomSources(cspDirective.Sources);
+                        }
+                    }
+                });
+
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspFrames(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (cspDirective == null)
+                throw new ArgumentNullException(nameof(cspDirective));
+
+            if (!cspDirective.IsEnabled)
+                return configurer;
+
+            configurer
+                .FrameSources(x =>
+                {
+                    if (cspDirective.IsNone)
+                    {
+                        x.None();
+                    }
+                    else
+                    {
+                        if (cspDirective.IsSelf)
+                        {
+                            x.Self();
+                        }
+
+                        if (cspDirective.Sources.Any())
+                        {
+                            x.CustomSources(cspDirective.Sources);
+                        }
+                    }
+                });
+
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspFrameAncestors(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (cspDirective == null)
+                throw new ArgumentNullException(nameof(cspDirective));
+
+            if (!cspDirective.IsEnabled)
+                return configurer;
+
+            configurer
+                .FrameAncestors(x =>
+                {
+                    if (cspDirective.IsNone)
+                    {
+                        x.None();
+                    }
+                    else
+                    {
+                        if (cspDirective.IsSelf)
+                        {
+                            x.Self();
+                        }
+
+                        if (cspDirective.Sources.Any())
+                        {
+                            x.CustomSources(cspDirective.Sources);
+                        }
+                    }
+                });
+
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspFonts(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (cspDirective == null)
+                throw new ArgumentNullException(nameof(cspDirective));
+
+            if (!cspDirective.IsEnabled)
+                return configurer;
+
+            configurer
+                .FontSources(x =>
+                {
+                    if (cspDirective.IsNone)
+                    {
+                        x.None();
+                    }
+                    else
+                    {
+                        if (cspDirective.IsSelf)
+                        {
+                            x.Self();
+                        }
+
+                        if (cspDirective.Sources.Any())
+                        {
+                            x.CustomSources(cspDirective.Sources);
+                        }
+                    }
+                });
+
+            return configurer;
+
+        }
+        private static IFluentCspOptions UseCspConnections(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (cspDirective == null)
+                throw new ArgumentNullException(nameof(cspDirective));
+
+            if (!cspDirective.IsEnabled)
+                return configurer;
+
+            configurer
+                .ConnectSources(x =>
+                {
+                    if (cspDirective.IsNone)
+                    {
+                        x.None();
+                    }
+                    else
+                    {
+                        if (cspDirective.IsSelf)
+                        {
+                            x.Self();
+                        }
+
+                        if (cspDirective.Sources.Any())
+                        {
+                            x.CustomSources(cspDirective.Sources);
+                        }
+                    }
+                });
+
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspBaseUris(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (cspDirective == null)
+                throw new ArgumentNullException(nameof(cspDirective));
+
+            if (!cspDirective.IsEnabled)
+                return configurer;
+
+            configurer
+                .BaseUris(x =>
+                {
+                    if (cspDirective.IsNone)
+                    {
+                        x.None();
+                    }
+                    else
+                    {
+                        if (cspDirective.IsSelf)
+                        {
+                            x.Self();
+                        }
+
+                        if (cspDirective.Sources.Any())
+                        {
+                            x.CustomSources(cspDirective.Sources);
+                        }
+                    }
+                });
+
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspChildren(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (cspDirective == null)
+                throw new ArgumentNullException(nameof(cspDirective));
+
+            if (!cspDirective.IsEnabled)
+                return configurer;
+
+            configurer
+                .ChildSources(x =>
+                {
+                    if (cspDirective.IsNone)
+                    {
+                        x.None();
+                    }
+                    else
+                    {
+                        if (cspDirective.IsSelf)
+                        {
+                            x.Self();
+                        }
+
+                        if (cspDirective.Sources.Any())
+                        {
+                            x.CustomSources(cspDirective.Sources);
+                        }
+                    }
+                });
+
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspForms(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (cspDirective == null)
+                throw new ArgumentNullException(nameof(cspDirective));
+
+            if (!cspDirective.IsEnabled)
+                return configurer;
+
+            configurer
+                .FormActions(x =>
+                {
+                    if (cspDirective.IsNone)
+                    {
+                        x.None();
+                    }
+                    else
+                    {
+                        if (cspDirective.IsSelf)
+                        {
+                            x.Self();
+                        }
+
+                        if (cspDirective.Sources.Any())
+                        {
+                            x.CustomSources(cspDirective.Sources);
+                        }
+                    }
+                });
+
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspManifests(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (cspDirective == null)
+                throw new ArgumentNullException(nameof(cspDirective));
+
+            if (!cspDirective.IsEnabled)
+                return configurer;
+
+            configurer
+                .ManifestSources(x =>
+                {
+                    if (cspDirective.IsNone)
+                    {
+                        x.None();
+                    }
+                    else
+                    {
+                        if (cspDirective.IsSelf)
+                        {
+                            x.Self();
+                        }
+
+                        if (cspDirective.Sources.Any())
+                        {
+                            x.CustomSources(cspDirective.Sources);
+                        }
+                    }
+                });
+
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspWorkers(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (cspDirective == null)
+                throw new ArgumentNullException(nameof(cspDirective));
+
+            if (!cspDirective.IsEnabled)
+                return configurer;
+
+            configurer
+                .WorkerSources(x =>
+                {
+                    if (cspDirective.IsNone)
+                    {
+                        x.None();
+                    }
+                    else
+                    {
+                        if (cspDirective.IsSelf)
+                        {
+                            x.Self();
+                        }
+
+                        if (cspDirective.Sources.Any())
+                        {
+                            x.CustomSources(cspDirective.Sources);
+                        }
+                    }
+                });
+
+            return configurer;
+        }
+        private static IFluentCspOptions UseCspSandbox(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirectiveSandbox cspDirectiveSandbox)
+        {
+            if (configurer == null)
+                throw new ArgumentNullException(nameof(configurer));
+
+            if (cspDirectiveSandbox == null)
+                throw new ArgumentNullException(nameof(cspDirectiveSandbox));
+
+            if (!cspDirectiveSandbox.IsEnabled)
+                return configurer;
+
+            configurer
+                .Sandbox(y =>
+                {
+                    if (cspDirectiveSandbox.AllowForms)
+                    {
+                        y.AllowForms();
+                    }
+
+                    if (cspDirectiveSandbox.AllowModals)
+                    {
+                        y.AllowModals();
+                    }
+
+                    if (cspDirectiveSandbox.AllowOrientationLock)
+                    {
+                        y.AllowOrientationLock();
+                    }
+
+                    if (cspDirectiveSandbox.AllowPointerLock)
+                    {
+                        y.AllowPointerLock();
+                    }
+
+                    if (cspDirectiveSandbox.AllowPopups)
+                    {
+                        y.AllowPopups();
+                    }
+
+                    if (cspDirectiveSandbox.AllowPopupsToEscapeSandbox)
+                    {
+                        y.AllowPopupsToEscapeSandbox();
+                    }
+
+                    if (cspDirectiveSandbox.AllowPresentation)
+                    {
+                        y.AllowPresentation();
+                    }
+
+                    if (cspDirectiveSandbox.AllowSameOrigin)
+                    {
+                        y.AllowSameOrigin();
+                    }
+
+                    if (cspDirectiveSandbox.AllowScripts)
+                    {
+                        y.AllowScripts();
+                    }
+
+                    if (cspDirectiveSandbox.AllowTopNavigation)
+                    {
+                        y.AllowTopNavigation();
+                    }
+                });
+
+            return configurer;
         }
     }
 }
