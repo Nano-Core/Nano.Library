@@ -37,7 +37,6 @@ using Nano.Web.Hosting.HealthChecks;
 using Nano.Web.Hosting.Middleware;
 using Nano.Web.Hosting.ModelBinders;
 using Nano.Web.Hosting.Serialization;
-using Nano.Web.Hosting.Startup.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
@@ -132,7 +131,6 @@ namespace Nano.Web.Extensions
             
             services
                 .AddApis()
-                .AddStartupTasks()
                 .AddHealthChecking(appOptions, webOptions);
 
             return services;
@@ -311,16 +309,6 @@ namespace Nano.Web.Extensions
                     x.Providers.Add<GzipCompressionProvider>();
                     x.Providers.Add<BrotliCompressionProvider>();
                 });
-
-            return services;
-        }
-        private static IServiceCollection AddStartupTasks(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services
-                .AddHostedService<InitializeDatabaseStartupTask>();
 
             return services;
         }
