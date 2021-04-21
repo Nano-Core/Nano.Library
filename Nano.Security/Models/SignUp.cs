@@ -7,7 +7,7 @@ namespace Nano.Security.Models
     /// <summary>
     /// Sign Up.
     /// </summary>
-    public class SignUp : BaseSignUp
+    public abstract class SignUp : BaseSignUp
     {
         /// <summary>
         /// Email.
@@ -56,10 +56,12 @@ namespace Nano.Security.Models
     /// <typeparam name="TIdentity">The identity type.</typeparam>
     public class SignUp<TUser, TIdentity> : SignUp
         where TUser : IEntityUser<TIdentity>
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
         /// User.
         /// </summary>
+        [Required]
         public virtual TUser User { get; set; }
     }
 }

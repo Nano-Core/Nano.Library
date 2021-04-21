@@ -14,9 +14,10 @@ using Nano.Repository.Interfaces;
 
 namespace Nano.Repository
 {
-    /// <inheritdoc cref="BaseRepository{TContext}"/>
-    public abstract class BaseRepositorySpatial<TContext> : BaseRepository<TContext>, IRepositorySpatial
-        where TContext : BaseDbContext
+    /// <inheritdoc cref="BaseRepository{TContext, TIdentity}"/>
+    public abstract class BaseRepositorySpatial<TContext, TIdentity> : BaseRepository<TContext, TIdentity>, IRepositorySpatial
+        where TContext : BaseDbContext<TIdentity> 
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <inheritdoc />
         protected BaseRepositorySpatial(TContext context)

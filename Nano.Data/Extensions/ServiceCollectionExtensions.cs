@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Nano.Config;
 using Nano.Data.Models;
 using Nano.Data.Providers.Sqlite;
+using Nano.Security;
 using Z.EntityFramework.Plus;
 
 namespace Nano.Data.Extensions
@@ -38,13 +39,38 @@ namespace Nano.Data.Extensions
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
 
+            services
+                .AddScoped<DefaultDbContext, TContext>()
+                .AddScoped<DefaultIdentityManager>();
+
+            services
+                .AddDataContext<TProvider, TContext, Guid>();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds data provider for <see cref="DbContext"/> to the <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <typeparam name="TProvider">The <see cref="IDataProvider"/> implementation.</typeparam>
+        /// <typeparam name="TContext">The <see cref="DbContext"/> implementation.</typeparam>
+        /// <typeparam name="TIdentity">The identity type.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        public static IServiceCollection AddDataContext<TProvider, TContext, TIdentity>(this IServiceCollection services)
+            where TProvider : class, IDataProvider
+            where TContext : BaseDbContext<TIdentity>
+            where TIdentity : IEquatable<TIdentity>
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
             var options = services.BuildServiceProvider()
                 .GetRequiredService<DataOptions>();
 
             services
                 .AddScoped<DbContext, TContext>()
-                .AddScoped<BaseDbContext, TContext>()
-                .AddScoped<DefaultDbContext, TContext>()
+                .AddScoped<BaseDbContext<TIdentity>, TContext>()
                 .AddScoped<DbContextOptions, DbContextOptions<TContext>>()
                 .AddSingleton<IDataProvider, TProvider>()
                 .AddDbContext<TContext>((provider, builder) =>
@@ -54,6 +80,15 @@ namespace Nano.Data.Extensions
                         .Configure(builder);
                 })
                 .AddDataHealthChecks<TProvider>(options);
+
+            services
+                .AddIdentity<IdentityUser<TIdentity>, IdentityRole<TIdentity>>()
+                .AddEntityFrameworkStores<BaseDbContext<TIdentity>>()
+                .AddTokenProvider<DataProtectorTokenProvider<IdentityUser<TIdentity>>>(JwtBearerDefaults.AuthenticationScheme)
+                .AddDefaultTokenProviders();
+
+            services
+                .AddIdentityManager<TIdentity>();
 
             ConfigManager.HasDbContext = true;
 
@@ -79,15 +114,12 @@ namespace Nano.Data.Extensions
 
             services
                 .AddScoped<DbContext, NullDbContext>()
-                .AddScoped<BaseDbContext, NullDbContext>()
+                .AddScoped<BaseDbContext<Guid>, NullDbContext>()
                 .AddScoped<DefaultDbContext, NullDbContext>()
                 .AddScoped<DbContextOptions, DbContextOptions<NullDbContext>>();
 
             services
-                .AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<BaseDbContext>()
-                .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>(JwtBearerDefaults.AuthenticationScheme)
-                .AddDefaultTokenProviders();
+                .AddIdentityManager<Guid>();
 
             services
                 .AddAudit(options)

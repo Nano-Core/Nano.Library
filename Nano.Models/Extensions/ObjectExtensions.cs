@@ -19,8 +19,10 @@ namespace Nano.Models.Extensions
         {
             if (@object == null) 
                 throw new ArgumentNullException(nameof(@object));
-            
-            return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFrom(@object);
+
+            return (T)TypeDescriptor
+                .GetConverter(typeof(T))
+                .ConvertFrom(@object.ToString());
         }
     }
 }

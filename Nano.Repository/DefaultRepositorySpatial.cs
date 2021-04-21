@@ -1,12 +1,13 @@
+using System;
 using Nano.Data;
 
 namespace Nano.Repository
 {
     /// <inheritdoc />
-    public class DefaultRepositorySpatial : BaseRepositorySpatial<DefaultDbContext>
+    public class DefaultRepositorySpatial : BaseRepositorySpatial<BaseDbContext<Guid>, Guid>
     {
         /// <inheritdoc />
-        public DefaultRepositorySpatial(DefaultDbContext context)
+        public DefaultRepositorySpatial(BaseDbContext<Guid> context)
             : base(context)
         {
 

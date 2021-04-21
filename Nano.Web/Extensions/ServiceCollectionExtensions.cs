@@ -25,8 +25,7 @@ using Nano.App;
 using Nano.Config.Extensions;
 using Nano.Data;
 using Nano.Models.Extensions;
-using Nano.Repository;
-using Nano.Repository.Interfaces;
+using Nano.Repository.Extensions;
 using Nano.Security;
 using Nano.Web.Api;
 using Nano.Web.Const;
@@ -207,6 +206,7 @@ namespace Nano.Web.Extensions
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services));
+
             if (securityOptions == null) 
                 throw new ArgumentNullException(nameof(securityOptions));
 
@@ -267,17 +267,6 @@ namespace Nano.Web.Extensions
 
             return services;
         }
-        private static IServiceCollection AddRepository(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services
-                .AddScoped<IRepository, DefaultRepository>()
-                .AddScoped<IRepositorySpatial, DefaultRepositorySpatial>();
-
-            return services;
-        }
         private static IServiceCollection AddVersioning(this IServiceCollection services, AppOptions appOptions)
         {
             if (services == null)
@@ -334,8 +323,7 @@ namespace Nano.Web.Extensions
 
                 config[HostDefaults.ContentRootKey] = Directory.GetCurrentDirectory();
 
-                // TODO: Doesn't poll: JS: Configured polling interval: NaN milliseconds (seems like knowm issue)
-
+                // TODO: HealthChecks UI: Doesn't poll: JS: Configured polling interval: NaN milliseconds (seems like knowm issue)
                 services
                     .AddHealthChecksUI(x =>
                         {

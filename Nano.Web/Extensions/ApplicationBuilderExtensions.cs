@@ -615,7 +615,7 @@ namespace Nano.Web.Extensions
             if (applicationBuilder == null) 
                 throw new ArgumentNullException(nameof(applicationBuilder));
 
-            // TODO: CSP - Missing from NWebSec
+            // TODO: CSP: Missing from NWebSec
             // navigate-to,
             // prefetch-src,
             // report-to,

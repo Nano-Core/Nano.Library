@@ -10,7 +10,7 @@ namespace Nano.Data
     /// <inheritdoc />
     public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbContextFactory<TContext>
         where TProvider : class, IDataProvider
-        where TContext : BaseDbContext
+        where TContext : DbContext
     {
         /// <inheritdoc />
         public virtual TContext CreateDbContext(string[] args)

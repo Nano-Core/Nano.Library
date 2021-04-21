@@ -40,6 +40,7 @@ namespace Nano.Security.Models
     /// <typeparam name="TIdentity">The identity type.</typeparam>
     public class SignUpExternal<TUser, TIdentity> : SignUpExternal
         where TUser : IEntityUser<TIdentity>
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
         /// User.

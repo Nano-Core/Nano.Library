@@ -51,7 +51,7 @@ namespace Nano.Logging.Providers.Log4Net
 
             hierarchy.Configured = true;
 
-            // TODO: Log4Net namespace overrides doesn't work.
+            // TODO: Log4Net: Namespace overrides.
             //foreach (var logLevelOverride in this.Options.LogLevelOverrides)
             //{
             //    var nestedHierarchy = (Hierarchy)LogManager

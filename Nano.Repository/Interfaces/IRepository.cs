@@ -33,12 +33,12 @@ namespace Nano.Repository.Interfaces
         /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
-        /// <typeparam name="TIdentity">The identity type.</typeparam>
-        /// <param name="key">The <typeparamref name="TIdentity"/> type, uniquely identify the <see cref="IEntity"/>.</param>
+        /// <typeparam name="TKey">The identity type.</typeparam>
+        /// <param name="key">The <typeparamref name="TKey"/> type, uniquely identify the <see cref="IEntity"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
-        Task<TEntity> GetAsync<TEntity, TIdentity>(TIdentity key, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityIdentity<TIdentity>;
+        Task<TEntity> GetAsync<TEntity, TKey>(TKey key, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<TKey>;
 
         /// <summary>
         /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
@@ -107,12 +107,12 @@ namespace Nano.Repository.Interfaces
         /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
-        /// <typeparam name="TIdentity">The type of the key.</typeparam>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
         /// <param name="keys">The keys uniquely identifying the <see cref="IEntity"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
-        Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TIdentity>(IEnumerable<TIdentity> keys, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityIdentity<TIdentity>;
+        Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(IEnumerable<TKey> keys, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<TKey>;
 
         /// <summary>
         /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.

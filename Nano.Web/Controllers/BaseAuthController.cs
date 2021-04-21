@@ -13,29 +13,40 @@ using Nano.Security.Const;
 using Nano.Security.Models;
 using Nano.Web.Const;
 using Nano.Web.Models;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Nano.Web.Controllers
 {
     /// <summary>
     /// Auth Controller.
     /// </summary>
+    [Route("Auth")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.READER)]
-    public class AuthController : BaseController
+    public abstract class BaseAuthController<TIdentity> : BaseController 
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
         /// Identity Manager.
         /// </summary>
-        protected virtual IdentityManager IdentityManager { get; }
+        protected virtual BaseIdentityManager<TIdentity> BaseIdentityManager { get; }
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger"/>.</param>
-        /// <param name="identityManager">The <see cref="IdentityManager"/>.</param>
-        public AuthController(ILogger logger, IdentityManager identityManager)
+        /// <param name="baseIdentityManager">The <see cref="BaseIdentityManager"/>.</param>
+        protected BaseAuthController(ILogger logger, BaseIdentityManager<TIdentity> baseIdentityManager)
             : base(logger)
         {
-            this.IdentityManager = identityManager ?? throw new ArgumentNullException(nameof(identityManager));
+            this.BaseIdentityManager = baseIdentityManager ?? throw new ArgumentNullException(nameof(baseIdentityManager));
+        }
+
+        /// <inheritdoc />
+        [AllowAnonymous]
+        [SwaggerOperation(Tags = new[] { "Auth" })]
+        public override IActionResult Options()
+        {
+            return base.Options();
         }
 
         /// <summary>
@@ -60,9 +71,10 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        [SwaggerOperation(Tags = new [] { "Auth" })]
         public virtual async Task<IActionResult> LogInAsync([FromBody][Required]Login login, CancellationToken cancellationToken = default)
         {
-            var accessToken = await this.IdentityManager
+            var accessToken = await this.BaseIdentityManager
                 .SignInAsync(login, cancellationToken);
 
             if (accessToken == null)
@@ -92,9 +104,10 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        [SwaggerOperation(Tags = new[] { "Auth" })]
         public virtual async Task<IActionResult> LoginRefreshAsync([FromBody][Required]LoginRefresh loginRefresh, CancellationToken cancellationToken = default)
         {
-            var accessToken = await this.IdentityManager
+            var accessToken = await this.BaseIdentityManager
                 .SignInRefreshAsync(loginRefresh, cancellationToken);
 
             if (accessToken == null)
@@ -123,15 +136,16 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        [SwaggerOperation(Tags = new[] { "Auth" })]
         public virtual async Task<IActionResult> SignInExternalAsync([FromBody][Required]LoginExternal loginExternal, CancellationToken cancellationToken = default)
         {
-            var accessToken = await this.IdentityManager
+            var accessToken = await this.BaseIdentityManager
                 .SignInExternalAsync(loginExternal, cancellationToken);
 
             ExternalLoginData externalLoginData = null;
             if (accessToken == null)
             {
-                externalLoginData = await this.IdentityManager
+                externalLoginData = await this.BaseIdentityManager
                     .GetExternalProviderInfoAsync(loginExternal, cancellationToken);
 
                 if (externalLoginData == null)
@@ -168,9 +182,10 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        [SwaggerOperation(Tags = new[] { "Auth" })]
         public virtual async Task<IActionResult> SignInExternalTransientAsync([FromBody][Required]LoginExternalTransient loginExternalTransient, CancellationToken cancellationToken = default)
         {
-            var accessToken = await this.IdentityManager
+            var accessToken = await this.BaseIdentityManager
                 .SignInExternalTransientAsync(loginExternalTransient, cancellationToken);
 
             if (accessToken == null)
@@ -199,9 +214,10 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        [SwaggerOperation(Tags = new[] { "Auth" })]
         public virtual async Task<IActionResult> LogOutAsync(CancellationToken cancellationToken = default)
         {
-            await this.IdentityManager
+            await this.BaseIdentityManager
                 .SignOutAsync(cancellationToken);
 
             await this.HttpContext
@@ -228,9 +244,10 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        [SwaggerOperation(Tags = new[] { "Auth" })]
         public virtual async Task<IActionResult> GetExternalSchemesAsync(CancellationToken cancellationToken = default)
         {
-            var externalLogins = await this.IdentityManager
+            var externalLogins = await this.BaseIdentityManager
                 .GetExternalProvidersAsync(cancellationToken);
 
             if (externalLogins == null)

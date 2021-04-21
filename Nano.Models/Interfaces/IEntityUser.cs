@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Identity;
 
 namespace Nano.Models.Interfaces
@@ -7,15 +8,16 @@ namespace Nano.Models.Interfaces
     /// </summary>
     /// <typeparam name="TIdentity">The identity type.</typeparam>
     public interface IEntityUser<TIdentity> : IEntityIdentity<TIdentity>
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
         /// Identity User Id.
         /// </summary>
-        string IdentityUserId { get; set; }
+        TIdentity IdentityUserId { get; set; }
 
         /// <summary>
         /// Identity User.
         /// </summary>
-        IdentityUser IdentityUser { get; set; }
+        IdentityUser<TIdentity> IdentityUser { get; set; }
     }
 }

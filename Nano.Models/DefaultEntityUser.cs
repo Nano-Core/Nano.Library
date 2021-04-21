@@ -17,6 +17,7 @@ namespace Nano.Models
 
     /// <inheritdoc cref="IEntityWritable"/>
     public class DefaultEntityUser<TIdentity> : BaseEntityUser<TIdentity>
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
         /// Created At.

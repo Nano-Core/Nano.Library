@@ -25,17 +25,9 @@ using Nano.Security.Models;
 namespace Nano.Data
 {
     /// <inheritdoc />
-    public abstract class BaseDbContext : IdentityDbContext<IdentityUser, IdentityRole, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserTokenExpiry<string>>
+    public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserTokenExpiry<TIdentity>>
+        where TIdentity : IEquatable<TIdentity>
     {
-        private static readonly IEnumerable<string> builtInRoles = new[]
-        {
-            BuiltInUserRoles.GUEST,
-            BuiltInUserRoles.READER,
-            BuiltInUserRoles.WRITER,
-            BuiltInUserRoles.SERVICE,
-            BuiltInUserRoles.ADMINISTRATOR
-        };
-        
         /// <summary>
         /// Options.
         /// </summary>
@@ -76,31 +68,31 @@ namespace Nano.Data
                 .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>();
 
             modelBuilder
-                .Entity<IdentityUserLogin<string>>()
+                .Entity<IdentityUserLogin<Guid>>()
                 .ToTable("__EFAuthUserLogin");
 
             modelBuilder
-                .Entity<IdentityUserRole<string>>()
+                .Entity<IdentityUserRole<Guid>>()
                 .ToTable("__EFAuthUserRole");
 
             modelBuilder
-                .Entity<IdentityUserTokenExpiry<string>>()
+                .Entity<IdentityUserTokenExpiry<Guid>>()
                 .ToTable("__EFAuthUserToken");
 
             modelBuilder
-                .Entity<IdentityUserClaim<string>>()
+                .Entity<IdentityUserClaim<Guid>>()
                 .ToTable("__EFAuthUserClaim");
 
             modelBuilder
-                .Entity<IdentityUser>()
+                .Entity<IdentityUser<Guid>>()
                 .ToTable("__EFAuthUser");
 
             modelBuilder
-                .Entity<IdentityRoleClaim<string>>()
+                .Entity<IdentityRoleClaim<Guid>>()
                 .ToTable("__EFAuthRoleClaim");
 
             modelBuilder
-                .Entity<IdentityRole>()
+                .Entity<IdentityRole<Guid>>()
                 .ToTable("__EFAuthRole");
         }
 
@@ -145,18 +137,23 @@ namespace Nano.Data
         /// <returns>The <see cref="Task"/> (void).</returns>
         public virtual async Task EnsureIdentityAsync(CancellationToken cancellationToken = default)
         {
-            if (this.Options.ConnectionString == null) // TODO: Don't create admin user if SecurityOptions.IsAuth=false
+            if (this.Options.ConnectionString == null)
                 return;
 
             var securityOptions = this.GetService<SecurityOptions>() ?? new SecurityOptions();
+
+            if (!securityOptions.IsAuth)
+                return;
+            
             var adminUsername = securityOptions.User.AdminUsername ?? "username";
             var adminPassword = securityOptions.User.AdminPassword ?? "password";
             var adminEmailAddress = securityOptions.User.AdminEmailAddress ?? "admin@domain.com";
 
-            foreach (var builtInRole in BaseDbContext.builtInRoles)
-            {
-                await this.AddRole(builtInRole);
-            }
+            await this.AddRole(BuiltInUserRoles.GUEST);
+            await this.AddRole(BuiltInUserRoles.READER);
+            await this.AddRole(BuiltInUserRoles.WRITER);
+            await this.AddRole(BuiltInUserRoles.SERVICE);
+            await this.AddRole(BuiltInUserRoles.ADMINISTRATOR);
 
             var adminUser = await this.AddUser(adminUsername, adminPassword, adminEmailAddress);
 
@@ -316,19 +313,19 @@ namespace Nano.Data
             return await success;
         }
 
-        private async Task<IdentityRole> AddRole(string role)
+        private async Task<IdentityRole<TIdentity>> AddRole(string role)
         {
             if (role == null)
                 throw new ArgumentNullException(nameof(role));
 
-            var roleManager = this.GetService<RoleManager<IdentityRole>>();
+            var roleManager = this.GetService<RoleManager<IdentityRole<TIdentity>>>();
 
             var exists = await roleManager
                 .RoleExistsAsync(role);
             
             if (!exists)
             {
-                var identityRole = new IdentityRole(role);
+                var identityRole = new IdentityRole<TIdentity>(role);
 
                 await roleManager
                     .CreateAsync(identityRole);
@@ -336,9 +333,10 @@ namespace Nano.Data
                 return identityRole;
             }
 
-            return await roleManager.FindByNameAsync(role);
+            return await roleManager
+                .FindByNameAsync(role);
         }
-        private async Task<IdentityUser> AddUser(string username, string password, string emailAddress = null)
+        private async Task<IdentityUser<TIdentity>> AddUser(string username, string password, string emailAddress = null)
         {
             if (username == null)
                 throw new ArgumentNullException(nameof(username));
@@ -346,12 +344,14 @@ namespace Nano.Data
             if (password == null)
                 throw new ArgumentNullException(nameof(password));
 
-            var userManager = this.GetService<UserManager<IdentityUser>>();
+            var userManager = this.GetService<UserManager<IdentityUser<TIdentity>>>();
 
-            var user = await userManager.FindByNameAsync(username);
+            var user = await userManager
+                .FindByNameAsync(username);
+            
             if (user == null)
             {
-                user = new IdentityUser
+                user = new IdentityUser<TIdentity>
                 {
                     UserName = username,
                     Email = emailAddress,
@@ -360,22 +360,27 @@ namespace Nano.Data
                     PhoneNumberConfirmed = true
                 };
 
-                await userManager.CreateAsync(user, password);
+                await userManager
+                    .CreateAsync(user, password);
             }
             else
             {
-                var isValid = await userManager.CheckPasswordAsync(user, password);
+                var isValid = await userManager
+                    .CheckPasswordAsync(user, password);
 
                 if (!isValid)
                 {
-                    var token = await userManager.GeneratePasswordResetTokenAsync(user);
-                    await userManager.ResetPasswordAsync(user, token, password);
+                    var token = await userManager
+                        .GeneratePasswordResetTokenAsync(user);
+                    
+                    await userManager
+                        .ResetPasswordAsync(user, token, password);
                 }
             }
 
             return user;
         }
-        private async Task AddUserToRole(IdentityUser user, string role)
+        private async Task AddUserToRole(IdentityUser<TIdentity> user, string role)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -383,12 +388,15 @@ namespace Nano.Data
             if (role == null)
                 throw new ArgumentNullException(nameof(role));
 
-            var userManager = this.GetService<UserManager<IdentityUser>>();
+            var userManager = this.GetService<UserManager<IdentityUser<TIdentity>>>();
 
-            var isInRole = await userManager.IsInRoleAsync(user, role);
+            var isInRole = await userManager
+                .IsInRoleAsync(user, role);
+            
             if (!isInRole)
             {
-                await userManager.AddToRoleAsync(user, role);
+                await userManager
+                    .AddToRoleAsync(user, role);
             }
         }
 

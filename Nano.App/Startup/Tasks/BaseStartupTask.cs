@@ -3,9 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace Nano.App.Startup
+namespace Nano.App.Startup.Tasks
 {
-    // TODO: Cleanup Tasks
     /// <inheritdoc />
     public abstract class BaseStartupTask : IHostedService
     {

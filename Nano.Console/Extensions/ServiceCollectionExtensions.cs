@@ -6,8 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Nano.Config.Extensions;
 using Nano.Console.Workers;
 using Nano.Models.Extensions;
-using Nano.Repository;
-using Nano.Repository.Interfaces;
+using Nano.Repository.Extensions;
 
 namespace Nano.Console.Extensions
 {
@@ -34,8 +33,7 @@ namespace Nano.Console.Extensions
                 .AddConfigOptions<ConsoleOptions>(configuration, ConsoleOptions.SectionName, out _);
 
             services
-                .AddScoped<IRepository, DefaultRepository>()
-                .AddScoped<IRepositorySpatial, DefaultRepositorySpatial>();
+                .AddRepository();
 
             AppDomain.CurrentDomain
                 .GetAssemblies()

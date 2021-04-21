@@ -7,7 +7,8 @@ namespace Nano.Security.Models
     /// <summary>
     /// Access Token Data.
     /// </summary>
-    public class AccessTokenData
+    public class AccessTokenData<TIdentity> 
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
         /// Id
@@ -17,12 +18,12 @@ namespace Nano.Security.Models
         /// <summary>
         /// App Id.
         /// </summary>
-        public virtual string AppId { get; set; } = IdentityManager.DEFAULT_APP_ID;
+        public virtual string AppId { get; set; } = BaseIdentityManager<TIdentity>.DEFAULT_APP_ID;
 
         /// <summary>
         /// User Id.
         /// </summary>
-        public virtual string UserId { get; set; }
+        public virtual TIdentity UserId { get; set; }
 
         /// <summary>
         /// User Name.

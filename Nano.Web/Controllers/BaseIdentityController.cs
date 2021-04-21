@@ -22,35 +22,25 @@ using Nano.Web.Models;
 
 namespace Nano.Web.Controllers
 {
-    /// <inheritdoc />
-    public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : BaseIdentityController<IRepository, TEntity, TIdentity, TCriteria>
-        where TEntity : BaseEntityUser<TIdentity>, IEntityUpdatable, IEntityIdentity<Guid>, new()
-        where TCriteria : class, IQueryCriteria, new()
-    {
-        /// <inheritdoc />
-        protected BaseIdentityController(ILogger logger, IRepository repository, IEventing eventing, IdentityManager identityManager) 
-            : base(logger, repository, eventing, identityManager)
-        {
-
-        }
-    }
+    // BUG: are we allowing Transient Admin login
 
     /// <inheritdoc />
     public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria>
         where TRepository : IRepository
         where TEntity : BaseEntityUser<TIdentity>, IEntityUpdatable, IEntityIdentity<TIdentity>, new()
+        where TIdentity : IEquatable<TIdentity>
         where TCriteria : class, IQueryCriteria, new()
     {
         /// <summary>
         /// Identity Manager.
         /// </summary>
-        protected virtual IdentityManager IdentityManager { get; }
+        protected virtual BaseIdentityManager<TIdentity> BaseIdentityManager { get; }
 
         /// <inheritdoc />
-        protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, IdentityManager identityManager) 
+        protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, BaseIdentityManager<TIdentity> baseIdentityManager) 
             : base(logger, repository, eventing)
         {
-            this.IdentityManager = identityManager ?? throw new ArgumentNullException(nameof(identityManager));
+            this.BaseIdentityManager = baseIdentityManager ?? throw new ArgumentNullException(nameof(baseIdentityManager));
         }
 
         /// <summary>
@@ -72,21 +62,32 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> SignUpAsync([FromBody][Required]SignUp<TEntity, TIdentity> signUp, CancellationToken cancellationToken = default)
         {
-            var identityUser = await this.IdentityManager
+            var identityUser = await this.BaseIdentityManager
                 .SignUpAsync(signUp, cancellationToken);
 
             signUp.User.Id = identityUser.Id.Parse<TIdentity>();
             signUp.User.IdentityUserId = identityUser.Id;
 
-            var result = await this.Repository
-                .AddAsync(signUp.User, cancellationToken);
+            TEntity user;
+            try
+            {
+                user = await this.Repository
+                    .AddAsync(signUp.User, cancellationToken);
 
-            await this.Repository
-                .SaveChanges(cancellationToken);
+                await this.Repository
+                    .SaveChanges(cancellationToken);
+            }
+            catch
+            {
+                await this.BaseIdentityManager
+                    .DeleteIdentityUser(identityUser);
 
-            result.IdentityUser = identityUser;
+                throw;
+            }
 
-            return this.Created("signup", result);
+            user.IdentityUser = identityUser;
+
+            return this.Created("signup", user);
         }
 
         /// <summary>
@@ -108,21 +109,33 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> SignUpExternalAsync([FromBody][Required]SignUpExternal<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
         {
-            var identityUser = await this.IdentityManager
+            var identityUser = await this.BaseIdentityManager
                 .SignUpExternalAsync(signUpExternal, cancellationToken);
 
             signUpExternal.User.Id = identityUser.Id.Parse<TIdentity>();
             signUpExternal.User.IdentityUserId = identityUser.Id;
 
-            var result = await this.Repository
-                .AddAsync(signUpExternal.User, cancellationToken);
-           
-            await this.Repository
-                .SaveChanges(cancellationToken);
+            TEntity user;
+            try
+            {
+                user = await this.Repository
+                    .AddAsync(signUpExternal.User, cancellationToken);
 
-            result.IdentityUser = identityUser;
+                await this.Repository
+                    .SaveChanges(cancellationToken);
 
-            return this.Created("signup/external", result);
+            }
+            catch
+            {
+                await this.BaseIdentityManager
+                    .DeleteIdentityUser(identityUser);
+
+                throw;
+            }
+
+            user.IdentityUser = identityUser;
+
+            return this.Created("signup/external", user);
         }
         
         /// <summary>
@@ -151,7 +164,7 @@ namespace Nano.Web.Controllers
             var controller = $"{typeof(TEntity).Name.ToLower()}s";
             var redirectUrl = Url.Action(nameof(SignUpExternalChallangeCallbackAsync), controller);
 
-            return await this.IdentityManager
+            return await this.BaseIdentityManager
                 .SignInExternalChallangeAsync(loginProvider, redirectUrl, cancellationToken);
         }
 
@@ -177,10 +190,12 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> SignUpExternalChallangeCallbackAsync([FromQuery]string remoteError = null, CancellationToken cancellationToken = default)
         {
+            // BUG: Fix. There might be a problem, When User has dependences like OrganizationId. Might not be relavant - do we actually make a challange? - Check Facebook / Google implementation.
+
             if (remoteError != null)
                 throw new UnauthorizedException(remoteError);
 
-            var signUpExternalResponse = await this.IdentityManager
+            var signUpExternalResponse = await this.BaseIdentityManager
                 .SignInExternalChallangeCallbackAsync(cancellationToken);
 
             var signUpExternal = new SignUpExternal
@@ -188,7 +203,7 @@ namespace Nano.Web.Controllers
                 EmailAddress = signUpExternalResponse.Email
             };
 
-            var identityUser = await this.IdentityManager
+            var identityUser = await this.BaseIdentityManager
                 .SignUpExternalAsync(signUpExternal, cancellationToken);
 
             var userId = identityUser.Id.Parse<TIdentity>();
@@ -239,7 +254,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> SetUsernameAsync([FromBody][Required]SetUsername setUsername, CancellationToken cancellationToken = default)
         {
-            await this.IdentityManager
+            await this.BaseIdentityManager
                 .SetUsernameAsync(setUsername, cancellationToken);
 
             return this.Ok();
@@ -268,7 +283,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> SetPasswordAsync([FromBody][Required]SetPassword setPassword, CancellationToken cancellationToken = default)
         {
-            await this.IdentityManager
+            await this.BaseIdentityManager
                 .SetPasswordAsync(setPassword, cancellationToken);
 
             return this.Ok();
@@ -294,7 +309,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> ResetPasswordAsync([FromBody][Required]ResetPassword resetPassword, CancellationToken cancellationToken = default)
         {
-            await this.IdentityManager
+            await this.BaseIdentityManager
                 .ResetPasswordAsync(resetPassword, cancellationToken);
 
             return this.Ok();
@@ -322,7 +337,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> GetResetPasswordTokenAsync([FromQuery][Required]string emailAddress, CancellationToken cancellationToken = default)
         {
-            var resetPasswordToken = await this.IdentityManager
+            var resetPasswordToken = await this.BaseIdentityManager
                 .GenerateResetPasswordTokenAsync(emailAddress, cancellationToken);
 
             return this.Ok(resetPasswordToken);
@@ -349,7 +364,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> ChangePasswordAsync([FromBody][Required]ChangePassword changePassword, CancellationToken cancellationToken = default)
         {
-            await this.IdentityManager
+            await this.BaseIdentityManager
                 .ChangePasswordAsync(changePassword, cancellationToken);
 
             return this.Ok();
@@ -376,7 +391,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> ChangeEmailAsync([FromBody][Required]ChangeEmail changeEmail, CancellationToken cancellationToken = default)
         {
-            await this.IdentityManager
+            await this.BaseIdentityManager
                 .ChangeEmailAsync(changeEmail, cancellationToken);
 
             return this.Ok();
@@ -404,7 +419,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> GetChangeEmailTokenAsync([FromQuery][Required]string emailAddress, [Required][FromQuery]string newEmailAddress, CancellationToken cancellationToken = default)
         {
-            var changeEmailToken = await this.IdentityManager
+            var changeEmailToken = await this.BaseIdentityManager
                 .GenerateChangeEmailTokenAsync(emailAddress, newEmailAddress, cancellationToken);
 
             return this.Ok(changeEmailToken);
@@ -430,7 +445,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> ConfirmEmailAsync([FromBody][Required]ConfirmEmail confirmEmail, CancellationToken cancellationToken = default)
         {
-            await this.IdentityManager
+            await this.BaseIdentityManager
                 .ConfirmEmailAsync(confirmEmail, cancellationToken);
 
             return this.Ok();
@@ -457,7 +472,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> GetConfirmEmailTokenAsync([FromQuery][Required]string emailAddress, CancellationToken cancellationToken = default)
         {
-            var confirmEmailToken = await this.IdentityManager
+            var confirmEmailToken = await this.BaseIdentityManager
                 .GenerateConfirmEmailTokenAsync(emailAddress, cancellationToken);
 
             return this.Ok(confirmEmailToken);
@@ -484,7 +499,7 @@ namespace Nano.Web.Controllers
         {
             this.HttpContext.Request.Scheme = "https";
 
-            await this.IdentityManager
+            await this.BaseIdentityManager
                 .RemoveExternalLoginAsync(cancellationToken);
 
             return this.Ok();

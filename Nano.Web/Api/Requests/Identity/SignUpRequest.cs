@@ -14,6 +14,7 @@ namespace Nano.Web.Api.Requests.Identity
     /// <inheritdoc />
     public class SignUpRequest<TUser, TIdentity> : BaseRequestPost
         where TUser : IEntityUser<TIdentity>
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
         /// Sign Up.

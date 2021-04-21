@@ -12,6 +12,7 @@ namespace Nano.Web.Api
     /// </summary>
     public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
         where TUser : class, IEntityUser<TIdentity>
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
         /// Identity Controller.

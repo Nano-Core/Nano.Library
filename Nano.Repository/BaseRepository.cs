@@ -16,8 +16,9 @@ using Z.EntityFramework.Plus;
 namespace Nano.Repository
 {
     /// <inheritdoc />
-    public abstract class BaseRepository<TContext> : IRepository
-        where TContext : BaseDbContext
+    public abstract class BaseRepository<TContext, TIdentity> : IRepository
+        where TContext : BaseDbContext<TIdentity>
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
         /// Context.
@@ -48,8 +49,8 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
-        public virtual async Task<TEntity> GetAsync<TEntity, TIdentity>(TIdentity key, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityIdentity<TIdentity>
+        public virtual async Task<TEntity> GetAsync<TEntity, TKey>(TKey key, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<TKey>
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
@@ -130,8 +131,8 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TIdentity>(IEnumerable<TIdentity> keys, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityIdentity<TIdentity>
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(IEnumerable<TKey> keys, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityIdentity<TKey>
         {
             if (keys == null)
                 throw new ArgumentNullException(nameof(keys));

@@ -29,8 +29,25 @@ namespace Nano.Security.Extensions
                 .AddConfigOptions<SecurityOptions>(configuration, SecurityOptions.SectionName, out var options);
 
             services
-                .AddSecurityIdentity(options)
-                .AddScoped<IdentityManager>();
+                .AddSecurityIdentity(options);
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds the <see cref="BaseIdentityManager{TIdentity}"/> to the <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <typeparam name="TIdentity">The identity type.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        internal static IServiceCollection AddIdentityManager<TIdentity>(this IServiceCollection services) 
+            where TIdentity : IEquatable<TIdentity>
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services
+                .AddScoped<BaseIdentityManager<TIdentity>>();
 
             return services;
         }

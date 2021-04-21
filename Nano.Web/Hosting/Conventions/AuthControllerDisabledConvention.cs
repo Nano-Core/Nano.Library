@@ -11,7 +11,7 @@ namespace Nano.Web.Hosting.Conventions
         {
             foreach (var controller in application.Controllers)
             {
-                if (controller.ControllerName == nameof(AuthController).Replace("Controller", string.Empty))
+                if (controller.ControllerName == nameof(DefaultAuthController).Replace("Controller", string.Empty))
                     controller.ApiExplorer.IsVisible = false;
             }
         }
