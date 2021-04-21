@@ -49,15 +49,39 @@
             <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
             <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
         </member>
-        <member name="T:Nano.Console.Workers.BaseWorker`1">
+        <member name="T:Nano.Console.Workers.BaseWorker">
             <summary>
-            Base .
+            Base Worker.
             </summary>
         </member>
-        <member name="P:Nano.Console.Workers.BaseWorker`1.Logger">
+        <member name="P:Nano.Console.Workers.BaseWorker.Logger">
             <summary>
             Logger.
             </summary>
+        </member>
+        <member name="P:Nano.Console.Workers.BaseWorker.ApplicationLifetime">
+            <summary>
+            Application Lifetime.
+            </summary>
+        </member>
+        <member name="M:Nano.Console.Workers.BaseWorker.#ctor(Microsoft.Extensions.Logging.ILogger,Microsoft.Extensions.Hosting.IHostApplicationLifetime)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
+            <param name="applicationLifetime">The <see cref="T:Microsoft.Extensions.Hosting.IHostApplicationLifetime"/>.</param>
+        </member>
+        <member name="M:Nano.Console.Workers.BaseWorker.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Console.Workers.BaseWorker.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Console.Workers.BaseWorker.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Console.Workers.BaseWorker`1">
+            <inheritdoc />
         </member>
         <member name="P:Nano.Console.Workers.BaseWorker`1.Eventing">
             <summary>
@@ -69,11 +93,6 @@
             Repository.
             </summary>
         </member>
-        <member name="P:Nano.Console.Workers.BaseWorker`1.ApplicationLifetime">
-            <summary>
-            Application Lifetime.
-            </summary>
-        </member>
         <member name="M:Nano.Console.Workers.BaseWorker`1.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing,Microsoft.Extensions.Hosting.IHostApplicationLifetime)">
             <summary>
             Constructor.
@@ -82,15 +101,6 @@
             <param name="repository">The <see cref="T:Nano.Repository.Interfaces.IRepository"/>.</param>
             <param name="eventing">The <see cref="T:Nano.Eventing.Interfaces.IEventingProvider"/>.</param>
             <param name="applicationLifetime">The <see cref="T:Microsoft.Extensions.Hosting.IApplicationLifetime"/>.</param>
-        </member>
-        <member name="M:Nano.Console.Workers.BaseWorker`1.StartAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Console.Workers.BaseWorker`1.StopAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Console.Workers.BaseWorker`1.Dispose">
-            <inheritdoc />
         </member>
         <member name="T:Nano.Console.Workers.DefaultWorker">
             <summary>
@@ -101,9 +111,6 @@
             <inheritdoc />
         </member>
         <member name="M:Nano.Console.Workers.DefaultWorker.StartAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Console.Workers.DefaultWorker.StopAsync(System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
     </members>

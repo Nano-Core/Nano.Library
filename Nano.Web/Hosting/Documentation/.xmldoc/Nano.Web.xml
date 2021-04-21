@@ -4,37 +4,42 @@
         <name>Nano.Web</name>
     </assembly>
     <members>
-        <member name="T:Nano.Web.Api.ApiClientOptions">
+        <member name="T:Nano.Web.Api.ApiOptions">
             <summary>
             Api Options.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.ApiClientOptions.Host">
+        <member name="P:Nano.Web.Api.ApiOptions.Host">
             <summary>
             Host.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.ApiClientOptions.Root">
+        <member name="P:Nano.Web.Api.ApiOptions.Root">
             <summary>
             Root.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.ApiClientOptions.Port">
+        <member name="P:Nano.Web.Api.ApiOptions.Port">
             <summary>
             Port.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.ApiClientOptions.UseSsl">
+        <member name="P:Nano.Web.Api.ApiOptions.UseSsl">
             <summary>
             Use Ssl.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.ApiClientOptions.UseExposeErrors">
+        <member name="P:Nano.Web.Api.ApiOptions.UseExposeErrors">
             <summary>
             Use Expose Erros.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.ApiClientOptions.Login">
+        <member name="P:Nano.Web.Api.ApiOptions.TimeoutInSeconds">
+            <summary>
+            Timeout In Seconds.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.ApiOptions.Login">
             <summary>
             Login.
             </summary>
@@ -44,11 +49,11 @@
             Base Api (abstract).
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.BaseApi.#ctor(Nano.Web.Api.ApiClientOptions)">
+        <member name="M:Nano.Web.Api.BaseApi.#ctor(Nano.Web.Api.ApiOptions)">
             <summary>
             Constructor.
             </summary>
-            <param name="apiClientOptions">The <see cref="T:Nano.Web.Api.ApiClientOptions"/>.</param>
+            <param name="apiOptions">The <see cref="T:Nano.Web.Api.ApiOptions"/>.</param>
         </member>
         <member name="M:Nano.Web.Api.BaseApi.LogInAsync(Nano.Web.Api.Requests.Auth.LogInRequest,System.Threading.CancellationToken)">
             <summary>
@@ -84,30 +89,20 @@
         </member>
         <member name="M:Nano.Web.Api.BaseApi.GetExternalSchemesAsync(Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest,System.Threading.CancellationToken)">
             <summary>
-            Get External Schemes Async.
+            GetAsync External Schemes Async.
             </summary>
             <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>A collection of <see cref="T:Nano.Security.Models.LoginProvider"/>'s.</returns>
         </member>
-        <member name="M:Nano.Web.Api.BaseApi.CustomAsync``1(``0,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.BaseApi.InvokeAsync``1(``0,System.Threading.CancellationToken)">
             <summary>
-            Invokes a custom request and returns void.
+            Invokes the request.
             </summary>
             <typeparam name="TRequest">The request type.</typeparam>
             <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>Nothing (void).</returns>
-        </member>
-        <member name="M:Nano.Web.Api.BaseApi.CustomAsync``2(``0,System.Threading.CancellationToken)">
-            <summary>
-            Invokes a custom request and returns a response.
-            </summary>
-            <typeparam name="TRequest">The request type.</typeparam>
-            <typeparam name="TResponse">The response type.</typeparam>
-            <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The instance of <typeparamref name="TResponse"/>.</returns>
+            <returns>Void.</returns>
         </member>
         <member name="M:Nano.Web.Api.BaseApi.InvokeAsync``2(``0,System.Threading.CancellationToken)">
             <summary>
@@ -123,17 +118,20 @@
             <summary>
             Invokes the request, and returns the response.
             </summary>
-            <typeparam name="TEntity"></typeparam>
+            <typeparam name="TEntity">The entity.</typeparam>
             <typeparam name="TRequest">The request type.</typeparam>
             <typeparam name="TResponse">The response type.</typeparam>
             <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The instance of <typeparamref name="TResponse"/>.</returns>
         </member>
+        <member name="M:Nano.Web.Api.BaseApi.Dispose">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Web.Api.BaseApi`1">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.BaseApi`1.#ctor(Nano.Web.Api.ApiClientOptions)">
+        <member name="M:Nano.Web.Api.BaseApi`1.#ctor(Nano.Web.Api.ApiOptions)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.BaseApi`1.GetAsync``1(`0,System.Threading.CancellationToken)">
@@ -397,7 +395,7 @@
             Identity Controller.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.BaseIdentityApi`2.#ctor(Nano.Web.Api.ApiClientOptions)">
+        <member name="M:Nano.Web.Api.BaseIdentityApi`2.#ctor(Nano.Web.Api.ApiOptions)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.BaseIdentityApi`2.SignUpAsync(Nano.Web.Api.Requests.Identity.SignUpRequest{`0,`1},System.Threading.CancellationToken)">
@@ -501,7 +499,7 @@
             Default Api.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.DefaultApi.#ctor(Nano.Web.Api.ApiClientOptions)">
+        <member name="M:Nano.Web.Api.DefaultApi.#ctor(Nano.Web.Api.ApiOptions)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.DefaultApi.DetailsAsync``1(Nano.Web.Api.Requests.DetailsRequest{System.Guid},System.Threading.CancellationToken)">
@@ -521,7 +519,7 @@
             Default Identity Api.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.DefaultIdentityApi`1.#ctor(Nano.Web.Api.ApiClientOptions)">
+        <member name="M:Nano.Web.Api.DefaultIdentityApi`1.#ctor(Nano.Web.Api.ApiOptions)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.DefaultIdentityApi`1.SignUpAsync(Nano.Web.Api.Requests.Identity.SignUpRequest{`0,System.Guid},System.Threading.CancellationToken)">
@@ -541,6 +539,36 @@
         </member>
         <member name="M:Nano.Web.Api.DefaultIdentityApi`1.DeleteManyAsync``1(Nano.Web.Api.Requests.DeleteManyRequest{System.Guid},System.Threading.CancellationToken)">
             <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Attributes.BaseHttpMethodAttribute">
+            <summary>
+            Base Http Method Attribute (abstract).
+            </summary>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Attributes.FormAttribute">
+            <summary>
+            Form Attribute
+            </summary>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Attributes.QueryAttribute">
+            <summary>
+            Query Attribute.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Attributes.QueryAttribute.Name">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Attributes.RouteAttribute">
+            <summary>
+            Route Attribute.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Attributes.RouteAttribute.Order">
+            <summary>
+            Order.
+            </summary>
         </member>
         <member name="T:Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest">
             <inheritdoc />
@@ -600,7 +628,9 @@
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.BaseRequest">
-            <inheritdoc />
+            <summary>
+            Base request (abstract).
+            </summary>
         </member>
         <member name="P:Nano.Web.Api.Requests.BaseRequest.Action">
             <summary>
@@ -612,23 +642,38 @@
             Controller.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.Requests.BaseRequest.GetUri``1(Nano.Web.Api.ApiClientOptions)">
-            <inheritdoc />
+        <member name="M:Nano.Web.Api.Requests.BaseRequest.GetRoute">
+            <summary>
+            Get Route.
+            Get the route parameters of the request, defined by properties having <see cref="T:Nano.Web.Api.Requests.Attributes.RouteAttribute"/>.
+            </summary>
+            <returns>The route as string.</returns>
         </member>
-        <member name="M:Nano.Web.Api.Requests.BaseRequest.GetRouteParameters">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Api.Requests.BaseRequest.GetQueryStringParameters">
-            <inheritdoc />
+        <member name="M:Nano.Web.Api.Requests.BaseRequest.GetQuerystring">
+            <summary>
+            Get Querystring.
+            Get the querystring parameters of the request, defined by properties having <see cref="T:Nano.Web.Api.Requests.Attributes.QueryAttribute"/>.
+            </summary>
+            <returns>The querystring as string.</returns>
         </member>
         <member name="T:Nano.Web.Api.Requests.BaseRequestDelete">
             <summary>
             Base Request Delete.
             </summary>
         </member>
+        <member name="M:Nano.Web.Api.Requests.BaseRequestDelete.GetBody">
+            <summary>
+            Get Body.
+            </summary>
+        </member>
         <member name="T:Nano.Web.Api.Requests.BaseRequestGet">
             <summary>
             Base Request Get.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.BaseRequestOptions">
+            <summary>
+            Base Request Delete.
             </summary>
         </member>
         <member name="T:Nano.Web.Api.Requests.BaseRequestPost">
@@ -637,7 +682,25 @@
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.BaseRequestPost.GetBody">
-            <inheritdoc />
+            <summary>
+            Get Body.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.BaseRequestPostForm">
+            <summary>
+            Base Request Post Form.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.BaseRequestPostForm.GetForm">
+            <summary>
+            Get Form.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.BaseRequestPut">
+            <summary>
+            Base Request Post.
+            </summary>
         </member>
         <member name="T:Nano.Web.Api.Requests.CreateManyRequest">
             <summary>
@@ -751,7 +814,7 @@
             Constructor.
             </summary>
         </member>
-        <member name="M:Nano.Web.Api.Requests.DeleteRequest`1.GetRouteParameters">
+        <member name="M:Nano.Web.Api.Requests.DeleteRequest`1.GetBody">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.DetailsManyRequest">
@@ -792,9 +855,6 @@
             <summary>
             Constructor.
             </summary>
-        </member>
-        <member name="M:Nano.Web.Api.Requests.DetailsRequest`1.GetRouteParameters">
-            <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.EditManyRequest">
             <summary>
@@ -913,9 +973,6 @@
         <member name="M:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest.#ctor">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.GetChangeEmailTokenRequest.GetQueryStringParameters">
-            <inheritdoc />
-        </member>
         <member name="T:Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest">
             <inheritdoc />
         </member>
@@ -927,9 +984,6 @@
         <member name="M:Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest.#ctor">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest.GetQueryStringParameters">
-            <inheritdoc />
-        </member>
         <member name="T:Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest">
             <inheritdoc />
         </member>
@@ -939,9 +993,6 @@
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest.#ctor">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest.GetQueryStringParameters">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Identity.RemoveExternalLogInRequest">
@@ -1046,52 +1097,6 @@
         </member>
         <member name="M:Nano.Web.Api.Requests.IndexRequest.GetBody">
             <inheritdoc />
-        </member>
-        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequest">
-            <summary>
-            Base interface for requests.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Api.Requests.Interfaces.IRequest.GetUri``1(Nano.Web.Api.ApiClientOptions)">
-            <summary>
-            Returns the Uri for the request.
-            </summary>
-            <typeparam name="TResponse">The type of response.</typeparam>
-            <param name="apiClientOptions">The <see cref="T:Nano.Web.Api.ApiClientOptions"/>.</param>
-            <returns>The <see cref="T:System.Uri"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Api.Requests.Interfaces.IRequest.GetQueryStringParameters">
-            <summary>
-            Get the collection  querystring  key/values.
-            </summary>
-            <returns>The <see cref="T:System.Collections.Generic.IList`1"/>.</returns>
-        </member>
-        <member name="M:Nano.Web.Api.Requests.Interfaces.IRequest.GetRouteParameters">
-            <summary>
-            Get the collection  querystring  key/values.
-            </summary>
-            <returns>The <see cref="T:System.Collections.Generic.IList`1"/>.</returns>
-        </member>
-        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequestDelete">
-            <summary>
-            Base interface for requests (DELETE).
-            </summary>
-        </member>
-        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequestGet">
-            <summary>
-            Base interface for querystring requests (GET).
-            </summary>
-        </member>
-        <member name="T:Nano.Web.Api.Requests.Interfaces.IRequestPost">
-            <summary>
-            Base interface for requests (POST).
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Api.Requests.Interfaces.IRequestPost.GetBody">
-            <summary>
-            Gets the body of the request.
-            </summary>
-            <returns>The body <see cref="T:System.Object"/>.</returns>
         </member>
         <member name="T:Nano.Web.Api.Requests.QueryCountRequest`1">
             <summary>
@@ -1243,8 +1248,25 @@
         <member name="M:Nano.Web.Api.Requests.Spatial.WithinRequest`1.#ctor">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.Requests.Spatial.WithinRequest`1.GetQueryStringParameters">
-            <inheritdoc />
+        <member name="T:Nano.Web.Api.Requests.Types.FormItem">
+            <summary>
+            Form Item.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Types.FormItem.Name">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Types.FormItem.Value">
+            <summary>
+            Value.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Types.FormItem.Type">
+            <summary>
+            Type.
+            </summary>
         </member>
         <member name="T:Nano.Web.Const.HttpContentType">
             <summary>
@@ -1266,12 +1288,47 @@
             Html ("text/html").
             </summary>
         </member>
+        <member name="F:Nano.Web.Const.HttpContentType.XHTML">
+            <summary>
+            Xhtml ("text/xhtml").
+            </summary>
+        </member>
         <member name="F:Nano.Web.Const.HttpContentType.TEXT">
             <summary>
             Text ("text/plain").
             </summary>
         </member>
+        <member name="F:Nano.Web.Const.HttpContentType.PDF">
+            <summary>
+            Pdf ("application/pdf").
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Const.HttpContentType.ZIP">
+            <summary>
+            Pdf ("application/zip").
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Const.HttpContentType.PNG">
+            <summary>
+            Png ("image/png").
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Const.HttpContentType.BMP">
+            <summary>
+            Bmp ("image/bmp").
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Const.HttpContentType.JPEG">
+            <summary>
+            Jpeg / Jpg ("image/jpeg").
+            </summary>
+        </member>
         <member name="F:Nano.Web.Const.HttpContentType.FORM">
+            <summary>
+            Form ("application/x-www-form-urlencoded").
+            </summary>
+        </member>
+        <member name="F:Nano.Web.Const.HttpContentType.FORM_ENCODED">
             <summary>
             Form ("application/x-www-form-urlencoded").
             </summary>
@@ -1282,24 +1339,27 @@
         <member name="M:Nano.Web.Controllers.AuditController.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Controllers.AuthController">
+        <member name="T:Nano.Web.Controllers.BaseAuthController`1">
             <summary>
             Auth Controller.
             </summary>
         </member>
-        <member name="P:Nano.Web.Controllers.AuthController.IdentityManager">
+        <member name="P:Nano.Web.Controllers.BaseAuthController`1.BaseIdentityManager">
             <summary>
             Identity Manager.
             </summary>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Security.IdentityManager)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Security.BaseIdentityManager{`0})">
             <summary>
             Constructor.
             </summary>
             <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
-            <param name="identityManager">The <see cref="P:Nano.Web.Controllers.AuthController.IdentityManager"/>.</param>
+            <param name="baseIdentityManager">The <see cref="P:Nano.Web.Controllers.BaseAuthController`1.BaseIdentityManager"/>.</param>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.LogInAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.Options">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
             <summary>
             Authenticates and signs in a user.
             On success a jwt-token is created and returned, for use with auhtorization.
@@ -1313,7 +1373,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.LoginRefreshAsync(Nano.Security.Models.LoginRefresh,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.LoginRefreshAsync(Nano.Security.Models.LoginRefresh,System.Threading.CancellationToken)">
             <summary>
             Refreshes a users authentication token.
             </summary>
@@ -1326,7 +1386,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.SignInExternalAsync(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalAsync(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
             <summary>
             Sign-in a user from an external login and authentication.
             </summary>
@@ -1339,7 +1399,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.SignInExternalTransientAsync(Nano.Security.Models.LoginExternalTransient,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalTransientAsync(Nano.Security.Models.LoginExternalTransient,System.Threading.CancellationToken)">
             <summary>
             Sign-in a user transiently from an external login and authentication.
             No Identity backing-store is used.
@@ -1353,7 +1413,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.LogOutAsync(System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogOutAsync(System.Threading.CancellationToken)">
             <summary>
             Logs out the user.
             </summary>
@@ -1364,7 +1424,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.AuthController.GetExternalSchemesAsync(System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.GetExternalSchemesAsync(System.Threading.CancellationToken)">
             <summary>
             Gets all the configured external authentication schemes.
             E.g. Google, Facebook, etc.
@@ -2120,21 +2180,15 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="T:Nano.Web.Controllers.BaseIdentityController`3">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`3.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing,Nano.Security.IdentityManager)">
-            <inheritdoc />
-        </member>
         <member name="T:Nano.Web.Controllers.BaseIdentityController`4">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Controllers.BaseIdentityController`4.IdentityManager">
+        <member name="P:Nano.Web.Controllers.BaseIdentityController`4.BaseIdentityManager">
             <summary>
             Identity Manager.
             </summary>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing,Nano.Security.IdentityManager)">
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing,Nano.Security.BaseIdentityManager{`2})">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.BaseIdentityController`4.SignUpAsync(Nano.Security.Models.SignUp{`1,`2},System.Threading.CancellationToken)">
@@ -2313,6 +2367,12 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
+        <member name="T:Nano.Web.Controllers.DefaultAuthController">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.DefaultAuthController.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Security.DefaultIdentityManager)">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Web.Controllers.DefaultController`2">
             <inheritdoc />
         </member>
@@ -2388,7 +2448,7 @@
         <member name="T:Nano.Web.Controllers.DefaultIdentityController`2">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Controllers.DefaultIdentityController`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing,Nano.Security.IdentityManager)">
+        <member name="M:Nano.Web.Controllers.DefaultIdentityController`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing,Nano.Security.DefaultIdentityManager)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Controllers.HomeController">
@@ -2429,7 +2489,7 @@
         <member name="M:Nano.Web.Controllers.HomeController.GetServices(System.String)">
             <summary>
             Get Services.
-            The services dependencies registerd during application start-up.
+            The services dependencies registered during application start-up.
             </summary>
             <param name="filter">The filter on service or implementation name.</param>
             <returns>The services.</returns>
@@ -2605,6 +2665,13 @@
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseXHttpContentTypeOptionsPolicyHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds https content type options policy header middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
         <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpStrictTransportSecurityPolicyHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
             Adds Hsts middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
@@ -2612,9 +2679,9 @@
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseHttpsRedirect(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Nano.Web.Extensions.ApplicationBuilderExtensions.UseContentSecurityPolicyHeader(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
-            Adds rerdirect valiation middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            Adds Content Security Policy (CSP) middleware to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
             </summary>
             <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
@@ -2728,7 +2795,10 @@
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Hosting.HealthChecks.StartupHealthCheck.#ctor(Nano.App.Startup.StartupTaskContext)">
-            <inheritdoc />
+            <summary>
+            Constructor.
+            </summary>
+            <param name="taskContext">The <see cref="T:Nano.App.Startup.StartupTaskContext"/>.</param>
         </member>
         <member name="M:Nano.Web.Hosting.HealthChecks.StartupHealthCheck.CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext,System.Threading.CancellationToken)">
             <inheritdoc />
@@ -2856,15 +2926,6 @@
             <param name="defaultNamespace">The default namespace used in the xml.</param>
             <param name="knownTypes">The known types.</param>
             <returns>The instance of type <typeparamref name="T"/>.</returns>
-        </member>
-        <member name="T:Nano.Web.Hosting.Startup.Tasks.InitializeDatabaseStartupTask">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Hosting.Startup.Tasks.InitializeDatabaseStartupTask.#ctor(Nano.App.Startup.StartupTaskContext,Nano.Data.BaseDbContext)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Hosting.Startup.Tasks.InitializeDatabaseStartupTask.StartAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
         </member>
         <member name="T:Nano.Web.Models.Error">
             <summary>
@@ -3041,12 +3102,6 @@
             Allowed Origins.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpsRewrite">
-            <summary>
-            Use Https Rewrite.
-            Enables middleware for automatically rewrite http requests to https.
-            </summary>
-        </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpsRequired">
             <summary>
             Use Https Redirect.
@@ -3065,9 +3120,21 @@
             Enables middleware for dynamic compression of http responses.
             </summary>
         </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.UseContentTypeOptions">
+            <summary>
+            Use Content Type Options.
+            Added X-Content-Type Options header.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.Csp">
+            <summary>
+            Csp.
+            Settings for Content-Security-Policy.
+            </summary>
+        </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.Hsts">
             <summary>
-            Use Hsts.
+            Hsts.
             Settings for Strict-Transport-Security.
             </summary>
         </member>
@@ -3094,6 +3161,11 @@
             Certificate (ssl)
             </summary>
         </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.HealthCheck">
+            <summary>
+            Health-Check.
+            </summary>
+        </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.ReferrerPolicyHeader">
             <summary>
             Use Referrer Policy Header.
@@ -3109,14 +3181,257 @@
             Use Xss Protection Policy Header.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHealthCheck">
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions">
             <summary>
-            Use Health Check.
+            Csp Options.
             </summary>
         </member>
-        <member name="P:Nano.Web.WebOptions.HostingOptions.UseHealthCheckUI">
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.BlockAllMixedContent">
             <summary>
-            Use Health Check UI.
+            Block All Mixed Content.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.UpgradeInsecureRequests">
+            <summary>
+            Upgrade Insecure Requests.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.Defaults">
+            <summary>
+            Defaults.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.Styles">
+            <summary>
+            Styles.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.Scripts">
+            <summary>
+            Scripts.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.Objects">
+            <summary>
+            Objects.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.Images">
+            <summary>
+            Images.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.Media">
+            <summary>
+            Media.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.Frames">
+            <summary>
+            Frames.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.FrameAncestors">
+            <summary>
+            Frame Ancestors.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.Fonts">
+            <summary>
+            Fonts.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.Connections">
+            <summary>
+            Connections.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.BaseUris">
+            <summary>
+            Base Uri's.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.Children">
+            <summary>
+            Children.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.Forms">
+            <summary>
+            Forms.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.Manifests">
+            <summary>
+            Manifests.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.Workers">
+            <summary>
+            Workers.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.Sandbox">
+            <summary>
+            Sandbox.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.ReportUris">
+            <summary>
+            Report Uris.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.PluginTypes">
+            <summary>
+            Plugin Types.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.IsEnabled">
+            <summary>
+            Is Enabled.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirective">
+            <summary>
+            Csp Directive.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirective.IsNone">
+            <summary>
+            Is None.
+            Adds the 'none' source.
+            All other sources are ignored.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirective.IsSelf">
+            <summary>
+            Is Self.
+            Adds the 'self' source.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirective.Sources">
+            <summary>
+            Sources.
+            Adds the array of custom sources.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirective.IsEnabled">
+            <summary>
+            Is Enabled.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveScripts">
+            <summary>
+            Csp Directive Scripts.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveScripts.IsUnsafeEval">
+            <summary>
+            Is None.
+            Adds the 'unsafe-eval' source.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveScripts.IsUnsafeInline">
+            <summary>
+            Is None.
+            Adds the 'unsafe-inline' source.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveScripts.StrictDynamic">
+            <summary>
+            Is None.
+            Adds the 'strict-dynamic' source.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveScripts.IsEnabled">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveStyles">
+            <summary>
+            Csp Directive Styles.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveStyles.IsUnsafeInline">
+            <summary>
+            Is None.
+            Adds the 'unsafe-inline' source.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveStyles.IsEnabled">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveSandbox">
+            <summary>
+            Sandbox.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveSandbox.AllowForms">
+            <summary>
+            Allow Forms.
+            Allows the page to submit forms. If this keyword is not used, this operation is not allowed.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveSandbox.AllowModals">
+            <summary>
+            Allow Modals.
+            Allows the page to open modal windows.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveSandbox.AllowOrientationLock">
+            <summary>
+            Allow Orientation Lock.
+            Allows the page to disable the ability to lock the screen orientation.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveSandbox.AllowPointerLock">
+            <summary>
+            Allow Pointer Lock.
+            Allows the page to use the Pointer Lock API.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveSandbox.AllowPopups">
+            <summary>
+            Allow Popups.
+            Allows popups (like from window.open, target= "_blank", showModalDialog). If this keyword is not used, that functionality will silently fail.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveSandbox.AllowPopupsToEscapeSandbox">
+            <summary>
+            Allow Popups To Escape Sandbox.
+            Allows a sandboxed document to open new windows without forcing the sandboxing flags upon them.
+            This will allow, for example, a third-party advertisement to be safely sandboxed without forcing the same restrictions upon a landing page.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveSandbox.AllowPresentation">
+            <summary>
+            Allow Presentation.
+            Allows embedders to have control over whether an iframe can start a presentation session.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveSandbox.AllowSameOrigin">
+            <summary>
+            Allow Same Origin.
+            Allows the content to be treated as being from its normal origin.
+            If this keyword is not used, the embedded content is treated as being from a unique origin.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveSandbox.AllowScripts">
+            <summary>
+            Allow Scripts.
+            Allows the page to run scripts (but not create pop-up windows).
+            If this keyword is not used, this operation is not allowed.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveSandbox.AllowTopNavigation">
+            <summary>
+            Allow Top Navigation.
+            Allows the page to navigate (load) content to the top-level browsing context.
+            If this keyword is not used, this operation is not allowed.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveSandbox.IsEnabled">
+            <summary>
+            Is Enabled.
             </summary>
         </member>
         <member name="T:Nano.Web.WebOptions.HostingOptions.HstsOptions">
@@ -3259,6 +3574,58 @@
         <member name="P:Nano.Web.WebOptions.HostingOptions.CertificateOptions.Password">
             <summary>
             Password
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions">
+            <summary>
+            Health-Check Options
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions.UseHealthCheck">
+            <summary>
+            Use Health Check.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions.UseHealthCheckUI">
+            <summary>
+            Use Health Check UI.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions.EvaluationInterval">
+            <summary>
+            Evaluation Interval.
+            The interval between health-checks.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions.FailureNotificationInterval">
+            <summary>
+            Failure Notification Timout.
+            The minimum number of secoends betweeen failure notificaitons.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions.WebHooks">
+            <summary>
+            Web-Hooks.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions.HealthCheckWebHookOptions">
+            <summary>
+            Health-Check Web-Hook Options.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions.HealthCheckWebHookOptions.Name">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions.HealthCheckWebHookOptions.Uri">
+            <summary>
+            Uri.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.HealthCheckOptions.HealthCheckWebHookOptions.Payload">
+            <summary>
+            Payload.
             </summary>
         </member>
         <member name="T:Nano.Web.WebOptions.DocumentationOptions">

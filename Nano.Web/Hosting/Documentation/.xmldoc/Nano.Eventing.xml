@@ -165,13 +165,14 @@
             <param name="routing">The routing key (if any).</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>
-        <member name="M:Nano.Eventing.Interfaces.IEventing.SubscribeAsync``1(System.IServiceProvider,System.String)">
+        <member name="M:Nano.Eventing.Interfaces.IEventing.SubscribeAsync``1(System.IServiceProvider,System.String,System.Threading.CancellationToken)">
             <summary>
             Consumes messages.
             </summary>
             <typeparam name="TMessage">The type of response body.</typeparam>
             <param name="serviceProvider">The <see cref="T:System.IServiceProvider"/>.</param>
             <param name="routing">The routing key (if any).</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>
         <member name="T:Nano.Eventing.Interfaces.IEventingHandler`1">
@@ -207,7 +208,7 @@
         <member name="M:Nano.Eventing.NullEventing.PublishAsync``1(``0,System.String)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Eventing.NullEventing.SubscribeAsync``1(System.IServiceProvider,System.String)">
+        <member name="M:Nano.Eventing.NullEventing.SubscribeAsync``1(System.IServiceProvider,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Eventing.NullEventing.Dispose">
@@ -230,7 +231,7 @@
         <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.PublishAsync``1(``0,System.String)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.SubscribeAsync``1(System.IServiceProvider,System.String)">
+        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.SubscribeAsync``1(System.IServiceProvider,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.Dispose">

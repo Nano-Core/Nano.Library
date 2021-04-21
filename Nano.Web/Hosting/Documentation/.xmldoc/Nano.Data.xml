@@ -4,57 +4,57 @@
         <name>Nano.Data</name>
     </assembly>
     <members>
-        <member name="T:Nano.Data.BaseDbContext">
+        <member name="T:Nano.Data.BaseDbContext`1">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Data.BaseDbContext.Options">
+        <member name="P:Nano.Data.BaseDbContext`1.Options">
             <summary>
             Options.
             </summary>
         </member>
-        <member name="P:Nano.Data.BaseDbContext.Audit">
+        <member name="P:Nano.Data.BaseDbContext`1.Audit">
             <summary>
             Audit Entries.
             </summary>
         </member>
-        <member name="P:Nano.Data.BaseDbContext.AuditProperties">
+        <member name="P:Nano.Data.BaseDbContext`1.AuditProperties">
             <summary>
             Audit Entry Properties.
             </summary>
         </member>
-        <member name="P:Nano.Data.BaseDbContext.AutoSave">
+        <member name="P:Nano.Data.BaseDbContext`1.AutoSave">
             <summary>
             Auto Save.
             </summary>
         </member>
-        <member name="M:Nano.Data.BaseDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions,Nano.Data.DataOptions)">
+        <member name="M:Nano.Data.BaseDbContext`1.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions,Nano.Data.DataOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Data.BaseDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+        <member name="M:Nano.Data.BaseDbContext`1.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Data.BaseDbContext.EnsureCreatedAsync(System.Threading.CancellationToken)">
+        <member name="M:Nano.Data.BaseDbContext`1.EnsureCreatedAsync(System.Threading.CancellationToken)">
             <summary>
             Create database.
             </summary>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>
-        <member name="M:Nano.Data.BaseDbContext.EnsureMigratedAsync(System.Threading.CancellationToken)">
+        <member name="M:Nano.Data.BaseDbContext`1.EnsureMigratedAsync(System.Threading.CancellationToken)">
             <summary>
             Migrate database.
             </summary>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>
-        <member name="M:Nano.Data.BaseDbContext.EnsureIdentityAsync(System.Threading.CancellationToken)">
+        <member name="M:Nano.Data.BaseDbContext`1.EnsureIdentityAsync(System.Threading.CancellationToken)">
             <summary>
             Creates users and roles.
             </summary>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>
-        <member name="M:Nano.Data.BaseDbContext.AddOrUpdate``1(``0)">
+        <member name="M:Nano.Data.BaseDbContext`1.AddOrUpdate``1(``0)">
             <summary>
             Adds or updates (if exists) the entity.
             </summary>
@@ -62,7 +62,7 @@
             <param name="entity">The <see cref="T:System.Object"/> of type <typeparamref name="TEntity"/>.</param>
             <returns>A <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry"/>.</returns>
         </member>
-        <member name="M:Nano.Data.BaseDbContext.AddOrUpdateMany``1(System.Collections.Generic.IEnumerable{``0})">
+        <member name="M:Nano.Data.BaseDbContext`1.AddOrUpdateMany``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
             Adds or updates (if exists) the entities.
             </summary>
@@ -70,16 +70,16 @@
             <param name="entities">The <see cref="T:System.Object"/>'s of type <typeparamref name="TEntity"/>.</param>
             <returns>A <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry`1"/>.</returns>
         </member>
-        <member name="M:Nano.Data.BaseDbContext.SaveChanges">
+        <member name="M:Nano.Data.BaseDbContext`1.SaveChanges">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Data.BaseDbContext.SaveChanges(System.Boolean)">
+        <member name="M:Nano.Data.BaseDbContext`1.SaveChanges(System.Boolean)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Data.BaseDbContext.SaveChangesAsync(System.Threading.CancellationToken)">
+        <member name="M:Nano.Data.BaseDbContext`1.SaveChangesAsync(System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Data.BaseDbContext.SaveChangesAsync(System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Nano.Data.BaseDbContext`1.SaveChangesAsync(System.Boolean,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Data.BaseDbContextFactory`2">
@@ -179,6 +179,9 @@
         <member name="M:Nano.Data.DefaultDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions,Nano.Data.DataOptions)">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Data.DefaultDbContextFactory`2">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Data.Extensions.QueryableExtensions">
             <summary>
             Queryable Extensions.
@@ -218,6 +221,16 @@
             <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
             <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
         </member>
+        <member name="M:Nano.Data.Extensions.ServiceCollectionExtensions.AddDataContext``3(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds data provider for <see cref="T:Microsoft.EntityFrameworkCore.DbContext"/> to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+            <typeparam name="TProvider">The <see cref="T:Nano.Data.Interfaces.IDataProvider"/> implementation.</typeparam>
+            <typeparam name="TContext">The <see cref="T:Microsoft.EntityFrameworkCore.DbContext"/> implementation.</typeparam>
+            <typeparam name="TIdentity">The identity type.</typeparam>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
         <member name="M:Nano.Data.Extensions.ServiceCollectionExtensions.AddData(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Adds <see cref="T:Nano.Data.DataOptions"/> appOptions to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
@@ -244,16 +257,6 @@
         <member name="P:Nano.Data.Models.Criterias.AuditEntryQueryCriteria.CreatedBy">
             <summary>
             Created By.
-            </summary>
-        </member>
-        <member name="P:Nano.Data.Models.Criterias.AuditEntryQueryCriteria.CreatedDateTo">
-            <summary>
-            Create Date To.
-            </summary>
-        </member>
-        <member name="P:Nano.Data.Models.Criterias.AuditEntryQueryCriteria.CreatedDateFrom">
-            <summary>
-            Create Date From.
             </summary>
         </member>
         <member name="P:Nano.Data.Models.Criterias.AuditEntryQueryCriteria.EntityTypeName">
@@ -401,12 +404,6 @@
             <inheritdoc />
         </member>
         <member name="M:Nano.Data.Models.Mappings.DefaultEntityUserMapping`1.Map(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{`0})">
-            <inheritdoc />
-        </member>
-        <member name="T:Nano.Data.Models.Mappings.DefaultEntityViewMapping`1">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Data.Models.Mappings.DefaultEntityViewMapping`1.Map(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{`0})">
             <inheritdoc />
         </member>
         <member name="T:Nano.Data.Models.Mappings.Extensions.EntityTypeBuilderExtensions">

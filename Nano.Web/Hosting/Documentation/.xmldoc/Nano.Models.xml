@@ -156,12 +156,21 @@
             Stream Extensions.
             </summary>
         </member>
-        <member name="M:Nano.Models.Extensions.StreamExtensions.ReadAllAsync(System.IO.Stream)">
+        <member name="M:Nano.Models.Extensions.StreamExtensions.ReadAllAsync(System.IO.Stream,System.Threading.CancellationToken)">
             <summary>
             Reads all bytes in the <see cref="T:System.IO.Stream"/> and returns the content as string.
             </summary>
             <param name="stream">The <see cref="T:System.IO.Stream"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The content as string.</returns>
+        </member>
+        <member name="M:Nano.Models.Extensions.StreamExtensions.ReadAllBytesAsync(System.IO.Stream,System.Threading.CancellationToken)">
+            <summary>
+            Reads all bytes in the <see cref="T:System.IO.Stream"/> and returns the content as byte array.
+            </summary>
+            <param name="stream">The <see cref="T:System.IO.Stream"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The content as byte array.</returns>
         </member>
         <member name="T:Nano.Models.Extensions.StringExtensions">
             <summary>
@@ -299,7 +308,6 @@
         <member name="P:Nano.Models.Interfaces.IEntityUser`1.IdentityUser">
             <summary>
             Identity User.
-            Always included using <see cref="T:Nano.Models.Attributes.IncludeAttribute"/>.
             </summary>
         </member>
         <member name="T:Nano.Models.Interfaces.IEntityWritable">

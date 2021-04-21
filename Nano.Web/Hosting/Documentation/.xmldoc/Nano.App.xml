@@ -19,6 +19,11 @@
             Name.
             </summary>
         </member>
+        <member name="P:Nano.App.AppOptions.EntryPoint">
+            <summary>
+            Entry Point.
+            </summary>
+        </member>
         <member name="P:Nano.App.AppOptions.Description">
             <summary>
             Description.
@@ -123,23 +128,6 @@
             <param name="hostingEnvironment">The <see cref="T:Microsoft.AspNetCore.Hosting.IHostingEnvironment"/>.</param>
             <param name="applicationLifetime">The <see cref="T:Microsoft.AspNetCore.Hosting.IApplicationLifetime"/>.</param>
         </member>
-        <member name="T:Nano.App.Startup.BaseStartupTask">
-            <inheritdoc />
-        </member>
-        <member name="P:Nano.App.Startup.BaseStartupTask.StartupTaskContext">
-            <summary>
-            Startup Task Context.
-            </summary>
-        </member>
-        <member name="M:Nano.App.Startup.BaseStartupTask.#ctor(Nano.App.Startup.StartupTaskContext)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.App.Startup.BaseStartupTask.StartAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.App.Startup.BaseStartupTask.StopAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
         <member name="T:Nano.App.Startup.StartupTaskContext">
             <summary>
             Startup Task Context.
@@ -160,10 +148,30 @@
             Decrement.
             </summary>
         </member>
+        <member name="T:Nano.App.Startup.Tasks.BaseStartupTask">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Startup.Tasks.BaseStartupTask.StartupTaskContext">
+            <summary>
+            Startup Task Context.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Startup.Tasks.BaseStartupTask.#ctor(Nano.App.Startup.StartupTaskContext)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="startupTaskContext">The <see cref="P:Nano.App.Startup.Tasks.BaseStartupTask.StartupTaskContext"/>.</param>
+        </member>
+        <member name="M:Nano.App.Startup.Tasks.BaseStartupTask.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Startup.Tasks.BaseStartupTask.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.App.Startup.Tasks.InitializeApplicationStartupTask">
             <inheritdoc />
         </member>
-        <member name="M:Nano.App.Startup.Tasks.InitializeApplicationStartupTask.#ctor(Nano.App.Startup.StartupTaskContext)">
+        <member name="M:Nano.App.Startup.Tasks.InitializeApplicationStartupTask.#ctor(Nano.App.Startup.StartupTaskContext,Nano.Data.DefaultDbContext)">
             <inheritdoc />
         </member>
         <member name="M:Nano.App.Startup.Tasks.InitializeApplicationStartupTask.StartAsync(System.Threading.CancellationToken)">

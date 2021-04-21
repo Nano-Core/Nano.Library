@@ -4,194 +4,206 @@
         <name>Nano.Repository</name>
     </assembly>
     <members>
-        <member name="T:Nano.Repository.BaseRepository`1">
+        <member name="T:Nano.Repository.BaseRepository`2">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Repository.BaseRepository`1.Context">
+        <member name="P:Nano.Repository.BaseRepository`2.Context">
             <summary>
             Context.
             </summary>
         </member>
-        <member name="P:Nano.Repository.BaseRepository`1.IsLazyLoadingEnabled">
+        <member name="P:Nano.Repository.BaseRepository`2.IsLazyLoadingEnabled">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.#ctor(`0)">
+        <member name="M:Nano.Repository.BaseRepository`2.#ctor(`0)">
             <summary>
             Constructor.
             </summary>
             <param name="context">The <see cref="T:Microsoft.EntityFrameworkCore.DbContext"/>.</param>
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetEntitySet``1">
+        <member name="M:Nano.Repository.BaseRepository`2.GetEntitySet``1">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetAsync``2(``1,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetAsync``2(``1,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetAsync``1(System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetAsync``1(System.Int32,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetAsync``1(System.Int64,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetAsync``1(System.Int64,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetAsync``1(System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetAsync``1(System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetAsync``1(System.Guid,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetAsync``1(System.Guid,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetFirstAsync``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetFirstAsync``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetFirstAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IOrdering,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetFirstAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IOrdering,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``2(System.Collections.Generic.IEnumerable{``1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetManyAsync``2(System.Collections.Generic.IEnumerable{``1},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``1(System.Collections.Generic.IEnumerable{System.Int32},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetManyAsync``1(System.Collections.Generic.IEnumerable{System.Int32},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``1(System.Collections.Generic.IEnumerable{System.Int64},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetManyAsync``1(System.Collections.Generic.IEnumerable{System.Int64},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``1(System.Collections.Generic.IEnumerable{System.String},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetManyAsync``1(System.Collections.Generic.IEnumerable{System.String},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``1(System.Collections.Generic.IEnumerable{System.Guid},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetManyAsync``1(System.Collections.Generic.IEnumerable{System.Guid},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``1(DynamicExpression.Interfaces.IQuery,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetManyAsync``1(DynamicExpression.Interfaces.IQuery,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetManyAsync``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IOrdering,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IOrdering,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IPagination,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IPagination,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IPagination,DynamicExpression.Interfaces.IOrdering,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IPagination,DynamicExpression.Interfaces.IOrdering,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IOrdering,DynamicExpression.Interfaces.IPagination,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IOrdering,DynamicExpression.Interfaces.IPagination,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.AddAsync``1(``0,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.AddAsync``1(``0,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.AddManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.AddManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.AddManyBulkAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.AddManyBulkAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.UpdateAsync``1(``0,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.UpdateAsync``1(``0,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.UpdateManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.UpdateManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.UpdateManyBulkAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.UpdateManyBulkAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.AddOrUpdateAsync``1(``0,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.AddOrUpdateAsync``1(``0,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.AddOrUpdateManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.AddOrUpdateManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.DeleteAsync``1(``0,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteAsync``1(``0,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.DeleteManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.DeleteManyAsync``2(``1,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteManyAsync``2(``1,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.DeleteManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.DeleteManyBulkAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteManyBulkAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.DeleteManyBulkAsync``2(``1,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteManyBulkAsync``2(``1,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.DeleteManyBulkAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteManyBulkAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.CountAsync``2(``1,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.CountAsync``2(``1,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.CountAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.CountAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.SumAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Decimal}},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.SumAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Decimal}},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.AverageAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Decimal}},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.AverageAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Decimal}},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.SaveChanges(System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.SaveChanges(System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.Dispose">
+        <member name="M:Nano.Repository.BaseRepository`2.Dispose">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`1.Dispose(System.Boolean)">
+        <member name="M:Nano.Repository.BaseRepository`2.Dispose(System.Boolean)">
             <summary>
             Dispose(bool).
             Override in derived classes as needed.
             </summary>
             <param name="disposing"></param>
         </member>
-        <member name="T:Nano.Repository.BaseRepositorySpatial`1">
-            <inheritdoc cref="T:Nano.Repository.BaseRepository`1"/>
+        <member name="T:Nano.Repository.BaseRepositorySpatial`2">
+            <inheritdoc cref="T:Nano.Repository.BaseRepository`2"/>
         </member>
-        <member name="M:Nano.Repository.BaseRepositorySpatial`1.#ctor(`0)">
+        <member name="M:Nano.Repository.BaseRepositorySpatial`2.#ctor(`0)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepositorySpatial`1.Covers``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepositorySpatial`2.Covers``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepositorySpatial`1.Crosses``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepositorySpatial`2.Crosses``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepositorySpatial`1.Touches``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepositorySpatial`2.Touches``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepositorySpatial`1.Overlaps``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepositorySpatial`2.Overlaps``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepositorySpatial`1.CoveredBy``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepositorySpatial`2.CoveredBy``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepositorySpatial`1.Disjoints``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepositorySpatial`2.Disjoints``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepositorySpatial`1.Intersects``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepositorySpatial`2.Intersects``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepositorySpatial`1.Within``2(DynamicExpression.Interfaces.IQuery{``1},System.Double,System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepositorySpatial`2.Within``2(DynamicExpression.Interfaces.IQuery{``1},System.Double,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Repository.DefaultRepository">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.DefaultRepository.#ctor(Nano.Data.DefaultDbContext)">
+        <member name="M:Nano.Repository.DefaultRepository.#ctor(Nano.Data.BaseDbContext{System.Guid})">
             <inheritdoc />
         </member>
         <member name="T:Nano.Repository.DefaultRepositorySpatial">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.DefaultRepositorySpatial.#ctor(Nano.Data.DefaultDbContext)">
+        <member name="M:Nano.Repository.DefaultRepositorySpatial.#ctor(Nano.Data.BaseDbContext{System.Guid})">
             <inheritdoc />
+        </member>
+        <member name="T:Nano.Repository.Extensions.ServiceCollectionExtensions">
+            <summary>
+            Service Collection Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Repository.Extensions.ServiceCollectionExtensions.AddRepository(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds <see cref="T:Nano.Repository.Interfaces.IRepository"/> and <see cref="T:Nano.Repository.Interfaces.IRepositorySpatial"/> to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
         </member>
         <member name="T:Nano.Repository.Interfaces.IRepository">
             <summary>
@@ -217,8 +229,8 @@
             Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="T:Nano.Models.Interfaces.IEntity"/>
             </summary>
             <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> type.</typeparam>
-            <typeparam name="TIdentity">The identity type.</typeparam>
-            <param name="key">The <typeparamref name="TIdentity"/> type, uniquely identify the <see cref="T:Nano.Models.Interfaces.IEntity"/>.</param>
+            <typeparam name="TKey">The identity type.</typeparam>
+            <param name="key">The <typeparamref name="TKey"/> type, uniquely identify the <see cref="T:Nano.Models.Interfaces.IEntity"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
             <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
         </member>
@@ -260,13 +272,13 @@
         </member>
         <member name="M:Nano.Repository.Interfaces.IRepository.GetFirstAsync``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
             <summary>
-            Gets the first instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="query"/>.
+            Gets the first instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="criteria"/>.
             </summary>
             <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> type.</typeparam>
             <typeparam name="TCriteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/>.</typeparam>
-            <param name="query">The <see cref="T:DynamicExpression.Interfaces.IQuery`1"/>.</param>
+            <param name="criteria">The <see cref="T:DynamicExpression.Interfaces.IQuery`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
-            <returns>The instances, matching the passed <paramref name="query"/>.</returns>
+            <returns>The instances, matching the passed <paramref name="criteria"/>.</returns>
         </member>
         <member name="M:Nano.Repository.Interfaces.IRepository.GetFirstAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},DynamicExpression.Interfaces.IOrdering,System.Threading.CancellationToken)">
             <summary>
@@ -283,7 +295,7 @@
             Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
             </summary>
             <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> type.</typeparam>
-            <typeparam name="TIdentity">The type of the key.</typeparam>
+            <typeparam name="TKey">The type of the key.</typeparam>
             <param name="keys">The keys uniquely identifying the <see cref="T:Nano.Models.Interfaces.IEntity"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
             <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
@@ -335,13 +347,13 @@
         </member>
         <member name="M:Nano.Repository.Interfaces.IRepository.GetManyAsync``2(DynamicExpression.Interfaces.IQuery{``1},System.Threading.CancellationToken)">
             <summary>
-            Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="query"/>.
+            Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="criteria"/>.
             </summary>
             <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> type.</typeparam>
             <typeparam name="TCriteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/>.</typeparam>
-            <param name="query">The <see cref="T:DynamicExpression.Interfaces.IQuery`1"/>.</param>
+            <param name="criteria">The <see cref="T:DynamicExpression.Interfaces.IQuery`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
-            <returns>The instances, matching the passed <paramref name="query"/>.</returns>
+            <returns>The instances, matching the passed <paramref name="criteria"/>.</returns>
         </member>
         <member name="M:Nano.Repository.Interfaces.IRepository.GetManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
             <summary>
