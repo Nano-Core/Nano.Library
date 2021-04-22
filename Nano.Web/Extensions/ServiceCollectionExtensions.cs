@@ -31,6 +31,7 @@ using Nano.Web.Api;
 using Nano.Web.Const;
 using Nano.Web.Controllers;
 using Nano.Web.Hosting.Conventions;
+using Nano.Web.Hosting.Documentation.Filters;
 using Nano.Web.Hosting.Filters;
 using Nano.Web.Hosting.HealthChecks;
 using Nano.Web.Hosting.Middleware;
@@ -374,6 +375,8 @@ namespace Nano.Web.Extensions
                     x.EnableAnnotations(true, true);
                     x.CustomSchemaIds(y => y.FullName);
                     x.OrderActionsBy(y => y.RelativePath);
+                    
+                    x.SchemaFilter<SwaggerExcludeFilter>();
 
                     var securityScheme = new OpenApiSecurityScheme
                     {

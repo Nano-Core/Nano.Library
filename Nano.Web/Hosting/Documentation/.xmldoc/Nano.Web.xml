@@ -1357,7 +1357,12 @@
             <param name="baseIdentityManager">The <see cref="P:Nano.Web.Controllers.BaseAuthController`1.BaseIdentityManager"/>.</param>
         </member>
         <member name="M:Nano.Web.Controllers.BaseAuthController`1.Options">
-            <inheritdoc />
+            <summary>
+            Options.
+            Any route can be called with http options, to return options header information.
+            </summary>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
         </member>
         <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
             <summary>
@@ -2743,11 +2748,17 @@
         <member name="M:Nano.Web.Hosting.Conventions.RoutePrefixConvention.Apply(Microsoft.AspNetCore.Mvc.ApplicationModels.ApplicationModel)">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Hosting.Documentation.Filters.LowercaseDocumentFilter">
-            <inheritdoc />
+        <member name="T:Nano.Web.Hosting.Documentation.Filters.SwaggerExcludeFilter">
+            <summary>
+            Swagger Exclude Filter.
+            </summary>
         </member>
-        <member name="M:Nano.Web.Hosting.Documentation.Filters.LowercaseDocumentFilter.Apply(Microsoft.OpenApi.Models.OpenApiDocument,Swashbuckle.AspNetCore.SwaggerGen.DocumentFilterContext)">
-            <inheritdoc />
+        <member name="M:Nano.Web.Hosting.Documentation.Filters.SwaggerExcludeFilter.Apply(Microsoft.OpenApi.Models.OpenApiSchema,Swashbuckle.AspNetCore.SwaggerGen.SchemaFilterContext)">
+            <summary>
+            Apply.
+            </summary>
+            <param name="schema">The <see cref="T:Microsoft.OpenApi.Models.OpenApiSchema"/>.</param>
+            <param name="context">The <see cref="T:Swashbuckle.AspNetCore.SwaggerGen.SchemaFilterContext"/>.</param>
         </member>
         <member name="T:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute">
             <summary>

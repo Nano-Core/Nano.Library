@@ -19,6 +19,7 @@ namespace Nano.Models
 
         /// <inheritdoc />
         [Include]
+        [SwaggerExclude]
         public virtual IdentityUser<TIdentity> IdentityUser { get; set; }
     }
 }

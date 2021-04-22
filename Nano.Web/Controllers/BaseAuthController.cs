@@ -41,7 +41,12 @@ namespace Nano.Web.Controllers
             this.BaseIdentityManager = baseIdentityManager ?? throw new ArgumentNullException(nameof(baseIdentityManager));
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Options.
+        /// Any route can be called with http options, to return options header information.
+        /// </summary>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
         [AllowAnonymous]
         [SwaggerOperation(Tags = new[] { "Auth" })]
         public override IActionResult Options()

@@ -11,6 +11,8 @@ using Nano.Web.Const;
 
 namespace Nano.Web.Controllers
 {
+    // TODO: Swagger: Triple-slash Xml documentation not working for methods with generic types: https://github.com/domaindrivendev/Swashbuckle.WebApi/issues/749
+
     /// <summary>
     /// Base controller.
     /// </summary>
