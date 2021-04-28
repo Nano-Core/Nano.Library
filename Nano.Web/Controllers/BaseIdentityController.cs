@@ -15,6 +15,7 @@ using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security;
+using Nano.Security.Const;
 using Nano.Security.Exceptions;
 using Nano.Security.Models;
 using Nano.Web.Const;
@@ -22,7 +23,8 @@ using Nano.Web.Models;
 
 namespace Nano.Web.Controllers
 {
-    // BUG: are we allowing Transient Admin login
+    // TODO: Challange SignUp / SignIn: we need to store the custom User first (before callback), then lookup by email, otherwise we could have db null constraint on required custom user properties.
+    //      Also differentiate SignIn and SignUp in IdentityManager, so that we know if it's first time (signUp) or following (signIn's)
 
     /// <inheritdoc />
     public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria>
@@ -34,13 +36,13 @@ namespace Nano.Web.Controllers
         /// <summary>
         /// Identity Manager.
         /// </summary>
-        protected virtual BaseIdentityManager<TIdentity> BaseIdentityManager { get; }
+        protected virtual BaseIdentityManager<TIdentity> IdentityManager { get; }
 
         /// <inheritdoc />
         protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, BaseIdentityManager<TIdentity> baseIdentityManager) 
             : base(logger, repository, eventing)
         {
-            this.BaseIdentityManager = baseIdentityManager ?? throw new ArgumentNullException(nameof(baseIdentityManager));
+            this.IdentityManager = baseIdentityManager ?? throw new ArgumentNullException(nameof(baseIdentityManager));
         }
 
         /// <summary>
@@ -62,7 +64,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> SignUpAsync([FromBody][Required]SignUp<TEntity, TIdentity> signUp, CancellationToken cancellationToken = default)
         {
-            var identityUser = await this.BaseIdentityManager
+            var identityUser = await this.IdentityManager
                 .SignUpAsync(signUp, cancellationToken);
 
             signUp.User.Id = identityUser.Id.Parse<TIdentity>();
@@ -79,8 +81,11 @@ namespace Nano.Web.Controllers
             }
             catch
             {
-                await this.BaseIdentityManager
+                await this.IdentityManager
                     .DeleteIdentityUser(identityUser);
+
+                await this.Repository
+                    .SaveChanges(cancellationToken);
 
                 throw;
             }
@@ -109,7 +114,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> SignUpExternalAsync([FromBody][Required]SignUpExternal<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
         {
-            var identityUser = await this.BaseIdentityManager
+            var identityUser = await this.IdentityManager
                 .SignUpExternalAsync(signUpExternal, cancellationToken);
 
             signUpExternal.User.Id = identityUser.Id.Parse<TIdentity>();
@@ -127,8 +132,11 @@ namespace Nano.Web.Controllers
             }
             catch
             {
-                await this.BaseIdentityManager
+                await this.IdentityManager
                     .DeleteIdentityUser(identityUser);
+
+                await this.Repository
+                    .SaveChanges(cancellationToken);
 
                 throw;
             }
@@ -164,7 +172,7 @@ namespace Nano.Web.Controllers
             var controller = $"{typeof(TEntity).Name.ToLower()}s";
             var redirectUrl = Url.Action(nameof(SignUpExternalChallangeCallbackAsync), controller);
 
-            return await this.BaseIdentityManager
+            return await this.IdentityManager
                 .SignInExternalChallangeAsync(loginProvider, redirectUrl, cancellationToken);
         }
 
@@ -190,12 +198,10 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> SignUpExternalChallangeCallbackAsync([FromQuery]string remoteError = null, CancellationToken cancellationToken = default)
         {
-            // BUG: Fix. There might be a problem, When User has dependences like OrganizationId. Might not be relavant - do we actually make a challange? - Check Facebook / Google implementation.
-
             if (remoteError != null)
                 throw new UnauthorizedException(remoteError);
 
-            var signUpExternalResponse = await this.BaseIdentityManager
+            var signUpExternalResponse = await this.IdentityManager
                 .SignInExternalChallangeCallbackAsync(cancellationToken);
 
             var signUpExternal = new SignUpExternal
@@ -203,7 +209,7 @@ namespace Nano.Web.Controllers
                 EmailAddress = signUpExternalResponse.Email
             };
 
-            var identityUser = await this.BaseIdentityManager
+            var identityUser = await this.IdentityManager
                 .SignUpExternalAsync(signUpExternal, cancellationToken);
 
             var userId = identityUser.Id.Parse<TIdentity>();
@@ -234,7 +240,7 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Sets the username of a user.
+        /// Sets the emailAddress of a user.
         /// </summary>
         /// <param name="setUsername">The set username.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -252,9 +258,9 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> SetUsernameAsync([FromBody][Required]SetUsername setUsername, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> SetUsernameAsync([FromBody][Required]SetUsername<TIdentity> setUsername, CancellationToken cancellationToken = default)
         {
-            await this.BaseIdentityManager
+            await this.IdentityManager
                 .SetUsernameAsync(setUsername, cancellationToken);
 
             return this.Ok();
@@ -281,9 +287,9 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> SetPasswordAsync([FromBody][Required]SetPassword setPassword, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> SetPasswordAsync([FromBody][Required]SetPassword<TIdentity> setPassword, CancellationToken cancellationToken = default)
         {
-            await this.BaseIdentityManager
+            await this.IdentityManager
                 .SetPasswordAsync(setPassword, cancellationToken);
 
             return this.Ok();
@@ -309,7 +315,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> ResetPasswordAsync([FromBody][Required]ResetPassword resetPassword, CancellationToken cancellationToken = default)
         {
-            await this.BaseIdentityManager
+            await this.IdentityManager
                 .ResetPasswordAsync(resetPassword, cancellationToken);
 
             return this.Ok();
@@ -337,7 +343,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> GetResetPasswordTokenAsync([FromQuery][Required]string emailAddress, CancellationToken cancellationToken = default)
         {
-            var resetPasswordToken = await this.BaseIdentityManager
+            var resetPasswordToken = await this.IdentityManager
                 .GenerateResetPasswordTokenAsync(emailAddress, cancellationToken);
 
             return this.Ok(resetPasswordToken);
@@ -362,9 +368,9 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> ChangePasswordAsync([FromBody][Required]ChangePassword changePassword, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> ChangePasswordAsync([FromBody][Required]ChangePassword<TIdentity> changePassword, CancellationToken cancellationToken = default)
         {
-            await this.BaseIdentityManager
+            await this.IdentityManager
                 .ChangePasswordAsync(changePassword, cancellationToken);
 
             return this.Ok();
@@ -389,9 +395,9 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> ChangeEmailAsync([FromBody][Required]ChangeEmail changeEmail, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> ChangeEmailAsync([FromBody][Required]ChangeEmail<TIdentity> changeEmail, CancellationToken cancellationToken = default)
         {
-            await this.BaseIdentityManager
+            await this.IdentityManager
                 .ChangeEmailAsync(changeEmail, cancellationToken);
 
             return this.Ok();
@@ -419,7 +425,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> GetChangeEmailTokenAsync([FromQuery][Required]string emailAddress, [Required][FromQuery]string newEmailAddress, CancellationToken cancellationToken = default)
         {
-            var changeEmailToken = await this.BaseIdentityManager
+            var changeEmailToken = await this.IdentityManager
                 .GenerateChangeEmailTokenAsync(emailAddress, newEmailAddress, cancellationToken);
 
             return this.Ok(changeEmailToken);
@@ -445,12 +451,12 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> ConfirmEmailAsync([FromBody][Required]ConfirmEmail confirmEmail, CancellationToken cancellationToken = default)
         {
-            await this.BaseIdentityManager
+            await this.IdentityManager
                 .ConfirmEmailAsync(confirmEmail, cancellationToken);
 
             return this.Ok();
         }
-        
+
         /// <summary>
         /// Gets the confirm email token, used to confirm the email address of a user.
         /// </summary>
@@ -472,12 +478,120 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> GetConfirmEmailTokenAsync([FromQuery][Required]string emailAddress, CancellationToken cancellationToken = default)
         {
-            var confirmEmailToken = await this.BaseIdentityManager
+            var confirmEmailToken = await this.IdentityManager
                 .GenerateConfirmEmailTokenAsync(emailAddress, cancellationToken);
 
             return this.Ok(confirmEmailToken);
         }
-        
+
+        /// <summary>
+        /// Changes the phone number of a user.
+        /// </summary>
+        /// <param name="changePhoneNumber">The change phone number.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("phone/change")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> ChangePhoneAsync([FromBody][Required]ChangePhoneNumber<TIdentity> changePhoneNumber, CancellationToken cancellationToken = default)
+        {
+            await this.IdentityManager
+                .ChangePhoneNumberAsync(changePhoneNumber, cancellationToken);
+
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Gets the change phone number token, used to change the phone number of a user.
+        /// </summary>
+        /// <param name="phoneNumber">The phone number.</param>
+        /// <param name="newPhoneNumber">The new phone number.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The change phone number token.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpGet]
+        [Route("phone/change/token")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(ChangePhoneNumberToken), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> GetChangePhoneTokenAsync([FromQuery][Required]string phoneNumber, [Required][FromQuery]string newPhoneNumber, CancellationToken cancellationToken = default)
+        {
+            var changeEmailToken = await this.IdentityManager
+                .GenerateChangePhoneNumberTokenAsync(phoneNumber, newPhoneNumber, cancellationToken);
+
+            return this.Ok(changeEmailToken);
+        }
+
+        /// <summary>
+        /// Confirms the phone number of a user.
+        /// </summary>
+        /// <param name="confirmPhoneNumber">The confirm phone number.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("phone/confirm")]
+        [AllowAnonymous]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> ConfirmPhoneAsync([FromBody][Required]ConfirmPhoneNumber confirmPhoneNumber, CancellationToken cancellationToken = default)
+        {
+            await this.IdentityManager
+                .ConfirmPhoneNumberAsync(confirmPhoneNumber, cancellationToken);
+
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Gets the confirm phone number token, used to confirm the phone number of a user.
+        /// </summary>
+        /// <param name="phoneNumber">The phone number.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The confirm phone token.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpGet]
+        [Route("phone/confirm/token")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(ConfirmPhoneNumberToken), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> GetConfirmPhoneTokenAsync([FromQuery][Required]string phoneNumber, CancellationToken cancellationToken = default)
+        {
+            var confirmEmailToken = await this.IdentityManager
+                .GenerateConfirmPhoneNumberTokenAsync(phoneNumber, cancellationToken);
+
+            return this.Ok(confirmEmailToken);
+        }
+
         /// <summary>
         /// Removes an external login for a user.
         /// </summary>
@@ -499,8 +613,65 @@ namespace Nano.Web.Controllers
         {
             this.HttpContext.Request.Scheme = "https";
 
-            await this.BaseIdentityManager
+            await this.IdentityManager
                 .RemoveExternalLoginAsync(cancellationToken);
+
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Assign a role to a user.
+        /// </summary>
+        /// <param name="assignRole">The assign role.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("role/assign")]
+        [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> CreateRoleAsync([FromBody][Required]AssignRole<TIdentity> assignRole, CancellationToken cancellationToken = default)
+        {
+            await this.IdentityManager
+                .AssignRoleAsync(assignRole, cancellationToken);
+
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Remove a role from a user.
+        /// </summary>
+        /// <param name="removeRole">The remove role.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [HttpDelete]
+        [Route("role/remove")]
+        [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> RemoveRoleAsync([FromBody][Required]RemoveRole<TIdentity> removeRole, CancellationToken cancellationToken = default)
+        {
+            await this.IdentityManager
+                .RemoveRoleAsync(removeRole, cancellationToken);
 
             return this.Ok();
         }

@@ -63,7 +63,7 @@ namespace Nano.Security.Extensions
             services
                 .Configure<IdentityOptions>(x =>
                 {
-                    x.User.RequireUniqueEmail = options.User.RequireUniqueEmail;
+                    x.User.RequireUniqueEmail = true;
                     x.User.AllowedUserNameCharacters = options.User.AllowedUserNameCharacters;
 
                     x.Password.RequireDigit = options.Password.RequireDigit;

@@ -1,4 +1,5 @@
-﻿using Nano.Security.Models;
+﻿using System;
+using Nano.Security.Models;
 
 namespace Nano.Web.Api.Requests.Identity
 {
@@ -8,7 +9,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// <summary>
         /// Set Password.
         /// </summary>
-        public virtual SetPassword SetPassword { get; set; }
+        public virtual SetPassword<Guid> SetPassword { get; set; }
 
         /// <inheritdoc />
         public SetPasswordRequest()

@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models
@@ -5,7 +6,9 @@ namespace Nano.Security.Models
     /// <summary>
     /// Change Email.
     /// </summary>
-    public class ChangeEmail
+    /// <typeparam name="TIdentity">The identity key type</typeparam>
+    public class ChangeEmail<TIdentity>
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
         /// Token.
@@ -17,7 +20,7 @@ namespace Nano.Security.Models
         /// User Id.
         /// </summary>
         [Required]
-        public virtual string UserId { get; set; }
+        public virtual TIdentity UserId { get; set; }
 
         /// <summary>
         /// New Email Address.

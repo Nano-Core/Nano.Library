@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models
 {
     /// <summary>
-    /// Confirm Email Token.
+    /// Confirm Phone Number Token.
     /// </summary>
-    public class ConfirmEmailToken
+    public class ConfirmPhoneNumberToken
     {
         /// <summary>
         /// Token.
@@ -14,10 +14,9 @@ namespace Nano.Security.Models
         public virtual string Token { get; set; }
 
         /// <summary>
-        /// Email Address.
+        /// Phone Number.
         /// </summary>
         [Required]
-        [EmailAddress]
-        public virtual string EmailAddress { get; set; }
+        public virtual string PhoneNumber { get; set; }
     }
 }

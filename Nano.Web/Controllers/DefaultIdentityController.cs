@@ -18,6 +18,7 @@ namespace Nano.Web.Controllers
         protected DefaultIdentityController(ILogger logger, IRepository repository, IEventing eventing, DefaultIdentityManager baseIdentityManager)
             : base(logger, repository, eventing, baseIdentityManager)
         {
+
         }
     }
 }

@@ -1,14 +1,16 @@
-﻿using Nano.Security.Models;
+﻿using System;
+using Nano.Security.Models;
 
 namespace Nano.Web.Api.Requests.Identity
 {
     /// <inheritdoc />
-    public class ChangeEmailRequest : BaseRequestPost
+    public class ChangeEmailRequest<TIdentity> : BaseRequestPost
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
         /// Change Email.
         /// </summary>
-        public virtual ChangeEmail ChangeEmail { get; set; }
+        public virtual ChangeEmail<TIdentity> ChangeEmail { get; set; }
 
         /// <inheritdoc />
         public ChangeEmailRequest()

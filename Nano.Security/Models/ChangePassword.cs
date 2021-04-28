@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models
@@ -5,13 +6,15 @@ namespace Nano.Security.Models
     /// <summary>
     /// Change Password.
     /// </summary>
-    public class ChangePassword
+    /// <typeparam name="TIdentity">The identity key type</typeparam>
+    public class ChangePassword<TIdentity>
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
         /// User Id.
         /// </summary>
         [Required]
-        public virtual string UserId { get; set; }
+        public virtual TIdentity UserId { get; set; }
 
         /// <summary>
         /// Old Password.

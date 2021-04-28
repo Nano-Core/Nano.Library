@@ -88,6 +88,16 @@ namespace Nano.Data
                 .ToTable("__EFAuthUser");
 
             modelBuilder
+                .Entity<IdentityUser<Guid>>()
+                .HasIndex(x => x.Email)
+                .IsUnique();
+
+            modelBuilder
+                .Entity<IdentityUser<Guid>>()
+                .HasIndex(x => x.PhoneNumber)
+                .IsUnique();
+
+            modelBuilder
                 .Entity<IdentityRoleClaim<Guid>>()
                 .ToTable("__EFAuthRoleClaim");
 

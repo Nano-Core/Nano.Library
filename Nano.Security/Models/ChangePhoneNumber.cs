@@ -4,12 +4,18 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models
 {
     /// <summary>
-    /// Set Password.
+    /// Change Phone Number.
     /// </summary>
     /// <typeparam name="TIdentity">The identity key type</typeparam>
-    public class SetPassword<TIdentity>
+    public class ChangePhoneNumber<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
+        /// <summary>
+        /// Token.
+        /// </summary>
+        [Required]
+        public virtual string Token { get; set; }
+
         /// <summary>
         /// User Id.
         /// </summary>
@@ -17,10 +23,9 @@ namespace Nano.Security.Models
         public virtual TIdentity UserId { get; set; }
 
         /// <summary>
-        /// New Password.
+        /// New Phone Number.
         /// </summary>
         [Required]
-        [MaxLength(256)]
-        public virtual string NewPassword { get; set; }
+        public virtual string NewPhoneNumber { get; set; }
     }
 }

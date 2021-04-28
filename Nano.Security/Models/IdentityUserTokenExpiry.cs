@@ -7,7 +7,7 @@ namespace Nano.Security.Models
     /// <summary>
     /// Identity User Token Expiry.
     /// </summary>
-    /// <typeparam name="TIdentity"></typeparam>
+    /// <typeparam name="TIdentity">The identity key type</typeparam>
     public class IdentityUserTokenExpiry<TIdentity> : IdentityUserToken<TIdentity>, IEntityAuditableNegated
         where TIdentity : IEquatable<TIdentity>
     {

@@ -1,14 +1,16 @@
-﻿using Nano.Security.Models;
+﻿using System;
+using Nano.Security.Models;
 
 namespace Nano.Web.Api.Requests.Identity
 {
     /// <inheritdoc />
-    public class ChangePasswordRequest : BaseRequestPost
+    public class ChangePasswordRequest<TIdentity> : BaseRequestPost
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
         /// Change Password.
         /// </summary>
-        public virtual ChangePassword ChangePassword { get; set; }
+        public virtual ChangePassword<TIdentity> ChangePassword { get; set; }
 
         /// <inheritdoc />
         public ChangePasswordRequest()

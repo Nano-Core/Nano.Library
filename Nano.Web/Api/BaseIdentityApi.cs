@@ -57,10 +57,10 @@ namespace Nano.Web.Api
         /// <summary>
         /// Set Username Async.
         /// </summary>
-        /// <param name="request">The <see cref="SetUsernameRequest"/>.</param>
+        /// <param name="request">The <see cref="SetUsernameRequest{TIdentity}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Void.</returns>
-        public virtual async Task SetUsernameAsync(SetUsernameRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task SetUsernameAsync(SetUsernameRequest<TIdentity> request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -105,10 +105,10 @@ namespace Nano.Web.Api
         /// <summary>
         /// Change Password Async.
         /// </summary>
-        /// <param name="request">The <see cref="ChangePasswordRequest"/>.</param>
+        /// <param name="request">The <see cref="ChangePasswordRequest{TIdentity}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Void.</returns>
-        public virtual async Task ChangePasswordAsync(ChangePasswordRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task ChangePasswordAsync(ChangePasswordRequest<TIdentity> request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -121,10 +121,10 @@ namespace Nano.Web.Api
         /// <summary>
         /// Change Email Async.
         /// </summary>
-        /// <param name="request">The <see cref="ChangeEmailRequest"/>.</param>
+        /// <param name="request">The <see cref="ChangeEmailRequest{TIdentity}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Void.</returns>
-        public virtual async Task ChangeEmailAsync(ChangeEmailRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task ChangeEmailAsync(ChangeEmailRequest<TIdentity> request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -183,6 +183,70 @@ namespace Nano.Web.Api
         }
 
         /// <summary>
+        /// Change Phone Async.
+        /// </summary>
+        /// <param name="request">The <see cref="ChangePhoneRequest{TIdentity}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Void.</returns>
+        public virtual async Task ChangePhoneAsync(ChangePhoneRequest<TIdentity> request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+            await this.InvokeAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Confirm Phone Async.
+        /// </summary>
+        /// <param name="request">The <see cref="ConfirmPhoneRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Void.</returns>
+        public virtual async Task ConfirmPhoneAsync(ConfirmPhoneRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+            await this.InvokeAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Get Change Phone Token Async.
+        /// </summary>
+        /// <param name="request">The <see cref="GetChangePhoneTokenRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Void.</returns>
+        public virtual async Task<ChangePhoneNumberToken> GetChangePhoneTokenAsync(GetChangePhoneTokenRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+            return await this.InvokeAsync<GetChangePhoneTokenRequest, ChangePhoneNumberToken>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Get Confirm Phone Token Async.
+        /// </summary>
+        /// <param name="request">The <see cref="GetConfirmPhoneTokenRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Void.</returns>
+        public virtual async Task<ConfirmPhoneNumberToken> GetConfirmPhoneTokenAsync(GetConfirmPhoneTokenRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+            return await this.InvokeAsync<GetConfirmPhoneTokenRequest, ConfirmPhoneNumberToken>(request, cancellationToken);
+        }
+
+        /// <summary>
         /// Get Reset Password Token Async.
         /// </summary>
         /// <param name="request">The <see cref="GetResetPasswordTokenRequest"/>.</param>
@@ -205,6 +269,38 @@ namespace Nano.Web.Api
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Void.</returns>
         public virtual async Task RemoveExternalLoginAsync(RemoveExternalLogInRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+            await this.InvokeAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Assign Role Async.
+        /// </summary>
+        /// <param name="request">The <see cref="AssignRoleRequest{TIdentity}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Void.</returns>
+        public virtual async Task CreateRoleAsync(AssignRoleRequest<TIdentity> request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+            await this.InvokeAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Remove Role Async.
+        /// </summary>
+        /// <param name="request">The <see cref="RemoveRoleRequest{TIdentity}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Void.</returns>
+        public virtual async Task RemoveRoleAsync(RemoveRoleRequest<TIdentity> request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));

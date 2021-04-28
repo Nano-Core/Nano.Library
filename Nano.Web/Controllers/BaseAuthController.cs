@@ -151,7 +151,7 @@ namespace Nano.Web.Controllers
             if (accessToken == null)
             {
                 externalLoginData = await this.BaseIdentityManager
-                    .GetExternalProviderInfoAsync(loginExternal, cancellationToken);
+                    .GetSignInExternalInfoAsync(loginExternal, cancellationToken);
 
                 if (externalLoginData == null)
                     return this.NotFound();

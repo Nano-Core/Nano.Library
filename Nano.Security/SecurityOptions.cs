@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Nano.Security.Const;
 
 namespace Nano.Security
@@ -71,12 +72,12 @@ namespace Nano.Security
             /// <summary>
             /// Expiration In Hours.
             /// </summary>
-            public virtual int ExpirationInHours { get; set; } = 72;
+            public virtual int ExpirationInHours { get; set; } = 72; // BUG: Should be defined in seconds.
 
             /// <summary>
             /// Refresh Expiration In Hours.
             /// </summary>
-            public virtual int RefreshExpirationInHours { get; set; } = 72;
+            public virtual int RefreshExpirationInHours { get; set; } = 72; // BUG: Should be defined in seconds.
         }
 
         /// <summary>
@@ -84,11 +85,6 @@ namespace Nano.Security
         /// </summary>
         public class UserOptions
         {
-            /// <summary>
-            /// Require Unique Email.
-            /// </summary>
-            public virtual bool RequireUniqueEmail { get; set; } = true;
-
             /// <summary>
             /// Allowed User Name Characters.
             /// </summary>
@@ -207,6 +203,11 @@ namespace Nano.Security
             /// Secret.
             /// </summary>
             public virtual string Secret { get; set; }
+
+            /// <summary>
+            /// Scopes.
+            /// </summary>
+            public virtual IEnumerable<string> Scopes { get; set; } = new List<string>();
         }
     }
 }

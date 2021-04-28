@@ -7,6 +7,7 @@ namespace Nano.Security.Models
     /// <summary>
     /// Access Token Data.
     /// </summary>
+    /// <typeparam name="TIdentity">The identity key type</typeparam>
     public class AccessTokenData<TIdentity> 
         where TIdentity : IEquatable<TIdentity>
     {

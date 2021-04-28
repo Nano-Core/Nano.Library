@@ -4,24 +4,24 @@ using Nano.Security.Models;
 namespace Nano.Web.Api.Requests.Identity
 {
     /// <inheritdoc />
-    public class SetUsernameRequest<TIdentity> : BaseRequestPost
+    public class ChangePhoneRequest<TIdentity> : BaseRequestPost
         where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
-        /// Set Username.
+        /// Change Phone.
         /// </summary>
-        public virtual SetUsername<TIdentity> SetUsername { get; set; }
+        public virtual ChangePhoneNumber<TIdentity> ChangePhone { get; set; }
 
         /// <inheritdoc />
-        public SetUsernameRequest()
+        public ChangePhoneRequest()
         {
-            this.Action = "username/set";
+            this.Action = "phone/change";
         }
 
         /// <inheritdoc />
         public override object GetBody()
         {
-            return this.SetUsername;
+            return this.ChangePhone;
         }
     }
 }

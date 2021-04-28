@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models
 {
     /// <summary>
-    /// Set Password.
+    /// Remove Role.
     /// </summary>
     /// <typeparam name="TIdentity">The identity key type</typeparam>
-    public class SetPassword<TIdentity>
+    public class RemoveRole<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
@@ -17,10 +17,10 @@ namespace Nano.Security.Models
         public virtual TIdentity UserId { get; set; }
 
         /// <summary>
-        /// New Password.
+        /// Role Name.
         /// </summary>
         [Required]
         [MaxLength(256)]
-        public virtual string NewPassword { get; set; }
+        public virtual string RoleName { get; set; }
     }
 }
