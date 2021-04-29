@@ -116,6 +116,7 @@ namespace Nano.Data.Extensions
                 .AddScoped<DbContext, NullDbContext>()
                 .AddScoped<BaseDbContext<Guid>, NullDbContext>()
                 .AddScoped<DefaultDbContext, NullDbContext>()
+                .AddScoped<DbContextOptions<NullDbContext>>()
                 .AddScoped<DbContextOptions, DbContextOptions<NullDbContext>>();
 
             services

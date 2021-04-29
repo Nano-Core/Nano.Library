@@ -7,7 +7,7 @@ namespace Nano.Data
     public class NullDbContext : DefaultDbContext
     {
         /// <inheritdoc />
-        public NullDbContext(DbContextOptions dbContextOptions, DataOptions dataOptions)
+        public NullDbContext(DbContextOptions<NullDbContext> dbContextOptions, DataOptions dataOptions)
             : base(dbContextOptions, dataOptions)
         {
 
