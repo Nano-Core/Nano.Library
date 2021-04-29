@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using MySqlConnector;
 using Nano.Data.Interfaces;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace Nano.Data.Providers.MySql
 {
@@ -56,8 +55,7 @@ namespace Nano.Data.Providers.MySql
                 {
                     x.MaxBatchSize(batchSize);
                     x.EnableRetryOnFailure(retryCount);
-                    x.CharSet(CharSet.Utf8Mb4);
-                    // x.UseNetTopologySuite(); // TODO: UseNetTopologySuite, Waiting for stable release of Pomelo.
+                    // x.UseNetTopologySuite(); // TODO: UseNetTopologySuite, Waiting for Pomelo.
                 });
         }
     }
