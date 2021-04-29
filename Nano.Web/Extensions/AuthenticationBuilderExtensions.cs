@@ -36,8 +36,11 @@ namespace Nano.Web.Extensions
                                 x.ClientId = externalLogin.Id;
                                 x.ClientSecret = externalLogin.Secret ?? "N/A";
 
-                                x.Scope
-                                    .Add("profile");
+                                foreach (var scope in externalLogin.Scopes)
+                                {
+                                    x.Scope
+                                        .Add(scope);
+                                }
                             });
                         break;
                     }
@@ -50,11 +53,29 @@ namespace Nano.Web.Extensions
                                 x.AppId = externalLogin.Id;
                                 x.AppSecret = externalLogin.Secret;
 
-                                x.Scope
-                                    .Add("public_profile");
+                                foreach (var scope in externalLogin.Scopes)
+                                {
+                                    x.Scope
+                                        .Add(scope);
+                                }
                             });
                         break;
                     }
+
+                    case "Microsoft":
+                        builder
+                            .AddMicrosoftAccount(x =>
+                            {
+                                x.ClientId = externalLogin.Id;
+                                x.ClientSecret = externalLogin.Secret;
+
+                                foreach (var scope in externalLogin.Scopes)
+                                {
+                                    x.Scope
+                                        .Add(scope);
+                                }
+                            });
+                        break;
 
                     default: 
                         throw new NotSupportedException($"External login: {externalLogin.Name} not supported.");

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Threading;
@@ -27,7 +28,7 @@ using StringExtensions = Nano.Security.Extensions.StringExtensions;
 
 namespace Nano.Security
 {
-    // BUG: Claims(add, remove)
+    // TODO: Claims(add, remove)
     // - Add/Remove User Claim   
     // - Get Claims for a usr
     // - Get Users for a claim
@@ -316,36 +317,34 @@ namespace Nano.Security
         /// <returns>The <see cref="ExternalLoginData"/></returns>
         public virtual async Task<ExternalLoginData> GetSignInExternalInfoAsync(LoginExternalProvider loginExternal, CancellationToken cancellationToken = default)
         {
-            switch (loginExternal.LoginProvider)
+            if (loginExternal == null) 
+                throw new ArgumentNullException(nameof(loginExternal));
+
+            try
             {
-                case "Facebook":
-                    using (var client = new HttpClient())
-                    {
-                        try
+                switch (loginExternal.LoginProvider)
+                {
+                    case "Facebook":
+                        using (var httpClient = new HttpClient())
                         {
                             const string HOST = "https://graph.facebook.com";
                             const string FIELDS = "id,name,address,email,birthday";
 
                             var url = $"{HOST}/{loginExternal.ProviderKey}/?fields={FIELDS}&access_token={loginExternal.AccessToken}";
 
-                            using var response = await client.GetAsync(url, cancellationToken);
+                            using var response = await httpClient
+                                .GetAsync(url, cancellationToken);
+
+                            response
+                                .EnsureSuccessStatusCode();
 
                             var content = await response.Content
                                 .ReadAsStringAsync(cancellationToken);
 
                             return JsonConvert.DeserializeObject<ExternalLoginData>(content);
                         }
-                        catch (Exception ex)
-                        {
-                            this.UserManager.Logger.LogWarning(ex, ex.Message);
 
-                            throw new UnauthorizedException();
-                        }
-                    }
-
-                case "Google":
-                    try
-                    {
+                    case "Google":
                         var payload = await GoogleJsonWebSignature
                             .ValidateAsync(loginExternal.AccessToken);
 
@@ -355,19 +354,43 @@ namespace Nano.Security
                             Name = payload.Name,
                             Email = payload.Email
                         };
-                    }
-                    catch (Exception ex)
-                    {
-                        this.UserManager.Logger.LogWarning(ex, ex.Message);
 
-                        throw new UnauthorizedException();
-                    }
+                    case "Microsoft":
+                        using (var httpClient = new HttpClient())
+                        {
+                            const string HOST = "https://graph.microsoft.com";
+                            const string VERSION = "1.0";
 
-                case "Microsot":
-                    throw new NotImplementedException();
+                            var url = $"{HOST}/{VERSION}/me";
 
-                default:
-                    throw new NotSupportedException(loginExternal.LoginProvider);
+                            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginExternal.AccessToken);
+
+                            var response = await httpClient
+                                .GetAsync(url, cancellationToken);
+
+                            response
+                                .EnsureSuccessStatusCode();
+
+                            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                            var microsoftUser = JsonConvert.DeserializeObject<dynamic>(content);
+
+                            return new ExternalLoginData
+                            {
+                                Id = microsoftUser.id,
+                                Name = microsoftUser.displayName,
+                                Email = microsoftUser.mail
+                            };
+                        }
+
+                    default:
+                        throw new NotSupportedException(loginExternal.LoginProvider);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.UserManager.Logger.LogWarning(ex, ex.Message);
+
+                throw new UnauthorizedException();
             }
         }
 
@@ -1107,12 +1130,15 @@ namespace Nano.Security
                         const string HOST = "https://graph.facebook.com";
 
                         var url = $"{HOST}/debug_token?input_token={loginExternal.AccessToken}&access_token={externalLoginOption.Id}|{externalLoginOption.Secret}";
-                        var response = await client.GetAsync(url, cancellationToken);
+                        var response = await client
+                            .GetAsync(url, cancellationToken);
 
                         if (!response.IsSuccessStatusCode)
                             return false;
 
-                        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                        var content = await response.Content
+                            .ReadAsStringAsync(cancellationToken);
+                        
                         var validation = JsonConvert.DeserializeObject<dynamic>(content);
 
                         if (!(bool)validation.data.is_valid)
@@ -1138,9 +1164,34 @@ namespace Nano.Security
 
                     return payload.Subject == loginExternal.ProviderKey;
 
-                case "Microsot":
-                    throw new NotImplementedException();
+                case "Microsoft":
+                    using (var httpClient = new HttpClient())
+                    {
+                        const string HOST = "https://graph.microsoft.com";
+                        const string VERSION = "1.0";
 
+                        var url = $"{HOST}/{VERSION}/me";
+
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginExternal.AccessToken);
+
+                        var response = await httpClient
+                            .GetAsync(url, cancellationToken);
+
+                        if (!response.IsSuccessStatusCode)
+                            return false;
+
+                        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                        var validation = JsonConvert.DeserializeObject<dynamic>(content);
+
+                        if (validation.error != null)
+                            return false;
+
+                        //if (validation.data.app_id != externalLoginOption.Id) // BUG: We need to validate the token for this APP
+                        //    return false;
+
+                        return validation.id == loginExternal.ProviderKey;
+                    }
+                
                 default:
                     throw new NotSupportedException(loginExternal.LoginProvider);
             }

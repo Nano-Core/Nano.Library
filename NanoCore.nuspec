@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>5.0.19-beta72</version>
+    <version>5.1.0-beta06</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -19,7 +19,14 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
 		- Added more content types for ApiClient
 		- Updated / Moved startup task for database migration to Nano.App
 		- Refactored Base / Default implementations to fully support customized database key types.
-	</releaseNotes>
+		- Added role related identity methods.
+		- Added phone number related identity methods.
+		- Phone number must be unique if present on user.
+		- Added SwaggerExclude property filter.
+		- Changed Identity so that Email is always required and has to be unique for users.
+		- Added custom configurable scopes for external login providers.
+		- Added Microsoft external login provider.
+    </releaseNotes>
     <dependencies>
       <group targetFramework="net5.0">
 	      <dependency id="AspNetCore.HealthChecks.MySql" version="5.0.1" />
@@ -37,7 +44,8 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
 	      <dependency id="Google.Apis.Auth" version="1.49.0" />
 		  <dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="5.0.2" />
 		  <dependency id="Microsoft.AspNetCore.Authentication.Google" version="5.0.2" />
-		  <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="5.0.2" />
+		  <dependency id="Microsoft.AspNetCore.Authentication.MicrosoftAccount" version="5.0.2" />
+	      <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="5.0.2" />
 		  <dependency id="Microsoft.AspNetCore.Authorization" version="5.0.2" />
 		  <dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="5.0.2" />
 		  <dependency id="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="5.0.2" />

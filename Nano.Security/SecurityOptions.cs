@@ -72,12 +72,12 @@ namespace Nano.Security
             /// <summary>
             /// Expiration In Hours.
             /// </summary>
-            public virtual int ExpirationInHours { get; set; } = 72; // BUG: Should be defined in seconds.
+            public virtual int ExpirationInHours { get; set; } = 72;
 
             /// <summary>
             /// Refresh Expiration In Hours.
             /// </summary>
-            public virtual int RefreshExpirationInHours { get; set; } = 72; // BUG: Should be defined in seconds.
+            public virtual int RefreshExpirationInHours { get; set; } = 72;
         }
 
         /// <summary>
