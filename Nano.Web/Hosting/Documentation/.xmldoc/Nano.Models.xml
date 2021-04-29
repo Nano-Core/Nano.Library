@@ -9,6 +9,11 @@
             Include Attribute.
             </summary>
         </member>
+        <member name="T:Nano.Models.Attributes.SwaggerExcludeAttribute">
+            <summary>
+            Swagger Exclude Attribute.
+            </summary>
+        </member>
         <member name="T:Nano.Models.BaseEntity">
             <inheritdoc />
         </member>

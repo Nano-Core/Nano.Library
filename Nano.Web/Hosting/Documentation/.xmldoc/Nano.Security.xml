@@ -44,37 +44,6 @@
             <param name="roleManager">The <see cref="T:Microsoft.AspNetCore.Identity.RoleManager`1"/></param>
             <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.GetJwtToken(Nano.Security.Models.AccessTokenData{`0},System.Threading.CancellationToken)">
-            <summary>
-            Gets an <see cref="T:Nano.Security.Models.AccessToken"/> using the passed <see cref="T:Nano.Security.Models.AccessTokenData`1"/>.
-            </summary>
-            <param name="accessTokenData">The <see cref="T:Nano.Security.Models.AccessTokenData`1"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.GetExternalProvidersAsync(System.Threading.CancellationToken)">
-            <summary>
-            Gets all the configured external logins schemes.
-            </summary>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The collection of <see cref="T:Nano.Security.Models.LoginProvider"/>'s.</returns>
-        </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.GetExternalProviderInfoAsync(Nano.Security.Models.LoginExternalProvider,System.Threading.CancellationToken)">
-            <summary>
-            Gets the external provider info.
-            </summary>
-            <param name="loginExternal">The <see cref="T:Nano.Security.Models.LoginExternalProvider"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.ExternalLoginData"/></returns>
-        </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.ValidateExternalProviderAccessToken(Nano.Security.Models.LoginExternalProvider,System.Threading.CancellationToken)">
-            <summary>
-            Validates the external provider access token.
-            </summary>
-            <param name="loginExternal">The <see cref="T:Nano.Security.Models.LoginExternalProvider"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>Boolean, indicating if the external provider access token is still valid.</returns>
-        </member>
         <member name="M:Nano.Security.BaseIdentityManager`1.SignInAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
             <summary>
             Signs in a user.
@@ -86,17 +55,9 @@
         <member name="M:Nano.Security.BaseIdentityManager`1.SignInAdminAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
             <summary>
             Signs in the admin user statically.
-            The login is transient, no Identity backing store is used.
+            The login is transient, no Identity store is used.
             </summary>
             <param name="login">The <see cref="T:Nano.Security.Models.Login"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
-        </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.SignInRefreshAsync(Nano.Security.Models.LoginRefresh,System.Threading.CancellationToken)">
-            <summary>
-            Refresh the login of a user.
-            </summary>
-            <param name="loginRefresh">The <see cref="T:Nano.Security.Models.LoginRefresh"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
@@ -135,6 +96,29 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ExternalLoginData"/>.</returns>
         </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.GetExternalProvidersAsync(System.Threading.CancellationToken)">
+            <summary>
+            Gets all the configured external logins schemes.
+            </summary>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The collection of <see cref="T:Nano.Security.Models.LoginProvider"/>'s.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.GetSignInExternalInfoAsync(Nano.Security.Models.LoginExternalProvider,System.Threading.CancellationToken)">
+            <summary>
+            Gets the external provider info.
+            </summary>
+            <param name="loginExternal">The <see cref="T:Nano.Security.Models.LoginExternalProvider"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.ExternalLoginData"/></returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.SignInRefreshAsync(Nano.Security.Models.LoginRefresh,System.Threading.CancellationToken)">
+            <summary>
+            Refresh the login of a user.
+            </summary>
+            <param name="loginRefresh">The <see cref="T:Nano.Security.Models.LoginRefresh"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+        </member>
         <member name="M:Nano.Security.BaseIdentityManager`1.SignOutAsync(System.Threading.CancellationToken)">
             <summary>
             Logs out a user.
@@ -165,19 +149,19 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.SetUsernameAsync(Nano.Security.Models.SetUsername,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.SetUsernameAsync(Nano.Security.Models.SetUsername{`0},System.Threading.CancellationToken)">
             <summary>
-            Sets a username for a user.
+            Sets a emailAddress for a user.
             </summary>
-            <param name="setUsername">The <see cref="T:Nano.Security.Models.SetUsername"/>.</param>
+            <param name="setUsername">The <see cref="T:Nano.Security.Models.SetUsername`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.SetPasswordAsync(Nano.Security.Models.SetPassword,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.SetPasswordAsync(Nano.Security.Models.SetPassword{`0},System.Threading.CancellationToken)">
             <summary>
             Sets a password for a user.
             </summary>
-            <param name="setPassword">The <see cref="T:Nano.Security.Models.SetPassword"/>.</param>
+            <param name="setPassword">The <see cref="T:Nano.Security.Models.SetPassword`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
@@ -189,19 +173,19 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.ChangePasswordAsync(Nano.Security.Models.ChangePassword,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.ChangePasswordAsync(Nano.Security.Models.ChangePassword{`0},System.Threading.CancellationToken)">
             <summary>
             Changes the password of a user.
             </summary>
-            <param name="changePassword">The <see cref="T:Nano.Security.Models.ChangePassword"/>.</param>
+            <param name="changePassword">The <see cref="T:Nano.Security.Models.ChangePassword`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.ChangeEmailAsync(Nano.Security.Models.ChangeEmail,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.ChangeEmailAsync(Nano.Security.Models.ChangeEmail{`0},System.Threading.CancellationToken)">
             <summary>
             Changes the email address of a user.
             </summary>
-            <param name="changeEmail">The <see cref="T:Nano.Security.Models.ChangeEmail"/>.</param>
+            <param name="changeEmail">The <see cref="T:Nano.Security.Models.ChangeEmail`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
@@ -213,11 +197,27 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.ChangePhoneNumberAsync(Nano.Security.Models.ChangePhoneNumber{`0},System.Threading.CancellationToken)">
+            <summary>
+            Changes the phone numberof a user.
+            </summary>
+            <param name="changePhoneNumber">The <see cref="T:Nano.Security.Models.ChangePhoneNumber`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.ConfirmPhoneNumberAsync(Nano.Security.Models.ConfirmPhoneNumber,System.Threading.CancellationToken)">
+            <summary>
+            Confirms the phone number of a user.
+            </summary>
+            <param name="confirmPhoneNumber">The <see cref="T:Nano.Security.Models.ConfirmPhoneNumber"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
         <member name="M:Nano.Security.BaseIdentityManager`1.GenerateResetPasswordTokenAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Generates an reset password token for a user.
             </summary>
-            <param name="emailAddress">The email address.</param>
+            <param name="emailAddress">The emailAddress.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ResetPasswordToken"/>.</returns>
         </member>
@@ -233,50 +233,65 @@
             <summary>
             Generates an change email token for a user.
             </summary>
-            <param name="emailAddress">The email address.</param>
+            <param name="emailAddress">The emailAddress.</param>
             <param name="newEmailAddress">The new email address.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.ChangeEmailToken"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateConfirmPhoneNumberTokenAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Generates an confirm phone number token for a user.
+            </summary>
+            <param name="phoneNumber">The phone number.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ResetPasswordToken"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateChangePhoneNumberTokenAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Generates an change phone number token for a user.
+            </summary>
+            <param name="phoneNumber">The user id.</param>
+            <param name="newPhoneNumber">The new phone number.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.ResetPasswordToken"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.CreateRoleAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Identity.IdentityRole`1"/>.
+            </summary>
+            <param name="roleName">The role name.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.DeleteRoleAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Deletes a <see cref="T:Microsoft.AspNetCore.Identity.IdentityRole`1"/>.
+            </summary>
+            <param name="roleName">The role name.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.AssignRoleAsync(Nano.Security.Models.AssignRole{`0},System.Threading.CancellationToken)">
+            <summary>
+            Assign a role to a user.
+            </summary>
+            <param name="assignRole">The <see cref="T:Nano.Security.Models.AssignRole`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.RemoveRoleAsync(Nano.Security.Models.RemoveRole{`0},System.Threading.CancellationToken)">
+            <summary>
+            Removes a role from a user.
+            </summary>
+            <param name="removeRole">The <see cref="T:Nano.Security.Models.RemoveRole`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
         </member>
         <member name="M:Nano.Security.BaseIdentityManager`1.DeleteIdentityUser(Microsoft.AspNetCore.Identity.IdentityUser{`0})">
             <summary>
             Deletes the <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.
             </summary>
             <param name="identityUser">The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.</param>
-        </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.CreateRole(System.String,System.Threading.CancellationToken)">
-            <summary>
-            Creates a <see cref="T:Microsoft.AspNetCore.Identity.IdentityRole"/>.
-            </summary>
-            <param name="roleName">The role name.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>Void.</returns>
-        </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.DeleteRole(System.String,System.Threading.CancellationToken)">
-            <summary>
-            Deletes a <see cref="T:Microsoft.AspNetCore.Identity.IdentityRole"/>.
-            </summary>
-            <param name="roleName">The role name.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>Void.</returns>
-        </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.AddRoleToUser(System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Adds a role to a user.
-            </summary>
-            <param name="userId"></param>
-            <param name="roleName"></param>
-            <param name="cancellationToken"></param>
-            <returns>Void.</returns>
-        </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.RemoveRole(System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Removes a role from a user.
-            </summary>
-            <param name="userId"></param>
-            <param name="roleName"></param>
-            <param name="cancellationToken"></param>
-            <returns>Void.</returns>
         </member>
         <member name="T:Nano.Security.Const.BuiltInUserRoles">
             <summary>
@@ -411,6 +426,27 @@
             <param name="httpContext">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.</param>
             <returns>The email.</returns>
         </member>
+        <member name="T:Nano.Security.Extensions.IdentityErrorDescriberExtensions">
+            <summary>
+            Identity Error Describer Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Security.Extensions.IdentityErrorDescriberExtensions.InvalidPhoneNumber(Microsoft.AspNetCore.Identity.IdentityErrorDescriber,System.String)">
+            <summary>
+            Returns an <see cref="T:Microsoft.AspNetCore.Identity.IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is invalid.
+            </summary>
+            <param name="errorDescriber">The <see cref="T:Microsoft.AspNetCore.Identity.IdentityErrorDescriber"/>.</param>
+            <param name="phoneNumber">The phone number that is invalid.</param>
+            <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is invalid.</returns>
+        </member>
+        <member name="M:Nano.Security.Extensions.IdentityErrorDescriberExtensions.DuplicatePhoneNumber(Microsoft.AspNetCore.Identity.IdentityErrorDescriber,System.String)">
+            <summary>
+            Returns an <see cref="T:Microsoft.AspNetCore.Identity.IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is already associated with an account.
+            </summary>
+            <param name="errorDescriber">The <see cref="T:Microsoft.AspNetCore.Identity.IdentityErrorDescriber"/>.</param>
+            <param name="phoneNumber">The phone number that is already associated with an account.</param>
+            <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is already associated with an account.</returns>
+        </member>
         <member name="T:Nano.Security.Extensions.ServiceCollectionExtensions">
             <summary>
             Service Collection Extensions.
@@ -443,6 +479,42 @@
             Generates and returns a random base64 token.
             </summary>
             <returns>A random base64 token.</returns>
+        </member>
+        <member name="T:Nano.Security.Extensions.UserManagerExtensions">
+            <summary>
+            User Manager Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Security.Extensions.UserManagerExtensions.FindByPhoneNumberAsync``2(Microsoft.AspNetCore.Identity.UserManager{``0},System.String)">
+            <summary>
+            Find By PhoneNumbe rAsync
+            </summary>
+            <typeparam name="TUser">The user type.</typeparam>
+            <typeparam name="TIdentity">The identity type.</typeparam>
+            <param name="userManager">The <see cref="T:Microsoft.AspNetCore.Identity.UserManager`1"/>.</param>
+            <param name="phoneNumber">the phone number.</param>
+            <returns>The user.</returns>
+        </member>
+        <member name="M:Nano.Security.Extensions.UserManagerExtensions.GeneratePhoneNumberConfirmationTokenAsync``2(Microsoft.AspNetCore.Identity.UserManager{``0},``0)">
+            <summary>
+            Generate Phone Number Confirmation Token Async.
+            </summary>
+            <typeparam name="TUser">The user type.</typeparam>
+            <typeparam name="TIdentity">The identity type.</typeparam>
+            <param name="userManager">The <see cref="T:Microsoft.AspNetCore.Identity.UserManager`1"/>.</param>
+            <param name="user">The user.</param>
+            <returns>The token.</returns>
+        </member>
+        <member name="M:Nano.Security.Extensions.UserManagerExtensions.ConfirmPhoneNumberAsync``2(Microsoft.AspNetCore.Identity.UserManager{``0},``0,System.String)">
+            <summary>
+            Confirm Phone Number Async.
+            </summary>
+            <typeparam name="TUser">The user type.</typeparam>
+            <typeparam name="TIdentity">The identity type.</typeparam>
+            <param name="userManager">The <see cref="T:Microsoft.AspNetCore.Identity.UserManager`1"/>.</param>
+            <param name="user">The user.</param>
+            <param name="token">The confirm phone number token.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityResult"/>.</returns>
         </member>
         <member name="T:Nano.Security.Models.AccessToken">
             <summary>
@@ -478,6 +550,7 @@
             <summary>
             Access Token Data.
             </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
         <member name="P:Nano.Security.Models.AccessTokenData`1.Id">
             <summary>
@@ -509,6 +582,22 @@
             Claims.
             </summary>
         </member>
+        <member name="T:Nano.Security.Models.AssignRole`1">
+            <summary>
+            Assign Role.
+            </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.AssignRole`1.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.AssignRole`1.RoleName">
+            <summary>
+            Role Name.
+            </summary>
+        </member>
         <member name="T:Nano.Security.Models.BaseSignUp">
             <summary>
             Base Sign-Up (abstract).
@@ -524,22 +613,23 @@
             Claims.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.ChangeEmail">
+        <member name="T:Nano.Security.Models.ChangeEmail`1">
             <summary>
             Change Email.
             </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.ChangeEmail.Token">
+        <member name="P:Nano.Security.Models.ChangeEmail`1.Token">
             <summary>
             Token.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ChangeEmail.UserId">
+        <member name="P:Nano.Security.Models.ChangeEmail`1.UserId">
             <summary>
             User Id.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ChangeEmail.NewEmailAddress">
+        <member name="P:Nano.Security.Models.ChangeEmail`1.NewEmailAddress">
             <summary>
             New Email Address.
             </summary>
@@ -564,29 +654,71 @@
             New Email Address.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.ChangePassword">
+        <member name="T:Nano.Security.Models.ChangePassword`1">
             <summary>
             Change Password.
             </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.ChangePassword.UserId">
+        <member name="P:Nano.Security.Models.ChangePassword`1.UserId">
             <summary>
             User Id.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ChangePassword.OldPassword">
+        <member name="P:Nano.Security.Models.ChangePassword`1.OldPassword">
             <summary>
             Old Password.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ChangePassword.NewPassword">
+        <member name="P:Nano.Security.Models.ChangePassword`1.NewPassword">
             <summary>
             New Password.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ChangePassword.ConfirmNewPassword">
+        <member name="P:Nano.Security.Models.ChangePassword`1.ConfirmNewPassword">
             <summary>
             Confirm New Passowrd.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.ChangePhoneNumber`1">
+            <summary>
+            Change Phone Number.
+            </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.ChangePhoneNumber`1.Token">
+            <summary>
+            Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangePhoneNumber`1.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangePhoneNumber`1.NewPhoneNumber">
+            <summary>
+            New Phone Number.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.ChangePhoneNumberToken">
+            <summary>
+            Change Phone Number Token
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangePhoneNumberToken.Token">
+            <summary>
+            Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangePhoneNumberToken.PhoneNumber">
+            <summary>
+            Phone Number.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangePhoneNumberToken.NewPhoneNumber">
+            <summary>
+            New Phone Number.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.ConfirmEmail">
@@ -616,7 +748,37 @@
         </member>
         <member name="P:Nano.Security.Models.ConfirmEmailToken.EmailAddress">
             <summary>
-            Email.
+            Email Address.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.ConfirmPhoneNumber">
+            <summary>
+            Confirm Phone Number.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ConfirmPhoneNumber.Token">
+            <summary>
+            Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ConfirmPhoneNumber.PhoneNumber">
+            <summary>
+            Phone Number.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.ConfirmPhoneNumberToken">
+            <summary>
+            Confirm Phone Number Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ConfirmPhoneNumberToken.Token">
+            <summary>
+            Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ConfirmPhoneNumberToken.PhoneNumber">
+            <summary>
+            Phone Number.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.ExternalLoginData">
@@ -668,7 +830,7 @@
             <summary>
             Identity User Token Expiry.
             </summary>
-            <typeparam name="TIdentity"></typeparam>
+            <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
         <member name="P:Nano.Security.Models.IdentityUserTokenExpiry`1.ExpireAt">
             <summary>
@@ -810,6 +972,22 @@
             Is Expired.
             </summary>
         </member>
+        <member name="T:Nano.Security.Models.RemoveRole`1">
+            <summary>
+            Remove Role.
+            </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.RemoveRole`1.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.RemoveRole`1.RoleName">
+            <summary>
+            Role Name.
+            </summary>
+        </member>
         <member name="T:Nano.Security.Models.ResetPassword">
             <summary>
             Reset Password.
@@ -845,32 +1023,34 @@
             Email Address.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.SetPassword">
+        <member name="T:Nano.Security.Models.SetPassword`1">
             <summary>
             Set Password.
             </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.SetPassword.UserId">
+        <member name="P:Nano.Security.Models.SetPassword`1.UserId">
             <summary>
             User Id.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.SetPassword.NewPassword">
+        <member name="P:Nano.Security.Models.SetPassword`1.NewPassword">
             <summary>
             New Password.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.SetUsername">
+        <member name="T:Nano.Security.Models.SetUsername`1">
             <summary>
             Set Username.
             </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.SetUsername.UserId">
+        <member name="P:Nano.Security.Models.SetUsername`1.UserId">
             <summary>
             User Id.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.SetUsername.NewUsername">
+        <member name="P:Nano.Security.Models.SetUsername`1.NewUsername">
             <summary>
             New Username.
             </summary>
@@ -1031,11 +1211,6 @@
             User Options (nested class).
             </summary>
         </member>
-        <member name="P:Nano.Security.SecurityOptions.UserOptions.RequireUniqueEmail">
-            <summary>
-            Require Unique Email.
-            </summary>
-        </member>
         <member name="P:Nano.Security.SecurityOptions.UserOptions.AllowedUserNameCharacters">
             <summary>
             Allowed User Name Characters.
@@ -1149,6 +1324,11 @@
         <member name="P:Nano.Security.SecurityOptions.ExternalLoginOptions.Secret">
             <summary>
             Secret.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.ExternalLoginOptions.Scopes">
+            <summary>
+            Scopes.
             </summary>
         </member>
     </members>
