@@ -12,12 +12,6 @@ namespace Nano.Security.Models
         /// </summary>
         [Required]
         public virtual string LoginProvider { get; set; }
-
-        /// <summary>
-        /// Provider Key.
-        /// </summary>
-        [Required]
-        public virtual string ProviderKey { get; set; }
         
         /// <summary>
         /// Access Token.

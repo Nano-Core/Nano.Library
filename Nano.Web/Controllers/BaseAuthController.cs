@@ -147,23 +147,10 @@ namespace Nano.Web.Controllers
             var accessToken = await this.BaseIdentityManager
                 .SignInExternalAsync(loginExternal, cancellationToken);
 
-            ExternalLoginData externalLoginData = null;
             if (accessToken == null)
-            {
-                externalLoginData = await this.BaseIdentityManager
-                    .GetSignInExternalInfoAsync(loginExternal, cancellationToken);
+                this.NotFound();
 
-                if (externalLoginData == null)
-                    return this.NotFound();
-            }
-
-            var response = new ExternalLoginResponse
-            {
-                Data = externalLoginData,
-                AccessToken = accessToken
-            };
-
-            return this.Ok(response);
+            return this.Ok(accessToken);
         }
 
         /// <summary>

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>5.1.1</version>
+    <version>5.1.2</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -14,18 +14,9 @@
     <summary>Rapidly built and deploy rich .NET 5.0 applications. 
 Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <releaseNotes>
-		- Added CSP, and removed HttpRewrite.
-		- Removed DbContextOptions ServiceCollection registration from healthChecks (not needed anymore).
-		- Added more content types for ApiClient
-		- Updated / Moved startup task for database migration to Nano.App
-		- Refactored Base / Default implementations to fully support customized database key types.
-		- Added role related identity methods.
-		- Added phone number related identity methods.
-		- Phone number must be unique if present on user.
-		- Added SwaggerExclude property filter.
-		- Changed Identity so that Email is always required and has to be unique for users.
-		- Added custom configurable scopes for external login providers.
-		- Added Microsoft external login provider.
+		- Added Delete IdentityUser, with cascade on DefaultUser.
+		- Added support for collections in api-client for querystring parameters.
+		- Improved external login implementation.
     </releaseNotes>
     <dependencies>
       <group targetFramework="net5.0">
@@ -70,8 +61,9 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
 	      <dependency id="Microsoft.Extensions.Configuration.UserSecrets" version="5.0.0" />
 	      <dependency id="Microsoft.Extensions.DependencyInjection" version="5.0.1" />
 	      <dependency id="Microsoft.Extensions.Hosting" version="5.0.0" />
-	      <dependency id="Microsoft.Extensions.Identity.Stores" version="5.0.5" />
-	      <dependency id="Microsoft.Extensions.Logging" version="5.0.0" />
+		  <dependency id="Microsoft.Extensions.Identity.Stores" version="5.0.5" />
+	      <dependency id="Microsoft.IdentityModel.Protocols.OpenIdConnect" version="6.11.0" />
+		  <dependency id="Microsoft.Extensions.Logging" version="5.0.0" />
 	      <dependency id="Microsoft.Extensions.Logging.Log4Net.AspNetCore" version="5.0.1" />
 		  <dependency id="Microsoft.Extensions.Options" version="5.0.0" />
 		  <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="5.0.0" />

@@ -82,7 +82,7 @@ namespace Nano.Web.Controllers
             catch
             {
                 await this.IdentityManager
-                    .DeleteIdentityUser(identityUser);
+                    .DeleteIdentityUser(identityUser, cancellationToken);
 
                 await this.Repository
                     .SaveChanges(cancellationToken);
@@ -133,7 +133,7 @@ namespace Nano.Web.Controllers
             catch
             {
                 await this.IdentityManager
-                    .DeleteIdentityUser(identityUser);
+                    .DeleteIdentityUser(identityUser, cancellationToken);
 
                 await this.Repository
                     .SaveChanges(cancellationToken);
@@ -672,6 +672,84 @@ namespace Nano.Web.Controllers
         {
             await this.IdentityManager
                 .RemoveRoleAsync(removeRole, cancellationToken);
+
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Delete the model with the passed identifier.
+        /// </summary>
+        /// <param name="id">The identifier of the model to delete.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Ok.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [HttpDelete]
+        [Route("delete/{id}")]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> Delete([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
+        {
+            var user = await this.Repository
+                .GetAsync<TEntity, TIdentity>(id, cancellationToken);
+
+            await this.Repository
+                .DeleteAsync(user, cancellationToken);
+
+            await this.IdentityManager
+                .DeleteIdentityUser(user.IdentityUser, cancellationToken);
+
+            await this.Repository
+                .SaveChanges(cancellationToken);
+
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Delete the models with the passed identifiers.
+        /// </summary>
+        /// <param name="ids">The identifiers of the models to delete.</param>
+        /// <param name="cancellationToken">The token used when request is cancelled.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Ok.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [HttpDelete]
+        [Route("delete/many")]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> DeleteMany([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
+        {
+            foreach (var id in ids)
+            {
+                var user = await this.Repository
+                    .GetAsync<TEntity, TIdentity>(id, cancellationToken);
+
+                await this.Repository
+                    .DeleteAsync(user, cancellationToken);
+
+                await this.IdentityManager
+                    .DeleteIdentityUser(user.IdentityUser, cancellationToken);
+            }
+
+            await this.Repository
+                .SaveChanges(cancellationToken);
 
             return this.Ok();
         }

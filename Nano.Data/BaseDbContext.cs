@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Nano.Config;
 using Nano.Data.Models;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
@@ -113,6 +114,9 @@ namespace Nano.Data
         /// <returns>The <see cref="Task"/> (void).</returns>
         public virtual async Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
         {
+            if (!ConfigManager.HasDbContext)
+                return;
+
             if (!this.Options.UseCreateDatabase)
                 return;
 
@@ -130,6 +134,9 @@ namespace Nano.Data
         /// <returns>The <see cref="Task"/> (void).</returns>
         public virtual async Task EnsureMigratedAsync(CancellationToken cancellationToken = default)
         {
+            if (!ConfigManager.HasDbContext)
+                return;
+
             if (!this.Options.UseMigrateDatabase)
                 return;
 
@@ -147,6 +154,9 @@ namespace Nano.Data
         /// <returns>The <see cref="Task"/> (void).</returns>
         public virtual async Task EnsureIdentityAsync(CancellationToken cancellationToken = default)
         {
+            if (!ConfigManager.HasDbContext)
+                return;
+            
             if (this.Options.ConnectionString == null)
                 return;
 

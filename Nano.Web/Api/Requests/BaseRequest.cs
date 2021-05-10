@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using System.Reflection;
+using Nano.Models.Extensions;
 using Nano.Web.Api.Requests.Attributes;
 using Newtonsoft.Json;
 
@@ -75,11 +77,23 @@ namespace Nano.Web.Api.Requests
                 {
                     var key = x.attribute.Name ?? x.property.Name;
                     var value = x.property.GetValue(this);
+                    var type = x.property.PropertyType;
 
                     if (value == null)
-                        return Uri.EscapeDataString(key);
+                    {
+                        return key;
+                    }
 
-                    return Uri.EscapeDataString(key) + "=" + Uri.EscapeDataString(value.ToString() ?? string.Empty);
+                    if (type.IsTypeOf(typeof(IEnumerable)) && type != typeof(string))
+                    {
+                        var querystringPart = ((IEnumerable)value)
+                            .Cast<object>()
+                            .Aggregate(string.Empty, (current, item) => current + $"{key}={Uri.EscapeDataString(item?.ToString() ?? string.Empty)}&");
+
+                        return querystringPart.Substring(0, querystringPart.Length - 1);
+                    }
+
+                    return $"{key}={Uri.EscapeDataString(value.ToString() ?? string.Empty)}";
                 });
 
             return string.Join("&", parameters);
