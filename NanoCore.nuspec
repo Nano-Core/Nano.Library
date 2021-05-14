@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>5.1.2</version>
+    <version>5.1.4</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -14,10 +14,12 @@
     <summary>Rapidly built and deploy rich .NET 5.0 applications. 
 Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <releaseNotes>
-		- Added Delete IdentityUser, with cascade on DefaultUser.
-		- Added support for collections in api-client for querystring parameters.
-		- Improved external login implementation.
-    </releaseNotes>
+		- Removed Identity Challange methods
+		- Added Claim add/remove methods to BaseIdentityManager, IdentityController and IdentityApi.
+		- Added more role methods to BaseIdentityManager
+		- Added Random password generator
+		- Added Jwt token extensions
+	</releaseNotes>
     <dependencies>
       <group targetFramework="net5.0">
 	      <dependency id="AspNetCore.HealthChecks.MySql" version="5.0.1" />

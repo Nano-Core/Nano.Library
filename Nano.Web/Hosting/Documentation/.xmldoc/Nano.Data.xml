@@ -629,7 +629,7 @@
         <member name="T:Nano.Data.NullDbContext">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Data.NullDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions,Nano.Data.DataOptions)">
+        <member name="M:Nano.Data.NullDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Nano.Data.NullDbContext},Nano.Data.DataOptions)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Data.NullDbContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">

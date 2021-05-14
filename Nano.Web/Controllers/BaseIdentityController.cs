@@ -1,12 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
@@ -16,16 +16,12 @@ using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security;
 using Nano.Security.Const;
-using Nano.Security.Exceptions;
 using Nano.Security.Models;
 using Nano.Web.Const;
 using Nano.Web.Models;
 
 namespace Nano.Web.Controllers
 {
-    // TODO: Challange SignUp / SignIn: we need to store the custom User first (before callback), then lookup by email, otherwise we could have db null constraint on required custom user properties.
-    //      Also differentiate SignIn and SignUp in IdentityManager, so that we know if it's first time (signUp) or following (signIn's)
-
     /// <inheritdoc />
     public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria>
         where TRepository : IRepository
@@ -144,99 +140,6 @@ namespace Nano.Web.Controllers
             user.IdentityUser = identityUser;
 
             return this.Created("signup/external", user);
-        }
-        
-        /// <summary>
-        /// Executes an external authentication challange for the external provider.
-        /// </summary>
-        /// <param name="loginProvider">The login provider request.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The challange result.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">Bad Request.</response>
-        /// <response code="500">Error occurred.</response>
-        [HttpGet]
-        [HttpPost]
-        [Route("signup/external/challange")]
-        [AllowAnonymous]
-        [ProducesResponseType(typeof(ChallengeResult), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> SignUpExternalChallangeAsync([FromQuery][Required]string loginProvider, CancellationToken cancellationToken = default)
-        {
-            this.HttpContext.Request.Scheme = "https";
-
-            await HttpContext
-                .SignOutAsync(IdentityConstants.ExternalScheme);
-
-            var controller = $"{typeof(TEntity).Name.ToLower()}s";
-            var redirectUrl = Url.Action(nameof(SignUpExternalChallangeCallbackAsync), controller);
-
-            return await this.IdentityManager
-                .SignInExternalChallangeAsync(loginProvider, redirectUrl, cancellationToken);
-        }
-
-        /// <summary>
-        /// Callback for the sign-in external challange result.
-        /// </summary>
-        /// <param name="remoteError">Error text from provider.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The created user.</returns>
-        /// <response code="200">Ok.</response>
-        /// <response code="201">Created.</response>
-        /// <response code="400">Bad Request.</response>
-        /// <response code="401">Unauthorized.</response>
-        /// <response code="500">Error occurred.</response>
-        [HttpGet]
-        [Route("signup/external/challange/callback")]
-        [AllowAnonymous]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> SignUpExternalChallangeCallbackAsync([FromQuery]string remoteError = null, CancellationToken cancellationToken = default)
-        {
-            if (remoteError != null)
-                throw new UnauthorizedException(remoteError);
-
-            var signUpExternalResponse = await this.IdentityManager
-                .SignInExternalChallangeCallbackAsync(cancellationToken);
-
-            var signUpExternal = new SignUpExternal
-            {
-                EmailAddress = signUpExternalResponse.Email
-            };
-
-            var identityUser = await this.IdentityManager
-                .SignUpExternalAsync(signUpExternal, cancellationToken);
-
-            var userId = identityUser.Id.Parse<TIdentity>();
-
-            var user = await this.Repository
-                .GetAsync<TEntity, TIdentity>(userId, cancellationToken);
-
-            if (user == null)
-            {
-                user = new TEntity
-                {
-                    Id = userId.Parse<TIdentity>(),
-                    IdentityUserId = identityUser.Id
-                };
-
-                var result = await this.Repository
-                    .AddAsync(user, cancellationToken);
-
-                await this.Repository
-                    .SaveChanges(cancellationToken);
-
-                result.IdentityUser = identityUser;
-
-                return this.Created("external/challange/callback", result);
-            }
-
-            return this.Ok(user);
         }
 
         /// <summary>
@@ -620,6 +523,34 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
+        /// Gets roles of a user.
+        /// </summary>
+        /// <param name="id">The user id.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The roles.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpGet]
+        [Route("roles/{id}")]
+        [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> GetRolesAsync([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
+        {
+            var roles = await this.IdentityManager
+                .GetUserRolesAsync(id, cancellationToken);
+
+            return this.Ok(roles);
+        }
+
+        /// <summary>
         /// Assign a role to a user.
         /// </summary>
         /// <param name="assignRole">The assign role.</param>
@@ -639,10 +570,10 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> CreateRoleAsync([FromBody][Required]AssignRole<TIdentity> assignRole, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> AssignRoleAsync([FromBody][Required]AssignRole<TIdentity> assignRole, CancellationToken cancellationToken = default)
         {
             await this.IdentityManager
-                .AssignRoleAsync(assignRole, cancellationToken);
+                .AssignUserRoleAsync(assignRole, cancellationToken);
 
             return this.Ok();
         }
@@ -671,7 +602,92 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> RemoveRoleAsync([FromBody][Required]RemoveRole<TIdentity> removeRole, CancellationToken cancellationToken = default)
         {
             await this.IdentityManager
-                .RemoveRoleAsync(removeRole, cancellationToken);
+                .RemoveUserRoleAsync(removeRole, cancellationToken);
+
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Gets claims of a user.
+        /// </summary>
+        /// <param name="id">The user id.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The claims.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpGet]
+        [Route("claims/{id}")]
+        [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(IEnumerable<Claim>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> GetClaimsAsync([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
+        {
+            var claims = await this.IdentityManager
+                .GetUserClaimsAsync(id, cancellationToken);
+
+            return this.Ok(claims);
+        }
+
+        /// <summary>
+        /// Assign a claim to a user.
+        /// </summary>
+        /// <param name="assignClaim">The assign claim.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [Route("claim/assign")]
+        [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> AssignRoleAsync([FromBody][Required]AssignClaim<TIdentity> assignClaim, CancellationToken cancellationToken = default)
+        {
+            await this.IdentityManager
+                .AssignUserClaimAsync(assignClaim, cancellationToken);
+
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Remove a claim from a user.
+        /// </summary>
+        /// <param name="removeClaim">The remove claim.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Void.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occured.</response>
+        [HttpPost]
+        [HttpDelete]
+        [Route("claim/remove")]
+        [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> RemoveRoleAsync([FromBody][Required]RemoveClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default)
+        {
+            await this.IdentityManager
+                .RemoveUserClaimAsync(removeClaim, cancellationToken);
 
             return this.Ok();
         }

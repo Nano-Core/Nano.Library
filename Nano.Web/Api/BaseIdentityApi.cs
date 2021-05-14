@@ -279,12 +279,28 @@ namespace Nano.Web.Api
         }
 
         /// <summary>
+        /// Get Roles Async.
+        /// </summary>
+        /// <param name="request">The <see cref="GetRolesRequest{TIdentity}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Void.</returns>
+        public virtual async Task GetRolesAsync(GetRolesRequest<TIdentity> request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+            await this.InvokeAsync(request, cancellationToken);
+        }
+
+        /// <summary>
         /// Assign Role Async.
         /// </summary>
         /// <param name="request">The <see cref="AssignRoleRequest{TIdentity}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Void.</returns>
-        public virtual async Task CreateRoleAsync(AssignRoleRequest<TIdentity> request, CancellationToken cancellationToken = default)
+        public virtual async Task AssignUserRoleAsync(AssignRoleRequest<TIdentity> request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -300,7 +316,55 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="RemoveRoleRequest{TIdentity}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Void.</returns>
-        public virtual async Task RemoveRoleAsync(RemoveRoleRequest<TIdentity> request, CancellationToken cancellationToken = default)
+        public virtual async Task RemoveUserRoleAsync(RemoveRoleRequest<TIdentity> request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+            await this.InvokeAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Get Claims Async.
+        /// </summary>
+        /// <param name="request">The <see cref="GetClaimsRequest{TIdentity}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Void.</returns>
+        public virtual async Task GetClaimsAsync(GetClaimsRequest<TIdentity> request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+            await this.InvokeAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Assign Claim Async.
+        /// </summary>
+        /// <param name="request">The <see cref="AssignClaimRequest{TIdentity}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Void.</returns>
+        public virtual async Task AssignUserClaimAsync(AssignClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+            await this.InvokeAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Remove Claim Async.
+        /// </summary>
+        /// <param name="request">The <see cref="RemoveClaimRequest{TIdentity}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Void.</returns>
+        public virtual async Task RemoveUserClaimAsync(RemoveClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));

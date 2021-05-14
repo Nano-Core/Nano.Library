@@ -4,6 +4,12 @@ using Nano.Security.Models;
 namespace Nano.Web.Api.Requests.Identity
 {
     /// <inheritdoc />
+    public class SetUsernameRequest : SetUsernameRequest<Guid>
+    {
+
+    }
+
+    /// <inheritdoc />
     public class SetUsernameRequest<TIdentity> : BaseRequestPost
         where TIdentity : IEquatable<TIdentity>
     {

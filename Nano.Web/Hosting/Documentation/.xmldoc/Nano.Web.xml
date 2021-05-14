@@ -526,7 +526,15 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Web.Api.BaseIdentityApi`2.CreateRoleAsync(Nano.Web.Api.Requests.Identity.AssignRoleRequest{`1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.BaseIdentityApi`2.GetRolesAsync(Nano.Web.Api.Requests.Identity.GetRolesRequest{`1},System.Threading.CancellationToken)">
+            <summary>
+            Get Roles Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.GetRolesRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.BaseIdentityApi`2.AssignUserRoleAsync(Nano.Web.Api.Requests.Identity.AssignRoleRequest{`1},System.Threading.CancellationToken)">
             <summary>
             Assign Role Async.
             </summary>
@@ -534,11 +542,35 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Web.Api.BaseIdentityApi`2.RemoveRoleAsync(Nano.Web.Api.Requests.Identity.RemoveRoleRequest{`1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.BaseIdentityApi`2.RemoveUserRoleAsync(Nano.Web.Api.Requests.Identity.RemoveRoleRequest{`1},System.Threading.CancellationToken)">
             <summary>
             Remove Role Async.
             </summary>
             <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.RemoveRoleRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.BaseIdentityApi`2.GetClaimsAsync(Nano.Web.Api.Requests.Identity.GetClaimsRequest{`1},System.Threading.CancellationToken)">
+            <summary>
+            Get Claims Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.GetClaimsRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.BaseIdentityApi`2.AssignUserClaimAsync(Nano.Web.Api.Requests.Identity.AssignClaimRequest{`1},System.Threading.CancellationToken)">
+            <summary>
+            Assign Claim Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.AssignClaimRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Web.Api.BaseIdentityApi`2.RemoveUserClaimAsync(Nano.Web.Api.Requests.Identity.RemoveClaimRequest{`1},System.Threading.CancellationToken)">
+            <summary>
+            Remove Claim Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.RemoveClaimRequest`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
@@ -963,6 +995,26 @@
         <member name="M:Nano.Web.Api.Requests.EditRequest.GetBody">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.AssignClaimRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.AssignClaimRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.AssignClaimRequest`1.AssignClaim">
+            <summary>
+            Assign Claim.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.AssignClaimRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.AssignClaimRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.AssignRoleRequest">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Web.Api.Requests.Identity.AssignRoleRequest`1">
             <inheritdoc />
         </member>
@@ -975,6 +1027,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.AssignRoleRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.ChangeEmailRequest">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Identity.ChangeEmailRequest`1">
@@ -991,6 +1046,9 @@
         <member name="M:Nano.Web.Api.Requests.Identity.ChangeEmailRequest`1.GetBody">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.ChangePasswordRequest">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Web.Api.Requests.Identity.ChangePasswordRequest`1">
             <inheritdoc />
         </member>
@@ -1003,6 +1061,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.ChangePasswordRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.ChangePhoneRequest">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Identity.ChangePhoneRequest`1">
@@ -1079,6 +1140,24 @@
         <member name="M:Nano.Web.Api.Requests.Identity.GetChangePhoneTokenRequest.#ctor">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.GetClaimsRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.GetClaimsRequest`1">
+            <summary>
+            Get User Claims Request.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.GetClaimsRequest`1.Id">
+            <summary>
+            Id.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.GetClaimsRequest`1.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
         <member name="T:Nano.Web.Api.Requests.Identity.GetConfirmEmailTokenRequest">
             <inheritdoc />
         </member>
@@ -1112,6 +1191,41 @@
         <member name="M:Nano.Web.Api.Requests.Identity.GetResetPasswordTokenRequest.#ctor">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.GetRolesRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.GetRolesRequest`1">
+            <summary>
+            Get Roles Request.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.GetRolesRequest`1.Id">
+            <summary>
+            Id.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.GetRolesRequest`1.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.RemoveClaimRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.RemoveClaimRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.RemoveClaimRequest`1.RemoveClaim">
+            <summary>
+            Assign Claim.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.RemoveClaimRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.RemoveClaimRequest`1.GetBody">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Web.Api.Requests.Identity.RemoveExternalLogInRequest">
             <inheritdoc />
         </member>
@@ -1119,6 +1233,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.RemoveExternalLogInRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.RemoveRoleRequest">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Identity.RemoveRoleRequest`1">
@@ -1161,6 +1278,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.SetPasswordRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.SetUsernameRequest">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Identity.SetUsernameRequest`1">
@@ -2349,30 +2469,6 @@
             <response code="400">Bad Request.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.SignUpExternalChallangeAsync(System.String,System.Threading.CancellationToken)">
-            <summary>
-            Executes an external authentication challange for the external provider.
-            </summary>
-            <param name="loginProvider">The login provider request.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns>The challange result.</returns>
-            <response code="200">Success.</response>
-            <response code="400">Bad Request.</response>
-            <response code="500">Error occurred.</response>
-        </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.SignUpExternalChallangeCallbackAsync(System.String,System.Threading.CancellationToken)">
-            <summary>
-            Callback for the sign-in external challange result.
-            </summary>
-            <param name="remoteError">Error text from provider.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns>The created user.</returns>
-            <response code="200">Ok.</response>
-            <response code="201">Created.</response>
-            <response code="400">Bad Request.</response>
-            <response code="401">Unauthorized.</response>
-            <response code="500">Error occurred.</response>
-        </member>
         <member name="M:Nano.Web.Controllers.BaseIdentityController`4.SetUsernameAsync(Nano.Security.Models.SetUsername{`2},System.Threading.CancellationToken)">
             <summary>
             Sets the emailAddress of a user.
@@ -2555,7 +2651,20 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.CreateRoleAsync(Nano.Security.Models.AssignRole{`2},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.GetRolesAsync(`2,System.Threading.CancellationToken)">
+            <summary>
+            Gets roles of a user.
+            </summary>
+            <param name="id">The user id.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The roles.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.AssignRoleAsync(Nano.Security.Models.AssignRole{`2},System.Threading.CancellationToken)">
             <summary>
             Assign a role to a user.
             </summary>
@@ -2576,6 +2685,71 @@
             <param name="cancellationToken">The cancellation token.</param>
             <returns>Void.</returns>
             <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.GetClaimsAsync(`2,System.Threading.CancellationToken)">
+            <summary>
+            Gets claims of a user.
+            </summary>
+            <param name="id">The user id.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The claims.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.AssignRoleAsync(Nano.Security.Models.AssignClaim{`2},System.Threading.CancellationToken)">
+            <summary>
+            Assign a claim to a user.
+            </summary>
+            <param name="assignClaim">The assign claim.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.RemoveRoleAsync(Nano.Security.Models.RemoveClaim{`2},System.Threading.CancellationToken)">
+            <summary>
+            Remove a claim from a user.
+            </summary>
+            <param name="removeClaim">The remove claim.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>Void.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.Delete(`2,System.Threading.CancellationToken)">
+            <summary>
+            Delete the model with the passed identifier.
+            </summary>
+            <param name="id">The identifier of the model to delete.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>Void.</returns>
+            <response code="200">Ok.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.DeleteMany(`2[],System.Threading.CancellationToken)">
+            <summary>
+            Delete the models with the passed identifiers.
+            </summary>
+            <param name="ids">The identifiers of the models to delete.</param>
+            <param name="cancellationToken">The token used when request is cancelled.</param>
+            <returns>Void.</returns>
+            <response code="200">Ok.</response>
             <response code="400">Bad Request.</response>
             <response code="401">Unauthorized.</response>
             <response code="404">Not Found.</response>

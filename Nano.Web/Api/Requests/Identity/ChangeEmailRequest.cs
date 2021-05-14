@@ -4,6 +4,12 @@ using Nano.Security.Models;
 namespace Nano.Web.Api.Requests.Identity
 {
     /// <inheritdoc />
+    public class ChangeEmailRequest : ChangeEmailRequest<Guid>
+    {
+
+    }
+
+    /// <inheritdoc />
     public class ChangeEmailRequest<TIdentity> : BaseRequestPost
         where TIdentity : IEquatable<TIdentity>
     {

@@ -15,6 +15,12 @@ namespace Nano.Security.Models
         public virtual string AppId { get; set; }
 
         /// <summary>
+        /// User Id.
+        /// </summary>
+        [MaxLength(256)]
+        public virtual string UserId { get; set; }
+
+        /// <summary>
         /// Token.
         /// </summary>
         [Required]

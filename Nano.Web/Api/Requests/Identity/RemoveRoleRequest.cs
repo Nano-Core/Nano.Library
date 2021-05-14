@@ -4,6 +4,12 @@ using Nano.Security.Models;
 namespace Nano.Web.Api.Requests.Identity
 {
     /// <inheritdoc />
+    public class RemoveRoleRequest : RemoveRoleRequest<Guid>
+    {
+
+    }
+
+    /// <inheritdoc />
     public class RemoveRoleRequest<TIdentity> : BaseRequestPost
         where TIdentity : IEquatable<TIdentity>
     {

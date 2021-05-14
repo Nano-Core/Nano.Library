@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols;
@@ -22,6 +21,7 @@ using Nano.Config;
 using Nano.Models.Exceptions;
 using Nano.Models.Extensions;
 using Nano.Security.Const;
+using Nano.Security.Data.Models;
 using Nano.Security.Exceptions;
 using Nano.Security.Extensions;
 using Nano.Security.Models;
@@ -30,12 +30,6 @@ using StringExtensions = Nano.Security.Extensions.StringExtensions;
 
 namespace Nano.Security
 {
-    // TODO: Claims(add, remove)
-    // - Add/Remove User Claim   
-    // - Get Claims for a usr
-    // - Get Users for a claim
-    // - Add/Remove Role claim
-
     /// <summary>
     /// Base Identity Manager.
     /// </summary>
@@ -226,76 +220,6 @@ namespace Nano.Security
             };
 
             return await this.GenerateJwtToken(tokenData, cancellationToken);
-        }
-
-        /// <summary>
-        /// Configures the external authentication properties and returns a <see cref="ChallengeResult"/>.
-        /// </summary>
-        /// <param name="loginProvider">The login provider.</param>
-        /// <param name="redirectUrl">The redirect url.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The <see cref="ChallengeResult"/>.</returns>
-        public virtual async Task<ChallengeResult> SignInExternalChallangeAsync(string loginProvider, string redirectUrl, CancellationToken cancellationToken = default)
-        {
-            if (loginProvider == null)
-                throw new ArgumentNullException(nameof(loginProvider));
-
-            if (redirectUrl == null)
-                throw new ArgumentNullException(nameof(redirectUrl));
-
-            return await Task
-                .Run(() =>
-                {
-                    var properties = this.SignInManager
-                        .ConfigureExternalAuthenticationProperties(loginProvider, redirectUrl);
-
-                    return new ChallengeResult(loginProvider, properties);
-                }, cancellationToken);
-        }
-
-        /// <summary>
-        /// Callback for signing in a user with external login info,
-        /// from external login cookie data.
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The <see cref="ExternalLoginData"/>.</returns>
-        public virtual async Task<ExternalLoginData> SignInExternalChallangeCallbackAsync(CancellationToken cancellationToken = default)
-        {
-            var externalLoginInfo = await this.SignInManager
-                .GetExternalLoginInfoAsync();
-
-            if (externalLoginInfo == null)
-                throw new UnauthorizedException();
-
-            var result = await this.SignInManager
-                .ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, false, true);
-
-            if (!result.Succeeded)
-                throw new UnauthorizedException();
-
-            if (result.IsLockedOut)
-                throw new UnauthorizedLockedOutException();
-
-            if (result.RequiresTwoFactor)
-                throw new UnauthorizedTwoFactorRequiredException();
-
-            var id = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
-            var name = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Name);
-            var address = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.StreetAddress);
-            var emailAddress = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email);
-            var birthDay = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.DateOfBirth);
-
-            if (emailAddress == null)
-                throw new UnauthorizedEmailAddressNotFoundException();
-
-            return new ExternalLoginData
-            {
-                Id = id,
-                Name = name,
-                Address = address,
-                Email = emailAddress,
-                BirthDay = birthDay == null ? (DateTime?)null : DateTime.Parse(birthDay)
-            };
         }
 
         /// <summary>
@@ -904,11 +828,25 @@ namespace Nano.Security
         }
 
         /// <summary>
+        /// Gets all the <see cref="IdentityRole{TIdentity}"/>'s.
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="IdentityRole{TIdentity}"/>'s.</returns>
+        public virtual async Task<IEnumerable<IdentityRole<TIdentity>>> GetRolesAsync(CancellationToken cancellationToken = default)
+        {
+            return await Task.Run(() =>
+            {
+                return this.RoleManager.Roles
+                    .OrderBy(x => x.Name);
+            }, cancellationToken);
+        }
+
+        /// <summary>
         /// Creates a <see cref="IdentityRole{TIdentity}"/>.
         /// </summary>
         /// <param name="roleName">The role name.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>Void.</returns>
+        /// <returns>The <see cref="IdentityRole{TIdentity}"/>.</returns>
         public virtual async Task<IdentityRole<TIdentity>> CreateRoleAsync(string roleName, CancellationToken cancellationToken = default)
         {
             if (roleName == null)
@@ -939,6 +877,9 @@ namespace Nano.Security
             var role = await this.RoleManager
                 .FindByNameAsync(roleName);
 
+            if (role == null)
+                throw new NullReferenceException(nameof(role));
+
             var result = await this.RoleManager
                 .DeleteAsync(role);
 
@@ -947,18 +888,44 @@ namespace Nano.Security
         }
 
         /// <summary>
+        /// Gets the roles of a user.
+        /// </summary>
+        /// <param name="userId">The user id.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The role names.</returns>
+        public virtual async Task<IEnumerable<string>> GetUserRolesAsync(TIdentity userId, CancellationToken cancellationToken = default)
+        {
+            if (userId == null)
+                throw new ArgumentNullException(nameof(userId));
+
+            var user = await this.UserManager
+                .FindByIdAsync(userId.ToString());
+
+            if (user == null)
+                throw new NullReferenceException(nameof(user));
+
+            var roles = await this.UserManager
+                .GetRolesAsync(user);
+
+            return roles;
+        }
+
+        /// <summary>
         /// Assign a role to a user.
         /// </summary>
         /// <param name="assignRole">The <see cref="AssignRole{TIdentity}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Void.</returns>
-        public virtual async Task AssignRoleAsync(AssignRole<TIdentity> assignRole, CancellationToken cancellationToken = default)
+        public virtual async Task AssignUserRoleAsync(AssignRole<TIdentity> assignRole, CancellationToken cancellationToken = default)
         {
             if (assignRole == null)
                 throw new ArgumentNullException(nameof(assignRole));
 
             var user = await this.UserManager
                 .FindByIdAsync(assignRole.UserId.ToString());
+
+            if (user == null)
+                throw new NullReferenceException(nameof(user));
 
             var result = await this.UserManager
                 .AddToRoleAsync(user, assignRole.RoleName);
@@ -973,7 +940,7 @@ namespace Nano.Security
         /// <param name="removeRole">The <see cref="RemoveRole{TIdentity}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>Void.</returns>
-        public virtual async Task RemoveRoleAsync(RemoveRole<TIdentity> removeRole, CancellationToken cancellationToken = default)
+        public virtual async Task RemoveUserRoleAsync(RemoveRole<TIdentity> removeRole, CancellationToken cancellationToken = default)
         {
             if (removeRole == null)
                 throw new ArgumentNullException(nameof(removeRole));
@@ -981,8 +948,227 @@ namespace Nano.Security
             var user = await this.UserManager
                 .FindByIdAsync(removeRole.UserId.ToString());
 
+            if (user == null)
+                throw new NullReferenceException(nameof(user));
+
             var result = await this.UserManager
                 .RemoveFromRoleAsync(user, removeRole.RoleName);
+
+            if (!result.Succeeded)
+                this.ThrowIdentityExceptions(result.Errors);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Claim"/> of a user.
+        /// </summary>
+        /// <param name="getClaim">The <see cref="GetClaim{TIdentity}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="Claim"/>.</returns>
+        public virtual async Task<Claim> GetUserClaimAsync(GetClaim<TIdentity> getClaim, CancellationToken cancellationToken = default)
+        {
+            if (getClaim == null)
+                throw new ArgumentNullException(nameof(getClaim));
+
+            var claims = await this.GetUserClaimsAsync(getClaim.Id, cancellationToken);
+
+            return claims
+                .FirstOrDefault(x => x.Type == getClaim.ClaimType);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Claim"/>'s of a user.
+        /// </summary>
+        /// <param name="userId">The user id.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="Claim"/>'s.</returns>
+        public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(TIdentity userId, CancellationToken cancellationToken = default)
+        {
+            if (userId == null)
+                throw new ArgumentNullException(nameof(userId));
+
+            var user = await this.UserManager
+                .FindByIdAsync(userId.ToString());
+
+            if (user == null)
+                throw new NullReferenceException(nameof(user));
+
+            var claims = await this.UserManager
+                .GetClaimsAsync(user);
+
+            return claims;
+        }
+
+        /// <summary>
+        /// Assigns a <see cref="IdentityUserClaim{TIdentity}"/> to a user.
+        /// </summary>
+        /// <param name="assignClaim">The <see cref="AssignClaim{TIdentity}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="IdentityUserClaim{TIdentity}"/>.</returns>
+        public virtual async Task<IdentityUserClaim<TIdentity>> AssignUserClaimAsync(AssignClaim<TIdentity> assignClaim, CancellationToken cancellationToken = default)
+        {
+            if (assignClaim == null)
+                throw new ArgumentNullException(nameof(assignClaim));
+
+            var user = await this.UserManager
+                .FindByIdAsync(assignClaim.Id.ToString());
+
+            if (user == null)
+                throw new NullReferenceException(nameof(user));
+
+            var userClaim = new IdentityUserClaim<TIdentity>
+            {
+                ClaimType = assignClaim.ClaimType, 
+                ClaimValue = assignClaim.ClaimValue
+            };
+
+            var claim = userClaim
+                .ToClaim();
+
+            var result = await this.UserManager
+                .AddClaimAsync(user, claim);
+
+            if (!result.Succeeded)
+                this.ThrowIdentityExceptions(result.Errors);
+
+            return userClaim;
+        }
+
+        /// <summary>
+        /// Removes a <see cref="IdentityUserClaim{TIdentity}"/> from a user.
+        /// </summary>
+        /// <param name="removeClaim">The <see cref="RemoveClaim{TIdentity}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Void.</returns>
+        public virtual async Task RemoveUserClaimAsync(RemoveClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default)
+        {
+            if (removeClaim == null)
+                throw new ArgumentNullException(nameof(removeClaim));
+
+            var user = await this.UserManager
+                .FindByIdAsync(removeClaim.Id.ToString());
+
+            if (user == null)
+                throw new NullReferenceException(nameof(user));
+
+            var claims = await this.UserManager
+                .GetClaimsAsync(user);
+
+            var claim = claims
+                .FirstOrDefault(x => x.Type == removeClaim.ClaimType);
+
+            if (claim == null)
+                throw new NullReferenceException(nameof(claim));
+
+            var result = await this.UserManager
+                .RemoveClaimAsync(user, claim);
+
+            if (!result.Succeeded)
+                this.ThrowIdentityExceptions(result.Errors);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Claim"/> of a role.
+        /// </summary>
+        /// <param name="getClaim">The <see cref="GetClaim{TIdentity}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="Claim"/>.</returns>
+        public virtual async Task<Claim> GetRoleClaimAsync(GetClaim<TIdentity> getClaim, CancellationToken cancellationToken = default)
+        {
+            if (getClaim == null)
+                throw new ArgumentNullException(nameof(getClaim));
+
+            var claims = await this.GetRoleClaimsAsync(getClaim.Id, cancellationToken);
+
+            return claims
+                .FirstOrDefault(x => x.Type == getClaim.ClaimType);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Claim"/>'s of a role.
+        /// </summary>
+        /// <param name="roleId">The role id.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="Claim"/>'s.</returns>
+        public virtual async Task<IEnumerable<Claim>> GetRoleClaimsAsync(TIdentity roleId, CancellationToken cancellationToken = default)
+        {
+            if (roleId == null)
+                throw new ArgumentNullException(nameof(roleId));
+
+            var role = await this.RoleManager
+                .FindByIdAsync(roleId.ToString());
+
+            if (role == null)
+                throw new NullReferenceException(nameof(role));
+
+            var claims = await this.RoleManager
+                .GetClaimsAsync(role);
+
+            return claims;
+        }
+
+        /// <summary>
+        /// Assigns a <see cref="IdentityRoleClaim{TIdentity}"/> to a role.
+        /// </summary>
+        /// <param name="assignClaim">The <see cref="AssignClaim{TIdentity}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="IdentityRoleClaim{TIdentity}"/>.</returns>
+        public virtual async Task<IdentityRoleClaim<TIdentity>> AssignRoleClaimAsync(AssignClaim<TIdentity> assignClaim, CancellationToken cancellationToken = default)
+        {
+            if (assignClaim == null)
+                throw new ArgumentNullException(nameof(assignClaim));
+
+            var role = await this.RoleManager
+                .FindByIdAsync(assignClaim.Id.ToString());
+
+            if (role == null)
+                throw new NullReferenceException(nameof(role));
+
+            var roleClaim = new IdentityRoleClaim<TIdentity>
+            {
+                ClaimType = assignClaim.ClaimType,
+                ClaimValue = assignClaim.ClaimValue
+            };
+
+            var claim = roleClaim
+                .ToClaim();
+
+            var result = await this.RoleManager
+                .AddClaimAsync(role, claim);
+
+            if (!result.Succeeded)
+                this.ThrowIdentityExceptions(result.Errors);
+
+            return roleClaim;
+        }
+
+        /// <summary>
+        /// Removes a <see cref="IdentityRoleClaim{TIdentity}"/> from a role.
+        /// </summary>
+        /// <param name="removeClaim">The <see cref="RemoveClaim{TIdentity}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>Void.</returns>
+        public virtual async Task RemoveRoleClaimAsync(RemoveClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default)
+        {
+            if (removeClaim == null)
+                throw new ArgumentNullException(nameof(removeClaim));
+
+            var role = await this.RoleManager
+                .FindByIdAsync(removeClaim.Id.ToString());
+
+            if (role == null)
+                throw new NullReferenceException(nameof(role));
+
+            var claims = await this.RoleManager
+                .GetClaimsAsync(role);
+
+            var claim = claims
+                .FirstOrDefault(x => x.Type == removeClaim.ClaimType);
+
+            if (claim == null)
+                throw new NullReferenceException(nameof(claim));
+
+            var result = await this.RoleManager
+                .RemoveClaimAsync(role, claim);
 
             if (!result.Succeeded)
                 this.ThrowIdentityExceptions(result.Errors);
@@ -1041,13 +1227,15 @@ namespace Nano.Security
             if (tokenData == null)
                 throw new ArgumentNullException(nameof(tokenData));
 
+            var userId = tokenData.UserId.ToString();
+
             var claims = new Collection<Claim>
                 {
                     new Claim(JwtRegisteredClaimNames.Jti, tokenData.Id),
-                    new Claim(JwtRegisteredClaimNames.Sub, tokenData.UserId?.ToString() ?? string.Empty),
+                    new Claim(JwtRegisteredClaimNames.Sub, userId ?? string.Empty),
                     new Claim(JwtRegisteredClaimNames.Email, tokenData.UserEmail),
                     new Claim(ClaimTypes.Name, tokenData.UserName),
-                    new Claim(ClaimTypes.NameIdentifier, tokenData.UserId?.ToString() ?? string.Empty),
+                    new Claim(ClaimTypes.NameIdentifier, userId ?? string.Empty),
                     new Claim(ClaimTypesExtended.AppId, tokenData.AppId)
                 }
                 .Union(tokenData.Claims)
@@ -1066,6 +1254,7 @@ namespace Nano.Security
                     return new AccessToken
                     {
                         AppId = tokenData.AppId,
+                        UserId = userId,
                         Token = token,
                         ExpireAt = expireAt
                     };
@@ -1145,20 +1334,6 @@ namespace Nano.Security
                 ExpireAt = identityUserToken.ExpireAt
             };
         }
-
-        private void ThrowIdentityExceptions(IEnumerable<IdentityError> errors)
-        {
-            if (errors == null)
-                throw new ArgumentNullException(nameof(errors));
-
-            var exceptions = errors
-                .Select(x => new TranslationException(x.Description));
-
-            throw new AggregateException(exceptions);
-        }
-
-
-
         private async Task<string> ValidateExternalProviderAccessToken(LoginExternalProvider loginExternal, CancellationToken cancellationToken = default)
         {
             if (loginExternal == null)
@@ -1324,5 +1499,15 @@ namespace Nano.Security
             }
         }
 
+        private void ThrowIdentityExceptions(IEnumerable<IdentityError> errors)
+        {
+            if (errors == null)
+                throw new ArgumentNullException(nameof(errors));
+
+            var exceptions = errors
+                .Select(x => new TranslationException(x.Description));
+
+            throw new AggregateException(exceptions);
+        }
     }
 }

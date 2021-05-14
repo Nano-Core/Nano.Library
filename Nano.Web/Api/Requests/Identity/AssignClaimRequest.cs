@@ -4,30 +4,30 @@ using Nano.Security.Models;
 namespace Nano.Web.Api.Requests.Identity
 {
     /// <inheritdoc />
-    public class AssignRoleRequest : AssignRoleRequest<Guid>
+    public class AssignClaimRequest : AssignClaimRequest<Guid>
     {
 
     }
 
     /// <inheritdoc />
-    public class AssignRoleRequest<TIdentity> : BaseRequestPost
+    public class AssignClaimRequest<TIdentity> : BaseRequestPost
         where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
-        /// Assign Role.
+        /// Assign Claim.
         /// </summary>
-        public virtual AssignRole<TIdentity> AssignRole { get; set; }
+        public virtual AssignClaim<TIdentity> AssignClaim { get; set; }
 
         /// <inheritdoc />
-        public AssignRoleRequest()
+        public AssignClaimRequest()
         {
-            this.Action = "role/assign";
+            this.Action = "claim/assign";
         }
 
         /// <inheritdoc />
         public override object GetBody()
         {
-            return this.AssignRole;
+            return this.AssignClaim;
         }
     }
 }

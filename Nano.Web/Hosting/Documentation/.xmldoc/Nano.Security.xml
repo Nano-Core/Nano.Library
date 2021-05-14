@@ -79,37 +79,12 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns></returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.SignInExternalChallangeAsync(System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Configures the external authentication properties and returns a <see cref="T:Microsoft.AspNetCore.Mvc.ChallengeResult"/>.
-            </summary>
-            <param name="loginProvider">The login provider.</param>
-            <param name="redirectUrl">The redirect url.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Mvc.ChallengeResult"/>.</returns>
-        </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.SignInExternalChallangeCallbackAsync(System.Threading.CancellationToken)">
-            <summary>
-            Callback for signing in a user with external login info,
-            from external login cookie data.
-            </summary>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.ExternalLoginData"/>.</returns>
-        </member>
         <member name="M:Nano.Security.BaseIdentityManager`1.GetExternalProvidersAsync(System.Threading.CancellationToken)">
             <summary>
             Gets all the configured external logins schemes.
             </summary>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The collection of <see cref="T:Nano.Security.Models.LoginProvider"/>'s.</returns>
-        </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.GetSignInExternalInfoAsync(Nano.Security.Models.LoginExternalProvider,System.Threading.CancellationToken)">
-            <summary>
-            Gets the external provider info.
-            </summary>
-            <param name="loginExternal">The <see cref="T:Nano.Security.Models.LoginExternalProvider"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.ExternalLoginData"/></returns>
         </member>
         <member name="M:Nano.Security.BaseIdentityManager`1.SignInRefreshAsync(Nano.Security.Models.LoginRefresh,System.Threading.CancellationToken)">
             <summary>
@@ -255,13 +230,20 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ResetPasswordToken"/>.</returns>
         </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.GetRolesAsync(System.Threading.CancellationToken)">
+            <summary>
+            Gets all the <see cref="T:Microsoft.AspNetCore.Identity.IdentityRole`1"/>'s.
+            </summary>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityRole`1"/>'s.</returns>
+        </member>
         <member name="M:Nano.Security.BaseIdentityManager`1.CreateRoleAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Creates a <see cref="T:Microsoft.AspNetCore.Identity.IdentityRole`1"/>.
             </summary>
             <param name="roleName">The role name.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>Void.</returns>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityRole`1"/>.</returns>
         </member>
         <member name="M:Nano.Security.BaseIdentityManager`1.DeleteRoleAsync(System.String,System.Threading.CancellationToken)">
             <summary>
@@ -271,7 +253,15 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.AssignRoleAsync(Nano.Security.Models.AssignRole{`0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.GetUserRolesAsync(`0,System.Threading.CancellationToken)">
+            <summary>
+            Gets the roles of a user.
+            </summary>
+            <param name="userId">The user id.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The role names.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.AssignUserRoleAsync(Nano.Security.Models.AssignRole{`0},System.Threading.CancellationToken)">
             <summary>
             Assign a role to a user.
             </summary>
@@ -279,7 +269,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.RemoveRoleAsync(Nano.Security.Models.RemoveRole{`0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.RemoveUserRoleAsync(Nano.Security.Models.RemoveRole{`0},System.Threading.CancellationToken)">
             <summary>
             Removes a role from a user.
             </summary>
@@ -287,11 +277,77 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.DeleteIdentityUser(Microsoft.AspNetCore.Identity.IdentityUser{`0})">
+        <member name="M:Nano.Security.BaseIdentityManager`1.GetUserClaimAsync(Nano.Security.Models.GetClaim{`0},System.Threading.CancellationToken)">
+            <summary>
+            Gets the <see cref="T:System.Security.Claims.Claim"/> of a user.
+            </summary>
+            <param name="getClaim">The <see cref="T:Nano.Security.Models.GetClaim`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:System.Security.Claims.Claim"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.GetUserClaimsAsync(`0,System.Threading.CancellationToken)">
+            <summary>
+            Gets the <see cref="T:System.Security.Claims.Claim"/>'s of a user.
+            </summary>
+            <param name="userId">The user id.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:System.Security.Claims.Claim"/>'s.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.AssignUserClaimAsync(Nano.Security.Models.AssignClaim{`0},System.Threading.CancellationToken)">
+            <summary>
+            Assigns a <see cref="T:Microsoft.AspNetCore.Identity.IdentityUserClaim`1"/> to a user.
+            </summary>
+            <param name="assignClaim">The <see cref="T:Nano.Security.Models.AssignClaim`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUserClaim`1"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.RemoveUserClaimAsync(Nano.Security.Models.RemoveClaim{`0},System.Threading.CancellationToken)">
+            <summary>
+            Removes a <see cref="T:Microsoft.AspNetCore.Identity.IdentityUserClaim`1"/> from a user.
+            </summary>
+            <param name="removeClaim">The <see cref="T:Nano.Security.Models.RemoveClaim`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.GetRoleClaimAsync(Nano.Security.Models.GetClaim{`0},System.Threading.CancellationToken)">
+            <summary>
+            Gets the <see cref="T:System.Security.Claims.Claim"/> of a role.
+            </summary>
+            <param name="getClaim">The <see cref="T:Nano.Security.Models.GetClaim`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:System.Security.Claims.Claim"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.GetRoleClaimsAsync(`0,System.Threading.CancellationToken)">
+            <summary>
+            Gets the <see cref="T:System.Security.Claims.Claim"/>'s of a role.
+            </summary>
+            <param name="roleId">The role id.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:System.Security.Claims.Claim"/>'s.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.AssignRoleClaimAsync(Nano.Security.Models.AssignClaim{`0},System.Threading.CancellationToken)">
+            <summary>
+            Assigns a <see cref="T:Microsoft.AspNetCore.Identity.IdentityRoleClaim`1"/> to a role.
+            </summary>
+            <param name="assignClaim">The <see cref="T:Nano.Security.Models.AssignClaim`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityRoleClaim`1"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.RemoveRoleClaimAsync(Nano.Security.Models.RemoveClaim{`0},System.Threading.CancellationToken)">
+            <summary>
+            Removes a <see cref="T:Microsoft.AspNetCore.Identity.IdentityRoleClaim`1"/> from a role.
+            </summary>
+            <param name="removeClaim">The <see cref="T:Nano.Security.Models.RemoveClaim`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.DeleteIdentityUser(Microsoft.AspNetCore.Identity.IdentityUser{`0},System.Threading.CancellationToken)">
             <summary>
             Deletes the <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.
             </summary>
             <param name="identityUser">The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
         </member>
         <member name="T:Nano.Security.Const.BuiltInUserRoles">
             <summary>
@@ -331,6 +387,17 @@
         <member name="P:Nano.Security.Const.ClaimTypesExtended.AppId">
             <summary>
             App Id.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Data.Models.IdentityUserTokenExpiry`1">
+            <summary>
+            Identity User Token Expiry.
+            </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
+        </member>
+        <member name="P:Nano.Security.Data.Models.IdentityUserTokenExpiry`1.ExpireAt">
+            <summary>
+            Expire At.
             </summary>
         </member>
         <member name="T:Nano.Security.DefaultIdentityManager">
@@ -447,6 +514,19 @@
             <param name="phoneNumber">The phone number that is already associated with an account.</param>
             <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is already associated with an account.</returns>
         </member>
+        <member name="T:Nano.Security.Extensions.JwtSecurityTokenExtensions">
+            <summary>
+            JwtSecurity Token Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Security.Extensions.JwtSecurityTokenExtensions.GetClaim(System.IdentityModel.Tokens.Jwt.JwtSecurityToken,System.String)">
+            <summary>
+            Get a <see cref="T:System.Security.Claims.Claim"/> encoded in the <see cref="T:System.IdentityModel.Tokens.Jwt.JwtSecurityToken"/>.
+            </summary>
+            <param name="jwtSecurityToken">The <see cref="T:System.IdentityModel.Tokens.Jwt.JwtSecurityToken"/>.</param>
+            <param name="type">The claim type.</param>
+            <returns>The <see cref="T:System.Security.Claims.Claim"/>.</returns>
+        </member>
         <member name="T:Nano.Security.Extensions.ServiceCollectionExtensions">
             <summary>
             Service Collection Extensions.
@@ -479,6 +559,13 @@
             Generates and returns a random base64 token.
             </summary>
             <returns>A random base64 token.</returns>
+        </member>
+        <member name="M:Nano.Security.Extensions.StringExtensions.GetJwtSecurityToken(System.String)">
+            <summary>
+            Gets the <see cref="T:System.IdentityModel.Tokens.Jwt.JwtSecurityToken"/> from a string access token.
+            </summary>
+            <param name="accessToken">The access token (jwt)</param>
+            <returns>The <see cref="T:System.IdentityModel.Tokens.Jwt.JwtSecurityToken"/>.</returns>
         </member>
         <member name="T:Nano.Security.Extensions.UserManagerExtensions">
             <summary>
@@ -524,6 +611,11 @@
         <member name="P:Nano.Security.Models.AccessToken.AppId">
             <summary>
             App Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.AccessToken.UserId">
+            <summary>
+            User Id.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.AccessToken.Token">
@@ -580,6 +672,27 @@
         <member name="P:Nano.Security.Models.AccessTokenData`1.Claims">
             <summary>
             Claims.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.AssignClaim`1">
+            <summary>
+            Assign Claim.
+            </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.AssignClaim`1.Id">
+            <summary>
+            Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.AssignClaim`1.ClaimType">
+            <summary>
+            Claim Type.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.AssignClaim`1.ClaimValue">
+            <summary>
+            Claim Value.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.AssignRole`1">
@@ -826,15 +939,36 @@
             Data.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.IdentityUserTokenExpiry`1">
+        <member name="T:Nano.Security.Models.GetClaim`1">
             <summary>
-            Identity User Token Expiry.
+            Get Claim.
             </summary>
             <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.IdentityUserTokenExpiry`1.ExpireAt">
+        <member name="P:Nano.Security.Models.GetClaim`1.Id">
             <summary>
-            Expire At.
+            Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.GetClaim`1.ClaimType">
+            <summary>
+            Claim Type.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.GetRole`1">
+            <summary>
+            Get Role.
+            </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.GetRole`1.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.GetRole`1.RoleName">
+            <summary>
+            Role Name.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.Login">
@@ -895,11 +1029,6 @@
         <member name="P:Nano.Security.Models.LoginExternalProvider.LoginProvider">
             <summary>
             Login Provider.
-            </summary>
-        </member>
-        <member name="P:Nano.Security.Models.LoginExternalProvider.ProviderKey">
-            <summary>
-            Provider Key.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.LoginExternalProvider.AccessToken">
@@ -970,6 +1099,22 @@
         <member name="P:Nano.Security.Models.RefreshToken.IsExpired">
             <summary>
             Is Expired.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.RemoveClaim`1">
+            <summary>
+            Remove Claim.
+            </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.RemoveClaim`1.Id">
+            <summary>
+            Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.RemoveClaim`1.ClaimType">
+            <summary>
+            Claim Type.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.RemoveRole`1">
@@ -1130,6 +1275,18 @@
             <summary>
             User.
             </summary>
+        </member>
+        <member name="T:Nano.Security.PasswordGenerator">
+            <summary>
+            Password Generator.
+            </summary>
+        </member>
+        <member name="M:Nano.Security.PasswordGenerator.Generate(Microsoft.AspNetCore.Identity.PasswordOptions)">
+            <summary>
+            Generates a random password, respecting the given strength requirements.
+            </summary>
+            <param name="passwordOptions">The <see cref="T:Microsoft.AspNetCore.Identity.PasswordOptions"/>.</param>
+            <returns>The random password</returns>
         </member>
         <member name="T:Nano.Security.SecurityOptions">
             <summary>

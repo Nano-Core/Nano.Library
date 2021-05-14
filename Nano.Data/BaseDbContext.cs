@@ -21,7 +21,7 @@ using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Security;
 using Nano.Security.Const;
-using Nano.Security.Models;
+using Nano.Security.Data.Models;
 
 namespace Nano.Data
 {
