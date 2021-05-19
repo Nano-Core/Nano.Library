@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Extensions.Logging;
+using Nano.Eventing;
 using Nano.Eventing.Interfaces;
 using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Interfaces;
@@ -13,6 +14,13 @@ namespace Nano.Web.Controllers
         where TCriteria : class, IQueryCriteriaSpatial, new()
     {
         /// <inheritdoc />
+        protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository)
+            : this(logger, repository, new NullEventing())
+        {
+
+        }
+
+        /// <inheritdoc />
         protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository, IEventing eventing)
             : base(logger, repository, eventing)
         {
@@ -24,7 +32,15 @@ namespace Nano.Web.Controllers
     public class DefaultControllerSpatial<TEntity, TIdentity, TCriteria> : BaseControllerSpatialWritable<IRepositorySpatial, TEntity, TIdentity, TCriteria>
         where TEntity : class, IEntityIdentity<TIdentity>, IEntitySpatial, IEntityWritable
         where TCriteria : class, IQueryCriteriaSpatial, new()
+        where TIdentity : IEquatable<TIdentity>
     {
+        /// <inheritdoc />
+        protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository)
+            : this(logger, repository, new NullEventing())
+        {
+
+        }
+
         /// <inheritdoc />
         protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository, IEventing eventing)
             : base(logger, repository, eventing)

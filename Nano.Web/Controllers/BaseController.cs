@@ -3,6 +3,7 @@ using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Nano.Eventing;
 using Nano.Eventing.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security.Const;
@@ -89,7 +90,19 @@ namespace Nano.Web.Controllers
         /// </summary>
         /// <param name="logger">The <see cref="ILogger"/>.</param>
         /// <param name="repository">The <see cref="IRepository"/>.</param>
-        /// <param name="eventing">The <see cref="IEventingProvider"/>.</param>
+        protected BaseController(ILogger logger, TRepository repository)
+            : base(logger)
+        {
+            this.Repository = repository;
+            this.Eventing = new NullEventing();
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
+        /// <param name="repository">The <see cref="IRepository"/>.</param>
+        /// <param name="eventing">The <see cref="IEventing"/>.</param>
         protected BaseController(ILogger logger, TRepository repository, IEventing eventing)
             : base(logger)
         {

@@ -105,6 +105,21 @@
         <member name="M:Nano.Repository.BaseRepository`2.AddOrUpdateManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteAsync``2(``1,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteAsync``1(System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteAsync``1(System.Int64,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteAsync``1(System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteAsync``1(System.Guid,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="M:Nano.Repository.BaseRepository`2.DeleteAsync``1(``0,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
@@ -478,12 +493,58 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
             <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteAsync``2(``1,System.Threading.CancellationToken)">
+            <summary>
+            Deletes the instance of the passed id.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
+            <typeparam name="TKey">The type of the key.</typeparam>
+            <param name="id">The id.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> returning 'void'.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteAsync``1(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Deletes the instance of the passed id.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
+            <param name="id">The id.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> returning 'void'.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteAsync``1(System.Int64,System.Threading.CancellationToken)">
+            <summary>
+            Deletes the instance of the passed id.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
+            <param name="id">The id.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> returning 'void'.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteAsync``1(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Deletes the instance of the passed id.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
+            <param name="id">The id.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> returning 'void'.</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteAsync``1(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Deletes the instance of the passed id.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
+            <param name="id">The id.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> returning 'void'.</returns>
+        </member>
         <member name="M:Nano.Repository.Interfaces.IRepository.DeleteAsync``1(``0,System.Threading.CancellationToken)">
             <summary>
             Deletes the instance of the passed <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>.
             </summary>
             <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
-            <param name="entity">The instance od <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>.</param>
+            <param name="entity">The instance of <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> returning 'void'.</returns>
         </member>

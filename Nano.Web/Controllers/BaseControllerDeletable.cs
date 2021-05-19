@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
@@ -6,6 +7,7 @@ using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Nano.Eventing;
 using Nano.Eventing.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
@@ -27,7 +29,15 @@ namespace Nano.Web.Controllers
         where TRepository : IRepository
         where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable
         where TCriteria : class, IQueryCriteria, new()
+        where TIdentity : IEquatable<TIdentity>
     {
+        /// <inheritdoc />
+        protected BaseControllerDeletable(ILogger logger, TRepository repository)
+            : this(logger, repository, new NullEventing())
+        {
+
+        }
+
         /// <inheritdoc />
         protected BaseControllerDeletable(ILogger logger, TRepository repository, IEventing eventing)
             : base(logger, repository, eventing)

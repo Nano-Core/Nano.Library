@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Nano.Eventing;
 using Nano.Eventing.Interfaces;
 using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Interfaces;
@@ -22,7 +24,15 @@ namespace Nano.Web.Controllers
         where TRepository : IRepositorySpatial
         where TEntity : class, IEntityIdentity<TIdentity>, IEntitySpatial, IEntityCreatable
         where TCriteria : class, IQueryCriteriaSpatial, new()
+        where TIdentity : IEquatable<TIdentity>
     {
+        /// <inheritdoc />
+        protected BaseControllerSpatialCreatable(ILogger logger, TRepository repository)
+            : this(logger, repository, new NullEventing())
+        {
+
+        }
+
         /// <inheritdoc />
         protected BaseControllerSpatialCreatable(ILogger logger, TRepository repository, IEventing eventing)
             : base(logger, repository, eventing)

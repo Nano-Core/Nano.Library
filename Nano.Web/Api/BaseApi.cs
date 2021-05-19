@@ -350,7 +350,9 @@ namespace Nano.Web.Api
             using var httpRequest = this.GetHttpRequestMessage(request);
             {
                 var body = request.GetBody();
-                var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
+                var content = body == null 
+                    ? string.Empty 
+                    : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
 
                 httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -368,7 +370,9 @@ namespace Nano.Web.Api
             using var httpRequest = this.GetHttpRequestMessage(request);
             {
                 var body = request.GetBody();
-                var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
+                var content = body == null 
+                    ? string.Empty 
+                    : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
 
                 httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -688,6 +692,7 @@ namespace Nano.Web.Api
 
     /// <inheritdoc />
     public class BaseApi<TIdentity> : BaseApi
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <inheritdoc />
         public BaseApi(ApiOptions apiOptions)

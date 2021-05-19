@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>5.1.4</version>
+    <version>5.1.5</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -14,12 +14,10 @@
     <summary>Rapidly built and deploy rich .NET 5.0 applications. 
 Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <releaseNotes>
-		- Removed Identity Challange methods
-		- Added Claim add/remove methods to BaseIdentityManager, IdentityController and IdentityApi.
-		- Added more role methods to BaseIdentityManager
-		- Added Random password generator
-		- Added Jwt token extensions
-	</releaseNotes>
+		- Added Delete by id methods to IRepository
+		- Added Controller constructors without IEventing dependency
+		- Added FromFormBody attribute, for json parameters posted as Form string.
+    </releaseNotes>
     <dependencies>
       <group targetFramework="net5.0">
 	      <dependency id="AspNetCore.HealthChecks.MySql" version="5.0.1" />
@@ -83,6 +81,7 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
 	      <dependency id="System.ComponentModel.Annotations" version="5.0.0" />
 		  <dependency id="Vivet.AspNetCore.RequestTimeZone" version="5.0.0" />
 	      <dependency id="Z.EntityFramework.Plus.EFCore" version="5.1.33" />
+	      <dependency id="JsonModelBinder" version="2.1.1" />
 	  </group>
     </dependencies>
   </metadata>

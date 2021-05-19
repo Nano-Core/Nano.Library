@@ -13,6 +13,7 @@ namespace Nano.Web.Api.Requests
     /// Details Request.
     /// </summary>
     public class DetailsRequest<TIdentity> : BaseRequestGet
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
         /// Id.

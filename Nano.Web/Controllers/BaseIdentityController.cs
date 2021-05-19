@@ -9,6 +9,7 @@ using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Nano.Eventing;
 using Nano.Eventing.Interfaces;
 using Nano.Models;
 using Nano.Models.Extensions;
@@ -35,7 +36,14 @@ namespace Nano.Web.Controllers
         protected virtual BaseIdentityManager<TIdentity> IdentityManager { get; }
 
         /// <inheritdoc />
-        protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, BaseIdentityManager<TIdentity> baseIdentityManager) 
+        protected BaseIdentityController(ILogger logger, TRepository repository, BaseIdentityManager<TIdentity> baseIdentityManager)
+            : this(logger, repository, new NullEventing(), baseIdentityManager)
+        {
+
+        }
+
+        /// <inheritdoc />
+        protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, BaseIdentityManager<TIdentity> baseIdentityManager)
             : base(logger, repository, eventing)
         {
             this.IdentityManager = baseIdentityManager ?? throw new ArgumentNullException(nameof(baseIdentityManager));

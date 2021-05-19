@@ -13,6 +13,7 @@ namespace Nano.Web.Api.Requests
     /// Delete Request.
     /// </summary>
     public class DeleteRequest<TIdentity> : BaseRequestDelete
+        where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
         /// Id.

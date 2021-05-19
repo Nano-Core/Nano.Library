@@ -51,6 +51,7 @@ namespace Nano.Repository
         /// <inheritdoc />
         public virtual async Task<TEntity> GetAsync<TEntity, TKey>(TKey key, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityIdentity<TKey>
+            where TKey : IEquatable<TKey>
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
@@ -450,12 +451,58 @@ namespace Nano.Repository
         }
 
         /// <inheritdoc />
+        public virtual async Task DeleteAsync<TEntity, TKey>(TKey id, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable 
+            where TKey : IEquatable<TKey>
+        {
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
+
+            var entity = this.Context
+                .FindAsync<TEntity>(id);
+
+            this.Context
+                .Remove(entity);
+
+            if (this.Context.AutoSave)
+                await this.SaveChanges(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteAsync<TEntity>(int id, CancellationToken cancellationToken)
+            where TEntity : class, IEntityDeletable
+        {
+            await this.DeleteAsync<TEntity, int>(id, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteAsync<TEntity>(long id, CancellationToken cancellationToken)
+            where TEntity : class, IEntityDeletable
+        {
+            await this.DeleteAsync<TEntity, long>(id, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteAsync<TEntity>(string id, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable
+        {
+            await this.DeleteAsync<TEntity, string>(id, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteAsync<TEntity>(Guid id, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable
+        {
+            await this.DeleteAsync<TEntity, Guid>(id, cancellationToken);
+        }
+
+        /// <inheritdoc />
         public virtual async Task DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
-    
+
             this.Context
                 .Remove(entity);
 

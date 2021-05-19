@@ -1519,6 +1519,19 @@
             Type.
             </summary>
         </member>
+        <member name="T:Nano.Web.Attributes.FromFormBody">
+            <summary>
+            From Form Body.
+            Using a specialized <see cref="T:BrunoZell.ModelBinding.JsonModelBinder"/>, that allows json post with a form.
+            Use when both files and json body are needed for parameters to a controller action.
+            https://github.com/BrunoZell/JsonModelBinder
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Attributes.FromFormBody.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
         <member name="T:Nano.Web.Const.HttpContentType">
             <summary>
             Http Content Type.
@@ -1585,6 +1598,9 @@
             </summary>
         </member>
         <member name="T:Nano.Web.Controllers.AuditController">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.AuditController.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.AuditController.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
@@ -1748,13 +1764,20 @@
             Repository.
             </summary>
         </member>
+        <member name="M:Nano.Web.Controllers.BaseController`1.#ctor(Microsoft.Extensions.Logging.ILogger,`0)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
+            <param name="repository">The <see cref="T:Nano.Repository.Interfaces.IRepository"/>.</param>
+        </member>
         <member name="M:Nano.Web.Controllers.BaseController`1.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <summary>
             Constructor.
             </summary>
             <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
             <param name="repository">The <see cref="T:Nano.Repository.Interfaces.IRepository"/>.</param>
-            <param name="eventing">The <see cref="T:Nano.Eventing.Interfaces.IEventingProvider"/>.</param>
+            <param name="eventing">The <see cref="T:Nano.Eventing.Interfaces.IEventing"/>.</param>
         </member>
         <member name="T:Nano.Web.Controllers.BaseControllerCreatable`4">
             <summary>
@@ -1764,6 +1787,9 @@
             <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> model the <see cref="T:Nano.Repository.Interfaces.IRepository"/> operates with.</typeparam>
             <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
             <typeparam name="TCriteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/> implementation.</typeparam>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerCreatable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0)">
+            <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.BaseControllerCreatable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
@@ -1800,6 +1826,9 @@
             <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> model the <see cref="T:Nano.Repository.Interfaces.IRepository"/> operates with.</typeparam>
             <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
             <typeparam name="TCriteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/> implementation.</typeparam>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerDeletable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0)">
+            <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.BaseControllerDeletable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
@@ -1843,6 +1872,9 @@
             <response code="500">Error occured.</response>
         </member>
         <member name="T:Nano.Web.Controllers.BaseControllerReadOnly`4">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
@@ -1994,6 +2026,9 @@
         <member name="T:Nano.Web.Controllers.BaseControllerSpatialCreatable`4">
             <inheritdoc />
         </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialCreatable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0)">
+            <inheritdoc />
+        </member>
         <member name="M:Nano.Web.Controllers.BaseControllerSpatialCreatable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
@@ -2022,6 +2057,9 @@
             <response code="500">Error occured.</response>
         </member>
         <member name="T:Nano.Web.Controllers.BaseControllerSpatialDeletable`4">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialDeletable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.BaseControllerSpatialDeletable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
@@ -2066,6 +2104,9 @@
             <response code="500">Error occured.</response>
         </member>
         <member name="T:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
@@ -2179,6 +2220,9 @@
         <member name="T:Nano.Web.Controllers.BaseControllerSpatialUpdatable`4">
             <inheritdoc />
         </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialUpdatable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0)">
+            <inheritdoc />
+        </member>
         <member name="M:Nano.Web.Controllers.BaseControllerSpatialUpdatable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
@@ -2208,6 +2252,9 @@
             <response code="500">Error occured.</response>
         </member>
         <member name="T:Nano.Web.Controllers.BaseControllerSpatialWritable`4">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
@@ -2309,6 +2356,9 @@
             <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
             <typeparam name="TCriteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/> implementation.</typeparam>
         </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerUpdatable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0)">
+            <inheritdoc />
+        </member>
         <member name="M:Nano.Web.Controllers.BaseControllerUpdatable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
@@ -2345,6 +2395,9 @@
             <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntity"/> model the <see cref="T:Nano.Repository.Interfaces.IRepository"/> operates with.</typeparam>
             <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
             <typeparam name="TCriteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/> implementation.</typeparam>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0)">
+            <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
@@ -2443,6 +2496,9 @@
             <summary>
             Identity Manager.
             </summary>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Security.BaseIdentityManager{`2})">
+            <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.BaseIdentityController`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing,Nano.Security.BaseIdentityManager{`2})">
             <inheritdoc />
@@ -2764,10 +2820,16 @@
         <member name="T:Nano.Web.Controllers.DefaultController`2">
             <inheritdoc />
         </member>
+        <member name="M:Nano.Web.Controllers.DefaultController`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository)">
+            <inheritdoc />
+        </member>
         <member name="M:Nano.Web.Controllers.DefaultController`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Controllers.DefaultController`3">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.DefaultController`3.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.DefaultController`3.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
@@ -2776,10 +2838,16 @@
         <member name="T:Nano.Web.Controllers.DefaultControllerCreatable`2">
             <inheritdoc />
         </member>
+        <member name="M:Nano.Web.Controllers.DefaultControllerCreatable`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository)">
+            <inheritdoc />
+        </member>
         <member name="M:Nano.Web.Controllers.DefaultControllerCreatable`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Controllers.DefaultControllerCreatable`3">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.DefaultControllerCreatable`3.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.DefaultControllerCreatable`3.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
@@ -2788,10 +2856,16 @@
         <member name="T:Nano.Web.Controllers.DefaultControllerDeletable`2">
             <inheritdoc />
         </member>
+        <member name="M:Nano.Web.Controllers.DefaultControllerDeletable`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository)">
+            <inheritdoc />
+        </member>
         <member name="M:Nano.Web.Controllers.DefaultControllerDeletable`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Controllers.DefaultControllerDeletable`3">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.DefaultControllerDeletable`3.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.DefaultControllerDeletable`3.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
@@ -2800,10 +2874,16 @@
         <member name="T:Nano.Web.Controllers.DefaultControllerReadOnly`2">
             <inheritdoc />
         </member>
+        <member name="M:Nano.Web.Controllers.DefaultControllerReadOnly`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository)">
+            <inheritdoc />
+        </member>
         <member name="M:Nano.Web.Controllers.DefaultControllerReadOnly`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Controllers.DefaultControllerReadOnly`3">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.DefaultControllerReadOnly`3.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.DefaultControllerReadOnly`3.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
@@ -2812,10 +2892,16 @@
         <member name="T:Nano.Web.Controllers.DefaultControllerSpatial`2">
             <inheritdoc />
         </member>
+        <member name="M:Nano.Web.Controllers.DefaultControllerSpatial`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepositorySpatial)">
+            <inheritdoc />
+        </member>
         <member name="M:Nano.Web.Controllers.DefaultControllerSpatial`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepositorySpatial,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Controllers.DefaultControllerSpatial`3">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.DefaultControllerSpatial`3.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepositorySpatial)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.DefaultControllerSpatial`3.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepositorySpatial,Nano.Eventing.Interfaces.IEventing)">
@@ -2824,16 +2910,25 @@
         <member name="T:Nano.Web.Controllers.DefaultControllerUpdatable`2">
             <inheritdoc />
         </member>
+        <member name="M:Nano.Web.Controllers.DefaultControllerUpdatable`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository)">
+            <inheritdoc />
+        </member>
         <member name="M:Nano.Web.Controllers.DefaultControllerUpdatable`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Controllers.DefaultControllerUpdatable`3">
             <inheritdoc />
         </member>
+        <member name="M:Nano.Web.Controllers.DefaultControllerUpdatable`3.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository)">
+            <inheritdoc />
+        </member>
         <member name="M:Nano.Web.Controllers.DefaultControllerUpdatable`3.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Controllers.DefaultIdentityController`2">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Controllers.DefaultIdentityController`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Security.DefaultIdentityManager)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Controllers.DefaultIdentityController`2.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing,Nano.Security.DefaultIdentityManager)">

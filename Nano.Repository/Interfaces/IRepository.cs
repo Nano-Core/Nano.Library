@@ -38,7 +38,8 @@ namespace Nano.Repository.Interfaces
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
         Task<TEntity> GetAsync<TEntity, TKey>(TKey key, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityIdentity<TKey>;
+            where TEntity : class, IEntityIdentity<TKey>
+            where TKey : IEquatable<TKey>;
 
         /// <summary>
         /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
@@ -313,10 +314,62 @@ namespace Nano.Repository.Interfaces
             where TEntity : class, IEntityCreatableAndUpdatable;
 
         /// <summary>
+        /// Deletes the instance of the passed id.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <param name="id">The id.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>A <see cref="Task"/> returning 'void'.</returns>
+        Task DeleteAsync<TEntity, TKey>(TKey id, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable
+            where TKey : IEquatable<TKey>;
+
+        /// <summary>
+        /// Deletes the instance of the passed id.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
+        /// <param name="id">The id.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>A <see cref="Task"/> returning 'void'.</returns>
+        Task DeleteAsync<TEntity>(int id, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable;
+
+        /// <summary>
+        /// Deletes the instance of the passed id.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
+        /// <param name="id">The id.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>A <see cref="Task"/> returning 'void'.</returns>
+        Task DeleteAsync<TEntity>(long id, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable;
+
+        /// <summary>
+        /// Deletes the instance of the passed id.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
+        /// <param name="id">The id.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>A <see cref="Task"/> returning 'void'.</returns>
+        Task DeleteAsync<TEntity>(string id, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable;
+
+        /// <summary>
+        /// Deletes the instance of the passed id.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
+        /// <param name="id">The id.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>A <see cref="Task"/> returning 'void'.</returns>
+        Task DeleteAsync<TEntity>(Guid id, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable;
+
+        /// <summary>
         /// Deletes the instance of the passed <see cref="IEntityDeletable"/>.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
-        /// <param name="entity">The instance od <see cref="IEntityDeletable"/>.</param>
+        /// <param name="entity">The instance of <see cref="IEntityDeletable"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="Task"/> returning 'void'.</returns>
         Task DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
