@@ -4,7 +4,6 @@ using Nano.Web.Api.Requests.Auth;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -13,11 +12,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Exceptions;
-using Nano.Models.Extensions;
 using Nano.Security.Extensions;
+using Nano.Web.Api.Extensions;
 using Nano.Web.Api.Requests;
 using Nano.Web.Api.Requests.Spatial;
 using Nano.Web.Const;
@@ -394,45 +392,8 @@ namespace Nano.Web.Api
                 {
                     foreach (var x in request.GetForm())
                     {
-                        if (x.Type == typeof(Stream))
-                        {
-                            var value = x.Value as FileStream;
-
-                            var bytes = await value
-                                .ReadAllBytesAsync(cancellationToken);
-
-                            var fileContent = new ByteArrayContent(bytes);
-                            fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
-
-                            formContent
-                                .Add(fileContent, x.Name);
-                        }
-                        else if (x.Type == typeof(FileInfo))
-                        {
-                            var value = x.Value as FileInfo;
-
-                            if (value == null)
-                                continue;
-
-                            var filename = value.FullName;
-
-                            if (!File.Exists(filename))
-                                throw new FileNotFoundException($"File: '{filename}' not found.");
-
-                            var bytes = await File.ReadAllBytesAsync(filename, cancellationToken);
-                            var fileContent = new ByteArrayContent(bytes);
-                            fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
-
-                            formContent
-                                .Add(fileContent, x.Name, Path.GetFileName(filename));
-                        }
-                        else
-                        {
-                            var value = x.Value.ToString() ?? string.Empty;
-
-                            formContent
-                                .Add(new StringContent(value), x.Name);
-                        }
+                        await formContent
+                            .AddFormItem(x, cancellationToken);
                     }
 
                     httpRequest.Content = formContent;
@@ -455,49 +416,8 @@ namespace Nano.Web.Api
                 {
                     foreach (var x in request.GetForm())
                     {
-                        if (x.Type == typeof(IFormFile))
-                        {
-                            var value = x.Value as IFormFile;
-
-                            if (value == null)
-                                continue;
-
-                            var bytes = await value
-                                .OpenReadStream()
-                                .ReadAllBytesAsync(cancellationToken);
-
-                            var fileContent = new ByteArrayContent(bytes);
-                            fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
-
-                            formContent
-                                .Add(fileContent, x.Name, value.FileName);
-                        }
-                        else if (x.Type == typeof(FileInfo))
-                        {
-                            var value = x.Value as FileInfo;
-
-                            if (value == null)
-                                continue;
-
-                            var filename = value.FullName;
-
-                            if (!File.Exists(filename))
-                                throw new FileNotFoundException($"{filename}");
-
-                            var bytes = await File.ReadAllBytesAsync(filename, cancellationToken);
-                            var fileContent = new ByteArrayContent(bytes);
-                            fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
-
-                            formContent
-                                .Add(fileContent, x.Name, Path.GetFileName(filename));
-                        }
-                        else
-                        {
-                            var value = x.Value.ToString() ?? string.Empty;
-
-                            formContent
-                                .Add(new StringContent(value), x.Name);
-                        }
+                        await formContent
+                            .AddFormItem(x, cancellationToken);
                     }
 
                     httpRequest.Content = formContent;
