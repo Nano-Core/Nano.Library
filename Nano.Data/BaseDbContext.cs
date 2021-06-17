@@ -164,10 +164,6 @@ namespace Nano.Data
 
             if (!securityOptions.IsAuth)
                 return;
-            
-            var adminUsername = securityOptions.User.AdminUsername ?? "username";
-            var adminPassword = securityOptions.User.AdminPassword ?? "password";
-            var adminEmailAddress = securityOptions.User.AdminEmailAddress ?? "admin@domain.com";
 
             await this.AddRole(BuiltInUserRoles.GUEST);
             await this.AddRole(BuiltInUserRoles.READER);
@@ -175,10 +171,17 @@ namespace Nano.Data
             await this.AddRole(BuiltInUserRoles.SERVICE);
             await this.AddRole(BuiltInUserRoles.ADMINISTRATOR);
 
-            var adminUser = await this.AddUser(adminUsername, adminPassword, adminEmailAddress);
+            var adminPassword = securityOptions.User.AdminPassword;
+            var adminEmailAddress = securityOptions.User.AdminEmailAddress;
 
-            await this.AddUserToRole(adminUser, BuiltInUserRoles.SERVICE);
-            await this.AddUserToRole(adminUser, BuiltInUserRoles.ADMINISTRATOR);
+            if (adminEmailAddress != null && adminPassword != null)
+            {
+                var adminUser = await this.AddUser(adminEmailAddress, adminPassword);
+
+                await this.AddUserToRole(adminUser, BuiltInUserRoles.SERVICE);
+                await this.AddUserToRole(adminUser, BuiltInUserRoles.ADMINISTRATOR);
+            }
+
 
             await base.SaveChangesAsync(cancellationToken);
         }
@@ -356,10 +359,10 @@ namespace Nano.Data
             return await roleManager
                 .FindByNameAsync(role);
         }
-        private async Task<IdentityUser<TIdentity>> AddUser(string username, string password, string emailAddress = null)
+        private async Task<IdentityUser<TIdentity>> AddUser(string emailAddress, string password)
         {
-            if (username == null)
-                throw new ArgumentNullException(nameof(username));
+            if (emailAddress == null)
+                throw new ArgumentNullException(nameof(emailAddress));
 
             if (password == null)
                 throw new ArgumentNullException(nameof(password));
@@ -367,13 +370,13 @@ namespace Nano.Data
             var userManager = this.GetService<UserManager<IdentityUser<TIdentity>>>();
 
             var user = await userManager
-                .FindByNameAsync(username);
+                .FindByEmailAsync(emailAddress);
             
             if (user == null)
             {
                 user = new IdentityUser<TIdentity>
                 {
-                    UserName = username,
+                    UserName = emailAddress,
                     Email = emailAddress,
                     EmailConfirmed = true,
                     PhoneNumber = "+1-000-000-0000",

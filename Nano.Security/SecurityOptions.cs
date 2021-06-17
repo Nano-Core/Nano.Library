@@ -91,11 +91,6 @@ namespace Nano.Security
             public virtual string AllowedUserNameCharacters { get; set; } = null;
 
             /// <summary>
-            /// Admin Username.
-            /// </summary>
-            public virtual string AdminUsername { get; set; } = "admin";
-
-            /// <summary>
             /// Admin Password.
             /// </summary>
             public virtual string AdminPassword { get; set; } = "password";

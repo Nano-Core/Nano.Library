@@ -52,6 +52,23 @@ namespace Nano.Models.Extensions
                     x.IsGenericType && x.GetGenericTypeDefinition() == baseType);
         }
 
+        /// <summary>
+        /// Is Simple.
+        /// Checks if the <see cref="Type"/> is simple.
+        /// </summary>
+        /// <param name="type">The <see cref="Type"/>.</param>
+        /// <returns>Boolean indicating if the type is simple.</returns>
+        public static bool IsSimple(this Type type)
+        {
+            if (type == null) 
+                throw new ArgumentNullException(nameof(type));
+            
+            return type.IsPrimitive
+                   || type.IsEnum
+                   || type == typeof(string)
+                   || type == typeof(decimal);
+        }
+
         private static string GetTypeString(this Type type)
         {
             var output = new StringBuilder();

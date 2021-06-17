@@ -9,6 +9,7 @@ namespace Nano.Security.Models
     {
         /// <summary>
         /// Roles.
+        /// Additional Roles to add to the user, besides the default roles in the configuration.
         /// </summary>
         public virtual IEnumerable<string> Roles { get; set; } = new List<string>();
 

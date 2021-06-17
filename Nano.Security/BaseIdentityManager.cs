@@ -132,12 +132,12 @@ namespace Nano.Security
             if (login == null)
                 throw new ArgumentNullException(nameof(login));
 
-            if (login.Username == this.Options.User.AdminUsername && login.Password == this.Options.User.AdminPassword)
+            if (login.Username == this.Options.User.AdminEmailAddress && login.Password == this.Options.User.AdminPassword)
             {
                 var tokenData = new AccessTokenData<TIdentity>
                 {
                     UserId = default,
-                    UserName = this.Options.User.AdminUsername,
+                    UserName = this.Options.User.AdminEmailAddress,
                     UserEmail = this.Options.User.AdminEmailAddress,
                     Claims = new[]
                     {

@@ -23,13 +23,14 @@ namespace Nano.Web.Api.Requests
                 .Where(x => x.GetCustomAttribute<FormAttribute>() != null)
                 .Select(x =>
                 {
+                    var type = x.PropertyType;
                     var value = x.GetValue(this);
 
                     return new FormItem
                     {
                         Name = x.Name,
                         Value = value,
-                        Type = x.PropertyType
+                        Type = type
                     };
                 });
         }
