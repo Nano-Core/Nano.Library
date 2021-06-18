@@ -40,8 +40,7 @@ namespace Nano.Data.Extensions
                 throw new ArgumentNullException(nameof(services));
 
             services
-                .AddScoped<DefaultDbContext, TContext>()
-                .AddScoped<DefaultIdentityManager>();
+                .AddScoped<DefaultDbContext, TContext>();
 
             services
                 .AddDataContext<TProvider, TContext, Guid>();

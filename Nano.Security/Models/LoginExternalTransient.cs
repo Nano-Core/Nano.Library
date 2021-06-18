@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models
 {
@@ -7,6 +8,12 @@ namespace Nano.Security.Models
     /// </summary>
     public class LoginExternalTransient : LoginExternalProvider
     {
+        /// <summary>
+        /// App Id.
+        /// </summary>
+        [MaxLength(256)]
+        public virtual string AppId { get; set; }
+
         /// <summary>
         /// Roles.
         /// </summary>

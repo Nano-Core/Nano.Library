@@ -29,6 +29,9 @@ namespace Nano.Security.Extensions
                 .AddConfigOptions<SecurityOptions>(configuration, SecurityOptions.SectionName, out var options);
 
             services
+                .AddScoped<TransientIdentityManager>();
+
+            services
                 .AddSecurityIdentity(options);
 
             return services;
@@ -47,7 +50,8 @@ namespace Nano.Security.Extensions
                 throw new ArgumentNullException(nameof(services));
 
             services
-                .AddScoped<BaseIdentityManager<TIdentity>>();
+                .AddScoped<BaseIdentityManager<TIdentity>>()
+                .AddScoped<DefaultIdentityManager>();
 
             return services;
         }
