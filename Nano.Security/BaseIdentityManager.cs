@@ -350,7 +350,7 @@ namespace Nano.Security
     /// <summary>
     /// Base Identity Manager.
     /// </summary>
-    public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
+    public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         where TIdentity : IEquatable<TIdentity>
     {
         /// <summary>
