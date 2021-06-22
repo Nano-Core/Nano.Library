@@ -17,7 +17,7 @@ namespace Nano.Security.Models
         /// <summary>
         /// App Id.
         /// </summary>
-        public virtual string AppId { get; set; } = BaseIdentityManager.DEFAULT_APP_ID;
+        public virtual string AppId { get; set; }
 
         /// <summary>
         /// User Id.

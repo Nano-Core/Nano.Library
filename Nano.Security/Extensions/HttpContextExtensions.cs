@@ -92,7 +92,7 @@ namespace Nano.Security.Extensions
                 throw new ArgumentNullException(nameof(httpContext));
 
             var value = httpContext.User
-                .FindFirstValue(ClaimTypes.Name);
+                .FindFirstValue(JwtRegisteredClaimNames.Name);
 
             return value;
         }
