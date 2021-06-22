@@ -43,7 +43,7 @@ namespace Nano.App
         /// <summary>
         /// Cultures.
         /// </summary>
-        public virtual CultureOptions Cultures { get; set; } = new CultureOptions();
+        public virtual CultureOptions Cultures { get; set; } = new();
 
         /// <summary>
         /// Culture Options (nested class).

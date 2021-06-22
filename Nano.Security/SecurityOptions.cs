@@ -22,27 +22,27 @@ namespace Nano.Security
         /// <summary>
         /// Jwt Options.
         /// </summary>
-        public virtual JwtOptions Jwt { get; set; } = new JwtOptions();
+        public virtual JwtOptions Jwt { get; set; } = new();
 
         /// <summary>
         /// User Options.
         /// </summary>
-        public virtual UserOptions User { get; set; } = new UserOptions();
+        public virtual UserOptions User { get; set; } = new();
 
         /// <summary>
         /// Sign In Options.
         /// </summary>
-        public virtual SignInOptions SignIn { get; set; } = new SignInOptions();
+        public virtual SignInOptions SignIn { get; set; } = new();
 
         /// <summary>
         /// Lockout Options.
         /// </summary>
-        public virtual LockoutOptions Lockout { get; set; } = new LockoutOptions();
+        public virtual LockoutOptions Lockout { get; set; } = new();
 
         /// <summary>
         /// Password Options.
         /// </summary>
-        public virtual PasswordOptions Password { get; set; } = new PasswordOptions();
+        public virtual PasswordOptions Password { get; set; } = new();
 
         /// <summary>
         /// External Logins Options.

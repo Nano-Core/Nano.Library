@@ -445,7 +445,7 @@ namespace Nano.Data
                 .Where(x =>
                     x.Entity.GetType().IsTypeOf(typeof(IEntityIdentity<>)) &&
                     x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
-                    (x.State == EntityState.Added || x.State == EntityState.Deleted))
+                    x.State is EntityState.Added or EntityState.Deleted)
                 .Select(x =>
                 {
                     var type = x.Entity.GetType();

@@ -17,6 +17,6 @@ namespace Nano.Models.Types
         /// Location.
         /// </summary>
         [Required]
-        public virtual Location Location { get; set; } = new Location();
+        public virtual Location Location { get; set; } = new();
     }
 }

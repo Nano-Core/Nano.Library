@@ -37,13 +37,13 @@ namespace Nano.Web.Api
         private AccessToken accessToken;
         private readonly ApiOptions apiOptions;
         private readonly HttpClient httpClient;
-        private readonly HttpClientHandler httpClientHandler = new HttpClientHandler
+        private readonly HttpClientHandler httpClientHandler = new()
         {
             AllowAutoRedirect = true,
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
         };
 
-        private static readonly JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings jsonSerializerSettings = new()
         {
             NullValueHandling = NullValueHandling.Ignore,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
@@ -477,11 +477,11 @@ namespace Nano.Web.Api
                 ? "https://"
                 : "http://";
             var host = this.apiOptions.Host.EndsWith("/")
-                ? this.apiOptions.Host.Substring(0, this.apiOptions.Host.Length - 1)
+                ? this.apiOptions.Host[..^1]
                 : this.apiOptions.Host;
             var port = this.apiOptions.Port;
             var root = this.apiOptions.Root.EndsWith("/")
-                ? this.apiOptions.Root.Substring(0, this.apiOptions.Root.Length - 1)
+                ? this.apiOptions.Root[..^1]
                 : this.apiOptions.Root;
             var controller = request.Controller == null ? null : $"{request.Controller}/";
             var action = request.Action == null ? null : $"{request.Action}/";
@@ -508,12 +508,12 @@ namespace Nano.Web.Api
 
             return request switch
             {
-                BaseRequestGet _ => HttpMethod.Get,
-                BaseRequestPut _ => HttpMethod.Put,
-                BaseRequestPost _ => HttpMethod.Post,
-                BaseRequestPostForm _ => HttpMethod.Post,
-                BaseRequestDelete _ => HttpMethod.Delete,
-                BaseRequestOptions _ => HttpMethod.Options,
+                BaseRequestGet => HttpMethod.Get,
+                BaseRequestPut => HttpMethod.Put,
+                BaseRequestPost => HttpMethod.Post,
+                BaseRequestPostForm => HttpMethod.Post,
+                BaseRequestDelete => HttpMethod.Delete,
+                BaseRequestOptions => HttpMethod.Options,
                 _ => throw new NotSupportedException()
             };
         }
@@ -558,6 +558,9 @@ namespace Nano.Web.Api
                 case HttpStatusCode.InternalServerError:
                     var errorContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
                     var error = JsonConvert.DeserializeObject<Error>(errorContent);
+
+                    if (error == null)
+                        throw new NullReferenceException(nameof(error));
 
                     if (error.IsTranslated)
                     {

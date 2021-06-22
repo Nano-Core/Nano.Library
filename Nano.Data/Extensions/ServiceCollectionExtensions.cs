@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Nano.Config;
 using Nano.Data.Models;
 using Nano.Data.Providers.Sqlite;
-using Nano.Security;
 using Z.EntityFramework.Plus;
 
 namespace Nano.Data.Extensions
@@ -184,7 +183,7 @@ namespace Nano.Data.Extensions
             }
             else
             {
-                AuditManager.DefaultConfiguration.Exclude(x => true);
+                AuditManager.DefaultConfiguration.Exclude(_ => true);
                 AuditManager.DefaultConfiguration.AutoSavePreAction = null;
             }
 

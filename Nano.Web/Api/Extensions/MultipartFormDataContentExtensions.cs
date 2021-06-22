@@ -27,7 +27,7 @@ namespace Nano.Web.Api.Extensions
         {
             if (formItem.Type == typeof(IFormFile))
             {
-                if (!(formItem.Value is IFormFile value))
+                if (formItem.Value is not IFormFile value)
                     return;
 
                 var bytes = await value
@@ -42,7 +42,7 @@ namespace Nano.Web.Api.Extensions
             }
             else if (formItem.Type == typeof(Stream))
             {
-                if (!(formItem.Value is FileStream value))
+                if (formItem.Value is not FileStream value)
                     return;
 
                 var bytes = await value
@@ -56,7 +56,7 @@ namespace Nano.Web.Api.Extensions
             }
             else if (formItem.Type == typeof(FileInfo))
             {
-                if (!(formItem.Value is FileInfo value))
+                if (formItem.Value is not FileInfo value)
                     return;
 
                 var filename = value.FullName;

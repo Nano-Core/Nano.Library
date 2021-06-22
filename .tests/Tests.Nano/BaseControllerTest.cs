@@ -24,17 +24,17 @@ namespace Tests.Nano
         /// <summary>
         /// Logger.
         /// </summary>
-        protected Mock<ILogger> MockLogger { get; set; } = new Mock<ILogger>();
+        protected Mock<ILogger> MockLogger { get; set; } = new();
 
         /// <summary>
         /// Eventing.
         /// </summary>
-        protected Mock<IEventing> MockEventing { get; set; } = new Mock<IEventing>();
+        protected Mock<IEventing> MockEventing { get; set; } = new();
 
         /// <summary>
         /// Repository.
         /// </summary>
-        protected Mock<IRepository> MockRepository { get; set; } = new Mock<IRepository>();
+        protected Mock<IRepository> MockRepository { get; set; } = new();
 
         /// <summary>
         /// Controller.

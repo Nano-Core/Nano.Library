@@ -75,9 +75,11 @@ namespace Nano.Web.Api.Requests
                 .Where(x => x.attribute != null)
                 .Select(x =>
                 {
-                    var key = x.attribute.Name ?? x.property.Name;
-                    var value = x.property.GetValue(this);
-                    var type = x.property.PropertyType;
+                    var (property, attribute) = x;
+
+                    var key = attribute.Name ?? property.Name;
+                    var value = property.GetValue(this);
+                    var type = property.PropertyType;
 
                     if (value == null)
                     {
@@ -90,7 +92,7 @@ namespace Nano.Web.Api.Requests
                             .Cast<object>()
                             .Aggregate(string.Empty, (current, item) => current + $"{key}={Uri.EscapeDataString(item?.ToString() ?? string.Empty)}&");
 
-                        return querystringPart.Substring(0, querystringPart.Length - 1);
+                        return querystringPart[..^1];
                     }
 
                     return $"{key}={Uri.EscapeDataString(value.ToString() ?? string.Empty)}";

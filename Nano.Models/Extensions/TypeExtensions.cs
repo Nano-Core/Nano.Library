@@ -76,7 +76,7 @@ namespace Nano.Models.Extensions
             var backTick = qualifiedName?.IndexOf('`') + 1 ?? 0;
 
             output
-                .Append(qualifiedName?.Substring(0, backTick - 1).Replace("[", string.Empty));
+                .Append(qualifiedName?[..(backTick - 1)].Replace("[", string.Empty));
             
             var typeStrings = type
                 .GetGenericArguments()

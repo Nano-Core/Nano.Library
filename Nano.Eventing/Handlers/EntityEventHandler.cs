@@ -93,7 +93,7 @@ namespace Nano.Eventing.Handlers
                         return;
 
                     case "Deleted":
-                        var isSoftDeleted = entity is IEntityDeletableSoft deleted && deleted.IsDeleted > 0L;
+                        var isSoftDeleted = entity is IEntityDeletableSoft {IsDeleted: > 0L};
 
                         if (entity == null || isSoftDeleted)
                         {

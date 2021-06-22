@@ -22,7 +22,10 @@ namespace Nano.Security.Extensions
             if (httpContext == null)
                 throw new ArgumentNullException(nameof(httpContext));
 
-            return (bool)httpContext.Items["IsAnonymous"];
+            var success = httpContext.Items
+                .TryGetValue("IsAnonymous", out var value);
+
+            return success && (bool)value;
         }
 
         /// <summary>
@@ -78,7 +81,7 @@ namespace Nano.Security.Extensions
 
             return success 
                 ? result 
-                : (Guid?)null;
+                : null;
         }
 
         /// <summary>

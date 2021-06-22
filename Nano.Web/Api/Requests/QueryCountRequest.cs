@@ -12,7 +12,7 @@ namespace Nano.Web.Api.Requests
         /// <summary>
         /// Criteria.
         /// </summary>
-        public virtual TCriteria Criteria { get; set; } = new TCriteria();
+        public virtual TCriteria Criteria { get; set; } = new();
 
         /// <summary>
         /// Constructor.

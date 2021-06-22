@@ -41,7 +41,7 @@ namespace Nano.Security.Extensions
             var handler = new JwtSecurityTokenHandler();
             var jsonToken = handler.ReadToken(accessToken);
 
-            if (!(jsonToken is JwtSecurityToken jwtSecurityToken))
+            if (jsonToken is not JwtSecurityToken jwtSecurityToken)
                 throw new NullReferenceException(nameof(jwtSecurityToken));
 
             return jwtSecurityToken;

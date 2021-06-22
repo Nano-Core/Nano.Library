@@ -72,7 +72,7 @@ namespace Nano.Web.Models
                         }
                         break;
                     }
-                case TranslationException _:
+                case TranslationException:
                     this.Exceptions = new[]
                     {
                         baseException.Message

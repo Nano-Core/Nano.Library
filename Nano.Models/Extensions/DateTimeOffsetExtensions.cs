@@ -7,7 +7,7 @@ namespace Nano.Models.Extensions
     /// </summary>
     public static class DateTimeOffsetExtensions
     {
-        private static readonly DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0);
+        private static readonly DateTime epoch = new(1970, 1, 1, 0, 0, 0);
 
         /// <summary>
         /// Gets the number of seconds since <see cref="epoch"/> (Unix). 

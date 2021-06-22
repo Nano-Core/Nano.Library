@@ -19,12 +19,12 @@ namespace Nano.Web
         /// <summary>
         /// Hosting.
         /// </summary>
-        public virtual HostingOptions Hosting { get; set; } = new HostingOptions();
+        public virtual HostingOptions Hosting { get; set; } = new();
 
         /// <summary>
         /// Documentation.
         /// </summary>
-        public virtual DocumentationOptions Documentation { get; set; } = new DocumentationOptions();
+        public virtual DocumentationOptions Documentation { get; set; } = new();
 
         /// <summary>
         /// Hosting Options.
@@ -79,41 +79,41 @@ namespace Nano.Web
             /// Csp.
             /// Settings for Content-Security-Policy.
             /// </summary>
-            public virtual CspOptions Csp { get; set; } = new CspOptions();
+            public virtual CspOptions Csp { get; set; } = new();
 
             /// <summary>
             /// Hsts.
             /// Settings for Strict-Transport-Security.
             /// </summary>
-            public virtual HstsOptions Hsts { get; set; } = new HstsOptions();
+            public virtual HstsOptions Hsts { get; set; } = new();
 
             /// <summary>
             /// Cache.
             /// Options for caching responses.
             /// </summary>
-            public virtual CacheOptions Cache { get; set; } = new CacheOptions();
+            public virtual CacheOptions Cache { get; set; } = new();
 
             /// <summary>
             /// Robots.
             /// Settings for robots (search engines) behavior.
             /// </summary>
-            public virtual RobotOptions Robots { get; set; } = new RobotOptions();
+            public virtual RobotOptions Robots { get; set; } = new();
 
             /// <summary>
             /// Session.
             /// Settings for session behavior.
             /// </summary>
-            public virtual SessionOptions Session { get; set; } = new SessionOptions();
+            public virtual SessionOptions Session { get; set; } = new();
 
             /// <summary>
             /// Certificate (ssl)
             /// </summary>
-            public virtual CertificateOptions Certificate { get; set; } = new CertificateOptions();
+            public virtual CertificateOptions Certificate { get; set; } = new();
 
             /// <summary>
             /// Health-Check.
             /// </summary>
-            public virtual HealthCheckOptions HealthCheck { get; set; } = new HealthCheckOptions();
+            public virtual HealthCheckOptions HealthCheck { get; set; } = new();
 
             /// <summary>
             /// Use Referrer Policy Header.
@@ -148,82 +148,82 @@ namespace Nano.Web
                 /// <summary>
                 /// Defaults.
                 /// </summary>
-                public virtual CspDirective Defaults { get; set; } = new CspDirective();
+                public virtual CspDirective Defaults { get; set; } = new();
 
                 /// <summary>
                 /// Styles.
                 /// </summary>
-                public virtual CspDirectiveStyles Styles { get; set; } = new CspDirectiveStyles();
+                public virtual CspDirectiveStyles Styles { get; set; } = new();
 
                 /// <summary>
                 /// Scripts.
                 /// </summary>
-                public virtual CspDirectiveScripts Scripts { get; set; } = new CspDirectiveScripts();
+                public virtual CspDirectiveScripts Scripts { get; set; } = new();
 
                 /// <summary>
                 /// Objects.
                 /// </summary>
-                public virtual CspDirective Objects { get; set; } = new CspDirective();
+                public virtual CspDirective Objects { get; set; } = new();
 
                 /// <summary>
                 /// Images.
                 /// </summary>
-                public virtual CspDirective Images { get; set; } = new CspDirective();
+                public virtual CspDirective Images { get; set; } = new();
 
                 /// <summary>
                 /// Media.
                 /// </summary>
-                public virtual CspDirective Media { get; set; } = new CspDirective();
+                public virtual CspDirective Media { get; set; } = new();
 
                 /// <summary>
                 /// Frames.
                 /// </summary>
-                public virtual CspDirective Frames { get; set; } = new CspDirective();
+                public virtual CspDirective Frames { get; set; } = new();
 
                 /// <summary>
                 /// Frame Ancestors.
                 /// </summary>
-                public virtual CspDirective FrameAncestors { get; set; } = new CspDirective();
+                public virtual CspDirective FrameAncestors { get; set; } = new();
 
                 /// <summary>
                 /// Fonts.
                 /// </summary>
-                public virtual CspDirective Fonts { get; set; } = new CspDirective();
+                public virtual CspDirective Fonts { get; set; } = new();
 
                 /// <summary>
                 /// Connections.
                 /// </summary>
-                public virtual CspDirective Connections { get; set; } = new CspDirective();
+                public virtual CspDirective Connections { get; set; } = new();
 
                 /// <summary>
                 /// Base Uri's.
                 /// </summary>
-                public virtual CspDirective BaseUris { get; set; } = new CspDirective();
+                public virtual CspDirective BaseUris { get; set; } = new();
 
                 /// <summary>
                 /// Children.
                 /// </summary>
-                public virtual CspDirective Children { get; set; } = new CspDirective();
+                public virtual CspDirective Children { get; set; } = new();
 
                 /// <summary>
                 /// Forms.
                 /// </summary>
-                public virtual CspDirective Forms { get; set; } = new CspDirective();
+                public virtual CspDirective Forms { get; set; } = new();
 
                 /// <summary>
                 /// Manifests.
                 /// </summary>
-                public virtual CspDirective Manifests { get; set; } = new CspDirective();
+                public virtual CspDirective Manifests { get; set; } = new();
 
                 /// <summary>
                 /// Workers.
                 /// </summary>
-                public virtual CspDirective Workers { get; set; } = new CspDirective();
+                public virtual CspDirective Workers { get; set; } = new();
 
                 /// <summary>
                 /// Sandbox.
                 /// </summary>
-                public virtual CspDirectiveSandbox Sandbox { get; set; } = new CspDirectiveSandbox();
+                public virtual CspDirectiveSandbox Sandbox { get; set; } = new();
 
                 /// <summary>
                 /// Report Uris.
@@ -600,12 +600,12 @@ namespace Nano.Web
             /// <summary>
             /// Contact.
             /// </summary>
-            public virtual OpenApiContact Contact { get; set; } = new OpenApiContact();
+            public virtual OpenApiContact Contact { get; set; } = new();
 
             /// <summary>
             /// License.
             /// </summary>
-            public virtual OpenApiLicense License { get; set; } = new OpenApiLicense();
+            public virtual OpenApiLicense License { get; set; } = new();
         }
     }
 }

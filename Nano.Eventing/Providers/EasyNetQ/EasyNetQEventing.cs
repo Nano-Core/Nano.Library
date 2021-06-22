@@ -55,13 +55,12 @@ namespace Nano.Eventing.Providers.EasyNetQ
             var route = string.IsNullOrEmpty(routing) ? string.Empty : $".{routing}";
             var appName = Assembly.GetEntryAssembly()?.GetName().Name;
             var queueName = $"{appName}:{name}{route}";
-            var exchangeName = name;
 
             var queue = await this.Bus.Advanced
                 .QueueDeclareAsync($"{queueName}", cancellationToken);
 
             var exchange = await this.Bus.Advanced
-                .ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout, cancellationToken: cancellationToken);
+                .ExchangeDeclareAsync(name, ExchangeType.Fanout, cancellationToken: cancellationToken);
 
             await this.Bus.Advanced
                 .BindAsync(exchange, queue, routing, cancellationToken);

@@ -46,7 +46,7 @@ namespace Nano.Web.Hosting.Middleware
             var request = httpContext.Request;
             var response = httpContext.Response;
 
-            var logLevel = response.StatusCode >= 500 && response.StatusCode <= 599 
+            var logLevel = response.StatusCode is >= 500 and <= 599 
                 ? LogLevel.Error 
                 : LogLevel.Information;
 
