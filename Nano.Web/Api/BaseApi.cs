@@ -591,14 +591,11 @@ namespace Nano.Web.Api
                     return await httpResponse.Content
                         .ReadAsStreamAsync(cancellationToken) as TResponse;
 
-                case HttpContentType.JSON:
-                    var successContent = await httpResponse.Content
+                default:
+                    var content = await httpResponse.Content
                         .ReadAsStringAsync(cancellationToken);
 
-                    return JsonConvert.DeserializeObject<TResponse>(successContent);
-
-                default:
-                    throw new NotSupportedException(contentType);
+                    return JsonConvert.DeserializeObject<TResponse>(content);
             }
         }
 
