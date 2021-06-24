@@ -153,8 +153,6 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            await this.AuthenticateAsync(cancellationToken);
-
             switch (request)
             {
                 case BaseRequestGet requestGet:
@@ -197,8 +195,6 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            await this.AuthenticateAsync(cancellationToken);
-
             request.Controller ??= this.GetInferredController<TResponse>();
 
             return request switch
@@ -229,8 +225,6 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            await this.AuthenticateAsync(cancellationToken);
-
             request.Controller ??= this.GetInferredController<TEntity>();
 
             return request switch
@@ -244,22 +238,28 @@ namespace Nano.Web.Api
             };
         }
 
-        private async Task AuthenticateAsync(CancellationToken cancellationToken = default)
+        private async Task<string> AuthenticateAsync(CancellationToken cancellationToken = default)
         {
             var httpContextAccess = HttpContextAccess.Current;
 
             if (httpContextAccess != null)
             {
+                var jwtToken = httpContextAccess
+                    .GetJwtToken();
+
+                if (jwtToken != null)
+                    return jwtToken;
+
                 var isAnonymous = httpContextAccess
                     .GetIsAnonymous();
 
                 if (isAnonymous)
                 {
                     if (this.apiOptions.Login == null)
-                        return;
+                        return this.accessToken?.Token;
 
                     if (!string.IsNullOrEmpty(this.accessToken?.Token) && !this.accessToken.IsExpired)
-                        return;
+                        return this.accessToken?.Token;
 
                     this.apiOptions.Login.IsRefreshable = false;
 
@@ -269,8 +269,12 @@ namespace Nano.Web.Api
                     };
 
                     this.accessToken = await this.InvokeAsync<LogInRequest, AccessToken>(loginRequest, cancellationToken);
+
+                    return this.accessToken?.Token;
                 }
             }
+
+            return this.accessToken?.Token;
         }
 
         private async Task GetAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
@@ -279,7 +283,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            using var httpRequest = this.GetHttpRequestMessage(request);
+            using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
             {
                 await this.httpClient
                     .SendAsync(httpRequest, cancellationToken);
@@ -292,7 +296,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            using var httpRequest = this.GetHttpRequestMessage(request);
+            using var httpRequest = await this.GetHttpRequestMessage(request ,cancellationToken);
             {
                 var httpResponse = await this.httpClient
                     .SendAsync(httpRequest, cancellationToken);
@@ -306,7 +310,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            using var httpRequest = this.GetHttpRequestMessage(request);
+            using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
             {
                 var body = request.GetBody();
                 var content = body == null
@@ -326,7 +330,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            using var httpRequest = this.GetHttpRequestMessage(request);
+            using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
             {
                 var body = request.GetBody();
                 var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
@@ -345,7 +349,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            using var httpRequest = this.GetHttpRequestMessage(request);
+            using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
             {
                 var body = request.GetBody();
                 var content = body == null 
@@ -365,7 +369,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            using var httpRequest = this.GetHttpRequestMessage(request);
+            using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
             {
                 var body = request.GetBody();
                 var content = body == null 
@@ -386,7 +390,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            using var httpRequest = this.GetHttpRequestMessage(request);
+            using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
             {
                 using var formContent = new MultipartFormDataContent();
                 {
@@ -410,7 +414,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            using var httpRequest = this.GetHttpRequestMessage(request);
+            using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
             {
                 using var formContent = new MultipartFormDataContent();
                 {
@@ -435,7 +439,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            using var httpRequest = this.GetHttpRequestMessage(request);
+            using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
             {
                 var body = request.GetBody();
                 var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
@@ -453,7 +457,7 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            using var httpRequest = this.GetHttpRequestMessage(request);
+            using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
             {
                 var body = request.GetBody();
                 var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
@@ -517,7 +521,7 @@ namespace Nano.Web.Api
                 _ => throw new NotSupportedException()
             };
         }
-        private HttpRequestMessage GetHttpRequestMessage<TRequest>(TRequest request)
+        private async Task<HttpRequestMessage> GetHttpRequestMessage<TRequest>(TRequest request, CancellationToken cancellationToken)
             where TRequest : BaseRequest
         {
             if (request == null)
@@ -525,6 +529,8 @@ namespace Nano.Web.Api
 
             var uri = this.GetUri(request);
             var method = this.GetMethod(request);
+            var jwtToken = await this.AuthenticateAsync(cancellationToken);
+
             var httpRequest = new HttpRequestMessage(method, uri);
 
             httpRequest.Headers.AcceptLanguage
@@ -533,9 +539,9 @@ namespace Nano.Web.Api
             httpRequest.Headers
                 .Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
 
-            if (accessToken?.Token != null)
+            if (jwtToken != null)
             {
-                httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.accessToken.Token);
+                httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
             }
 
             return httpRequest;
@@ -552,7 +558,7 @@ namespace Nano.Web.Api
                     return default;
 
                 case HttpStatusCode.Unauthorized:
-                    throw new AggregateException(new UnauthorizedAccessException());
+                    throw new UnauthorizedAccessException();
 
                 case HttpStatusCode.BadRequest:
                 case HttpStatusCode.InternalServerError:

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>5.1.11</version>
+    <version>5.1.12</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -14,7 +14,8 @@
     <summary>Rapidly built and deploy rich .NET 5.0 applications. 
 Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <releaseNotes>
-	    - Fixed issue with authentication scheme.
+	    - Fixed api-client not adding jwt-token to request header.
+		- Fixed unauthorized exception not sending 401 http error from api-client.
     </releaseNotes>
     <dependencies>
       <group targetFramework="net5.0">
