@@ -174,7 +174,7 @@ namespace Nano.Data
             var adminPassword = securityOptions.User.AdminPassword;
             var adminEmailAddress = securityOptions.User.AdminEmailAddress;
 
-            if (adminEmailAddress != null && adminPassword != null)
+            if (!string.IsNullOrEmpty(adminEmailAddress) && !string.IsNullOrEmpty(adminPassword))
             {
                 var adminUser = await this.AddUser(adminEmailAddress, adminPassword);
 
