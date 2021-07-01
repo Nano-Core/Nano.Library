@@ -99,7 +99,7 @@ namespace Nano.Web.Extensions
                     x.Conventions.Insert(0, routePrefixConvention);
                     x.ModelBinderProviders.Insert(0, queryModelBinderProvider);
 
-                    if (!securityOptions.IsAuth)
+                    if (!securityOptions.IsAuth || dataOptions.ConnectionString == null)
                         x.Conventions.Insert(1, new AuthControllerDisabledConvention());
 
                     if (dataOptions.ConnectionString == null || !dataOptions.UseAudit)

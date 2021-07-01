@@ -93,12 +93,12 @@ namespace Nano.Security
             /// <summary>
             /// Admin Password.
             /// </summary>
-            public virtual string AdminPassword { get; set; } = "password";
+            public virtual string AdminPassword { get; set; }
 
             /// <summary>
             /// Admin Email Address.
             /// </summary>
-            public virtual string AdminEmailAddress { get; set; } = "admin@nobody.com";
+            public virtual string AdminEmailAddress { get; set; }
 
             /// <summary>
             /// Default Roles.
