@@ -136,7 +136,7 @@ namespace Nano.Web.Controllers
         [Route("login/external")]
         [AllowAnonymous]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(ExternalLoginResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -169,7 +169,7 @@ namespace Nano.Web.Controllers
         [Route("login/external/transient")]
         [AllowAnonymous]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(ExternalLoginResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -183,12 +183,7 @@ namespace Nano.Web.Controllers
             if (accessToken == null)
                 return this.NotFound();
 
-            var response = new ExternalLoginResponse
-            {
-                AccessToken = accessToken
-            };
-
-            return this.Ok(response);
+            return this.Ok(accessToken);
         }
 
         /// <summary>

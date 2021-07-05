@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
+using Microsoft.Net.Http.Headers;
 using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Exceptions;
 using Nano.Security.Exceptions;
@@ -27,6 +28,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Vivet.AspNetCore.RequestTimeZone;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
+using StringWithQualityHeaderValue = System.Net.Http.Headers.StringWithQualityHeaderValue;
 
 namespace Nano.Web.Api
 {
@@ -82,7 +84,15 @@ namespace Nano.Web.Api
         /// <returns>The <see cref="AccessToken"/>.</returns>
         public virtual async Task<AccessToken> LogInAsync(LogInRequest request, CancellationToken cancellationToken = default)
         {
-            return await this.InvokeAsync<LogInRequest, AccessToken>(request, cancellationToken);
+            if (request == null) 
+                throw new ArgumentNullException(nameof(request));
+            
+            var response = await this.InvokeAsync<LogInRequest, AccessToken>(request, cancellationToken);
+
+            HttpContextAccess.Current?.Request.Headers
+                .Add(HeaderNames.Authorization, $"Bearer {response.Token}");
+
+            return response;
         }
 
         /// <summary>
@@ -96,7 +106,12 @@ namespace Nano.Web.Api
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.InvokeAsync<LogInRefreshRequest, AccessToken>(request, cancellationToken);
+            var response = await this.InvokeAsync<LogInRefreshRequest, AccessToken>(request, cancellationToken);
+
+            HttpContextAccess.Current?.Request.Headers
+                .Add(HeaderNames.Authorization, $"Bearer {response.Token}");
+
+            return response;
         }
 
         /// <summary>
@@ -105,12 +120,17 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="LogInRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<ExternalLoginResponse> LogInExternalAsync(LogInExternalRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task<AccessToken> LogInExternalAsync(LogInExternalRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.InvokeAsync<LogInExternalRequest, ExternalLoginResponse>(request, cancellationToken);
+            var response = await this.InvokeAsync<LogInExternalRequest, AccessToken>(request, cancellationToken);
+
+            HttpContextAccess.Current?.Request.Headers
+                .Add(HeaderNames.Authorization, $"Bearer {response.Token}");
+
+            return response;
         }
 
         /// <summary>

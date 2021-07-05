@@ -1,8 +1,8 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 using Nano.Security.Const;
 
 namespace Nano.Security.Extensions
@@ -54,9 +54,10 @@ namespace Nano.Security.Extensions
             if (httpContext == null)
                 throw new ArgumentNullException(nameof(httpContext));
 
-            var value = httpContext
-                .GetTokenAsync("access_token")
-                .Result;
+            const string PREFIX = "Baerer ";
+
+            var authorizationHeader = httpContext.Request.Headers[HeaderNames.Authorization].ToString();
+            var value = authorizationHeader[PREFIX.Length..];
 
             return value;
         }
