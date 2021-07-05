@@ -52,7 +52,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.SignInAdminAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.SignInAdminTransientAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
             <summary>
             Signs in the admin user statically.
             The login is transient, no Identity store is used.

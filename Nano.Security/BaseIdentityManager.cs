@@ -57,10 +57,15 @@ namespace Nano.Security
         /// <param name="login">The <see cref="Login"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<AccessToken> SignInAdminAsync(Login login, CancellationToken cancellationToken = default)
+        public virtual async Task<AccessToken> SignInAdminTransientAsync(Login login, CancellationToken cancellationToken = default)
         {
             if (login == null)
                 throw new ArgumentNullException(nameof(login));
+
+            if (string.IsNullOrEmpty(this.Options.User.AdminEmailAddress) || string.IsNullOrEmpty(this.Options.User.AdminEmailAddress))
+            {
+                throw new UnauthorizedException();
+            }
 
             if (login.Username == this.Options.User.AdminEmailAddress && login.Password == this.Options.User.AdminPassword)
             {
@@ -365,7 +370,7 @@ namespace Nano.Security
             }
             else
             {
-                return await this.SignInAdminAsync(login, cancellationToken);
+                return await this.SignInAdminTransientAsync(login, cancellationToken);
             }
 
             throw new UnauthorizedException();
