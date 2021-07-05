@@ -58,12 +58,17 @@ namespace Nano.Data.Models.Mappings.Extensions
                         .Select(y => y.Name)
                         .ToArray();
 
-                    var name = columns
-                        .Aggregate("UX", (y, z) => y + $"_{z}");
+                    var tableName = x.DeclaringEntityType
+                        .GetTableName();
+
+                    var columnNames = columns
+                        .Aggregate("", (y, z) => y + $"_{z}");
+
+                    var indexName = $"UX_{tableName}{columnNames}";
 
                     entity
                         .HasIndex(columns)
-                        .HasDatabaseName(name)
+                        .HasDatabaseName(indexName)
                         .IsUnique();
                 });
 
