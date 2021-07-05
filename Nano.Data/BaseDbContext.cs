@@ -69,19 +69,19 @@ namespace Nano.Data
                 .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>();
 
             modelBuilder
-                .Entity<IdentityUserLogin<Guid>>()
+                .Entity<IdentityUserLogin<TIdentity>>()
                 .ToTable("__EFAuthUserLogin");
 
             modelBuilder
-                .Entity<IdentityUserRole<Guid>>()
+                .Entity<IdentityUserRole<TIdentity>>()
                 .ToTable("__EFAuthUserRole");
 
             modelBuilder
-                .Entity<IdentityUserTokenExpiry<Guid>>()
+                .Entity<IdentityUserTokenExpiry<TIdentity>>()
                 .ToTable("__EFAuthUserToken");
 
             modelBuilder
-                .Entity<IdentityUserClaim<Guid>>()
+                .Entity<IdentityUserClaim<TIdentity>>()
                 .ToTable("__EFAuthUserClaim");
 
             modelBuilder
@@ -89,21 +89,21 @@ namespace Nano.Data
                 .ToTable("__EFAuthUser");
 
             modelBuilder
-                .Entity<IdentityUser<Guid>>()
+                .Entity<IdentityUser<TIdentity>>()
                 .HasIndex(x => x.Email)
                 .IsUnique();
 
             modelBuilder
-                .Entity<IdentityUser<Guid>>()
+                .Entity<IdentityUser<TIdentity>>()
                 .HasIndex(x => x.PhoneNumber)
                 .IsUnique();
 
             modelBuilder
-                .Entity<IdentityRoleClaim<Guid>>()
+                .Entity<IdentityRoleClaim<TIdentity>>()
                 .ToTable("__EFAuthRoleClaim");
 
             modelBuilder
-                .Entity<IdentityRole<Guid>>()
+                .Entity<IdentityRole<TIdentity>>()
                 .ToTable("__EFAuthRole");
         }
 
@@ -181,7 +181,6 @@ namespace Nano.Data
                 await this.AddUserToRole(adminUser, BuiltInUserRoles.SERVICE);
                 await this.AddUserToRole(adminUser, BuiltInUserRoles.ADMINISTRATOR);
             }
-
 
             await base.SaveChangesAsync(cancellationToken);
         }

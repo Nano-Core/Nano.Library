@@ -51,9 +51,6 @@ namespace Nano.Data.Models.Mappings.Extensions
                 .ToList()
                 .ForEach(x =>
                 {
-                    if (x.IsUnique)
-                        return;
-
                     entity.Metadata
                         .RemoveIndex(x.Properties);
 

@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
 using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Exceptions;
+using Nano.Security.Exceptions;
 using Nano.Security.Extensions;
 using Nano.Web.Api.Extensions;
 using Nano.Web.Api.Requests;
@@ -558,7 +559,7 @@ namespace Nano.Web.Api
                     return default;
 
                 case HttpStatusCode.Unauthorized:
-                    throw new UnauthorizedAccessException();
+                    throw new UnauthorizedException();  
 
                 case HttpStatusCode.BadRequest:
                 case HttpStatusCode.InternalServerError:
