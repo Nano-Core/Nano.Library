@@ -57,6 +57,13 @@ namespace Nano.Security.Extensions
             const string PREFIX = "Baerer ";
 
             var authorizationHeader = httpContext.Request.Headers[HeaderNames.Authorization].ToString();
+
+            if (string.IsNullOrEmpty(authorizationHeader))
+                return null;
+
+            if (authorizationHeader.Length <= PREFIX.Length)
+                return null;
+
             var value = authorizationHeader[PREFIX.Length..];
 
             return value;
