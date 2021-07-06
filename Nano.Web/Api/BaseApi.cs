@@ -89,8 +89,7 @@ namespace Nano.Web.Api
             
             var response = await this.InvokeAsync<LogInRequest, AccessToken>(request, cancellationToken);
 
-            HttpContextAccess.Current?.Request.Headers
-                .Add(HeaderNames.Authorization, $"Bearer {response.Token}");
+            this.SetAuthorizationHeader(response.Token);
 
             return response;
         }
@@ -108,8 +107,7 @@ namespace Nano.Web.Api
 
             var response = await this.InvokeAsync<LogInRefreshRequest, AccessToken>(request, cancellationToken);
 
-            HttpContextAccess.Current?.Request.Headers
-                .Add(HeaderNames.Authorization, $"Bearer {response.Token}");
+            this.SetAuthorizationHeader(response.Token);
 
             return response;
         }
@@ -127,8 +125,7 @@ namespace Nano.Web.Api
 
             var response = await this.InvokeAsync<LogInExternalRequest, AccessToken>(request, cancellationToken);
 
-            HttpContextAccess.Current?.Request.Headers
-                .Add(HeaderNames.Authorization, $"Bearer {response.Token}");
+            this.SetAuthorizationHeader(response.Token);
 
             return response;
         }
@@ -624,6 +621,15 @@ namespace Nano.Web.Api
 
                     return JsonConvert.DeserializeObject<TResponse>(content);
             }
+        }
+        private void SetAuthorizationHeader(string token)
+        {
+            var httpContext = HttpContextAccess.Current;
+
+            if (httpContext == null)
+                return;
+
+            httpContext.Request.Headers[HeaderNames.Authorization] = token;
         }
 
         /// <inheritdoc />
