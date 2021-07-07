@@ -629,7 +629,7 @@ namespace Nano.Web.Api
             if (httpContext == null)
                 return;
 
-            httpContext.Request.Headers[HeaderNames.Authorization] = token;
+            httpContext.Request.Headers[HeaderNames.Authorization] = $"Bearer {token}";
         }
 
         /// <inheritdoc />
