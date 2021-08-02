@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Config.Extensions;
@@ -82,7 +83,7 @@ namespace Nano.Eventing.Extensions
                 {
                     var handlerType = x.Type;
                     var genericHandlerType = x.GenericType;
-                    var eventType = x.GenericType.GetGenericArguments()[0];
+                    var eventType = genericHandlerType.GetGenericArguments()[0];
 
                     services
                         .AddScoped(genericHandlerType, handlerType); 
@@ -97,7 +98,8 @@ namespace Nano.Eventing.Extensions
                         .Invoke(eventing, new object[]
                         {
                             provider, 
-                            string.Empty
+                            string.Empty,
+                            CancellationToken.None
                         });
                 });
 
@@ -132,7 +134,12 @@ namespace Nano.Eventing.Extensions
                         .GetType()
                         .GetMethod("SubscribeAsync")?
                         .MakeGenericMethod(eventType)
-                        .Invoke(eventing, new object[] { provider, x.Name });
+                        .Invoke(eventing, new object[]
+                        {
+                            provider, 
+                            x.Name,
+                            CancellationToken.None
+                        });
                 });
 
             return services;
