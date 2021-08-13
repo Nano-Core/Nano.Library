@@ -456,7 +456,7 @@ namespace Nano.Security
                     throw new InvalidOperationException();
 
                 var identityUser = await this.UserManager
-                    .FindByNameAsync(principal.Identity?.Name);
+                    .FindByNameAsync(principal.Identity?.Name); // BUG: throws
 
                 var appClaim = principal.Claims
                     .FirstOrDefault(x => x.Type == ClaimTypesExtended.AppId);
@@ -483,7 +483,7 @@ namespace Nano.Security
             }
             catch (Exception ex)
             {
-                this.UserManager.Logger.LogWarning(ex, ex.Message);
+                this.UserManager.Logger.LogError(ex, ex.Message);
 
                 throw new UnauthorizedException();
             }
