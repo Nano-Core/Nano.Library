@@ -455,8 +455,17 @@ namespace Nano.Security
                 if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                     throw new InvalidOperationException();
 
+                var subClaim = principal.Claims
+                    .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sub);
+
+                if (subClaim == null)
+                    throw new NullReferenceException(nameof(subClaim));
+
                 var identityUser = await this.UserManager
-                    .FindByNameAsync(principal.Identity?.Name); // BUG: throws
+                    .FindByIdAsync(subClaim.Value);
+
+                if (identityUser == null)
+                    throw new NullReferenceException(nameof(identityUser));
 
                 var appClaim = principal.Claims
                     .FirstOrDefault(x => x.Type == ClaimTypesExtended.AppId);
