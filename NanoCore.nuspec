@@ -14,7 +14,7 @@
     <summary>Rapidly built and deploy rich .NET 5.0 applications. 
 Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <releaseNotes>
-		- Fixed issue with missing CancellationToken parameter for Eventing SubscribeAsync.
+		- Added configurable shutdown timeout.
 	</releaseNotes>
     <dependencies>
       <group targetFramework="net5.0">
