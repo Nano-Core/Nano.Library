@@ -116,13 +116,14 @@ namespace Nano.Web
         {
             var root = Directory.GetCurrentDirectory();
             var config = ConfigManager.BuildConfiguration(args);
-            var shutdownTimeout = TimeSpan.FromSeconds(10);
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
             var applicationKey = Assembly.GetEntryAssembly()?.FullName ?? Assembly.GetExecutingAssembly().FullName;
 
             var webOptions = config
                 .GetSection(WebOptions.SectionName)
                 .Get<WebOptions>() ?? new WebOptions();
+
+            var shutdownTimeout = TimeSpan.FromSeconds(webOptions.Hosting.ShutdownTimeout); 
 
             return new WebHostBuilder()
                 .UseEnvironment(environment)

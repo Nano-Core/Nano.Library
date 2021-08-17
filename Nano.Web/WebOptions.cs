@@ -52,6 +52,12 @@ namespace Nano.Web
             public virtual string[] AllowedOrigins { get; set; } = new string[0];
 
             /// <summary>
+            /// Shutdown Timeout.
+            /// The number of seconds the application waits after receiving a SIGTERM signal, before shutting down.
+            /// </summary>
+            public virtual int ShutdownTimeout { get; set; } = 10;
+
+            /// <summary>
             /// Use Https Redirect.
             /// Forces https for all requests.
             /// </summary>
