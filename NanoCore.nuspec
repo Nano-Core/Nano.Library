@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>5.1.23</version>
+    <version>5.1.24</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -14,7 +14,7 @@
     <summary>Rapidly built and deploy rich .NET 5.0 applications. 
 Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <releaseNotes>
-		- Added configurable shutdown timeout.
+	    - Updatted all NuGet dependencies.
 	</releaseNotes>
     <dependencies>
       <group targetFramework="net5.0">
@@ -22,7 +22,7 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
 	      <dependency id="AspNetCore.HealthChecks.Network" version="5.0.4" />
 	      <dependency id="AspNetCore.HealthChecks.Rabbitmq" version="5.0.1" />
 	      <dependency id="AspNetCore.HealthChecks.Sqlite" version="5.0.1" />
-		  <dependency id="AspNetCore.HealthChecks.SqlServer" version="5.0.2" />
+		  <dependency id="AspNetCore.HealthChecks.SqlServer" version="5.0.3" />
 		  <dependency id="AspNetCore.HealthChecks.System" version="5.0.1" />
 	      <dependency id="AspNetCore.HealthChecks.UI" version="5.0.1" />
 	      <dependency id="AspNetCore.HealthChecks.UI.Client" version="5.0.1" />
@@ -30,26 +30,26 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
 	      <dependency id="DynamicExpression" version="2.2.1" />
 	      <dependency id="EasyNetQ" version="6.3.1" />
 	      <dependency id="EntityFrameworkCore.Triggers" version="1.2.3" />
-	      <dependency id="Google.Apis.Auth" version="1.51.0" />
-		  <dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="5.0.5" />
-		  <dependency id="Microsoft.AspNetCore.Authentication.Google" version="5.0.5" />
-		  <dependency id="Microsoft.AspNetCore.Authentication.MicrosoftAccount" version="5.0.5" />
-	      <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="5.0.5" />
-		  <dependency id="Microsoft.AspNetCore.Authorization" version="5.0.5" />
-		  <dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="5.0.5" />
-		  <dependency id="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="5.0.5" />
+	      <dependency id="Google.Apis.Auth" version="1.55.0" />
+		  <dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="5.0.10" />
+		  <dependency id="Microsoft.AspNetCore.Authentication.Google" version="5.0.10" />
+		  <dependency id="Microsoft.AspNetCore.Authentication.MicrosoftAccount" version="5.0.10" />
+	      <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="5.0.10" />
+		  <dependency id="Microsoft.AspNetCore.Authorization" version="5.0.10" />
+		  <dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="5.0.10" />
+		  <dependency id="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="5.0.10" />
 		  <dependency id="Microsoft.AspNetCore.Mvc.Versioning" version="5.0.0" />
 		  <dependency id="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" version="5.0.0" />
-	      <dependency id="Microsoft.EntityFrameworkCore" version="5.0.5" />
-	      <dependency id="Microsoft.EntityFrameworkCore.Design" version="5.0.5" />
-	      <dependency id="Microsoft.EntityFrameworkCore.InMemory" version="5.0.5" />
-	      <dependency id="Microsoft.EntityFrameworkCore.Proxies" version="5.0.5" />
-	      <dependency id="Microsoft.EntityFrameworkCore.Relational" version="5.0.5" />
-	      <dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="5.0.5" />
-	      <dependency id="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" version="5.0.5" />
-	      <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="5.0.5" />
-	      <dependency id="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" version="5.0.5" />
-	      <dependency id="Microsoft.EntityFrameworkCore.Tools" version="5.0.5" />
+	      <dependency id="Microsoft.EntityFrameworkCore" version="5.0.10" />
+	      <dependency id="Microsoft.EntityFrameworkCore.Design" version="5.0.10" />
+	      <dependency id="Microsoft.EntityFrameworkCore.InMemory" version="5.0.10" />
+	      <dependency id="Microsoft.EntityFrameworkCore.Proxies" version="5.0.10" />
+	      <dependency id="Microsoft.EntityFrameworkCore.Relational" version="5.0.10" />
+	      <dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="5.0.10" />
+	      <dependency id="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" version="5.0.10" />
+	      <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="5.0.10" />
+	      <dependency id="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" version="5.0.10" />
+	      <dependency id="Microsoft.EntityFrameworkCore.Tools" version="5.0.10" />
 	      <dependency id="Microsoft.Extensions.Configuration" version="5.0.0" />
 	      <dependency id="Microsoft.Extensions.Configuration.Binder" version="5.0.0" />
 	      <dependency id="Microsoft.Extensions.Configuration.CommandLine" version="5.0.0" />
@@ -57,28 +57,28 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
 	      <dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="5.0.0" />
 	      <dependency id="Microsoft.Extensions.Configuration.Json" version="5.0.0" />
 	      <dependency id="Microsoft.Extensions.Configuration.UserSecrets" version="5.0.0" />
-	      <dependency id="Microsoft.Extensions.DependencyInjection" version="5.0.1" />
+	      <dependency id="Microsoft.Extensions.DependencyInjection" version="5.0.2" />
 	      <dependency id="Microsoft.Extensions.Hosting" version="5.0.0" />
-		  <dependency id="Microsoft.Extensions.Identity.Stores" version="5.0.5" />
-	      <dependency id="Microsoft.IdentityModel.Protocols.OpenIdConnect" version="6.11.0" />
+		  <dependency id="Microsoft.Extensions.Identity.Stores" version="5.0.10" />
+	      <dependency id="Microsoft.IdentityModel.Protocols.OpenIdConnect" version="6.12.2" />
 		  <dependency id="Microsoft.Extensions.Logging" version="5.0.0" />
-	      <dependency id="Microsoft.Extensions.Logging.Log4Net.AspNetCore" version="5.0.1" />
+	      <dependency id="Microsoft.Extensions.Logging.Log4Net.AspNetCore" version="5.0.4" />
 		  <dependency id="Microsoft.Extensions.Options" version="5.0.0" />
 		  <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="5.0.0" />
-	      <dependency id="NetTopologySuite" version="2.2.0" />
+	      <dependency id="NetTopologySuite" version="2.3.0" />
 	      <dependency id="Newtonsoft.Json" version="13.0.1" />
 	      <dependency id="NWebsec.AspNetCore.Middleware" version="3.0.0" />
 	      <dependency id="NWebsec.AspNetCore.Mvc" version="3.0.0" />
-	      <dependency id="Pomelo.EntityFrameworkCore.MySql" version="5.0.0" />
+	      <dependency id="Pomelo.EntityFrameworkCore.MySql" version="5.0.1" />
 	      <dependency id="Serilog" version="2.10.0" />
 		  <dependency id="Serilog.Extensions.Logging" version="3.0.1" />
-	      <dependency id="Serilog.Sinks.Console" version="3.1.1" />
-	      <dependency id="Swashbuckle.AspNetCore" version="6.1.3" />
-	      <dependency id="Swashbuckle.AspNetCore.Newtonsoft" version="6.1.3" />
-	      <dependency id="Swashbuckle.AspNetCore.Annotations" version="6.1.3" />
+	      <dependency id="Serilog.Sinks.Console" version="4.0.0" />
+	      <dependency id="Swashbuckle.AspNetCore" version="6.2.1" />
+	      <dependency id="Swashbuckle.AspNetCore.Newtonsoft" version="6.2.1" />
+	      <dependency id="Swashbuckle.AspNetCore.Annotations" version="6.2.1" />
 	      <dependency id="System.ComponentModel.Annotations" version="5.0.0" />
 		  <dependency id="Vivet.AspNetCore.RequestTimeZone" version="5.0.0" />
-	      <dependency id="Z.EntityFramework.Plus.EFCore" version="5.1.33" />
+	      <dependency id="Z.EntityFramework.Plus.EFCore" version="5.2.12" />
 	      <dependency id="JsonModelBinder" version="2.1.1" />
 	  </group>
     </dependencies>
