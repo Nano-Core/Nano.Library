@@ -12,6 +12,7 @@ using Microsoft.Net.Http.Headers;
 using Nano.App;
 using Nano.Config;
 using Nano.Web.Enums;
+using Nano.Web.Extensions.Const;
 using Nano.Web.Hosting;
 using Nano.Web.Hosting.Middleware;
 using NWebsec.AspNetCore.Mvc;
@@ -44,7 +45,7 @@ namespace Nano.Web.Extensions
             if (webOptions.Hosting.HealthCheck.UseHealthCheck)
             {
                 applicationBuilder
-                    .UseHealthChecks("/healthz", new HealthCheckOptions
+                    .UseHealthChecks(HealthzCheckUris.Path, new HealthCheckOptions
                     {
                         Predicate = _ => true,
                         AllowCachingResponses = true,
@@ -56,10 +57,10 @@ namespace Nano.Web.Extensions
                     applicationBuilder
                         .UseHealthChecksUI(x =>
                         {
-                            x.UIPath = "/healthz-ui";
-                            x.ApiPath = "/healthz-api";
-                            x.ResourcesPath = "/healthz-rex";
-                            x.WebhookPath = "/healthz-hooks";
+                            x.UIPath = HealthzCheckUris.UiPath;
+                            x.ApiPath = HealthzCheckUris.ApiPath;
+                            x.ResourcesPath = HealthzCheckUris.RexPath;
+                            x.WebhookPath = HealthzCheckUris.WebHooksPath;
                             x.UseRelativeApiPath = true;
                             x.UseRelativeResourcesPath = true;
                             x.UseRelativeWebhookPath = true;

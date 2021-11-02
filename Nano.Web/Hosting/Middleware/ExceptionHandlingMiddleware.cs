@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Nano.Security.Exceptions;
 using Nano.Web.Const;
+using Nano.Web.Extensions.Const;
 using Nano.Web.Hosting.Serialization;
 using Nano.Web.Models;
 using Newtonsoft.Json;
@@ -118,9 +119,14 @@ namespace Nano.Web.Hosting.Middleware
                 var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
                 var protocol = request.IsHttps ? request.Protocol.Replace("HTTP", "HTTPS") : request.Protocol;
                 var queryString = request.QueryString.HasValue ? $"{request.QueryString.Value}" : string.Empty;
-                
-                this.Logger
-                    .Log(logLevel, exception, MESSAGE_TEMPLATE, protocol, method, path, queryString, response.StatusCode, elapsed, id);
+
+                var isHealthCheck = logLevel == LogLevel.Information && path == HealthzCheckUris.Path;
+
+                if (!isHealthCheck)
+                {
+                    this.Logger
+                        .Log(logLevel, exception, MESSAGE_TEMPLATE, protocol, method, path, queryString, response.StatusCode, elapsed, id);
+                }
             }
         }
     }
