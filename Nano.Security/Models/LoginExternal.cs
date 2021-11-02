@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models
@@ -27,5 +28,10 @@ namespace Nano.Security.Models
         [Required]
         [DefaultValue(true)]
         public virtual bool IsRefreshable { get; set; } = true;
+
+        /// <summary>
+        /// Transient Claims.
+        /// </summary>
+        public virtual IDictionary<string, string> TransientClaims { get; set; } = new Dictionary<string, string>();
     }
 }

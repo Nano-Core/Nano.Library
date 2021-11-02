@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models
@@ -18,5 +19,10 @@ namespace Nano.Security.Models
         /// </summary>
         [Required]
         public virtual string RefreshToken { get; set; }
+
+        /// <summary>
+        /// Transient Claims.
+        /// </summary>
+        public virtual IDictionary<string, string> TransientClaims { get; set; } = new Dictionary<string, string>();
     }
 }

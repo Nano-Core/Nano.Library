@@ -359,7 +359,7 @@ namespace Nano.Security
                     var identityUser = await this.UserManager
                         .FindByNameAsync(login.Username);
 
-                    return await this.GenerateJwtToken(identityUser, appId, login.IsRefreshable, cancellationToken);
+                    return await this.GenerateJwtToken(identityUser, appId, login.IsRefreshable, login.TransientClaims, cancellationToken);
                 }
 
                 if (result.IsLockedOut)
@@ -403,7 +403,7 @@ namespace Nano.Security
             await this.SignInManager
                 .SignInAsync(identityUser, loginExternal.IsRememerMe);
 
-            return await this.GenerateJwtToken(identityUser, appId, loginExternal.IsRefreshable, cancellationToken);
+            return await this.GenerateJwtToken(identityUser, appId, loginExternal.IsRefreshable, loginExternal.TransientClaims, cancellationToken);
         }
 
         /// <summary>
@@ -488,7 +488,7 @@ namespace Nano.Security
                 if (identityUserToken.ExpireAt <= DateTimeOffset.UtcNow)
                     throw new InvalidOperationException("identityUserToken.ExpireAt <= DateTimeOffset.UtcNow");
 
-                return await this.GenerateJwtToken(identityUser, identityUserToken.Name, true, cancellationToken);
+                return await this.GenerateJwtToken(identityUser, identityUserToken.Name, true, loginRefresh.TransientClaims, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -1415,7 +1415,7 @@ namespace Nano.Security
                     this.ThrowIdentityExceptions(claimAssignResult.Errors);
             }
         }
-        private async Task<AccessToken> GenerateJwtToken(IdentityUser<TIdentity> identityUser, string appId, bool isRefreshable, CancellationToken cancellationToken = default)
+        private async Task<AccessToken> GenerateJwtToken(IdentityUser<TIdentity> identityUser, string appId, bool isRefreshable, IDictionary<string, string> transientClaims, CancellationToken cancellationToken = default)
         {
             if (identityUser == null)
                 throw new ArgumentNullException(nameof(identityUser));
@@ -1433,7 +1433,8 @@ namespace Nano.Security
                 .Select(y => new Claim(ClaimTypes.Role, y));
 
             var claims = userClaims
-                .Union(roleClaims);
+                .Union(roleClaims)
+                .Union(transientClaims.Select(x => new Claim(x.Key, x.Value)));
 
             var tokenData = new AccessTokenData
             {
