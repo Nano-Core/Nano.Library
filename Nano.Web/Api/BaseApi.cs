@@ -89,6 +89,11 @@ namespace Nano.Web.Api
             
             var response = await this.InvokeAsync<LogInRequest, AccessToken>(request, cancellationToken);
 
+            if (response == null)
+            {
+                throw new UnauthorizedException();
+            }
+
             this.SetAuthorizationHeader(response.Token);
 
             return response;
@@ -109,6 +114,11 @@ namespace Nano.Web.Api
 
             this.SetAuthorizationHeader(response.Token);
 
+            if (response == null)
+            {
+                throw new UnauthorizedException();
+            }
+
             return response;
         }
 
@@ -124,6 +134,11 @@ namespace Nano.Web.Api
                 throw new ArgumentNullException(nameof(request));
 
             var response = await this.InvokeAsync<LogInExternalRequest, AccessToken>(request, cancellationToken);
+
+            if (response == null)
+            {
+                return null;
+            }
 
             this.SetAuthorizationHeader(response.Token);
 
@@ -624,6 +639,9 @@ namespace Nano.Web.Api
         }
         private void SetAuthorizationHeader(string token)
         {
+            if (token == null) 
+                throw new ArgumentNullException(nameof(token));
+            
             var httpContext = HttpContextAccess.Current;
 
             if (httpContext == null)
