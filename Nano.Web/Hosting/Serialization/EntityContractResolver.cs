@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Nano.Models.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -14,7 +13,6 @@ namespace Nano.Web.Hosting.Serialization
         /// <summary>
         /// Create a property.
         /// Empty collections is not serialzied.
-        /// Properties of types implementing <see cref="IEntityIdentity{TIdentity}"/> is not serialized. 
         /// </summary>
         /// <param name="member">The <see cref="MemberInfo"/>.</param>
         /// <param name="memberSerialization">The <see cref="MemberSerialization"/>.</param>
