@@ -110,7 +110,6 @@ namespace Nano.Web.Extensions
 
                     x.Filters.Add<IsAnonymousFilter>();
                     x.Filters.Add<ModelStateValidationFilter>();
-                    x.Filters.Add<DisableLazyLoadingResultFilterAttribute>();
                 })
                 .AddNewtonsoftJson(x =>
                 {

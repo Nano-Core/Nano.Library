@@ -17,11 +17,6 @@ namespace Nano.Repository.Interfaces
     public interface IRepository : IDisposable
     {
         /// <summary>
-        /// Is Lazy-Loading Enabled.
-        /// </summary>
-        bool IsLazyLoadingEnabled { get; set; }
-
-        /// <summary>
         /// Gets the <see cref="DbSet{TEntity}"/> mathcing the type of <typeparamref name="TEntity"/>.
         /// </summary>
         /// <typeparam name="TEntity">The type</typeparam>

@@ -20,8 +20,8 @@ namespace Nano.Repository.Extensions
                 throw new ArgumentNullException(nameof(services));
 
             services
-                .AddSingleton<IRepository, DefaultRepository>()
-                .AddSingleton<IRepositorySpatial, DefaultRepositorySpatial>();
+                .AddScoped<IRepository, DefaultRepository>()
+                .AddScoped<IRepositorySpatial, DefaultRepositorySpatial>();
 
             return services;
         }

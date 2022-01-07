@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Reflection;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -25,11 +24,9 @@ namespace Nano.Web.Hosting.Serialization
             var property = base.CreateProperty(member, memberSerialization);
             var propertyType = property.PropertyType;
 
-            if (propertyType == typeof(ILazyLoader))
-            {
-                property.Ignored = true;
-            }
-            else if (propertyType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(propertyType))
+            // TODO: Properties are Lazy-Loaded, when enabled. It should filter out properties that will be Lazy-Loaded. Seems there is no solution.
+
+            if (propertyType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(propertyType))
             {
                 property.ShouldSerialize = instance =>
                 {
