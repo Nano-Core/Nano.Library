@@ -161,7 +161,6 @@ namespace Nano.Web
                 .UseContentRoot(root)
                 .ConfigureServices(x =>
                 {
-                    x.AddSingleton(x);
                     x.AddSingleton<IApplication, TApplication>();
 
                     x.AddApp(config);
@@ -171,6 +170,8 @@ namespace Nano.Web
                     x.AddSecurity(config);
                     x.AddEventing(config);
                     x.AddWeb(config);
+
+                    x.AddSingleton(x);
                 })
                 .UseStartup<TApplication>()
                 .UseSetting(WebHostDefaults.ApplicationKey, applicationKey)

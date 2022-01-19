@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using EasyNetQ;
 using EasyNetQ.Topology;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
 using Nano.Models.Extensions;
 
@@ -45,12 +46,9 @@ namespace Nano.Eventing.Providers.EasyNetQ
         }
 
         /// <inheritdoc />
-        public virtual async Task SubscribeAsync<TMessage>(IServiceProvider serviceProvider, string routing = "", CancellationToken cancellationToken = default)
+        public virtual async Task SubscribeAsync<TMessage>(string routing = "", CancellationToken cancellationToken = default)
             where TMessage : class
         {
-            if (serviceProvider == null)
-                throw new ArgumentNullException(nameof(serviceProvider));
-
             var name = typeof(TMessage).GetFriendlyName();
             var route = string.IsNullOrEmpty(routing) ? string.Empty : $".{routing}";
             var appName = Assembly.GetEntryAssembly()?.GetName().Name;
@@ -65,30 +63,49 @@ namespace Nano.Eventing.Providers.EasyNetQ
             await this.Bus.Advanced
                 .BindAsync(exchange, queue, routing, cancellationToken);
 
+            var serviceCollection = this.Bus.Advanced.Container
+                .Resolve<IServiceCollection>();
+
             this.Bus.Advanced
                 .Consume<TMessage>(queue, (message, info) =>
                 {
-                    if (info.RoutingKey != routing)
-                        return;
+                    try
+                    {
+                        if (info.RoutingKey != routing)
+                            return;
 
-                    using var serviceScope = serviceProvider.CreateScope();
-                   
-                    var eventType = message.MessageType;
-                    var genericType = typeof(IEventingHandler<>).MakeGenericType(eventType);
-                    var eventHandler = serviceScope.ServiceProvider.GetRequiredService(genericType);
+                        var eventType = message.MessageType;
+                        var genericType = typeof(IEventingHandler<>)
+                            .MakeGenericType(eventType);
 
-                    var method = eventHandler
-                        .GetType()
-                        .GetMethod("CallbackAsync");
+                        var eventHandler = serviceCollection
+                            .BuildServiceProvider()
+                            .GetRequiredService(genericType);
 
-                    if (method == null)
-                        throw new NullReferenceException(nameof(method));
+                        var method = eventHandler
+                            .GetType()
+                            .GetMethod(nameof(IEventingHandler<object>.CallbackAsync));
 
-                    var callbackTask = (Task)method
-                        .Invoke(eventHandler, new object[] { message.Body });
+                        if (method == null)
+                            throw new NullReferenceException(nameof(method));
 
-                    callbackTask?
-                        .Wait(cancellationToken);
+                        var callbackTask = (Task)method
+                            .Invoke(eventHandler, new object[] { message.Body });
+
+                        callbackTask?
+                            .Wait(cancellationToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        var logger = serviceCollection
+                            .BuildServiceProvider()
+                            .GetRequiredService<ILogger>();
+
+                        logger
+                            .LogError(ex, ex.Message);
+
+                        throw;
+                    }
                 });
         }
 

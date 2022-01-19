@@ -78,6 +78,13 @@ namespace Nano.Eventing.Extensions
                     !x.Type.IsAbstract &&
                     x.Type.IsTypeOf(typeof(IEventingHandler<>)) &&
                     x.Type != typeof(EntityEventHandler))
+                .GroupBy(x => new
+                {
+                    TypeName = x.Type.FullName, 
+                    GenericTypeName = x.GenericType.FullName
+                })
+                .Select(x => x.FirstOrDefault())
+                .Where(x => x != null)
                 .ToList()
                 .ForEach(x =>
                 {
@@ -93,11 +100,10 @@ namespace Nano.Eventing.Extensions
 
                     eventing
                         .GetType()
-                        .GetMethod("SubscribeAsync")?
+                        .GetMethod(nameof(IEventing.SubscribeAsync))?
                         .MakeGenericMethod(eventType)
                         .Invoke(eventing, new object[]
                         {
-                            provider, 
                             string.Empty,
                             CancellationToken.None
                         });
@@ -117,6 +123,9 @@ namespace Nano.Eventing.Extensions
                     !x.IsAbstract &&
                     !x.Name.EndsWith("Proxy") &&
                     x.GetCustomAttributes<SubscribeAttribute>().Any())
+                .GroupBy(x => x.FullName)
+                .Select(x => x.FirstOrDefault())
+                .Where(x => x != null)
                 .ToList()
                 .ForEach(x =>
                 {
@@ -132,11 +141,10 @@ namespace Nano.Eventing.Extensions
 
                     eventing
                         .GetType()
-                        .GetMethod("SubscribeAsync")?
+                        .GetMethod(nameof(IEventing.SubscribeAsync))?
                         .MakeGenericMethod(eventType)
                         .Invoke(eventing, new object[]
                         {
-                            provider, 
                             x.Name,
                             CancellationToken.None
                         });
