@@ -41,6 +41,9 @@ namespace Nano.Console.Extensions
                 .Where(x =>
                     !x.IsAbstract &&
                     x.IsTypeOf(typeof(BaseWorker)))
+                .GroupBy(x => x.FullName)
+                .Select(x => x.FirstOrDefault())
+                .Where(x => x != null)
                 .ToList()
                 .ForEach(x =>
                 {

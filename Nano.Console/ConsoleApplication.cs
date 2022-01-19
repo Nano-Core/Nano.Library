@@ -67,6 +67,8 @@ namespace Nano.Console
                     x.AddEventing(config);
 
                     x.AddConsole(config);
+
+                    x.AddSingleton(x);
                 });
         }
     }
