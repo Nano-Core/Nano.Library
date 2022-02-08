@@ -56,67 +56,60 @@ namespace Nano.Web.Hosting.Middleware
             {
                 await next(httpContext);
             }
+            catch (UnauthorizedException)
+            {
+                response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            }
+            catch (OperationCanceledException)
+            {
+                response.StatusCode = (int)HttpStatusCode.NoContent;
+            }
             catch (Exception ex)
             {
-                exception = ex.GetBaseException();
-                response.ContentType = request.ContentType ?? response.ContentType;
-
                 if (response.HasStarted)
                 {
                     response.Clear();
                 }
 
-                if (exception is UnauthorizedException)
-                {
-                    response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                }
-                else
-                {
-                    // BUG:
-                    if (httpContext.RequestAborted.IsCancellationRequested)
-                    {
-                        return;
-                    }
+                response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-                    response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                exception = ex.GetBaseException();
+                var error = new Error(ex);
 
-                    var error = new Error(ex);
-                    
-                    logLevel = error.IsTranslated
-                        ? LogLevel.Information
-                        : LogLevel.Error;
+                logLevel = error.IsTranslated
+                    ? LogLevel.Information
+                    : LogLevel.Error;
 
-                    var acceptHheader = request.Headers["Accept"];
-                    var contentTypeHeader = request.Headers["Content-Type"];
-                    var queryString = request.QueryString.HasValue 
-                        ? request.QueryString.Value ?? string.Empty
-                        : string.Empty;
+                var acceptHheader = request.Headers["Accept"];
+                var contentTypeHeader = request.Headers["Content-Type"];
+                var queryString = request.QueryString.HasValue
+                    ? request.QueryString.Value ?? string.Empty
+                    : string.Empty;
 
-                    var result = acceptHheader.Any()
-                        ? acceptHheader.Contains(HttpContentType.JSON)
+                var result = acceptHheader.Any()
+                    ? acceptHheader.Contains(HttpContentType.JSON)
+                        ? JsonConvert.SerializeObject(error)
+                        : acceptHheader.Contains(HttpContentType.XML)
+                            ? XmlConvert.SerializeObject(error)
+                            : acceptHheader.Contains(HttpContentType.FORM) || acceptHheader.Contains(HttpContentType.FORM_ENCODED)
+                                ? JsonConvert.SerializeObject(error)
+                                : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}"
+                    : contentTypeHeader.Any()
+                        ? contentTypeHeader.Contains(HttpContentType.JSON)
                             ? JsonConvert.SerializeObject(error)
-                            : acceptHheader.Contains(HttpContentType.XML)
+                            : contentTypeHeader.Contains(HttpContentType.XML)
                                 ? XmlConvert.SerializeObject(error)
                                 : acceptHheader.Contains(HttpContentType.FORM) || acceptHheader.Contains(HttpContentType.FORM_ENCODED)
                                     ? JsonConvert.SerializeObject(error)
                                     : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}"
-                        : contentTypeHeader.Any()
-                            ? contentTypeHeader.Contains(HttpContentType.JSON)
-                                ? JsonConvert.SerializeObject(error)
-                                : contentTypeHeader.Contains(HttpContentType.XML)
-                                    ? XmlConvert.SerializeObject(error)
-                                    : acceptHheader.Contains(HttpContentType.FORM) || acceptHheader.Contains(HttpContentType.FORM_ENCODED)
-                                        ? JsonConvert.SerializeObject(error)
-                                        : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}"
-                            : queryString.Contains($"format={HttpContentType.JSON}")
-                                ? JsonConvert.SerializeObject(error)
-                                : queryString.Contains($"format={HttpContentType.XML}")
-                                    ? XmlConvert.SerializeObject(error)
-                                    : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}";
+                        : queryString.Contains($"format={HttpContentType.JSON}")
+                            ? JsonConvert.SerializeObject(error)
+                            : queryString.Contains($"format={HttpContentType.XML}")
+                                ? XmlConvert.SerializeObject(error)
+                                : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}";
 
-                    await response
-                        .WriteAsync(result);
-                }
+                await response
+                    .WriteAsync(result);
             }
             finally
             {
