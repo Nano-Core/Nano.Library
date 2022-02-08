@@ -65,7 +65,7 @@ namespace Nano.Config
                         if (entryPointFile != null)
                         {
                             configurationBuilder
-                                .AddUserSecrets(Assembly.LoadFile(entryPointFile));
+                                .AddUserSecrets(Assembly.LoadFile(entryPointFile), true);
                         }
                 }
             }
