@@ -58,12 +58,13 @@ namespace Nano.Web.Hosting.Middleware
             }
             catch (Exception ex)
             {
-                exception = ex.GetBaseException();    
+                exception = ex.GetBaseException();
+                response.ContentType = request.ContentType ?? response.ContentType;
 
                 if (response.HasStarted)
+                {
                     response.Clear();
-
-                response.ContentType = request.ContentType;
+                }
 
                 if (exception is UnauthorizedException)
                 {
@@ -71,6 +72,12 @@ namespace Nano.Web.Hosting.Middleware
                 }
                 else
                 {
+                    // BUG:
+                    if (httpContext.RequestAborted.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
                     var error = new Error(ex);
