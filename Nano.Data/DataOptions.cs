@@ -81,6 +81,11 @@ namespace Nano.Data
         public virtual bool UseHealthCheck { get; set; } = true;
 
         /// <summary>
+        /// Default Collation.
+        /// </summary>
+        public virtual string DefaultCollation { get; set; } = null;
+
+        /// <summary>
         /// Connection String.
         /// </summary>
         public virtual string ConnectionString { get; set; } = null;

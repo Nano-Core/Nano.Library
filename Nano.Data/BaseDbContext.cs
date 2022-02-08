@@ -62,7 +62,13 @@ namespace Nano.Data
             if (modelBuilder == null)
                 throw new ArgumentNullException(nameof(modelBuilder));
 
-            base.OnModelCreating(modelBuilder); 
+            base.OnModelCreating(modelBuilder);
+
+            if (!string.IsNullOrEmpty(this.Options.DefaultCollation))
+            {
+                modelBuilder
+                    .UseCollation(this.Options.DefaultCollation);
+            }
 
             modelBuilder
                 .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()
