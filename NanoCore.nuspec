@@ -14,10 +14,8 @@
     <summary>Rapidly built and deploy rich .NET 6.0 applications. 
 Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <releaseNotes>
-		- Upgraded to .net 6.0.
-		- Fixed user secrets, not being optional.
-		- Added Default Collation to DataOptions.
-		- Improved error handling for Cancellation Exceptions.
+		- Improved IRepository delete methods, and added different logic for hard- and soft-delete.
+		- 
     </releaseNotes>
     <dependencies>
       <group targetFramework="net6.0">

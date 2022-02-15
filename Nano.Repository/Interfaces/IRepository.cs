@@ -317,7 +317,7 @@ namespace Nano.Repository.Interfaces
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="Task"/> returning 'void'.</returns>
         Task DeleteAsync<TEntity, TKey>(TKey id, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityDeletable
+            where TEntity : class, IEntityDeletable, IEntityIdentity<TKey>, new()
             where TKey : IEquatable<TKey>;
 
         /// <summary>
@@ -328,7 +328,7 @@ namespace Nano.Repository.Interfaces
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="Task"/> returning 'void'.</returns>
         Task DeleteAsync<TEntity>(int id, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityDeletable;
+            where TEntity : class, IEntityDeletable, IEntityIdentity<int>, new();
 
         /// <summary>
         /// Deletes the instance of the passed id.
@@ -338,7 +338,7 @@ namespace Nano.Repository.Interfaces
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="Task"/> returning 'void'.</returns>
         Task DeleteAsync<TEntity>(long id, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityDeletable;
+            where TEntity : class, IEntityDeletable, IEntityIdentity<long>, new();
 
         /// <summary>
         /// Deletes the instance of the passed id.
@@ -348,7 +348,7 @@ namespace Nano.Repository.Interfaces
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="Task"/> returning 'void'.</returns>
         Task DeleteAsync<TEntity>(string id, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityDeletable;
+            where TEntity : class, IEntityDeletable, IEntityIdentity<string>, new();
 
         /// <summary>
         /// Deletes the instance of the passed id.
@@ -358,7 +358,7 @@ namespace Nano.Repository.Interfaces
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>A <see cref="Task"/> returning 'void'.</returns>
         Task DeleteAsync<TEntity>(Guid id, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityDeletable;
+            where TEntity : class, IEntityDeletable, IEntityIdentity<Guid>, new();
 
         /// <summary>
         /// Deletes the instance of the passed <see cref="IEntityDeletable"/>.
@@ -369,6 +369,18 @@ namespace Nano.Repository.Interfaces
         /// <returns>A <see cref="Task"/> returning 'void'.</returns>
         Task DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable;
+
+        /// <summary>
+        /// Deletes all instances of the passed <see cref="IEntityDeletable"/>'s.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <param name="ids">The id's.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The <see cref="Task"/> (void).</returns>
+        Task DeleteManyAsync<TEntity, TKey>(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable, IEntityIdentity<TKey>, new()
+            where TKey : IEquatable<TKey>;
 
         /// <summary>
         /// Deletes all instances of the passed <see cref="IEntityDeletable"/>'s.
@@ -403,6 +415,58 @@ namespace Nano.Repository.Interfaces
             where TEntity : class, IEntityDeletable;
 
         /// <summary>
+        /// Bulk deletes all instances of the  passed id's matching <see cref="IEntityDeletable"/>'s.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <param name="ids">The id's.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The <see cref="Task"/> (void).</returns>
+        Task DeleteManyBulkAsync<TEntity, TKey>(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable, IEntityIdentity<TKey>, new()
+            where TKey : IEquatable<TKey>;
+
+        /// <summary>
+        /// Bulk deletes all instances of the  passed id's matching <see cref="IEntityDeletable"/>'s.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
+        /// <param name="ids">The id's.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The <see cref="Task"/> (void).</returns>
+        Task DeleteManyBulkAsync<TEntity>(IEnumerable<Guid> ids, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable, IEntityIdentity<Guid>, new();
+
+        /// <summary>
+        /// Bulk deletes all instances of the  passed id's matching <see cref="IEntityDeletable"/>'s.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
+        /// <param name="ids">The id's.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The <see cref="Task"/> (void).</returns>
+        Task DeleteManyBulkAsync<TEntity>(IEnumerable<int> ids, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable, IEntityIdentity<int>, new();
+
+        /// <summary>
+        /// Bulk deletes all instances of the  passed id's matching <see cref="IEntityDeletable"/>'s.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
+        /// <param name="ids">The id's.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The <see cref="Task"/> (void).</returns>
+        Task DeleteManyBulkAsync<TEntity>(IEnumerable<long> ids, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable, IEntityIdentity<long>, new();
+
+        /// <summary>
+        /// Bulk deletes all instances of the  passed id's matching <see cref="IEntityDeletable"/>'s.
+        /// </summary>
+        /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
+        /// <param name="ids">The id's.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+        /// <returns>The <see cref="Task"/> (void).</returns>
+        Task DeleteManyBulkAsync<TEntity>(IEnumerable<string> ids, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable, IEntityIdentity<string>, new();
+
+        /// <summary>
         /// Bulk deletes all instances of the passed <see cref="IEntityDeletable"/>'s.
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
@@ -410,28 +474,6 @@ namespace Nano.Repository.Interfaces
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
         /// <returns>The <see cref="Task"/> (void).</returns>
         Task DeleteManyBulkAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityDeletable;
-
-        /// <summary>
-        /// Bulk deletes all instances of <typeparamref name="TEntity"/>, matching the criterias of the passed <paramref name="criteria"/>.
-        /// </summary>
-        /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
-        /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> type.</typeparam>
-        /// <param name="criteria">The <see cref="IQueryCriteria"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
-        /// <returns>The <see cref="Task"/> (void).</returns>
-        Task DeleteManyBulkAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityDeletable
-            where TCriteria : class, IQueryCriteria, new();
-
-        /// <summary>
-        /// Bulk deletes all instances matching the passed criteria <see cref="Expression"/>.
-        /// </summary>
-        /// <typeparam name="TEntity">The <see cref="IEntityUpdatable"/> type.</typeparam>
-        /// <param name="expression">The <see cref="Expression"/> to evaulate entities to be deleted.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
-        /// <returns>The <see cref="Task"/> (void).</returns>
-        Task DeleteManyBulkAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
             where TEntity : class, IEntityDeletable;
 
         /// <summary>

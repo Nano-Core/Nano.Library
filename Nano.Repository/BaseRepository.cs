@@ -11,7 +11,6 @@ using Nano.Data;
 using Nano.Data.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
-using Z.EntityFramework.Plus;
 
 namespace Nano.Repository
 {
@@ -445,46 +444,46 @@ namespace Nano.Repository
 
         /// <inheritdoc />
         public virtual async Task DeleteAsync<TEntity, TKey>(TKey id, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityDeletable 
+            where TEntity : class, IEntityDeletable, IEntityIdentity<TKey>, new()
             where TKey : IEquatable<TKey>
         {
             if (id == null)
                 throw new ArgumentNullException(nameof(id));
 
-            var entity = this.Context
-                .FindAsync<TEntity>(id);
+            var entity = this.Context.Options.UseSoftDeletetion
+                ? await this.Context.FindAsync<TEntity>(id)
+                : new TEntity
+                    {
+                        Id = id
+                    };
 
-            this.Context
-                .Remove(entity);
-
-            if (this.Context.AutoSave)
-                await this.SaveChanges(cancellationToken);
+            await this.DeleteAsync(entity, cancellationToken);
         }
 
         /// <inheritdoc />
         public virtual async Task DeleteAsync<TEntity>(int id, CancellationToken cancellationToken)
-            where TEntity : class, IEntityDeletable
+            where TEntity : class, IEntityDeletable, IEntityIdentity<int>, new()
         {
             await this.DeleteAsync<TEntity, int>(id, cancellationToken);
         }
 
         /// <inheritdoc />
         public virtual async Task DeleteAsync<TEntity>(long id, CancellationToken cancellationToken)
-            where TEntity : class, IEntityDeletable
+            where TEntity : class, IEntityDeletable, IEntityIdentity<long>, new()
         {
             await this.DeleteAsync<TEntity, long>(id, cancellationToken);
         }
 
         /// <inheritdoc />
         public virtual async Task DeleteAsync<TEntity>(string id, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityDeletable
+            where TEntity : class, IEntityDeletable, IEntityIdentity<string>, new()
         {
             await this.DeleteAsync<TEntity, string>(id, cancellationToken);
         }
 
         /// <inheritdoc />
         public virtual async Task DeleteAsync<TEntity>(Guid id, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityDeletable
+            where TEntity : class, IEntityDeletable, IEntityIdentity<Guid>, new()
         {
             await this.DeleteAsync<TEntity, Guid>(id, cancellationToken);
         }
@@ -501,6 +500,32 @@ namespace Nano.Repository
 
             if (this.Context.AutoSave)
                 await this.SaveChanges(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteManyAsync<TEntity, TKey>(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable, IEntityIdentity<TKey>, new()
+            where TKey : IEquatable<TKey>
+        {
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
+
+            IEnumerable<TEntity> entities;
+            if (this.Context.Options.UseSoftDeletetion)
+            {
+                entities = this.GetEntitySet<TEntity>()
+                    .Where(x => ids.Contains(x.Id));
+            }
+            else
+            {
+                entities = ids
+                    .Select(x => new TEntity
+                    {
+                        Id = x
+                    });
+            }
+
+            await this.DeleteManyAsync(entities, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -525,14 +550,23 @@ namespace Nano.Repository
             if (criteria == null)
                 throw new ArgumentNullException(nameof(criteria));
 
-            var entities = this.GetEntitySet<TEntity>()
-                .Where(criteria);
+            if (this.Context.Options.UseSoftDeletetion)
+            {
+                var entities = this.GetEntitySet<TEntity>()
+                    .Where(criteria);
 
-            this.Context
-                .RemoveRange(entities);
+                this.Context
+                    .RemoveRange(entities);
 
-            if (this.Context.AutoSave)
-                await this.SaveChanges(cancellationToken);
+                if (this.Context.AutoSave)
+                    await this.SaveChanges(cancellationToken);
+            }
+            else
+            {
+                await this.GetEntitySet<TEntity>()
+                    .Where(criteria)
+                    .DeleteFromQueryAsync(cancellationToken);
+            }
         }
 
         /// <inheritdoc />
@@ -542,14 +576,83 @@ namespace Nano.Repository
             if (expression == null)
                 throw new ArgumentNullException(nameof(expression));
 
-            var entities = this.GetEntitySet<TEntity>()
-                .Where(expression);
+            if (this.Context.Options.UseSoftDeletetion)
+            {
+                var entities = this.GetEntitySet<TEntity>()
+                    .Where(expression);
 
-            this.Context
-                .RemoveRange(entities);
+                this.Context
+                    .RemoveRange(entities);
 
-            if (this.Context.AutoSave)
-                await this.SaveChanges(cancellationToken);
+                if (this.Context.AutoSave)
+                    await this.SaveChanges(cancellationToken);
+            }
+            else
+            {
+                await this.GetEntitySet<TEntity>()
+                    .Where(expression)
+                    .DeleteFromQueryAsync(cancellationToken);
+            }
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteManyBulkAsync<TEntity, TKey>(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable, IEntityIdentity<TKey>, new()
+            where TKey : IEquatable<TKey>
+        {
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
+
+            if (this.Context.Options.UseSoftDeletetion)
+                throw new InvalidOperationException("Sql bulk delete operations are not allowed when having soft-delete enabled.");
+
+            var entities = ids
+                .Select(x => new TEntity
+                {
+                    Id = x
+                });
+
+            await this.DeleteManyBulkAsync(entities, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteManyBulkAsync<TEntity>(IEnumerable<Guid> ids, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable, IEntityIdentity<Guid>, new()
+        {
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
+
+            await this.DeleteManyBulkAsync<TEntity, Guid>(ids, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteManyBulkAsync<TEntity>(IEnumerable<int> ids, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable, IEntityIdentity<int>, new()
+        {
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
+
+            await this.DeleteManyBulkAsync<TEntity, int>(ids, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteManyBulkAsync<TEntity>(IEnumerable<long> ids, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable, IEntityIdentity<long>, new()
+        {
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
+
+            await this.DeleteManyBulkAsync<TEntity, long>(ids, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task DeleteManyBulkAsync<TEntity>(IEnumerable<string> ids, CancellationToken cancellationToken = default)
+            where TEntity : class, IEntityDeletable, IEntityIdentity<string>, new()
+        {
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
+
+            await this.DeleteManyBulkAsync<TEntity, string>(ids, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -559,48 +662,15 @@ namespace Nano.Repository
             if (entities == null)
                 throw new ArgumentNullException(nameof(entities));
 
-            await this.GetEntitySet<TEntity>()
-                .BulkDeleteAsync(entities, cancellationToken);
-
-            if (this.Context.AutoSave)
-                await this.SaveChanges(cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public virtual async Task DeleteManyBulkAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityDeletable
-            where TCriteria : class, IQueryCriteria, new()
-        {
-            if (criteria == null)
-                throw new ArgumentNullException(nameof(criteria));
-
-            var entities = this.GetEntitySet<TEntity>()
-                .Where(criteria);
-
-            this.Context
-                .RemoveRange(entities);
+            if (this.Context.Options.UseSoftDeletetion)
+                throw new InvalidOperationException("Sql bulk delete operations are not allowed when having soft-delete enabled.");
 
             await this.GetEntitySet<TEntity>()
-                .Where(criteria)
-                .DeleteAsync(cancellationToken);
-
-            if (this.Context.AutoSave)
-                await this.SaveChanges(cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public virtual async Task DeleteManyBulkAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntityDeletable
-        {
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
-
-            await this.GetEntitySet<TEntity>()
-                .Where(expression)
-                .DeleteAsync(cancellationToken);
-
-            if (this.Context.AutoSave)
-                await this.SaveChanges(cancellationToken);
+                .BulkDeleteAsync(entities, x =>
+                {
+                    x.BatchSize = this.Context.Options.BulkBatchSize;
+                    x.BatchDelayInterval = this.Context.Options.BulkBatchDelay;
+                }, cancellationToken);
         }
 
         /// <inheritdoc />
