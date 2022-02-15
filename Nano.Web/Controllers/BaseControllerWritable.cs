@@ -28,7 +28,7 @@ namespace Nano.Web.Controllers
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE + "," + BuiltInUserRoles.WRITER)]
     public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
         where TRepository : IRepository
-        where TEntity : class, IEntityIdentity<TIdentity>, IEntityWritable
+        where TEntity : class, IEntityIdentity<TIdentity>, IEntityWritable, new()
         where TCriteria : class, IQueryCriteria, new()
         where TIdentity : IEquatable<TIdentity>
     {
@@ -195,14 +195,8 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> Delete([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
         {
-            var entity = await this
-                .Repository.GetAsync<TEntity, TIdentity>(id, cancellationToken);
-
-            if (entity == null)
-                return this.NotFound();
-
             await this.Repository
-                .DeleteAsync(entity, cancellationToken);
+                .DeleteAsync<TEntity, TIdentity>(id, cancellationToken);
 
             await this.Repository
                 .SaveChanges(cancellationToken);
@@ -233,11 +227,8 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> DeleteMany([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
         {
-            var entities = await this.Repository
-                .GetManyAsync<TEntity, TIdentity>(ids, cancellationToken);
-
             await this.Repository
-                .DeleteManyAsync(entities, cancellationToken);
+                .DeleteManyAsync<TEntity, TIdentity>(ids, cancellationToken);
 
             await this.Repository
                 .SaveChanges(cancellationToken);

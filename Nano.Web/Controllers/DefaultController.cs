@@ -11,7 +11,7 @@ namespace Nano.Web.Controllers
 {
     /// <inheritdoc />
     public class DefaultController<TEntity, TCriteria> : DefaultController<TEntity, Guid, TCriteria>
-        where TEntity : DefaultEntity
+        where TEntity : DefaultEntity, new()
         where TCriteria : class, IQueryCriteria, new()
     {
         /// <inheritdoc />
@@ -31,7 +31,7 @@ namespace Nano.Web.Controllers
 
     /// <inheritdoc />
     public class DefaultController<TEntity, TIdentity, TCriteria> : BaseControllerWritable<IRepository, TEntity, TIdentity, TCriteria>
-        where TEntity : class, IEntityIdentity<TIdentity>, IEntityWritable
+        where TEntity : class, IEntityIdentity<TIdentity>, IEntityWritable, new()
         where TCriteria : class, IQueryCriteria, new()
         where TIdentity : IEquatable<TIdentity>
     {
