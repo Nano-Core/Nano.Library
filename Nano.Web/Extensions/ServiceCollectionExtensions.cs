@@ -129,6 +129,9 @@ namespace Nano.Web.Extensions
                 .AddApplicationPart(assembly);
             
             services
+                .AddScoped<AuditController>();
+
+            services
                 .AddApis()
                 .AddHealthChecking(appOptions, webOptions);
 

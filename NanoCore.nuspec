@@ -15,7 +15,7 @@
 Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <releaseNotes>
 		- Improved IRepository delete methods, and added different logic for hard- and soft-delete.
-		- 
+		- Fixed AuditController throwing dependency injection error.
     </releaseNotes>
     <dependencies>
       <group targetFramework="net6.0">
