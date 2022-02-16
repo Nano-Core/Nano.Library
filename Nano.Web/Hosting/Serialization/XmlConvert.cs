@@ -23,7 +23,7 @@ namespace Nano.Web.Hosting.Serialization
             if (@object == null)
                 throw new ArgumentNullException(nameof(@object));
 
-            var xmlSerializer = new XmlSerializer(typeof(T), null, knownTypes ?? new Type[0], null, defaultNamespace);
+            var xmlSerializer = new XmlSerializer(typeof(T), null, knownTypes ?? Type.EmptyTypes, null, defaultNamespace);
 
             using var stringWriter = new StringWriter();
             
@@ -45,7 +45,7 @@ namespace Nano.Web.Hosting.Serialization
             if (xml == null)
                 throw new ArgumentNullException(nameof(xml));
 
-            var xmlSerializer = new XmlSerializer(typeof(T), null, knownTypes ?? new Type[0], null, defaultNamespace);
+            var xmlSerializer = new XmlSerializer(typeof(T), null, knownTypes ?? Type.EmptyTypes, null, defaultNamespace);
 
             using var stringReader = new StringReader(xml);
             

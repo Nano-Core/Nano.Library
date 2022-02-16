@@ -166,7 +166,7 @@ namespace Nano.Data
             if (this.Options.ConnectionString == null)
                 return;
 
-            var securityOptions = this.GetService<SecurityOptions>() ?? new SecurityOptions();
+            var securityOptions = this.GetService<SecurityOptions>();
 
             if (!securityOptions.IsAuth)
                 return;
@@ -257,9 +257,6 @@ namespace Nano.Data
 
             var eventing = this.GetService<IEventing>();
 
-            if (eventing == null)
-                return success;
-
             this.ChangeTracker.LazyLoadingEnabled = false;
 
             try
@@ -313,9 +310,6 @@ namespace Nano.Data
                 .ContinueWith(async x =>
                 {
                     var eventing = this.GetService<IEventing>();
-
-                    if (eventing == null)
-                        return await x;
 
                     this.ChangeTracker.LazyLoadingEnabled = false;
 

@@ -1,3 +1,5 @@
+using System;
+
 namespace Nano.App
 {
     /// <summary>
@@ -58,7 +60,7 @@ namespace Nano.App
             /// <summary>
             /// Supported.
             /// </summary>
-            public virtual string[] Supported { get; set; } = new string[0];
+            public virtual string[] Supported { get; set; } = Array.Empty<string>();
         }
     }
 }

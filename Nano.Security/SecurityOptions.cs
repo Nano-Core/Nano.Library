@@ -47,7 +47,7 @@ namespace Nano.Security
         /// <summary>
         /// External Logins Options.
         /// </summary>
-        public virtual ExternalLoginOptions[] ExternalLogins { get; set; } = new ExternalLoginOptions[0];
+        public virtual ExternalLoginOptions[] ExternalLogins { get; set; } = Array.Empty<ExternalLoginOptions>();
 
         /// <summary>
         /// Jwt Options (nested class)

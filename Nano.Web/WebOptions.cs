@@ -39,17 +39,17 @@ namespace Nano.Web
             /// <summary>
             /// Ports.
             /// </summary>
-            public virtual int[] Ports { get; set; } = new int[0];
+            public virtual int[] Ports { get; set; } = Array.Empty<int>();
 
             /// <summary>
             /// Ports Https.
             /// </summary>
-            public virtual int[] PortsHttps { get; set; } = new int[0];
+            public virtual int[] PortsHttps { get; set; } = Array.Empty<int>();
 
             /// <summary>
             /// Allowed Origins.
             /// </summary>
-            public virtual string[] AllowedOrigins { get; set; } = new string[0];
+            public virtual string[] AllowedOrigins { get; set; } = Array.Empty<string>();
 
             /// <summary>
             /// Shutdown Timeout.
@@ -234,12 +234,12 @@ namespace Nano.Web
                 /// <summary>
                 /// Report Uris.
                 /// </summary>
-                public virtual string[] ReportUris { get; set; } = new string[0];
+                public virtual string[] ReportUris { get; set; } = Array.Empty<string>();
 
                 /// <summary>
                 /// Plugin Types.
                 /// </summary>
-                public virtual string[] PluginTypes { get; set; } = new string[0];
+                public virtual string[] PluginTypes { get; set; } = Array.Empty<string>();
 
                 /// <summary>
                 /// Is Enabled.
@@ -268,7 +268,7 @@ namespace Nano.Web
                     /// Sources.
                     /// Adds the array of custom sources.
                     /// </summary>
-                    public virtual string[] Sources { get; set; } = new string[0];
+                    public virtual string[] Sources { get; set; } = Array.Empty<string>();
 
                     /// <summary>
                     /// Is Enabled.
@@ -573,7 +573,7 @@ namespace Nano.Web
                 /// <summary>
                 /// Web-Hooks.
                 /// </summary>
-                public virtual HealthCheckWebHookOptions[] WebHooks { get; set; } = new HealthCheckWebHookOptions[0];
+                public virtual HealthCheckWebHookOptions[] WebHooks { get; set; } = Array.Empty<HealthCheckWebHookOptions>();
 
                 /// <summary>
                 /// Health-Check Web-Hook Options.

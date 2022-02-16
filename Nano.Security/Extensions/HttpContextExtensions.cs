@@ -25,7 +25,7 @@ namespace Nano.Security.Extensions
             var success = httpContext.Items
                 .TryGetValue("IsAnonymous", out var value);
 
-            return success && (bool)value;
+            return success && value != null && (bool)value;
         }
 
         /// <summary>

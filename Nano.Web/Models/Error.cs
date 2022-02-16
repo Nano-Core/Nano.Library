@@ -18,7 +18,7 @@ namespace Nano.Web.Models
         /// <summary>
         /// Description.
         /// </summary>
-        public string[] Exceptions { get; set; } = new string[0];
+        public string[] Exceptions { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Status Code.
@@ -70,6 +70,7 @@ namespace Nano.Web.Models
 
                             this.IsTranslated = true;
                         }
+                    
                         break;
                     }
                 case TranslationException:
@@ -77,7 +78,9 @@ namespace Nano.Web.Models
                     {
                         baseException.Message
                     };
+
                     this.IsTranslated = true;
+                    
                     break;
             }
         }

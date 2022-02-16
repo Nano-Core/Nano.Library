@@ -572,7 +572,9 @@ namespace Nano.Security
                 .CreateAsync(user);
 
             if (!createResult.Succeeded)
+            {
                 this.ThrowIdentityExceptions(createResult.Errors);
+            }
 
             var userLoginInfo = new UserLoginInfo(signUpExternal.ExternalLogin.LoginProvider, externalLoginData.Id, signUpExternal.ExternalLogin.LoginProvider);
 
@@ -580,7 +582,9 @@ namespace Nano.Security
                 .AddLoginAsync(user, userLoginInfo);
 
             if (!addLoginResult.Succeeded)
+            {
                 this.ThrowIdentityExceptions(addLoginResult.Errors);
+            }
 
             await this.AssignSignUpRolesAndClaims(signUpExternal, user);
 
@@ -644,7 +648,9 @@ namespace Nano.Security
                 .SetUserNameAsync(user, setUsername.NewUsername);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
         }
 
         /// <summary>
@@ -674,7 +680,9 @@ namespace Nano.Security
                 .AddPasswordAsync(user, setPassword.NewPassword);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
 
         }
 
@@ -702,7 +710,9 @@ namespace Nano.Security
                 .ResetPasswordAsync(user, resetPassword.Token, resetPassword.Password);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
         }
 
         /// <summary>
@@ -726,7 +736,9 @@ namespace Nano.Security
                 .ChangePasswordAsync(user, changePassword.OldPassword, changePassword.NewPassword);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
 
             await this.SignInManager
                 .RefreshSignInAsync(user);
@@ -753,7 +765,9 @@ namespace Nano.Security
                 .ChangeEmailAsync(user, changeEmail.NewEmailAddress, changeEmail.Token);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
 
             this.DbContext
                 .Update(user);
@@ -786,7 +800,9 @@ namespace Nano.Security
                 .ConfirmEmailAsync(user, confirmEmail.Token);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
         }
 
         /// <summary>
@@ -810,7 +826,9 @@ namespace Nano.Security
                 .ChangePhoneNumberAsync(user, changePhoneNumber.NewPhoneNumber, changePhoneNumber.Token);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
 
             user.PhoneNumberConfirmed = false;
 
@@ -845,7 +863,9 @@ namespace Nano.Security
                 .ConfirmPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(user, confirmPhoneNumber.Token);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
         }
 
         /// <summary>
@@ -1051,7 +1071,9 @@ namespace Nano.Security
                 .CreateAsync(identityRole);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
 
             return identityRole;
         }
@@ -1077,7 +1099,9 @@ namespace Nano.Security
                 .DeleteAsync(role);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
         }
 
         /// <summary>
@@ -1124,7 +1148,9 @@ namespace Nano.Security
                 .AddToRoleAsync(user, assignRole.RoleName);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
         }
 
         /// <summary>
@@ -1148,7 +1174,9 @@ namespace Nano.Security
                 .RemoveFromRoleAsync(user, removeRole.RoleName);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
         }
 
         /// <summary>
@@ -1221,7 +1249,9 @@ namespace Nano.Security
                 .AddClaimAsync(user, claim);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
 
             return userClaim;
         }
@@ -1256,7 +1286,9 @@ namespace Nano.Security
                 .RemoveClaimAsync(user, claim);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
         }
 
         /// <summary>
@@ -1329,7 +1361,9 @@ namespace Nano.Security
                 .AddClaimAsync(role, claim);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
 
             return roleClaim;
         }
@@ -1364,7 +1398,9 @@ namespace Nano.Security
                 .RemoveClaimAsync(role, claim);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
         }
 
         /// <summary>
@@ -1382,7 +1418,9 @@ namespace Nano.Security
                 .DeleteAsync(identityUser);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
         }
 
         private async Task AssignSignUpRolesAndClaims(BaseSignUp signUp, IdentityUser<TIdentity> identityUser)
@@ -1467,7 +1505,9 @@ namespace Nano.Security
                 .RemoveAuthenticationTokenAsync(identityUser, JwtBearerDefaults.AuthenticationScheme, appId);
 
             if (!removeResult.Succeeded)
+            {
                 this.ThrowIdentityExceptions(removeResult.Errors);
+            }
 
             var identityUserToken = new IdentityUserTokenExpiry<TIdentity>
             {
