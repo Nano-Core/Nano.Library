@@ -16,6 +16,7 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
     <releaseNotes>
 		- Improved IRepository delete methods, and added different logic for hard- and soft-delete.
 		- Fixed AuditController throwing dependency injection error.
+		- Fixed errors not being thrown as Translation Exceptions, when expecting no response from ApiClient.
     </releaseNotes>
     <dependencies>
       <group targetFramework="net6.0">

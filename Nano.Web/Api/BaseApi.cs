@@ -318,8 +318,10 @@ namespace Nano.Web.Api
 
             using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
             {
-                await this.httpClient
+                var httpResponse = await this.httpClient
                     .SendAsync(httpRequest, cancellationToken);
+
+                await this.GetReponseAsync(httpResponse, cancellationToken);
             }
         }
         private async Task<TResponse> GetAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
@@ -352,8 +354,10 @@ namespace Nano.Web.Api
 
                 httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
-                await this.httpClient
+                var httpResponse = await this.httpClient
                     .SendAsync(httpRequest, cancellationToken);
+
+                await this.GetReponseAsync(httpResponse, cancellationToken);
             }
         }
         private async Task<TResponse> PutAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
@@ -391,8 +395,10 @@ namespace Nano.Web.Api
 
                 httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
-                await this.httpClient
+                var httpResponse = await this.httpClient
                     .SendAsync(httpRequest, cancellationToken);
+
+                await this.GetReponseAsync(httpResponse, cancellationToken);
             }
         }
         private async Task<TResponse> PostAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
@@ -435,8 +441,10 @@ namespace Nano.Web.Api
 
                     httpRequest.Content = formContent;
 
-                    await this.httpClient
+                    var httpResponse = await this.httpClient
                         .SendAsync(httpRequest, cancellationToken);
+
+                    await this.GetReponseAsync(httpResponse, cancellationToken);
                 }
             }
         }
@@ -479,8 +487,10 @@ namespace Nano.Web.Api
 
                 httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
-                await this.httpClient
+                var httpResponse = await this.httpClient
                     .SendAsync(httpRequest, cancellationToken);
+
+                await this.GetReponseAsync(httpResponse, cancellationToken);
             }
         }
         private async Task<TResponse> DeleteAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
@@ -578,6 +588,42 @@ namespace Nano.Web.Api
             }
 
             return httpRequest;
+        }
+        private async Task GetReponseAsync(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
+        {
+            if (httpResponse == null)
+                throw new ArgumentNullException(nameof(httpResponse));
+
+            switch (httpResponse.StatusCode)
+            {
+                case HttpStatusCode.NotFound:
+                    return;
+
+                case HttpStatusCode.Unauthorized:
+                    throw new UnauthorizedException();
+
+                case HttpStatusCode.BadRequest:
+                case HttpStatusCode.InternalServerError:
+                    var errorContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
+                    var error = JsonConvert.DeserializeObject<Error>(errorContent);
+
+                    if (error == null)
+                        throw new NullReferenceException(nameof(error));
+
+                    if (error.IsTranslated)
+                    {
+                        throw new AggregateException(error.Exceptions.Select(x => new TranslationException(x)));
+                    }
+                    if (this.apiOptions.UseExposeErrors)
+                    {
+                        throw new AggregateException(error.Exceptions.Select(x => new InvalidOperationException(x)));
+                    }
+
+                    break;
+            }
+
+            httpResponse
+                .EnsureSuccessStatusCode();
         }
         private async Task<TResponse> GetReponseAsync<TResponse>(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
             where TResponse : class
