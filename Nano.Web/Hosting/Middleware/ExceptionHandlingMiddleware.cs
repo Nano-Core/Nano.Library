@@ -60,6 +60,10 @@ namespace Nano.Web.Hosting.Middleware
             {
                 response.StatusCode = (int)HttpStatusCode.Unauthorized;
             }
+            catch (TaskCanceledException)
+            {
+                response.StatusCode = (int)HttpStatusCode.NoContent;
+            }
             catch (OperationCanceledException)
             {
                 response.StatusCode = (int)HttpStatusCode.NoContent;
