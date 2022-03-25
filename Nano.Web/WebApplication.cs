@@ -130,6 +130,8 @@ namespace Nano.Web
                 .UseConfiguration(config)
                 .UseKestrel(x =>
                 {
+                    x.AddServerHeader = false;
+
                     webOptions.Hosting.Ports
                         .ToList()
                         .ForEach(y =>

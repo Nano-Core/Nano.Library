@@ -76,12 +76,12 @@ namespace Nano.Web.Api.Extensions
                 var isSimple = formItem.Type
                     .IsSimple();
 
-                var value = isSimple
+                var value = !isSimple
                     ? JsonConvert.SerializeObject(formItem.Value, new JsonSerializerSettings
-                    {
-                        ReferenceLoopHandling = ReferenceLoopHandling.Error,
-                        NullValueHandling = NullValueHandling.Ignore 
-                    })
+                        {
+                            ReferenceLoopHandling = ReferenceLoopHandling.Error,
+                            NullValueHandling = NullValueHandling.Ignore 
+                        })
                     : formItem.Value.ToString() ?? string.Empty;
 
                 formContent
