@@ -13,7 +13,8 @@ namespace Nano.Eventing.Interfaces
         /// Invoked when recieving a publshed message.
         /// </summary>
         /// <param name="event">The instance of type <typeparamref name="TEvent"/>.</param>
+        /// <param name="isRetrying">Is Retrying. Indicates whether the message is being redelivered.</param>
         /// <returns>Void.</returns>
-        Task CallbackAsync(TEvent @event);
+        Task CallbackAsync(TEvent @event, bool isRetrying);
     }
 }

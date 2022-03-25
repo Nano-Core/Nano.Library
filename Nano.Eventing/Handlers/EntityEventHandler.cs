@@ -36,7 +36,7 @@ namespace Nano.Eventing.Handlers
         }
 
         /// <inheritdoc />
-        public virtual async Task CallbackAsync(EntityEvent @event)
+        public virtual async Task CallbackAsync(EntityEvent @event, bool isRetrying)
         {
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));

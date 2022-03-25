@@ -90,7 +90,7 @@ namespace Nano.Eventing.Providers.EasyNetQ
                             throw new NullReferenceException(nameof(method));
 
                         var callbackTask = (Task)method
-                            .Invoke(eventHandler, new object[] { message.Body });
+                            .Invoke(eventHandler, new object[] { message.Body, info.Redelivered });
 
                         callbackTask?
                             .Wait(cancellationToken);
