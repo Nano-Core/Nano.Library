@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>6.0.3</version>
+    <version>6.0.4</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
@@ -14,8 +14,8 @@
     <summary>Rapidly built and deploy rich .NET 6.0 applications. 
 Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <releaseNotes>
-		- Fixed Health-checks cancellation (aborted) exceptions, showing errors in log.
-    </releaseNotes>
+		- Removed server header for Kestrel.
+	</releaseNotes>
     <dependencies>
       <group targetFramework="net6.0">
 	      <dependency id="Microsoft.Extensions.DependencyInjection" version="6.0.0" />
