@@ -694,7 +694,8 @@ namespace Nano.Web.Extensions
                         .UseCspManifests(csp.Manifests)
                         .UseCspWorkers(csp.Workers)
                         .UseCspSandbox(csp.Sandbox);
-                });
+                })
+                .UseCspPermissionsPolicy(csp.PermissionsPolicy);
 
             return applicationBuilder;
         }
@@ -730,6 +731,61 @@ namespace Nano.Web.Extensions
                     x.WithExposedHeaders("RequestId", "TZ");
                 });
             
+            return applicationBuilder;
+        }
+
+        private static IApplicationBuilder UseCspPermissionsPolicy(this IApplicationBuilder applicationBuilder, WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy cspDirectivePermissionsPolicy)
+        {
+            if (applicationBuilder == null)
+                throw new ArgumentNullException(nameof(applicationBuilder));
+
+            if (!cspDirectivePermissionsPolicy.IsEnabled)
+                return applicationBuilder;
+
+            applicationBuilder
+                .Use(async (context, next) =>
+                {
+                    var permissionPolicyValues = string.Empty;
+
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.Accelerometer, "accelerometer");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.AmbientLightSensor, "ambient-light-sensor");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.AutoPlay, "autoplay");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.Battery, "battery");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.Camera, "camera");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.DisplayCapture, "display-capture");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.DocumentDomain, "document-domain");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.EncryptedMedia, "encrypted-media");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.ExecutionWhileNotRendered, "execution-while-not-rendered");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.ExecutionWhileOutOfViewport, "execution-while-out-of-viewport");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.FullScreen, "fullscreen");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.Gamepad, "gamepad");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.Geolocation, "geolocation");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.Gyroscope, "gyroscope");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.LayoutAnimations, "layout-animations");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.LegacyImageFormats, "legacy-image-formats");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.Magnetometer, "magnetometer");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.Microphone, "microphone");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.Midi, "midi");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.NavigationOverride, "navigation-override");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.OversizedImages, "oversized-images");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.Payment, "payment");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.PictureInPicture, "picture-in-picture");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.PublicKeyCredentialsGet, "publickey-credentials-get");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.SpeakerSelection, "speaker-selection");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.SyncXhr, "sync-xhr");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.UnoptimizedImages, "unoptimized-images");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.UnsizedMedia, "unsized-media");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.Usb, "usb");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.ScreenWakeLock, "screen-wake-lock");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.WebShare, "web-share");
+                    permissionPolicyValues += UseCspPermissionsPolicyDirective(cspDirectivePermissionsPolicy.XrSpatialTracking, "xr-spatial-tracking");
+
+                    context.Response.Headers
+                        .Add("Permissions-Policy", permissionPolicyValues);
+
+                    await next();
+                });
+
             return applicationBuilder;
         }
 
@@ -1358,6 +1414,28 @@ namespace Nano.Web.Extensions
                 });
 
             return configurer;
+        }
+        private static string UseCspPermissionsPolicyDirective<T>(T cspDirective, string directiveName)
+            where T : WebOptions.HostingOptions.CspOptions.CspDirective
+        {
+            if (cspDirective.IsEnabled)
+            {
+                if (cspDirective.IsNone)
+                {
+                    return $"{directiveName}=(none);";
+                }
+                else
+                {
+                    var values = cspDirective.Sources
+                        .Aggregate(string.Empty, (current, x) => current + $"{x} ");
+
+                    return cspDirective.IsSelf 
+                        ? $"{directiveName}=(self {values});" 
+                        : $"{directiveName}=({values});";
+                }
+            }
+
+            return string.Empty;
         }
     }
 }

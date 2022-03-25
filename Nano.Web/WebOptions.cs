@@ -232,6 +232,11 @@ namespace Nano.Web
                 public virtual CspDirectiveSandbox Sandbox { get; set; } = new();
 
                 /// <summary>
+                /// Permissions Policy.
+                /// </summary>
+                public virtual CspDirectivePermissionsPolicy PermissionsPolicy { get; set; } = new();
+
+                /// <summary>
                 /// Report Uris.
                 /// </summary>
                 public virtual string[] ReportUris { get; set; } = Array.Empty<string>();
@@ -244,7 +249,25 @@ namespace Nano.Web
                 /// <summary>
                 /// Is Enabled.
                 /// </summary>
-                internal virtual bool IsEnabled => this.BlockAllMixedContent || this.UpgradeInsecureRequests || this.Defaults.IsEnabled || this.Styles.IsEnabled || this.Scripts.IsEnabled || this.Objects.IsEnabled || this.Images.IsEnabled || this.Media.IsEnabled || this.Frames.IsEnabled || this.FrameAncestors.IsEnabled || this.Fonts.IsEnabled || this.Connections.IsEnabled || this.BaseUris.IsEnabled || this.Children.IsEnabled || this.Forms.IsEnabled || this.Manifests.IsEnabled || this.Workers.IsEnabled || this.Sandbox.IsEnabled;
+                internal virtual bool IsEnabled => this.BlockAllMixedContent || 
+                                                   this.UpgradeInsecureRequests || 
+                                                   this.Defaults.IsEnabled || 
+                                                   this.Styles.IsEnabled || 
+                                                   this.Scripts.IsEnabled || 
+                                                   this.Objects.IsEnabled || 
+                                                   this.Images.IsEnabled || 
+                                                   this.Media.IsEnabled || 
+                                                   this.Frames.IsEnabled || 
+                                                   this.FrameAncestors.IsEnabled || 
+                                                   this.Fonts.IsEnabled || 
+                                                   this.Connections.IsEnabled || 
+                                                   this.BaseUris.IsEnabled || 
+                                                   this.Children.IsEnabled || 
+                                                   this.Forms.IsEnabled || 
+                                                   this.Manifests.IsEnabled || 
+                                                   this.Workers.IsEnabled || 
+                                                   this.Sandbox.IsEnabled || 
+                                                   this.PermissionsPolicy.IsEnabled;
 
                 /// <summary>
                 /// Csp Directive.
@@ -300,7 +323,10 @@ namespace Nano.Web
                     public virtual bool StrictDynamic { get; set; } = false;
 
                     /// <inheritdoc />
-                    internal override bool IsEnabled => base.IsEnabled || this.IsUnsafeEval || this.IsUnsafeInline || this.StrictDynamic;
+                    internal override bool IsEnabled => base.IsEnabled || 
+                                                        this.IsUnsafeEval || 
+                                                        this.IsUnsafeInline || 
+                                                        this.StrictDynamic;
                 }
 
                 /// <summary>
@@ -390,7 +416,529 @@ namespace Nano.Web
                     /// <summary>
                     /// Is Enabled.
                     /// </summary>
-                    internal virtual bool IsEnabled => this.AllowForms || this.AllowModals || this.AllowOrientationLock || this.AllowPointerLock || this.AllowPopups || this.AllowPopupsToEscapeSandbox || this.AllowPresentation || this.AllowSameOrigin || this.AllowScripts || this.AllowTopNavigation;
+                    internal virtual bool IsEnabled => this.AllowForms || 
+                                                       this.AllowModals || 
+                                                       this.AllowOrientationLock || 
+                                                       this.AllowPointerLock || 
+                                                       this.AllowPopups || 
+                                                       this.AllowPopupsToEscapeSandbox || 
+                                                       this.AllowPresentation || 
+                                                       this.AllowSameOrigin || 
+                                                       this.AllowScripts || 
+                                                       this.AllowTopNavigation;
+                }
+
+                /// <summary>
+                /// Csp Directive Permissions Policy.
+                /// </summary>
+                public class CspDirectivePermissionsPolicy
+                {
+                    /// <summary>
+                    /// Accelerometer.
+                    /// Controls whether the current document is allowed to gather information about the acceleration
+                    /// of the device through the Accelerometer interface.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyAccelerometer Accelerometer { get; set; } = new();
+
+                    /// <summary>
+                    /// Ambient Light Sensor.
+                    /// Controls whether the current document is allowed to gather information about the amount of light
+                    /// in the environment around the device through the AmbientLightSensor interface.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyAmbientLightSensor AmbientLightSensor { get; set; } = new();
+
+                    /// <summary>
+                    /// Auto Play.
+                    /// Controls whether the current document is allowed to autoplay media requested through the HTMLMediaElement interface.
+                    /// When this policy is disabled and there were no user gestures, the Promise returned by HTMLMediaElement.play() will reject with a DOMException.
+                    /// The autoplay attribute on audio and video elements will be ignored.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyAutoPlay AutoPlay { get; set; } = new();
+
+                    /// <summary>
+                    /// Battery.
+                    /// Controls whether the use of the Battery Status API is allowed. When this policy is disabled,
+                    /// the Promise returned by Navigator.getBattery() will reject with a NotAllowedError DOMException.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyBattery Battery { get; set; } = new();
+
+                    /// <summary>
+                    /// Camera.
+                    /// Controls whether the current document is allowed to use video input devices.
+                    /// When this policy is disabled, the Promise returned by getUserMedia() will reject with a NotAllowedError DOMException.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyCamera Camera { get; set; } = new();
+
+                    /// <summary>
+                    /// Display Capture.
+                    /// Controls whether or not the current document is permitted to use the getDisplayMedia() method to capture screen contents.
+                    /// When this policy is disabled, the promise returned by getDisplayMedia() will reject with a NotAllowedError
+                    /// if permission is not obtained to capture the display's contents.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyDisplayCapture DisplayCapture { get; set; } = new();
+
+                    /// <summary>
+                    /// Document Domain.
+                    /// Controls whether the current document is allowed to set document.domain.
+                    /// When this policy is disabled, attempting to set document.domain will fail and cause a SecurityError DOMException to be thrown.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyDocumentDomain DocumentDomain { get; set; } = new();
+
+                    /// <summary>
+                    /// Encrypted Media.
+                    /// Controls whether the current document is allowed to use the Encrypted Media Extensions API (EME).
+                    /// When this policy is disabled, the Promise returned by Navigator.requestMediaKeySystemAccess() will reject with a DOMException.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyEncryptedMedia EncryptedMedia { get; set; } = new();
+
+                    /// <summary>
+                    /// Execution While Not Rendered.
+                    /// Controls whether tasks should execute in frames while they're not being rendered (e.g. if an iframe is hidden or display: none).
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyExecutionWhileNotRendered ExecutionWhileNotRendered { get; set; } = new();
+
+                    /// <summary>
+                    /// Execution While Out Of Viewport.
+                    /// Controls whether tasks should execute in frames while they're outside of the visible viewport.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyExecutionWhileOutOfViewport ExecutionWhileOutOfViewport { get; set; } = new();
+
+                    /// <summary>
+                    /// FullScreen.
+                    /// Controls whether the current document is allowed to use Element.requestFullScreen().
+                    /// When this policy is disabled, the returned Promise rejects with a TypeError.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyFullscreen FullScreen { get; set; } = new();
+
+                    /// <summary>
+                    /// Gamepad.
+                    /// Controls whether the current document is allowed to use the Gamepad API.
+                    /// When this policy is disabled, calls to Navigator.getGamepads() will throw a SecurityError DOMException,
+                    /// and the gamepadconnected and gamepaddisconnected events will not fire.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyGamepad Gamepad { get; set; } = new();
+
+                    /// <summary>
+                    /// Geo location.
+                    /// Controls whether the current document is allowed to use the Geolocation Interface.
+                    /// When this policy is disabled, calls to getCurrentPosition() and watchPosition() will cause those functions' callbacks to be invoked
+                    /// with a GeolocationPositionError code of PERMISSION_DENIED.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyGeolocation Geolocation { get; set; } = new();
+
+                    /// <summary>
+                    /// Gyroscope.
+                    /// Controls whether the current document is allowed to gather information about the orientation
+                    /// of the device through the Gyroscope interface.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyGyroscope Gyroscope { get; set; } = new();
+
+                    /// <summary>
+                    /// Layout Animations.
+                    /// Controls whether the current document is allowed to show layout animations.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyLayoutAnimations LayoutAnimations { get; set; } = new();
+
+                    /// <summary>
+                    /// Legacy Image Formats.
+                    /// Controls whether the current document is allowed to display images in legacy formats.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyLegacyImageFormats LegacyImageFormats { get; set; } = new();
+
+                    /// <summary>
+                    /// Magnetometer.
+                    /// Controls whether the current document is allowed to gather information about the orientation of the device through the Magnetometer interface.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyMagnetometer Magnetometer { get; set; } = new();
+
+                    /// <summary>
+                    /// Microphone.
+                    /// Controls whether the current document is allowed to use audio input devices.
+                    /// When this policy is disabled, the Promise returned by MediaDevices.getUserMedia() will reject with a NotAllowedError.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyMicrophone Microphone { get; set; } = new();
+
+                    /// <summary>
+                    /// Midi.
+                    /// Controls whether the current document is allowed to use the Web MIDI API.
+                    /// When this policy is disabled, the Promise returned by Navigator.requestMIDIAccess() will reject with a DOMException.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyMidi Midi { get; set; } = new();
+
+                    /// <summary>
+                    /// Navigation Override.
+                    /// Controls the availability of mechanisms that enables the page author to take control over
+                    /// the behavior of spatial navigation, or to cancel it outright.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyNavigationOverride NavigationOverride { get; set; } = new();
+
+                    /// <summary>
+                    /// Oversized Images.
+                    /// Controls whether the current document is allowed to download and display large images.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyOversizedImages OversizedImages { get; set; } = new();
+
+                    /// <summary>
+                    /// Payment.
+                    /// Controls whether the current document is allowed to use the Payment Request API.
+                    /// When this policy is enabled, the PaymentRequest() constructor will throw a SecurityError DOMException.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyPayment Payment { get; set; } = new();
+
+                    /// <summary>
+                    /// Picture In Picture.
+                    /// Controls whether the current document is allowed to play a video in a Picture-in-Picture mode via the corresponding API.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyPictureInPicture PictureInPicture { get; set; } = new();
+
+                    /// <summary>
+                    /// Public Key Credentials Get.
+                    /// Controls whether the current document is allowed to use the Web Authentication API to retrieve already stored public-key credentials,
+                    /// i.e. via navigator.credentials.get({publicKey: ..., ...}).
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyPublicKeyCredentialsGet PublicKeyCredentialsGet { get; set; } = new();
+
+                    /// <summary>
+                    /// Speaker Selection.
+                    /// Controls whether the current document is allowed to use the Audio Output Devices API to list and select speakers.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicySpeakerSelection SpeakerSelection { get; set; } = new();
+
+                    /// <summary>
+                    /// Sync Xhr.
+                    /// Controls whether the current document is allowed to make synchronous XMLHttpRequest requests.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicySyncXhr SyncXhr { get; set; } = new();
+
+                    /// <summary>
+                    /// Unoptimized Images.
+                    /// Controls whether the current document is allowed to download and display unoptimized images.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyUnoptimizedImages UnoptimizedImages { get; set; } = new();
+
+                    /// <summary>
+                    /// Unsized Media.
+                    /// Controls whether the current document is allowed to change the size of media elements after the initial layout is complete.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyUnsizedMedia UnsizedMedia { get; set; } = new();
+
+                    /// <summary>
+                    /// Usb.
+                    /// Controls whether the current document is allowed to use the WebUSB API
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyUsb Usb { get; set; } = new();
+
+                    /// <summary>
+                    /// Screen Wake Lock.
+                    /// Controls whether the current document is allowed to use Screen Wake Lock API
+                    /// to indicate that device should not turn off or dim the screen.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyScreenWakeLock ScreenWakeLock { get; set; } = new();
+
+                    /// <summary>
+                    /// Web Share.
+                    /// Controls whether or not the current document is allowed to use the Navigator.share() of Web Share API to
+                    /// share text, links, images, and other content to arbitrary destinations of user's choice, e.g. mobile apps.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyWebShare WebShare { get; set; } = new();
+
+                    /// <summary>
+                    /// Xr Spatial Tracking.
+                    /// Controls whether or not the current document is allowed to use the WebXR Device API to interact with a WebXR session.
+                    /// </summary>
+                    public virtual CspDirectivePermissionsPolicyXrSpatialTracking XrSpatialTracking { get; set; } = new();
+
+                    /// <summary>
+                    /// Is Enabled.
+                    /// </summary>
+                    internal virtual bool IsEnabled => this.Accelerometer.IsEnabled || 
+                                                       this.AmbientLightSensor.IsEnabled ||
+                                                       this.AutoPlay.IsEnabled || 
+                                                       this.Battery.IsEnabled ||
+                                                       this.Camera.IsEnabled || 
+                                                       this.DisplayCapture.IsEnabled ||
+                                                       this.DocumentDomain.IsEnabled || 
+                                                       this.EncryptedMedia.IsEnabled ||
+                                                       this.ExecutionWhileNotRendered.IsEnabled || 
+                                                       this.ExecutionWhileOutOfViewport.IsEnabled ||
+                                                       this.FullScreen.IsEnabled || 
+                                                       this.Gamepad.IsEnabled ||
+                                                       this.Geolocation.IsEnabled || 
+                                                       this.Gyroscope.IsEnabled ||
+                                                       this.LayoutAnimations.IsEnabled || 
+                                                       this.LegacyImageFormats.IsEnabled ||
+                                                       this.Magnetometer.IsEnabled || 
+                                                       this.Microphone.IsEnabled ||
+                                                       this.Midi.IsEnabled || 
+                                                       this.NavigationOverride.IsEnabled ||
+                                                       this.OversizedImages.IsEnabled || 
+                                                       this.Payment.IsEnabled ||
+                                                       this.PictureInPicture.IsEnabled || 
+                                                       this.PublicKeyCredentialsGet.IsEnabled ||
+                                                       this.SpeakerSelection.IsEnabled || 
+                                                       this.SyncXhr.IsEnabled ||
+                                                       this.UnoptimizedImages.IsEnabled || 
+                                                       this.UnsizedMedia.IsEnabled ||
+                                                       this.Usb.IsEnabled || 
+                                                       this.ScreenWakeLock.IsEnabled ||
+                                                       this.WebShare.IsEnabled || 
+                                                       this.XrSpatialTracking.IsEnabled;
+                    
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Accelerometer.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyAccelerometer : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Ambient Light Sensor
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyAmbientLightSensor : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions PolicyAuto Play.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyAutoPlay : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Battery.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyBattery : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Camera
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyCamera : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Display Capture.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyDisplayCapture : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Document Domain.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyDocumentDomain : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Encrypted Media.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyEncryptedMedia : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Execution While Not Rendered.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyExecutionWhileNotRendered : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Execution While Out Of Viewport.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyExecutionWhileOutOfViewport : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Fullscreen.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyFullscreen : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Gamepad.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyGamepad : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Geo location.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyGeolocation : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Gyroscope.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyGyroscope : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Layout Animations.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyLayoutAnimations : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Legacy Image Formats.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyLegacyImageFormats : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Magnetometer.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyMagnetometer : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Microphone.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyMicrophone : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Midi.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyMidi : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Navigation Override.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyNavigationOverride : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Oversized Images.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyOversizedImages : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Payment.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyPayment : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Picture-In-Picture.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyPictureInPicture : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Public Key Credentials Get.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyPublicKeyCredentialsGet : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions PolicySpeakerSelection.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicySpeakerSelection : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Sync Xhr.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicySyncXhr : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Unoptimized Images.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyUnoptimizedImages : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Unsized Media.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyUnsizedMedia : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Usb.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyUsb : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Screen Wake Lock.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyScreenWakeLock : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Web Share.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyWebShare : CspDirective
+                    {
+
+                    }
+
+                    /// <summary>
+                    /// Csp Directive Permissions Policy Xr Spatial Tracking.
+                    /// </summary>
+                    public class CspDirectivePermissionsPolicyXrSpatialTracking : CspDirective
+                    {
+
+                    }
                 }
             }
 

@@ -16,6 +16,7 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
     <releaseNotes>
 		- Removed server header for Kestrel.
 		- Added IsRetrying parameter to IEventingHandler.CallbackAsync.
+		- Added Permission-Policy header configuration.
 	</releaseNotes>
     <dependencies>
       <group targetFramework="net6.0">
