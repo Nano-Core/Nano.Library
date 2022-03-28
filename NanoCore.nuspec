@@ -2,13 +2,13 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>NanoCore</id>
-    <version>6.0.4</version>
+    <version>6.0.5</version>
     <title>Nano Core</title>
     <authors>Nano Contributors</authors>
     <owners>Michael Vivet</owners>
     <requireLicenseAcceptanc>true</requireLicenseAcceptanc>
     <licenseUrl>https://raw.githubusercontent.com/Nano-Core/Nano.Library/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/Nano-Core</projectUrl>
+    <projectUrl>https://ithub.com/Nano-Core</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/Nano-Core/Nano.Library/master/icon.ico</iconUrl>
     <description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
     <summary>Rapidly built and deploy rich .NET 6.0 applications. 
@@ -75,7 +75,7 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
 		  <dependency id="Microsoft.AspNetCore.Authentication.Google" version="6.0.3" />
 		  <dependency id="Microsoft.AspNetCore.Authentication.MicrosoftAccount" version="6.0.3" />
 	      <dependency id="Microsoft.AspNetCore.Authorization" version="6.0.3" />
-	      <dependency id="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="6.0.1" />
+	      <dependency id="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="6.0.3" />
 		  <dependency id="Microsoft.AspNetCore.Mvc.Versioning" version="5.0.0" />
 		  <dependency id="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" version="5.0.0" />
 	      <dependency id="NWebsec.AspNetCore.Middleware" version="3.0.0" />
