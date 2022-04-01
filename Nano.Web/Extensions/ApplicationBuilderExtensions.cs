@@ -1424,15 +1424,13 @@ namespace Nano.Web.Extensions
                 {
                     return $"{directiveName}=(none);";
                 }
-                else
-                {
-                    var values = cspDirective.Sources
-                        .Aggregate(string.Empty, (current, x) => current + $"{x} ");
 
-                    return cspDirective.IsSelf 
-                        ? $"{directiveName}=(self {values});" 
-                        : $"{directiveName}=({values});";
-                }
+                var values = cspDirective.Sources
+                    .Aggregate(string.Empty, (current, x) => current + $"{x} ");
+
+                return cspDirective.IsSelf 
+                    ? $"{directiveName}=(self {values});" 
+                    : $"{directiveName}=({values});";
             }
 
             return string.Empty;

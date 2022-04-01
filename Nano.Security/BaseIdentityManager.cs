@@ -184,20 +184,13 @@ namespace Nano.Security
 
             try
             {
-                switch (loginExternalProvider.Name)
+                return loginExternalProvider.Name switch
                 {
-                    case "Google":
-                        return await this.ValidateExternalProviderAccessTokenGoogle(loginExternalProvider, this.Options.ExternalLogins.Google, cancellationToken);
-
-                    case "Facebook":
-                        return await this.ValidateExternalProviderAccessTokenFacebook(loginExternalProvider, this.Options.ExternalLogins.Facebook, cancellationToken);
-
-                    case "Microsoft":
-                        return await this.ValidateExternalProviderAccessTokenMicrosoft(loginExternalProvider, this.Options.ExternalLogins.Microsoft, cancellationToken);
-
-                    default:
-                        throw new NotSupportedException(loginExternalProvider.Name);
-                }
+                    "Google" => await this.ValidateExternalProviderAccessTokenGoogle(loginExternalProvider, this.Options.ExternalLogins.Google, cancellationToken),
+                    "Facebook" => await this.ValidateExternalProviderAccessTokenFacebook(loginExternalProvider, this.Options.ExternalLogins.Facebook, cancellationToken),
+                    "Microsoft" => await this.ValidateExternalProviderAccessTokenMicrosoft(loginExternalProvider, this.Options.ExternalLogins.Microsoft, cancellationToken),
+                    _ => throw new NotSupportedException(loginExternalProvider.Name)
+                };
             }
             catch (Exception ex)
             {
