@@ -43,15 +43,17 @@ namespace Nano.Web.Api
         /// <summary>
         /// Sign Up External Callback Async.
         /// </summary>
-        /// <param name="request">The <see cref="SignUpExternalRequest{TUser}"/>.</param>
+        /// <typeparam name="TSignUp">The signup type.</typeparam>
+        /// <param name="request">The <see cref="BaseSignUpExternalRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<TUser> SignUpExternalAsync(SignUpExternalRequest<TUser, TIdentity> request, CancellationToken cancellationToken = default)
+        public virtual async Task<TUser> SignUpExternalAsync<TSignUp>(TSignUp request, CancellationToken cancellationToken = default)
+            where TSignUp : BaseSignUpExternalRequest
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.InvokeAsync<SignUpExternalRequest<TUser, TIdentity>, TUser>(request, cancellationToken);
+            return await this.InvokeAsync<TSignUp, TUser>(request, cancellationToken);
         }
 
         /// <summary>

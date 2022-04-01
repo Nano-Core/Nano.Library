@@ -3,19 +3,19 @@
 namespace Nano.Web.Api.Requests.Auth
 {
     /// <inheritdoc />
-    public class LogInExternalRequest : BaseRequestPost
+    public abstract class BaseLogInExternalRequest : BaseRequestPost
+    {
+
+    }
+
+    /// <inheritdoc />
+    public abstract class BaseLogInExternalRequest<TLogin> : BaseLogInExternalRequest
+        where TLogin : BaseLoginExternal, new()
     {
         /// <summary>
         /// External Login.
         /// </summary>
-        public virtual LoginExternal LoginExternal { get; set; }
-
-        /// <inheritdoc />
-        public LogInExternalRequest()
-        {
-            this.Action = "login/external";
-            this.Controller = "auth";
-        }
+        public virtual TLogin LoginExternal { get; set; } = new();
 
         /// <inheritdoc />
         public override object GetBody()

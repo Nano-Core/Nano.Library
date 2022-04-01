@@ -128,12 +128,37 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="LogInRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<AccessToken> LogInExternalAsync(LogInExternalRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task<AccessToken> LogInExternalAsync<TLogin>(TLogin request, CancellationToken cancellationToken = default)
+            where TLogin : BaseLogInExternalRequest
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var response = await this.InvokeAsync<LogInExternalRequest, AccessToken>(request, cancellationToken);
+            var response = await this.InvokeAsync<TLogin, AccessToken>(request, cancellationToken);
+
+            if (response == null)
+            {
+                return null;
+            }
+
+            this.SetAuthorizationHeader(response.Token);
+
+            return response;
+        }
+
+        /// <summary>
+        /// Log-In External Async.
+        /// </summary>
+        /// <param name="request">The <see cref="LogInRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="AccessToken"/>.</returns>
+        public virtual async Task<AccessToken> LogInExternalTransientAsync<TLogin>(TLogin request, CancellationToken cancellationToken = default)
+            where TLogin : BaseLogInExternalRequest
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var response = await this.InvokeAsync<TLogin, AccessToken>(request, cancellationToken);
 
             if (response == null)
             {

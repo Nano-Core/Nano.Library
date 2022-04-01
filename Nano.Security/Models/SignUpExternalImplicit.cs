@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using Nano.Models.Interfaces;
 
 namespace Nano.Security.Models
@@ -7,20 +6,8 @@ namespace Nano.Security.Models
     /// <summary>
     /// Sign Up External.
     /// </summary>
-    public class SignUpExternal : BaseSignUp
-    {
-        /// <summary>
-        /// External Login.
-        /// </summary>
-        [Required]
-        public virtual LoginExternal ExternalLogin { get; set; } = new();
-    }
-
-    /// <summary>
-    /// Sign Up External.
-    /// </summary>
     /// <typeparam name="TUser">The user type</typeparam>
-    public class SignUpExternal<TUser> : SignUpExternal<TUser, Guid>
+    public class SignUpExternalImplicit<TUser> : SignUpExternalImplicit<TUser, Guid>
         where TUser : IEntityUser<Guid>
     {
 
@@ -31,7 +18,7 @@ namespace Nano.Security.Models
     /// </summary>
     /// <typeparam name="TUser">The user type.</typeparam>
     /// <typeparam name="TIdentity">The identity type.</typeparam>
-    public class SignUpExternal<TUser, TIdentity> : SignUpExternal
+    public class SignUpExternalImplicit<TUser, TIdentity> : BaseSignUpExternal<LoginExternalProviderImplicit>
         where TUser : IEntityUser<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {

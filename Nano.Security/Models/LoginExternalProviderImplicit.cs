@@ -3,16 +3,10 @@
 namespace Nano.Security.Models
 {
     /// <summary>
-    /// Login External Provider.
+    /// Login External Provider Implicit.
     /// </summary>
-    public class LoginExternalProvider
+    public class LoginExternalProviderImplicit : BaseLoginExternalProvider
     {
-        /// <summary>
-        /// Login Provider.
-        /// </summary>
-        [Required]
-        public virtual string LoginProvider { get; set; }
-        
         /// <summary>
         /// Access Token.
         /// </summary>

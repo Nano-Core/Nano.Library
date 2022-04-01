@@ -109,14 +109,65 @@ namespace Nano.Web.Controllers
         /// <response code="400">Bad Request.</response>
         /// <response code="500">Error occurred.</response>
         [HttpPost]
-        [Route("signup/external")]
+        [Route("signup/external/implicit")]
         [AllowAnonymous]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> SignUpExternalAsync([FromBody][Required]SignUpExternal<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> SignUpExternalImplicitAsync([FromBody][Required]SignUpExternalImplicit<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
+        {
+            var identityUser = await this.IdentityManager
+                .SignUpExternalAsync(signUpExternal, cancellationToken);
+
+            signUpExternal.User.Id = identityUser.Id.Parse<TIdentity>();
+            signUpExternal.User.IdentityUserId = identityUser.Id;
+
+            TEntity user;
+            try
+            {
+                user = await this.Repository
+                    .AddAsync(signUpExternal.User, cancellationToken);
+
+                await this.Repository
+                    .SaveChanges(cancellationToken);
+
+            }
+            catch
+            {
+                await this.IdentityManager
+                    .DeleteIdentityUser(identityUser, cancellationToken);
+
+                await this.Repository
+                    .SaveChanges(cancellationToken);
+
+                throw;
+            }
+
+            user.IdentityUser = identityUser;
+
+            return this.Created("signup/external", user);
+        }
+
+        /// <summary>
+        /// Sign-up a user based on external login provider.
+        /// </summary>
+        /// <param name="signUpExternal">The signup external.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The access token.</returns>
+        /// <response code="201">Created.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="500">Error occurred.</response>
+        [HttpPost]
+        [Route("signup/external/authcode")]
+        [AllowAnonymous]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> SignUpExternalAuthCodeAsync([FromBody][Required]SignUpExternalAuthCode<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
         {
             var identityUser = await this.IdentityManager
                 .SignUpExternalAsync(signUpExternal, cancellationToken);

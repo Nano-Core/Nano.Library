@@ -93,7 +93,7 @@
             </summary>
             <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>A collection of <see cref="T:Nano.Security.Models.LoginProvider"/>'s.</returns>
+            <returns>A collection of <see cref="T:Nano.Security.Models.ExternalProvider"/>'s.</returns>
         </member>
         <member name="M:Nano.Web.Api.BaseApi.InvokeAsync``1(``0,System.Threading.CancellationToken)">
             <summary>
@@ -1303,7 +1303,7 @@
         <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalRequest`2">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Api.Requests.Identity.SignUpExternalRequest`2.SignUpExternal">
+        <member name="P:Nano.Web.Api.Requests.Identity.SignUpExternalRequest`2.SignUpExternalImplicit">
             <summary>
             Sign Up External.
             </summary>
@@ -1662,7 +1662,7 @@
             <summary>
             Sign-in a user from an external login and authentication.
             </summary>
-            <param name="loginExternal">The external login.</param>
+            <param name="loginExternalProvider">The external login.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The external login response.</returns>
             <response code="200">Success.</response>
@@ -1671,7 +1671,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalTransientAsync(Nano.Security.Models.LoginExternalTransient,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalImplicitTransientAsync(Nano.Security.Models.LoginExternalTransientImplicit,System.Threading.CancellationToken)">
             <summary>
             Sign-in a user transiently from an external login and authentication.
             No Identity backing-store is used.
@@ -2514,7 +2514,7 @@
             <response code="400">Bad Request.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.SignUpExternalAsync(Nano.Security.Models.SignUpExternal{`1,`2},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.SignUpExternalAsync(Nano.Security.Models.SignUpExternalImplicit{`1,`2},System.Threading.CancellationToken)">
             <summary>
             Sign-up a user based on external login provider.
             </summary>

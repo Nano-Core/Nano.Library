@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models
 {
     /// <summary>
-    /// Login External.
+    /// Base Login (abstract).
     /// </summary>
-    public class LoginExternal : LoginExternalProvider
+    public abstract class BaseLogin
     {
         /// <summary>
         /// App Id.
@@ -17,20 +17,29 @@ namespace Nano.Security.Models
 
         /// <summary>
         /// Is Remember Me.
+        /// Not relevant for transient logins.
         /// </summary>
         [Required]
         [DefaultValue(false)]
-        public virtual bool IsRememerMe { get; set; } = false;
+        public virtual bool IsRememberMe { get; set; } = false;
 
         /// <summary>
         /// Is Refreshable.
+        /// Not relevant for transient logins.
         /// </summary>
         [Required]
         [DefaultValue(true)]
         public virtual bool IsRefreshable { get; set; } = true;
 
         /// <summary>
+        /// Transient Roles.
+        /// Non persisted roles, that is added to the jwt-token when logging in.
+        /// </summary>
+        public virtual IEnumerable<string> TransientRoles { get; set; } = new List<string>();
+
+        /// <summary>
         /// Transient Claims.
+        /// Non persisted claims, that is added to the jwt-token when logging in.
         /// </summary>
         public virtual IDictionary<string, string> TransientClaims { get; set; } = new Dictionary<string, string>();
     }
