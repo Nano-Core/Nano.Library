@@ -217,7 +217,7 @@ namespace Nano.Security
                 /// <summary>
                 /// Scopes.
                 /// </summary>
-                public virtual IEnumerable<string> Scopes { get; set; } = new List<string>();
+                public virtual string[] Scopes { get; set; } = Array.Empty<string>();
             }
 
             /// <summary>
@@ -238,7 +238,7 @@ namespace Nano.Security
                 /// <summary>
                 /// Scopes.
                 /// </summary>
-                public virtual IEnumerable<string> Scopes { get; set; } = new List<string>();
+                public virtual string[] Scopes { get; set; } = Array.Empty<string>();
             }
 
             /// <summary>
@@ -246,6 +246,11 @@ namespace Nano.Security
             /// </summary>
             public class MicrosoftOptions
             {
+                /// <summary>
+                /// Tenant Id.
+                /// </summary>
+                public virtual string TenantId { get; set; }
+
                 /// <summary>
                 /// Client Id.
                 /// </summary>
@@ -259,7 +264,7 @@ namespace Nano.Security
                 /// <summary>
                 /// Scopes.
                 /// </summary>
-                public virtual IEnumerable<string> Scopes { get; set; } = new List<string>();
+                public virtual string[] Scopes { get; set; } = Array.Empty<string>();
             }
         }
     }
