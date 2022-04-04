@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using Nano.Models.Interfaces;
 
 namespace Nano.Security.Models
 {
@@ -14,13 +15,21 @@ namespace Nano.Security.Models
     /// Base Sign-Up External (abstract).
     /// </summary>
     /// <typeparam name="TProvider">The provider type.</typeparam>
-    public abstract class BaseSignUpExternal<TProvider> : BaseSignUpExternal
+    /// <typeparam name="TUser"></typeparam>
+    /// <typeparam name="TIdentity"></typeparam>
+    public abstract class BaseSignUpExternal<TProvider, TUser, TIdentity> : BaseSignUpExternal
         where TProvider : BaseLoginExternalProvider, new()
+        where TUser : IEntityUser<TIdentity>, new()
+        where TIdentity : IEquatable<TIdentity>
     {
+        /// <summary>
+        /// User.
+        /// </summary>
+        public virtual TUser User { get; set; } = new();
+
         /// <summary>
         /// Login External.
         /// </summary>
-        [Required]
-        public virtual TProvider Provider { get; set; }
+        public TProvider Provider { get; set; } = new();
     }
 }

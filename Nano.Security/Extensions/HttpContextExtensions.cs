@@ -4,6 +4,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using Nano.Security.Const;
+using Nano.Security.Models;
 
 namespace Nano.Security.Extensions
 {
@@ -122,6 +123,32 @@ namespace Nano.Security.Extensions
                 .FindFirstValue(JwtRegisteredClaimNames.Email);
 
             return value;
+        }
+
+        /// <summary>
+        /// Get Jwt External Token.
+        /// </summary>
+        /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
+        /// <returns>The <see cref="AccessToken"/>.</returns>
+        public static AccessToken GetJwtExternalToken(this HttpContext httpContext)
+        {
+            if (httpContext == null)
+                throw new ArgumentNullException(nameof(httpContext));
+
+            var token = httpContext.User
+                .FindFirstValue(ClaimTypesExtended.ExternalToken);
+
+            var refreshToken = httpContext.User
+                .FindFirstValue(ClaimTypesExtended.ExternalRefreshToken);
+
+            return new AccessToken
+            {
+                Token = token,
+                RefreshToken = new RefreshToken
+                {
+                    Token = refreshToken
+                }
+            };
         }
     }
 }

@@ -22,6 +22,5 @@ namespace Nano.Web.Api.Requests.Identity
         {
             return this.SignUpExternal;
         }
-
     }
 }

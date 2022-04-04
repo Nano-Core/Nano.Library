@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Nano.Security.Models
+﻿namespace Nano.Security.Models
 {
     /// <summary>
     /// Base Login External (abstract).
@@ -20,7 +18,6 @@ namespace Nano.Security.Models
         /// <summary>
         /// Provider.
         /// </summary>
-        [Required]
-        public virtual TProvider Provider { get; set; } = new();
+        public TProvider Provider { get; set; } = new();
     }
 }

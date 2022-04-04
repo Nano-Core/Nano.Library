@@ -18,6 +18,10 @@ using Nano.Web.Models;
 
 namespace Nano.Web.Controllers
 {
+    // BUG: Add ASync to all controller methods.
+    // BUG: Go through all if statements for brackets
+    // BUG: Test stuff (look at test dlls' and remove??)
+
     /// <summary>
     /// Base abstract <see cref="Controller"/>, implementing  methods for instances of <typeparamref name="TEntity"/>.
     /// </summary>

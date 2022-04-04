@@ -3,7 +3,8 @@
     /// <summary>
     /// Login External Auth Code.
     /// </summary>
-    public class LoginExternalAuthCode : BaseLoginExternal<LoginExternalProviderAuthCode>
+    public class LoginExternalAuthCode<TProvider> : BaseLoginExternal<TProvider> 
+        where TProvider : LoginExternalProviderAuthCode, new()
     {
 
     }

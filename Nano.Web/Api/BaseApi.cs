@@ -147,30 +147,6 @@ namespace Nano.Web.Api
         }
 
         /// <summary>
-        /// Log-In External Async.
-        /// </summary>
-        /// <param name="request">The <see cref="LogInRequest"/>.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<AccessToken> LogInExternalTransientAsync<TLogin>(TLogin request, CancellationToken cancellationToken = default)
-            where TLogin : BaseLogInExternalRequest
-        {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-
-            var response = await this.InvokeAsync<TLogin, AccessToken>(request, cancellationToken);
-
-            if (response == null)
-            {
-                return null;
-            }
-
-            this.SetAuthorizationHeader(response.Token);
-
-            return response;
-        }
-
-        /// <summary>
         /// Log-Out Async.
         /// </summary>
         /// <param name="request">The <see cref="LogOutRequest"/>.</param>
@@ -314,16 +290,22 @@ namespace Nano.Web.Api
                 if (isAnonymous)
                 {
                     if (this.apiOptions.Login == null)
+                    {
                         return this.accessToken?.Token;
+                    }
 
                     if (!string.IsNullOrEmpty(this.accessToken?.Token) && !this.accessToken.IsExpired)
+                    {
                         return this.accessToken?.Token;
-
-                    this.apiOptions.Login.IsRefreshable = false;
+                    }
 
                     var loginRequest = new LogInRequest
                     {
-                        Login = this.apiOptions.Login
+                        Login = new Login
+                        {
+                            Username = this.apiOptions.Login.Username,
+                            Password = this.apiOptions.Login.Password
+                        }
                     };
 
                     this.accessToken = await this.InvokeAsync<LogInRequest, AccessToken>(loginRequest, cancellationToken);

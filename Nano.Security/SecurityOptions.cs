@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Nano.Security.Const;
 
 namespace Nano.Security

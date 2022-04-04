@@ -1,4 +1,4 @@
-﻿using Nano.Security.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Web.Api
 {
@@ -40,6 +40,32 @@ namespace Nano.Web.Api
         /// <summary>
         /// Login.
         /// </summary>
-        public virtual Login Login { get; set; }
+        public virtual LoginCredentials Login { get; set; }
+
+        /// <summary>
+        /// Login Credentials.
+        /// </summary>
+        public class LoginCredentials
+        {
+            /// <summary>
+            /// Username.
+            /// </summary>
+            [Required]
+            [MaxLength(256)]
+            public virtual string Username { get; set; }
+
+            /// <summary>
+            /// Password.
+            /// </summary>
+            [Required]
+            [MaxLength(256)]
+            public virtual string Password { get; set; }
+
+            /// <summary>
+            /// Is Refreshable.
+            /// Not relevant for transient logins.
+            /// </summary>
+            internal virtual bool IsRefreshable => false;
+        }
     }
 }

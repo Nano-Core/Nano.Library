@@ -11,6 +11,6 @@ namespace Nano.Security.Models
         /// Name.
         /// </summary>
         [Required]
-        public virtual string Name { get; set; }
+        internal string Name { get; set; }
     }
 }

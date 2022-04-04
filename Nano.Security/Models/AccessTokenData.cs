@@ -35,6 +35,16 @@ namespace Nano.Security.Models
         public virtual string UserEmail { get; set; }
 
         /// <summary>
+        /// External Token.
+        /// </summary>
+        public virtual string ExternalToken { get; set; }
+
+        /// <summary>
+        /// External Refresh Token.
+        /// </summary>
+        public virtual string ExternalRefreshToken { get; set; }
+
+        /// <summary>
         /// Claims.
         /// </summary>
         public virtual IEnumerable<Claim> Claims { get; set; } = new List<Claim>();

@@ -3,7 +3,8 @@
     /// <summary>
     /// Login External Implicit.
     /// </summary>
-    public class LoginExternalImplicit : BaseLoginExternal<LoginExternalProviderImplicit>
+    public class LoginExternalImplicit<TProvider> : BaseLoginExternal<TProvider>
+        where TProvider : LoginExternalProviderImplicit, new()
     {
 
     }

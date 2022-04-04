@@ -3,9 +3,9 @@
 namespace Nano.Security.Models
 {
     /// <summary>
-    /// Login External Provider Implicit.
+    /// Login External Provider Implicit (abstract).
     /// </summary>
-    public class LoginExternalProviderImplicit : BaseLoginExternalProvider
+    public abstract class LoginExternalProviderImplicit : BaseLoginExternalProvider
     {
         /// <summary>
         /// Access Token.

@@ -4,27 +4,28 @@ using Nano.Models.Interfaces;
 namespace Nano.Security.Models
 {
     /// <summary>
-    /// Sign Up External.
+    /// Sign Up External Implicit.
     /// </summary>
+    /// <typeparam name="TProvider">The provider type.</typeparam>
     /// <typeparam name="TUser">The user type</typeparam>
-    public class SignUpExternalImplicit<TUser> : SignUpExternalImplicit<TUser, Guid>
-        where TUser : IEntityUser<Guid>
+    public class SignUpExternalImplicit<TProvider, TUser> : SignUpExternalImplicit<TProvider, TUser, Guid>
+        where TProvider : LoginExternalProviderImplicit, new()
+        where TUser : IEntityUser<Guid>, new()
     {
 
     }
 
     /// <summary>
-    /// Sign Up External.
+    /// Sign Up External Implicit.
     /// </summary>
+    /// <typeparam name="TProvider">The provider type.</typeparam>
     /// <typeparam name="TUser">The user type.</typeparam>
     /// <typeparam name="TIdentity">The identity type.</typeparam>
-    public class SignUpExternalImplicit<TUser, TIdentity> : BaseSignUpExternal<LoginExternalProviderImplicit>
-        where TUser : IEntityUser<TIdentity>
+    public class SignUpExternalImplicit<TProvider, TUser, TIdentity> : BaseSignUpExternal<TProvider, TUser, TIdentity>
+        where TProvider : LoginExternalProviderImplicit, new()
+        where TUser : IEntityUser<TIdentity>, new()
         where TIdentity : IEquatable<TIdentity>
     {
-        /// <summary>
-        /// User.
-        /// </summary>
-        public virtual TUser User { get; set; }
+
     }
 }
