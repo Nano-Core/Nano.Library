@@ -148,7 +148,7 @@
             <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
             <param name="context">The <see cref="T:Microsoft.EntityFrameworkCore.DbContext"/>.</param>
         </member>
-        <member name="M:Nano.Eventing.Handlers.EntityEventHandler.CallbackAsync(Nano.Eventing.EntityEvent)">
+        <member name="M:Nano.Eventing.Handlers.EntityEventHandler.CallbackAsync(Nano.Eventing.EntityEvent,System.Boolean)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Eventing.Interfaces.IEventing">
@@ -165,12 +165,11 @@
             <param name="routing">The routing key (if any).</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>
-        <member name="M:Nano.Eventing.Interfaces.IEventing.SubscribeAsync``1(System.IServiceProvider,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Eventing.Interfaces.IEventing.SubscribeAsync``1(System.String,System.Threading.CancellationToken)">
             <summary>
             Consumes messages.
             </summary>
             <typeparam name="TMessage">The type of response body.</typeparam>
-            <param name="serviceProvider">The <see cref="T:System.IServiceProvider"/>.</param>
             <param name="routing">The routing key (if any).</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
@@ -180,12 +179,13 @@
             Event Handler interface.
             </summary>
         </member>
-        <member name="M:Nano.Eventing.Interfaces.IEventingHandler`1.CallbackAsync(`0)">
+        <member name="M:Nano.Eventing.Interfaces.IEventingHandler`1.CallbackAsync(`0,System.Boolean)">
             <summary>
             CallbackAsync.
             Invoked when recieving a publshed message.
             </summary>
             <param name="event">The instance of type <typeparamref name="TEvent"/>.</param>
+            <param name="isRetrying">Is Retrying. Indicates whether the message is being redelivered.</param>
             <returns>Void.</returns>
         </member>
         <member name="T:Nano.Eventing.Interfaces.IEventingProvider">
@@ -208,7 +208,7 @@
         <member name="M:Nano.Eventing.NullEventing.PublishAsync``1(``0,System.String)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Eventing.NullEventing.SubscribeAsync``1(System.IServiceProvider,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Eventing.NullEventing.SubscribeAsync``1(System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Eventing.NullEventing.Dispose">
@@ -231,7 +231,7 @@
         <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.PublishAsync``1(``0,System.String)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.SubscribeAsync``1(System.IServiceProvider,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.SubscribeAsync``1(System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.Dispose">
@@ -254,10 +254,16 @@
             Options.
             </summary>
         </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.#ctor(Nano.Eventing.EventingOptions)">
+        <member name="P:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.Services">
+            <summary>
+            Services.
+            </summary>
+        </member>
+        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.#ctor(Microsoft.Extensions.DependencyInjection.IServiceCollection,Nano.Eventing.EventingOptions)">
             <summary>
             Constructor.
             </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
             <param name="options">The <see cref="T:Nano.Eventing.EventingOptions"/>.</param>
         </member>
         <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.Configure">

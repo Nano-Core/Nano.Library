@@ -222,6 +222,14 @@
             <param name="baseType">The <see cref="T:System.Type"/> that be inherited or implemented by the passed <paramref name="type"/>.</param>
             <returns>True or false, depending on whehter the <paramref name="type"/> implements or derives from <paramref name="baseType"/>.</returns>
         </member>
+        <member name="M:Nano.Models.Extensions.TypeExtensions.IsSimple(System.Type)">
+            <summary>
+            Is Simple.
+            Checks if the <see cref="T:System.Type"/> is simple.
+            </summary>
+            <param name="type">The <see cref="T:System.Type"/>.</param>
+            <returns>Boolean indicating if the type is simple.</returns>
+        </member>
         <member name="T:Nano.Models.Interfaces.IEntity">
             <summary>
             Entity interface.

@@ -12,9 +12,6 @@
             Context.
             </summary>
         </member>
-        <member name="P:Nano.Repository.BaseRepository`2.IsLazyLoadingEnabled">
-            <inheritdoc />
-        </member>
         <member name="M:Nano.Repository.BaseRepository`2.#ctor(`0)">
             <summary>
             Constructor.
@@ -123,6 +120,9 @@
         <member name="M:Nano.Repository.BaseRepository`2.DeleteAsync``1(``0,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteManyAsync``2(System.Collections.Generic.IEnumerable{``1},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="M:Nano.Repository.BaseRepository`2.DeleteManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
@@ -132,13 +132,22 @@
         <member name="M:Nano.Repository.BaseRepository`2.DeleteManyAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteManyBulkAsync``2(System.Collections.Generic.IEnumerable{``1},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteManyBulkAsync``1(System.Collections.Generic.IEnumerable{System.Guid},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteManyBulkAsync``1(System.Collections.Generic.IEnumerable{System.Int32},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteManyBulkAsync``1(System.Collections.Generic.IEnumerable{System.Int64},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`2.DeleteManyBulkAsync``1(System.Collections.Generic.IEnumerable{System.String},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="M:Nano.Repository.BaseRepository`2.DeleteManyBulkAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Repository.BaseRepository`2.DeleteManyBulkAsync``2(``1,System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Repository.BaseRepository`2.DeleteManyBulkAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Repository.BaseRepository`2.CountAsync``2(``1,System.Threading.CancellationToken)">
@@ -225,11 +234,6 @@
             (Base) Interface for a repository.
             Defines methods for the most rudamentory operations (get, criteria2, add, update, delete) on instances of <see cref="T:Nano.Models.Interfaces.IEntity"/>.
             <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/>, <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/> and <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>). 
-            </summary>
-        </member>
-        <member name="P:Nano.Repository.Interfaces.IRepository.IsLazyLoadingEnabled">
-            <summary>
-            Is Lazy-Loading Enabled.
             </summary>
         </member>
         <member name="M:Nano.Repository.Interfaces.IRepository.GetEntitySet``1">
@@ -548,6 +552,16 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> returning 'void'.</returns>
         </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteManyAsync``2(System.Collections.Generic.IEnumerable{``1},System.Threading.CancellationToken)">
+            <summary>
+            Deletes all instances of the passed <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>'s.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
+            <typeparam name="TKey">The type of the key.</typeparam>
+            <param name="ids">The id's.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+        </member>
         <member name="M:Nano.Repository.Interfaces.IRepository.DeleteManyAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
             <summary>
             Deletes all instances of the passed <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>'s.
@@ -576,31 +590,58 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
             <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteManyBulkAsync``2(System.Collections.Generic.IEnumerable{``1},System.Threading.CancellationToken)">
+            <summary>
+            Bulk deletes all instances of the  passed id's matching <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>'s.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
+            <typeparam name="TKey">The type of the key.</typeparam>
+            <param name="ids">The id's.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteManyBulkAsync``1(System.Collections.Generic.IEnumerable{System.Guid},System.Threading.CancellationToken)">
+            <summary>
+            Bulk deletes all instances of the  passed id's matching <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>'s.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
+            <param name="ids">The id's.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteManyBulkAsync``1(System.Collections.Generic.IEnumerable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Bulk deletes all instances of the  passed id's matching <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>'s.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
+            <param name="ids">The id's.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteManyBulkAsync``1(System.Collections.Generic.IEnumerable{System.Int64},System.Threading.CancellationToken)">
+            <summary>
+            Bulk deletes all instances of the  passed id's matching <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>'s.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
+            <param name="ids">The id's.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+        </member>
+        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteManyBulkAsync``1(System.Collections.Generic.IEnumerable{System.String},System.Threading.CancellationToken)">
+            <summary>
+            Bulk deletes all instances of the  passed id's matching <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>'s.
+            </summary>
+            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
+            <param name="ids">The id's.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
+            <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
+        </member>
         <member name="M:Nano.Repository.Interfaces.IRepository.DeleteManyBulkAsync``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">
             <summary>
             Bulk deletes all instances of the passed <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>'s.
             </summary>
             <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
             <param name="entities">The instances of <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>'s.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
-            <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
-        </member>
-        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteManyBulkAsync``2(``1,System.Threading.CancellationToken)">
-            <summary>
-            Bulk deletes all instances of <typeparamref name="TEntity"/>, matching the criterias of the passed <paramref name="criteria"/>.
-            </summary>
-            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/> type.</typeparam>
-            <typeparam name="TCriteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/> type.</typeparam>
-            <param name="criteria">The <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/>.</param>
-            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
-            <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
-        </member>
-        <member name="M:Nano.Repository.Interfaces.IRepository.DeleteManyBulkAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
-            <summary>
-            Bulk deletes all instances matching the passed criteria <see cref="T:System.Linq.Expressions.Expression"/>.
-            </summary>
-            <typeparam name="TEntity">The <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/> type.</typeparam>
-            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/> to evaulate entities to be deleted.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
             <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>
