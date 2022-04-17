@@ -60,10 +60,14 @@ namespace Nano.Security.Extensions
             var authorizationHeader = httpContext.Request.Headers[HeaderNames.Authorization].ToString();
 
             if (string.IsNullOrEmpty(authorizationHeader))
+            {
                 return null;
+            }
 
             if (authorizationHeader.Length <= PREFIX.Length)
+            {
                 return null;
+            }
 
             var value = authorizationHeader[PREFIX.Length..];
 
@@ -84,7 +88,9 @@ namespace Nano.Security.Extensions
                 .FindFirstValue(JwtRegisteredClaimNames.Sub);
 
             if (value == null)
+            {
                 return null;
+            }
 
             var success = Guid.TryParse(value, out var result);
 

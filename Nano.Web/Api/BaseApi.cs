@@ -282,7 +282,9 @@ namespace Nano.Web.Api
                     .GetJwtToken();
 
                 if (jwtToken != null)
+                {
                     return jwtToken;
+                }
 
                 var isAnonymous = httpContextAccess
                     .GetIsAnonymous();
@@ -698,7 +700,9 @@ namespace Nano.Web.Api
             var httpContext = HttpContextAccess.Current;
 
             if (httpContext == null)
+            {
                 return;
+            }
 
             httpContext.Request.Headers[HeaderNames.Authorization] = $"Bearer {token}";
         }

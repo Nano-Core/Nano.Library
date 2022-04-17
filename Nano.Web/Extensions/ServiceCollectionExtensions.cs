@@ -100,13 +100,19 @@ namespace Nano.Web.Extensions
                     x.ModelBinderProviders.Insert(0, queryModelBinderProvider);
 
                     if (!securityOptions.IsAuth || dataOptions.ConnectionString == null)
+                    {
                         x.Conventions.Insert(1, new AuthControllerDisabledConvention());
+                    }
 
                     if (dataOptions.ConnectionString == null || !dataOptions.UseAudit)
+                    {
                         x.Conventions.Insert(2, new AuditControllerDisabledConvention());
+                    }
 
                     if (webOptions.Hosting.UseHttpsRequired)
+                    {
                         x.Filters.Add<RequireHttpsAttribute>();
+                    }
 
                     x.Filters.Add<IsAnonymousFilter>();
                     x.Filters.Add<ModelStateValidationFilter>();
@@ -163,18 +169,24 @@ namespace Nano.Web.Extensions
                     var options = section?.Get<ApiOptions>();
 
                     if (options == null)
+                    {
                         return;
+                    }
 
                     var instance = Activator.CreateInstance(x, options);
 
                     if (instance == null)
+                    {
                         return;
+                    }
 
                     services
                         .AddSingleton(x, instance);
 
                     if (hosts.Contains(options.Host))
+                    {
                         return;
+                    }
 
                     services
                         .AddHealthChecks()
@@ -313,7 +325,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(options));
 
             if (!options.Hosting.HealthCheck.UseHealthCheck)
+            {
                 return services;
+            }
 
             services
                 .AddHealthChecks()
@@ -369,7 +383,9 @@ namespace Nano.Web.Extensions
                     };
 
                     if (!string.IsNullOrEmpty(appOptions.TermsOfService))
-                        info.TermsOfService = new Uri(appOptions.TermsOfService); 
+                    {
+                        info.TermsOfService = new Uri(appOptions.TermsOfService);
+                    } 
 
                     x.SwaggerDoc(appOptions.Version, info);
                     x.IgnoreObsoleteActions();
@@ -407,13 +423,17 @@ namespace Nano.Web.Extensions
                              var path = Path.Combine(AppContext.BaseDirectory, name);
 
                              if (File.Exists(path))
+                             {
                                  x.IncludeXmlComments(path);
+                             }
 
                              var modelsName = y.Name.Replace(".dll", "").Replace(".exe", "") + ".Models.xml";
                              var modelsPath = Path.Combine(AppContext.BaseDirectory, modelsName);
 
                              if (File.Exists(modelsPath))
+                             {
                                  x.IncludeXmlComments(modelsPath);
+                             }
 
                              y.Assembly
                                  .GetManifestResourceNames()
@@ -424,7 +444,9 @@ namespace Nano.Web.Extensions
                                      var resource = y.Assembly.GetManifestResourceStream(z);
 
                                      if (resource != null)
+                                     {
                                          x.IncludeXmlComments(() => new XPathDocument(resource));
+                                     }
                                  });
                          });
                 })

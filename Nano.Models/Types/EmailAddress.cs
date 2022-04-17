@@ -23,7 +23,10 @@ namespace Nano.Models.Types
         public virtual bool IsValid
         {
             get => this.Email != null && Regex.IsMatch(this.Email, EmailAddress.VALIDATE_PATTERN);
-            protected set { }
+            protected set
+            {
+                // do nothing.
+            }
         }
     }
 }

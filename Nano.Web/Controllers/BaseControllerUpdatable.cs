@@ -18,10 +18,6 @@ using Nano.Web.Models;
 
 namespace Nano.Web.Controllers
 {
-    // BUG: Add ASync to all controller methods.
-    // BUG: Go through all if statements for brackets
-    // BUG: Test stuff (look at test dlls' and remove??)
-
     /// <summary>
     /// Base abstract <see cref="Controller"/>, implementing  methods for instances of <typeparamref name="TEntity"/>.
     /// </summary>
@@ -71,13 +67,15 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Edit([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> EditAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
         {
             entity = await this.Repository
                 .UpdateAsync(entity, cancellationToken);
 
             if (entity == null)
+            {
                 return this.NotFound();
+            }
 
             await this.Repository
                 .SaveChanges(cancellationToken);
@@ -105,7 +103,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> EditMany([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> EditManyAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         {
             entities = await this.Repository
                 .UpdateManyAsync(entities, cancellationToken);

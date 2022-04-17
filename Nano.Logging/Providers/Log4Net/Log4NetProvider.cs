@@ -71,9 +71,8 @@ namespace Nano.Logging.Providers.Log4Net
                 ExternalConfigurationSetup = true,
                 LoggerRepository = hierarchy.Name
             };
-            var provider = new Microsoft.Extensions.Logging.Log4NetProvider(providerOptions);
 
-            return provider;
+            return  new Microsoft.Extensions.Logging.Log4NetProvider(providerOptions);
         }
     }
 }

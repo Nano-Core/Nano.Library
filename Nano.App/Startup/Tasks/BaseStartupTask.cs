@@ -9,17 +9,17 @@ namespace Nano.App.Startup.Tasks
     public abstract class BaseStartupTask : IHostedService
     {
         /// <summary>
-        /// Startup Task Context.
+        /// Context.
         /// </summary>
-        protected internal virtual StartupTaskContext StartupTaskContext { get; }
+        protected internal virtual StartupTaskContext Context { get; }
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="startupTaskContext">The <see cref="StartupTaskContext"/>.</param>
+        /// <param name="startupTaskContext">The <see cref="Startup.StartupTaskContext"/>.</param>
         protected BaseStartupTask(StartupTaskContext startupTaskContext)
         {
-            this.StartupTaskContext = startupTaskContext ?? throw new ArgumentNullException(nameof(startupTaskContext));
+            this.Context = startupTaskContext ?? throw new ArgumentNullException(nameof(startupTaskContext));
         }
 
         /// <inheritdoc />

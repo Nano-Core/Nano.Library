@@ -288,13 +288,19 @@ namespace Nano.Security
                         var validation = JsonConvert.DeserializeObject<dynamic>(debugToken);
 
                         if (validation == null)
+                        {
                             throw new NullReferenceException(nameof(validation));
+                        }
 
                         if (!(bool)validation.data.is_valid)
+                        {
                             throw new InvalidOperationException("!validation.data.is_valid");
+                        }
 
                         if (validation.data.app_id != externalLoginOptions.AppId)
+                        {
                             throw new InvalidOperationException("validation.data.app_id != externalLoginOption.Id");
+                        }
 
                         using var userResponse = await httpClient
                             .GetAsync($"{HOST}/{validation.data.user_id}/?fields={FIELDS}&access_token={implicitLogin.AccessToken}", cancellationToken);
@@ -468,10 +474,14 @@ namespace Nano.Security
                 }
 
                 if (result.IsLockedOut)
+                {
                     throw new UnauthorizedLockedOutException();
+                }
 
                 if (result.RequiresTwoFactor)
+                {
                     throw new UnauthorizedTwoFactorRequiredException();
+                }
             }
             else
             {
@@ -515,7 +525,9 @@ namespace Nano.Security
                 .FindByLoginAsync(externalLoginData.ProviderName, externalLoginData.Id);
 
             if (identityUser == null)
+            {
                 return null;
+            }
 
             var appId = loginParameters.AppId ?? BaseIdentityManager.DEFAULT_APP_ID;
 
@@ -574,25 +586,33 @@ namespace Nano.Security
                     .ValidateToken(loginRefresh.Token, validationParameters, out var securityToken);
 
                 if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                {
                     throw new InvalidOperationException();
+                }
 
                 var subClaim = principal.Claims
                     .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sub);
 
                 if (subClaim == null)
+                {
                     throw new NullReferenceException(nameof(subClaim));
+                }
 
                 var identityUser = await this.UserManager
                     .FindByIdAsync(subClaim.Value);
 
                 if (identityUser == null)
+                {
                     throw new NullReferenceException(nameof(identityUser));
+                }
 
                 var appClaim = principal.Claims
                     .FirstOrDefault(x => x.Type == ClaimTypesExtended.AppId);
 
                 if (appClaim == null)
+                {
                     throw new NullReferenceException(nameof(appClaim));
+                }
 
                 var identityUserToken = this.DbContext
                     .Set<IdentityUserTokenExpiry<TIdentity>>()
@@ -601,13 +621,19 @@ namespace Nano.Security
                     .FirstOrDefault();
 
                 if (identityUserToken == null)
+                {
                     throw new NullReferenceException(nameof(identityUserToken));
+                }
 
                 if (identityUserToken.Value != loginRefresh.RefreshToken)
+                {
                     throw new InvalidOperationException($"identityUserToken.Value ({identityUserToken.Value}) != loginRefresh.RefreshToken ({loginRefresh.RefreshToken})");
+                }
 
                 if (identityUserToken.ExpireAt <= DateTimeOffset.UtcNow)
+                {
                     throw new InvalidOperationException("identityUserToken.ExpireAt <= DateTimeOffset.UtcNow");
+                }
 
 
 
@@ -695,7 +721,9 @@ namespace Nano.Security
                 .FindByNameAsync(username);
 
             if (user == null)
+            {
                 throw new NullReferenceException(nameof(user));
+            }
 
             await this.SignInManager
                 .SignOutAsync();
@@ -722,7 +750,9 @@ namespace Nano.Security
                 .CreateAsync(user, signUp.Password);
 
             if (!result.Succeeded)
+            {
                 this.ThrowIdentityExceptions(result.Errors);
+            }
 
             await this.AssignSignUpRolesAndClaims(signUp, user);
 
@@ -747,7 +777,9 @@ namespace Nano.Security
             var externalLoginData = await this.GetExternalProviderLoginData(signUpExternal.Provider, cancellationToken);
 
             if (externalLoginData == null)
+            {
                 throw new UnauthorizedException();
+            }
 
             var user = new IdentityUser<TIdentity>
             {
@@ -798,7 +830,9 @@ namespace Nano.Security
                 .FindByLoginAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey);
 
             if (user == null)
+            {
                 throw new NullReferenceException(nameof(user));
+            }
 
             var result = await this.UserManager
                 .RemoveLoginAsync(user, externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey);
@@ -829,7 +863,9 @@ namespace Nano.Security
                 .FindByIdAsync(setUsername.UserId.ToString());
 
             if (user == null)
+            {
                 throw new NullReferenceException(nameof(user));
+            }
 
             var result = await this.UserManager
                 .SetUserNameAsync(user, setUsername.NewUsername);
@@ -839,7 +875,7 @@ namespace Nano.Security
                 this.ThrowIdentityExceptions(result.Errors);
             }
         }
-
+        
         /// <summary>
         /// Sets a password for a user.
         /// </summary>
@@ -855,13 +891,17 @@ namespace Nano.Security
                 .FindByIdAsync(setPassword.UserId.ToString());
 
             if (user == null)
+            {
                 throw new NullReferenceException(nameof(user));
+            }
 
             var hasPassword = await this.UserManager
                 .HasPasswordAsync(user);
 
             if (hasPassword)
+            {
                 throw new UnauthorizedSetPasswordException();
+            }
 
             var result = await this.UserManager
                 .AddPasswordAsync(user, setPassword.NewPassword);
@@ -917,7 +957,9 @@ namespace Nano.Security
                 .FindByIdAsync(changePassword.UserId.ToString());
 
             if (user == null)
+            {
                 throw new NullReferenceException(nameof(user));
+            }
 
             var result = await this.UserManager
                 .ChangePasswordAsync(user, changePassword.OldPassword, changePassword.NewPassword);
@@ -946,7 +988,9 @@ namespace Nano.Security
                 .FindByIdAsync(changeEmail.UserId.ToString());
 
             if (user == null)
+            {
                 throw new NullReferenceException(nameof(user));
+            }
 
             var result = await this.UserManager
                 .ChangeEmailAsync(user, changeEmail.NewEmailAddress, changeEmail.Token);
@@ -1007,7 +1051,9 @@ namespace Nano.Security
                 .FindByIdAsync(changePhoneNumber.UserId.ToString());
 
             if (user == null)
+            {
                 throw new NullReferenceException(nameof(user));
+            }
 
             var result = await this.UserManager
                 .ChangePhoneNumberAsync(user, changePhoneNumber.NewPhoneNumber, changePhoneNumber.Token);
@@ -1174,7 +1220,9 @@ namespace Nano.Security
                 .FindByPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(phoneNumber);
 
             if (user == null)
+            {
                 throw new NullReferenceException(nameof(user));
+            }
 
             var token = await this.UserManager
                 .GeneratePhoneNumberConfirmationTokenAsync<IdentityUser<TIdentity>, TIdentity>(user);
@@ -1205,7 +1253,9 @@ namespace Nano.Security
                 .FindByPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(phoneNumber);
 
             if (user == null)
+            {
                 throw new NullReferenceException(nameof(user));
+            }
 
             var userNew = await this.UserManager
                 .FindByPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(phoneNumber);
@@ -1280,7 +1330,9 @@ namespace Nano.Security
                 .FindByNameAsync(roleName);
 
             if (role == null)
+            {
                 throw new NullReferenceException(nameof(role));
+            }
 
             var result = await this.RoleManager
                 .DeleteAsync(role);
@@ -1306,7 +1358,9 @@ namespace Nano.Security
                 .FindByIdAsync(userId.ToString());
 
             if (user == null)
+            {
                 throw new NullReferenceException(nameof(user));
+            }
 
             var roles = await this.UserManager
                 .GetRolesAsync(user);
@@ -1329,7 +1383,9 @@ namespace Nano.Security
                 .FindByIdAsync(assignRole.UserId.ToString());
 
             if (user == null)
+            {
                 throw new NullReferenceException(nameof(user));
+            }
 
             var result = await this.UserManager
                 .AddToRoleAsync(user, assignRole.RoleName);
@@ -1355,7 +1411,9 @@ namespace Nano.Security
                 .FindByIdAsync(removeRole.UserId.ToString());
 
             if (user == null)
+            {
                 throw new NullReferenceException(nameof(user));
+            }
 
             var result = await this.UserManager
                 .RemoveFromRoleAsync(user, removeRole.RoleName);
@@ -1398,7 +1456,9 @@ namespace Nano.Security
                 .FindByIdAsync(userId.ToString());
 
             if (user == null)
+            {
                 throw new NullReferenceException(nameof(user));
+            }
 
             var claims = await this.UserManager
                 .GetClaimsAsync(user);
@@ -1421,7 +1481,9 @@ namespace Nano.Security
                 .FindByIdAsync(assignClaim.Id.ToString());
 
             if (user == null)
+            {
                 throw new NullReferenceException(nameof(user));
+            }
 
             var userClaim = new IdentityUserClaim<TIdentity>
             {
@@ -1458,7 +1520,9 @@ namespace Nano.Security
                 .FindByIdAsync(removeClaim.Id.ToString());
 
             if (user == null)
+            {
                 throw new NullReferenceException(nameof(user));
+            }
 
             var claims = await this.UserManager
                 .GetClaimsAsync(user);
@@ -1467,7 +1531,9 @@ namespace Nano.Security
                 .FirstOrDefault(x => x.Type == removeClaim.ClaimType);
 
             if (claim == null)
+            {
                 throw new NullReferenceException(nameof(claim));
+            }
 
             var result = await this.UserManager
                 .RemoveClaimAsync(user, claim);
@@ -1510,7 +1576,9 @@ namespace Nano.Security
                 .FindByIdAsync(roleId.ToString());
 
             if (role == null)
+            {
                 throw new NullReferenceException(nameof(role));
+            }
 
             var claims = await this.RoleManager
                 .GetClaimsAsync(role);
@@ -1533,7 +1601,9 @@ namespace Nano.Security
                 .FindByIdAsync(assignClaim.Id.ToString());
 
             if (role == null)
+            {
                 throw new NullReferenceException(nameof(role));
+            }
 
             var roleClaim = new IdentityRoleClaim<TIdentity>
             {
@@ -1570,7 +1640,9 @@ namespace Nano.Security
                 .FindByIdAsync(removeClaim.Id.ToString());
 
             if (role == null)
+            {
                 throw new NullReferenceException(nameof(role));
+            }
 
             var claims = await this.RoleManager
                 .GetClaimsAsync(role);
@@ -1579,7 +1651,9 @@ namespace Nano.Security
                 .FirstOrDefault(x => x.Type == removeClaim.ClaimType);
 
             if (claim == null)
+            {
                 throw new NullReferenceException(nameof(claim));
+            }
 
             var result = await this.RoleManager
                 .RemoveClaimAsync(role, claim);
@@ -1626,7 +1700,9 @@ namespace Nano.Security
                 .AddToRolesAsync(identityUser, roles);
 
             if (!roleAssignResult.Succeeded)
+            {
                 this.ThrowIdentityExceptions(roleAssignResult.Errors);
+            }
 
             if (signUp.Claims.Any())
             {
@@ -1637,7 +1713,9 @@ namespace Nano.Security
                     .AddClaimsAsync(identityUser, claims);
 
                 if (!claimAssignResult.Succeeded)
+                {
                     this.ThrowIdentityExceptions(claimAssignResult.Errors);
+                }
             }
         }
         private async Task<AccessToken> GenerateJwtToken(IdentityUser<TIdentity> identityUser, string appId, bool isRefreshable, string externalAccessToken, string externalRefreshToken, IDictionary<string, string> transientClaims, IEnumerable<string> transientRoles)

@@ -19,7 +19,7 @@ namespace Nano.App.Startup.Tasks
         /// <inheritdoc />
         public override async Task StartAsync(CancellationToken cancellationToken = default)
         {
-            this.StartupTaskContext
+            this.Context
                 .Increment();
 
             if (this.dbContext != null)
@@ -34,7 +34,7 @@ namespace Nano.App.Startup.Tasks
                     .EnsureIdentityAsync(cancellationToken);
             }
 
-            this.StartupTaskContext
+            this.Context
                 .Decrement();
         }
     }

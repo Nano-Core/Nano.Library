@@ -47,7 +47,9 @@ namespace Nano.Data.Extensions
                 throw new ArgumentNullException(nameof(type));
 
             if (depth <= 0)
+            {
                 return queryable;
+            }
 
             type
                 .GetProperties()

@@ -83,7 +83,9 @@ namespace Nano.Web.Controllers
                 .SignInAsync(login, cancellationToken);
 
             if (accessToken == null)
+            {
                 this.NotFound();
+            }
 
             return this.Ok(accessToken);
         }

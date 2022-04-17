@@ -123,7 +123,7 @@ namespace Nano.Eventing.Handlers
             catch (Exception ex)
             {
                 this.Logger.Log(LogLevel.Error, ex, ex.Message);
-                this.Logger.LogError($"Nano: Entity with id '{@event.Id}' of type: {@event.Type} with state: {@event.State} throw an exception.");
+                this.Logger.LogError($"Nano: Entity with id '{@event.Id}' of type: {@event.Type} with state: {@event.State} threw an exception.");
             }
         }
     }

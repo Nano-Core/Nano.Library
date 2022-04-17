@@ -37,7 +37,9 @@ namespace Nano.Data.Providers.SqlServer
             var connectionString = this.Options.ConnectionString;
 
             if (connectionString == null)
+            {
                 return;
+            }
 
             builder
                 .EnableSensitiveDataLogging(useSensitiveDataLogging)

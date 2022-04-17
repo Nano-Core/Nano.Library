@@ -13,7 +13,7 @@ namespace Nano.Security.Const
         /// <summary>
         /// External Provider Name.
         /// </summary>
-        public static string ExternalProviderName => "external_provider_name";
+        public static string ExternalProviderName => "external_provider_name"; // bug implement
 
         /// <summary>
         /// External Token.

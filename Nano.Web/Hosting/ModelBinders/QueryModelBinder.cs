@@ -91,7 +91,9 @@ namespace Nano.Web.Hosting.ModelBinders
 
             var success = int.TryParse(request.Query["Paging.Count"].FirstOrDefault(), out var count);
             if (!success)
+            {
                 count = 25;
+            }
 
             return count;
         }
@@ -102,7 +104,9 @@ namespace Nano.Web.Hosting.ModelBinders
 
             var success = int.TryParse(request.Query["Paging.Number"].FirstOrDefault(), out var number);
             if (!success)
+            {
                 number = 1;
+            }
 
             return number;
         }
@@ -113,7 +117,9 @@ namespace Nano.Web.Hosting.ModelBinders
 
             var success = Enum.TryParse<OrderingDirection>(request.Query["Order.Direction"].FirstOrDefault(), true, out var direction);
             if (!success)
+            {
                 direction = OrderingDirection.Asc;
+            }
 
             return direction;
         }
@@ -163,11 +169,15 @@ namespace Nano.Web.Hosting.ModelBinders
                 {
                     var success = request.Query.TryGetValue(x.Name, out var values);
                     if (!success)
+                    {
                         return;
+                    }
 
                     var value = values.FirstOrDefault();
                     if (value == null)
+                    {
                         return;
+                    }
 
                     if (x.PropertyType == typeof(TimeSpan) || x.PropertyType == typeof(TimeSpan?))
                     {

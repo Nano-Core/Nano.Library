@@ -64,7 +64,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Create([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> CreateAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
         {
             entity = await this.Repository
                 .AddAsync(entity, cancellationToken);
@@ -93,7 +93,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Create([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> CreateManyAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         {
             entities = await this.Repository
                 .AddManyAsync(entities, cancellationToken);
@@ -125,13 +125,15 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Edit([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> EditAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
         {
             entity = await this.Repository
                 .UpdateAsync(entity, cancellationToken);
 
             if (entity == null)
+            {
                 return this.NotFound();
+            }
 
             await this.Repository
                 .SaveChanges(cancellationToken);
@@ -159,13 +161,15 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> EditMany([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> EditManyAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         {
             entities = await this.Repository
                 .UpdateManyAsync(entities, cancellationToken);
 
             if (entities == null)
+            {
                 return this.NotFound();
+            }
 
             await this.Repository
                 .SaveChanges(cancellationToken);
@@ -193,7 +197,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Delete([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> DeleteAsync([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
         {
             await this.Repository
                 .DeleteAsync<TEntity, TIdentity>(id, cancellationToken);
@@ -225,7 +229,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> DeleteMany([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> DeleteManyAsync([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
         {
             await this.Repository
                 .DeleteManyAsync<TEntity, TIdentity>(ids, cancellationToken);
@@ -255,7 +259,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> DeleteQuery([FromBody][Required]TCriteria select, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> DeleteQueryAsync([FromBody][Required]TCriteria select, CancellationToken cancellationToken = default)
         {
             await this.Repository
                 .DeleteManyAsync<TEntity, TCriteria>(select, cancellationToken);
