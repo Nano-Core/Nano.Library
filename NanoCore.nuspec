@@ -15,14 +15,15 @@
 Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
     <releaseNotes>
 		- Changed external login options, to have specific sections for Google, Facebook and Microsoft.
-		- Refactored models and methods for external identity login and signup.
-		- Added support for Microsoft auth-code authentication flow.
+		- Added support for Microsoft auth-code authentication flow, and removed support for implicit Microsoft flow.
+		- Refactored models and methods for external login and signup.
+		- Updated DynamicExpression library.
     </releaseNotes>
     <dependencies>
       <group targetFramework="net6.0">
 	      <dependency id="Microsoft.Extensions.DependencyInjection" version="6.0.0" />
 	      <dependency id="Microsoft.Extensions.Identity.Stores" version="6.0.3" />
-	      <dependency id="DynamicExpression" version="2.2.1" />
+	      <dependency id="DynamicExpression" version="2.2.2" />
 	      <dependency id="NetTopologySuite" version="2.4.0" />
 	      <dependency id="Newtonsoft.Json" version="13.0.1" />
 	      <dependency id="System.ComponentModel.Annotations" version="5.0.0" />
