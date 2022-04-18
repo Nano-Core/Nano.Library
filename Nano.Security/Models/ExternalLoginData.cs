@@ -6,11 +6,6 @@ namespace Nano.Security.Models
     public class ExternalLoginData
     {
         /// <summary>
-        /// Provider Name.
-        /// </summary>
-        public virtual string ProviderName { get; set; }
-
-        /// <summary>
         /// Id.
         /// </summary>
         public virtual string Id { get; set; }
@@ -28,11 +23,6 @@ namespace Nano.Security.Models
         /// <summary>
         /// External Token.
         /// </summary>
-        public virtual string ExternalToken { get; set; }
-
-        /// <summary>
-        /// External Refresh Token.
-        /// </summary>
-        public virtual string ExternalRefreshToken { get; set; }
+        public virtual ExternalLoginTokenData ExternalToken { get; set; } = new();
     }
 }

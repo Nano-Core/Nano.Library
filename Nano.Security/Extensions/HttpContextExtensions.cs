@@ -136,24 +136,25 @@ namespace Nano.Security.Extensions
         /// </summary>
         /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public static AccessToken GetJwtExternalToken(this HttpContext httpContext)
+        public static ExternalLoginTokenData GetJwtExternalToken(this HttpContext httpContext)
         {
             if (httpContext == null)
                 throw new ArgumentNullException(nameof(httpContext));
 
+            var name = httpContext.User
+                .FindFirstValue(ClaimTypesExtended.ExternalProviderName);
+
             var token = httpContext.User
-                .FindFirstValue(ClaimTypesExtended.ExternalToken);
+                .FindFirstValue(ClaimTypesExtended.ExternalProviderToken);
 
             var refreshToken = httpContext.User
-                .FindFirstValue(ClaimTypesExtended.ExternalRefreshToken);
+                .FindFirstValue(ClaimTypesExtended.ExternalProviderRefreshToken);
 
-            return new AccessToken
+            return new ExternalLoginTokenData
             {
+                Name = name,
                 Token = token,
-                RefreshToken = new RefreshToken
-                {
-                    Token = refreshToken
-                }
+                RefreshToken = refreshToken
             };
         }
     }

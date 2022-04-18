@@ -13,16 +13,16 @@ namespace Nano.Security.Const
         /// <summary>
         /// External Provider Name.
         /// </summary>
-        public static string ExternalProviderName => "external_provider_name"; // bug implement
+        public static string ExternalProviderName => "external_provider_name";
 
         /// <summary>
-        /// External Token.
+        /// External Provider Token.
         /// </summary>
-        public static string ExternalToken => "external_token";
+        public static string ExternalProviderToken => "external_provider_token";
 
         /// <summary>
-        /// External Refresh Token.
+        /// External Provider Refresh Token.
         /// </summary>
-        public static string ExternalRefreshToken => "external_refresh_token";
+        public static string ExternalProviderRefreshToken => "external_provider_refresh_token";
     }
 }

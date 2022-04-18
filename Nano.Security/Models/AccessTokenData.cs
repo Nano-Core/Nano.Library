@@ -10,7 +10,7 @@ namespace Nano.Security.Models
     public class AccessTokenData
     {
         /// <summary>
-        /// Id
+        /// Id.
         /// </summary>
         public virtual string Id { get; set; } = Guid.NewGuid().ToString();
 
@@ -30,19 +30,14 @@ namespace Nano.Security.Models
         public virtual string UserName { get; set; }
 
         /// <summary>
-        /// User Email
+        /// User Email.
         /// </summary>
         public virtual string UserEmail { get; set; }
 
         /// <summary>
         /// External Token.
         /// </summary>
-        public virtual string ExternalToken { get; set; }
-
-        /// <summary>
-        /// External Refresh Token.
-        /// </summary>
-        public virtual string ExternalRefreshToken { get; set; }
+        public virtual ExternalLoginTokenData ExternalToken { get; set; } = new();
 
         /// <summary>
         /// Claims.

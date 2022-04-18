@@ -137,7 +137,6 @@ namespace Nano.Security
                 UserName = externalLoginData.Name,
                 UserEmail = externalLoginData.Email,
                 ExternalToken = externalLoginData.ExternalToken,
-                ExternalRefreshToken = externalLoginData.ExternalRefreshToken,
                 Claims = claims
                     .Union(roleClaims)
             };
@@ -197,8 +196,9 @@ namespace Nano.Security
                     new(JwtRegisteredClaimNames.Sub, tokenData.UserId),
                     new(JwtRegisteredClaimNames.Name, tokenData.UserName),
                     new(JwtRegisteredClaimNames.Email, tokenData.UserEmail),
-                    new(ClaimTypesExtended.ExternalToken, tokenData.ExternalToken ?? string.Empty),
-                    new(ClaimTypesExtended.ExternalRefreshToken, tokenData.ExternalRefreshToken ?? string.Empty)
+                    new(ClaimTypesExtended.ExternalProviderName, tokenData.ExternalToken.Name ?? string.Empty),
+                    new(ClaimTypesExtended.ExternalProviderToken, tokenData.ExternalToken.Token ?? string.Empty),
+                    new(ClaimTypesExtended.ExternalProviderRefreshToken, tokenData.ExternalToken.RefreshToken ?? string.Empty)
                 }
                 .Union(tokenData.Claims)
                 .Distinct();
@@ -246,11 +246,14 @@ namespace Nano.Security
 
                         return new ExternalLoginData
                         {
-                            ProviderName = "Google",
                             Id = payload.Subject,
                             Name = payload.Name,
                             Email = payload.Email,
-                            ExternalToken = implicitLogin.AccessToken
+                            ExternalToken =
+                            {
+                                Name = "Google",
+                                Token = implicitLogin.AccessToken
+                            }
                         };
 
                     default:
@@ -314,8 +317,11 @@ namespace Nano.Security
                         var externalLoginData = JsonConvert.DeserializeObject<ExternalLoginData>(user);
                         if (externalLoginData != null)
                         {
-                            externalLoginData.ProviderName = "Facebook";
-                            externalLoginData.ExternalToken = implicitLogin.AccessToken;
+                            externalLoginData.ExternalToken = new ExternalLoginTokenData
+                            {
+                                Name = "Facebook",
+                                Token = implicitLogin.AccessToken
+                            };
                         }
 
                         return externalLoginData;
@@ -394,12 +400,15 @@ namespace Nano.Security
 
             return new ExternalLoginData
             {
-                ProviderName = "Microsoft",
                 Id = id,
                 Name = name,
                 Email = email,
-                ExternalToken = accessToken,
-                ExternalRefreshToken = refreshToken
+                ExternalToken =
+                {
+                    Name = "Microsoft",
+                    Token = accessToken,
+                    RefreshToken = refreshToken
+                }
             };
         }
     }
@@ -470,7 +479,7 @@ namespace Nano.Security
                     var identityUser = await this.UserManager
                         .FindByNameAsync(login.Username);
 
-                    return await this.GenerateJwtToken(identityUser, appId, login.Parameters.IsRefreshable, null, null, login.Parameters.TransientClaims, login.Parameters.TransientRoles);
+                    return await this.GenerateJwtToken(identityUser, appId, login.Parameters.IsRefreshable, null, null, null, login.Parameters.TransientClaims, login.Parameters.TransientRoles);
                 }
 
                 if (result.IsLockedOut)
@@ -522,7 +531,7 @@ namespace Nano.Security
                 throw new UnauthorizedException();
 
             var identityUser = await this.UserManager
-                .FindByLoginAsync(externalLoginData.ProviderName, externalLoginData.Id);
+                .FindByLoginAsync(externalLoginData.ExternalToken.Name, externalLoginData.Id);
 
             if (identityUser == null)
             {
@@ -534,7 +543,7 @@ namespace Nano.Security
             await this.SignInManager
                 .SignInAsync(identityUser, loginParameters.IsRememberMe);
 
-            return await this.GenerateJwtToken(identityUser, appId, loginParameters.IsRefreshable, externalLoginData.ExternalToken, externalLoginData.ExternalRefreshToken, loginParameters.TransientClaims, loginParameters.TransientRoles);
+            return await this.GenerateJwtToken(identityUser, appId, loginParameters.IsRefreshable, externalLoginData.ExternalToken.Name, externalLoginData.ExternalToken.Token, externalLoginData.ExternalToken.RefreshToken, loginParameters.TransientClaims, loginParameters.TransientRoles);
 
         }
 
@@ -635,69 +644,19 @@ namespace Nano.Security
                     throw new InvalidOperationException("identityUserToken.ExpireAt <= DateTimeOffset.UtcNow");
                 }
 
+                var externalProviderName = principal.Claims
+                    .Where(x => x.Type == ClaimTypesExtended.ExternalProviderName)
+                    .Select(x => x.Value)
+                    .FirstOrDefault();
 
+                var externalProviderRefreshToken = principal.Claims
+                    .Where(x => x.Type == ClaimTypesExtended.ExternalProviderRefreshToken)
+                    .Select(x => x.Value)
+                    .FirstOrDefault();
 
-
-
-                var externalTokenClaim = principal.Claims
-                    .FirstOrDefault(x => x.Type == ClaimTypesExtended.ExternalToken);
-
-                var externalRefreshTokenClaim = principal.Claims
-                    .FirstOrDefault(x => x.Type == ClaimTypesExtended.ExternalRefreshToken);
-
-
-
-                // BUG: We need to add the External provider name to the token, so we know where to refresh
-
-                if (externalRefreshTokenClaim?.Value != null)
-                {
-
-                }
-
-
-                // BUG: implement refresh external token.
-                //var externalRefreshToken = principal.Claims.Where(x => x.Type == ClaimTypesExtended.ExternalRefreshToken).Select(x => x.Value).FirstOrDefault();
-
-                //if (!string.IsNullOrEmpty(externalRefreshToken))
-                //{
-                //    using var httpClient = new HttpClient();
-                //    {
-                //        var httpRequestMessage = new HttpRequestMessage();
-
-                //        httpRequestMessage.Method = HttpMethod.Post;
-                //        httpRequestMessage.RequestUri = new Uri($"https://login.microsoftonline.com/{externalLoginOptions.TenantId}/oauth2/v2.0/token");
-
-                //        using var formContent = new MultipartFormDataContent();
-                //        {
-                //            formContent.Add(new StringContent(externalLoginOptions.ClientId), "client_id");
-                //            formContent.Add(new StringContent(externalLoginOptions.ClientSecret), "client_secret");
-                //            formContent.Add(new StringContent("refresh_token"), "grant_type");
-                //            formContent.Add(new StringContent(externalRefreshToken), "refresh_token");
-                //            formContent.Add(new StringContent(externalLoginOptions.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
-
-                //            httpRequestMessage.Content = formContent;
-
-                //            var httpResponse = await httpClient
-                //                .SendAsync(httpRequestMessage, cancellationToken);
-
-                //            var stringContent = await httpResponse.Content
-                //                .ReadAsStringAsync(cancellationToken);
-
-                //            var content = JsonConvert.DeserializeObject<dynamic>(stringContent);
-
-                //            var error = content?.error;
-                //            if (error != null)
-                //            {
-                //                throw new InvalidOperationException(stringContent);
-                //            }
-
-                //            var externalAccessToken = content?.access_token;
-                //            externalRefreshToken = content?.refresh_token;
-                //        }
-                //    }
-                //}
-
-                return await this.GenerateJwtToken(identityUser, identityUserToken.Name, true, null, null, loginRefresh.TransientClaims, loginRefresh.TransientRoles);
+                var externalProviderData = await this.RefreshExternalProviderTokenOrDefault(externalProviderName, externalProviderRefreshToken, cancellationToken);
+                
+                return await this.GenerateJwtToken(identityUser, identityUserToken.Name, true, externalProviderData.Name, externalProviderData.Token, externalProviderData.RefreshToken, loginRefresh.TransientClaims, loginRefresh.TransientRoles);
             }
             catch (Exception ex)
             {
@@ -1718,7 +1677,7 @@ namespace Nano.Security
                 }
             }
         }
-        private async Task<AccessToken> GenerateJwtToken(IdentityUser<TIdentity> identityUser, string appId, bool isRefreshable, string externalAccessToken, string externalRefreshToken, IDictionary<string, string> transientClaims, IEnumerable<string> transientRoles)
+        private async Task<AccessToken> GenerateJwtToken(IdentityUser<TIdentity> identityUser, string appId, bool isRefreshable, string externalProviderName, string externalProviderToken, string externalProviderRefreshToken, IDictionary<string, string> transientClaims, IEnumerable<string> transientRoles)
         {
             if (identityUser == null)
                 throw new ArgumentNullException(nameof(identityUser));
@@ -1750,8 +1709,12 @@ namespace Nano.Security
                 UserId = identityUser.Id.ToString(),
                 UserName = identityUser.UserName,
                 UserEmail = identityUser.Email,
-                ExternalToken = externalAccessToken,
-                ExternalRefreshToken = externalRefreshToken,
+                ExternalToken =
+                {
+                    Name = externalProviderName,
+                    Token = externalProviderToken,
+                    RefreshToken = externalProviderRefreshToken
+                },
                 Claims = claims
             };
 
@@ -1801,6 +1764,121 @@ namespace Nano.Security
                 Token = token,
                 ExpireAt = identityUserToken.ExpireAt
             };
+        }
+        private async Task<ExternalLoginTokenData> RefreshExternalProviderTokenOrDefault(string externalProviderName = null, string externalProviderRefreshToken = null, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrEmpty(externalProviderName))
+            {
+                return new ExternalLoginTokenData();
+            }
+
+            if (string.IsNullOrEmpty(externalProviderRefreshToken))
+            {
+                return new ExternalLoginTokenData();
+            }
+
+            try
+            {
+                return externalProviderName switch
+                {
+                    "Google" => await this.RefreshExternalProviderTokenGoogle(externalProviderName, externalProviderRefreshToken, cancellationToken),
+                    "Facebook" => await this.RefreshExternalProviderTokenFacebook(externalProviderName, externalProviderRefreshToken, cancellationToken),
+                    "Microsoft" => await this.RefreshExternalProviderTokenMicrosoft(externalProviderName, externalProviderRefreshToken, cancellationToken),
+                    _ => throw new NotSupportedException($"The external provider: {externalProviderName} is not supported.")
+                };
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(ex, ex.Message);
+
+                throw new UnauthorizedException();
+            }
+        }
+        private async Task<ExternalLoginTokenData> RefreshExternalProviderTokenGoogle(string externalProviderName, string externalProviderRefreshToken = null, CancellationToken cancellationToken = default)
+        {
+            if (externalProviderName == null)
+                throw new ArgumentNullException(nameof(externalProviderName));
+
+            if (externalProviderRefreshToken == null)
+                throw new ArgumentNullException(nameof(externalProviderRefreshToken));
+
+            return await Task.Run(() =>
+            {
+                Log.Information($"The external provider: {externalProviderName} does not support refresh token.");
+
+                return new ExternalLoginTokenData();
+            }, cancellationToken);
+        }
+        private async Task<ExternalLoginTokenData> RefreshExternalProviderTokenFacebook(string externalProviderName, string externalProviderRefreshToken = null, CancellationToken cancellationToken = default)
+        {
+            if (externalProviderName == null)
+                throw new ArgumentNullException(nameof(externalProviderName));
+
+            if (externalProviderRefreshToken == null)
+                throw new ArgumentNullException(nameof(externalProviderRefreshToken));
+
+            return await Task.Run(() =>
+            {
+                Log.Information($"The external provider: {externalProviderName} does not support refresh token.");
+
+                return new ExternalLoginTokenData();
+            }, cancellationToken);
+        }
+        private async Task<ExternalLoginTokenData> RefreshExternalProviderTokenMicrosoft(string externalProviderName, string externalProviderRefreshToken = null, CancellationToken cancellationToken = default)
+        {
+            if (externalProviderName == null)
+                throw new ArgumentNullException(nameof(externalProviderName));
+
+            if (externalProviderRefreshToken == null)
+                throw new ArgumentNullException(nameof(externalProviderRefreshToken));
+
+            if (string.IsNullOrEmpty(externalProviderRefreshToken))
+            {
+                return new ExternalLoginTokenData();
+            }
+
+            var externalLoginOptions = this.Options.ExternalLogins.Microsoft;
+
+            using var httpClient = new HttpClient();
+            {
+                var httpRequestMessage = new HttpRequestMessage();
+                {
+                    httpRequestMessage.Method = HttpMethod.Post;
+                    httpRequestMessage.RequestUri = new Uri($"https://login.microsoftonline.com/{externalLoginOptions.TenantId}/oauth2/v2.0/token");
+
+                    using var formContent = new MultipartFormDataContent();
+                    {
+                        formContent.Add(new StringContent(externalLoginOptions.ClientId), "client_id");
+                        formContent.Add(new StringContent(externalLoginOptions.ClientSecret), "client_secret");
+                        formContent.Add(new StringContent("refresh_token"), "grant_type");
+                        formContent.Add(new StringContent(externalProviderRefreshToken), "refresh_token");
+                        formContent.Add(new StringContent(externalLoginOptions.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
+
+                        httpRequestMessage.Content = formContent;
+
+                        var httpResponse = await httpClient
+                            .SendAsync(httpRequestMessage, cancellationToken);
+
+                        var stringContent = await httpResponse.Content
+                            .ReadAsStringAsync(cancellationToken);
+
+                        var content = JsonConvert.DeserializeObject<dynamic>(stringContent);
+
+                        var error = content?.error;
+                        if (error != null)
+                        {
+                            throw new InvalidOperationException(stringContent);
+                        }
+
+                        return new ExternalLoginTokenData
+                        {
+                            Name = externalProviderName,
+                            Token = content?.access_token,
+                            RefreshToken = content?.refresh_token
+                        };
+                    }
+                }
+            }
         }
 
         private void ThrowIdentityExceptions(IEnumerable<IdentityError> errors)
