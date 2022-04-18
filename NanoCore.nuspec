@@ -16,6 +16,7 @@ Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning,
     <releaseNotes>
 		- Changed external login options, to have specific sections for Google, Facebook and Microsoft.
 		- Added support for Microsoft auth-code authentication flow, and removed support for implicit Microsoft flow.
+		- Added support for Microsoft refresh token.
 		- Refactored models and methods for external login and signup.
 		- Updated DynamicExpression library.
     </releaseNotes>
