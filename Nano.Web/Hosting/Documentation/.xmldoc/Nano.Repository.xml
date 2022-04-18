@@ -4,6 +4,12 @@
         <name>Nano.Repository</name>
     </assembly>
     <members>
+        <member name="T:Nano.Repository.BaseRepository`1">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Repository.BaseRepository`1.#ctor(`0)">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Repository.BaseRepository`2">
             <inheritdoc />
         </member>

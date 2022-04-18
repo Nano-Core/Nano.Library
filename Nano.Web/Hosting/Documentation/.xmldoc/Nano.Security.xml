@@ -440,14 +440,19 @@
             App Id.
             </summary>
         </member>
-        <member name="P:Nano.Security.Const.ClaimTypesExtended.ExternalToken">
+        <member name="P:Nano.Security.Const.ClaimTypesExtended.ExternalProviderName">
             <summary>
-            External Token.
+            External Provider Name.
             </summary>
         </member>
-        <member name="P:Nano.Security.Const.ClaimTypesExtended.ExternalRefreshToken">
+        <member name="P:Nano.Security.Const.ClaimTypesExtended.ExternalProviderToken">
             <summary>
-            External Refresh Token.
+            External Provider Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Const.ClaimTypesExtended.ExternalProviderRefreshToken">
+            <summary>
+            External Provider Refresh Token.
             </summary>
         </member>
         <member name="T:Nano.Security.Data.Models.IdentityUserTokenExpiry`1">
@@ -713,7 +718,7 @@
         </member>
         <member name="P:Nano.Security.Models.AccessTokenData.Id">
             <summary>
-            Id
+            Id.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.AccessTokenData.AppId">
@@ -733,17 +738,12 @@
         </member>
         <member name="P:Nano.Security.Models.AccessTokenData.UserEmail">
             <summary>
-            User Email
+            User Email.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.AccessTokenData.ExternalToken">
             <summary>
             External Token.
-            </summary>
-        </member>
-        <member name="P:Nano.Security.Models.AccessTokenData.ExternalRefreshToken">
-            <summary>
-            External Refresh Token.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.AccessTokenData.Claims">
@@ -1037,11 +1037,6 @@
             External Login Data.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ExternalLoginData.ProviderName">
-            <summary>
-            Provider Name.
-            </summary>
-        </member>
         <member name="P:Nano.Security.Models.ExternalLoginData.Id">
             <summary>
             Id.
@@ -1062,24 +1057,24 @@
             External Token.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ExternalLoginData.ExternalRefreshToken">
+        <member name="T:Nano.Security.Models.ExternalLoginTokenData">
             <summary>
-            External Refresh Token.
+            External Login Token Data.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.ExternalLoginResponse">
+        <member name="P:Nano.Security.Models.ExternalLoginTokenData.Name">
             <summary>
-            External Login Response.
+            Name.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ExternalLoginResponse.AccessToken">
+        <member name="P:Nano.Security.Models.ExternalLoginTokenData.Token">
             <summary>
-            Access Token.
+            Token.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ExternalLoginResponse.Data">
+        <member name="P:Nano.Security.Models.ExternalLoginTokenData.RefreshToken">
             <summary>
-            Data.
+            Refresh Token.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.GetClaim`1">
