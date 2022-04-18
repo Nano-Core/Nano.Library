@@ -128,12 +128,13 @@ namespace Nano.Web.Api
         /// <param name="request">The <see cref="LogInRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<AccessToken> LogInExternalAsync(LogInExternalRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task<AccessToken> LogInExternalAsync<TLogin>(TLogin request, CancellationToken cancellationToken = default)
+            where TLogin : BaseLogInExternalRequest
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var response = await this.InvokeAsync<LogInExternalRequest, AccessToken>(request, cancellationToken);
+            var response = await this.InvokeAsync<TLogin, AccessToken>(request, cancellationToken);
 
             if (response == null)
             {
@@ -281,7 +282,9 @@ namespace Nano.Web.Api
                     .GetJwtToken();
 
                 if (jwtToken != null)
+                {
                     return jwtToken;
+                }
 
                 var isAnonymous = httpContextAccess
                     .GetIsAnonymous();
@@ -289,16 +292,22 @@ namespace Nano.Web.Api
                 if (isAnonymous)
                 {
                     if (this.apiOptions.Login == null)
+                    {
                         return this.accessToken?.Token;
+                    }
 
                     if (!string.IsNullOrEmpty(this.accessToken?.Token) && !this.accessToken.IsExpired)
+                    {
                         return this.accessToken?.Token;
-
-                    this.apiOptions.Login.IsRefreshable = false;
+                    }
 
                     var loginRequest = new LogInRequest
                     {
-                        Login = this.apiOptions.Login
+                        Login = new Login
+                        {
+                            Username = this.apiOptions.Login.Username,
+                            Password = this.apiOptions.Login.Password
+                        }
                     };
 
                     this.accessToken = await this.InvokeAsync<LogInRequest, AccessToken>(loginRequest, cancellationToken);
@@ -691,7 +700,9 @@ namespace Nano.Web.Api
             var httpContext = HttpContextAccess.Current;
 
             if (httpContext == null)
+            {
                 return;
+            }
 
             httpContext.Request.Headers[HeaderNames.Authorization] = $"Bearer {token}";
         }

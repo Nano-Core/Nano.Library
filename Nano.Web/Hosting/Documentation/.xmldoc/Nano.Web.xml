@@ -44,6 +44,27 @@
             Login.
             </summary>
         </member>
+        <member name="T:Nano.Web.Api.ApiOptions.LoginCredentials">
+            <summary>
+            Login Credentials.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.ApiOptions.LoginCredentials.Username">
+            <summary>
+            Username.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.ApiOptions.LoginCredentials.Password">
+            <summary>
+            Password.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.ApiOptions.LoginCredentials.IsRefreshable">
+            <summary>
+            Is Refreshable.
+            Not relevant for transient logins.
+            </summary>
+        </member>
         <member name="T:Nano.Web.Api.BaseApi">
             <summary>
             Base Api (abstract).
@@ -71,7 +92,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Api.BaseApi.LogInExternalAsync(Nano.Web.Api.Requests.Auth.LogInExternalRequest,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.BaseApi.LogInExternalAsync``1(``0,System.Threading.CancellationToken)">
             <summary>
             Log-In External Async.
             </summary>
@@ -406,11 +427,12 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The instance of <typeparamref name="TUser"/>.</returns>
         </member>
-        <member name="M:Nano.Web.Api.BaseIdentityApi`2.SignUpExternalAsync(Nano.Web.Api.Requests.Identity.SignUpExternalRequest{`0,`1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.BaseIdentityApi`2.SignUpExternalAsync``1(``0,System.Threading.CancellationToken)">
             <summary>
             Sign Up External Callback Async.
             </summary>
-            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.SignUpExternalRequest`1"/>.</param>
+            <typeparam name="TSignUp">The signup type.</typeparam>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.BaseSignUpExternalRequest"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
@@ -602,12 +624,6 @@
         <member name="M:Nano.Web.Api.DefaultIdentityApi`1.#ctor(Nano.Web.Api.ApiOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.DefaultIdentityApi`1.SignUpAsync(Nano.Web.Api.Requests.Identity.SignUpRequest{`0,System.Guid},System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Web.Api.DefaultIdentityApi`1.SignUpExternalAsync(Nano.Web.Api.Requests.Identity.SignUpExternalRequest{`0,System.Guid},System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
         <member name="M:Nano.Web.Api.DefaultIdentityApi`1.DetailsAsync``1(Nano.Web.Api.Requests.DetailsRequest{System.Guid},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
@@ -619,6 +635,20 @@
         </member>
         <member name="M:Nano.Web.Api.DefaultIdentityApi`1.DeleteManyAsync``1(Nano.Web.Api.Requests.DeleteManyRequest{System.Guid},System.Threading.CancellationToken)">
             <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Extensions.MultipartFormDataContentExtensions">
+            <summary>
+            Multipart Form Data Content Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Extensions.MultipartFormDataContentExtensions.AddFormItem(System.Net.Http.MultipartFormDataContent,Nano.Web.Api.Requests.Types.FormItem,System.Threading.CancellationToken)">
+            <summary>
+            Add For Item.
+            </summary>
+            <param name="formContent">The <see cref="T:System.Net.Http.MultipartFormDataContent"/>.</param>
+            <param name="formItem">The <see cref="T:Nano.Web.Api.Requests.Types.FormItem"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
         </member>
         <member name="T:Nano.Web.Api.Requests.Attributes.BaseHttpMethodAttribute">
             <summary>
@@ -650,24 +680,42 @@
             Order.
             </summary>
         </member>
+        <member name="T:Nano.Web.Api.Requests.Auth.BaseLogInExternalRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Auth.BaseLogInExternalRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Auth.BaseLogInExternalRequest`1.LoginExternal">
+            <summary>
+            External Login.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.BaseLogInExternalRequest`1.GetBody">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest.#ctor">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Api.Requests.Auth.LogInExternalRequest">
+        <member name="T:Nano.Web.Api.Requests.Auth.LogInExternalFacebookRequest">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Api.Requests.Auth.LogInExternalRequest.LoginExternal">
-            <summary>
-            External Login.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Api.Requests.Auth.LogInExternalRequest.#ctor">
+        <member name="M:Nano.Web.Api.Requests.Auth.LogInExternalFacebookRequest.#ctor">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.Requests.Auth.LogInExternalRequest.GetBody">
+        <member name="T:Nano.Web.Api.Requests.Auth.LogInExternalGoogleRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.LogInExternalGoogleRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Auth.LogInExternalMicrosoftRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.LogInExternalMicrosoftRequest.#ctor">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Auth.LogInRefreshRequest">
@@ -1029,6 +1077,20 @@
         <member name="M:Nano.Web.Api.Requests.Identity.AssignRoleRequest`1.GetBody">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.BaseSignUpExternalRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.BaseSignUpExternalRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Identity.BaseSignUpExternalRequest`1.SignUpExternal">
+            <summary>
+            Sign Up External.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.BaseSignUpExternalRequest`1.GetBody">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Web.Api.Requests.Identity.ChangeEmailRequest">
             <inheritdoc />
         </member>
@@ -1297,21 +1359,22 @@
         <member name="M:Nano.Web.Api.Requests.Identity.SetUsernameRequest`1.GetBody">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalRequest`1">
+        <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalFacebookRequest`2">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalRequest`2">
+        <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalFacebookRequest`2.#ctor">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Api.Requests.Identity.SignUpExternalRequest`2.SignUpExternal">
-            <summary>
-            Sign Up External.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalRequest`2.#ctor">
+        <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalGoogleRequest`2">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalRequest`2.GetBody">
+        <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalGoogleRequest`2.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalMicrosoftRequest`2">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalMicrosoftRequest`2.#ctor">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Identity.SignUpRequest`1">
@@ -1600,9 +1663,6 @@
         <member name="T:Nano.Web.Controllers.AuditController">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Controllers.AuditController.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository)">
-            <inheritdoc />
-        </member>
         <member name="M:Nano.Web.Controllers.AuditController.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Repository.Interfaces.IRepository,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
@@ -1658,27 +1718,78 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalAsync(Nano.Security.Models.LoginExternal,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalGoogleAsync(Nano.Security.Models.LoginExternalGoogle,System.Threading.CancellationToken)">
             <summary>
-            Sign-in a user from an external login and authentication.
+            Sign-in a user from an external Google login and authentication using implicit flow.
             </summary>
             <param name="loginExternal">The external login.</param>
             <param name="cancellationToken">The cancellation token.</param>
-            <returns>The external login response.</returns>
+            <returns>The access token.</returns>
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
             <response code="401">Unauthorized.</response>
             <response code="404">Not Found.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalTransientAsync(Nano.Security.Models.LoginExternalTransient,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalGoogleTransientAsync(Nano.Security.Models.LoginExternalGoogle,System.Threading.CancellationToken)">
             <summary>
-            Sign-in a user transiently from an external login and authentication.
-            No Identity backing-store is used.
+            Sign-in a user transient, from an external Google login and authentication using implicit flow.
             </summary>
-            <param name="loginExternalTransient">The external login transient.</param>
+            <param name="loginExternal">The external login.</param>
             <param name="cancellationToken">The cancellation token.</param>
-            <returns>The external login response.</returns>
+            <returns>The access token.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalFacebookAsync(Nano.Security.Models.LoginExternalFacebook,System.Threading.CancellationToken)">
+            <summary>
+            Sign-in a user from an external Facebook login and authentication using implicit flow.
+            </summary>
+            <param name="loginExternal">The external login.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The access token.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalFacebookTransientAsync(Nano.Security.Models.LoginExternalFacebook,System.Threading.CancellationToken)">
+            <summary>
+            Sign-in a user transient, from an external Facebook login and authentication using implicit flow.
+            </summary>
+            <param name="loginExternal">The external login.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The access token.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalMicrosoftAsync(Nano.Security.Models.LoginExternalMicrosoft,System.Threading.CancellationToken)">
+            <summary>
+            Sign-in a user from an external Microsoft login and authentication using implicit flow.
+            </summary>
+            <param name="loginExternal">The external login.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The access token.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalMicrosoftTransientAsync(Nano.Security.Models.LoginExternalMicrosoft,System.Threading.CancellationToken)">
+            <summary>
+            Sign-in a user transient, from an external Microsoft login and authentication using implicit flow.
+            </summary>
+            <param name="loginExternal">The external login.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The access token.</returns>
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
             <response code="401">Unauthorized.</response>
@@ -1794,7 +1905,7 @@
         <member name="M:Nano.Web.Controllers.BaseControllerCreatable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerCreatable`4.Create(`1,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerCreatable`4.CreateAsync(`1,System.Threading.CancellationToken)">
             <summary>
             Create the passed model.
             </summary>
@@ -1806,7 +1917,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerCreatable`4.Create(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerCreatable`4.CreateManyAsync(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
             <summary>
             Creates the passed models.
             </summary>
@@ -1833,7 +1944,7 @@
         <member name="M:Nano.Web.Controllers.BaseControllerDeletable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerDeletable`4.Delete(`2,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerDeletable`4.DeleteAsync(`2,System.Threading.CancellationToken)">
             <summary>
             Delete the model with the passed identifier.
             </summary>
@@ -1846,7 +1957,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerDeletable`4.DeleteMany(`2[],System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerDeletable`4.DeleteManyAsync(`2[],System.Threading.CancellationToken)">
             <summary>
             Delete the models with the passed identifiers.
             </summary>
@@ -1859,7 +1970,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerDeletable`4.DeleteQuery(`3,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerDeletable`4.DeleteQueryAsync(`3,System.Threading.CancellationToken)">
             <summary>
             Deletes the models matching the passed 'select' criteria.
             </summary>
@@ -1880,7 +1991,7 @@
         <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.Index(DynamicExpression.Interfaces.IQuery,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.IndexAsync(DynamicExpression.Interfaces.IQuery,System.Threading.CancellationToken)">
             <summary>
             Gets all models.
             </summary>
@@ -1893,7 +2004,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.IndexPost(DynamicExpression.Interfaces.IQuery,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.IndexPostAsync(DynamicExpression.Interfaces.IQuery,System.Threading.CancellationToken)">
             <summary>
             Gets all models.
             </summary>
@@ -1906,7 +2017,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.Details(`2,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.DetailsAsync(`2,System.Threading.CancellationToken)">
             <summary>
             Gets the model.
             </summary>
@@ -1919,7 +2030,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.DetailsMany(`2[],System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.DetailsManyAsync(`2[],System.Threading.CancellationToken)">
             <summary>
             Gets the models.
             </summary>
@@ -1932,7 +2043,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.DetailsManyPost(`2[],System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.DetailsManyPostAsync(`2[],System.Threading.CancellationToken)">
             <summary>
             Gets the models.
             </summary>
@@ -1945,7 +2056,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.Query(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.QueryAsync(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
             <summary>
             Query models.
             </summary>
@@ -1958,7 +2069,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.QueryPost(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.QueryPostAsync(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
             <summary>
             Query models.
             </summary>
@@ -1971,7 +2082,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.QueryFirst(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.QueryFirstAsync(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
             <summary>
             Query the first mathcing entity.
             </summary>
@@ -1984,7 +2095,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.QueryFirstPost(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.QueryFirstPostAsync(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
             <summary>
             Query the first mathcing entity.
             </summary>
@@ -1997,7 +2108,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.QueryCount(`3,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.QueryCountAsync(`3,System.Threading.CancellationToken)">
             <summary>
             Gets the number of models (Count).
             </summary>
@@ -2010,7 +2121,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.QueryCountPost(`3,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerReadOnly`4.QueryCountPostAsync(`3,System.Threading.CancellationToken)">
             <summary>
             Gets the number of models (Count).
             </summary>
@@ -2032,7 +2143,7 @@
         <member name="M:Nano.Web.Controllers.BaseControllerSpatialCreatable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialCreatable`4.Create(`1,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialCreatable`4.CreateAsync(`1,System.Threading.CancellationToken)">
             <summary>
             Create the passed model.
             </summary>
@@ -2044,7 +2155,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialCreatable`4.Create(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialCreatable`4.CreateManyAsync(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
             <summary>
             Creates the passed models.
             </summary>
@@ -2065,7 +2176,7 @@
         <member name="M:Nano.Web.Controllers.BaseControllerSpatialDeletable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialDeletable`4.Delete(`2,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialDeletable`4.DeleteAsync(`2,System.Threading.CancellationToken)">
             <summary>
             Delete the model with the passed identifier.
             </summary>
@@ -2078,7 +2189,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialDeletable`4.DeleteMany(`2[],System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialDeletable`4.DeleteManyAsync(`2[],System.Threading.CancellationToken)">
             <summary>
             Delete the models with the passed identifiers.
             </summary>
@@ -2091,7 +2202,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialDeletable`4.DeleteQuery(`3,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialDeletable`4.DeleteQueryAsync(`3,System.Threading.CancellationToken)">
             <summary>
             Deletes the models matching the passed 'select' criteria.
             </summary>
@@ -2112,7 +2223,7 @@
         <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.Intersects(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.IntersectsAsync(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
             <summary>
             Gets the models, that intersects.
             </summary>
@@ -2125,7 +2236,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.Covers(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.CoversAsync(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
             <summary>
             Gets the models, that covers.
             </summary>
@@ -2138,7 +2249,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.CoveredBy(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.CoveredByAsync(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
             <summary>
             Gets the models, that are covered-by.
             </summary>
@@ -2151,7 +2262,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.Overlaps(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.OverlapsAsync(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
             <summary>
             Gets the models, that are covered-by.
             </summary>
@@ -2164,7 +2275,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.Touches(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.TouchesAsync(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
             <summary>
             Gets the models, that tocuhes.
             </summary>
@@ -2177,7 +2288,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.Crosses(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.CrossesAsync(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
             <summary>
             Gets the models, that crosses.
             </summary>
@@ -2190,7 +2301,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.Disjoints(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.DisjointsAsync(DynamicExpression.Interfaces.IQuery{`3},System.Threading.CancellationToken)">
             <summary>
             Gets the models, that are disjointed.
             </summary>
@@ -2203,7 +2314,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.Within(DynamicExpression.Interfaces.IQuery{`3},System.Double,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialReadOnly`4.WithinAsync(DynamicExpression.Interfaces.IQuery{`3},System.Double,System.Threading.CancellationToken)">
             <summary>
             Gets the models, that are within.
             </summary>
@@ -2226,7 +2337,7 @@
         <member name="M:Nano.Web.Controllers.BaseControllerSpatialUpdatable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialUpdatable`4.Edit(`1,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialUpdatable`4.EditAsync(`1,System.Threading.CancellationToken)">
             <summary>
             Edit the passed model.
             </summary>
@@ -2239,7 +2350,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialUpdatable`4.EditMany(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialUpdatable`4.EditManyAsync(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
             <summary>
             Edits the passed models.
             </summary>
@@ -2260,7 +2371,7 @@
         <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.Create(`1,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.CreateAsync(`1,System.Threading.CancellationToken)">
             <summary>
             Create the passed model.
             </summary>
@@ -2272,7 +2383,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.Create(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.CreateAsync(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
             <summary>
             Creates the passed models.
             </summary>
@@ -2284,7 +2395,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.Edit(`1,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.EditAsync(`1,System.Threading.CancellationToken)">
             <summary>
             Edit the passed model.
             </summary>
@@ -2297,7 +2408,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.EditMany(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.EditManyAsync(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
             <summary>
             Edits the passed models.
             </summary>
@@ -2309,7 +2420,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.Delete(`2,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.DeleteAsync(`2,System.Threading.CancellationToken)">
             <summary>
             Delete the model with the passed identifier.
             </summary>
@@ -2322,7 +2433,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.DeleteMany(`2[],System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.DeleteManyAsync(`2[],System.Threading.CancellationToken)">
             <summary>
             Delete the models with the passed identifiers.
             </summary>
@@ -2335,7 +2446,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.DeleteQuery(`3,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerSpatialWritable`4.DeleteQueryAsync(`3,System.Threading.CancellationToken)">
             <summary>
             Deletes the models matching the passed 'select' criteria.
             </summary>
@@ -2362,7 +2473,7 @@
         <member name="M:Nano.Web.Controllers.BaseControllerUpdatable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerUpdatable`4.Edit(`1,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerUpdatable`4.EditAsync(`1,System.Threading.CancellationToken)">
             <summary>
             Edit the passed model.
             </summary>
@@ -2375,7 +2486,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerUpdatable`4.EditMany(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerUpdatable`4.EditManyAsync(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
             <summary>
             Edits the passed models.
             </summary>
@@ -2402,7 +2513,7 @@
         <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.#ctor(Microsoft.Extensions.Logging.ILogger,`0,Nano.Eventing.Interfaces.IEventing)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.Create(`1,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.CreateAsync(`1,System.Threading.CancellationToken)">
             <summary>
             Create the passed model.
             </summary>
@@ -2414,7 +2525,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.Create(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.CreateManyAsync(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
             <summary>
             Creates the passed models.
             </summary>
@@ -2426,7 +2537,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.Edit(`1,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.EditAsync(`1,System.Threading.CancellationToken)">
             <summary>
             Edit the passed model.
             </summary>
@@ -2439,7 +2550,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.EditMany(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.EditManyAsync(System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
             <summary>
             Edits the passed models.
             </summary>
@@ -2451,7 +2562,7 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.Delete(`2,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.DeleteAsync(`2,System.Threading.CancellationToken)">
             <summary>
             Delete the model with the passed identifier.
             </summary>
@@ -2464,7 +2575,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.DeleteMany(`2[],System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.DeleteManyAsync(`2[],System.Threading.CancellationToken)">
             <summary>
             Delete the models with the passed identifiers.
             </summary>
@@ -2477,7 +2588,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.DeleteQuery(`3,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseControllerWritable`4.DeleteQueryAsync(`3,System.Threading.CancellationToken)">
             <summary>
             Deletes the models matching the passed 'select' criteria.
             </summary>
@@ -2514,9 +2625,31 @@
             <response code="400">Bad Request.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.SignUpExternalAsync(Nano.Security.Models.SignUpExternal{`1,`2},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.SignUpExternalGoogleAsync(Nano.Security.Models.SignUpExternalGoogle{`1,`2},System.Threading.CancellationToken)">
             <summary>
-            Sign-up a user based on external login provider.
+            Sign-up a user based on external Google login provider.
+            </summary>
+            <param name="signUpExternal">The signup external.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The access token.</returns>
+            <response code="201">Created.</response>
+            <response code="400">Bad Request.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.SignUpExternalFacebookAsync(Nano.Security.Models.SignUpExternalFacebook{`1,`2},System.Threading.CancellationToken)">
+            <summary>
+            Sign-up a user based on external Facebook login provider.
+            </summary>
+            <param name="signUpExternal">The signup external.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The access token.</returns>
+            <response code="201">Created.</response>
+            <response code="400">Bad Request.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.SignUpExternalMicrosoftAsync(Nano.Security.Models.SignUpExternalMicrosoft{`1,`2},System.Threading.CancellationToken)">
+            <summary>
+            Sign-up a user based on external Microsoft login provider.
             </summary>
             <param name="signUpExternal">The signup external.</param>
             <param name="cancellationToken">The cancellation token.</param>
@@ -2785,7 +2918,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.Delete(`2,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.DeleteAsync(`2,System.Threading.CancellationToken)">
             <summary>
             Delete the model with the passed identifier.
             </summary>
@@ -2798,7 +2931,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.DeleteMany(`2[],System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.DeleteManyAsync(`2[],System.Threading.CancellationToken)">
             <summary>
             Delete the models with the passed identifiers.
             </summary>
@@ -3189,6 +3322,36 @@
             <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Authentication.AuthenticationBuilder"/>.</returns>
         </member>
+        <member name="T:Nano.Web.Extensions.Const.HealthzCheckUris">
+            <summary>
+            Healthz Check Uris.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Extensions.Const.HealthzCheckUris.Path">
+            <summary>
+            Path.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Extensions.Const.HealthzCheckUris.UiPath">
+            <summary>
+            Ui Path.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Extensions.Const.HealthzCheckUris.ApiPath">
+            <summary>
+            Api Path.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Extensions.Const.HealthzCheckUris.RexPath">
+            <summary>
+            Rex Path.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Extensions.Const.HealthzCheckUris.WebHooksPath">
+            <summary>
+            WebHooks Path.
+            </summary>
+        </member>
         <member name="T:Nano.Web.Extensions.ServiceCollectionExtensions">
             <summary>
             Service Collection Extensions.
@@ -3237,26 +3400,6 @@
             </summary>
             <param name="schema">The <see cref="T:Microsoft.OpenApi.Models.OpenApiSchema"/>.</param>
             <param name="context">The <see cref="T:Swashbuckle.AspNetCore.SwaggerGen.SchemaFilterContext"/>.</param>
-        </member>
-        <member name="T:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute">
-            <summary>
-            A <see cref="T:Microsoft.AspNetCore.Mvc.Filters.ResultFilterAttribute"/> that disables lazy loading before serialzing the response.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute.Repository">
-            <summary>
-            The <see cref="T:Nano.Repository.Interfaces.IRepository"/>.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute.#ctor(Nano.Repository.Interfaces.IRepository)">
-            <summary>
-            Constructor.
-            Initialzing the <see cref="T:Nano.Repository.Interfaces.IRepository"/> with the passed <paramref name="repository"/>.
-            </summary>
-            <param name="repository">The <see cref="T:Nano.Repository.Interfaces.IRepository"/>.</param>
-        </member>
-        <member name="M:Nano.Web.Hosting.Filters.DisableLazyLoadingResultFilterAttribute.OnResultExecuting(Microsoft.AspNetCore.Mvc.Filters.ResultExecutingContext)">
-            <inheritdoc />
         </member>
         <member name="T:Nano.Web.Hosting.Filters.IsAnonymousFilter">
             <summary>
@@ -3384,7 +3527,6 @@
             <summary>
             Create a property.
             Empty collections is not serialzied.
-            Properties of types implementing <see cref="T:Nano.Models.Interfaces.IEntityIdentity`1"/> is not serialized. 
             </summary>
             <param name="member">The <see cref="T:System.Reflection.MemberInfo"/>.</param>
             <param name="memberSerialization">The <see cref="T:Newtonsoft.Json.MemberSerialization"/>.</param>
@@ -3591,6 +3733,12 @@
             Allowed Origins.
             </summary>
         </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.ShutdownTimeout">
+            <summary>
+            Shutdown Timeout.
+            The number of seconds the application waits after receiving a SIGTERM signal, before shutting down.
+            </summary>
+        </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.UseHttpsRequired">
             <summary>
             Use Https Redirect.
@@ -3765,6 +3913,11 @@
             Sandbox.
             </summary>
         </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.PermissionsPolicy">
+            <summary>
+            Permissions Policy.
+            </summary>
+        </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.ReportUris">
             <summary>
             Report Uris.
@@ -3921,6 +4074,391 @@
         <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectiveSandbox.IsEnabled">
             <summary>
             Is Enabled.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy">
+            <summary>
+            Csp Directive Permissions Policy.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.Accelerometer">
+            <summary>
+            Accelerometer.
+            Controls whether the current document is allowed to gather information about the acceleration
+            of the device through the Accelerometer interface.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.AmbientLightSensor">
+            <summary>
+            Ambient Light Sensor.
+            Controls whether the current document is allowed to gather information about the amount of light
+            in the environment around the device through the AmbientLightSensor interface.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.AutoPlay">
+            <summary>
+            Auto Play.
+            Controls whether the current document is allowed to autoplay media requested through the HTMLMediaElement interface.
+            When this policy is disabled and there were no user gestures, the Promise returned by HTMLMediaElement.play() will reject with a DOMException.
+            The autoplay attribute on audio and video elements will be ignored.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.Battery">
+            <summary>
+            Battery.
+            Controls whether the use of the Battery Status API is allowed. When this policy is disabled,
+            the Promise returned by Navigator.getBattery() will reject with a NotAllowedError DOMException.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.Camera">
+            <summary>
+            Camera.
+            Controls whether the current document is allowed to use video input devices.
+            When this policy is disabled, the Promise returned by getUserMedia() will reject with a NotAllowedError DOMException.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.DisplayCapture">
+            <summary>
+            Display Capture.
+            Controls whether or not the current document is permitted to use the getDisplayMedia() method to capture screen contents.
+            When this policy is disabled, the promise returned by getDisplayMedia() will reject with a NotAllowedError
+            if permission is not obtained to capture the display's contents.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.DocumentDomain">
+            <summary>
+            Document Domain.
+            Controls whether the current document is allowed to set document.domain.
+            When this policy is disabled, attempting to set document.domain will fail and cause a SecurityError DOMException to be thrown.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.EncryptedMedia">
+            <summary>
+            Encrypted Media.
+            Controls whether the current document is allowed to use the Encrypted Media Extensions API (EME).
+            When this policy is disabled, the Promise returned by Navigator.requestMediaKeySystemAccess() will reject with a DOMException.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.ExecutionWhileNotRendered">
+            <summary>
+            Execution While Not Rendered.
+            Controls whether tasks should execute in frames while they're not being rendered (e.g. if an iframe is hidden or display: none).
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.ExecutionWhileOutOfViewport">
+            <summary>
+            Execution While Out Of Viewport.
+            Controls whether tasks should execute in frames while they're outside of the visible viewport.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.FullScreen">
+            <summary>
+            FullScreen.
+            Controls whether the current document is allowed to use Element.requestFullScreen().
+            When this policy is disabled, the returned Promise rejects with a TypeError.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.Gamepad">
+            <summary>
+            Gamepad.
+            Controls whether the current document is allowed to use the Gamepad API.
+            When this policy is disabled, calls to Navigator.getGamepads() will throw a SecurityError DOMException,
+            and the gamepadconnected and gamepaddisconnected events will not fire.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.Geolocation">
+            <summary>
+            Geo location.
+            Controls whether the current document is allowed to use the Geolocation Interface.
+            When this policy is disabled, calls to getCurrentPosition() and watchPosition() will cause those functions' callbacks to be invoked
+            with a GeolocationPositionError code of PERMISSION_DENIED.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.Gyroscope">
+            <summary>
+            Gyroscope.
+            Controls whether the current document is allowed to gather information about the orientation
+            of the device through the Gyroscope interface.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.LayoutAnimations">
+            <summary>
+            Layout Animations.
+            Controls whether the current document is allowed to show layout animations.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.LegacyImageFormats">
+            <summary>
+            Legacy Image Formats.
+            Controls whether the current document is allowed to display images in legacy formats.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.Magnetometer">
+            <summary>
+            Magnetometer.
+            Controls whether the current document is allowed to gather information about the orientation of the device through the Magnetometer interface.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.Microphone">
+            <summary>
+            Microphone.
+            Controls whether the current document is allowed to use audio input devices.
+            When this policy is disabled, the Promise returned by MediaDevices.getUserMedia() will reject with a NotAllowedError.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.Midi">
+            <summary>
+            Midi.
+            Controls whether the current document is allowed to use the Web MIDI API.
+            When this policy is disabled, the Promise returned by Navigator.requestMIDIAccess() will reject with a DOMException.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.NavigationOverride">
+            <summary>
+            Navigation Override.
+            Controls the availability of mechanisms that enables the page author to take control over
+            the behavior of spatial navigation, or to cancel it outright.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.OversizedImages">
+            <summary>
+            Oversized Images.
+            Controls whether the current document is allowed to download and display large images.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.Payment">
+            <summary>
+            Payment.
+            Controls whether the current document is allowed to use the Payment Request API.
+            When this policy is enabled, the PaymentRequest() constructor will throw a SecurityError DOMException.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.PictureInPicture">
+            <summary>
+            Picture In Picture.
+            Controls whether the current document is allowed to play a video in a Picture-in-Picture mode via the corresponding API.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.PublicKeyCredentialsGet">
+            <summary>
+            Public Key Credentials Get.
+            Controls whether the current document is allowed to use the Web Authentication API to retrieve already stored public-key credentials,
+            i.e. via navigator.credentials.get({publicKey: ..., ...}).
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.SpeakerSelection">
+            <summary>
+            Speaker Selection.
+            Controls whether the current document is allowed to use the Audio Output Devices API to list and select speakers.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.SyncXhr">
+            <summary>
+            Sync Xhr.
+            Controls whether the current document is allowed to make synchronous XMLHttpRequest requests.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.UnoptimizedImages">
+            <summary>
+            Unoptimized Images.
+            Controls whether the current document is allowed to download and display unoptimized images.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.UnsizedMedia">
+            <summary>
+            Unsized Media.
+            Controls whether the current document is allowed to change the size of media elements after the initial layout is complete.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.Usb">
+            <summary>
+            Usb.
+            Controls whether the current document is allowed to use the WebUSB API
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.ScreenWakeLock">
+            <summary>
+            Screen Wake Lock.
+            Controls whether the current document is allowed to use Screen Wake Lock API
+            to indicate that device should not turn off or dim the screen.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.WebShare">
+            <summary>
+            Web Share.
+            Controls whether or not the current document is allowed to use the Navigator.share() of Web Share API to
+            share text, links, images, and other content to arbitrary destinations of user's choice, e.g. mobile apps.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.XrSpatialTracking">
+            <summary>
+            Xr Spatial Tracking.
+            Controls whether or not the current document is allowed to use the WebXR Device API to interact with a WebXR session.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.IsEnabled">
+            <summary>
+            Is Enabled.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyAccelerometer">
+            <summary>
+            Csp Directive Permissions Policy Accelerometer.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyAmbientLightSensor">
+            <summary>
+            Csp Directive Permissions Policy Ambient Light Sensor
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyAutoPlay">
+            <summary>
+            Csp Directive Permissions PolicyAuto Play.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyBattery">
+            <summary>
+            Csp Directive Permissions Policy Battery.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyCamera">
+            <summary>
+            Csp Directive Permissions Policy Camera
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyDisplayCapture">
+            <summary>
+            Csp Directive Permissions Policy Display Capture.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyDocumentDomain">
+            <summary>
+            Csp Directive Permissions Policy Document Domain.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyEncryptedMedia">
+            <summary>
+            Csp Directive Permissions Policy Encrypted Media.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyExecutionWhileNotRendered">
+            <summary>
+            Csp Directive Permissions Policy Execution While Not Rendered.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyExecutionWhileOutOfViewport">
+            <summary>
+            Csp Directive Permissions Policy Execution While Out Of Viewport.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyFullscreen">
+            <summary>
+            Csp Directive Permissions Policy Fullscreen.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyGamepad">
+            <summary>
+            Csp Directive Permissions Policy Gamepad.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyGeolocation">
+            <summary>
+            Csp Directive Permissions Policy Geo location.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyGyroscope">
+            <summary>
+            Csp Directive Permissions Policy Gyroscope.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyLayoutAnimations">
+            <summary>
+            Csp Directive Permissions Policy Layout Animations.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyLegacyImageFormats">
+            <summary>
+            Csp Directive Permissions Policy Legacy Image Formats.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyMagnetometer">
+            <summary>
+            Csp Directive Permissions Policy Magnetometer.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyMicrophone">
+            <summary>
+            Csp Directive Permissions Policy Microphone.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyMidi">
+            <summary>
+            Csp Directive Permissions Policy Midi.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyNavigationOverride">
+            <summary>
+            Csp Directive Permissions Policy Navigation Override.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyOversizedImages">
+            <summary>
+            Csp Directive Permissions Policy Oversized Images.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyPayment">
+            <summary>
+            Csp Directive Permissions Policy Payment.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyPictureInPicture">
+            <summary>
+            Csp Directive Permissions Policy Picture-In-Picture.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyPublicKeyCredentialsGet">
+            <summary>
+            Csp Directive Permissions Policy Public Key Credentials Get.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicySpeakerSelection">
+            <summary>
+            Csp Directive Permissions PolicySpeakerSelection.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicySyncXhr">
+            <summary>
+            Csp Directive Permissions Policy Sync Xhr.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyUnoptimizedImages">
+            <summary>
+            Csp Directive Permissions Policy Unoptimized Images.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyUnsizedMedia">
+            <summary>
+            Csp Directive Permissions Policy Unsized Media.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyUsb">
+            <summary>
+            Csp Directive Permissions Policy Usb.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyScreenWakeLock">
+            <summary>
+            Csp Directive Permissions Policy Screen Wake Lock.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyWebShare">
+            <summary>
+            Csp Directive Permissions Policy Web Share.
+            </summary>
+        </member>
+        <member name="T:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.CspDirectivePermissionsPolicyXrSpatialTracking">
+            <summary>
+            Csp Directive Permissions Policy Xr Spatial Tracking.
             </summary>
         </member>
         <member name="T:Nano.Web.WebOptions.HostingOptions.HstsOptions">

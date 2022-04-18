@@ -22,7 +22,9 @@ namespace Nano.Web.Hosting.Filters
                 throw new ArgumentNullException(nameof(context));
 
             if (context.ModelState.IsValid)
+            {
                 return;
+            }
 
             var error = new Error
             {

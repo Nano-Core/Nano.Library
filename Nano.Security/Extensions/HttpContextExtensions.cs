@@ -4,6 +4,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using Nano.Security.Const;
+using Nano.Security.Models;
 
 namespace Nano.Security.Extensions
 {
@@ -59,10 +60,14 @@ namespace Nano.Security.Extensions
             var authorizationHeader = httpContext.Request.Headers[HeaderNames.Authorization].ToString();
 
             if (string.IsNullOrEmpty(authorizationHeader))
+            {
                 return null;
+            }
 
             if (authorizationHeader.Length <= PREFIX.Length)
+            {
                 return null;
+            }
 
             var value = authorizationHeader[PREFIX.Length..];
 
@@ -83,7 +88,9 @@ namespace Nano.Security.Extensions
                 .FindFirstValue(JwtRegisteredClaimNames.Sub);
 
             if (value == null)
+            {
                 return null;
+            }
 
             var success = Guid.TryParse(value, out var result);
 
@@ -122,6 +129,33 @@ namespace Nano.Security.Extensions
                 .FindFirstValue(JwtRegisteredClaimNames.Email);
 
             return value;
+        }
+
+        /// <summary>
+        /// Get Jwt External Token.
+        /// </summary>
+        /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
+        /// <returns>The <see cref="AccessToken"/>.</returns>
+        public static ExternalLoginTokenData GetJwtExternalToken(this HttpContext httpContext)
+        {
+            if (httpContext == null)
+                throw new ArgumentNullException(nameof(httpContext));
+
+            var name = httpContext.User
+                .FindFirstValue(ClaimTypesExtended.ExternalProviderName);
+
+            var token = httpContext.User
+                .FindFirstValue(ClaimTypesExtended.ExternalProviderToken);
+
+            var refreshToken = httpContext.User
+                .FindFirstValue(ClaimTypesExtended.ExternalProviderRefreshToken);
+
+            return new ExternalLoginTokenData
+            {
+                Name = name,
+                Token = token,
+                RefreshToken = refreshToken
+            };
         }
     }
 }

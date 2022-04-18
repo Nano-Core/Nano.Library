@@ -212,7 +212,8 @@ namespace Nano.Data
                 return this.Entry(tracked);
             }
 
-            return dbSet.Add(entity);
+            return dbSet
+                .Add(entity);
         }
 
         /// <summary>

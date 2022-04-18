@@ -15,6 +15,7 @@ namespace Nano.Security.Models
 
         /// <summary>
         /// Claims.
+        /// Additonal claims to add to the user.
         /// </summary>
         public virtual IDictionary<string, string> Claims { get; set; } = new Dictionary<string, string>();
     }

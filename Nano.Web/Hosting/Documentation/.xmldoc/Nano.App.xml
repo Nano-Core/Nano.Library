@@ -151,16 +151,16 @@
         <member name="T:Nano.App.Startup.Tasks.BaseStartupTask">
             <inheritdoc />
         </member>
-        <member name="P:Nano.App.Startup.Tasks.BaseStartupTask.StartupTaskContext">
+        <member name="P:Nano.App.Startup.Tasks.BaseStartupTask.Context">
             <summary>
-            Startup Task Context.
+            Context.
             </summary>
         </member>
         <member name="M:Nano.App.Startup.Tasks.BaseStartupTask.#ctor(Nano.App.Startup.StartupTaskContext)">
             <summary>
             Constructor.
             </summary>
-            <param name="startupTaskContext">The <see cref="P:Nano.App.Startup.Tasks.BaseStartupTask.StartupTaskContext"/>.</param>
+            <param name="startupTaskContext">The <see cref="T:Nano.App.Startup.StartupTaskContext"/>.</param>
         </member>
         <member name="M:Nano.App.Startup.Tasks.BaseStartupTask.StartAsync(System.Threading.CancellationToken)">
             <inheritdoc />

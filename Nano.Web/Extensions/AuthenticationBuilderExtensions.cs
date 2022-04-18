@@ -24,62 +24,55 @@ namespace Nano.Web.Extensions
             if (options == null) 
                 throw new ArgumentNullException(nameof(options));
 
-            foreach (var externalLogin in options.ExternalLogins)
+            var googleOptions = options.ExternalLogins.Google;
+            if (googleOptions != null)
             {
-                switch (externalLogin.Name)
-                {
-                    case "Google":
+                builder
+                    .AddGoogle(x =>
                     {
-                        builder
-                            .AddGoogle(x =>
-                            {
-                                x.ClientId = externalLogin.Id;
-                                x.ClientSecret = externalLogin.Secret ?? "N/A";
+                        x.ClientId = googleOptions.ClientId;
+                        x.ClientSecret = googleOptions.ClientSecret ?? "N/A";
 
-                                foreach (var scope in externalLogin.Scopes)
-                                {
-                                    x.Scope
-                                        .Add(scope);
-                                }
-                            });
-                        break;
-                    }
+                        foreach (var scope in googleOptions.Scopes)
+                        {
+                            x.Scope
+                                .Add(scope);
+                        }
+                    });
+            }
 
-                    case "Facebook":
+            var facebookOptions = options.ExternalLogins.Facebook;
+            if (options.ExternalLogins.Facebook != null)
+            {
+                builder
+                    .AddFacebook(x =>
                     {
-                        builder
-                            .AddFacebook(x =>
-                            {
-                                x.AppId = externalLogin.Id;
-                                x.AppSecret = externalLogin.Secret;
+                        x.AppId = facebookOptions.AppId;
+                        x.AppSecret = facebookOptions.AppSecret;
 
-                                foreach (var scope in externalLogin.Scopes)
-                                {
-                                    x.Scope
-                                        .Add(scope);
-                                }
-                            });
-                        break;
-                    }
+                        foreach (var scope in facebookOptions.Scopes)
+                        {
+                            x.Scope
+                                .Add(scope);
+                        }
+                    });
+            }
 
-                    case "Microsoft":
-                        builder
-                            .AddMicrosoftAccount(x =>
-                            {
-                                x.ClientId = externalLogin.Id;
-                                x.ClientSecret = externalLogin.Secret;
+            var microsoftOptions = options.ExternalLogins.Microsoft;
+            if (options.ExternalLogins.Microsoft != null)
+            {
+                builder
+                    .AddMicrosoftAccount(x =>
+                    {
+                        x.ClientId = microsoftOptions.ClientId;
+                        x.ClientSecret = microsoftOptions.ClientSecret;
 
-                                foreach (var scope in externalLogin.Scopes)
-                                {
-                                    x.Scope
-                                        .Add(scope);
-                                }
-                            });
-                        break;
-
-                    default: 
-                        throw new NotSupportedException($"External login: {externalLogin.Name} not supported.");
-                }
+                        foreach (var scope in microsoftOptions.Scopes)
+                        {
+                            x.Scope
+                                .Add(scope);
+                        }
+                    });
             }
 
             return builder;

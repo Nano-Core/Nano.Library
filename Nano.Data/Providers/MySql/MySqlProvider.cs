@@ -41,7 +41,9 @@ namespace Nano.Data.Providers.MySql
             var serverVersion = ServerVersion.AutoDetect(connection);
 
             if (connectionString == null)
+            {
                 return;
+            }
 
             builder
                 .EnableSensitiveDataLogging(useSensitiveDataLogging)

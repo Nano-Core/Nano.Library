@@ -1,5 +1,3 @@
-using System;
-
 namespace Nano.Security.Models
 {
     /// <summary>
@@ -21,15 +19,10 @@ namespace Nano.Security.Models
         /// Email.
         /// </summary>
         public virtual string Email { get; set; }
-        
+
         /// <summary>
-        /// Address.
+        /// External Token.
         /// </summary>
-        public virtual string Address { get; set; }
-        
-        /// <summary>
-        /// Birth Day.
-        /// </summary>
-        public virtual DateTime? BirthDay { get; set; }
+        public virtual ExternalLoginTokenData ExternalToken { get; set; } = new();
     }
 }

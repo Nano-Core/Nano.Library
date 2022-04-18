@@ -364,25 +364,39 @@ namespace Nano.Web.Extensions
                     .UseXRobotsTag(x =>
                     {
                         if (xRobotTags.UseNoIndex)
+                        {
                             x.NoIndex();
+                        }
 
                         if (xRobotTags.UseNoFollow)
+                        {
                             x.NoFollow();
+                        }
 
                         if (xRobotTags.UseNoSnippet)
+                        {
                             x.NoSnippet();
+                        }
 
                         if (xRobotTags.UseNoArchive)
+                        {
                             x.NoArchive();
+                        }
 
                         if (xRobotTags.UseNoOdp)
+                        {
                             x.NoOdp();
+                        }
 
                         if (xRobotTags.UseNoTranslate)
+                        {
                             x.NoTranslate();
+                        }
 
                         if (xRobotTags.UseNoImageIndex)
+                        {
                             x.NoImageIndex();
+                        }
                     });
             }
 
@@ -634,7 +648,9 @@ namespace Nano.Web.Extensions
             var csp = webOptions.Hosting.Csp;
 
             if (!csp.IsEnabled)
+            {
                 return applicationBuilder;
+            }
 
             if (csp.UpgradeInsecureRequests)
             {
@@ -740,7 +756,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(applicationBuilder));
 
             if (!cspDirectivePermissionsPolicy.IsEnabled)
+            {
                 return applicationBuilder;
+            }
 
             applicationBuilder
                 .Use(async (context, next) =>
@@ -795,7 +813,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(configurer));
 
             if (!reportUris.Any())
+            {
                 return configurer;
+            }
 
             configurer
                 .ReportUris(x => 
@@ -809,7 +829,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(configurer));
 
             if (!pluginTypes.Any())
+            {
                 return configurer;
+            }
 
             configurer
                 .PluginTypes(x =>
@@ -826,7 +848,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .DefaultSources(x =>
@@ -860,7 +884,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .StyleSources(x =>
@@ -899,7 +925,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .ScriptSources(x =>
@@ -948,7 +976,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .ObjectSources(x =>
@@ -982,7 +1012,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .ImageSources(x =>
@@ -1016,7 +1048,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .MediaSources(x =>
@@ -1050,7 +1084,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .FrameSources(x =>
@@ -1084,7 +1120,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .FrameAncestors(x =>
@@ -1118,7 +1156,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .FontSources(x =>
@@ -1153,7 +1193,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .ConnectSources(x =>
@@ -1187,7 +1229,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .BaseUris(x =>
@@ -1221,7 +1265,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .ChildSources(x =>
@@ -1255,7 +1301,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .FormActions(x =>
@@ -1289,7 +1337,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .ManifestSources(x =>
@@ -1323,7 +1373,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirective));
 
             if (!cspDirective.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .WorkerSources(x =>
@@ -1357,7 +1409,9 @@ namespace Nano.Web.Extensions
                 throw new ArgumentNullException(nameof(cspDirectiveSandbox));
 
             if (!cspDirectiveSandbox.IsEnabled)
+            {
                 return configurer;
+            }
 
             configurer
                 .Sandbox(y =>
@@ -1424,15 +1478,13 @@ namespace Nano.Web.Extensions
                 {
                     return $"{directiveName}=(none);";
                 }
-                else
-                {
-                    var values = cspDirective.Sources
-                        .Aggregate(string.Empty, (current, x) => current + $"{x} ");
 
-                    return cspDirective.IsSelf 
-                        ? $"{directiveName}=(self {values});" 
-                        : $"{directiveName}=({values});";
-                }
+                var values = cspDirective.Sources
+                    .Aggregate(string.Empty, (current, x) => current + $"{x} ");
+
+                return cspDirective.IsSelf 
+                    ? $"{directiveName}=(self {values});" 
+                    : $"{directiveName}=({values});";
             }
 
             return string.Empty;

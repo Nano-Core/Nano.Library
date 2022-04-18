@@ -59,7 +59,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Index([FromQuery][Required]IQuery query, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> IndexAsync([FromQuery][Required]IQuery query, CancellationToken cancellationToken = default)
         {
             query ??= new Query();
 
@@ -67,7 +67,9 @@ namespace Nano.Web.Controllers
                 .GetManyAsync<TEntity>(query, cancellationToken);
 
             if (result == null)
+            {
                 return this.NotFound();
+            }
 
             return this.Ok(result);
         }
@@ -92,7 +94,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> IndexPost([FromBody][Required]IQuery query, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> IndexPostAsync([FromBody][Required]IQuery query, CancellationToken cancellationToken = default)
         {
             query ??= new Query();
 
@@ -100,7 +102,9 @@ namespace Nano.Web.Controllers
                 .GetManyAsync<TEntity>(query, cancellationToken);
 
             if (result == null)
+            {
                 return this.NotFound();
+            }
 
             return this.Ok(result);
         }
@@ -124,13 +128,15 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Details([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> DetailsAsync([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
         {
             var result = await this.Repository
                 .GetAsync<TEntity, TIdentity>(id, cancellationToken);
 
             if (result == null)
+            {
                 return this.NotFound();
+            }
 
             return this.Ok(result);
         }
@@ -154,13 +160,15 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> DetailsMany([FromQuery][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> DetailsManyAsync([FromQuery][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
         {
             var result = await this.Repository
                 .GetManyAsync<TEntity, TIdentity>(ids, cancellationToken);
 
             if (result == null)
+            {
                 return this.NotFound();
+            }
 
             return this.Ok(result);
         }
@@ -185,13 +193,15 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> DetailsManyPost([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> DetailsManyPostAsync([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
         {
             var result = await this.Repository
                 .GetManyAsync<TEntity, TIdentity>(ids, cancellationToken);
 
             if (result == null)
+            {
                 return this.NotFound();
+            }
 
             return this.Ok(result);
         }
@@ -215,7 +225,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> Query([FromQuery][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> QueryAsync([FromQuery][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         {
             query ??= new Query<TCriteria>();
 
@@ -223,7 +233,9 @@ namespace Nano.Web.Controllers
                 .GetManyAsync<TEntity, TCriteria>(query, cancellationToken);
 
             if (result == null)
+            {
                 return this.NotFound();
+            }
 
             return this.Ok(result);
         }
@@ -248,7 +260,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> QueryPost([FromBody][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> QueryPostAsync([FromBody][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         {
             query ??= new Query<TCriteria>();
 
@@ -256,7 +268,9 @@ namespace Nano.Web.Controllers
                 .GetManyAsync<TEntity, TCriteria>(query, cancellationToken);
 
             if (result == null)
+            {
                 return this.NotFound();
+            }
 
             return this.Ok(result);
         }
@@ -280,7 +294,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> QueryFirst([FromQuery][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> QueryFirstAsync([FromQuery][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         {
             query ??= new Query<TCriteria>();
 
@@ -288,7 +302,9 @@ namespace Nano.Web.Controllers
                 .GetFirstAsync<TEntity, TCriteria>(query, cancellationToken);
 
             if (result == null)
+            {
                 return this.NotFound();
+            }
 
             return this.Ok(result);
         }
@@ -313,7 +329,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> QueryFirstPost([FromBody][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> QueryFirstPostAsync([FromBody][Required]IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         {
             query ??= new Query<TCriteria>();
 
@@ -321,7 +337,9 @@ namespace Nano.Web.Controllers
                 .GetFirstAsync<TEntity, TCriteria>(query, cancellationToken);
 
             if (result == null)
+            {
                 return this.NotFound();
+            }
 
             return this.Ok(result);
         }
@@ -345,7 +363,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> QueryCount([FromQuery][Required]TCriteria criteria, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> QueryCountAsync([FromQuery][Required]TCriteria criteria, CancellationToken cancellationToken = default)
         {
             var result = await this.Repository
                 .CountAsync<TEntity, TCriteria>(criteria, cancellationToken);
@@ -373,7 +391,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> QueryCountPost([FromBody][Required]TCriteria criteria, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> QueryCountPostAsync([FromBody][Required]TCriteria criteria, CancellationToken cancellationToken = default)
         {
             var result = await this.Repository
                 .CountAsync<TEntity, TCriteria>(criteria, cancellationToken);

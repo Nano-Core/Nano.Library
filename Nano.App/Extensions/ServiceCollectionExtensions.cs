@@ -47,17 +47,6 @@ namespace Nano.App.Extensions
 
             services
                 .AddSingleton<StartupTaskContext>()
-                .AddStartupTasks();
-
-            return services;
-        }
-
-        private static IServiceCollection AddStartupTasks(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services
                 .AddHostedService<InitializeApplicationStartupTask>();
 
             return services;

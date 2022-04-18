@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Nano.Security.Const;
 
 namespace Nano.Security
@@ -45,9 +44,9 @@ namespace Nano.Security
         public virtual PasswordOptions Password { get; set; } = new();
 
         /// <summary>
-        /// External Logins Options.
+        /// External Logins.
         /// </summary>
-        public virtual ExternalLoginOptions[] ExternalLogins { get; set; } = Array.Empty<ExternalLoginOptions>();
+        public virtual ExternalLoginOptions ExternalLogins { get; set; } = new();
 
         /// <summary>
         /// Jwt Options (nested class)
@@ -185,24 +184,87 @@ namespace Nano.Security
         public class ExternalLoginOptions
         {
             /// <summary>
-            /// Name.
+            /// Google.
             /// </summary>
-            public virtual string Name { get; set; }
+            public virtual GoogleOptions Google { get; set; }
 
             /// <summary>
-            /// Id.
+            /// Facebook.
             /// </summary>
-            public virtual string Id { get; set; }
+            public virtual FacebookOptions Facebook { get; set; }
 
             /// <summary>
-            /// Secret.
+            /// Microsoft.
             /// </summary>
-            public virtual string Secret { get; set; }
+            public virtual MicrosoftOptions Microsoft { get; set; }
 
             /// <summary>
-            /// Scopes.
+            /// Google Options.
             /// </summary>
-            public virtual IEnumerable<string> Scopes { get; set; } = new List<string>();
+            public class GoogleOptions
+            {
+                /// <summary>
+                /// Client Id.
+                /// </summary>
+                public virtual string ClientId { get; set; }
+
+                /// <summary>
+                /// Client Secret.
+                /// </summary>
+                public virtual string ClientSecret { get; set; }
+
+                /// <summary>
+                /// Scopes.
+                /// </summary>
+                public virtual string[] Scopes { get; set; } = Array.Empty<string>();
+            }
+
+            /// <summary>
+            /// Facebook Options.
+            /// </summary>
+            public class FacebookOptions
+            {
+                /// <summary>
+                /// App Id.
+                /// </summary>
+                public virtual string AppId { get; set; }
+
+                /// <summary>
+                /// App Secret.
+                /// </summary>
+                public virtual string AppSecret { get; set; }
+
+                /// <summary>
+                /// Scopes.
+                /// </summary>
+                public virtual string[] Scopes { get; set; } = Array.Empty<string>();
+            }
+
+            /// <summary>
+            /// Microsoft Options.
+            /// </summary>
+            public class MicrosoftOptions
+            {
+                /// <summary>
+                /// Tenant Id.
+                /// </summary>
+                public virtual string TenantId { get; set; }
+
+                /// <summary>
+                /// Client Id.
+                /// </summary>
+                public virtual string ClientId { get; set; }
+
+                /// <summary>
+                /// Client Secret.
+                /// </summary>
+                public virtual string ClientSecret { get; set; }
+
+                /// <summary>
+                /// Scopes.
+                /// </summary>
+                public virtual string[] Scopes { get; set; } = Array.Empty<string>();
+            }
         }
     }
 }

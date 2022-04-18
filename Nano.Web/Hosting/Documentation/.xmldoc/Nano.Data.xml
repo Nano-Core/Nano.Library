@@ -168,6 +168,11 @@
             Use Health Check.
             </summary>
         </member>
+        <member name="P:Nano.Data.DataOptions.DefaultCollation">
+            <summary>
+            Default Collation.
+            </summary>
+        </member>
         <member name="P:Nano.Data.DataOptions.ConnectionString">
             <summary>
             Connection String.

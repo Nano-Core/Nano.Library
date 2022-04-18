@@ -25,7 +25,9 @@ namespace Nano.Security.Extensions
                 .FirstOrDefault(x => x.Type == type);
 
             if (claim == null)
+            {
                 throw new NullReferenceException(nameof(claim));
+            }
 
             return claim;
         }

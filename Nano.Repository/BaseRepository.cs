@@ -15,6 +15,18 @@ using Nano.Repository.Interfaces;
 namespace Nano.Repository
 {
     /// <inheritdoc />
+    public abstract class BaseRepository<TContext> : BaseRepository<TContext, Guid>
+        where TContext : BaseDbContext<Guid>
+    {
+        /// <inheritdoc />
+        protected BaseRepository(TContext context)
+            : base(context)
+        {
+
+        }
+    }
+
+    /// <inheritdoc />
     public abstract class BaseRepository<TContext, TIdentity> : IRepository
         where TContext : BaseDbContext<TIdentity>
         where TIdentity : IEquatable<TIdentity>
