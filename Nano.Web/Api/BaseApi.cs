@@ -330,7 +330,7 @@ namespace Nano.Web.Api
                 var httpResponse = await this.httpClient
                     .SendAsync(httpRequest, cancellationToken);
 
-                await this.GetReponseAsync(httpResponse, cancellationToken);
+                await this.GetResponseAsync(httpResponse, cancellationToken);
             }
         }
         private async Task<TResponse> GetAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
@@ -345,7 +345,7 @@ namespace Nano.Web.Api
                 var httpResponse = await this.httpClient
                     .SendAsync(httpRequest, cancellationToken);
 
-                return await this.GetReponseAsync<TResponse>(httpResponse, cancellationToken);
+                return await this.GetResponseAsync<TResponse>(httpResponse, cancellationToken);
             }
         }
         private async Task PutAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
@@ -366,7 +366,7 @@ namespace Nano.Web.Api
                 var httpResponse = await this.httpClient
                     .SendAsync(httpRequest, cancellationToken);
 
-                await this.GetReponseAsync(httpResponse, cancellationToken);
+                await this.GetResponseAsync(httpResponse, cancellationToken);
             }
         }
         private async Task<TResponse> PutAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
@@ -386,7 +386,7 @@ namespace Nano.Web.Api
                 var httpResponse = await this.httpClient
                     .SendAsync(httpRequest, cancellationToken);
 
-                return await this.GetReponseAsync<TResponse>(httpResponse, cancellationToken);
+                return await this.GetResponseAsync<TResponse>(httpResponse, cancellationToken);
             }
         }
         private async Task PostAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
@@ -407,7 +407,7 @@ namespace Nano.Web.Api
                 var httpResponse = await this.httpClient
                     .SendAsync(httpRequest, cancellationToken);
 
-                await this.GetReponseAsync(httpResponse, cancellationToken);
+                await this.GetResponseAsync(httpResponse, cancellationToken);
             }
         }
         private async Task<TResponse> PostAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
@@ -429,7 +429,7 @@ namespace Nano.Web.Api
                 var httpResponse = await this.httpClient
                     .SendAsync(httpRequest, cancellationToken);
 
-                return await this.GetReponseAsync<TResponse>(httpResponse, cancellationToken);
+                return await this.GetResponseAsync<TResponse>(httpResponse, cancellationToken);
             }
         }
         private async Task PostFormAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
@@ -453,7 +453,7 @@ namespace Nano.Web.Api
                     var httpResponse = await this.httpClient
                         .SendAsync(httpRequest, cancellationToken);
 
-                    await this.GetReponseAsync(httpResponse, cancellationToken);
+                    await this.GetResponseAsync(httpResponse, cancellationToken);
                 }
             }
         }
@@ -479,7 +479,7 @@ namespace Nano.Web.Api
                     var httpResponse = await this.httpClient
                         .SendAsync(httpRequest, cancellationToken);
 
-                    return await this.GetReponseAsync<TResponse>(httpResponse, cancellationToken);
+                    return await this.GetResponseAsync<TResponse>(httpResponse, cancellationToken);
                 }
             }
         }
@@ -499,7 +499,7 @@ namespace Nano.Web.Api
                 var httpResponse = await this.httpClient
                     .SendAsync(httpRequest, cancellationToken);
 
-                await this.GetReponseAsync(httpResponse, cancellationToken);
+                await this.GetResponseAsync(httpResponse, cancellationToken);
             }
         }
         private async Task<TResponse> DeleteAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
@@ -519,7 +519,7 @@ namespace Nano.Web.Api
                 var httpResponse = await this.httpClient
                     .SendAsync(httpRequest, cancellationToken);
 
-                return await this.GetReponseAsync<TResponse>(httpResponse, cancellationToken);
+                return await this.GetResponseAsync<TResponse>(httpResponse, cancellationToken);
             }
         }
 
@@ -598,7 +598,7 @@ namespace Nano.Web.Api
 
             return httpRequest;
         }
-        private async Task GetReponseAsync(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
+        private async Task GetResponseAsync(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
         {
             if (httpResponse == null)
                 throw new ArgumentNullException(nameof(httpResponse));
@@ -634,7 +634,7 @@ namespace Nano.Web.Api
             httpResponse
                 .EnsureSuccessStatusCode();
         }
-        private async Task<TResponse> GetReponseAsync<TResponse>(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
+        private async Task<TResponse> GetResponseAsync<TResponse>(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
             where TResponse : class
         {
             if (httpResponse == null)
