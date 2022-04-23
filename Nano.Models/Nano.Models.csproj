@@ -12,7 +12,7 @@
 		<DocumentationFile>$(MSBuildThisFileDirectory)\bin\$(Configuration)\Nano.Models.xml</DocumentationFile>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-	    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<EmbedAllSources>true</EmbedAllSources>
 	    <IncludeSymbols>true</IncludeSymbols>
 	    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	</PropertyGroup>
