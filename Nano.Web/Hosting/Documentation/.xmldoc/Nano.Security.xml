@@ -58,7 +58,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager.GetExternalProviderLoginData``1(``0,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager.GetExternalProviderLogInData``1(``0,System.Threading.CancellationToken)">
             <summary>
             Validate External Provider Access Token.
             </summary>

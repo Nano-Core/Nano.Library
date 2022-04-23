@@ -448,7 +448,7 @@ namespace Nano.Web.Controllers
         public virtual async Task<IActionResult> GetExternalLoginData([FromBody][Required]BaseLogInExternalProvider logInExternalProvider, CancellationToken cancellationToken = default)
         {
             var externalLoginData = await this.BaseIdentityManager
-                .GetExternalProviderLoginData(logInExternalProvider, cancellationToken);
+                .GetExternalProviderLogInData(logInExternalProvider, cancellationToken);
 
             if (externalLoginData == null)
             {

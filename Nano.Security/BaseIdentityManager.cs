@@ -115,7 +115,7 @@ namespace Nano.Security
             if (logInExternalTransient == null)
                 throw new ArgumentNullException(nameof(logInExternalTransient));
 
-            var externalLoginData = await this.GetExternalProviderLoginData(logInExternalTransient.Provider, cancellationToken);
+            var externalLoginData = await this.GetExternalProviderLogInData(logInExternalTransient.Provider, cancellationToken);
 
             return await this.SignInExternalTransientAsync(externalLoginData, logInExternalTransient.TransientRoles, logInExternalTransient.TransientClaims, cancellationToken);
         }
@@ -164,7 +164,7 @@ namespace Nano.Security
         /// <param name="logInExternalProvider">The <see cref="object"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="ExternalLogInData"/>.</returns>
-        public virtual async Task<ExternalLogInData> GetExternalProviderLoginData<TProvider>(TProvider logInExternalProvider, CancellationToken cancellationToken = default)
+        public virtual async Task<ExternalLogInData> GetExternalProviderLogInData<TProvider>(TProvider logInExternalProvider, CancellationToken cancellationToken = default)
             where TProvider : BaseLogInExternalProvider
         {
             if (logInExternalProvider == null)
@@ -532,7 +532,7 @@ namespace Nano.Security
             if (logInExternal == null)
                 throw new ArgumentNullException(nameof(logInExternal));
 
-            var externalLoginData = await this.GetExternalProviderLoginData(logInExternal.Provider, cancellationToken);
+            var externalLoginData = await this.GetExternalProviderLogInData(logInExternal.Provider, cancellationToken);
 
             var logInExternalData = new LogInExternalDirect
             {
@@ -762,7 +762,7 @@ namespace Nano.Security
             if (signUpExternal == null)
                 throw new ArgumentNullException(nameof(signUpExternal));
 
-            var externalLoginData = await this.GetExternalProviderLoginData(signUpExternal.Provider, cancellationToken);
+            var externalLoginData = await this.GetExternalProviderLogInData(signUpExternal.Provider, cancellationToken);
 
             return await this.SignUpExternalAsync(externalLoginData, signUpExternal.User, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
         }
