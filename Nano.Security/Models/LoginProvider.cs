@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models
 {
     /// <summary>
-    /// Login Provider.
+    /// LogIn Provider.
     /// </summary>
-    public class LoginProvider
+    public class LogInProvider
     {
         /// <summary>
         /// Name.

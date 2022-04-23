@@ -16,7 +16,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// <summary>
         /// Change Email.
         /// </summary>
-        public virtual ChangeEmail<TIdentity> ChangeEmail { get; set; }
+        public virtual ChangeEmail<TIdentity> ChangeEmail { get; set; } = new();
 
         /// <inheritdoc />
         public ChangeEmailRequest()

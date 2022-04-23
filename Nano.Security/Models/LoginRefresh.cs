@@ -6,7 +6,7 @@ namespace Nano.Security.Models
     /// <summary>
     /// Login Refresh.
     /// </summary>
-    public class LoginRefresh
+    public class LogInRefresh
     {
         /// <summary>
         /// Token.

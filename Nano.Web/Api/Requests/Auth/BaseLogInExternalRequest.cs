@@ -10,10 +10,10 @@ namespace Nano.Web.Api.Requests.Auth
 
     /// <inheritdoc />
     public abstract class BaseLogInExternalRequest<TLogin> : BaseLogInExternalRequest
-        where TLogin : BaseLoginExternal, new()
+        where TLogin : LogInExternal, new()
     {
         /// <summary>
-        /// External Login.
+        /// LogIn External.
         /// </summary>
         public virtual TLogin LoginExternal { get; set; } = new();
 

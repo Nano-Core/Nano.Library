@@ -125,7 +125,7 @@ namespace Nano.Web.Api
         /// <summary>
         /// Log-In External Async.
         /// </summary>
-        /// <param name="request">The <see cref="LogInRequest"/>.</param>
+        /// <param name="request">The <see cref="BaseLogInExternalRequest"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
         public virtual async Task<AccessToken> LogInExternalAsync<TLogin>(TLogin request, CancellationToken cancellationToken = default)
@@ -161,17 +161,32 @@ namespace Nano.Web.Api
         }
 
         /// <summary>
-        /// GetAsync External Schemes Async.
+        /// Get External Log-In Data Async.
         /// </summary>
-        /// <param name="request">The <see cref="GetExternalSchemesRequest"/>.</param>
+        /// <param name="request">The <see cref="GetExternalLoginDataRequest{TProvider}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>A collection of <see cref="LoginProvider"/>'s.</returns>
-        public virtual async Task<IEnumerable<LoginProvider>> GetExternalSchemesAsync(GetExternalSchemesRequest request, CancellationToken cancellationToken = default)
+        /// <returns>The <see cref="AccessToken"/>.</returns>
+        public virtual async Task<ExternalLogInData> GetExternalLogInDataAsync<TProvider>(GetExternalLoginDataRequest<TProvider> request, CancellationToken cancellationToken = default)
+            where TProvider : BaseLogInExternalProvider, new()
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.InvokeAsync<GetExternalSchemesRequest, IEnumerable<LoginProvider>>(request, cancellationToken);
+            return await this.InvokeAsync<GetExternalLoginDataRequest<TProvider>, ExternalLogInData>(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// GetAsync External Schemes Async.
+        /// </summary>
+        /// <param name="request">The <see cref="GetExternalSchemesRequest"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>A collection of <see cref="LogInProvider"/>'s.</returns>
+        public virtual async Task<IEnumerable<LogInProvider>> GetExternalSchemesAsync(GetExternalSchemesRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return await this.InvokeAsync<GetExternalSchemesRequest, IEnumerable<LogInProvider>>(request, cancellationToken);
         }
 
         /// <summary>
@@ -291,7 +306,7 @@ namespace Nano.Web.Api
 
                 if (isAnonymous)
                 {
-                    if (this.apiOptions.Login == null)
+                    if (this.apiOptions.LogIn == null)
                     {
                         return this.accessToken?.Token;
                     }
@@ -301,16 +316,16 @@ namespace Nano.Web.Api
                         return this.accessToken?.Token;
                     }
 
-                    var loginRequest = new LogInRequest
+                    var logInRequest = new LogInRequest
                     {
-                        Login = new Login
+                        LogIn = new LogIn
                         {
-                            Username = this.apiOptions.Login.Username,
-                            Password = this.apiOptions.Login.Password
+                            Username = this.apiOptions.LogIn.Username,
+                            Password = this.apiOptions.LogIn.Password
                         }
                     };
 
-                    this.accessToken = await this.InvokeAsync<LogInRequest, AccessToken>(loginRequest, cancellationToken);
+                    this.accessToken = await this.InvokeAsync<LogInRequest, AccessToken>(logInRequest, cancellationToken);
 
                     return this.accessToken?.Token;
                 }

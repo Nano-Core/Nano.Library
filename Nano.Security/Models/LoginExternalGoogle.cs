@@ -1,9 +1,9 @@
 ﻿namespace Nano.Security.Models
 {
     /// <summary>
-    /// Login External Google.
+    /// LogIn External Google.
     /// </summary>
-    public class LoginExternalGoogle : LoginExternalImplicit<LoginExternalProviderGoogle>
+    public class LogInExternalGoogle : LogInExternalImplicit<LogInExternalProviderGoogle>
     {
 
     }

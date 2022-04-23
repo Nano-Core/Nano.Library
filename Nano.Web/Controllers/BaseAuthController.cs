@@ -58,7 +58,7 @@ namespace Nano.Web.Controllers
         /// Authenticates and signs in a user.
         /// On success a jwt-token is created and returned, for use with auhtorization.
         /// </summary>
-        /// <param name="login">The login model.</param>
+        /// <param name="logIn">The login model.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The access token.</returns>
         /// <response code="200">Success.</response>
@@ -77,23 +77,23 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         [SwaggerOperation(Tags = new [] { "Auth" })]
-        public virtual async Task<IActionResult> LogInAsync([FromBody][Required]Login login, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> LogInAsync([FromBody][Required]LogIn logIn, CancellationToken cancellationToken = default)
         {
             var accessToken = await this.BaseIdentityManager
-                .SignInAsync(login, cancellationToken);
+                .SignInAsync(logIn, cancellationToken);
 
             if (accessToken == null)
             {
-                this.NotFound();
+                this.Unauthorized();
             }
 
             return this.Ok(accessToken);
         }
 
         /// <summary>
-        /// Refreshes a users authentication token.
+        /// Refreshes a user's token.
         /// </summary>
-        /// <param name="loginRefresh">The login refresh model.</param>
+        /// <param name="logInRefresh">The login refresh.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The access token.</returns>
         /// <response code="200">Success.</response>
@@ -112,23 +112,91 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Auth" })]
-        public virtual async Task<IActionResult> LoginRefreshAsync([FromBody][Required]LoginRefresh loginRefresh, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> LogInRefreshAsync([FromBody][Required]LogInRefresh logInRefresh, CancellationToken cancellationToken = default)
         {
             var accessToken = await this.BaseIdentityManager
-                .SignInRefreshAsync(loginRefresh, cancellationToken);
+                .SignInRefreshAsync(logInRefresh, cancellationToken);
 
             if (accessToken == null)
             {
-                this.NotFound();
+                this.Unauthorized();
             }
 
             return this.Ok(accessToken);
         }
 
         /// <summary>
-        /// Sign-in a user from an external Google login and authentication using implicit flow.
+        /// Sign-in a user transient, from data recieved from a separate authentication.
         /// </summary>
-        /// <param name="loginExternal">The external login.</param>
+        /// <param name="logInExternalDirect">The external login direct.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The access token.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occurred.</response>
+        [HttpPost]
+        [Route("login/external/direct")]
+        [AllowAnonymous]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        [SwaggerOperation(Tags = new[] { "Auth" })]
+        public virtual async Task<IActionResult> LogInExternalDirectAsync([FromBody][Required]LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
+        {
+            var accessToken = await this.BaseIdentityManager
+                .SignInExternalAsync(logInExternalDirect, cancellationToken);
+
+            if (accessToken == null)
+            {
+                this.Unauthorized();
+            }
+
+            return this.Ok(accessToken);
+        }
+
+        /// <summary>
+        /// Sign-in a user, from data recieved from a separate authentication.
+        /// </summary>
+        /// <param name="logInExternalDirect">The external login direct.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The access token.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="401">Unauthorized.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occurred.</response>
+        [HttpPost]
+        [Route("login/external/direct/transient")]
+        [AllowAnonymous]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        [SwaggerOperation(Tags = new[] { "Auth" })]
+        public virtual async Task<IActionResult> LogInExternalDirectTransientAsync([FromBody][Required]LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
+        {
+            var accessToken = await this.BaseIdentityManager
+                .SignInExternalTransientAsync(logInExternalDirect.ExternalLogInData, logInExternalDirect.TransientRoles, logInExternalDirect.TransientClaims, cancellationToken);
+
+            if (accessToken == null)
+            {
+                this.Unauthorized();
+            }
+
+            return this.Ok(accessToken);
+        }
+
+        /// <summary>
+        /// Sign-in a user, from external Google authentication using auth-code flow.
+        /// </summary>
+        /// <param name="logInExternal">The external login.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The access token.</returns>
         /// <response code="200">Success.</response>
@@ -146,23 +214,23 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Auth" })]
-        public virtual async Task<IActionResult> SignInExternalGoogleAsync([FromBody][Required]LoginExternalGoogle loginExternal, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> LogInExternalGoogleAsync([FromBody][Required]LogInExternalGoogle logInExternal, CancellationToken cancellationToken = default)
         {
             var accessToken = await this.BaseIdentityManager
-                .SignInExternalAsync(loginExternal, cancellationToken);
+                .SignInExternalAsync(logInExternal, cancellationToken);
 
             if (accessToken == null)
             {
-                this.NotFound();
+                this.Unauthorized();
             }
 
             return this.Ok(accessToken);
         }
 
         /// <summary>
-        /// Sign-in a user transient, from an external Google login and authentication using implicit flow.
+        /// Sign-in a user transient, from external Google authentication using auth-code flow.
         /// </summary>
-        /// <param name="loginExternal">The external login.</param>
+        /// <param name="logInExternal">The external login.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The access token.</returns>
         /// <response code="200">Success.</response>
@@ -180,23 +248,23 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Auth" })]
-        public virtual async Task<IActionResult> SignInExternalGoogleTransientAsync([FromBody][Required]LoginExternalGoogle loginExternal, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> LogInExternalGoogleTransientAsync([FromBody][Required]LogInExternalGoogle logInExternal, CancellationToken cancellationToken = default)
         {
             var accessToken = await this.BaseIdentityManager
-                .SignInExternalTransientAsync(loginExternal, cancellationToken);
+                .SignInExternalTransientAsync(logInExternal, cancellationToken);
 
             if (accessToken == null)
             {
-                this.NotFound();
+                this.Unauthorized();
             }
 
             return this.Ok(accessToken);
         }
 
         /// <summary>
-        /// Sign-in a user from an external Facebook login and authentication using implicit flow.
+        /// Sign-in a user transient, from external Facebook authentication using auth-code flow.
         /// </summary>
-        /// <param name="loginExternal">The external login.</param>
+        /// <param name="logInExternal">The external login.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The access token.</returns>
         /// <response code="200">Success.</response>
@@ -214,23 +282,23 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Auth" })]
-        public virtual async Task<IActionResult> SignInExternalFacebookAsync([FromBody][Required]LoginExternalFacebook loginExternal, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> LogInExternalFacebookAsync([FromBody][Required]LogInExternalFacebook logInExternal, CancellationToken cancellationToken = default)
         {
             var accessToken = await this.BaseIdentityManager
-                .SignInExternalAsync(loginExternal, cancellationToken);
+                .SignInExternalAsync(logInExternal, cancellationToken);
 
             if (accessToken == null)
             {
-                this.NotFound();
+                this.Unauthorized();
             }
 
             return this.Ok(accessToken);
         }
 
         /// <summary>
-        /// Sign-in a user transient, from an external Facebook login and authentication using implicit flow.
+        /// Sign-in a user transient, from external Facebook authentication using auth-code flow.
         /// </summary>
-        /// <param name="loginExternal">The external login.</param>
+        /// <param name="logInExternal">The external login.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The access token.</returns>
         /// <response code="200">Success.</response>
@@ -248,23 +316,23 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Auth" })]
-        public virtual async Task<IActionResult> SignInExternalFacebookTransientAsync([FromBody][Required]LoginExternalFacebook loginExternal, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> LogInExternalFacebookTransientAsync([FromBody][Required]LogInExternalFacebook logInExternal, CancellationToken cancellationToken = default)
         {
             var accessToken = await this.BaseIdentityManager
-                .SignInExternalTransientAsync(loginExternal, cancellationToken);
+                .SignInExternalTransientAsync(logInExternal, cancellationToken);
 
             if (accessToken == null)
             {
-                this.NotFound();
+                this.Unauthorized();
             }
 
             return this.Ok(accessToken);
         }
 
         /// <summary>
-        /// Sign-in a user from an external Microsoft login and authentication using implicit flow.
+        /// Sign-in a user, from external Microsoft authentication using auth-code flow.
         /// </summary>
-        /// <param name="loginExternal">The external login.</param>
+        /// <param name="logInExternal">The external login.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The access token.</returns>
         /// <response code="200">Success.</response>
@@ -282,23 +350,23 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Auth" })]
-        public virtual async Task<IActionResult> SignInExternalMicrosoftAsync([FromBody][Required]LoginExternalMicrosoft loginExternal, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> LogInExternalMicrosoftAsync([FromBody][Required]LogInExternalMicrosoft logInExternal, CancellationToken cancellationToken = default)
         {
             var accessToken = await this.BaseIdentityManager
-                .SignInExternalAsync(loginExternal, cancellationToken);
+                .SignInExternalAsync(logInExternal, cancellationToken);
 
             if (accessToken == null)
             {
-                this.NotFound();
+                this.Unauthorized();
             }
 
             return this.Ok(accessToken);
         }
 
         /// <summary>
-        /// Sign-in a user transient, from an external Microsoft login and authentication using implicit flow.
+        /// Sign-in a user transient, from external Microsoft authentication using auth-code flow.
         /// </summary>
-        /// <param name="loginExternal">The external login.</param>
+        /// <param name="logInExternal">The external login.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The access token.</returns>
         /// <response code="200">Success.</response>
@@ -316,14 +384,14 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Auth" })]
-        public virtual async Task<IActionResult> SignInExternalMicrosoftTransientAsync([FromBody][Required]LoginExternalMicrosoft loginExternal, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> LogInExternalMicrosoftTransientAsync([FromBody][Required]LogInExternalMicrosoft logInExternal, CancellationToken cancellationToken = default)
         {
             var accessToken = await this.BaseIdentityManager
-                .SignInExternalTransientAsync(loginExternal, cancellationToken);
+                .SignInExternalTransientAsync(logInExternal, cancellationToken);
 
             if (accessToken == null)
             {
-                this.NotFound();
+                this.Unauthorized();
             }
 
             return this.Ok(accessToken);
@@ -357,6 +425,40 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
+        /// Get external login data from an external authentication provider.
+        /// E.g. Google, Facebook, etc.
+        /// </summary>
+        /// <param name="logInExternalProvider">The external login data.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The external login data.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occurred.</response>
+        [HttpPost]
+        [Route("external/data")]
+        [AllowAnonymous]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(ExternalLogInData), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        [SwaggerOperation(Tags = new[] { "Auth" })]
+        public virtual async Task<IActionResult> GetExternalLoginData([FromBody][Required]BaseLogInExternalProvider logInExternalProvider, CancellationToken cancellationToken = default)
+        {
+            var externalLoginData = await this.BaseIdentityManager
+                .GetExternalProviderLoginData(logInExternalProvider, cancellationToken);
+
+            if (externalLoginData == null)
+            {
+                this.Unauthorized();
+            }
+
+            return this.Ok(externalLoginData);
+        }
+
+        /// <summary>
         /// Gets all the configured external authentication schemes.
         /// E.g. Google, Facebook, etc.
         /// </summary>
@@ -370,22 +472,22 @@ namespace Nano.Web.Controllers
         [Route("external/schemes")]
         [AllowAnonymous]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(LoginProvider), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(LogInProvider), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Auth" })]
         public virtual async Task<IActionResult> GetExternalSchemesAsync(CancellationToken cancellationToken = default)
         {
-            var externalLogins = await this.BaseIdentityManager
-                .GetExternalProvidersAsync(cancellationToken);
+            var logInProviders = await this.BaseIdentityManager
+                .GetExternalProviderSchemesAsync(cancellationToken);
 
-            if (externalLogins == null)
+            if (logInProviders == null)
             {
                 this.NotFound();
             }
 
-            return this.Ok(externalLogins);
+            return this.Ok(logInProviders);
         }
     }
 }

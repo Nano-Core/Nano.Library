@@ -6,9 +6,9 @@ namespace Nano.Web.Api.Requests.Auth
     public class LogInRequest : BaseRequestPost
     {
         /// <summary>
-        /// Login.
+        /// LogIn.
         /// </summary>
-        public virtual Login Login { get; set; }
+        public virtual LogIn LogIn { get; set; } = new();
 
         /// <inheritdoc />
         public LogInRequest()
@@ -20,7 +20,7 @@ namespace Nano.Web.Api.Requests.Auth
         /// <inheritdoc />
         public override object GetBody()
         {
-            return this.Login;
+            return this.LogIn;
         }
     }
 }

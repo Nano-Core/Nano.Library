@@ -3,14 +3,13 @@
 namespace Nano.Web.Api.Requests.Auth
 {
     /// <inheritdoc />
-    public class LogInExternalGoogleRequest : BaseLogInExternalRequest<LogInExternalGoogle>
+    public class LogInExternalDirectRequest : BaseLogInExternalRequest<LogInExternalDirect>
     {
         /// <inheritdoc />
-        public LogInExternalGoogleRequest()
+        public LogInExternalDirectRequest()
         {
-            this.Action = "login/external/google";
+            this.Action = "login/external/direct";
             this.Controller = "auth";
         }
     }
-
 }

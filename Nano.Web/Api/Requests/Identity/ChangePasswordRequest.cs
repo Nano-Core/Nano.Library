@@ -16,7 +16,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// <summary>
         /// Change Password.
         /// </summary>
-        public virtual ChangePassword<TIdentity> ChangePassword { get; set; }
+        public virtual ChangePassword<TIdentity> ChangePassword { get; set; } = new();
 
         /// <inheritdoc />
         public ChangePasswordRequest()

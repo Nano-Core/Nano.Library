@@ -3,7 +3,7 @@ namespace Nano.Security.Models
     /// <summary>
     /// External Login Data.
     /// </summary>
-    public class ExternalLoginData
+    public class ExternalLogInData
     {
         /// <summary>
         /// Id.

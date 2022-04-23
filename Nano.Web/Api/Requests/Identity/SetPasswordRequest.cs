@@ -9,7 +9,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// <summary>
         /// Set Password.
         /// </summary>
-        public virtual SetPassword<Guid> SetPassword { get; set; }
+        public virtual SetPassword<Guid> SetPassword { get; set; } = new();
 
         /// <inheritdoc />
         public SetPasswordRequest()

@@ -8,7 +8,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// <summary>
         /// Confirm Phone.
         /// </summary>
-        public virtual ConfirmEmail ConfirmPhone { get; set; }
+        public virtual ConfirmEmail ConfirmPhone { get; set; } = new();
 
         /// <inheritdoc />
         public ConfirmPhoneRequest()
