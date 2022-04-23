@@ -16,7 +16,8 @@ build: off
 build_script:
 - ps: >-
     dotnet build .\Nano.Library.sln;
-    nuget;
+
+    nuget update -self;
     nuget pack .\NanoCore.nuspec -symbols -SymbolPackageFormat snupkg;
 test: off
 artifacts:

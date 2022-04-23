@@ -12,7 +12,7 @@
 		<authors>Nano Contributors</authors>
 		<owners>Michael Vivet</owners>
 		<icon>lib\icon.png</icon>
-		<!--<readme>lib\README.md</readme> BUG: https://github.com/NuGet/Home/issues/11292 -->
+		<readme>lib\README.md</readme>
 		<license type="file">lib/LICENSE</license>
 		<language>en-US</language>
 		<requireLicenseAcceptance>true</requireLicenseAcceptance>
