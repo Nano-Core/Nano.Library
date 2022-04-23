@@ -4,7 +4,6 @@
     <TargetFramework>net6.0</TargetFramework>
     <ApplicationIcon>..\icon.ico</ApplicationIcon>
     <Configurations>Debug;Release</Configurations>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.0.0</Version>
     <LangVersion>latest</LangVersion>
     <WarningsAsErrors />
@@ -13,10 +12,11 @@
     <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <DocumentationFile>$(MSBuildThisFileDirectory)\bin\$(Configuration)\Nano.Web.xml</DocumentationFile>
+    <!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>-->
   </PropertyGroup>
 
   <ItemGroup>

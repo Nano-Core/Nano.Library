@@ -1,28 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ApplicationIcon>..\icon.ico</ApplicationIcon>
-    <Configurations>Debug;Release</Configurations>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0.0</Version>
-    <LangVersion>latest</LangVersion>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors></WarningsAsErrors>
-    <NoWarn />
-    <DocumentationFile>$(MSBuildThisFileDirectory)\bin\$(Configuration)\Nano.Console.xml</DocumentationFile>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ApplicationIcon>..\icon.ico</ApplicationIcon>
+		<Configurations>Debug;Release</Configurations>
+		<Version>1.0.0.0</Version>
+		<LangVersion>latest</LangVersion>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<WarningsAsErrors></WarningsAsErrors>
+		<NoWarn />
+		<DocumentationFile>$(MSBuildThisFileDirectory)\bin\$(Configuration)\Nano.Console.xml</DocumentationFile>
+		<!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-  </PropertyGroup>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>-->
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Nano.Console.csproj.DotSettings" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="Nano.Console.csproj.DotSettings" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Nano.App\Nano.App.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Nano.App\Nano.App.csproj" />
+	</ItemGroup>
 
 </Project>
