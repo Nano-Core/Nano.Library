@@ -16,7 +16,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// <summary>
         /// Change Phone.
         /// </summary>
-        public virtual ChangePhoneNumber<TIdentity> ChangePhone { get; set; }
+        public virtual ChangePhoneNumber<TIdentity> ChangePhone { get; set; } = new();
 
         /// <inheritdoc />
         public ChangePhoneRequest()

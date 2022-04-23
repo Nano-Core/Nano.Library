@@ -16,7 +16,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// <summary>
         /// Assign Claim.
         /// </summary>
-        public virtual AssignClaim<TIdentity> AssignClaim { get; set; }
+        public virtual AssignClaim<TIdentity> AssignClaim { get; set; } = new();
 
         /// <inheritdoc />
         public AssignClaimRequest()

@@ -8,7 +8,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// <summary>
         /// Reset Password.
         /// </summary>
-        public virtual ResetPassword ResetPassword { get; set; }
+        public virtual ResetPassword ResetPassword { get; set; } = new();
 
         /// <inheritdoc />
         public ResetPasswordRequest()

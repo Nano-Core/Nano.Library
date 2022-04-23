@@ -16,7 +16,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// <summary>
         /// Assign Role.
         /// </summary>
-        public virtual AssignRole<TIdentity> AssignRole { get; set; }
+        public virtual AssignRole<TIdentity> AssignRole { get; set; } = new();
 
         /// <inheritdoc />
         public AssignRoleRequest()

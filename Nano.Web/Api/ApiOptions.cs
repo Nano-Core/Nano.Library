@@ -38,14 +38,14 @@ namespace Nano.Web.Api
         public virtual int TimeoutInSeconds { get; set; } = 30;
 
         /// <summary>
-        /// Login.
+        /// LogIn.
         /// </summary>
-        public virtual LoginCredentials Login { get; set; }
+        public virtual LogInCredentials LogIn { get; set; }
 
         /// <summary>
-        /// Login Credentials.
+        /// LogIn Credentials.
         /// </summary>
-        public class LoginCredentials
+        public class LogInCredentials
         {
             /// <summary>
             /// Username.
@@ -60,12 +60,6 @@ namespace Nano.Web.Api
             [Required]
             [MaxLength(256)]
             public virtual string Password { get; set; }
-
-            /// <summary>
-            /// Is Refreshable.
-            /// Not relevant for transient logins.
-            /// </summary>
-            internal virtual bool IsRefreshable => false;
         }
     }
 }

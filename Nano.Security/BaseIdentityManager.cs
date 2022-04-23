@@ -1,13 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Claims;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +13,19 @@ using Nano.Security.Exceptions;
 using Nano.Security.Extensions;
 using Nano.Security.Models;
 using Newtonsoft.Json;
-using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Claim = System.Security.Claims.Claim;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
+using Nano.Models.Extensions;
 
 namespace Nano.Security
 {
@@ -35,6 +37,11 @@ namespace Nano.Security
         internal const string DEFAULT_APP_ID = "Default";
 
         /// <summary>
+        /// Logger.
+        /// </summary>
+        protected virtual ILogger Logger { get; }
+
+        /// <summary>
         /// Options.
         /// </summary>
         protected virtual SecurityOptions Options { get; }
@@ -42,49 +49,55 @@ namespace Nano.Security
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
         /// <param name="options">The <see cref="SecurityOptions"/>.</param>
-        protected BaseIdentityManager(SecurityOptions options)
+        protected BaseIdentityManager(ILogger logger, SecurityOptions options)
         {
+            this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.Options = options ?? throw new ArgumentNullException(nameof(options));
-
         }
 
         /// <summary>
         /// Signs in the admin user statically.
         /// The login is transient, no Identity store is used.
         /// </summary>
-        /// <param name="login">The <see cref="Login"/>.</param>
+        /// <param name="logIn">The <see cref="LogIn"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<AccessToken> SignInAdminTransientAsync(Login login, CancellationToken cancellationToken = default)
+        public virtual async Task<AccessToken> SignInAdminTransientAsync(LogIn logIn, CancellationToken cancellationToken = default)
         {
-            if (login == null)
-                throw new ArgumentNullException(nameof(login));
+            if (logIn == null)
+                throw new ArgumentNullException(nameof(logIn));
 
-            if (string.IsNullOrEmpty(this.Options.User.AdminEmailAddress) || string.IsNullOrEmpty(this.Options.User.AdminEmailAddress))
+            if (string.IsNullOrEmpty(this.Options.User.AdminEmailAddress))
+            {
+                throw new NullReferenceException(nameof(this.Options.User.AdminEmailAddress));
+            }
+
+            if (string.IsNullOrEmpty(this.Options.User.AdminEmailAddress))
+            {
+                throw new NullReferenceException(nameof(this.Options.User.AdminEmailAddress));
+            }
+
+            if (logIn.Username != this.Options.User.AdminEmailAddress || logIn.Password != this.Options.User.AdminPassword)
             {
                 throw new UnauthorizedException();
             }
 
-            if (login.Username == this.Options.User.AdminEmailAddress && login.Password == this.Options.User.AdminPassword)
+            var tokenData = new AccessTokenData
             {
-                var tokenData = new AccessTokenData
+                UserId = Guid.NewGuid().ToString(),
+                UserName = this.Options.User.AdminEmailAddress,
+                UserEmail = this.Options.User.AdminEmailAddress,
+                Claims = new[]
                 {
-                    UserId = Guid.NewGuid().ToString(),
-                    UserName = this.Options.User.AdminEmailAddress,
-                    UserEmail = this.Options.User.AdminEmailAddress,
-                    Claims = new[]
-                    {
-                        new Claim(ClaimTypes.Role, BuiltInUserRoles.ADMINISTRATOR)
-                    }
-                };
+                    new Claim(ClaimTypes.Role, BuiltInUserRoles.ADMINISTRATOR)
+                }
+            };
 
-                var accessToken = this.GenerateJwtToken(tokenData);
+            var accessToken = this.GenerateJwtToken(tokenData);
 
-                return await Task.FromResult(accessToken);
-            }
-
-            throw new UnauthorizedException();
+            return await Task.FromResult(accessToken);
         }
 
         /// <summary>
@@ -93,18 +106,18 @@ namespace Nano.Security
         /// The login relies on the external login provider being valid.
         /// </summary>
         /// <typeparam name="TProvider">The provider type.</typeparam>
-        /// <param name="loginExternalTransient">The <see cref="BaseLoginExternal{T}"/>.</param>
+        /// <param name="logInExternalTransient">The <see cref="BaseLogInExternal{T}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<AccessToken> SignInExternalTransientAsync<TProvider>(BaseLoginExternal<TProvider> loginExternalTransient, CancellationToken cancellationToken = default)
-            where TProvider : BaseLoginExternalProvider, new()
+        public virtual async Task<AccessToken> SignInExternalTransientAsync<TProvider>(BaseLogInExternal<TProvider> logInExternalTransient, CancellationToken cancellationToken = default)
+            where TProvider : BaseLogInExternalProvider, new()
         {
-            if (loginExternalTransient == null)
-                throw new ArgumentNullException(nameof(loginExternalTransient));
+            if (logInExternalTransient == null)
+                throw new ArgumentNullException(nameof(logInExternalTransient));
 
-            var externalLoginData = await this.GetExternalProviderLoginData(loginExternalTransient.Provider, cancellationToken);
+            var externalLoginData = await this.GetExternalProviderLogInData(logInExternalTransient.Provider, cancellationToken);
 
-            return await this.SignInExternalTransientAsync(externalLoginData, loginExternalTransient.Parameters, cancellationToken);
+            return await this.SignInExternalTransientAsync(externalLoginData, logInExternalTransient.TransientRoles, logInExternalTransient.TransientClaims, cancellationToken);
         }
 
         /// <summary>
@@ -112,31 +125,29 @@ namespace Nano.Security
         /// The login is transient, no Identity backing store is used.
         /// The login relies on the external login provider being valid.
         /// </summary>
-        /// <param name="externalLoginData">The <see cref="ExternalLoginData"/>.</param>
-        /// <param name="loginParameters">The <see cref="LoginParameters"/>.</param>
+        /// <param name="externalLogInData">The <see cref="ExternalLogInData"/>.</param>
+        /// <param name="transientRoles">The roles added to the token.</param>
+        /// <param name="transientClaims">The claims added to the token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<AccessToken> SignInExternalTransientAsync(ExternalLoginData externalLoginData, LoginParameters loginParameters, CancellationToken cancellationToken = default)
+        public virtual async Task<AccessToken> SignInExternalTransientAsync(ExternalLogInData externalLogInData, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default)
         {
-            if (externalLoginData == null) 
-                throw new ArgumentNullException(nameof(externalLoginData));
+            if (externalLogInData == null) 
+                throw new ArgumentNullException(nameof(externalLogInData));
 
-            if (loginParameters == null)
-                throw new ArgumentNullException(nameof(loginParameters));
+            var claims = transientClaims?
+                .Select(x => new Claim(x.Key, x.Value)) ?? new List<Claim>();
 
-            var claims = loginParameters.TransientClaims
-                .Select(x => new Claim(x.Key, x.Value));
-
-            var roleClaims = loginParameters.TransientRoles
-                .Select(x => new Claim(ClaimTypes.Role, x));
+            var roleClaims = transientRoles?
+                .Select(x => new Claim(ClaimTypes.Role, x)) ?? new List<Claim>();
 
             var tokenData = new AccessTokenData
             {
-                AppId = loginParameters.AppId ?? BaseIdentityManager.DEFAULT_APP_ID,
-                UserId = externalLoginData.Id,
-                UserName = externalLoginData.Name,
-                UserEmail = externalLoginData.Email,
-                ExternalToken = externalLoginData.ExternalToken,
+                AppId = BaseIdentityManager.DEFAULT_APP_ID,
+                UserId = externalLogInData.Id,
+                UserName = externalLogInData.Name,
+                UserEmail = externalLogInData.Email,
+                ExternalToken = externalLogInData.ExternalToken,
                 Claims = claims
                     .Union(roleClaims)
             };
@@ -150,28 +161,28 @@ namespace Nano.Security
         /// Validate External Provider Access Token.
         /// </summary>
         /// <typeparam name="TProvider">The provider type.</typeparam>
-        /// <param name="loginExternalProvider">The <see cref="object"/>.</param>
+        /// <param name="logInExternalProvider">The <see cref="object"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The <see cref="ExternalLoginData"/>.</returns>
-        public virtual async Task<ExternalLoginData> GetExternalProviderLoginData<TProvider>(TProvider loginExternalProvider, CancellationToken cancellationToken = default)
-            where TProvider : BaseLoginExternalProvider
+        /// <returns>The <see cref="ExternalLogInData"/>.</returns>
+        public virtual async Task<ExternalLogInData> GetExternalProviderLogInData<TProvider>(TProvider logInExternalProvider, CancellationToken cancellationToken = default)
+            where TProvider : BaseLogInExternalProvider
         {
-            if (loginExternalProvider == null)
-                throw new ArgumentNullException(nameof(loginExternalProvider));
+            if (logInExternalProvider == null)
+                throw new ArgumentNullException(nameof(logInExternalProvider));
 
             try
             {
-                return loginExternalProvider.Name switch
+                return logInExternalProvider.Name switch
                 {
-                    "Google" => await this.GetExternalProviderLoginDataGoogle(loginExternalProvider, this.Options.ExternalLogins.Google, cancellationToken),
-                    "Facebook" => await this.GetExternalProviderLoginDataFacebook(loginExternalProvider, this.Options.ExternalLogins.Facebook, cancellationToken),
-                    "Microsoft" => await this.GetExternalProviderLoginDataMicrosoft(loginExternalProvider, this.Options.ExternalLogins.Microsoft, cancellationToken),
-                    _ => throw new NotSupportedException(loginExternalProvider.Name)
+                    "Google" => await this.GetExternalProviderLoginDataGoogle(logInExternalProvider, this.Options.ExternalLogins.Google, cancellationToken),
+                    "Facebook" => await this.GetExternalProviderLoginDataFacebook(logInExternalProvider, this.Options.ExternalLogins.Facebook, cancellationToken),
+                    "Microsoft" => await this.GetExternalProviderLoginDataMicrosoft(logInExternalProvider, this.Options.ExternalLogins.Microsoft, cancellationToken),
+                    _ => throw new NotSupportedException(logInExternalProvider.Name)
                 };
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(ex, ex.Message);
+                this.Logger.LogError(ex, ex.Message);
 
                 throw new UnauthorizedException();
             }
@@ -219,61 +230,57 @@ namespace Nano.Security
             };
         }
 
-        private async Task<ExternalLoginData> GetExternalProviderLoginDataGoogle<TProvider>(TProvider loginExternalProvider, SecurityOptions.ExternalLoginOptions.GoogleOptions externalLoginOptions, CancellationToken cancellationToken = default)
-            where TProvider : BaseLoginExternalProvider
+        private async Task<ExternalLogInData> GetExternalProviderLoginDataGoogle<TProvider>(TProvider logInExternalProvider, SecurityOptions.ExternalLoginOptions.GoogleOptions externalLoginOptions, CancellationToken cancellationToken = default)
+            where TProvider : BaseLogInExternalProvider
         {
-            if (loginExternalProvider == null)
-                throw new ArgumentNullException(nameof(loginExternalProvider));
+            if (logInExternalProvider == null)
+                throw new ArgumentNullException(nameof(logInExternalProvider));
 
             if (externalLoginOptions == null)
                 throw new ArgumentNullException(nameof(externalLoginOptions));
 
-            return await Task.Run(async () =>
+            switch (logInExternalProvider)
             {
-                switch (loginExternalProvider)
-                {
-                    case LoginExternalProviderImplicit implicitLogin:
-                        var settings = new GoogleJsonWebSignature.ValidationSettings
+                case LogInExternalProviderImplicit implicitLogin:
+                    var settings = new GoogleJsonWebSignature.ValidationSettings
+                    {
+                        Audience = new[]
                         {
-                            Audience = new[]
-                            {
-                                externalLoginOptions.ClientId
-                            }
-                        };
+                            externalLoginOptions.ClientId
+                        }
+                    };
 
-                        var payload = await GoogleJsonWebSignature
-                            .ValidateAsync(implicitLogin.AccessToken, settings);
+                    var payload = await GoogleJsonWebSignature
+                        .ValidateAsync(implicitLogin.AccessToken, settings);
 
-                        return new ExternalLoginData
+                    return new ExternalLogInData
+                    {
+                        Id = payload.Subject,
+                        Name = payload.Name,
+                        Email = payload.Email,
+                        ExternalToken =
                         {
-                            Id = payload.Subject,
-                            Name = payload.Name,
-                            Email = payload.Email,
-                            ExternalToken =
-                            {
-                                Name = "Google",
-                                Token = implicitLogin.AccessToken
-                            }
-                        };
+                            Name = "Google",
+                            Token = implicitLogin.AccessToken
+                        }
+                    };
 
-                    default:
-                        throw new NotSupportedException(loginExternalProvider.GetType().Name);
-                }
-            }, cancellationToken);
-
+                default:
+                    throw new NotSupportedException(logInExternalProvider.GetType().Name);
+            }
         }
-        private async Task<ExternalLoginData> GetExternalProviderLoginDataFacebook<TProvider>(TProvider loginExternalProvider, SecurityOptions.ExternalLoginOptions.FacebookOptions externalLoginOptions, CancellationToken cancellationToken = default)
-            where TProvider : BaseLoginExternalProvider
+        private async Task<ExternalLogInData> GetExternalProviderLoginDataFacebook<TProvider>(TProvider logInExternalProvider, SecurityOptions.ExternalLoginOptions.FacebookOptions externalLoginOptions, CancellationToken cancellationToken = default)
+            where TProvider : BaseLogInExternalProvider
         {
-            if (loginExternalProvider == null)
-                throw new ArgumentNullException(nameof(loginExternalProvider));
+            if (logInExternalProvider == null)
+                throw new ArgumentNullException(nameof(logInExternalProvider));
 
             if (externalLoginOptions == null)
                 throw new ArgumentNullException(nameof(externalLoginOptions));
 
-            switch (loginExternalProvider)
+            switch (logInExternalProvider)
             {
-                case LoginExternalProviderImplicit implicitLogin:
+                case LogInExternalProviderImplicit implicitLogin:
                     using (var httpClient = new HttpClient())
                     {
                         const string HOST = "https://graph.facebook.com";
@@ -314,7 +321,7 @@ namespace Nano.Security
                         var user = await userResponse.Content
                             .ReadAsStringAsync(cancellationToken);
 
-                        var externalLoginData = JsonConvert.DeserializeObject<ExternalLoginData>(user);
+                        var externalLoginData = JsonConvert.DeserializeObject<ExternalLogInData>(user);
                         if (externalLoginData != null)
                         {
                             externalLoginData.ExternalToken = new ExternalLoginTokenData
@@ -328,14 +335,14 @@ namespace Nano.Security
                     }
 
                 default:
-                    throw new NotSupportedException(loginExternalProvider.GetType().Name);
+                    throw new NotSupportedException(logInExternalProvider.GetType().Name);
             }
         }
-        private async Task<ExternalLoginData> GetExternalProviderLoginDataMicrosoft<TProvider>(TProvider loginExternalProvider, SecurityOptions.ExternalLoginOptions.MicrosoftOptions externalLoginOptions, CancellationToken cancellationToken = default)
-            where TProvider : BaseLoginExternalProvider
+        private async Task<ExternalLogInData> GetExternalProviderLoginDataMicrosoft<TProvider>(TProvider logInExternalProvider, SecurityOptions.ExternalLoginOptions.MicrosoftOptions externalLoginOptions, CancellationToken cancellationToken = default)
+            where TProvider : BaseLogInExternalProvider
         {
-            if (loginExternalProvider == null)
-                throw new ArgumentNullException(nameof(loginExternalProvider));
+            if (logInExternalProvider == null)
+                throw new ArgumentNullException(nameof(logInExternalProvider));
 
             if (externalLoginOptions == null)
                 throw new ArgumentNullException(nameof(externalLoginOptions));
@@ -345,9 +352,9 @@ namespace Nano.Security
             string accessToken;
             string refreshToken;
 
-            switch (loginExternalProvider)
+            switch (logInExternalProvider)
             {
-                case LoginExternalProviderAuthCode authCodeLogin:
+                case LogInExternalProviderAuthCode authCodeLogin:
                     using (var httpClient = new HttpClient())
                     {
                         var httpRequestMessage = new HttpRequestMessage();
@@ -388,7 +395,7 @@ namespace Nano.Security
                     break;
 
                 default:
-                    throw new NotSupportedException(loginExternalProvider.GetType().Name);
+                    throw new NotSupportedException(logInExternalProvider.GetType().Name);
             }
 
             var jwtToken = tokenHandler
@@ -398,7 +405,7 @@ namespace Nano.Security
             var name = jwtToken?.Payload.Where(x => x.Key == "name").Select(x => x.Value?.ToString()).FirstOrDefault();
             var email = jwtToken?.Payload.Where(x => x.Key == "upn").Select(x => x.Value?.ToString()).FirstOrDefault();
 
-            return new ExternalLoginData
+            return new ExternalLogInData
             {
                 Id = id,
                 Name = name,
@@ -442,13 +449,14 @@ namespace Nano.Security
         /// <summary>
         /// The user authenticates and on success recieves a jwt token for use with auhtorization.
         /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
         /// <param name="dbContext">The <see cref="SignInManager{T}"/>.</param>
         /// <param name="signInManager">The <see cref="SignInManager{T}"/>.</param>
         /// <param name="userManager">The <see cref="UserManager{T}"/>.</param>
         /// <param name="roleManager">The <see cref="RoleManager{T}"/></param>
         /// <param name="options">The <see cref="SecurityOptions"/>.</param>
-        protected BaseIdentityManager(DbContext dbContext, SignInManager<IdentityUser<TIdentity>> signInManager, RoleManager<IdentityRole<TIdentity>> roleManager, UserManager<IdentityUser<TIdentity>> userManager, SecurityOptions options)
-            : base(options)
+        protected BaseIdentityManager(ILogger logger, DbContext dbContext, SignInManager<IdentityUser<TIdentity>> signInManager, RoleManager<IdentityRole<TIdentity>> roleManager, UserManager<IdentityUser<TIdentity>> userManager, SecurityOptions options)
+            : base(logger, options)
         {
             this.DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             this.UserManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
@@ -459,106 +467,125 @@ namespace Nano.Security
         /// <summary>
         /// Signs in a user.
         /// </summary>
-        /// <param name="login">The <see cref="Login"/>.</param>
+        /// <param name="logIn">The <see cref="LogIn"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<AccessToken> SignInAsync(Login login, CancellationToken cancellationToken = default)
+        public virtual async Task<AccessToken> SignInAsync(LogIn logIn, CancellationToken cancellationToken = default)
         {
-            if (login == null)
-                throw new ArgumentNullException(nameof(login));
+            if (logIn == null)
+                throw new ArgumentNullException(nameof(logIn));
 
             if (ConfigManager.HasDbContext)
             {
                 var result = await this.SignInManager
-                    .PasswordSignInAsync(login.Username, login.Password, login.Parameters.IsRememberMe, this.Options.Lockout.AllowedForNewUsers);
+                    .PasswordSignInAsync(logIn.Username, logIn.Password, logIn.IsRememberMe, this.Options.Lockout.AllowedForNewUsers);
 
                 if (result.Succeeded)
                 {
-                    var appId = login.Parameters.AppId ?? BaseIdentityManager.DEFAULT_APP_ID;
+                    var appId = logIn.AppId ?? BaseIdentityManager.DEFAULT_APP_ID;
 
                     var identityUser = await this.UserManager
-                        .FindByNameAsync(login.Username);
+                        .FindByNameAsync(logIn.Username);
 
-                    return await this.GenerateJwtToken(identityUser, appId, login.Parameters.IsRefreshable, null, null, null, login.Parameters.TransientClaims, login.Parameters.TransientRoles);
+                    return await this.GenerateJwtToken(identityUser, appId, logIn.IsRefreshable, null, null, null, logIn.TransientClaims, logIn.TransientRoles);
                 }
 
                 if (result.IsLockedOut)
                 {
+                    this.Logger.LogInformation($"The user: {logIn.Username} is locked out.");
+
+                    throw new UnauthorizedLockedOutException();
+                }
+
+                if (result.IsNotAllowed)
+                {
+                    this.Logger.LogInformation($"The user: {logIn.Username} is not allowed to login.");
+
                     throw new UnauthorizedLockedOutException();
                 }
 
                 if (result.RequiresTwoFactor)
                 {
+                    this.Logger.LogInformation($"The user: {logIn.Username} requires two-factor authentication.");
+
                     throw new UnauthorizedTwoFactorRequiredException();
                 }
-            }
-            else
-            {
-                return await this.SignInAdminTransientAsync(login, cancellationToken);
+
+                this.Logger.LogInformation($"An unknwon error occured, when trying to login user: {logIn.Username}.");
+
+                throw new UnauthorizedException();
             }
 
-            throw new UnauthorizedException();
+            return await this.SignInAdminTransientAsync(logIn, cancellationToken);
         }
 
         /// <summary>
         /// Signs in a user, from external login.
         /// </summary>
         /// <typeparam name="TProvider">The provider type.</typeparam>
-        /// <param name="loginExternal">The <see cref="BaseLoginExternal{T}"/>.</param>
+        /// <param name="logInExternal">The <see cref="BaseLogInExternal{T}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>the <see cref="AccessToken"/>.</returns>
-        public virtual async Task<AccessToken> SignInExternalAsync<TProvider>(BaseLoginExternal<TProvider> loginExternal, CancellationToken cancellationToken = default)
-            where TProvider : BaseLoginExternalProvider, new()
+        public virtual async Task<AccessToken> SignInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternal, CancellationToken cancellationToken = default)
+            where TProvider : BaseLogInExternalProvider, new()
         {
-            if (loginExternal == null)
-                throw new ArgumentNullException(nameof(loginExternal));
+            if (logInExternal == null)
+                throw new ArgumentNullException(nameof(logInExternal));
 
-            var externalLoginData = await this.GetExternalProviderLoginData(loginExternal.Provider, cancellationToken);
+            var externalLoginData = await this.GetExternalProviderLogInData(logInExternal.Provider, cancellationToken);
 
-            return await this.SignInExternalAsync(externalLoginData, loginExternal.Parameters, cancellationToken);
+            var logInExternalData = new LogInExternalDirect
+            {
+                AppId = logInExternal.AppId,
+                IsRefreshable = logInExternal.IsRefreshable,
+                IsRememberMe = logInExternal.IsRememberMe,
+                TransientRoles = logInExternal.TransientRoles,
+                TransientClaims = logInExternal.TransientClaims,
+                ExternalLogInData = externalLoginData
+            };
+
+            return await this.SignInExternalAsync(logInExternalData, cancellationToken);
         }
 
         /// <summary>
         /// Signs in a user, from external login.
         /// </summary>
-        /// <param name="externalLoginData">The <see cref="ExternalLoginData"/>.</param>
-        /// <param name="loginParameters">The <see cref="LoginParameters"/>.</param>
+        /// <param name="logInExternalDirect">The <see cref="LogInExternalDirect"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<AccessToken> SignInExternalAsync(ExternalLoginData externalLoginData, LoginParameters loginParameters, CancellationToken cancellationToken = default)
+        public virtual async Task<AccessToken> SignInExternalAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
         {
-            if (externalLoginData == null)
+            if (logInExternalDirect == null)
                 throw new UnauthorizedException();
 
             var identityUser = await this.UserManager
-                .FindByLoginAsync(externalLoginData.ExternalToken.Name, externalLoginData.Id);
+                .FindByLoginAsync(logInExternalDirect.ExternalLogInData.ExternalToken.Name, logInExternalDirect.ExternalLogInData.Id);
 
             if (identityUser == null)
             {
-                return null;
+                throw new NullReferenceException(nameof(identityUser));
             }
 
-            var appId = loginParameters.AppId ?? BaseIdentityManager.DEFAULT_APP_ID;
+            var appId = logInExternalDirect.AppId ?? BaseIdentityManager.DEFAULT_APP_ID;
 
             await this.SignInManager
-                .SignInAsync(identityUser, loginParameters.IsRememberMe);
+                .SignInAsync(identityUser, logInExternalDirect.IsRememberMe);
 
-            return await this.GenerateJwtToken(identityUser, appId, loginParameters.IsRefreshable, externalLoginData.ExternalToken.Name, externalLoginData.ExternalToken.Token, externalLoginData.ExternalToken.RefreshToken, loginParameters.TransientClaims, loginParameters.TransientRoles);
-
+            return await this.GenerateJwtToken(identityUser, appId, logInExternalDirect.IsRefreshable, logInExternalDirect.ExternalLogInData.ExternalToken.Name, logInExternalDirect.ExternalLogInData.ExternalToken.Token, logInExternalDirect.ExternalLogInData.ExternalToken.RefreshToken, logInExternalDirect.TransientClaims, logInExternalDirect.TransientRoles);
         }
 
         /// <summary>
         /// Gets all the configured external logins schemes.
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-        /// <returns>The collection of <see cref="LoginProvider"/>'s.</returns>
-        public virtual async Task<IEnumerable<LoginProvider>> GetExternalProvidersAsync(CancellationToken cancellationToken = default)
+        /// <returns>The collection of <see cref="LogInProvider"/>'s.</returns>
+        public virtual async Task<IEnumerable<LogInProvider>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default)
         {
             var schemes = await this.SignInManager
                 .GetExternalAuthenticationSchemesAsync();
 
             return schemes
-                .Select(x => new LoginProvider
+                .Select(x => new LogInProvider
                 {
                     Name = x.Name,
                     DisplayName = x.DisplayName
@@ -568,13 +595,13 @@ namespace Nano.Security
         /// <summary>
         /// Refresh the login of a user.
         /// </summary>
-        /// <param name="loginRefresh">The <see cref="LoginRefresh"/>.</param>
+        /// <param name="logInRefresh">The <see cref="LogInRefresh"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<AccessToken> SignInRefreshAsync(LoginRefresh loginRefresh, CancellationToken cancellationToken = default)
+        public virtual async Task<AccessToken> SignInRefreshAsync(LogInRefresh logInRefresh, CancellationToken cancellationToken = default)
         {
-            if (loginRefresh == null)
-                throw new ArgumentNullException(nameof(loginRefresh));
+            if (logInRefresh == null)
+                throw new ArgumentNullException(nameof(logInRefresh));
 
             try
             {
@@ -592,11 +619,13 @@ namespace Nano.Security
 
                 var securityTokenHandler = new JwtSecurityTokenHandler();
                 var principal = securityTokenHandler
-                    .ValidateToken(loginRefresh.Token, validationParameters, out var securityToken);
+                    .ValidateToken(logInRefresh.Token, validationParameters, out var securityToken);
 
                 if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    throw new InvalidOperationException();
+                    this.Logger.LogInformation("The security token is invalid.");
+
+                    throw new UnauthorizedAccessException();
                 }
 
                 var subClaim = principal.Claims
@@ -634,9 +663,9 @@ namespace Nano.Security
                     throw new NullReferenceException(nameof(identityUserToken));
                 }
 
-                if (identityUserToken.Value != loginRefresh.RefreshToken)
+                if (identityUserToken.Value != logInRefresh.RefreshToken)
                 {
-                    throw new InvalidOperationException($"identityUserToken.Value ({identityUserToken.Value}) != loginRefresh.RefreshToken ({loginRefresh.RefreshToken})");
+                    throw new InvalidOperationException($"identityUserToken.Value ({identityUserToken.Value}) != logInRefresh.RefreshToken ({logInRefresh.RefreshToken})");
                 }
 
                 if (identityUserToken.ExpireAt <= DateTimeOffset.UtcNow)
@@ -656,7 +685,7 @@ namespace Nano.Security
 
                 var externalProviderData = await this.RefreshExternalProviderTokenOrDefault(externalProviderName, externalProviderRefreshToken, cancellationToken);
                 
-                return await this.GenerateJwtToken(identityUser, identityUserToken.Name, true, externalProviderData.Name, externalProviderData.Token, externalProviderData.RefreshToken, loginRefresh.TransientClaims, loginRefresh.TransientRoles);
+                return await this.GenerateJwtToken(identityUser, identityUserToken.Name, true, externalProviderData.Name, externalProviderData.Token, externalProviderData.RefreshToken, logInRefresh.TransientClaims, logInRefresh.TransientRoles);
             }
             catch (Exception ex)
             {
@@ -689,7 +718,7 @@ namespace Nano.Security
         }
 
         /// <summary>
-        /// Registers a new user.
+        /// Sign-Up a new user.
         /// </summary>
         /// <param name="signUp">The <see cref="SignUp"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
@@ -713,63 +742,80 @@ namespace Nano.Security
                 this.ThrowIdentityExceptions(result.Errors);
             }
 
-            await this.AssignSignUpRolesAndClaims(signUp, user);
+            await this.AssignSignUpRolesAndClaims(user, signUp.Roles, signUp.Claims);
 
             return user;
         }
 
         /// <summary>
-        /// Registers a new user using an external login provider.
+        /// Sign-Up a new user using an external login provider.
         /// </summary>
         /// <typeparam name="TProvider">The provider type.</typeparam>
-        /// <typeparam name="TUser"></typeparam>
+        /// <typeparam name="TUser">The user type.</typeparam>
         /// <param name="signUpExternal">The <see cref="BaseSignUpExternal{TProvider, TUser, TIdentity}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="IdentityUser"/>.</returns>
         public virtual async Task<IdentityUser<TIdentity>> SignUpExternalAsync<TProvider, TUser>(BaseSignUpExternal<TProvider, TUser, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
-            where TProvider : BaseLoginExternalProvider, new()
+            where TProvider : BaseLogInExternalProvider, new()
             where TUser : IEntityUser<TIdentity>, new()
         {
             if (signUpExternal == null)
                 throw new ArgumentNullException(nameof(signUpExternal));
 
-            var externalLoginData = await this.GetExternalProviderLoginData(signUpExternal.Provider, cancellationToken);
+            var externalLoginData = await this.GetExternalProviderLogInData(signUpExternal.Provider, cancellationToken);
 
-            if (externalLoginData == null)
-            {
-                throw new UnauthorizedException();
-            }
+            return await this.SignUpExternalAsync(externalLoginData, signUpExternal.User, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
+        }
 
-            var user = new IdentityUser<TIdentity>
+        /// <summary>
+        /// Sign-Up a new user using an external login provider data.
+        /// </summary>
+        /// <typeparam name="TUser">The user type.</typeparam>
+        /// <param name="externalLogInData">The <see cref="ExternalLogInData"/>.</param>
+        /// <param name="user">The user.</param>
+        /// <param name="roles">The roles.</param>
+        /// <param name="claims">The claims.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The <see cref="IdentityUser"/>.</returns>
+        public virtual async Task<IdentityUser<TIdentity>> SignUpExternalAsync<TUser>(ExternalLogInData externalLogInData, TUser user, IEnumerable<string> roles = null, IDictionary<string, string> claims = null, CancellationToken cancellationToken = default)
+            where TUser : IEntityUser<TIdentity>, new()
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            if (externalLogInData == null)
+                throw new ArgumentNullException(nameof(externalLogInData));
+
+            var identityUser = new IdentityUser<TIdentity>
             {
-                Email = externalLoginData.Email,
-                UserName = externalLoginData.Email
+                Email = externalLogInData.Email,
+                UserName = externalLogInData.Email
             };
 
             var createResult = await this.UserManager
-                .CreateAsync(user);
+                .CreateAsync(identityUser);
 
             if (!createResult.Succeeded)
             {
                 this.ThrowIdentityExceptions(createResult.Errors);
             }
 
-            var userLoginInfo = new UserLoginInfo(signUpExternal.Provider.Name, externalLoginData.Id, signUpExternal.Provider.Name);
+            var userLoginInfo = new UserLoginInfo(externalLogInData.ExternalToken.Name, externalLogInData.Id, externalLogInData.ExternalToken.Name);
 
             var addLoginResult = await this.UserManager
-                .AddLoginAsync(user, userLoginInfo);
+                .AddLoginAsync(identityUser, userLoginInfo);
 
             if (!addLoginResult.Succeeded)
             {
                 this.ThrowIdentityExceptions(addLoginResult.Errors);
             }
 
-            await this.AssignSignUpRolesAndClaims(signUpExternal, user);
+            await this.AssignSignUpRolesAndClaims(identityUser, roles, claims);
 
             await this.SignInManager
-                .SignInAsync(user, false);
+                .SignInAsync(identityUser, false);
 
-            return user;
+            return identityUser;
         }
 
         /// <summary>
@@ -889,6 +935,7 @@ namespace Nano.Security
             if (user == null)
             {
                 var invalidEmailAddress = new IdentityErrorDescriber().InvalidEmail(resetPassword.EmailAddress);
+
                 throw new TranslationException(invalidEmailAddress.Description);
             }
 
@@ -983,6 +1030,7 @@ namespace Nano.Security
             if (user == null)
             {
                 var invalidEmailAddress = new IdentityErrorDescriber().InvalidEmail(confirmEmail.EmailAddress);
+
                 throw new TranslationException(invalidEmailAddress.Description);
             }
 
@@ -1048,6 +1096,7 @@ namespace Nano.Security
             if (user == null)
             {
                 var invalidPhoneNumber = new IdentityErrorDescriber().InvalidPhoneNumber(confirmPhoneNumber.PhoneNumber);
+
                 throw new TranslationException(invalidPhoneNumber.Description);
             }
 
@@ -1077,6 +1126,7 @@ namespace Nano.Security
             if (user == null)
             {
                 var invalidEmailAddress = new IdentityErrorDescriber().InvalidEmail(emailAddress);
+
                 throw new TranslationException(invalidEmailAddress.Description);
             }
 
@@ -1107,6 +1157,7 @@ namespace Nano.Security
             if (user == null)
             {
                 var invalidEmailAddress = new IdentityErrorDescriber().InvalidEmail(emailAddress);
+
                 throw new TranslationException(invalidEmailAddress.Description);
             }
 
@@ -1141,6 +1192,7 @@ namespace Nano.Security
             if (user == null)
             {
                 var invalidEmailAddress = new IdentityErrorDescriber().InvalidEmail(emailAddress);
+
                 throw new TranslationException(invalidEmailAddress.Description);
             }
 
@@ -1150,6 +1202,7 @@ namespace Nano.Security
             if (userNew != null)
             {
                 var duplicateEmail = new IdentityErrorDescriber().DuplicateEmail(newEmailAddress);
+
                 throw new TranslationException(duplicateEmail.Description);
             }
 
@@ -1222,6 +1275,7 @@ namespace Nano.Security
             if (userNew != null)
             {
                 var duplicatePhoneNumber = new IdentityErrorDescriber().DuplicatePhoneNumber(newPhoneNumber);
+
                 throw new TranslationException(duplicatePhoneNumber.Description);
             }
 
@@ -1243,11 +1297,10 @@ namespace Nano.Security
         /// <returns>The <see cref="IdentityRole{TIdentity}"/>'s.</returns>
         public virtual async Task<IEnumerable<IdentityRole<TIdentity>>> GetRolesAsync(CancellationToken cancellationToken = default)
         {
-            return await Task.Run(() =>
-            {
-                return this.RoleManager.Roles
-                    .OrderBy(x => x.Name);
-            }, cancellationToken);
+            var roles = this.RoleManager.Roles
+                .OrderBy(x => x.Name);
+
+            return await Task.FromResult(roles);
         }
 
         /// <summary>
@@ -1624,6 +1677,49 @@ namespace Nano.Security
         }
 
         /// <summary>
+        /// Creates a user, and the associated <see cref="IdentityUser{TIdentity}"/>.
+        /// </summary>
+        /// <typeparam name="TUser">The user type.</typeparam>
+        /// <param name="user">The user.</param>
+        /// <param name="identityUser">The <see cref="IdentityUser{TIdentity}"/></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>The created user.</returns>
+        public virtual async Task<TUser> CreateUser<TUser>(TUser user, IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default)
+            where TUser : IEntityUser<TIdentity>
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            if (identityUser == null)
+                throw new ArgumentNullException(nameof(identityUser));
+
+            user.Id = identityUser.Id.Parse<TIdentity>();
+            user.IdentityUserId = identityUser.Id;
+
+            try
+            {
+                await this.DbContext
+                    .AddAsync(user, cancellationToken);
+
+                await this.DbContext
+                    .SaveChangesAsync(cancellationToken);
+            }
+            catch
+            {
+                await this.DeleteIdentityUser(identityUser, cancellationToken);
+
+                await this.DbContext
+                    .SaveChangesAsync(cancellationToken);
+
+                throw;
+            }
+
+            user.IdentityUser = identityUser;
+
+            return user;
+        }
+
+        /// <summary>
         /// Deletes the <see cref="IdentityUser"/>.
         /// </summary>
         /// <param name="identityUser">The <see cref="IdentityUser"/>.</param>
@@ -1643,31 +1739,33 @@ namespace Nano.Security
             }
         }
 
-        private async Task AssignSignUpRolesAndClaims(BaseSignUp signUp, IdentityUser<TIdentity> identityUser)
+        private async Task AssignSignUpRolesAndClaims(IdentityUser<TIdentity> identityUser, IEnumerable<string> roles2 = null, IDictionary<string, string> claims2 = null)
         {
-            if (signUp == null)
-                throw new ArgumentNullException(nameof(signUp));
-
             if (identityUser == null)
                 throw new ArgumentNullException(nameof(identityUser));
 
-            var roles = signUp.Roles
+            var roles = roles2?
                 .Union(this.Options.User.DefaultRoles)
-                .Distinct();
+                .Distinct()
+                .ToList() ?? new List<string>();
 
-            var roleAssignResult = await this.UserManager
-                .AddToRolesAsync(identityUser, roles);
-
-            if (!roleAssignResult.Succeeded)
+            if (roles.Any())
             {
-                this.ThrowIdentityExceptions(roleAssignResult.Errors);
+                var roleAssignResult = await this.UserManager
+                    .AddToRolesAsync(identityUser, roles);
+
+                if (!roleAssignResult.Succeeded)
+                {
+                    this.ThrowIdentityExceptions(roleAssignResult.Errors);
+                }
             }
 
-            if (signUp.Claims.Any())
-            {
-                var claims = signUp.Claims
-                    .Select(x => new Claim(x.Key, x.Value));
+            var claims = claims2?
+                .Select(x => new Claim(x.Key, x.Value))
+                .ToList() ?? new List<Claim>();
 
+            if (claims.Any())
+            {
                 var claimAssignResult = await this.UserManager
                     .AddClaimsAsync(identityUser, claims);
 
@@ -1701,7 +1799,8 @@ namespace Nano.Security
 
             var claims = userClaims
                 .Union(roleClaims)
-                .Union(transientClaims.Select(x => new Claim(x.Key, x.Value)));
+                .Union(transientClaims
+                    .Select(x => new Claim(x.Key, x.Value)));
 
             var tokenData = new AccessTokenData
             {
@@ -1734,7 +1833,7 @@ namespace Nano.Security
             if (appId == null)
                 return null;
 
-            var token = StringExtensions.GetRandomToken();
+            var token = Extensions.StringExtensions.GetRandomToken();
 
             var removeResult = await this.UserManager
                 .RemoveAuthenticationTokenAsync(identityUser, JwtBearerDefaults.AuthenticationScheme, appId);
@@ -1765,6 +1864,7 @@ namespace Nano.Security
                 ExpireAt = identityUserToken.ExpireAt
             };
         }
+        
         private async Task<ExternalLoginTokenData> RefreshExternalProviderTokenOrDefault(string externalProviderName = null, string externalProviderRefreshToken = null, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(externalProviderName))
@@ -1789,7 +1889,8 @@ namespace Nano.Security
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(ex, ex.Message);
+                this.Logger
+                    .LogError(ex, ex.Message);
 
                 throw new UnauthorizedException();
             }
@@ -1802,12 +1903,10 @@ namespace Nano.Security
             if (externalProviderRefreshToken == null)
                 throw new ArgumentNullException(nameof(externalProviderRefreshToken));
 
-            return await Task.Run(() =>
-            {
-                Log.Information($"The external provider: {externalProviderName} does not support refresh token.");
+            this.Logger
+                .LogInformation($"The external provider: {externalProviderName} does not support refresh token.");
 
-                return new ExternalLoginTokenData();
-            }, cancellationToken);
+            return await Task.FromResult(new ExternalLoginTokenData());
         }
         private async Task<ExternalLoginTokenData> RefreshExternalProviderTokenFacebook(string externalProviderName, string externalProviderRefreshToken = null, CancellationToken cancellationToken = default)
         {
@@ -1817,12 +1916,10 @@ namespace Nano.Security
             if (externalProviderRefreshToken == null)
                 throw new ArgumentNullException(nameof(externalProviderRefreshToken));
 
-            return await Task.Run(() =>
-            {
-                Log.Information($"The external provider: {externalProviderName} does not support refresh token.");
+            this.Logger
+                .LogInformation($"The external provider: {externalProviderName} does not support refresh token.");
 
-                return new ExternalLoginTokenData();
-            }, cancellationToken);
+            return await Task.FromResult(new ExternalLoginTokenData());
         }
         private async Task<ExternalLoginTokenData> RefreshExternalProviderTokenMicrosoft(string externalProviderName, string externalProviderRefreshToken = null, CancellationToken cancellationToken = default)
         {

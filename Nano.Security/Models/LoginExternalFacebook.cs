@@ -1,9 +1,9 @@
 ﻿namespace Nano.Security.Models
 {
     /// <summary>
-    /// Login External Facebook.
+    /// LogIn External Facebook.
     /// </summary>
-    public class LoginExternalFacebook : LoginExternalImplicit<LoginExternalProviderFacebook>
+    public class LogInExternalFacebook : LogInExternalImplicit<LogInExternalProviderFacebook>
     {
 
     }

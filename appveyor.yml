@@ -1,0 +1,33 @@
+version: 6.1.1.{build}
+skip_tags: true
+max_jobs: 1
+image: Visual Studio 2022
+configuration: Release
+platform: Any CPU
+force_https_clone: true
+nuget:
+  account_feed: false
+  project_feed: false
+environment:
+  NUGET_HOST: https://www.nuget.org
+  NUGET_APIKEY: 
+    secure: woiE/T1An0qrjC95RuwiZ+5ZCaMpQz2kWNgqYsrAUReykE3nQQHhFyNwGbV742xZ
+build: off
+build_script:
+- ps: >-
+    dotnet build .\Nano.Library.sln;
+
+    nuget update -self;
+    nuget pack .\NanoCore.nuspec -symbols -SymbolPackageFormat snupkg;
+test: off
+artifacts:
+- path: 'NanoCore.$(VERSION).nupkg'
+  name: NuGet Package
+- path: 'NanoCore.$(VERSION).snupkg'
+  name: NuGet Symbol Package
+deploy:
+- provider: NuGet
+  server: $(NUGET_HOST)
+  api_key: $(NUGET_APIKEY)
+  on:
+    branch: master

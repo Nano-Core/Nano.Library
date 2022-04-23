@@ -8,7 +8,7 @@ namespace Nano.Security.Models
     /// </summary>
     /// <typeparam name="TUser"></typeparam>
     /// <typeparam name="TIdentity"></typeparam>
-    public class SignUpExternalGoogle<TUser, TIdentity> : SignUpExternalImplicit<LoginExternalProviderGoogle, TUser, TIdentity>
+    public class SignUpExternalGoogle<TUser, TIdentity> : SignUpExternalImplicit<LogInExternalProviderGoogle, TUser, TIdentity>
         where TUser : IEntityUser<TIdentity>, new()
         where TIdentity : IEquatable<TIdentity>
     {

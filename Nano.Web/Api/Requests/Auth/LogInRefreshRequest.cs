@@ -8,7 +8,7 @@ namespace Nano.Web.Api.Requests.Auth
         /// <summary>
         /// Login.
         /// </summary>
-        public virtual LoginRefresh LoginRefresh { get; set; }
+        public virtual LogInRefresh LogInRefresh { get; set; } = new();
 
         /// <inheritdoc />
         public LogInRefreshRequest()
@@ -20,7 +20,7 @@ namespace Nano.Web.Api.Requests.Auth
         /// <inheritdoc />
         public override object GetBody()
         {
-            return this.LoginRefresh;
+            return this.LogInRefresh;
         }
     }
 }

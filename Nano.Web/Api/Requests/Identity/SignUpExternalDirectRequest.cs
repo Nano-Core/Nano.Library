@@ -5,21 +5,21 @@ using Nano.Security.Models;
 namespace Nano.Web.Api.Requests.Identity
 {
     /// <inheritdoc />
-    public class SignUpExternalMicrosoftRequest<TUser> : BaseSignUpExternalRequest<SignUpExternalMicrosoft<TUser, Guid>>
+    public class SignUpExternalDirectRequest<TUser> : BaseSignUpExternalRequest<SignUpExternalFacebook<TUser, Guid>>
         where TUser : IEntityUser<Guid>, new()
     {
 
     }
 
     /// <inheritdoc />
-    public class SignUpExternalMicrosoftRequest<TUser, TIdentity> : BaseSignUpExternalRequest<SignUpExternalMicrosoft<TUser, TIdentity>>
+    public class SignUpExternalDirectRequest<TUser, TIdentity> : BaseSignUpExternalRequest<SignUpExternalDirect<TUser, TIdentity>>
         where TUser : IEntityUser<TIdentity>, new()
         where TIdentity : IEquatable<TIdentity>
     {
         /// <inheritdoc />
-        public SignUpExternalMicrosoftRequest()
+        public SignUpExternalDirectRequest()
         {
-            this.Action = "signup/external/microsoft";
+            this.Action = "signup/external/direct";
         }
     }
 }

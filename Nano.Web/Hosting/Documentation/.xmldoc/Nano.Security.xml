@@ -9,56 +9,63 @@
             Base Identity Manager.
             </summary>
         </member>
+        <member name="P:Nano.Security.BaseIdentityManager.Logger">
+            <summary>
+            Logger.
+            </summary>
+        </member>
         <member name="P:Nano.Security.BaseIdentityManager.Options">
             <summary>
             Options.
             </summary>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager.#ctor(Nano.Security.SecurityOptions)">
+        <member name="M:Nano.Security.BaseIdentityManager.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Security.SecurityOptions)">
             <summary>
             Constructor.
             </summary>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
             <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager.SignInAdminTransientAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager.SignInAdminTransientAsync(Nano.Security.Models.LogIn,System.Threading.CancellationToken)">
             <summary>
             Signs in the admin user statically.
             The login is transient, no Identity store is used.
             </summary>
-            <param name="login">The <see cref="T:Nano.Security.Models.Login"/>.</param>
+            <param name="logIn">The <see cref="T:Nano.Security.Models.LogIn"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager.SignInExternalTransientAsync``1(Nano.Security.Models.BaseLoginExternal{``0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager.SignInExternalTransientAsync``1(Nano.Security.Models.BaseLogInExternal{``0},System.Threading.CancellationToken)">
             <summary>
             Signs in a user, from external login.
             The login is transient, no Identity backing store is used.
             The login relies on the external login provider being valid.
             </summary>
             <typeparam name="TProvider">The provider type.</typeparam>
-            <param name="loginExternalTransient">The <see cref="T:Nano.Security.Models.BaseLoginExternal`1"/>.</param>
+            <param name="logInExternalTransient">The <see cref="T:Nano.Security.Models.BaseLogInExternal`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager.SignInExternalTransientAsync(Nano.Security.Models.ExternalLoginData,Nano.Security.Models.LoginParameters,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager.SignInExternalTransientAsync(Nano.Security.Models.ExternalLogInData,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IDictionary{System.String,System.String},System.Threading.CancellationToken)">
             <summary>
             Signs in a user, from external login.
             The login is transient, no Identity backing store is used.
             The login relies on the external login provider being valid.
             </summary>
-            <param name="externalLoginData">The <see cref="T:Nano.Security.Models.ExternalLoginData"/>.</param>
-            <param name="loginParameters">The <see cref="T:Nano.Security.Models.LoginParameters"/>.</param>
+            <param name="externalLogInData">The <see cref="T:Nano.Security.Models.ExternalLogInData"/>.</param>
+            <param name="transientRoles">The roles added to the token.</param>
+            <param name="transientClaims">The claims added to the token.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager.GetExternalProviderLoginData``1(``0,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager.GetExternalProviderLogInData``1(``0,System.Threading.CancellationToken)">
             <summary>
             Validate External Provider Access Token.
             </summary>
             <typeparam name="TProvider">The provider type.</typeparam>
-            <param name="loginExternalProvider">The <see cref="T:System.Object"/>.</param>
+            <param name="logInExternalProvider">The <see cref="T:System.Object"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.ExternalLoginData"/>.</returns>
+            <returns>The <see cref="T:Nano.Security.Models.ExternalLogInData"/>.</returns>
         </member>
         <member name="M:Nano.Security.BaseIdentityManager.GenerateJwtToken(Nano.Security.Models.AccessTokenData)">
             <summary>
@@ -92,54 +99,54 @@
             Sign In Manager.
             </summary>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.#ctor(Microsoft.EntityFrameworkCore.DbContext,Microsoft.AspNetCore.Identity.SignInManager{Microsoft.AspNetCore.Identity.IdentityUser{`0}},Microsoft.AspNetCore.Identity.RoleManager{Microsoft.AspNetCore.Identity.IdentityRole{`0}},Microsoft.AspNetCore.Identity.UserManager{Microsoft.AspNetCore.Identity.IdentityUser{`0}},Nano.Security.SecurityOptions)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.#ctor(Microsoft.Extensions.Logging.ILogger,Microsoft.EntityFrameworkCore.DbContext,Microsoft.AspNetCore.Identity.SignInManager{Microsoft.AspNetCore.Identity.IdentityUser{`0}},Microsoft.AspNetCore.Identity.RoleManager{Microsoft.AspNetCore.Identity.IdentityRole{`0}},Microsoft.AspNetCore.Identity.UserManager{Microsoft.AspNetCore.Identity.IdentityUser{`0}},Nano.Security.SecurityOptions)">
             <summary>
             The user authenticates and on success recieves a jwt token for use with auhtorization.
             </summary>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
             <param name="dbContext">The <see cref="T:Microsoft.AspNetCore.Identity.SignInManager`1"/>.</param>
             <param name="signInManager">The <see cref="T:Microsoft.AspNetCore.Identity.SignInManager`1"/>.</param>
             <param name="userManager">The <see cref="T:Microsoft.AspNetCore.Identity.UserManager`1"/>.</param>
             <param name="roleManager">The <see cref="T:Microsoft.AspNetCore.Identity.RoleManager`1"/></param>
             <param name="options">The <see cref="T:Nano.Security.SecurityOptions"/>.</param>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.SignInAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.SignInAsync(Nano.Security.Models.LogIn,System.Threading.CancellationToken)">
             <summary>
             Signs in a user.
             </summary>
-            <param name="login">The <see cref="T:Nano.Security.Models.Login"/>.</param>
+            <param name="logIn">The <see cref="T:Nano.Security.Models.LogIn"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.SignInExternalAsync``1(Nano.Security.Models.BaseLoginExternal{``0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.SignInExternalAsync``1(Nano.Security.Models.BaseLogInExternal{``0},System.Threading.CancellationToken)">
             <summary>
             Signs in a user, from external login.
             </summary>
             <typeparam name="TProvider">The provider type.</typeparam>
-            <param name="loginExternal">The <see cref="T:Nano.Security.Models.BaseLoginExternal`1"/>.</param>
+            <param name="logInExternal">The <see cref="T:Nano.Security.Models.BaseLogInExternal`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>the <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.SignInExternalAsync(Nano.Security.Models.ExternalLoginData,Nano.Security.Models.LoginParameters,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.SignInExternalAsync(Nano.Security.Models.LogInExternalDirect,System.Threading.CancellationToken)">
             <summary>
             Signs in a user, from external login.
             </summary>
-            <param name="externalLoginData">The <see cref="T:Nano.Security.Models.ExternalLoginData"/>.</param>
-            <param name="loginParameters">The <see cref="T:Nano.Security.Models.LoginParameters"/>.</param>
+            <param name="logInExternalDirect">The <see cref="T:Nano.Security.Models.LogInExternalDirect"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.GetExternalProvidersAsync(System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.GetExternalProviderSchemesAsync(System.Threading.CancellationToken)">
             <summary>
             Gets all the configured external logins schemes.
             </summary>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The collection of <see cref="T:Nano.Security.Models.LoginProvider"/>'s.</returns>
+            <returns>The collection of <see cref="T:Nano.Security.Models.LogInProvider"/>'s.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.SignInRefreshAsync(Nano.Security.Models.LoginRefresh,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.SignInRefreshAsync(Nano.Security.Models.LogInRefresh,System.Threading.CancellationToken)">
             <summary>
             Refresh the login of a user.
             </summary>
-            <param name="loginRefresh">The <see cref="T:Nano.Security.Models.LoginRefresh"/>.</param>
+            <param name="logInRefresh">The <see cref="T:Nano.Security.Models.LogInRefresh"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
@@ -152,7 +159,7 @@
         </member>
         <member name="M:Nano.Security.BaseIdentityManager`1.SignUpAsync(Nano.Security.Models.SignUp,System.Threading.CancellationToken)">
             <summary>
-            Registers a new user.
+            Sign-Up a new user.
             </summary>
             <param name="signUp">The <see cref="T:Nano.Security.Models.SignUp"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
@@ -160,11 +167,23 @@
         </member>
         <member name="M:Nano.Security.BaseIdentityManager`1.SignUpExternalAsync``2(Nano.Security.Models.BaseSignUpExternal{``0,``1,`0},System.Threading.CancellationToken)">
             <summary>
-            Registers a new user using an external login provider.
+            Sign-Up a new user using an external login provider.
             </summary>
             <typeparam name="TProvider">The provider type.</typeparam>
-            <typeparam name="TUser"></typeparam>
+            <typeparam name="TUser">The user type.</typeparam>
             <param name="signUpExternal">The <see cref="T:Nano.Security.Models.BaseSignUpExternal`3"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.SignUpExternalAsync``1(Nano.Security.Models.ExternalLogInData,``0,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IDictionary{System.String,System.String},System.Threading.CancellationToken)">
+            <summary>
+            Sign-Up a new user using an external login provider data.
+            </summary>
+            <typeparam name="TUser">The user type.</typeparam>
+            <param name="externalLogInData">The <see cref="T:Nano.Security.Models.ExternalLogInData"/>.</param>
+            <param name="user">The user.</param>
+            <param name="roles">The roles.</param>
+            <param name="claims">The claims.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.</returns>
         </member>
@@ -392,6 +411,16 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.CreateUser``1(``0,Microsoft.AspNetCore.Identity.IdentityUser{`0},System.Threading.CancellationToken)">
+            <summary>
+            Creates a user, and the associated <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser`1"/>.
+            </summary>
+            <typeparam name="TUser">The user type.</typeparam>
+            <param name="user">The user.</param>
+            <param name="identityUser">The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser`1"/></param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The created user.</returns>
+        </member>
         <member name="M:Nano.Security.BaseIdentityManager`1.DeleteIdentityUser(Microsoft.AspNetCore.Identity.IdentityUser{`0},System.Threading.CancellationToken)">
             <summary>
             Deletes the <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.
@@ -469,7 +498,7 @@
         <member name="T:Nano.Security.DefaultIdentityManager">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Security.DefaultIdentityManager.#ctor(Microsoft.EntityFrameworkCore.DbContext,Microsoft.AspNetCore.Identity.SignInManager{Microsoft.AspNetCore.Identity.IdentityUser{System.Guid}},Microsoft.AspNetCore.Identity.RoleManager{Microsoft.AspNetCore.Identity.IdentityRole{System.Guid}},Microsoft.AspNetCore.Identity.UserManager{Microsoft.AspNetCore.Identity.IdentityUser{System.Guid}},Nano.Security.SecurityOptions)">
+        <member name="M:Nano.Security.DefaultIdentityManager.#ctor(Microsoft.Extensions.Logging.ILogger,Microsoft.EntityFrameworkCore.DbContext,Microsoft.AspNetCore.Identity.SignInManager{Microsoft.AspNetCore.Identity.IdentityUser{System.Guid}},Microsoft.AspNetCore.Identity.RoleManager{Microsoft.AspNetCore.Identity.IdentityRole{System.Guid}},Microsoft.AspNetCore.Identity.UserManager{Microsoft.AspNetCore.Identity.IdentityUser{System.Guid}},Nano.Security.SecurityOptions)">
             <inheritdoc />
         </member>
         <member name="T:Nano.Security.Exceptions.UnauthorizedEmailAddressNotFoundException">
@@ -788,38 +817,57 @@
             Role Name.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.BaseLogin">
+        <member name="T:Nano.Security.Models.BaseLogIn">
             <summary>
-            Base Login (abstract).
+            Base LogIn (abstract).
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.BaseLogin.Parameters">
+        <member name="P:Nano.Security.Models.BaseLogIn.AppId">
             <summary>
-            Parameters.
+            App Id.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.BaseLoginExternal">
+        <member name="P:Nano.Security.Models.BaseLogIn.IsRememberMe">
             <summary>
-            Base Login External (abstract).
+            Is Remember Me.
+            Not relevant for transient logins.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.BaseLoginExternal`1">
+        <member name="P:Nano.Security.Models.BaseLogIn.IsRefreshable">
             <summary>
-            Base Login External (abstract).
+            Is Refreshable.
+            Not relevant for transient logins.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.BaseLogIn.TransientRoles">
+            <summary>
+            Transient Roles.
+            Non persisted roles, that is added to the jwt-token when logging in.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.BaseLogIn.TransientClaims">
+            <summary>
+            Transient Claims.
+            Non persisted claims, that is added to the jwt-token when logging in.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.BaseLogInExternal`1">
+            <summary>
+            Base LogIn External (abstract).
             </summary>
             <typeparam name="TProvider">The provider type.</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.BaseLoginExternal`1.Provider">
+        <member name="P:Nano.Security.Models.BaseLogInExternal`1.Provider">
             <summary>
             Provider.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.BaseLoginExternalProvider">
+        <member name="T:Nano.Security.Models.BaseLogInExternalProvider">
             <summary>
-            Base Login External Provider (abstract).
+            Base LogIn External Provider (abstract).
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.BaseLoginExternalProvider.Name">
+        <member name="P:Nano.Security.Models.BaseLogInExternalProvider.Name">
             <summary>
             Name.
             </summary>
@@ -846,18 +894,25 @@
             Base Sign-Up External (abstract).
             </summary>
         </member>
+        <member name="T:Nano.Security.Models.BaseSignUpExternal`2">
+            <summary>
+            Base Sign-Up External (abstract).
+            </summary>
+            <typeparam name="TUser">The user type.</typeparam>
+            <typeparam name="TIdentity">The identity type.</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.BaseSignUpExternal`2.User">
+            <summary>
+            User.
+            </summary>
+        </member>
         <member name="T:Nano.Security.Models.BaseSignUpExternal`3">
             <summary>
             Base Sign-Up External (abstract).
             </summary>
             <typeparam name="TProvider">The provider type.</typeparam>
-            <typeparam name="TUser"></typeparam>
-            <typeparam name="TIdentity"></typeparam>
-        </member>
-        <member name="P:Nano.Security.Models.BaseSignUpExternal`3.User">
-            <summary>
-            User.
-            </summary>
+            <typeparam name="TUser">The user type.</typeparam>
+            <typeparam name="TIdentity">The identity type.</typeparam>
         </member>
         <member name="P:Nano.Security.Models.BaseSignUpExternal`3.Provider">
             <summary>
@@ -1032,27 +1087,27 @@
             Phone Number.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.ExternalLoginData">
+        <member name="T:Nano.Security.Models.ExternalLogInData">
             <summary>
             External Login Data.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ExternalLoginData.Id">
+        <member name="P:Nano.Security.Models.ExternalLogInData.Id">
             <summary>
             Id.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ExternalLoginData.Name">
+        <member name="P:Nano.Security.Models.ExternalLogInData.Name">
             <summary>
             Name.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ExternalLoginData.Email">
+        <member name="P:Nano.Security.Models.ExternalLogInData.Email">
             <summary>
             Email.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ExternalLoginData.ExternalToken">
+        <member name="P:Nano.Security.Models.ExternalLogInData.ExternalToken">
             <summary>
             External Token.
             </summary>
@@ -1109,171 +1164,152 @@
             Role Name.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.Login">
+        <member name="T:Nano.Security.Models.LogIn">
             <summary>
-            Login.
+            LogIn.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.Login.Username">
+        <member name="P:Nano.Security.Models.LogIn.Username">
             <summary>
             Username.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.Login.Password">
+        <member name="P:Nano.Security.Models.LogIn.Password">
             <summary>
             Password.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.LoginExternalAuthCode`1">
+        <member name="T:Nano.Security.Models.LogInExternal">
             <summary>
-            Login External Auth Code.
+            LogIn External.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.LoginExternalFacebook">
+        <member name="T:Nano.Security.Models.LogInExternalAuthCode`1">
             <summary>
-            Login External Facebook.
+            LogIn External Auth Code (abstract).
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.LoginExternalGoogle">
+        <member name="T:Nano.Security.Models.LogInExternalDirect">
             <summary>
-            Login External Google.
+            LogIn External Direct.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.LoginExternalImplicit`1">
+        <member name="P:Nano.Security.Models.LogInExternalDirect.ExternalLogInData">
             <summary>
-            Login External Implicit.
+            External LogIn Data.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.LoginExternalMicrosoft">
+        <member name="T:Nano.Security.Models.LogInExternalFacebook">
             <summary>
-            Login External Microsoft.
+            LogIn External Facebook.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.LoginExternalProviderAuthCode">
+        <member name="T:Nano.Security.Models.LogInExternalGoogle">
             <summary>
-            Login External Provider Auth Code (abstract).
+            LogIn External Google.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.LoginExternalProviderAuthCode.Code">
+        <member name="T:Nano.Security.Models.LogInExternalImplicit`1">
+            <summary>
+            LogIn External Implicit (abstract).
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.LogInExternalMicrosoft">
+            <summary>
+            LogIn External Microsoft.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.LogInExternalProviderAuthCode">
+            <summary>
+            LogIn External Provider Auth Code (abstract).
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.LogInExternalProviderAuthCode.Code">
             <summary>
             Code.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.LoginExternalProviderAuthCode.CodeVerifier">
+        <member name="P:Nano.Security.Models.LogInExternalProviderAuthCode.CodeVerifier">
             <summary>
             Code Verifier.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.LoginExternalProviderAuthCode.RedirectUri">
+        <member name="P:Nano.Security.Models.LogInExternalProviderAuthCode.RedirectUri">
             <summary>
             Redirect Uri.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.LoginExternalProviderFacebook">
+        <member name="T:Nano.Security.Models.LogInExternalProviderFacebook">
             <summary>
-            Login External Provider Facebook.
+            LogIn External Provider Facebook.
             </summary>
         </member>
-        <member name="M:Nano.Security.Models.LoginExternalProviderFacebook.#ctor">
+        <member name="M:Nano.Security.Models.LogInExternalProviderFacebook.#ctor">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Security.Models.LoginExternalProviderGoogle">
+        <member name="T:Nano.Security.Models.LogInExternalProviderGoogle">
             <summary>
-            Login External Provider Google.
+            LogIn External Provider Google.
             </summary>
         </member>
-        <member name="M:Nano.Security.Models.LoginExternalProviderGoogle.#ctor">
+        <member name="M:Nano.Security.Models.LogInExternalProviderGoogle.#ctor">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Security.Models.LoginExternalProviderImplicit">
+        <member name="T:Nano.Security.Models.LogInExternalProviderImplicit">
             <summary>
-            Login External Provider Implicit (abstract).
+            LogIn External Provider Implicit (abstract).
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.LoginExternalProviderImplicit.AccessToken">
+        <member name="P:Nano.Security.Models.LogInExternalProviderImplicit.AccessToken">
             <summary>
             Access Token.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.LoginExternalProviderMicrosoft">
+        <member name="T:Nano.Security.Models.LogInExternalProviderMicrosoft">
             <summary>
-            Login External Provider Microsoft.
+            LogIn External Provider Microsoft.
             </summary>
         </member>
-        <member name="M:Nano.Security.Models.LoginExternalProviderMicrosoft.#ctor">
+        <member name="M:Nano.Security.Models.LogInExternalProviderMicrosoft.#ctor">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Security.Models.LoginParameters">
+        <member name="T:Nano.Security.Models.LogInProvider">
             <summary>
-            Login Parameters.
+            LogIn Provider.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.LoginParameters.AppId">
-            <summary>
-            App Id.
-            </summary>
-        </member>
-        <member name="P:Nano.Security.Models.LoginParameters.IsRememberMe">
-            <summary>
-            Is Remember Me.
-            Not relevant for transient logins.
-            </summary>
-        </member>
-        <member name="P:Nano.Security.Models.LoginParameters.IsRefreshable">
-            <summary>
-            Is Refreshable.
-            Not relevant for transient logins.
-            </summary>
-        </member>
-        <member name="P:Nano.Security.Models.LoginParameters.TransientRoles">
-            <summary>
-            Transient Roles.
-            Non persisted roles, that is added to the jwt-token when logging in.
-            </summary>
-        </member>
-        <member name="P:Nano.Security.Models.LoginParameters.TransientClaims">
-            <summary>
-            Transient Claims.
-            Non persisted claims, that is added to the jwt-token when logging in.
-            </summary>
-        </member>
-        <member name="T:Nano.Security.Models.LoginProvider">
-            <summary>
-            Login Provider.
-            </summary>
-        </member>
-        <member name="P:Nano.Security.Models.LoginProvider.Name">
+        <member name="P:Nano.Security.Models.LogInProvider.Name">
             <summary>
             Name.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.LoginProvider.DisplayName">
+        <member name="P:Nano.Security.Models.LogInProvider.DisplayName">
             <summary>
             Display Name.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.LoginRefresh">
+        <member name="T:Nano.Security.Models.LogInRefresh">
             <summary>
             Login Refresh.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.LoginRefresh.Token">
+        <member name="P:Nano.Security.Models.LogInRefresh.Token">
             <summary>
             Token.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.LoginRefresh.RefreshToken">
+        <member name="P:Nano.Security.Models.LogInRefresh.RefreshToken">
             <summary>
             Refresh Token.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.LoginRefresh.TransientRoles">
+        <member name="P:Nano.Security.Models.LogInRefresh.TransientRoles">
             <summary>
             Transient Roles.
             Non persisted roles, that is added to the jwt-token when logging in.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.LoginRefresh.TransientClaims">
+        <member name="P:Nano.Security.Models.LogInRefresh.TransientClaims">
             <summary>
             Transient Claims.
             Non persisted claims, that is added to the jwt-token when logging in.
@@ -1455,6 +1491,24 @@
             <typeparam name="TProvider">The provider type.</typeparam>
             <typeparam name="TUser">The user type.</typeparam>
             <typeparam name="TIdentity">The identity type.</typeparam>
+        </member>
+        <member name="T:Nano.Security.Models.SignUpExternalDirect`1">
+            <summary>
+            Sign Up External Direct.
+            </summary>
+            <typeparam name="TUser">The user type</typeparam>
+        </member>
+        <member name="T:Nano.Security.Models.SignUpExternalDirect`2">
+            <summary>
+            Sign Up External Direct.
+            </summary>
+            <typeparam name="TUser">The user type.</typeparam>
+            <typeparam name="TIdentity">The identity type.</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.SignUpExternalDirect`2.ExternalLogInData">
+            <summary>
+            External LogIn Data.
+            </summary>
         </member>
         <member name="T:Nano.Security.Models.SignUpExternalFacebook`2">
             <summary>
@@ -1764,7 +1818,7 @@
             Transient Identity Manager.
             </summary>
         </member>
-        <member name="M:Nano.Security.TransientIdentityManager.#ctor(Nano.Security.SecurityOptions)">
+        <member name="M:Nano.Security.TransientIdentityManager.#ctor(Microsoft.Extensions.Logging.ILogger,Nano.Security.SecurityOptions)">
             <inheritdoc />
         </member>
     </members>

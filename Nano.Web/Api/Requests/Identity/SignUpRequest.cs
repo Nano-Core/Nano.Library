@@ -19,7 +19,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// <summary>
         /// Sign Up.
         /// </summary>
-        public virtual SignUp<TUser, TIdentity> SignUp { get; set; }
+        public virtual SignUp<TUser, TIdentity> SignUp { get; set; } = new();
 
         /// <inheritdoc />
         public SignUpRequest()

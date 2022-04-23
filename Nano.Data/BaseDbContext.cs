@@ -22,6 +22,7 @@ using Nano.Models.Interfaces;
 using Nano.Security;
 using Nano.Security.Const;
 using Nano.Security.Data.Models;
+using Serilog;
 
 namespace Nano.Data
 {
@@ -149,6 +150,8 @@ namespace Nano.Data
             if (this.Options.ConnectionString == null)
                 return;
 
+            Log.Information("Applying Migrations at start-up.");
+                
             await this.Database
                 .MigrateAsync(cancellationToken);
         }

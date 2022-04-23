@@ -4,7 +4,7 @@
 	  <TargetFrameworks>net6.0</TargetFrameworks>
     <ApplicationIcon>..\..\icon.ico</ApplicationIcon>
     <Configurations>Debug;Release</Configurations>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>1.0.0.0</Version>
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

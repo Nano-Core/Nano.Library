@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace Nano.Security
 {
     /// <summary>
@@ -6,8 +8,8 @@ namespace Nano.Security
     public class TransientIdentityManager : BaseIdentityManager
     {
         /// <inheritdoc />
-        public TransientIdentityManager(SecurityOptions options)
-            : base(options)
+        public TransientIdentityManager(ILogger logger, SecurityOptions options)
+            : base(logger, options)
         {
 
         }

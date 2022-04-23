@@ -1,12 +1,12 @@
 ﻿namespace Nano.Security.Models
 {
     /// <summary>
-    /// Login External Provider Facebook.
+    /// LogIn External Provider Facebook.
     /// </summary>
-    public class LoginExternalProviderFacebook : LoginExternalProviderImplicit
+    public class LogInExternalProviderFacebook : LogInExternalProviderImplicit
     {
         /// <inheritdoc />
-        public LoginExternalProviderFacebook()
+        public LogInExternalProviderFacebook()
         {
             this.Name = "Facebook";
         }

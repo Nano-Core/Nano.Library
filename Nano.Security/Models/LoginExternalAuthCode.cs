@@ -1,10 +1,10 @@
 ﻿namespace Nano.Security.Models
 {
     /// <summary>
-    /// Login External Auth Code.
+    /// LogIn External Auth Code (abstract).
     /// </summary>
-    public class LoginExternalAuthCode<TProvider> : BaseLoginExternal<TProvider> 
-        where TProvider : LoginExternalProviderAuthCode, new()
+    public abstract class LogInExternalAuthCode<TProvider> : BaseLogInExternal<TProvider> 
+        where TProvider : LogInExternalProviderAuthCode, new()
     {
 
     }

@@ -16,7 +16,7 @@ namespace Nano.Web.Api.Requests.Identity
         /// <summary>
         /// Assign Role.
         /// </summary>
-        public virtual RemoveRole<TIdentity> RemoveRole { get; set; }
+        public virtual RemoveRole<TIdentity> RemoveRole { get; set; } = new();
 
         /// <inheritdoc />
         public RemoveRoleRequest()

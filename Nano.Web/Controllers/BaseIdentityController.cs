@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Nano.Eventing;
 using Nano.Eventing.Interfaces;
 using Nano.Models;
-using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security;
@@ -71,36 +70,43 @@ namespace Nano.Web.Controllers
             var identityUser = await this.IdentityManager
                 .SignUpAsync(signUp, cancellationToken);
 
-            signUp.User.Id = identityUser.Id.Parse<TIdentity>();
-            signUp.User.IdentityUserId = identityUser.Id;
-
-            TEntity user;
-            try
-            {
-                user = await this.Repository
-                    .AddAsync(signUp.User, cancellationToken);
-
-                await this.Repository
-                    .SaveChanges(cancellationToken);
-            }
-            catch
-            {
-                await this.IdentityManager
-                    .DeleteIdentityUser(identityUser, cancellationToken);
-
-                await this.Repository
-                    .SaveChanges(cancellationToken);
-
-                throw;
-            }
-
-            user.IdentityUser = identityUser;
+            var user = await this.IdentityManager
+                .CreateUser(signUp.User, identityUser, cancellationToken);
 
             return this.Created("signup", user);
         }
 
         /// <summary>
-        /// Sign-up a user based on external Google login provider.
+        /// Sign-up a user based on external login data directly.
+        /// This can be used when the external provider is verified separately, and the data is passed instead of retrieved from the external provider. 
+        /// </summary>
+        /// <param name="signUpExternal">The signup external direct.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The access token.</returns>
+        /// <response code="201">Created.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="500">Error occurred.</response>
+        [HttpPost]
+        [Route("signup/external/direct")]
+        [AllowAnonymous]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        public virtual async Task<IActionResult> SignUpExternalDirectAsync([FromBody][Required]SignUpExternalDirect<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
+        {
+            var identityUser = await this.IdentityManager
+                .SignUpExternalAsync(signUpExternal.ExternalLogInData, signUpExternal.User, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
+
+            var user = await this.IdentityManager
+                .CreateUser(signUpExternal.User, identityUser, cancellationToken);
+
+            return this.Created("signup/external", user);
+        }
+
+        /// <summary>
+        /// Sign-up a user based on external Google logIn provider.
         /// </summary>
         /// <param name="signUpExternal">The signup external.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -118,13 +124,17 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> SignUpExternalGoogleAsync([FromBody][Required]SignUpExternalGoogle<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
         {
-            var user = await this.SignUpExternalAsync(signUpExternal, cancellationToken);
+            var identityUser = await this.IdentityManager
+                .SignUpExternalAsync(signUpExternal, cancellationToken);
+
+            var user = await this.IdentityManager
+                .CreateUser(signUpExternal.User, identityUser, cancellationToken);
 
             return this.Created("signup/external", user);
         }
 
         /// <summary>
-        /// Sign-up a user based on external Facebook login provider.
+        /// Sign-up a user based on external Facebook logIn provider.
         /// </summary>
         /// <param name="signUpExternal">The signup external.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -142,13 +152,17 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> SignUpExternalFacebookAsync([FromBody][Required]SignUpExternalFacebook<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
         {
-            var user = await this.SignUpExternalAsync(signUpExternal, cancellationToken);
+            var identityUser = await this.IdentityManager
+                .SignUpExternalAsync(signUpExternal, cancellationToken);
+
+            var user = await this.IdentityManager
+                .CreateUser(signUpExternal.User, identityUser, cancellationToken);
 
             return this.Created("signup/external", user);
         }
 
         /// <summary>
-        /// Sign-up a user based on external Microsoft login provider.
+        /// Sign-up a user based on external Microsoft logIn provider.
         /// </summary>
         /// <param name="signUpExternal">The signup external.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -166,7 +180,11 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual async Task<IActionResult> SignUpExternalMicrosoftAsync([FromBody][Required]SignUpExternalMicrosoft<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
         {
-            var user = await this.SignUpExternalAsync(signUpExternal, cancellationToken);
+            var identityUser = await this.IdentityManager
+                .SignUpExternalAsync(signUpExternal, cancellationToken);
+
+            var user = await this.IdentityManager
+                .CreateUser(signUpExternal.User, identityUser, cancellationToken);
 
             return this.Created("signup/external", user);
         }
@@ -201,7 +219,7 @@ namespace Nano.Web.Controllers
         /// <summary>
         /// Sets the password of a user.
         /// Only use to set a password for a user without one.
-        /// Users authenticated with external login providers, doesn't initially have a password.
+        /// Users authenticated with external logIn providers, doesn't initially have a password.
         /// </summary>
         /// <param name="setPassword">The set password.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -525,7 +543,7 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Removes an external login for a user.
+        /// Removes an external logIn for a user.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Void.</returns>
@@ -535,7 +553,7 @@ namespace Nano.Web.Controllers
         /// <response code="404">Not Found.</response>
         /// <response code="500">Error occured.</response>
         [HttpPost]
-        [Route("external/login/remove")]
+        [Route("external/logIn/remove")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -797,44 +815,6 @@ namespace Nano.Web.Controllers
                 .SaveChanges(cancellationToken);
 
             return this.Ok();
-        }
-
-        private async Task<TEntity> SignUpExternalAsync<TProvider>(BaseSignUpExternal<TProvider, TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
-            where TProvider : BaseLoginExternalProvider, new()
-        {
-            if (signUpExternal == null)
-                throw new ArgumentNullException(nameof(signUpExternal));
-
-            var identityUser = await this.IdentityManager
-                .SignUpExternalAsync(signUpExternal, cancellationToken);
-
-            signUpExternal.User.Id = identityUser.Id.Parse<TIdentity>();
-            signUpExternal.User.IdentityUserId = identityUser.Id;
-
-            TEntity user;
-            try
-            {
-                user = await this.Repository
-                    .AddAsync(signUpExternal.User, cancellationToken);
-
-                await this.Repository
-                    .SaveChanges(cancellationToken);
-
-            }
-            catch
-            {
-                await this.IdentityManager
-                    .DeleteIdentityUser(identityUser, cancellationToken);
-
-                await this.Repository
-                    .SaveChanges(cancellationToken);
-
-                throw;
-            }
-
-            user.IdentityUser = identityUser;
-
-            return user;
         }
     }
 }
