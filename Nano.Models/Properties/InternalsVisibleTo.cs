@@ -1,3 +1,3 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Tests.Nano.Models")]
+[assembly: InternalsVisibleTo("Tests.Nano")]

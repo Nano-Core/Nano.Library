@@ -2,4 +2,4 @@
 
 [assembly: InternalsVisibleTo("Nano.Web")]
 [assembly: InternalsVisibleTo("Nano.Console")]
-[assembly: InternalsVisibleTo("Tests.Nano.Repository")]
+[assembly: InternalsVisibleTo("Tests.Nano")]
