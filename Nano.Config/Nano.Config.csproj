@@ -10,11 +10,11 @@
 		<WarningsAsErrors></WarningsAsErrors>
 		<NoWarn />
 		<DocumentationFile>$(MSBuildThisFileDirectory)\bin\$(Configuration)\Nano.Config.xml</DocumentationFile>
-		<!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<EmbedUntrackedSources>true</EmbedUntrackedSources>
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>-->
+	    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+	    <IncludeSymbols>true</IncludeSymbols>
+	    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -30,4 +30,7 @@
 		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+	</ItemGroup>
 </Project>

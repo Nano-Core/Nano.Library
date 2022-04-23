@@ -10,11 +10,11 @@
 		<WarningsAsErrors></WarningsAsErrors>
 		<NoWarn />
 		<DocumentationFile>$(MSBuildThisFileDirectory)\bin\$(Configuration)\Nano.Models.xml</DocumentationFile>
-		<!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<EmbedUntrackedSources>true</EmbedUntrackedSources>
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>-->
+	    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+	    <IncludeSymbols>true</IncludeSymbols>
+	    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -26,4 +26,7 @@
 		<PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+	</ItemGroup>
 </Project>

@@ -10,11 +10,11 @@
 		<WarningsAsErrors></WarningsAsErrors>
 		<NoWarn />
 		<DocumentationFile>$(MSBuildThisFileDirectory)\bin\$(Configuration)\Nano.Console.xml</DocumentationFile>
-		<!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>-->
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+	    <IncludeSymbols>true</IncludeSymbols>
+	    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -25,4 +25,7 @@
 		<ProjectReference Include="..\Nano.App\Nano.App.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+	</ItemGroup>
 </Project>

@@ -10,11 +10,11 @@
 		<WarningsAsErrors></WarningsAsErrors>
 		<NoWarn />
 		<DocumentationFile>$(MSBuildThisFileDirectory)\bin\$(Configuration)\Nano.App.xml</DocumentationFile>
-		<!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>-->
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+	    <IncludeSymbols>true</IncludeSymbols>
+	    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -31,4 +31,7 @@
 		<ProjectReference Include="..\Nano.Security\Nano.Security.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+	</ItemGroup>
 </Project>
