@@ -12,7 +12,7 @@
 		<authors>Nano Contributors</authors>
 		<owners>Michael Vivet</owners>
 		<icon>lib\icon.png</icon>
-		<!--<readme>lib\README.md</readme>-->
+		<!--<readme>lib\README.md</readme> BUG: https://github.com/NuGet/Home/issues/11292 -->
 		<license type="file">lib/LICENSE</license>
 		<language>en-US</language>
 		<requireLicenseAcceptance>true</requireLicenseAcceptance>
@@ -21,8 +21,8 @@
 		<releaseNotes>
 			- Added logging when migrating database in code.
 			- Updated models, api-client requests and IdentityManagers, Controllers and api-client methods for external provider login separation.
-			- Updated all project files, to include git source-link.
 			- Updated NuGet packages.
+			- Added symbols and source-link to NuGet package.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net6.0">

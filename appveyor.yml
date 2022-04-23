@@ -16,7 +16,8 @@ build: off
 build_script:
 - ps: >-
     dotnet build .\Nano.Library.sln;
-    nuget pack .\NanoCore.nuspec -symbols -SymbolPackageFormat snupkg
+    nuget;
+    nuget pack .\NanoCore.nuspec -symbols -SymbolPackageFormat snupkg;
 test: off
 artifacts:
 - path: 'NanoCore.$(VERSION).nupkg'
