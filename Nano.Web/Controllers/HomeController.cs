@@ -177,7 +177,7 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         public virtual IActionResult SetTimeZone([FromQuery][Required]string name, CancellationToken cancellationToken = default)
         {
-            var cookieName = RequestTimeZoneCookieProvider.DefaultCookieName;
+            var cookieName = RequestTimeZoneCookieProvider.defaultCookieName;
             var cookieValue = RequestTimeZoneCookieProvider.MakeCookieValue(new RequestTimeZone(name));
             var cookieOptions = new CookieOptions
             {
