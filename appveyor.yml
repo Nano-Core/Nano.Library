@@ -21,9 +21,9 @@ build_script:
     nuget pack .\NanoCore.nuspec -symbols -SymbolPackageFormat snupkg;
 test: off
 artifacts:
-- path: 'NanoCore.$(VERSION).nupkg'
+- path: '**\*.nupkg'
   name: NuGet Package
-- path: 'NanoCore.$(VERSION).snupkg'
+- path: '**\*.snupkg'
   name: NuGet Symbol Package
 deploy:
 - provider: NuGet
