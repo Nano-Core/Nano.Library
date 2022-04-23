@@ -39,30 +39,24 @@
             Timeout In Seconds.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.ApiOptions.Login">
+        <member name="P:Nano.Web.Api.ApiOptions.LogIn">
             <summary>
-            Login.
+            LogIn.
             </summary>
         </member>
-        <member name="T:Nano.Web.Api.ApiOptions.LoginCredentials">
+        <member name="T:Nano.Web.Api.ApiOptions.LogInCredentials">
             <summary>
-            Login Credentials.
+            LogIn Credentials.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.ApiOptions.LoginCredentials.Username">
+        <member name="P:Nano.Web.Api.ApiOptions.LogInCredentials.Username">
             <summary>
             Username.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.ApiOptions.LoginCredentials.Password">
+        <member name="P:Nano.Web.Api.ApiOptions.LogInCredentials.Password">
             <summary>
             Password.
-            </summary>
-        </member>
-        <member name="P:Nano.Web.Api.ApiOptions.LoginCredentials.IsRefreshable">
-            <summary>
-            Is Refreshable.
-            Not relevant for transient logins.
             </summary>
         </member>
         <member name="T:Nano.Web.Api.BaseApi">
@@ -96,7 +90,7 @@
             <summary>
             Log-In External Async.
             </summary>
-            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.LogInRequest"/>.</param>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.BaseLogInExternalRequest"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
@@ -108,13 +102,21 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void..</returns>
         </member>
+        <member name="M:Nano.Web.Api.BaseApi.GetExternalLogInDataAsync``1(Nano.Web.Api.Requests.Auth.GetExternalLoginDataRequest{``0},System.Threading.CancellationToken)">
+            <summary>
+            Get External Log-In Data Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.GetExternalLoginDataRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+        </member>
         <member name="M:Nano.Web.Api.BaseApi.GetExternalSchemesAsync(Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest,System.Threading.CancellationToken)">
             <summary>
             GetAsync External Schemes Async.
             </summary>
             <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>A collection of <see cref="T:Nano.Security.Models.LoginProvider"/>'s.</returns>
+            <returns>A collection of <see cref="T:Nano.Security.Models.LogInProvider"/>'s.</returns>
         </member>
         <member name="M:Nano.Web.Api.BaseApi.InvokeAsync``1(``0,System.Threading.CancellationToken)">
             <summary>
@@ -688,16 +690,36 @@
         </member>
         <member name="P:Nano.Web.Api.Requests.Auth.BaseLogInExternalRequest`1.LoginExternal">
             <summary>
-            External Login.
+            LogIn External.
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Auth.BaseLogInExternalRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Auth.GetExternalLoginDataRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Auth.GetExternalLoginDataRequest`1.Provider">
+            <summary>
+            Provider.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.GetExternalLoginDataRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.GetExternalLoginDataRequest`1.GetBody">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Auth.LogInExternalDirectRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.LogInExternalDirectRequest.#ctor">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Auth.LogInExternalFacebookRequest">
@@ -721,7 +743,7 @@
         <member name="T:Nano.Web.Api.Requests.Auth.LogInRefreshRequest">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Api.Requests.Auth.LogInRefreshRequest.LoginRefresh">
+        <member name="P:Nano.Web.Api.Requests.Auth.LogInRefreshRequest.LogInRefresh">
             <summary>
             Login.
             </summary>
@@ -735,9 +757,9 @@
         <member name="T:Nano.Web.Api.Requests.Auth.LogInRequest">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Api.Requests.Auth.LogInRequest.Login">
+        <member name="P:Nano.Web.Api.Requests.Auth.LogInRequest.LogIn">
             <summary>
-            Login.
+            LogIn.
             </summary>
         </member>
         <member name="M:Nano.Web.Api.Requests.Auth.LogInRequest.#ctor">
@@ -1359,16 +1381,34 @@
         <member name="M:Nano.Web.Api.Requests.Identity.SetUsernameRequest`1.GetBody">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalDirectRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalDirectRequest`2">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalDirectRequest`2.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalFacebookRequest`1">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalFacebookRequest`2">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalFacebookRequest`2.#ctor">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalGoogleRequest`1">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalGoogleRequest`2">
             <inheritdoc />
         </member>
         <member name="M:Nano.Web.Api.Requests.Identity.SignUpExternalGoogleRequest`2.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalMicrosoftRequest`1">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Identity.SignUpExternalMicrosoftRequest`2">
@@ -1691,12 +1731,12 @@
             <returns>Void.</returns>
             <response code="200">Success.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInAsync(Nano.Security.Models.Login,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInAsync(Nano.Security.Models.LogIn,System.Threading.CancellationToken)">
             <summary>
             Authenticates and signs in a user.
             On success a jwt-token is created and returned, for use with auhtorization.
             </summary>
-            <param name="login">The login model.</param>
+            <param name="logIn">The login model.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The access token.</returns>
             <response code="200">Success.</response>
@@ -1705,11 +1745,11 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseAuthController`1.LoginRefreshAsync(Nano.Security.Models.LoginRefresh,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInRefreshAsync(Nano.Security.Models.LogInRefresh,System.Threading.CancellationToken)">
             <summary>
-            Refreshes a users authentication token.
+            Refreshes a user's token.
             </summary>
-            <param name="loginRefresh">The login refresh model.</param>
+            <param name="logInRefresh">The login refresh.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The access token.</returns>
             <response code="200">Success.</response>
@@ -1718,11 +1758,11 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalGoogleAsync(Nano.Security.Models.LoginExternalGoogle,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInExternalDirectAsync(Nano.Security.Models.LogInExternalDirect,System.Threading.CancellationToken)">
             <summary>
-            Sign-in a user from an external Google login and authentication using implicit flow.
+            Sign-in a user transient, from data recieved from a separate authentication.
             </summary>
-            <param name="loginExternal">The external login.</param>
+            <param name="logInExternalDirect">The external login direct.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The access token.</returns>
             <response code="200">Success.</response>
@@ -1731,11 +1771,11 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalGoogleTransientAsync(Nano.Security.Models.LoginExternalGoogle,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInExternalDirectTransientAsync(Nano.Security.Models.LogInExternalDirect,System.Threading.CancellationToken)">
             <summary>
-            Sign-in a user transient, from an external Google login and authentication using implicit flow.
+            Sign-in a user, from data recieved from a separate authentication.
             </summary>
-            <param name="loginExternal">The external login.</param>
+            <param name="logInExternalDirect">The external login direct.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The access token.</returns>
             <response code="200">Success.</response>
@@ -1744,11 +1784,11 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalFacebookAsync(Nano.Security.Models.LoginExternalFacebook,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInExternalGoogleAsync(Nano.Security.Models.LogInExternalGoogle,System.Threading.CancellationToken)">
             <summary>
-            Sign-in a user from an external Facebook login and authentication using implicit flow.
+            Sign-in a user, from external Google authentication using auth-code flow.
             </summary>
-            <param name="loginExternal">The external login.</param>
+            <param name="logInExternal">The external login.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The access token.</returns>
             <response code="200">Success.</response>
@@ -1757,11 +1797,11 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalFacebookTransientAsync(Nano.Security.Models.LoginExternalFacebook,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInExternalGoogleTransientAsync(Nano.Security.Models.LogInExternalGoogle,System.Threading.CancellationToken)">
             <summary>
-            Sign-in a user transient, from an external Facebook login and authentication using implicit flow.
+            Sign-in a user transient, from external Google authentication using auth-code flow.
             </summary>
-            <param name="loginExternal">The external login.</param>
+            <param name="logInExternal">The external login.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The access token.</returns>
             <response code="200">Success.</response>
@@ -1770,11 +1810,11 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalMicrosoftAsync(Nano.Security.Models.LoginExternalMicrosoft,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInExternalFacebookAsync(Nano.Security.Models.LogInExternalFacebook,System.Threading.CancellationToken)">
             <summary>
-            Sign-in a user from an external Microsoft login and authentication using implicit flow.
+            Sign-in a user transient, from external Facebook authentication using auth-code flow.
             </summary>
-            <param name="loginExternal">The external login.</param>
+            <param name="logInExternal">The external login.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The access token.</returns>
             <response code="200">Success.</response>
@@ -1783,11 +1823,37 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseAuthController`1.SignInExternalMicrosoftTransientAsync(Nano.Security.Models.LoginExternalMicrosoft,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInExternalFacebookTransientAsync(Nano.Security.Models.LogInExternalFacebook,System.Threading.CancellationToken)">
             <summary>
-            Sign-in a user transient, from an external Microsoft login and authentication using implicit flow.
+            Sign-in a user transient, from external Facebook authentication using auth-code flow.
             </summary>
-            <param name="loginExternal">The external login.</param>
+            <param name="logInExternal">The external login.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The access token.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInExternalMicrosoftAsync(Nano.Security.Models.LogInExternalMicrosoft,System.Threading.CancellationToken)">
+            <summary>
+            Sign-in a user, from external Microsoft authentication using auth-code flow.
+            </summary>
+            <param name="logInExternal">The external login.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The access token.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInExternalMicrosoftTransientAsync(Nano.Security.Models.LogInExternalMicrosoft,System.Threading.CancellationToken)">
+            <summary>
+            Sign-in a user transient, from external Microsoft authentication using auth-code flow.
+            </summary>
+            <param name="logInExternal">The external login.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The access token.</returns>
             <response code="200">Success.</response>
@@ -1805,6 +1871,19 @@
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
             <response code="401">Unauthorized.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.GetExternalLoginData(Nano.Security.Models.BaseLogInExternalProvider,System.Threading.CancellationToken)">
+            <summary>
+            Get external login data from an external authentication provider.
+            E.g. Google, Facebook, etc.
+            </summary>
+            <param name="logInExternalProvider">The external login data.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The external login data.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="404">Not Found.</response>
             <response code="500">Error occurred.</response>
         </member>
         <member name="M:Nano.Web.Controllers.BaseAuthController`1.GetExternalSchemesAsync(System.Threading.CancellationToken)">
@@ -2625,9 +2704,21 @@
             <response code="400">Bad Request.</response>
             <response code="500">Error occured.</response>
         </member>
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.SignUpExternalDirectAsync(Nano.Security.Models.SignUpExternalDirect{`1,`2},System.Threading.CancellationToken)">
+            <summary>
+            Sign-up a user based on external login data directly.
+            This can be used when the external provider is verified separately, and the data is passed instead of retrieved from the external provider. 
+            </summary>
+            <param name="signUpExternal">The signup external direct.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The access token.</returns>
+            <response code="201">Created.</response>
+            <response code="400">Bad Request.</response>
+            <response code="500">Error occurred.</response>
+        </member>
         <member name="M:Nano.Web.Controllers.BaseIdentityController`4.SignUpExternalGoogleAsync(Nano.Security.Models.SignUpExternalGoogle{`1,`2},System.Threading.CancellationToken)">
             <summary>
-            Sign-up a user based on external Google login provider.
+            Sign-up a user based on external Google logIn provider.
             </summary>
             <param name="signUpExternal">The signup external.</param>
             <param name="cancellationToken">The cancellation token.</param>
@@ -2638,7 +2729,7 @@
         </member>
         <member name="M:Nano.Web.Controllers.BaseIdentityController`4.SignUpExternalFacebookAsync(Nano.Security.Models.SignUpExternalFacebook{`1,`2},System.Threading.CancellationToken)">
             <summary>
-            Sign-up a user based on external Facebook login provider.
+            Sign-up a user based on external Facebook logIn provider.
             </summary>
             <param name="signUpExternal">The signup external.</param>
             <param name="cancellationToken">The cancellation token.</param>
@@ -2649,7 +2740,7 @@
         </member>
         <member name="M:Nano.Web.Controllers.BaseIdentityController`4.SignUpExternalMicrosoftAsync(Nano.Security.Models.SignUpExternalMicrosoft{`1,`2},System.Threading.CancellationToken)">
             <summary>
-            Sign-up a user based on external Microsoft login provider.
+            Sign-up a user based on external Microsoft logIn provider.
             </summary>
             <param name="signUpExternal">The signup external.</param>
             <param name="cancellationToken">The cancellation token.</param>
@@ -2675,7 +2766,7 @@
             <summary>
             Sets the password of a user.
             Only use to set a password for a user without one.
-            Users authenticated with external login providers, doesn't initially have a password.
+            Users authenticated with external logIn providers, doesn't initially have a password.
             </summary>
             <param name="setPassword">The set password.</param>
             <param name="cancellationToken">The cancellation token.</param>
@@ -2830,7 +2921,7 @@
         </member>
         <member name="M:Nano.Web.Controllers.BaseIdentityController`4.RemoveExternalLoginAsync(System.Threading.CancellationToken)">
             <summary>
-            Removes an external login for a user.
+            Removes an external logIn for a user.
             </summary>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>Void.</returns>
