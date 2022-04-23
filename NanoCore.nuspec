@@ -1,112 +1,128 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
-  <metadata>
-    <id>NanoCore</id>
-    <version>6.1.0</version>
-    <title>Nano Core</title>
-    <authors>Nano Contributors</authors>
-    <owners>Michael Vivet</owners>
-    <requireLicenseAcceptanc>true</requireLicenseAcceptanc>
-    <licenseUrl>https://raw.githubusercontent.com/Nano-Core/Nano.Library/master/LICENSE</licenseUrl>
-    <projectUrl>https://ithub.com/Nano-Core</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/Nano-Core/Nano.Library/master/icon.ico</iconUrl>
-    <description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
-    <summary>Rapidly built and deploy rich .NET 6.0 applications. 
-Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
-    <releaseNotes>
-		- Changed external login options, to have specific sections for Google, Facebook and Microsoft.
-		- Added support for Microsoft auth-code authentication flow, and removed support for implicit Microsoft flow.
-		- Added support for Microsoft refresh token.
-		- Refactored models and methods for external login and signup.
-		- Updated DynamicExpression library.
-    </releaseNotes>
-    <dependencies>
-      <group targetFramework="net6.0">
-	      <dependency id="Microsoft.Extensions.DependencyInjection" version="6.0.0" />
-	      <dependency id="Microsoft.Extensions.Identity.Stores" version="6.0.3" />
-	      <dependency id="DynamicExpression" version="2.2.2" />
-	      <dependency id="NetTopologySuite" version="2.4.0" />
-	      <dependency id="Newtonsoft.Json" version="13.0.1" />
-	      <dependency id="System.ComponentModel.Annotations" version="5.0.0" />
-	      <dependency id="Microsoft.Extensions.Configuration" version="6.0.1" />
-	      <dependency id="Microsoft.Extensions.Configuration.Binder" version="6.0.0" />
-	      <dependency id="Microsoft.Extensions.Configuration.CommandLine" version="6.0.0" />
-	      <dependency id="Microsoft.Extensions.Configuration.EnvironmentVariables" version="6.0.1" />
-	      <dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="6.0.0" />
-	      <dependency id="Microsoft.Extensions.Configuration.Json" version="6.0.0" />
-	      <dependency id="Microsoft.Extensions.Configuration.UserSecrets" version="6.0.1" />
-	      <dependency id="Microsoft.Extensions.Options" version="6.0.0" />
-	      <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="6.0.0" />
-	      <dependency id="Microsoft.Extensions.Logging" version="6.0.0" />
-	      <dependency id="Microsoft.Extensions.Logging.Log4Net.AspNetCore" version="6.1.0" />
-	      <dependency id="Serilog" version="2.10.0" />
-	      <dependency id="Serilog.Extensions.Logging" version="3.1.0" />
-	      <dependency id="Serilog.Sinks.Console" version="4.0.1" />
-	      <dependency id="AspNetCore.HealthChecks.Rabbitmq" version="6.0.2" />
-	      <dependency id="EasyNetQ" version="6.3.1" />
-	      <dependency id="AspNetCore.HealthChecks.MySql" version="6.0.2" />
-	      <dependency id="AspNetCore.HealthChecks.Sqlite" version="6.0.2" />
-	      <dependency id="AspNetCore.HealthChecks.SqlServer" version="6.0.2" />
-	      <dependency id="EntityFrameworkCore.Triggers" version="1.2.3" />
-	      <dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="6.0.3" />
-	      <dependency id="Microsoft.EntityFrameworkCore" version="6.0.3" />
-	      <dependency id="Microsoft.EntityFrameworkCore.Design" version="6.0.3" />
-	      <dependency id="Microsoft.EntityFrameworkCore.InMemory" version="6.0.3" />
-	      <dependency id="Microsoft.EntityFrameworkCore.Proxies" version="6.0.3" />
-	      <dependency id="Microsoft.EntityFrameworkCore.Relational" version="6.0.3" />
-	      <dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="6.0.3" />
-	      <dependency id="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" version="6.0.3" />
-	      <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="6.0.3" />
-	      <dependency id="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" version="6.0.3" />
-	      <dependency id="Pomelo.EntityFrameworkCore.MySql" version="6.0.1" />
-	      <dependency id="Z.EntityFramework.Plus.EFCore" version="6.13.15" />
-	      <dependency id="Microsoft.Extensions.Hosting" version="6.0.1" />
-	      <dependency id="Google.Apis.Auth" version="1.56.0" />
-	      <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="6.0.3" />
-	      <dependency id="Microsoft.IdentityModel.Protocols.OpenIdConnect" version="6.16.0" />
-		  <dependency id="AspNetCore.HealthChecks.Network" version="6.0.3" />
-		  <dependency id="AspNetCore.HealthChecks.System" version="6.0.4" />
-		  <dependency id="AspNetCore.HealthChecks.UI" version="6.0.4" />
-		  <dependency id="AspNetCore.HealthChecks.UI.Client" version="6.0.4" />
-		  <dependency id="AspNetCore.HealthChecks.UI.InMemory.Storage" version="6.0.4" />
-	      <dependency id="JsonModelBinder" version="2.1.1" />
-		  <dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="6.0.3" />
-		  <dependency id="Microsoft.AspNetCore.Authentication.Google" version="6.0.3" />
-		  <dependency id="Microsoft.AspNetCore.Authentication.MicrosoftAccount" version="6.0.3" />
-	      <dependency id="Microsoft.AspNetCore.Authorization" version="6.0.3" />
-	      <dependency id="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="6.0.3" />
-		  <dependency id="Microsoft.AspNetCore.Mvc.Versioning" version="5.0.0" />
-		  <dependency id="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" version="5.0.0" />
-	      <dependency id="NWebsec.AspNetCore.Middleware" version="3.0.0" />
-	      <dependency id="NWebsec.AspNetCore.Mvc" version="3.0.0" />
-	      <dependency id="Swashbuckle.AspNetCore" version="6.3.0" />
-	      <dependency id="Swashbuckle.AspNetCore.Newtonsoft" version="6.3.0" />
-	      <dependency id="Swashbuckle.AspNetCore.Annotations" version="6.3.0" />
-		  <dependency id="Vivet.AspNetCore.RequestTimeZone" version="6.0.0" />
-	  </group>
-    </dependencies>
-  </metadata>
-  <files>
-    <file src="Nano.App\bin\Release\net6.0\Nano.App.dll" target="lib\net6.0\Nano.App.dll" />
-    <file src="Nano.App\bin\Release\net6.0\Nano.App.xml" target="lib\net6.0\Nano.App.xml" />
-    <file src="Nano.Config\bin\Release\net6.0\Nano.Config.dll" target="lib\net6.0\Nano.Config.dll" />
-    <file src="Nano.Config\bin\Release\net6.0\Nano.Config.xml" target="lib\net6.0\Nano.Config.xml" />
-    <file src="Nano.Console\bin\Release\net6.0\Nano.Console.dll" target="lib\net6.0\Nano.Console.dll" />
-    <file src="Nano.Console\bin\Release\net6.0\Nano.Console.xml" target="lib\net6.0\Nano.Console.xml" />
-    <file src="Nano.Data\bin\Release\net6.0\Nano.Data.dll" target="lib\net6.0\Nano.Data.dll" />
-    <file src="Nano.Data\bin\Release\net6.0\Nano.Data.xml" target="lib\net6.0\Nano.Data.xml" />
-    <file src="Nano.Eventing\bin\Release\net6.0\Nano.Eventing.dll" target="lib\net6.0\Nano.Eventing.dll" />
-    <file src="Nano.Eventing\bin\Release\net6.0\Nano.Eventing.xml" target="lib\net6.0\Nano.Eventing.xml" />
-    <file src="Nano.Logging\bin\Release\net6.0\Nano.Logging.dll" target="lib\net6.0\Nano.Logging.dll" />
-    <file src="Nano.Logging\bin\Release\net6.0\Nano.Logging.xml" target="lib\net6.0\Nano.Logging.xml" />
-    <file src="Nano.Models\bin\Release\net6.0\Nano.Models.dll" target="lib\net6.0\Nano.Models.dll" />
-    <file src="Nano.Models\bin\Release\net6.0\Nano.Models.xml" target="lib\net6.0\Nano.Models.xml" />
-    <file src="Nano.Repository\bin\Release\net6.0\Nano.Repository.dll" target="lib\net6.0\Nano.Repository.dll" />
-    <file src="Nano.Repository\bin\Release\net6.0\Nano.Repository.xml" target="lib\net6.0\Nano.Repository.xml" />
-    <file src="Nano.Security\bin\Release\net6.0\Nano.Security.dll" target="lib\net6.0\Nano.Security.dll" />
-    <file src="Nano.Security\bin\Release\net6.0\Nano.Security.xml" target="lib\net6.0\Nano.Security.xml" />
-    <file src="Nano.Web\bin\Release\net6.0\Nano.Web.dll" target="lib\net6.0\Nano.Web.dll" />
-    <file src="Nano.Web\bin\Release\net6.0\Nano.Web.xml" target="lib\net6.0\Nano.Web.xml" />
-    <file src="LICENSE" target="lib\LICENSE" />
-  </files>
+	<metadata>
+		<id>NanoCore</id>
+		<version>6.1.1</version>
+		<title>Nano Core</title>
+		<summary>
+			Rapidly built and deploy rich .NET 6.0 applications.
+			Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.
+		</summary>
+		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
+		<authors>Nano Contributors</authors>
+		<owners>Michael Vivet</owners>
+		<icon>lib\icon.png</icon>
+		<readme>lib\README.md</readme>
+		<license type="file">lib/LICENSE</license>
+		<language>en-US</language>
+		<requireLicenseAcceptance>true</requireLicenseAcceptance>
+		<projectUrl>https://github.com/Nano-Core</projectUrl>
+		<repository type="git" url="https://github.com/Nano-Core/Nano.Library" />
+		<releaseNotes>
+			- Added logging when migrating database in code.
+			- Updated models, api-client requests and IdentityManagers, Controllers and api-client methods for external provider login separation.
+			- Updated all project files, to include git source-link.
+			- Updated NuGet packages.
+		</releaseNotes>
+		<dependencies>
+			<group targetFramework="net6.0">
+				<dependency id="Microsoft.Extensions.DependencyInjection" version="6.0.0" />
+				<dependency id="Microsoft.Extensions.Identity.Stores" version="6.0.4" />
+				<dependency id="DynamicExpression" version="2.2.3" />
+				<dependency id="NetTopologySuite" version="2.4.0" />
+				<dependency id="Newtonsoft.Json" version="13.0.1" />
+				<dependency id="System.ComponentModel.Annotations" version="5.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration" version="6.0.1" />
+				<dependency id="Microsoft.Extensions.Configuration.Binder" version="6.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.CommandLine" version="6.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.EnvironmentVariables" version="6.0.1" />
+				<dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="6.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.Json" version="6.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.UserSecrets" version="6.0.1" />
+				<dependency id="Microsoft.Extensions.Options" version="6.0.0" />
+				<dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="6.0.0" />
+				<dependency id="Microsoft.Extensions.Logging" version="6.0.0" />
+				<dependency id="Microsoft.Extensions.Logging.Log4Net.AspNetCore" version="6.1.0" />
+				<dependency id="Serilog" version="2.10.0" />
+				<dependency id="Serilog.Extensions.Logging" version="3.1.0" />
+				<dependency id="Serilog.Sinks.Console" version="4.0.1" />
+				<dependency id="AspNetCore.HealthChecks.Rabbitmq" version="6.0.2" />
+				<dependency id="EasyNetQ" version="6.3.1" />
+				<dependency id="AspNetCore.HealthChecks.MySql" version="6.0.2" />
+				<dependency id="AspNetCore.HealthChecks.Sqlite" version="6.0.2" />
+				<dependency id="AspNetCore.HealthChecks.SqlServer" version="6.0.2" />
+				<dependency id="EntityFrameworkCore.Triggers" version="1.2.3" />
+				<dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="6.0.4" />
+				<dependency id="Microsoft.EntityFrameworkCore" version="6.0.4" />
+				<dependency id="Microsoft.EntityFrameworkCore.Design" version="6.0.4" />
+				<dependency id="Microsoft.EntityFrameworkCore.InMemory" version="6.0.4" />
+				<dependency id="Microsoft.EntityFrameworkCore.Proxies" version="6.0.4" />
+				<dependency id="Microsoft.EntityFrameworkCore.Relational" version="6.0.4" />
+				<dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="6.0.4" />
+				<dependency id="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" version="6.0.4" />
+				<dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="6.0.4" />
+				<dependency id="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" version="6.0.4" />
+				<dependency id="Pomelo.EntityFrameworkCore.MySql" version="6.0.1" />
+				<dependency id="Z.EntityFramework.Plus.EFCore" version="6.13.17" />
+				<dependency id="Microsoft.Extensions.Hosting" version="6.0.1" />
+				<dependency id="Google.Apis.Auth" version="1.57.0" />
+				<dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="6.0.4" />
+				<dependency id="Microsoft.IdentityModel.Protocols.OpenIdConnect" version="6.17.0" />
+				<dependency id="AspNetCore.HealthChecks.Network" version="6.0.3" />
+				<dependency id="AspNetCore.HealthChecks.System" version="6.0.4" />
+				<dependency id="AspNetCore.HealthChecks.UI" version="6.0.4" />
+				<dependency id="AspNetCore.HealthChecks.UI.Client" version="6.0.4" />
+				<dependency id="AspNetCore.HealthChecks.UI.InMemory.Storage" version="6.0.4" />
+				<dependency id="JsonModelBinder" version="2.1.1" />
+				<dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="6.0.4" />
+				<dependency id="Microsoft.AspNetCore.Authentication.Google" version="6.0.4" />
+				<dependency id="Microsoft.AspNetCore.Authentication.MicrosoftAccount" version="6.0.4" />
+				<dependency id="Microsoft.AspNetCore.Authorization" version="6.0.4" />
+				<dependency id="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="6.0.4" />
+				<dependency id="Microsoft.AspNetCore.Mvc.Versioning" version="5.0.0" />
+				<dependency id="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" version="5.0.0" />
+				<dependency id="NWebsec.AspNetCore.Middleware" version="3.0.0" />
+				<dependency id="NWebsec.AspNetCore.Mvc" version="3.0.0" />
+				<dependency id="Swashbuckle.AspNetCore" version="6.3.1" />
+				<dependency id="Swashbuckle.AspNetCore.Newtonsoft" version="6.3.1" />
+				<dependency id="Swashbuckle.AspNetCore.Annotations" version="6.3.1" />
+				<dependency id="Vivet.AspNetCore.RequestTimeZone" version="6.0.1" />
+			</group>
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="Nano.App\bin\Release\net6.0\Nano.App.dll" target="lib\net6.0\Nano.App.dll" />
+		<file src="Nano.App\bin\Release\net6.0\Nano.App.pdb" target="lib\net6.0\Nano.App.pdb" />
+		<file src="Nano.App\bin\Release\net6.0\Nano.App.xml" target="lib\net6.0\Nano.App.xml" />
+		<file src="Nano.Config\bin\Release\net6.0\Nano.Config.dll" target="lib\net6.0\Nano.Config.dll" />
+		<file src="Nano.Config\bin\Release\net6.0\Nano.Config.pdb" target="lib\net6.0\Nano.Config.pdb" />
+		<file src="Nano.Config\bin\Release\net6.0\Nano.Config.xml" target="lib\net6.0\Nano.Config.xml" />
+		<file src="Nano.Console\bin\Release\net6.0\Nano.Console.dll" target="lib\net6.0\Nano.Console.dll" />
+		<file src="Nano.Console\bin\Release\net6.0\Nano.Console.pdb" target="lib\net6.0\Nano.Console.pdb" />
+		<file src="Nano.Console\bin\Release\net6.0\Nano.Console.xml" target="lib\net6.0\Nano.Console.xml" />
+		<file src="Nano.Data\bin\Release\net6.0\Nano.Data.dll" target="lib\net6.0\Nano.Data.dll" />
+		<file src="Nano.Data\bin\Release\net6.0\Nano.Data.pdb" target="lib\net6.0\Nano.Data.pdb" />
+		<file src="Nano.Data\bin\Release\net6.0\Nano.Data.xml" target="lib\net6.0\Nano.Data.xml" />
+		<file src="Nano.Eventing\bin\Release\net6.0\Nano.Eventing.dll" target="lib\net6.0\Nano.Eventing.dll" />
+		<file src="Nano.Eventing\bin\Release\net6.0\Nano.Eventing.pdb" target="lib\net6.0\Nano.Eventing.pdb" />
+		<file src="Nano.Eventing\bin\Release\net6.0\Nano.Eventing.xml" target="lib\net6.0\Nano.Eventing.xml" />
+		<file src="Nano.Logging\bin\Release\net6.0\Nano.Logging.dll" target="lib\net6.0\Nano.Logging.dll" />
+		<file src="Nano.Logging\bin\Release\net6.0\Nano.Logging.pdb" target="lib\net6.0\Nano.Logging.pdb" />
+		<file src="Nano.Logging\bin\Release\net6.0\Nano.Logging.xml" target="lib\net6.0\Nano.Logging.xml" />
+		<file src="Nano.Models\bin\Release\net6.0\Nano.Models.dll" target="lib\net6.0\Nano.Models.dll" />
+		<file src="Nano.Models\bin\Release\net6.0\Nano.Models.pdb" target="lib\net6.0\Nano.Models.pdb" />
+		<file src="Nano.Models\bin\Release\net6.0\Nano.Models.xml" target="lib\net6.0\Nano.Models.xml" />
+		<file src="Nano.Repository\bin\Release\net6.0\Nano.Repository.dll" target="lib\net6.0\Nano.Repository.dll" />
+		<file src="Nano.Repository\bin\Release\net6.0\Nano.Repository.pdb" target="lib\net6.0\Nano.Repository.pdb" />
+		<file src="Nano.Repository\bin\Release\net6.0\Nano.Repository.xml" target="lib\net6.0\Nano.Repository.xml" />
+		<file src="Nano.Security\bin\Release\net6.0\Nano.Security.dll" target="lib\net6.0\Nano.Security.dll" />
+		<file src="Nano.Security\bin\Release\net6.0\Nano.Security.pdb" target="lib\net6.0\Nano.Security.pdb" />
+		<file src="Nano.Security\bin\Release\net6.0\Nano.Security.xml" target="lib\net6.0\Nano.Security.xml" />
+		<file src="Nano.Web\bin\Release\net6.0\Nano.Web.dll" target="lib\net6.0\Nano.Web.dll" />
+		<file src="Nano.Web\bin\Release\net6.0\Nano.Web.pdb" target="lib\net6.0\Nano.Web.pdb" />
+		<file src="Nano.Web\bin\Release\net6.0\Nano.Web.xml" target="lib\net6.0\Nano.Web.xml" />
+		<file src="LICENSE" target="lib\LICENSE" />
+		<file src="icon.png" target="lib\icon.png" />
+		<file src="README.md" target="lib\README.md" />
+	</files>
 </package>
