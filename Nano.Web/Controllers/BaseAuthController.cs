@@ -425,10 +425,9 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Get external login data from an external authentication provider.
-        /// E.g. Google, Facebook, etc.
+        /// Get external login data from an external Google authentication provider.
         /// </summary>
-        /// <param name="logInExternalProvider">The external login data.</param>
+        /// <param name="logInExternalProvider">The external login provider.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The external login data.</returns>
         /// <response code="200">Success.</response>
@@ -436,7 +435,7 @@ namespace Nano.Web.Controllers
         /// <response code="404">Not Found.</response>
         /// <response code="500">Error occurred.</response>
         [HttpPost]
-        [Route("external/data")]
+        [Route("external/google/data")]
         [AllowAnonymous]
         [Consumes(HttpContentType.JSON, HttpContentType.XML)]
         [Produces(HttpContentType.JSON, HttpContentType.XML)]
@@ -445,7 +444,73 @@ namespace Nano.Web.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Auth" })]
-        public virtual async Task<IActionResult> GetExternalLoginData([FromBody][Required]BaseLogInExternalProvider logInExternalProvider, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> GetExternalLoginData([FromBody][Required]LogInExternalProviderGoogle logInExternalProvider, CancellationToken cancellationToken = default)
+        {
+            var externalLoginData = await this.BaseIdentityManager
+                .GetExternalProviderLogInData(logInExternalProvider, cancellationToken);
+
+            if (externalLoginData == null)
+            {
+                this.Unauthorized();
+            }
+
+            return this.Ok(externalLoginData);
+        }
+
+        /// <summary>
+        /// Get external login data from an external Facebook authentication provider.
+        /// </summary>
+        /// <param name="logInExternalProvider">The external login provider.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The external login data.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occurred.</response>
+        [HttpPost]
+        [Route("external/facebook/data")]
+        [AllowAnonymous]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(ExternalLogInData), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        [SwaggerOperation(Tags = new[] { "Auth" })]
+        public virtual async Task<IActionResult> GetExternalLoginData([FromBody][Required]LogInExternalProviderFacebook logInExternalProvider, CancellationToken cancellationToken = default)
+        {
+            var externalLoginData = await this.BaseIdentityManager
+                .GetExternalProviderLogInData(logInExternalProvider, cancellationToken);
+
+            if (externalLoginData == null)
+            {
+                this.Unauthorized();
+            }
+
+            return this.Ok(externalLoginData);
+        }
+
+        /// <summary>
+        /// Get external login data from an external Microsoft authentication provider.
+        /// </summary>
+        /// <param name="logInExternalProvider">The external login provider.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The external login data.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Bad Request.</response>
+        /// <response code="404">Not Found.</response>
+        /// <response code="500">Error occurred.</response>
+        [HttpPost]
+        [Route("external/microsoft/data")]
+        [AllowAnonymous]
+        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+        [Produces(HttpContentType.JSON, HttpContentType.XML)]
+        [ProducesResponseType(typeof(ExternalLogInData), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+        [SwaggerOperation(Tags = new[] { "Auth" })]
+        public virtual async Task<IActionResult> GetExternalLoginData([FromBody][Required]LogInExternalProviderMicrosoft logInExternalProvider, CancellationToken cancellationToken = default)
         {
             var externalLoginData = await this.BaseIdentityManager
                 .GetExternalProviderLogInData(logInExternalProvider, cancellationToken);

@@ -163,16 +163,16 @@ namespace Nano.Web.Api
         /// <summary>
         /// Get External Log-In Data Async.
         /// </summary>
-        /// <param name="request">The <see cref="GetExternalLoginDataRequest{TProvider}"/>.</param>
+        /// <param name="request">The <see cref="BaseGetExternalLoginDataRequest{TProvider}"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>The <see cref="AccessToken"/>.</returns>
-        public virtual async Task<ExternalLogInData> GetExternalLogInDataAsync<TProvider>(GetExternalLoginDataRequest<TProvider> request, CancellationToken cancellationToken = default)
+        public virtual async Task<ExternalLogInData> GetExternalLogInDataAsync<TProvider>(BaseGetExternalLoginDataRequest<TProvider> request, CancellationToken cancellationToken = default)
             where TProvider : BaseLogInExternalProvider, new()
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            return await this.InvokeAsync<GetExternalLoginDataRequest<TProvider>, ExternalLogInData>(request, cancellationToken);
+            return await this.InvokeAsync<BaseGetExternalLoginDataRequest<TProvider>, ExternalLogInData>(request, cancellationToken);
         }
 
         /// <summary>

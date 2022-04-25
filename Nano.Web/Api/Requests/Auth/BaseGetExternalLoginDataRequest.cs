@@ -3,7 +3,7 @@
 namespace Nano.Web.Api.Requests.Auth
 {
     /// <inheritdoc />
-    public class GetExternalLoginDataRequest<TProvider> : BaseRequestPost
+    public abstract class BaseGetExternalLoginDataRequest<TProvider> : BaseRequestPost
         where TProvider : BaseLogInExternalProvider, new()
     {
         /// <summary>
@@ -12,9 +12,8 @@ namespace Nano.Web.Api.Requests.Auth
         public virtual TProvider Provider { get; set; } = new();
 
         /// <inheritdoc />
-        public GetExternalLoginDataRequest()
+        protected BaseGetExternalLoginDataRequest()
         {
-            this.Action = "external/data";
             this.Controller = "auth";
         }
 
