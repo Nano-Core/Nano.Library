@@ -126,7 +126,7 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Sign-in a user transient, from data recieved from a separate authentication.
+        /// Sign-in a user, from data received from a separate authentication.
         /// </summary>
         /// <param name="logInExternalDirect">The external login direct.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -160,7 +160,7 @@ namespace Nano.Web.Controllers
         }
 
         /// <summary>
-        /// Sign-in a user, from data recieved from a separate authentication.
+        /// Sign-in a user, from data received from a separate authentication.
         /// </summary>
         /// <param name="logInExternalDirect">The external login direct.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
