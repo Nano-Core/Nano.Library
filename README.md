@@ -1,6 +1,8 @@
 # Nano Library
+[![Build status](https://ci.appveyor.com/api/projects/status/la8s64bjr9ymq6ov/branch/master?svg=true)](https://ci.appveyor.com/project/vivet/nano-library/branch/master)
 [![NuGet](https://img.shields.io/nuget/dt/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
 [![NuGet](https://img.shields.io/nuget/v/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
+
 
 Nano is a library for rapidly building Net 6.0 applications.  
 
