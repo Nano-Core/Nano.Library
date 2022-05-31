@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -25,47 +26,43 @@ namespace Nano.Web.Api.Extensions
         /// <returns>Void.</returns>
         internal static async Task AddFormItem(this MultipartFormDataContent formContent, FormItem formItem, CancellationToken cancellationToken = default)
         {
-            if (formItem.Type == typeof(IFormFile))
-            {
-                if (formItem.Value is not IFormFile value)
-                {
-                    return;
-                }
+            if (formContent == null) 
+                throw new ArgumentNullException(nameof(formContent));
 
-                var bytes = await value
-                    .OpenReadStream()
+            if (formItem == null) 
+                throw new ArgumentNullException(nameof(formItem));
+
+            if (formItem.Value is IFormFile valueFormFile)
+            {
+                var stream = valueFormFile
+                    .OpenReadStream();
+
+                await using (stream)
+                {
+                    var bytes = await stream
+                        .ReadAllBytesAsync(cancellationToken);
+
+                    var fileContent = new ByteArrayContent(bytes);
+                    fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
+
+                    formContent
+                        .Add(fileContent, formItem.Name, valueFormFile.FileName);
+                }
+            }
+            else if (formItem.Value is FileStream valueFileStream)
+            {
+                var bytes = await valueFileStream
                     .ReadAllBytesAsync(cancellationToken);
 
                 var fileContent = new ByteArrayContent(bytes);
                 fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
 
                 formContent
-                    .Add(fileContent, formItem.Name, value.FileName);
+                    .Add(fileContent, formItem.Name, valueFileStream.Name);
             }
-            else if (formItem.Type == typeof(Stream))
+            else if (formItem.Value is FileInfo valueFileInfo)
             {
-                if (formItem.Value is not FileStream value)
-                {
-                    return;
-                }
-
-                var bytes = await value
-                    .ReadAllBytesAsync(cancellationToken);
-
-                var fileContent = new ByteArrayContent(bytes);
-                fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
-
-                formContent
-                    .Add(fileContent, formItem.Name);
-            }
-            else if (formItem.Type == typeof(FileInfo))
-            {
-                if (formItem.Value is not FileInfo value)
-                {
-                    return;
-                }
-
-                var filename = value.FullName;
+                var filename = valueFileInfo.FullName;
 
                 if (!File.Exists(filename))
                 {
@@ -77,11 +74,11 @@ namespace Nano.Web.Api.Extensions
                 fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
 
                 formContent
-                    .Add(fileContent, formItem.Name, Path.GetFileName(filename));
+                    .Add(fileContent, formItem.Name, valueFileInfo.Name);
             }
             else
             {
-                var isSimple = formItem.Type
+                var isSimple = formItem.Value.GetType()
                     .IsSimple();
 
                 var value = !isSimple
@@ -95,7 +92,6 @@ namespace Nano.Web.Api.Extensions
                 formContent
                     .Add(new StringContent(value), formItem.Name);
             }
-
         }
     }
 }

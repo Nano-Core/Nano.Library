@@ -29,8 +29,7 @@ namespace Nano.Web.Api.Requests
                     return new FormItem
                     {
                         Name = x.Name,
-                        Value = value,
-                        Type = type
+                        Value = value
                     };
                 });
         }

@@ -16,10 +16,5 @@ namespace Nano.Web.Api.Requests.Types
         /// Value.
         /// </summary>
         public virtual object Value { get; set; }
-
-        /// <summary>
-        /// Type.
-        /// </summary>
-        public virtual Type Type { get; set; }
     }
 }
