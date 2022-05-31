@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Nano.Web.Models;
-using Newtonsoft.Json;
 
 namespace Nano.Web.Hosting.Filters
 {
@@ -44,17 +43,23 @@ namespace Nano.Web.Hosting.Filters
                 return;
             }
 
+            var exceptions = context.ModelState.Values
+                .SelectMany(x => x.Errors
+                    .Select(y => y.ErrorMessage))
+                .ToArray();
+
             var error = new Error
             {
                 Summary = "Invalid ModelState",
                 StatusCode = (int)HttpStatusCode.BadRequest,
-                Exceptions = context.ModelState.Values.SelectMany(x => x.Errors.Select(y => y.ErrorMessage)).ToArray()
+                Exceptions = exceptions
             };
 
-            var message = JsonConvert.SerializeObject(error);
-
-            this.Logger
-                .LogWarning(message);
+            foreach (var exception in error.Exceptions)
+            {
+                this.Logger
+                    .LogWarning($"{error.Summary}{exception}");
+            }
 
             context.Result = new BadRequestObjectResult(error);
         }
