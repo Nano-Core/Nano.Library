@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>6.1.2</version>
+		<version>6.1.3</version>
 		<title>Nano Core</title>
 		<summary>
 			Rapidly built and deploy rich .NET 6.0 applications.
@@ -21,6 +21,7 @@
 		<releaseNotes>
 			- Added logging when modestate validation failed, and bad request is returned.
 			- Simplified and improved form handling in api-client.
+			- Updated all NuGet packages.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net6.0">
