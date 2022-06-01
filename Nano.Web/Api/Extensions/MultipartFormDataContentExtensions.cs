@@ -32,66 +32,156 @@ namespace Nano.Web.Api.Extensions
             if (formItem == null) 
                 throw new ArgumentNullException(nameof(formItem));
 
-            if (formItem.Value is IFormFile valueFormFile)
+            if (formItem.Value is Array array)
             {
-                var stream = valueFormFile
-                    .OpenReadStream();
-
-                await using (stream)
+                foreach (var element in array)
                 {
-                    var bytes = await stream
-                        .ReadAllBytesAsync(cancellationToken);
+                    switch (element)
+                    {
+                        case IFormFile formFile:
+                            await formContent
+                                .Add(formFile, formItem.Name, cancellationToken);
+                            break;
 
-                    var fileContent = new ByteArrayContent(bytes);
-                    fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
+                        case FileInfo fileInfo:
+                            await formContent
+                                .Add(fileInfo, formItem.Name, cancellationToken);
+                            break;
 
-                    formContent
-                        .Add(fileContent, formItem.Name, valueFormFile.FileName);
+                        case FileStream fileStream:
+                            await formContent
+                                .Add(fileStream, formItem.Name, cancellationToken);
+                            break;
+
+                        default:
+                            await formContent
+                                .Add(formItem.Value, formItem.Name, cancellationToken);
+                            break;
+                    }
                 }
             }
-            else if (formItem.Value is FileStream valueFileStream)
+            else
             {
-                var bytes = await valueFileStream
+                switch (formItem.Value)
+                {
+                    case IFormFile formFile:
+                        await formContent
+                            .Add(formFile, formItem.Name, cancellationToken);
+                        break;
+                    
+                    case FileInfo fileInfo:
+                        await formContent
+                            .Add(fileInfo, formItem.Name, cancellationToken);
+                        break;
+                    
+                    case FileStream fileStream:
+                        await formContent
+                            .Add(fileStream, formItem.Name, cancellationToken);
+                        break;
+
+                    default:
+                        await formContent
+                            .Add(formItem.Value, formItem.Name, cancellationToken);
+                        break;
+                }
+            }
+        }
+
+        private static async Task Add(this MultipartFormDataContent formContent, FileInfo fileInfo, string name, CancellationToken cancellationToken = default)
+        {
+            if (formContent == null)
+                throw new ArgumentNullException(nameof(formContent));
+
+            if (fileInfo == null)
+                throw new ArgumentNullException(nameof(fileInfo));
+
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
+
+            if (!File.Exists(fileInfo.FullName))
+            {
+                throw new FileNotFoundException($"File: '{fileInfo.FullName}' not found.");
+            }
+
+            var bytes = await File.ReadAllBytesAsync(fileInfo.FullName, cancellationToken);
+            var fileContent = new ByteArrayContent(bytes);
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
+
+            formContent
+                .Add(fileContent, name, fileInfo.Name);
+        }
+        private static async Task Add(this MultipartFormDataContent formContent, IFormFile formFile, string name, CancellationToken cancellationToken = default)
+        {
+            if (formContent == null)
+                throw new ArgumentNullException(nameof(formContent));
+
+            if (formFile == null)
+                throw new ArgumentNullException(nameof(formFile));
+
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
+
+            var stream = formFile
+                .OpenReadStream();
+
+            await using (stream)
+            {
+                var bytes = await stream
                     .ReadAllBytesAsync(cancellationToken);
 
                 var fileContent = new ByteArrayContent(bytes);
                 fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
 
                 formContent
-                    .Add(fileContent, formItem.Name, valueFileStream.Name);
+                    .Add(fileContent, name, formFile.FileName);
             }
-            else if (formItem.Value is FileInfo valueFileInfo)
-            {
-                var filename = valueFileInfo.FullName;
+        }
+        private static async Task Add(this MultipartFormDataContent formContent, FileStream fileStream, string name, CancellationToken cancellationToken = default)
+        {
+            if (formContent == null)
+                throw new ArgumentNullException(nameof(formContent));
 
-                if (!File.Exists(filename))
+            if (fileStream == null)
+                throw new ArgumentNullException(nameof(fileStream));
+
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
+
+            var bytes = await fileStream
+                .ReadAllBytesAsync(cancellationToken);
+
+            var fileContent = new ByteArrayContent(bytes);
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
+
+            formContent
+                .Add(fileContent, name, fileStream.Name);
+        }
+        private static async Task Add(this MultipartFormDataContent formContent, object value2, string name, CancellationToken cancellationToken = default)
+        {
+            if (formContent == null)
+                throw new ArgumentNullException(nameof(formContent));
+
+            if (value2 == null)
+                throw new ArgumentNullException(nameof(value2));
+
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
+
+            var isSimple = value2.GetType()
+                .IsSimple();
+
+            var value = !isSimple
+                ? JsonConvert.SerializeObject(value2, new JsonSerializerSettings
                 {
-                    throw new FileNotFoundException($"File: '{filename}' not found.");
-                }
+                    ReferenceLoopHandling = ReferenceLoopHandling.Error,
+                    NullValueHandling = NullValueHandling.Ignore
+                })
+                : value2.ToString() ?? string.Empty;
 
-                var bytes = await File.ReadAllBytesAsync(filename, cancellationToken);
-                var fileContent = new ByteArrayContent(bytes);
-                fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
+            formContent
+                .Add(new StringContent(value), name);
 
-                formContent
-                    .Add(fileContent, formItem.Name, valueFileInfo.Name);
-            }
-            else
-            {
-                var isSimple = formItem.Value.GetType()
-                    .IsSimple();
-
-                var value = !isSimple
-                    ? JsonConvert.SerializeObject(formItem.Value, new JsonSerializerSettings
-                        {
-                            ReferenceLoopHandling = ReferenceLoopHandling.Error,
-                            NullValueHandling = NullValueHandling.Ignore 
-                        })
-                    : formItem.Value.ToString() ?? string.Empty;
-
-                formContent
-                    .Add(new StringContent(value), formItem.Name);
-            }
+            await Task.CompletedTask;
         }
     }
 }

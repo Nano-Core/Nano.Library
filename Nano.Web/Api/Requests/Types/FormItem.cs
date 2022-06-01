@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Nano.Web.Api.Requests.Types
+﻿namespace Nano.Web.Api.Requests.Types
 {
     /// <summary>
     /// Form Item.

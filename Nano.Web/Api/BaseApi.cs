@@ -603,8 +603,11 @@ namespace Nano.Web.Api
             httpRequest.Headers.AcceptLanguage
                 .Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
 
-            httpRequest.Headers
-                .Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
+            if (DateTimeInfo.TimeZone.Value != null)
+            {
+                httpRequest.Headers
+                    .Add(RequestTimeZoneHeaderProvider.Headerkey, DateTimeInfo.TimeZone.Value.Id);
+            }
 
             if (jwtToken != null)
             {
