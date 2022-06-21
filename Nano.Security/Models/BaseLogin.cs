@@ -28,7 +28,7 @@ namespace Nano.Security.Models
         /// Not relevant for transient logins.
         /// </summary>
         [Required]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public virtual bool IsRefreshable { get; set; } = false;
 
         /// <summary>

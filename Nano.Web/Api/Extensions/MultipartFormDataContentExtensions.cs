@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -32,7 +33,7 @@ namespace Nano.Web.Api.Extensions
             if (formItem == null) 
                 throw new ArgumentNullException(nameof(formItem));
 
-            if (formItem.Value is Array array)
+            if (formItem.Value is IEnumerable array)
             {
                 foreach (var element in array)
                 {

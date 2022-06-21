@@ -42,7 +42,7 @@ namespace Nano.Models.Extensions
             {
                 await stream
                     .CopyToAsync(memoryStream, cancellationToken);
-                
+
                 return memoryStream
                     .ToArray();
             }
