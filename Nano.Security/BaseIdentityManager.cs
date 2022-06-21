@@ -174,7 +174,7 @@ public abstract class BaseIdentityManager
         {
             return logInExternalProvider.Name switch
             {
-                "Google" => await this.GetExternalProviderLoginDataGoogle(logInExternalProvider, this.Options.ExternalLogins.Google, cancellationToken),
+                "Google" => await this.GetExternalProviderLoginDataGoogle(logInExternalProvider, this.Options.ExternalLogins.Google),
                 "Facebook" => await this.GetExternalProviderLoginDataFacebook(logInExternalProvider, this.Options.ExternalLogins.Facebook, cancellationToken),
                 "Microsoft" => await this.GetExternalProviderLoginDataMicrosoft(logInExternalProvider, this.Options.ExternalLogins.Microsoft, cancellationToken),
                 _ => throw new NotSupportedException(logInExternalProvider.Name)
@@ -230,7 +230,7 @@ public abstract class BaseIdentityManager
         };
     }
 
-    private async Task<ExternalLogInData> GetExternalProviderLoginDataGoogle<TProvider>(TProvider logInExternalProvider, SecurityOptions.ExternalLoginOptions.GoogleOptions externalLoginOptions, CancellationToken cancellationToken = default)
+    private async Task<ExternalLogInData> GetExternalProviderLoginDataGoogle<TProvider>(TProvider logInExternalProvider, SecurityOptions.ExternalLoginOptions.GoogleOptions externalLoginOptions)
         where TProvider : BaseLogInExternalProvider
     {
         if (logInExternalProvider == null)
@@ -1881,8 +1881,8 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         {
             return externalProviderName switch
             {
-                "Google" => await this.RefreshExternalProviderTokenGoogle(externalProviderName, externalProviderRefreshToken, cancellationToken),
-                "Facebook" => await this.RefreshExternalProviderTokenFacebook(externalProviderName, externalProviderRefreshToken, cancellationToken),
+                "Google" => await this.RefreshExternalProviderTokenGoogle(externalProviderName, externalProviderRefreshToken),
+                "Facebook" => await this.RefreshExternalProviderTokenFacebook(externalProviderName, externalProviderRefreshToken),
                 "Microsoft" => await this.RefreshExternalProviderTokenMicrosoft(externalProviderName, externalProviderRefreshToken, cancellationToken),
                 _ => throw new NotSupportedException($"The external provider: {externalProviderName} is not supported.")
             };
@@ -1895,7 +1895,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
             throw new UnauthorizedException();
         }
     }
-    private async Task<ExternalLoginTokenData> RefreshExternalProviderTokenGoogle(string externalProviderName, string externalProviderRefreshToken = null, CancellationToken cancellationToken = default)
+    private async Task<ExternalLoginTokenData> RefreshExternalProviderTokenGoogle(string externalProviderName, string externalProviderRefreshToken = null)
     {
         if (externalProviderName == null)
             throw new ArgumentNullException(nameof(externalProviderName));
@@ -1908,7 +1908,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         return await Task.FromResult(new ExternalLoginTokenData());
     }
-    private async Task<ExternalLoginTokenData> RefreshExternalProviderTokenFacebook(string externalProviderName, string externalProviderRefreshToken = null, CancellationToken cancellationToken = default)
+    private async Task<ExternalLoginTokenData> RefreshExternalProviderTokenFacebook(string externalProviderName, string externalProviderRefreshToken = null)
     {
         if (externalProviderName == null)
             throw new ArgumentNullException(nameof(externalProviderName));

@@ -55,7 +55,7 @@
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.3.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.3.1" />
-		<PackageReference Include="Vivet.AspNetCore.RequestTimeZone" Version="6.0.1" />
+		<PackageReference Include="Vivet.AspNetCore.RequestTimeZone" Version="6.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>

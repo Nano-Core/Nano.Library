@@ -56,7 +56,7 @@ internal static class MultipartFormDataContentExtensions
 
                     default:
                         await formContent
-                            .Add(formItem.Value, formItem.Name, cancellationToken);
+                            .Add(formItem.Value, formItem.Name);
                         break;
                 }
             }
@@ -82,7 +82,7 @@ internal static class MultipartFormDataContentExtensions
 
                 default:
                     await formContent
-                        .Add(formItem.Value, formItem.Name, cancellationToken);
+                        .Add(formItem.Value, formItem.Name);
                     break;
             }
         }
@@ -157,7 +157,7 @@ internal static class MultipartFormDataContentExtensions
         formContent
             .Add(fileContent, name, fileStream.Name);
     }
-    private static async Task Add(this MultipartFormDataContent formContent, object value2, string name, CancellationToken cancellationToken = default)
+    private static async Task Add(this MultipartFormDataContent formContent, object value2, string name)
     {
         if (formContent == null)
             throw new ArgumentNullException(nameof(formContent));

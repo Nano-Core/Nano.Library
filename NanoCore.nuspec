@@ -19,8 +19,8 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library" />
 		<releaseNotes>
-			- Added logging when modestate validation failed, and bad request is returned.
-			- Simplified and improved form handling in api-client.
+			- Fixed api-client for form collection of files, not catching IEnumerable but only Array.
+			- Cosmetics code quality improvements.
 			- Updated all NuGet packages.
 		</releaseNotes>
 		<dependencies>
@@ -85,7 +85,7 @@
 				<dependency id="Swashbuckle.AspNetCore" version="6.3.1" />
 				<dependency id="Swashbuckle.AspNetCore.Newtonsoft" version="6.3.1" />
 				<dependency id="Swashbuckle.AspNetCore.Annotations" version="6.3.1" />
-				<dependency id="Vivet.AspNetCore.RequestTimeZone" version="6.0.1" />
+				<dependency id="Vivet.AspNetCore.RequestTimeZone" version="6.0.2" />
 			</group>
 		</dependencies>
 	</metadata>
