@@ -1,17 +1,16 @@
 using Microsoft.Extensions.Logging;
 
-namespace Nano.Logging.Interfaces
+namespace Nano.Logging.Interfaces;
+
+/// <summary>
+/// Logging Provider interface.
+/// Defines the provider used for logging in the application.
+/// </summary>
+public interface ILoggingProvider
 {
     /// <summary>
-    /// Logging Provider interface.
-    /// Defines the provider used for logging in the application.
+    /// Configures the <see cref="ILoggingProvider"/>.
     /// </summary>
-    public interface ILoggingProvider
-    {
-        /// <summary>
-        /// Configures the <see cref="ILoggingProvider"/>.
-        /// </summary>
-        /// <returns>The <see cref="ILoggerProvider"/>.</returns>
-        ILoggerProvider Configure();
-    }
+    /// <returns>The <see cref="ILoggerProvider"/>.</returns>
+    ILoggerProvider Configure();
 }

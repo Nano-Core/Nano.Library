@@ -1,16 +1,15 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 
-namespace Nano.Data
+namespace Nano.Data;
+
+/// <inheritdoc />
+public class DefaultDbContext : BaseDbContext<Guid>
 {
     /// <inheritdoc />
-    public class DefaultDbContext : BaseDbContext<Guid>
+    public DefaultDbContext(DbContextOptions contextOptions, DataOptions dataOptions)
+        : base(contextOptions, dataOptions)
     {
-        /// <inheritdoc />
-        public DefaultDbContext(DbContextOptions contextOptions, DataOptions dataOptions)
-            : base(contextOptions, dataOptions)
-        {
 
-        }
     }
 }

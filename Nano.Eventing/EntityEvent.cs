@@ -1,38 +1,37 @@
 using System;
 
-namespace Nano.Eventing
+namespace Nano.Eventing;
+
+/// <summary>
+/// Entity Event.
+/// </summary>
+public class EntityEvent
 {
     /// <summary>
-    /// Entity Event.
+    /// Id.
     /// </summary>
-    public class EntityEvent
+    public object Id { get; set; }
+
+    /// <summary>
+    /// Type.
+    /// </summary>
+    public string Type { get; set; }
+
+    /// <summary>
+    /// State.
+    /// </summary>
+    public string State { get; set; }
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="type"></param>
+    /// <param name="state"></param>
+    public EntityEvent(object id, string type, string state)
     {
-        /// <summary>
-        /// Id.
-        /// </summary>
-        public object Id { get; set; }
-
-        /// <summary>
-        /// Type.
-        /// </summary>
-        public string Type { get; set; }
-
-        /// <summary>
-        /// State.
-        /// </summary>
-        public string State { get; set; }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="type"></param>
-        /// <param name="state"></param>
-        public EntityEvent(object id, string type, string state)
-        {
-            this.Id = id ?? throw new ArgumentNullException(nameof(id));
-            this.Type = type ?? throw new ArgumentNullException(nameof(type));
-            this.State = state ?? throw new ArgumentNullException(nameof(state));
-        }
+        this.Id = id ?? throw new ArgumentNullException(nameof(id));
+        this.Type = type ?? throw new ArgumentNullException(nameof(type));
+        this.State = state ?? throw new ArgumentNullException(nameof(state));
     }
 }

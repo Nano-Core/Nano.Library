@@ -1,42 +1,41 @@
 
 using System;
 
-namespace Nano.Logging
+namespace Nano.Logging;
+
+/// <summary>
+/// Logging Options.
+/// </summary>
+public class LoggingOptions
 {
     /// <summary>
-    /// Logging Options.
+    /// Section Name.
     /// </summary>
-    public class LoggingOptions
+    public static string SectionName => "Logging";
+
+    /// <summary>
+    /// Log Level.
+    /// </summary>
+    public virtual LogLevel LogLevel { get; set; } = LogLevel.Information;
+
+    /// <summary>
+    /// Log Level Overrides.
+    /// </summary>
+    public virtual LogLevelOverride[] LogLevelOverrides { get; set; } = Array.Empty<LogLevelOverride>();
+
+    /// <summary>
+    /// Log Level Override (nested class).
+    /// </summary>
+    public class LogLevelOverride
     {
         /// <summary>
-        /// Section Name.
+        /// Namespace.
         /// </summary>
-        public static string SectionName => "Logging";
+        public virtual string Namespace { get; set; }
 
         /// <summary>
         /// Log Level.
         /// </summary>
-        public virtual LogLevel LogLevel { get; set; } = LogLevel.Information;
-
-        /// <summary>
-        /// Log Level Overrides.
-        /// </summary>
-        public virtual LogLevelOverride[] LogLevelOverrides { get; set; } = Array.Empty<LogLevelOverride>();
-
-        /// <summary>
-        /// Log Level Override (nested class).
-        /// </summary>
-        public class LogLevelOverride
-        {
-            /// <summary>
-            /// Namespace.
-            /// </summary>
-            public virtual string Namespace { get; set; }
-
-            /// <summary>
-            /// Log Level.
-            /// </summary>
-            public virtual LogLevel LogLevel { get; set; } = LogLevel.Warning;
-        }
+        public virtual LogLevel LogLevel { get; set; } = LogLevel.Warning;
     }
 }

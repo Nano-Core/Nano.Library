@@ -1,15 +1,14 @@
 ﻿using Nano.Security.Models;
 
-namespace Nano.Web.Api.Requests.Auth
+namespace Nano.Web.Api.Requests.Auth;
+
+/// <inheritdoc />
+public class LogInExternalFacebookRequest : BaseLogInExternalRequest<LogInExternalFacebook>
 {
     /// <inheritdoc />
-    public class LogInExternalFacebookRequest : BaseLogInExternalRequest<LogInExternalFacebook>
+    public LogInExternalFacebookRequest()
     {
-        /// <inheritdoc />
-        public LogInExternalFacebookRequest()
-        {
-            this.Action = "login/external/facebook";
-            this.Controller = "auth";
-        }
+        this.Action = "login/external/facebook";
+        this.Controller = "auth";
     }
 }

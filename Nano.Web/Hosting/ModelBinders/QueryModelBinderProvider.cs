@@ -3,35 +3,34 @@ using DynamicExpression.Entities;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Nano.Web.Hosting.ModelBinders
+namespace Nano.Web.Hosting.ModelBinders;
+
+/// <inheritdoc />
+public class QueryModelBinderProvider : IModelBinderProvider
 {
     /// <inheritdoc />
-    public class QueryModelBinderProvider : IModelBinderProvider
+    public IModelBinder GetBinder(ModelBinderProviderContext context)
     {
-        /// <inheritdoc />
-        public IModelBinder GetBinder(ModelBinderProviderContext context)
+        if (context == null)
+            throw new ArgumentNullException(nameof(context));
+
+        var modelType = context.Metadata.ModelType;
+
+        if (modelType.IsGenericType && (modelType.GetGenericTypeDefinition() == typeof(IQuery<>) || modelType.GetGenericTypeDefinition() == typeof(Query<>)))
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
+            var types = modelType.GetGenericArguments();
+            var genericType = typeof(QueryModelBinder<>).MakeGenericType(types);
 
-            var modelType = context.Metadata.ModelType;
-
-            if (modelType.IsGenericType && (modelType.GetGenericTypeDefinition() == typeof(IQuery<>) || modelType.GetGenericTypeDefinition() == typeof(Query<>)))
-            {
-                var types = modelType.GetGenericArguments();
-                var genericType = typeof(QueryModelBinder<>).MakeGenericType(types);
-
-                return (IModelBinder)Activator.CreateInstance(genericType);
-            }
-
-            if (modelType == typeof(IQuery) || modelType == typeof(Query))
-            {
-                var genericType = typeof(QueryModelBinder);
-
-                return (IModelBinder)Activator.CreateInstance(genericType);
-            }
-
-            return null;
+            return (IModelBinder)Activator.CreateInstance(genericType);
         }
+
+        if (modelType == typeof(IQuery) || modelType == typeof(Query))
+        {
+            var genericType = typeof(QueryModelBinder);
+
+            return (IModelBinder)Activator.CreateInstance(genericType);
+        }
+
+        return null;
     }
 }

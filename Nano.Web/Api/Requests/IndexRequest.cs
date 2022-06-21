@@ -1,30 +1,29 @@
 ﻿using DynamicExpression.Entities;
 using DynamicExpression.Interfaces;
 
-namespace Nano.Web.Api.Requests
+namespace Nano.Web.Api.Requests;
+
+/// <summary>
+/// Index Request.
+/// </summary>
+public class IndexRequest : BaseRequestPost
 {
     /// <summary>
-    /// Index Request.
+    /// Query.
     /// </summary>
-    public class IndexRequest : BaseRequestPost
+    public virtual IQuery Query { get; set; } = new Query();
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public IndexRequest()
     {
-        /// <summary>
-        /// Query.
-        /// </summary>
-        public virtual IQuery Query { get; set; } = new Query();
+        this.Action = "index";
+    }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public IndexRequest()
-        {
-            this.Action = "index";
-        }
-
-        /// <inheritdoc />
-        public override object GetBody()
-        {
-            return this.Query;
-        }
+    /// <inheritdoc />
+    public override object GetBody()
+    {
+        return this.Query;
     }
 }

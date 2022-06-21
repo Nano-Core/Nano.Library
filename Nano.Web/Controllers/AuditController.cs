@@ -6,17 +6,16 @@ using Nano.Eventing.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security.Const;
 
-namespace Nano.Web.Controllers
+namespace Nano.Web.Controllers;
+
+/// <inheritdoc />
+[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
+public class AuditController : DefaultControllerReadOnly<DefaultAuditEntry, AuditEntryQueryCriteria>
 {
     /// <inheritdoc />
-    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
-    public class AuditController : DefaultControllerReadOnly<DefaultAuditEntry, AuditEntryQueryCriteria>
+    public AuditController(ILogger logger, IRepository repository, IEventing eventing)
+        : base(logger, repository, eventing)
     {
-        /// <inheritdoc />
-        public AuditController(ILogger logger, IRepository repository, IEventing eventing) 
-            : base(logger, repository, eventing)
-        {
 
-        }
     }
 }

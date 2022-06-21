@@ -1,20 +1,19 @@
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Nano.Web.Controllers;
 
-namespace Nano.Web.Hosting.Conventions
+namespace Nano.Web.Hosting.Conventions;
+
+/// <inheritdoc />
+public class AuthControllerDisabledConvention : IApplicationModelConvention
 {
     /// <inheritdoc />
-    public class AuthControllerDisabledConvention : IApplicationModelConvention
+    public void Apply(ApplicationModel application)
     {
-        /// <inheritdoc />
-        public void Apply(ApplicationModel application)
+        foreach (var controller in application.Controllers)
         {
-            foreach (var controller in application.Controllers)
+            if (controller.ControllerName == nameof(DefaultAuthController).Replace("Controller", string.Empty))
             {
-                if (controller.ControllerName == nameof(DefaultAuthController).Replace("Controller", string.Empty))
-                {
-                    controller.ApiExplorer.IsVisible = false;
-                }
+                controller.ApiExplorer.IsVisible = false;
             }
         }
     }

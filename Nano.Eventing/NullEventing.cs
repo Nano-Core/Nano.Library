@@ -2,31 +2,30 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nano.Eventing.Interfaces;
 
-namespace Nano.Eventing
+namespace Nano.Eventing;
+
+/// <summary>
+/// Null Eventing.
+/// </summary>
+public class NullEventing : IEventing
 {
-    /// <summary>
-    /// Null Eventing.
-    /// </summary>
-    public class NullEventing : IEventing
+    /// <inheritdoc />
+    public virtual Task PublishAsync<TMessage>(TMessage body, string routing = "")
+        where TMessage : class
     {
-        /// <inheritdoc />
-        public virtual Task PublishAsync<TMessage>(TMessage body, string routing = "") 
-            where TMessage : class
-        {
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
+    }
 
-        /// <inheritdoc />
-        public virtual Task SubscribeAsync<TMessage>(string routing = "", CancellationToken cancellationToken = default) 
-            where TMessage : class
-        {
-            return Task.CompletedTask;
-        }
+    /// <inheritdoc />
+    public virtual Task SubscribeAsync<TMessage>(string routing = "", CancellationToken cancellationToken = default)
+        where TMessage : class
+    {
+        return Task.CompletedTask;
+    }
 
-        /// <inheritdoc />
-        public void Dispose()
-        {
+    /// <inheritdoc />
+    public void Dispose()
+    {
 
-        }
     }
 }

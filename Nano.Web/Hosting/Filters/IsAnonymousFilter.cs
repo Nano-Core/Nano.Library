@@ -5,49 +5,48 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Nano.Web.Hosting.Filters
+namespace Nano.Web.Hosting.Filters;
+
+/// <summary>
+/// Is Anonymous Filter.
+/// </summary>
+public class IsAnonymousFilter : ActionFilterAttribute
 {
     /// <summary>
-    /// Is Anonymous Filter.
+    /// Add IsAnonymous key/value pair to <see cref="HttpContext.Items"/>.
     /// </summary>
-    public class IsAnonymousFilter : ActionFilterAttribute
+    /// <param name="context">The <see cref="ActionExecutingContext"/>.</param>
+    public override void OnActionExecuting(ActionExecutingContext context)
     {
-        /// <summary>
-        /// Add IsAnonymous key/value pair to <see cref="HttpContext.Items"/>.
-        /// </summary>
-        /// <param name="context">The <see cref="ActionExecutingContext"/>.</param>
-        public override void OnActionExecuting(ActionExecutingContext context)
+        if (context == null)
+            throw new ArgumentNullException(nameof(context));
+
+        var isAnonymous = false;
+
+        if (context.ActionDescriptor is ControllerActionDescriptor descriptor)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
+            var actionAttribute = descriptor.MethodInfo
+                .GetCustomAttributes(typeof(AllowAnonymousAttribute), true)
+                .FirstOrDefault();
 
-            var isAnonymous = false;
-
-            if (context.ActionDescriptor is ControllerActionDescriptor descriptor)
+            if (actionAttribute != null)
             {
-                var actionAttribute = descriptor.MethodInfo
+                isAnonymous = true;
+            }
+            else
+            {
+                var controllerAttribute = descriptor.ControllerTypeInfo
                     .GetCustomAttributes(typeof(AllowAnonymousAttribute), true)
                     .FirstOrDefault();
 
-                if (actionAttribute != null)
+                if (controllerAttribute != null)
                 {
                     isAnonymous = true;
                 }
-                else
-                {
-                    var controllerAttribute = descriptor.ControllerTypeInfo
-                        .GetCustomAttributes(typeof(AllowAnonymousAttribute), true)
-                        .FirstOrDefault();
-
-                    if (controllerAttribute != null)
-                    {
-                        isAnonymous = true;
-                    }
-                }
             }
-
-            context.HttpContext.Items
-                .Add("IsAnonymous", isAnonymous);
         }
+
+        context.HttpContext.Items
+            .Add("IsAnonymous", isAnonymous);
     }
 }

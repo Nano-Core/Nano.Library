@@ -5,27 +5,26 @@ using Microsoft.Extensions.Configuration;
 using Nano.Config;
 using Nano.Data.Interfaces;
 
-namespace Nano.Data
+namespace Nano.Data;
+
+/// <inheritdoc />
+public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbContextFactory<TContext>
+    where TProvider : class, IDataProvider
+    where TContext : DbContext
 {
     /// <inheritdoc />
-    public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbContextFactory<TContext>
-        where TProvider : class, IDataProvider
-        where TContext : DbContext
+    public virtual TContext CreateDbContext(string[] args)
     {
-        /// <inheritdoc />
-        public virtual TContext CreateDbContext(string[] args)
-        {
-            var configuration = ConfigManager.BuildConfiguration();
+        var configuration = ConfigManager.BuildConfiguration();
 
-            var builder = new DbContextOptionsBuilder<TContext>();
-            var dataOptions = configuration
-                .GetSection(DataOptions.SectionName)
-                .Get<DataOptions>() ?? new DataOptions();
+        var builder = new DbContextOptionsBuilder<TContext>();
+        var dataOptions = configuration
+            .GetSection(DataOptions.SectionName)
+            .Get<DataOptions>() ?? new DataOptions();
 
-            var provider = Activator.CreateInstance(typeof(TProvider), dataOptions) as TProvider;
-            provider?.Configure(builder);
+        var provider = Activator.CreateInstance(typeof(TProvider), dataOptions) as TProvider;
+        provider?.Configure(builder);
 
-            return Activator.CreateInstance(typeof(TContext), builder.Options, dataOptions) as TContext;
-        }
+        return Activator.CreateInstance(typeof(TContext), builder.Options, dataOptions) as TContext;
     }
 }

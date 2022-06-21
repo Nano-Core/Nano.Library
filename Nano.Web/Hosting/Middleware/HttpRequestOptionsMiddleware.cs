@@ -3,36 +3,35 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Nano.Web.Hosting.Middleware
+namespace Nano.Web.Hosting.Middleware;
+
+/// <inheritdoc />
+public class HttpRequestOptionsMiddleware : IMiddleware
 {
     /// <inheritdoc />
-    public class HttpRequestOptionsMiddleware : IMiddleware
+    public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
     {
-        /// <inheritdoc />
-        public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
+        if (httpContext == null)
+            throw new ArgumentNullException(nameof(httpContext));
+
+        if (next == null)
+            throw new ArgumentNullException(nameof(next));
+
+        if (httpContext.Request.Method == HttpMethods.Options)
         {
-            if (httpContext == null)
-                throw new ArgumentNullException(nameof(httpContext));
+            var response = httpContext.Response;
+            var headers = response.Headers;
 
-            if (next == null)
-                throw new ArgumentNullException(nameof(next));
+            headers.Add("Access-Control-Allow-Origin", new[] { (string)httpContext.Request.Headers["Origin"] });
+            headers.Add("Access-Control-Allow-Headers", new[] { "Origin, Server, Date, Cache-Control, Accept, Content-Type, Transfer-Encoding, Connection, Content-Encoding, RequestId, api-supported-versions, Strict-Transport-Security, X-Frame-Options, X-XSS-Protection, X-Content-Type-Options, X-Download-Options, X-Robots-Tag, X-Requested-With" });
+            headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, PATCH, DELETE, OPTIONS" });
+            headers.Add("Access-Control-Allow-Credentials", new[] { "true" });
 
-            if (httpContext.Request.Method == HttpMethods.Options)
-            {
-                var response = httpContext.Response;
-                var headers = response.Headers;
+            response.StatusCode = (int)HttpStatusCode.OK;
 
-                headers.Add("Access-Control-Allow-Origin", new[] { (string)httpContext.Request.Headers["Origin"] });
-                headers.Add("Access-Control-Allow-Headers", new[] { "Origin, Server, Date, Cache-Control, Accept, Content-Type, Transfer-Encoding, Connection, Content-Encoding, RequestId, api-supported-versions, Strict-Transport-Security, X-Frame-Options, X-XSS-Protection, X-Content-Type-Options, X-Download-Options, X-Robots-Tag, X-Requested-With" });
-                headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, PATCH, DELETE, OPTIONS" });
-                headers.Add("Access-Control-Allow-Credentials", new[] { "true" });
-
-                response.StatusCode = (int)HttpStatusCode.OK;
-
-                await response.WriteAsync("OK");
-            }
-            else
-                await next.Invoke(httpContext);
+            await response.WriteAsync("OK");
         }
+        else
+            await next.Invoke(httpContext);
     }
 }

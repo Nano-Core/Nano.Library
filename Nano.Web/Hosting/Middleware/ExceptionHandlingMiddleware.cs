@@ -12,125 +12,124 @@ using Nano.Web.Hosting.Serialization;
 using Nano.Web.Models;
 using Newtonsoft.Json;
 
-namespace Nano.Web.Hosting.Middleware
+namespace Nano.Web.Hosting.Middleware;
+
+/// <inheritdoc />
+public class ExceptionHandlingMiddleware : IMiddleware
 {
-    /// <inheritdoc />
-    public class ExceptionHandlingMiddleware : IMiddleware
+    private const string MESSAGE_TEMPLATE = "{protocol} {method} {path}{queryString} {statusCode} in {elapsed:0.0000} ms. (Id={id})";
+
+    /// <summary>
+    /// Logger.
+    /// </summary>
+    protected virtual ILogger Logger { get; }
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="logger">the <see cref="ILogger"/></param>
+    public ExceptionHandlingMiddleware(ILogger logger)
     {
-        private const string MESSAGE_TEMPLATE = "{protocol} {method} {path}{queryString} {statusCode} in {elapsed:0.0000} ms. (Id={id})";
+        this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        /// <summary>
-        /// Logger.
-        /// </summary>
-        protected virtual ILogger Logger { get; }
+    /// <inheritdoc />
+    public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
+    {
+        if (httpContext == null)
+            throw new ArgumentNullException(nameof(httpContext));
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="logger">the <see cref="ILogger"/></param>
-        public ExceptionHandlingMiddleware(ILogger logger)
+        if (next == null)
+            throw new ArgumentNullException(nameof(next));
+
+        var timestamp = Stopwatch.GetTimestamp();
+
+        var request = httpContext.Request;
+        var response = httpContext.Response;
+
+        var logLevel = response.StatusCode is >= 500 and <= 599
+            ? LogLevel.Error
+            : LogLevel.Information;
+
+        Exception exception = default;
+        try
         {
-            this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            await next(httpContext);
         }
-
-        /// <inheritdoc />
-        public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
+        catch (UnauthorizedException)
         {
-            if (httpContext == null)
-                throw new ArgumentNullException(nameof(httpContext));
-
-            if (next == null)
-                throw new ArgumentNullException(nameof(next));
-
-            var timestamp = Stopwatch.GetTimestamp();
-
-            var request = httpContext.Request;
-            var response = httpContext.Response;
-
-            var logLevel = response.StatusCode is >= 500 and <= 599 
-                ? LogLevel.Error 
-                : LogLevel.Information;
-
-            Exception exception = default;
-            try
+            response.StatusCode = (int)HttpStatusCode.Unauthorized;
+        }
+        catch (TaskCanceledException)
+        {
+            response.StatusCode = (int)HttpStatusCode.NoContent;
+        }
+        catch (OperationCanceledException)
+        {
+            response.StatusCode = (int)HttpStatusCode.NoContent;
+        }
+        catch (Exception ex)
+        {
+            if (response.HasStarted)
             {
-                await next(httpContext);
+                response.Clear();
             }
-            catch (UnauthorizedException)
-            {
-                response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            }
-            catch (TaskCanceledException)
-            {
-                response.StatusCode = (int)HttpStatusCode.NoContent;
-            }
-            catch (OperationCanceledException)
-            {
-                response.StatusCode = (int)HttpStatusCode.NoContent;
-            }
-            catch (Exception ex)
-            {
-                if (response.HasStarted)
-                {
-                    response.Clear();
-                }
 
-                response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-                exception = ex.GetBaseException();
-                var error = new Error(ex);
+            exception = ex.GetBaseException();
+            var error = new Error(ex);
 
-                logLevel = error.IsTranslated
-                    ? LogLevel.Information
-                    : LogLevel.Error;
+            logLevel = error.IsTranslated
+                ? LogLevel.Information
+                : LogLevel.Error;
 
-                var acceptHheader = request.Headers["Accept"];
-                var contentTypeHeader = request.Headers["Content-Type"];
-                var queryString = request.QueryString.HasValue
-                    ? request.QueryString.Value ?? string.Empty
-                    : string.Empty;
+            var acceptHheader = request.Headers["Accept"];
+            var contentTypeHeader = request.Headers["Content-Type"];
+            var queryString = request.QueryString.HasValue
+                ? request.QueryString.Value ?? string.Empty
+                : string.Empty;
 
-                var result = acceptHheader.Any()
-                    ? acceptHheader.Contains(HttpContentType.JSON)
+            var result = acceptHheader.Any()
+                ? acceptHheader.Contains(HttpContentType.JSON)
+                    ? JsonConvert.SerializeObject(error)
+                    : acceptHheader.Contains(HttpContentType.XML)
+                        ? XmlConvert.SerializeObject(error)
+                        : acceptHheader.Contains(HttpContentType.FORM) || acceptHheader.Contains(HttpContentType.FORM_ENCODED)
+                            ? JsonConvert.SerializeObject(error)
+                            : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}"
+                : contentTypeHeader.Any()
+                    ? contentTypeHeader.Contains(HttpContentType.JSON)
                         ? JsonConvert.SerializeObject(error)
-                        : acceptHheader.Contains(HttpContentType.XML)
+                        : contentTypeHeader.Contains(HttpContentType.XML)
                             ? XmlConvert.SerializeObject(error)
                             : acceptHheader.Contains(HttpContentType.FORM) || acceptHheader.Contains(HttpContentType.FORM_ENCODED)
                                 ? JsonConvert.SerializeObject(error)
                                 : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}"
-                    : contentTypeHeader.Any()
-                        ? contentTypeHeader.Contains(HttpContentType.JSON)
-                            ? JsonConvert.SerializeObject(error)
-                            : contentTypeHeader.Contains(HttpContentType.XML)
-                                ? XmlConvert.SerializeObject(error)
-                                : acceptHheader.Contains(HttpContentType.FORM) || acceptHheader.Contains(HttpContentType.FORM_ENCODED)
-                                    ? JsonConvert.SerializeObject(error)
-                                    : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}"
-                        : queryString.Contains($"format={HttpContentType.JSON}")
-                            ? JsonConvert.SerializeObject(error)
-                            : queryString.Contains($"format={HttpContentType.XML}")
-                                ? XmlConvert.SerializeObject(error)
-                                : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}";
+                    : queryString.Contains($"format={HttpContentType.JSON}")
+                        ? JsonConvert.SerializeObject(error)
+                        : queryString.Contains($"format={HttpContentType.XML}")
+                            ? XmlConvert.SerializeObject(error)
+                            : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}";
 
-                await response
-                    .WriteAsync(result);
-            }
-            finally
+            await response
+                .WriteAsync(result);
+        }
+        finally
+        {
+            var method = request.Method;
+            var path = request.Path.Value;
+            var id = httpContext.TraceIdentifier;
+            var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
+            var protocol = request.IsHttps ? request.Protocol.Replace("HTTP", "HTTPS") : request.Protocol;
+            var queryString = request.QueryString.HasValue ? $"{request.QueryString.Value}" : string.Empty;
+
+            var isHealthCheck = logLevel == LogLevel.Information && path == HealthzCheckUris.Path;
+
+            if (!isHealthCheck)
             {
-                var method = request.Method;
-                var path = request.Path.Value;
-                var id = httpContext.TraceIdentifier;
-                var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
-                var protocol = request.IsHttps ? request.Protocol.Replace("HTTP", "HTTPS") : request.Protocol;
-                var queryString = request.QueryString.HasValue ? $"{request.QueryString.Value}" : string.Empty;
-
-                var isHealthCheck = logLevel == LogLevel.Information && path == HealthzCheckUris.Path;
-
-                if (!isHealthCheck)
-                {
-                    this.Logger
-                        .Log(logLevel, exception, MESSAGE_TEMPLATE, protocol, method, path, queryString, response.StatusCode, elapsed, id);
-                }
+                this.Logger
+                    .Log(logLevel, exception, MESSAGE_TEMPLATE, protocol, method, path, queryString, response.StatusCode, elapsed, id);
             }
         }
     }

@@ -1,28 +1,27 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Nano.Security.Models
+namespace Nano.Security.Models;
+
+/// <summary>
+/// Change Phone Number Token
+/// </summary>
+public class ChangePhoneNumberToken
 {
     /// <summary>
-    /// Change Phone Number Token
+    /// Token.
     /// </summary>
-    public class ChangePhoneNumberToken
-    {
-        /// <summary>
-        /// Token.
-        /// </summary>
-        [Required]
-        public virtual string Token { get; set; }
+    [Required]
+    public virtual string Token { get; set; }
 
-        /// <summary>
-        /// Phone Number.
-        /// </summary>
-        [Required]
-        public virtual string PhoneNumber { get; set; }
+    /// <summary>
+    /// Phone Number.
+    /// </summary>
+    [Required]
+    public virtual string PhoneNumber { get; set; }
 
-        /// <summary>
-        /// New Phone Number.
-        /// </summary>
-        [Required]
-        public virtual string NewPhoneNumber { get; set; }
-    }
+    /// <summary>
+    /// New Phone Number.
+    /// </summary>
+    [Required]
+    public virtual string NewPhoneNumber { get; set; }
 }

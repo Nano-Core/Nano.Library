@@ -1,17 +1,16 @@
-﻿namespace Nano.Security.Exceptions
+﻿namespace Nano.Security.Exceptions;
+
+/// <summary>
+/// Unauthorized Two-Factor Required Exception.
+/// </summary>
+public class UnauthorizedTwoFactorRequiredException : UnauthorizedException
 {
-    /// <summary>
-    /// Unauthorized Two-Factor Required Exception.
-    /// </summary>
-    public class UnauthorizedTwoFactorRequiredException : UnauthorizedException
+    private const string CODE = "TwoFactorAuthenticationRequired";
+
+    /// <inheritdoc />
+    public UnauthorizedTwoFactorRequiredException()
+        : base(UnauthorizedTwoFactorRequiredException.CODE)
     {
-        private const string CODE = "TwoFactorAuthenticationRequired";
 
-        /// <inheritdoc />
-        public UnauthorizedTwoFactorRequiredException()
-            : base(UnauthorizedTwoFactorRequiredException.CODE)
-        {
-
-        }
     }
 }

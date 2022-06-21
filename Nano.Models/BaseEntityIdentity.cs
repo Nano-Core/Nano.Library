@@ -1,11 +1,10 @@
 using Nano.Models.Interfaces;
 
-namespace Nano.Models
+namespace Nano.Models;
+
+/// <inheritdoc cref="IEntityIdentity{TIdentity}"/>
+public abstract class BaseEntityIdentity<TIdentity> : BaseEntity, IEntityIdentity<TIdentity>
 {
-    /// <inheritdoc cref="IEntityIdentity{TIdentity}"/>
-    public abstract class BaseEntityIdentity<TIdentity> : BaseEntity, IEntityIdentity<TIdentity>
-    {
-        /// <inheritdoc />
-        public TIdentity Id { get; set; }
-    }
+    /// <inheritdoc />
+    public TIdentity Id { get; set; }
 }

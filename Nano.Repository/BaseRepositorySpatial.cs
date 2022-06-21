@@ -12,178 +12,177 @@ using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 
-namespace Nano.Repository
+namespace Nano.Repository;
+
+/// <inheritdoc cref="BaseRepository{TContext, TIdentity}"/>
+public abstract class BaseRepositorySpatial<TContext, TIdentity> : BaseRepository<TContext, TIdentity>, IRepositorySpatial
+    where TContext : BaseDbContext<TIdentity>
+    where TIdentity : IEquatable<TIdentity>
 {
-    /// <inheritdoc cref="BaseRepository{TContext, TIdentity}"/>
-    public abstract class BaseRepositorySpatial<TContext, TIdentity> : BaseRepository<TContext, TIdentity>, IRepositorySpatial
-        where TContext : BaseDbContext<TIdentity> 
-        where TIdentity : IEquatable<TIdentity>
+    /// <inheritdoc />
+    protected BaseRepositorySpatial(TContext context)
+        : base(context)
     {
-        /// <inheritdoc />
-        protected BaseRepositorySpatial(TContext context)
-            : base(context)
-        {
 
-        }
+    }
 
-        /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> Covers<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntitySpatial
-            where TCriteria : class, IQueryCriteriaSpatial
-        {
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> Covers<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntitySpatial
+        where TCriteria : class, IQueryCriteriaSpatial
+    {
+        if (query == null)
+            throw new ArgumentNullException(nameof(query));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
+        var indent = this.Context.Options.QueryIncludeDepth;
 
-            return await this.Context
-                .Set<TEntity>()
-                .IncludeAnnotations(indent)
-                .Where(query.Criteria)
-                .Where(x => x.Geometry.Covers(query.Criteria.Geometry))
-                .Order(query.Order)
-                .Limit(query.Paging)
-                .ToArrayAsync(cancellationToken);
-        }
+        return await this.Context
+            .Set<TEntity>()
+            .IncludeAnnotations(indent)
+            .Where(query.Criteria)
+            .Where(x => x.Geometry.Covers(query.Criteria.Geometry))
+            .Order(query.Order)
+            .Limit(query.Paging)
+            .ToArrayAsync(cancellationToken);
+    }
 
-        /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> Crosses<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntitySpatial
-            where TCriteria : class, IQueryCriteriaSpatial
-        {
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> Crosses<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntitySpatial
+        where TCriteria : class, IQueryCriteriaSpatial
+    {
+        if (query == null)
+            throw new ArgumentNullException(nameof(query));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
+        var indent = this.Context.Options.QueryIncludeDepth;
 
-            return await this.Context
-                .Set<TEntity>()
-                .IncludeAnnotations(indent)
-                .Where(query.Criteria)
-                .Where(x => x.Geometry.Crosses(query.Criteria.Geometry))
-                .Order(query.Order)
-                .Limit(query.Paging)
-                .ToArrayAsync(cancellationToken);
-        }
+        return await this.Context
+            .Set<TEntity>()
+            .IncludeAnnotations(indent)
+            .Where(query.Criteria)
+            .Where(x => x.Geometry.Crosses(query.Criteria.Geometry))
+            .Order(query.Order)
+            .Limit(query.Paging)
+            .ToArrayAsync(cancellationToken);
+    }
 
-        /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> Touches<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntitySpatial
-            where TCriteria : class, IQueryCriteriaSpatial
-        {
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> Touches<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntitySpatial
+        where TCriteria : class, IQueryCriteriaSpatial
+    {
+        if (query == null)
+            throw new ArgumentNullException(nameof(query));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
+        var indent = this.Context.Options.QueryIncludeDepth;
 
-            return await this.Context
-                .Set<TEntity>()
-                .IncludeAnnotations(indent)
-                .Where(query.Criteria)
-                .Where(x => x.Geometry.Touches(query.Criteria.Geometry))
-                .Order(query.Order)
-                .Limit(query.Paging)
-                .ToArrayAsync(cancellationToken);
-        }
+        return await this.Context
+            .Set<TEntity>()
+            .IncludeAnnotations(indent)
+            .Where(query.Criteria)
+            .Where(x => x.Geometry.Touches(query.Criteria.Geometry))
+            .Order(query.Order)
+            .Limit(query.Paging)
+            .ToArrayAsync(cancellationToken);
+    }
 
-        /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> Overlaps<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntitySpatial
-            where TCriteria : class, IQueryCriteriaSpatial
-        {
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> Overlaps<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntitySpatial
+        where TCriteria : class, IQueryCriteriaSpatial
+    {
+        if (query == null)
+            throw new ArgumentNullException(nameof(query));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
+        var indent = this.Context.Options.QueryIncludeDepth;
 
-            return await this.Context
-                .Set<TEntity>()
-                .IncludeAnnotations(indent)
-                .Where(query.Criteria)
-                .Where(x => x.Geometry.Overlaps(query.Criteria.Geometry))
-                .Order(query.Order)
-                .Limit(query.Paging)
-                .ToArrayAsync(cancellationToken);
-        }
+        return await this.Context
+            .Set<TEntity>()
+            .IncludeAnnotations(indent)
+            .Where(query.Criteria)
+            .Where(x => x.Geometry.Overlaps(query.Criteria.Geometry))
+            .Order(query.Order)
+            .Limit(query.Paging)
+            .ToArrayAsync(cancellationToken);
+    }
 
-        /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> CoveredBy<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntitySpatial
-            where TCriteria : class, IQueryCriteriaSpatial
-        {
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> CoveredBy<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntitySpatial
+        where TCriteria : class, IQueryCriteriaSpatial
+    {
+        if (query == null)
+            throw new ArgumentNullException(nameof(query));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
+        var indent = this.Context.Options.QueryIncludeDepth;
 
-            return await this.Context
-                .Set<TEntity>()
-                .IncludeAnnotations(indent)
-                .Where(query.Criteria)
-                .Where(x => x.Geometry.CoveredBy(query.Criteria.Geometry))
-                .Order(query.Order)
-                .Limit(query.Paging)
-                .ToArrayAsync(cancellationToken);
-        }
+        return await this.Context
+            .Set<TEntity>()
+            .IncludeAnnotations(indent)
+            .Where(query.Criteria)
+            .Where(x => x.Geometry.CoveredBy(query.Criteria.Geometry))
+            .Order(query.Order)
+            .Limit(query.Paging)
+            .ToArrayAsync(cancellationToken);
+    }
 
-        /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> Disjoints<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntitySpatial
-            where TCriteria : class, IQueryCriteriaSpatial
-        {
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> Disjoints<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntitySpatial
+        where TCriteria : class, IQueryCriteriaSpatial
+    {
+        if (query == null)
+            throw new ArgumentNullException(nameof(query));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
+        var indent = this.Context.Options.QueryIncludeDepth;
 
-            return await this.Context
-                .Set<TEntity>()
-                .IncludeAnnotations(indent)
-                .Where(query.Criteria)
-                .Where(x => x.Geometry.Disjoint(query.Criteria.Geometry))
-                .Order(query.Order)
-                .Limit(query.Paging)
-                .ToArrayAsync(cancellationToken);
-        }
+        return await this.Context
+            .Set<TEntity>()
+            .IncludeAnnotations(indent)
+            .Where(query.Criteria)
+            .Where(x => x.Geometry.Disjoint(query.Criteria.Geometry))
+            .Order(query.Order)
+            .Limit(query.Paging)
+            .ToArrayAsync(cancellationToken);
+    }
 
-        /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> Intersects<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntitySpatial
-            where TCriteria : class, IQueryCriteriaSpatial
-        {
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> Intersects<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntitySpatial
+        where TCriteria : class, IQueryCriteriaSpatial
+    {
+        if (query == null)
+            throw new ArgumentNullException(nameof(query));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
+        var indent = this.Context.Options.QueryIncludeDepth;
 
-            return await this.Context
-                .Set<TEntity>()
-                .IncludeAnnotations(indent)
-                .Where(query.Criteria)
-                .Where(x => x.Geometry.Intersects(query.Criteria.Geometry))
-                .Order(query.Order)
-                .Limit(query.Paging)
-                .ToArrayAsync(cancellationToken);
-        }
+        return await this.Context
+            .Set<TEntity>()
+            .IncludeAnnotations(indent)
+            .Where(query.Criteria)
+            .Where(x => x.Geometry.Intersects(query.Criteria.Geometry))
+            .Order(query.Order)
+            .Limit(query.Paging)
+            .ToArrayAsync(cancellationToken);
+    }
 
-        /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> Within<TEntity, TCriteria>(IQuery<TCriteria> query, double distance = 10000D, CancellationToken cancellationToken = default)
-            where TEntity : class, IEntitySpatial
-            where TCriteria : class, IQueryCriteriaSpatial
-        {
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> Within<TEntity, TCriteria>(IQuery<TCriteria> query, double distance = 10000D, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntitySpatial
+        where TCriteria : class, IQueryCriteriaSpatial
+    {
+        if (query == null)
+            throw new ArgumentNullException(nameof(query));
 
-            var indent = this.Context.Options.QueryIncludeDepth;
+        var indent = this.Context.Options.QueryIncludeDepth;
 
-            return await this.Context
-                .Set<TEntity>()
-                .IncludeAnnotations(indent)
-                .Where(query.Criteria)
-                .Where(x => x.Geometry.IsWithinDistance(query.Criteria.Geometry, distance))
-                .Order(query.Order)
-                .Limit(query.Paging)
-                .ToArrayAsync(cancellationToken);
-        }
+        return await this.Context
+            .Set<TEntity>()
+            .IncludeAnnotations(indent)
+            .Where(query.Criteria)
+            .Where(x => x.Geometry.IsWithinDistance(query.Criteria.Geometry, distance))
+            .Order(query.Order)
+            .Limit(query.Paging)
+            .ToArrayAsync(cancellationToken);
     }
 }

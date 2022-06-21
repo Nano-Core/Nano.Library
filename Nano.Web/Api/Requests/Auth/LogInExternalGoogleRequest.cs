@@ -1,16 +1,14 @@
 ﻿using Nano.Security.Models;
 
-namespace Nano.Web.Api.Requests.Auth
+namespace Nano.Web.Api.Requests.Auth;
+
+/// <inheritdoc />
+public class LogInExternalGoogleRequest : BaseLogInExternalRequest<LogInExternalGoogle>
 {
     /// <inheritdoc />
-    public class LogInExternalGoogleRequest : BaseLogInExternalRequest<LogInExternalGoogle>
+    public LogInExternalGoogleRequest()
     {
-        /// <inheritdoc />
-        public LogInExternalGoogleRequest()
-        {
-            this.Action = "login/external/google";
-            this.Controller = "auth";
-        }
+        this.Action = "login/external/google";
+        this.Controller = "auth";
     }
-
 }

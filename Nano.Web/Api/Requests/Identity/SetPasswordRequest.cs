@@ -1,26 +1,25 @@
 ﻿using System;
 using Nano.Security.Models;
 
-namespace Nano.Web.Api.Requests.Identity
+namespace Nano.Web.Api.Requests.Identity;
+
+/// <inheritdoc />
+public class SetPasswordRequest : BaseRequestPost
 {
+    /// <summary>
+    /// Set Password.
+    /// </summary>
+    public virtual SetPassword<Guid> SetPassword { get; set; } = new();
+
     /// <inheritdoc />
-    public class SetPasswordRequest : BaseRequestPost
+    public SetPasswordRequest()
     {
-        /// <summary>
-        /// Set Password.
-        /// </summary>
-        public virtual SetPassword<Guid> SetPassword { get; set; } = new();
+        this.Action = "password/set";
+    }
 
-        /// <inheritdoc />
-        public SetPasswordRequest()
-        {
-            this.Action = "password/set";
-        }
-
-        /// <inheritdoc />
-        public override object GetBody()
-        {
-            return this.SetPassword;
-        }
+    /// <inheritdoc />
+    public override object GetBody()
+    {
+        return this.SetPassword;
     }
 }

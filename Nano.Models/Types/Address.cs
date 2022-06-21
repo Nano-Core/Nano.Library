@@ -1,22 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Nano.Models.Types
+namespace Nano.Models.Types;
+
+/// <summary>
+/// Address.
+/// </summary>
+public class Address
 {
     /// <summary>
-    /// Address.
+    /// String.
     /// </summary>
-    public class Address
-    {
-        /// <summary>
-        /// String.
-        /// </summary>
-        [MaxLength(256)]
-        public virtual string String { get; set; }
+    [MaxLength(256)]
+    public virtual string String { get; set; }
 
-        /// <summary>
-        /// Location.
-        /// </summary>
-        [Required]
-        public virtual Location Location { get; set; } = new();
-    }
+    /// <summary>
+    /// Location.
+    /// </summary>
+    [Required]
+    public virtual Location Location { get; set; } = new();
 }

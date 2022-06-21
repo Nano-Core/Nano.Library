@@ -8,48 +8,47 @@ using Nano.App.Startup.Tasks;
 using Nano.Config.Extensions;
 using Nano.Models.Extensions;
 
-namespace Nano.App.Extensions
+namespace Nano.App.Extensions;
+
+/// <summary>
+/// Service Collection Extensions.
+/// </summary>
+public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Service Collection Extensions.
+    /// Adds <see cref="AppOptions"/> to the <see cref="IServiceCollection"/>.
     /// </summary>
-    public static class ServiceCollectionExtensions
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
+    /// <returns>The <see cref="IServiceCollection"/>.</returns>
+    internal static IServiceCollection AddApp(this IServiceCollection services, IConfiguration configuration)
     {
-        /// <summary>
-        /// Adds <see cref="AppOptions"/> to the <see cref="IServiceCollection"/>.
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
-        /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        internal static IServiceCollection AddApp(this IServiceCollection services, IConfiguration configuration)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
 
-            if (configuration == null)
-                throw new ArgumentNullException(nameof(configuration));
+        if (configuration == null)
+            throw new ArgumentNullException(nameof(configuration));
 
-            services
-                .AddConfigOptions<AppOptions>(configuration, AppOptions.SectionName, out _);
+        services
+            .AddConfigOptions<AppOptions>(configuration, AppOptions.SectionName, out _);
 
-            AppDomain.CurrentDomain
-                .GetAssemblies()
-                .SelectMany(x => x.GetTypes())
-                .Where(x =>
-                    !x.IsAbstract &&
-                    x.IsTypeOf(typeof(BaseStartupTask)))
-                .ToList()
-                .ForEach(x =>
-                {
-                    services
-                        .AddSingleton(typeof(IHostedService), x);
-                });
+        AppDomain.CurrentDomain
+            .GetAssemblies()
+            .SelectMany(x => x.GetTypes())
+            .Where(x =>
+                !x.IsAbstract &&
+                x.IsTypeOf(typeof(BaseStartupTask)))
+            .ToList()
+            .ForEach(x =>
+            {
+                services
+                    .AddSingleton(typeof(IHostedService), x);
+            });
 
-            services
-                .AddSingleton<StartupTaskContext>()
-                .AddHostedService<InitializeApplicationStartupTask>();
+        services
+            .AddSingleton<StartupTaskContext>()
+            .AddHostedService<InitializeApplicationStartupTask>();
 
-            return services;
-        }
+        return services;
     }
 }

@@ -28,7 +28,7 @@ namespace Nano.Console.Extensions
 
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
-            
+
             services
                 .AddConfigOptions<ConsoleOptions>(configuration, ConsoleOptions.SectionName, out _);
 

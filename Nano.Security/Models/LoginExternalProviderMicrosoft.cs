@@ -1,14 +1,13 @@
-﻿namespace Nano.Security.Models
+﻿namespace Nano.Security.Models;
+
+/// <summary>
+/// LogIn External Provider Microsoft.
+/// </summary>
+public class LogInExternalProviderMicrosoft : LogInExternalProviderAuthCode
 {
-    /// <summary>
-    /// LogIn External Provider Microsoft.
-    /// </summary>
-    public class LogInExternalProviderMicrosoft : LogInExternalProviderAuthCode
+    /// <inheritdoc />
+    public LogInExternalProviderMicrosoft()
     {
-        /// <inheritdoc />
-        public LogInExternalProviderMicrosoft()
-        {
-            this.Name = "Microsoft";
-        }
+        this.Name = "Microsoft";
     }
 }

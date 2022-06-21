@@ -1,17 +1,16 @@
-﻿namespace Nano.Security.Exceptions
+﻿namespace Nano.Security.Exceptions;
+
+/// <summary>
+/// Unauthorized Locked Out Exception.
+/// </summary>
+public class UnauthorizedLockedOutException : UnauthorizedException
 {
-    /// <summary>
-    /// Unauthorized Locked Out Exception.
-    /// </summary>
-    public class UnauthorizedLockedOutException : UnauthorizedException
+    private const string CODE = "LockedOut";
+
+    /// <inheritdoc />
+    public UnauthorizedLockedOutException()
+        : base(UnauthorizedLockedOutException.CODE)
     {
-        private const string CODE = "LockedOut";
 
-        /// <inheritdoc />
-        public UnauthorizedLockedOutException()
-            : base(UnauthorizedLockedOutException.CODE)
-        {
-
-        }
     }
 }

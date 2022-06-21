@@ -1,30 +1,29 @@
 ﻿using System.Collections.Generic;
 using Nano.Models.Interfaces;
 
-namespace Nano.Web.Api.Requests
+namespace Nano.Web.Api.Requests;
+
+/// <summary>
+/// Update Many Request.
+/// </summary>
+public class EditManyRequest : BaseRequestPut
 {
     /// <summary>
-    /// Update Many Request.
+    /// Entities.
     /// </summary>
-    public class EditManyRequest : BaseRequestPut
+    public virtual IEnumerable<IEntityUpdatable> Entities { get; set; }
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public EditManyRequest()
     {
-        /// <summary>
-        /// Entities.
-        /// </summary>
-        public virtual IEnumerable<IEntityUpdatable> Entities { get; set; }
+        this.Action = "edit/many";
+    }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public EditManyRequest()
-        {
-            this.Action = "edit/many";
-        }
-
-        /// <inheritdoc />
-        public override object GetBody()
-        {
-            return this.Entities;
-        }
+    /// <inheritdoc />
+    public override object GetBody()
+    {
+        return this.Entities;
     }
 }

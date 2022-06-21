@@ -8,25 +8,24 @@ using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security;
 
-namespace Nano.Web.Controllers
+namespace Nano.Web.Controllers;
+
+/// <inheritdoc />
+public abstract class DefaultIdentityController<TEntity, TCriteria> : BaseIdentityController<IRepository, TEntity, Guid, TCriteria>
+    where TEntity : DefaultEntityUser, IEntityUpdatable, new()
+    where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    public abstract class DefaultIdentityController<TEntity, TCriteria> : BaseIdentityController<IRepository, TEntity, Guid, TCriteria>
-        where TEntity : DefaultEntityUser, IEntityUpdatable, new()
-        where TCriteria : class, IQueryCriteria, new()
+    protected DefaultIdentityController(ILogger logger, IRepository repository, DefaultIdentityManager baseIdentityManager)
+        : this(logger, repository, new NullEventing(), baseIdentityManager)
     {
-        /// <inheritdoc />
-        protected DefaultIdentityController(ILogger logger, IRepository repository, DefaultIdentityManager baseIdentityManager)
-            : this(logger, repository, new NullEventing(), baseIdentityManager)
-        {
 
-        }
+    }
 
-        /// <inheritdoc />
-        protected DefaultIdentityController(ILogger logger, IRepository repository, IEventing eventing, DefaultIdentityManager baseIdentityManager)
-            : base(logger, repository, eventing, baseIdentityManager)
-        {
+    /// <inheritdoc />
+    protected DefaultIdentityController(ILogger logger, IRepository repository, IEventing eventing, DefaultIdentityManager baseIdentityManager)
+        : base(logger, repository, eventing, baseIdentityManager)
+    {
 
-        }
     }
 }

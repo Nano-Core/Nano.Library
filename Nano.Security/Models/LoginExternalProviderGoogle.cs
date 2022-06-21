@@ -1,14 +1,13 @@
-﻿namespace Nano.Security.Models
+﻿namespace Nano.Security.Models;
+
+/// <summary>
+/// LogIn External Provider Google.
+/// </summary>
+public class LogInExternalProviderGoogle : LogInExternalProviderImplicit
 {
-    /// <summary>
-    /// LogIn External Provider Google.
-    /// </summary>
-    public class LogInExternalProviderGoogle : LogInExternalProviderImplicit
+    /// <inheritdoc />
+    public LogInExternalProviderGoogle()
     {
-        /// <inheritdoc />
-        public LogInExternalProviderGoogle()
-        {
-            this.Name = "Google";
-        }
+        this.Name = "Google";
     }
 }

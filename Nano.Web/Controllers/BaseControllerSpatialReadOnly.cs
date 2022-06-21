@@ -16,293 +16,292 @@ using Nano.Security.Const;
 using Nano.Web.Const;
 using Nano.Web.Models;
 
-namespace Nano.Web.Controllers
+namespace Nano.Web.Controllers;
+
+/// <inheritdoc />
+[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE + "," + BuiltInUserRoles.READER)]
+public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
+    where TRepository : IRepositorySpatial
+    where TEntity : class, IEntityIdentity<TIdentity>, IEntitySpatial
+    where TCriteria : class, IQueryCriteriaSpatial, new()
+    where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE + "," + BuiltInUserRoles.READER)]
-    public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
-        where TRepository : IRepositorySpatial
-        where TEntity : class, IEntityIdentity<TIdentity>, IEntitySpatial
-        where TCriteria : class, IQueryCriteriaSpatial, new()
-        where TIdentity : IEquatable<TIdentity>
+    protected BaseControllerSpatialReadOnly(ILogger logger, TRepository repository)
+        : this(logger, repository, new NullEventing())
     {
-        /// <inheritdoc />
-        protected BaseControllerSpatialReadOnly(ILogger logger, TRepository repository)
-            : this(logger, repository, new NullEventing())
-        {
 
+    }
+
+    /// <inheritdoc />
+    protected BaseControllerSpatialReadOnly(ILogger logger, TRepository repository, IEventing eventing)
+        : base(logger, repository, eventing)
+    {
+
+    }
+
+    /// <summary>
+    /// Gets the models, that intersects.
+    /// </summary>
+    /// <param name="criteria">The criteria.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The models.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("intersects")]
+    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> IntersectsAsync([FromBody][Required]IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
+    {
+        var result = await this.Repository
+            .Intersects<TEntity, TCriteria>(criteria, cancellationToken);
+
+        if (result == null)
+        {
+            return this.NotFound();
         }
 
-        /// <inheritdoc />
-        protected BaseControllerSpatialReadOnly(ILogger logger, TRepository repository, IEventing eventing)
-            : base(logger, repository, eventing)
-        {
+        return this.Ok(result);
+    }
 
+    /// <summary>
+    /// Gets the models, that covers.
+    /// </summary>
+    /// <param name="criteria">The criteria.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The models.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("covers")]
+    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> CoversAsync([FromBody][Required]IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
+    {
+        var result = await this.Repository
+            .Covers<TEntity, TCriteria>(criteria, cancellationToken);
+
+        if (result == null)
+        {
+            return this.NotFound();
         }
 
-        /// <summary>
-        /// Gets the models, that intersects.
-        /// </summary>
-        /// <param name="criteria">The criteria.</param>
-        /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The models.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">Bad Request.</response>
-        /// <response code="401">Unauthorized.</response>
-        /// <response code="404">Not Found.</response>
-        /// <response code="500">Error occured.</response>
-        [HttpPost]
-        [Route("intersects")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> IntersectsAsync([FromBody][Required]IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
+        return this.Ok(result);
+    }
+
+    /// <summary>
+    /// Gets the models, that are covered-by.
+    /// </summary>
+    /// <param name="criteria">The criteria.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The models.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("covered-by")]
+    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> CoveredByAsync([FromBody][Required]IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
+    {
+        var result = await this.Repository
+            .CoveredBy<TEntity, TCriteria>(criteria, cancellationToken);
+
+        if (result == null)
         {
-            var result = await this.Repository
-                .Intersects<TEntity, TCriteria>(criteria, cancellationToken);
-
-            if (result == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(result);
+            return this.NotFound();
         }
 
-        /// <summary>
-        /// Gets the models, that covers.
-        /// </summary>
-        /// <param name="criteria">The criteria.</param>
-        /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The models.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">Bad Request.</response>
-        /// <response code="401">Unauthorized.</response>
-        /// <response code="404">Not Found.</response>
-        /// <response code="500">Error occured.</response>
-        [HttpPost]
-        [Route("covers")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> CoversAsync([FromBody][Required]IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
+        return this.Ok(result);
+    }
+
+    /// <summary>
+    /// Gets the models, that are covered-by.
+    /// </summary>
+    /// <param name="criteria">The criteria.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The models.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("overlaps")]
+    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> OverlapsAsync([FromBody][Required]IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
+    {
+        var result = await this.Repository
+            .Overlaps<TEntity, TCriteria>(criteria, cancellationToken);
+
+        if (result == null)
         {
-            var result = await this.Repository
-                .Covers<TEntity, TCriteria>(criteria, cancellationToken);
-
-            if (result == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(result);
+            return this.NotFound();
         }
 
-        /// <summary>
-        /// Gets the models, that are covered-by.
-        /// </summary>
-        /// <param name="criteria">The criteria.</param>
-        /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The models.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">Bad Request.</response>
-        /// <response code="401">Unauthorized.</response>
-        /// <response code="404">Not Found.</response>
-        /// <response code="500">Error occured.</response>
-        [HttpPost]
-        [Route("covered-by")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> CoveredByAsync([FromBody][Required]IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
+        return this.Ok(result);
+    }
+
+    /// <summary>
+    /// Gets the models, that tocuhes.
+    /// </summary>
+    /// <param name="criteria">The criteria.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The models.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("touches")]
+    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> TouchesAsync([FromBody][Required]IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
+    {
+        var result = await this.Repository
+            .Touches<TEntity, TCriteria>(criteria, cancellationToken);
+
+        if (result == null)
         {
-            var result = await this.Repository
-                .CoveredBy<TEntity, TCriteria>(criteria, cancellationToken);
-
-            if (result == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(result);
+            return this.NotFound();
         }
 
-        /// <summary>
-        /// Gets the models, that are covered-by.
-        /// </summary>
-        /// <param name="criteria">The criteria.</param>
-        /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The models.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">Bad Request.</response>
-        /// <response code="401">Unauthorized.</response>
-        /// <response code="404">Not Found.</response>
-        /// <response code="500">Error occured.</response>
-        [HttpPost]
-        [Route("overlaps")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> OverlapsAsync([FromBody][Required]IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
+        return this.Ok(result);
+    }
+
+    /// <summary>
+    /// Gets the models, that crosses.
+    /// </summary>
+    /// <param name="criteria">The criteria.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The models.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("crosses")]
+    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> CrossesAsync([FromBody][Required]IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
+    {
+        var result = await this.Repository
+            .Crosses<TEntity, TCriteria>(criteria, cancellationToken);
+
+        if (result == null)
         {
-            var result = await this.Repository
-                .Overlaps<TEntity, TCriteria>(criteria, cancellationToken);
-
-            if (result == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(result);
+            return this.NotFound();
         }
 
-        /// <summary>
-        /// Gets the models, that tocuhes.
-        /// </summary>
-        /// <param name="criteria">The criteria.</param>
-        /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The models.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">Bad Request.</response>
-        /// <response code="401">Unauthorized.</response>
-        /// <response code="404">Not Found.</response>
-        /// <response code="500">Error occured.</response>
-        [HttpPost]
-        [Route("touches")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> TouchesAsync([FromBody][Required]IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
+        return this.Ok(result);
+    }
+
+    /// <summary>
+    /// Gets the models, that are disjointed.
+    /// </summary>
+    /// <param name="criteria">The criteria.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The models.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("disjoints")]
+    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> DisjointsAsync([FromBody][Required]IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
+    {
+        var result = await this.Repository
+            .Disjoints<TEntity, TCriteria>(criteria, cancellationToken);
+
+        if (result == null)
         {
-            var result = await this.Repository
-                .Touches<TEntity, TCriteria>(criteria, cancellationToken);
-
-            if (result == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(result);
+            return this.NotFound();
         }
 
-        /// <summary>
-        /// Gets the models, that crosses.
-        /// </summary>
-        /// <param name="criteria">The criteria.</param>
-        /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The models.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">Bad Request.</response>
-        /// <response code="401">Unauthorized.</response>
-        /// <response code="404">Not Found.</response>
-        /// <response code="500">Error occured.</response>
-        [HttpPost]
-        [Route("crosses")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> CrossesAsync([FromBody][Required]IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
+        return this.Ok(result);
+    }
+
+    /// <summary>
+    /// Gets the models, that are within.
+    /// </summary>
+    /// <param name="criteria">The criteria.</param>
+    /// <param name="distance">The distance in meters. Default: 50.000 meters.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The models.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("within")]
+    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> WithinAsync([FromBody][Required]IQuery<TCriteria> criteria, [FromQuery]double distance = 50000, CancellationToken cancellationToken = default)
+    {
+        var result = await this.Repository
+            .Within<TEntity, TCriteria>(criteria, distance, cancellationToken);
+
+        if (result == null)
         {
-            var result = await this.Repository
-                .Crosses<TEntity, TCriteria>(criteria, cancellationToken);
-
-            if (result == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(result);
+            return this.NotFound();
         }
 
-        /// <summary>
-        /// Gets the models, that are disjointed.
-        /// </summary>
-        /// <param name="criteria">The criteria.</param>
-        /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The models.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">Bad Request.</response>
-        /// <response code="401">Unauthorized.</response>
-        /// <response code="404">Not Found.</response>
-        /// <response code="500">Error occured.</response>
-        [HttpPost]
-        [Route("disjoints")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> DisjointsAsync([FromBody][Required]IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
-        {
-            var result = await this.Repository
-                .Disjoints<TEntity, TCriteria>(criteria, cancellationToken);
-
-            if (result == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(result);
-        }
-
-        /// <summary>
-        /// Gets the models, that are within.
-        /// </summary>
-        /// <param name="criteria">The criteria.</param>
-        /// <param name="distance">The distance in meters. Default: 50.000 meters.</param>
-        /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The models.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">Bad Request.</response>
-        /// <response code="401">Unauthorized.</response>
-        /// <response code="404">Not Found.</response>
-        /// <response code="500">Error occured.</response>
-        [HttpPost]
-        [Route("within")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> WithinAsync([FromBody][Required]IQuery<TCriteria> criteria, [FromQuery]double distance = 50000, CancellationToken cancellationToken = default)
-        {
-            var result = await this.Repository
-                .Within<TEntity, TCriteria>(criteria, distance, cancellationToken);
-
-            if (result == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(result);
-        }
+        return this.Ok(result);
     }
 }

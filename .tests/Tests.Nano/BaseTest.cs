@@ -1,24 +1,23 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Nano
+namespace Tests.Nano;
+
+/// <summary>
+/// Base Tests (abstact)
+/// </summary>
+public abstract class BaseTest
 {
     /// <summary>
-    /// Base Tests (abstact)
+    /// Cleanup.
+    /// Implementation designated for cleanup, after all the tests in a fixture has completed.
     /// </summary>
-    public abstract class BaseTest
-    {
-        /// <summary>
-        /// Cleanup.
-        /// Implementation designated for cleanup, after all the tests in a fixture has completed.
-        /// </summary>
-        [TestCleanup]
-        public abstract void Cleanup();
+    [TestCleanup]
+    public abstract void Cleanup();
 
-        /// <summary>
-        /// Cleanup.
-        /// Implementation designated for initializing, before all the tests in a fixture starts executing.
-        /// </summary>
-        [TestInitialize]
-        public abstract void Initialize();
-    }
+    /// <summary>
+    /// Cleanup.
+    /// Implementation designated for initializing, before all the tests in a fixture starts executing.
+    /// </summary>
+    [TestInitialize]
+    public abstract void Initialize();
 }

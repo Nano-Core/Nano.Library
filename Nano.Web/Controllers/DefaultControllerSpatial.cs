@@ -6,46 +6,45 @@ using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 
-namespace Nano.Web.Controllers
+namespace Nano.Web.Controllers;
+
+/// <inheritdoc />
+public class DefaultControllerSpatial<TEntity, TCriteria> : DefaultControllerSpatial<TEntity, Guid, TCriteria>
+    where TEntity : class, IEntityIdentity<Guid>, IEntitySpatial, IEntityWritable
+    where TCriteria : class, IQueryCriteriaSpatial, new()
 {
     /// <inheritdoc />
-    public class DefaultControllerSpatial<TEntity, TCriteria> : DefaultControllerSpatial<TEntity, Guid, TCriteria>
-        where TEntity : class, IEntityIdentity<Guid>, IEntitySpatial, IEntityWritable
-        where TCriteria : class, IQueryCriteriaSpatial, new()
+    protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository)
+        : this(logger, repository, new NullEventing())
     {
-        /// <inheritdoc />
-        protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository)
-            : this(logger, repository, new NullEventing())
-        {
 
-        }
-
-        /// <inheritdoc />
-        protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository, IEventing eventing)
-            : base(logger, repository, eventing)
-        {
-
-        }
     }
 
     /// <inheritdoc />
-    public class DefaultControllerSpatial<TEntity, TIdentity, TCriteria> : BaseControllerSpatialWritable<IRepositorySpatial, TEntity, TIdentity, TCriteria>
-        where TEntity : class, IEntityIdentity<TIdentity>, IEntitySpatial, IEntityWritable
-        where TCriteria : class, IQueryCriteriaSpatial, new()
-        where TIdentity : IEquatable<TIdentity>
+    protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository, IEventing eventing)
+        : base(logger, repository, eventing)
     {
-        /// <inheritdoc />
-        protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository)
-            : this(logger, repository, new NullEventing())
-        {
 
-        }
+    }
+}
 
-        /// <inheritdoc />
-        protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository, IEventing eventing)
-            : base(logger, repository, eventing)
-        {
+/// <inheritdoc />
+public class DefaultControllerSpatial<TEntity, TIdentity, TCriteria> : BaseControllerSpatialWritable<IRepositorySpatial, TEntity, TIdentity, TCriteria>
+    where TEntity : class, IEntityIdentity<TIdentity>, IEntitySpatial, IEntityWritable
+    where TCriteria : class, IQueryCriteriaSpatial, new()
+    where TIdentity : IEquatable<TIdentity>
+{
+    /// <inheritdoc />
+    protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository)
+        : this(logger, repository, new NullEventing())
+    {
 
-        }
+    }
+
+    /// <inheritdoc />
+    protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository, IEventing eventing)
+        : base(logger, repository, eventing)
+    {
+
     }
 }
