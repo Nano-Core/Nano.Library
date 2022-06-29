@@ -5,8 +5,7 @@
 		<version>6.1.5</version>
 		<title>Nano Core</title>
 		<summary>
-			Rapidly built and deploy rich .NET 6.0 applications.
-			Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.
+			Rapidly built and deploy rich .NET 6.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.
 		</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
 		<authors>Nano Contributors</authors>
