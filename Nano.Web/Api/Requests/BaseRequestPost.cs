@@ -1,13 +1,12 @@
-﻿namespace Nano.Web.Api.Requests
+﻿namespace Nano.Web.Api.Requests;
+
+/// <summary>
+/// Base Request Post.
+/// </summary>
+public abstract class BaseRequestPost : BaseRequest
 {
     /// <summary>
-    /// Base Request Post.
+    /// Get Body.
     /// </summary>
-    public abstract class BaseRequestPost : BaseRequest
-    {
-        /// <summary>
-        /// Get Body.
-        /// </summary>
-        public abstract object GetBody();
-    }
+    public abstract object GetBody();
 }

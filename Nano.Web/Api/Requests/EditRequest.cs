@@ -1,29 +1,28 @@
 ﻿using Nano.Models.Interfaces;
 
-namespace Nano.Web.Api.Requests
+namespace Nano.Web.Api.Requests;
+
+/// <summary>
+/// Update Request.
+/// </summary>
+public class EditRequest : BaseRequestPut
 {
     /// <summary>
-    /// Update Request.
+    /// Entity.
     /// </summary>
-    public class EditRequest : BaseRequestPut
+    public virtual IEntityUpdatable Entity { get; set; }
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public EditRequest()
     {
-        /// <summary>
-        /// Entity.
-        /// </summary>
-        public virtual IEntityUpdatable Entity { get; set; }
+        this.Action = "edit";
+    }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public EditRequest()
-        {
-            this.Action = "edit";
-        }
-
-        /// <inheritdoc />
-        public override object GetBody()
-        {
-            return this.Entity;
-        }
+    /// <inheritdoc />
+    public override object GetBody()
+    {
+        return this.Entity;
     }
 }

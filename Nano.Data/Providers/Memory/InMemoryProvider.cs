@@ -3,51 +3,50 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Nano.Data.Interfaces;
 
-namespace Nano.Data.Providers.Memory
+namespace Nano.Data.Providers.Memory;
+
+/// <summary>
+/// In Memory Data Provider.
+/// </summary>
+public class InMemoryProvider : IDataProvider
 {
     /// <summary>
-    /// In Memory Data Provider.
+    /// Options.
     /// </summary>
-    public class InMemoryProvider : IDataProvider
+    protected virtual DataOptions Options { get; }
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="options">The <see cref="DataOptions"/>.</param>
+    public InMemoryProvider(DataOptions options)
     {
-        /// <summary>
-        /// Options.
-        /// </summary>
-        protected virtual DataOptions Options { get; }
+        this.Options = options ?? throw new ArgumentNullException(nameof(options));
+    }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="options">The <see cref="DataOptions"/>.</param>
-        public InMemoryProvider(DataOptions options)
+    /// <inheritdoc />
+    public void Configure(DbContextOptionsBuilder builder)
+    {
+        if (builder == null)
+            throw new ArgumentNullException(nameof(builder));
+
+        var useLazyLoading = this.Options.UseLazyLoading;
+        var useSensitiveDataLogging = this.Options.UseSensitiveDataLogging;
+        var connectionString = this.Options.ConnectionString;
+
+        if (connectionString == null)
         {
-            this.Options = options ?? throw new ArgumentNullException(nameof(options));
+            return;
         }
 
-        /// <inheritdoc />
-        public void Configure(DbContextOptionsBuilder builder)
-        {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-
-            var useLazyLoading = this.Options.UseLazyLoading;
-            var useSensitiveDataLogging = this.Options.UseSensitiveDataLogging;
-            var connectionString = this.Options.ConnectionString;
-
-            if (connectionString == null)
+        builder
+            .EnableSensitiveDataLogging(useSensitiveDataLogging)
+            .ConfigureWarnings(x =>
             {
-                return;
-            }
-
-            builder
-                .EnableSensitiveDataLogging(useSensitiveDataLogging)
-                .ConfigureWarnings(x =>
-                {
-                    x.Ignore(RelationalEventId.BoolWithDefaultWarning);
-                    x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
-                })
-                .UseLazyLoadingProxies(useLazyLoading)
-                .UseInMemoryDatabase(connectionString);
-        }
+                x.Ignore(RelationalEventId.BoolWithDefaultWarning);
+                x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
+            })
+            .UseLazyLoadingProxies(useLazyLoading)
+            .UseInMemoryDatabase(connectionString);
     }
 }

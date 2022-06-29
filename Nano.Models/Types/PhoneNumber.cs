@@ -1,17 +1,16 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Nano.Models.Types
+namespace Nano.Models.Types;
+
+/// <summary>
+/// Phone Number
+/// </summary>
+public class PhoneNumber
 {
     /// <summary>
-    /// Phone Number
+    /// Number (E164 format).
     /// </summary>
-    public class PhoneNumber
-    {
-        /// <summary>
-        /// Number (E164 format).
-        /// </summary>
-        [Phone]
-        [MaxLength(20)]
-        public virtual string Number { get; set; }
-    }
+    [Phone]
+    [MaxLength(20)]
+    public virtual string Number { get; set; }
 }

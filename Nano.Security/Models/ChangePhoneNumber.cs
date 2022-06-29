@@ -1,31 +1,30 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Nano.Security.Models
+namespace Nano.Security.Models;
+
+/// <summary>
+/// Change Phone Number.
+/// </summary>
+/// <typeparam name="TIdentity">The identity key type</typeparam>
+public class ChangePhoneNumber<TIdentity>
+    where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Change Phone Number.
+    /// Token.
     /// </summary>
-    /// <typeparam name="TIdentity">The identity key type</typeparam>
-    public class ChangePhoneNumber<TIdentity>
-        where TIdentity : IEquatable<TIdentity>
-    {
-        /// <summary>
-        /// Token.
-        /// </summary>
-        [Required]
-        public virtual string Token { get; set; }
+    [Required]
+    public virtual string Token { get; set; }
 
-        /// <summary>
-        /// User Id.
-        /// </summary>
-        [Required]
-        public virtual TIdentity UserId { get; set; }
+    /// <summary>
+    /// User Id.
+    /// </summary>
+    [Required]
+    public virtual TIdentity UserId { get; set; }
 
-        /// <summary>
-        /// New Phone Number.
-        /// </summary>
-        [Required]
-        public virtual string NewPhoneNumber { get; set; }
-    }
+    /// <summary>
+    /// New Phone Number.
+    /// </summary>
+    [Required]
+    public virtual string NewPhoneNumber { get; set; }
 }

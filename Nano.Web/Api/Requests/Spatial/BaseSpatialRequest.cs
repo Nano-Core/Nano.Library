@@ -2,24 +2,23 @@
 using DynamicExpression.Interfaces;
 using Nano.Models.Criterias.Interfaces;
 
-namespace Nano.Web.Api.Requests.Spatial
+namespace Nano.Web.Api.Requests.Spatial;
+
+/// <summary>
+/// Base Spatial Request (abstract).
+/// </summary>
+/// <typeparam name="TCriteria">The type of <see cref="IQueryCriteriaSpatial"/>.</typeparam>
+public abstract class BaseSpatialRequest<TCriteria> : BaseRequestPost
+    where TCriteria : IQueryCriteriaSpatial, new()
 {
     /// <summary>
-    /// Base Spatial Request (abstract).
+    /// Query.
     /// </summary>
-    /// <typeparam name="TCriteria">The type of <see cref="IQueryCriteriaSpatial"/>.</typeparam>
-    public abstract class BaseSpatialRequest<TCriteria> : BaseRequestPost
-        where TCriteria : IQueryCriteriaSpatial, new()
-    {
-        /// <summary>
-        /// Query.
-        /// </summary>
-        public virtual IQuery<TCriteria> Query { get; set; } = new Query<TCriteria>();
+    public virtual IQuery<TCriteria> Query { get; set; } = new Query<TCriteria>();
 
-        /// <inheritdoc />
-        public override object GetBody()
-        {
-            return this.Query;
-        }
+    /// <inheritdoc />
+    public override object GetBody()
+    {
+        return this.Query;
     }
 }

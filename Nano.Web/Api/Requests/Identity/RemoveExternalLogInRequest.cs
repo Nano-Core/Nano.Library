@@ -1,18 +1,17 @@
-﻿namespace Nano.Web.Api.Requests.Identity
+﻿namespace Nano.Web.Api.Requests.Identity;
+
+/// <inheritdoc />
+public class RemoveExternalLogInRequest : BaseRequestPost
 {
     /// <inheritdoc />
-    public class RemoveExternalLogInRequest : BaseRequestPost
+    public RemoveExternalLogInRequest()
     {
-        /// <inheritdoc />
-        public RemoveExternalLogInRequest()
-        {
-            this.Action = "external/login/remove";
-        }
+        this.Action = "external/login/remove";
+    }
 
-        /// <inheritdoc />
-        public override object GetBody()
-        {
-            return null;
-        }
+    /// <inheritdoc />
+    public override object GetBody()
+    {
+        return null;
     }
 }

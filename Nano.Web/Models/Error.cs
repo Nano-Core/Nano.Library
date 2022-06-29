@@ -3,95 +3,94 @@ using System.Linq;
 using System.Net;
 using Nano.Models.Exceptions;
 
-namespace Nano.Web.Models
+namespace Nano.Web.Models;
+
+/// <summary>
+/// Error.
+/// </summary>
+public class Error
 {
     /// <summary>
-    /// Error.
+    /// Message.
     /// </summary>
-    public class Error
+    public string Summary { get; set; }
+
+    /// <summary>
+    /// Description.
+    /// </summary>
+    public string[] Exceptions { get; set; } = Array.Empty<string>();
+
+    /// <summary>
+    /// Status Code.
+    /// </summary>
+    public int StatusCode { get; set; } = 500;
+
+    /// <summary>
+    /// Is Translated.
+    /// </summary>
+    public bool IsTranslated { get; set; }
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public Error()
     {
-        /// <summary>
-        /// Message.
-        /// </summary>
-        public string Summary { get; set; }
 
-        /// <summary>
-        /// Description.
-        /// </summary>
-        public string[] Exceptions { get; set; } = Array.Empty<string>();
+    }
 
-        /// <summary>
-        /// Status Code.
-        /// </summary>
-        public int StatusCode { get; set; } = 500;
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="exception">The <see cref="Exception"/>.</param>
+    public Error(Exception exception)
+        : this()
+    {
+        if (exception == null)
+            throw new ArgumentNullException(nameof(exception));
 
-        /// <summary>
-        /// Is Translated.
-        /// </summary>
-        public bool IsTranslated { get; set; }
+        var baseException = exception.GetBaseException();
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public Error()
+        this.Summary = "Internal Server Error";
+        this.StatusCode = (int)HttpStatusCode.InternalServerError;
+        this.Exceptions = new[]
         {
+            $"{baseException.GetType().Name} - {baseException.Message}"
+        };
 
-        }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="exception">The <see cref="Exception"/>.</param>
-        public Error(Exception exception)
-            : this()
+        switch (exception)
         {
-            if (exception == null)
-                throw new ArgumentNullException(nameof(exception));
-
-            var baseException = exception.GetBaseException();
-
-            this.Summary = "Internal Server Error";
-            this.StatusCode = (int)HttpStatusCode.InternalServerError;
-            this.Exceptions = new[]
+            case AggregateException aggregateException:
             {
-                $"{baseException.GetType().Name} - {baseException.Message}"
-            };
-
-            switch (exception)
-            {
-                case AggregateException aggregateException:
-                    {
-                        if (aggregateException.InnerException is TranslationException)
-                        {
-                            this.Exceptions = aggregateException.InnerExceptions
-                                .Where(x => x is TranslationException)
-                                .Select(x => x.Message)
-                                .ToArray();
-
-                            this.IsTranslated = true;
-                        }
-                    
-                        break;
-                    }
-                case TranslationException:
-                    this.Exceptions = new[]
-                    {
-                        baseException.Message
-                    };
+                if (aggregateException.InnerException is TranslationException)
+                {
+                    this.Exceptions = aggregateException.InnerExceptions
+                        .Where(x => x is TranslationException)
+                        .Select(x => x.Message)
+                        .ToArray();
 
                     this.IsTranslated = true;
-                    
-                    break;
+                }
+
+                break;
             }
-        }
+            case TranslationException:
+                this.Exceptions = new[]
+                {
+                    baseException.Message
+                };
 
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            var exceptionsString = this.Exceptions
-                .Aggregate($"Messages:{Environment.NewLine}", (current, exception) => current + exception + Environment.NewLine);
+                this.IsTranslated = true;
 
-            return $"{this.StatusCode} {this.Summary}{Environment.NewLine}Messages:{Environment.NewLine}{exceptionsString}";
+                break;
         }
+    }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        var exceptionsString = this.Exceptions
+            .Aggregate($"Messages:{Environment.NewLine}", (current, exception) => current + exception + Environment.NewLine);
+
+        return $"{this.StatusCode} {this.Summary}{Environment.NewLine}Messages:{Environment.NewLine}{exceptionsString}";
     }
 }

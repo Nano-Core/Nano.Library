@@ -1,25 +1,24 @@
 ﻿using Nano.Security.Models;
 
-namespace Nano.Web.Api.Requests.Identity
+namespace Nano.Web.Api.Requests.Identity;
+
+/// <inheritdoc />
+public class ConfirmEmailRequest : BaseRequestPost
 {
+    /// <summary>
+    /// Confirm Email.
+    /// </summary>
+    public virtual ConfirmEmail ConfirmEmail { get; set; } = new();
+
     /// <inheritdoc />
-    public class ConfirmEmailRequest : BaseRequestPost
+    public ConfirmEmailRequest()
     {
-        /// <summary>
-        /// Confirm Email.
-        /// </summary>
-        public virtual ConfirmEmail ConfirmEmail { get; set; } = new();
+        this.Action = "email/confirm";
+    }
 
-        /// <inheritdoc />
-        public ConfirmEmailRequest()
-        {
-            this.Action = "email/confirm";
-        }
-
-        /// <inheritdoc />
-        public override object GetBody()
-        {
-            return this.ConfirmEmail;
-        }
+    /// <inheritdoc />
+    public override object GetBody()
+    {
+        return this.ConfirmEmail;
     }
 }

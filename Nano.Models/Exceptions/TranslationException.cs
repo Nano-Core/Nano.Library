@@ -1,20 +1,19 @@
 using System;
 
-namespace Nano.Models.Exceptions
+namespace Nano.Models.Exceptions;
+
+/// <summary>
+/// Translation Exception.
+/// </summary>
+public class TranslationException : Exception
 {
     /// <summary>
-    /// Translation Exception.
+    /// Constructor.
     /// </summary>
-    public class TranslationException : Exception
+    /// <param name="message">The message.</param>
+    public TranslationException(string message)
+        : base(message)
     {
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        public TranslationException(string message)
-            : base(message)
-        {
 
-        }
     }
 }

@@ -2,38 +2,37 @@ using System;
 using System.Collections.Generic;
 using DynamicExpression;
 
-namespace Nano.Models.Criterias
+namespace Nano.Models.Criterias;
+
+/// <inheritdoc />
+public class DefaultQueryCriteria : BaseQueryCriteria
 {
+    /// <summary>
+    /// After At.
+    /// </summary>
+    public virtual DateTimeOffset? AfterAt { get; set; }
+
+    /// <summary>
+    /// Before At.
+    /// </summary>
+    public virtual DateTimeOffset? BeforeAt { get; set; }
+
     /// <inheritdoc />
-    public class DefaultQueryCriteria : BaseQueryCriteria
+    public override IList<CriteriaExpression> GetExpressions()
     {
-        /// <summary>
-        /// After At.
-        /// </summary>
-        public virtual DateTimeOffset? AfterAt { get; set; }
+        var expressions = base.GetExpressions();
 
-        /// <summary>
-        /// Before At.
-        /// </summary>
-        public virtual DateTimeOffset? BeforeAt { get; set; }
+        var expression = new CriteriaExpression();
 
-        /// <inheritdoc />
-        public override IList<CriteriaExpression> GetExpressions()
-        {
-            var expressions = base.GetExpressions();
+        if (this.BeforeAt.HasValue)
+            expression.LessThanOrEqual("CreatedAt", this.BeforeAt);
 
-            var expression = new CriteriaExpression();
+        if (this.AfterAt.HasValue)
+            expression.GreaterThanOrEqual("CreatedAt", this.AfterAt);
 
-            if (this.BeforeAt.HasValue)
-                expression.LessThanOrEqual("CreatedAt", this.BeforeAt);
+        expressions
+            .Add(expression);
 
-            if (this.AfterAt.HasValue)
-                expression.GreaterThanOrEqual("CreatedAt", this.AfterAt);
-
-            expressions
-                .Add(expression);
-
-            return expressions;
-        }
+        return expressions;
     }
 }

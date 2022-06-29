@@ -1,26 +1,25 @@
 ﻿using Nano.Security.Models;
 
-namespace Nano.Web.Api.Requests.Auth
+namespace Nano.Web.Api.Requests.Auth;
+
+/// <inheritdoc />
+public class LogInRefreshRequest : BaseRequestPost
 {
+    /// <summary>
+    /// Login.
+    /// </summary>
+    public virtual LogInRefresh LogInRefresh { get; set; } = new();
+
     /// <inheritdoc />
-    public class LogInRefreshRequest : BaseRequestPost
+    public LogInRefreshRequest()
     {
-        /// <summary>
-        /// Login.
-        /// </summary>
-        public virtual LogInRefresh LogInRefresh { get; set; } = new();
+        this.Action = "login/refresh";
+        this.Controller = "auth";
+    }
 
-        /// <inheritdoc />
-        public LogInRefreshRequest()
-        {
-            this.Action = "login/refresh";
-            this.Controller = "auth";
-        }
-
-        /// <inheritdoc />
-        public override object GetBody()
-        {
-            return this.LogInRefresh;
-        }
+    /// <inheritdoc />
+    public override object GetBody()
+    {
+        return this.LogInRefresh;
     }
 }

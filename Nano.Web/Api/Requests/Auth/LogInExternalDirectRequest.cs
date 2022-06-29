@@ -1,15 +1,14 @@
 ﻿using Nano.Security.Models;
 
-namespace Nano.Web.Api.Requests.Auth
+namespace Nano.Web.Api.Requests.Auth;
+
+/// <inheritdoc />
+public class LogInExternalDirectRequest : BaseLogInExternalRequest<LogInExternalDirect>
 {
     /// <inheritdoc />
-    public class LogInExternalDirectRequest : BaseLogInExternalRequest<LogInExternalDirect>
+    public LogInExternalDirectRequest()
     {
-        /// <inheritdoc />
-        public LogInExternalDirectRequest()
-        {
-            this.Action = "login/external/direct";
-            this.Controller = "auth";
-        }
+        this.Action = "login/external/direct";
+        this.Controller = "auth";
     }
 }

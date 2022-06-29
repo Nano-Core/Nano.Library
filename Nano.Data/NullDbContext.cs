@@ -1,26 +1,25 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 
-namespace Nano.Data
+namespace Nano.Data;
+
+/// <inheritdoc />
+public class NullDbContext : DefaultDbContext
 {
     /// <inheritdoc />
-    public class NullDbContext : DefaultDbContext
+    public NullDbContext(DbContextOptions<NullDbContext> dbContextOptions, DataOptions dataOptions)
+        : base(dbContextOptions, dataOptions)
     {
-        /// <inheritdoc />
-        public NullDbContext(DbContextOptions<NullDbContext> dbContextOptions, DataOptions dataOptions)
-            : base(dbContextOptions, dataOptions)
-        {
 
-        }
+    }
 
-        /// <inheritdoc />
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (optionsBuilder == null) 
-                throw new ArgumentNullException(nameof(optionsBuilder));
+    /// <inheritdoc />
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (optionsBuilder == null)
+            throw new ArgumentNullException(nameof(optionsBuilder));
 
-            optionsBuilder
-                .UseInMemoryDatabase("nulldb");
-        }
+        optionsBuilder
+            .UseInMemoryDatabase("nulldb");
     }
 }

@@ -1,14 +1,13 @@
 ﻿using Nano.Security.Models;
 
-namespace Nano.Web.Api.Requests.Auth
+namespace Nano.Web.Api.Requests.Auth;
+
+/// <inheritdoc />
+public class GetExternalLoginDataMicrosoftRequest : BaseGetExternalLoginDataRequest<LogInExternalProviderMicrosoft>
 {
     /// <inheritdoc />
-    public class GetExternalLoginDataMicrosoftRequest : BaseGetExternalLoginDataRequest<LogInExternalProviderMicrosoft>
+    public GetExternalLoginDataMicrosoftRequest()
     {
-        /// <inheritdoc />
-        public GetExternalLoginDataMicrosoftRequest()
-        {
-            this.Action = "external/microsoft/data";
-        }
+        this.Action = "external/microsoft/data";
     }
 }

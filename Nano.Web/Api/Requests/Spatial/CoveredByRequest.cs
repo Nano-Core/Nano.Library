@@ -1,18 +1,17 @@
 ﻿using Nano.Models.Criterias.Interfaces;
 
-namespace Nano.Web.Api.Requests.Spatial
+namespace Nano.Web.Api.Requests.Spatial;
+
+/// <summary>
+/// Covered-By Request.
+/// </summary>
+/// <typeparam name="TCriteria">The type of <see cref="IQueryCriteriaSpatial"/>.</typeparam>
+public class CoveredByRequest<TCriteria> : BaseSpatialRequest<TCriteria>
+    where TCriteria : IQueryCriteriaSpatial, new()
 {
-    /// <summary>
-    /// Covered-By Request.
-    /// </summary>
-    /// <typeparam name="TCriteria">The type of <see cref="IQueryCriteriaSpatial"/>.</typeparam>
-    public class CoveredByRequest<TCriteria> : BaseSpatialRequest<TCriteria>
-        where TCriteria : IQueryCriteriaSpatial, new()
+    /// <inheritdoc />
+    public CoveredByRequest()
     {
-        /// <inheritdoc />
-        public CoveredByRequest()
-        {
-            this.Action = "covered-by";
-        }
+        this.Action = "covered-by";
     }
 }

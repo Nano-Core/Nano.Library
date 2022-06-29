@@ -1,14 +1,13 @@
 ﻿using Nano.Security.Models;
 
-namespace Nano.Web.Api.Requests.Auth
+namespace Nano.Web.Api.Requests.Auth;
+
+/// <inheritdoc />
+public class GetExternalLoginDataGoogleRequest : BaseGetExternalLoginDataRequest<LogInExternalProviderGoogle>
 {
     /// <inheritdoc />
-    public class GetExternalLoginDataGoogleRequest : BaseGetExternalLoginDataRequest<LogInExternalProviderGoogle>
+    public GetExternalLoginDataGoogleRequest()
     {
-        /// <inheritdoc />
-        public GetExternalLoginDataGoogleRequest()
-        {
-            this.Action = "external/google/data";
-        }
+        this.Action = "external/google/data";
     }
 }

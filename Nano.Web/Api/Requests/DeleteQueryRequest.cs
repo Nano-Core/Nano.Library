@@ -1,30 +1,29 @@
 ﻿using DynamicExpression.Interfaces;
 using Nano.Models.Criterias;
 
-namespace Nano.Web.Api.Requests
+namespace Nano.Web.Api.Requests;
+
+/// <summary>
+/// Delete Many Query Request.
+/// </summary>
+public class DeleteQueryRequest : BaseRequestDelete
 {
     /// <summary>
-    /// Delete Many Query Request.
+    /// Query Criteria.
     /// </summary>
-    public class DeleteQueryRequest : BaseRequestDelete
+    public virtual IQueryCriteria QueryCriteria { get; set; } = new DefaultQueryCriteria();
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public DeleteQueryRequest()
     {
-        /// <summary>
-        /// Query Criteria.
-        /// </summary>
-        public virtual IQueryCriteria QueryCriteria { get; set; } = new DefaultQueryCriteria();
+        this.Action = "delete/query";
+    }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public DeleteQueryRequest()
-        {
-            this.Action = "delete/query";
-        }
-
-        /// <inheritdoc />
-        public override object GetBody()
-        {
-            return this.QueryCriteria;
-        }
+    /// <inheritdoc />
+    public override object GetBody()
+    {
+        return this.QueryCriteria;
     }
 }

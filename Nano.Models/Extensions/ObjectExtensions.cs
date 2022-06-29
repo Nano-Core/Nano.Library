@@ -1,28 +1,27 @@
 using System;
 using System.ComponentModel;
 
-namespace Nano.Models.Extensions
+namespace Nano.Models.Extensions;
+
+/// <summary>
+/// Object Extensions.
+/// </summary>
+public static class ObjectExtensions
 {
     /// <summary>
-    /// Object Extensions.
+    /// Parse.
+    /// Parses the object to type of <typeparamref name="T"></typeparamref>.
     /// </summary>
-    public static class ObjectExtensions
+    /// <typeparam name="T">the type to parse to.</typeparam>
+    /// <param name="object">the object to parse.</param>
+    /// <returns>The parsed object.</returns>
+    public static T Parse<T>(this object @object)
     {
-        /// <summary>
-        /// Parse.
-        /// Parses the object to type of <typeparamref name="T"></typeparamref>.
-        /// </summary>
-        /// <typeparam name="T">the type to parse to.</typeparam>
-        /// <param name="object">the object to parse.</param>
-        /// <returns>The parsed object.</returns>
-        public static T Parse<T>(this object @object)
-        {
-            if (@object == null) 
-                throw new ArgumentNullException(nameof(@object));
+        if (@object == null)
+            throw new ArgumentNullException(nameof(@object));
 
-            return (T)TypeDescriptor
-                .GetConverter(typeof(T))
-                .ConvertFrom(@object.ToString());
-        }
+        return (T)TypeDescriptor
+            .GetConverter(typeof(T))
+            .ConvertFrom(@object.ToString());
     }
 }

@@ -2,23 +2,22 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Nano.Web.Hosting.Middleware
+namespace Nano.Web.Hosting.Middleware;
+
+/// <inheritdoc />
+public class HttpRequestIdentifierMiddleware : IMiddleware
 {
     /// <inheritdoc />
-    public class HttpRequestIdentifierMiddleware : IMiddleware
+    public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
     {
-        /// <inheritdoc />
-        public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
-        {
-            if (httpContext == null)
-                throw new ArgumentNullException(nameof(httpContext));
+        if (httpContext == null)
+            throw new ArgumentNullException(nameof(httpContext));
 
-            if (next == null)
-                throw new ArgumentNullException(nameof(next));
+        if (next == null)
+            throw new ArgumentNullException(nameof(next));
 
-            httpContext.Response.Headers["RequestId"] = httpContext.TraceIdentifier;
+        httpContext.Response.Headers["RequestId"] = httpContext.TraceIdentifier;
 
-            await next(httpContext);
-        }
+        await next(httpContext);
     }
 }

@@ -2,40 +2,39 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nano.Data;
 
-namespace Nano.App.Startup.Tasks
+namespace Nano.App.Startup.Tasks;
+
+/// <inheritdoc />
+public class InitializeApplicationStartupTask : BaseStartupTask
 {
+    private readonly DefaultDbContext dbContext;
+
     /// <inheritdoc />
-    public class InitializeApplicationStartupTask : BaseStartupTask
+    public InitializeApplicationStartupTask(StartupTaskContext startupTaskContext, DefaultDbContext dbContext = null)
+        : base(startupTaskContext)
     {
-        private readonly DefaultDbContext dbContext;
+        this.dbContext = dbContext;
+    }
 
-        /// <inheritdoc />
-        public InitializeApplicationStartupTask(StartupTaskContext startupTaskContext, DefaultDbContext dbContext = null)
-            : base(startupTaskContext)
+    /// <inheritdoc />
+    public override async Task StartAsync(CancellationToken cancellationToken = default)
+    {
+        this.Context
+            .Increment();
+
+        if (this.dbContext != null)
         {
-            this.dbContext = dbContext;
+            await this.dbContext
+                .EnsureCreatedAsync(cancellationToken);
+
+            await this.dbContext
+                .EnsureMigratedAsync(cancellationToken);
+
+            await this.dbContext
+                .EnsureIdentityAsync(cancellationToken);
         }
 
-        /// <inheritdoc />
-        public override async Task StartAsync(CancellationToken cancellationToken = default)
-        {
-            this.Context
-                .Increment();
-
-            if (this.dbContext != null)
-            {
-                await this.dbContext
-                    .EnsureCreatedAsync(cancellationToken);
-
-                await this.dbContext
-                    .EnsureMigratedAsync(cancellationToken);
-
-                await this.dbContext
-                    .EnsureIdentityAsync(cancellationToken);
-            }
-
-            this.Context
-                .Decrement();
-        }
+        this.Context
+            .Decrement();
     }
 }

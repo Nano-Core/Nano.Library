@@ -16,86 +16,85 @@ using Nano.Security.Const;
 using Nano.Web.Const;
 using Nano.Web.Models;
 
-namespace Nano.Web.Controllers
+namespace Nano.Web.Controllers;
+
+/// <inheritdoc />
+[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.READER)]
+public abstract class BaseControllerSpatialCreatable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerSpatialReadOnly<TRepository, TEntity, TIdentity, TCriteria>
+    where TRepository : IRepositorySpatial
+    where TEntity : class, IEntityIdentity<TIdentity>, IEntitySpatial, IEntityCreatable
+    where TCriteria : class, IQueryCriteriaSpatial, new()
+    where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.READER)]
-    public abstract class BaseControllerSpatialCreatable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerSpatialReadOnly<TRepository, TEntity, TIdentity, TCriteria>
-        where TRepository : IRepositorySpatial
-        where TEntity : class, IEntityIdentity<TIdentity>, IEntitySpatial, IEntityCreatable
-        where TCriteria : class, IQueryCriteriaSpatial, new()
-        where TIdentity : IEquatable<TIdentity>
+    protected BaseControllerSpatialCreatable(ILogger logger, TRepository repository)
+        : this(logger, repository, new NullEventing())
     {
-        /// <inheritdoc />
-        protected BaseControllerSpatialCreatable(ILogger logger, TRepository repository)
-            : this(logger, repository, new NullEventing())
-        {
 
-        }
+    }
 
-        /// <inheritdoc />
-        protected BaseControllerSpatialCreatable(ILogger logger, TRepository repository, IEventing eventing)
-            : base(logger, repository, eventing)
-        {
+    /// <inheritdoc />
+    protected BaseControllerSpatialCreatable(ILogger logger, TRepository repository, IEventing eventing)
+        : base(logger, repository, eventing)
+    {
 
-        }
+    }
 
-        /// <summary>
-        /// Create the passed model.
-        /// </summary>
-        /// <param name="entity">The model to create.</param>
-        /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The created model.</returns>
-        /// <response code="201">Created.</response>
-        /// <response code="400">Bad Request.</response>
-        /// <response code="401">Unauthorized.</response>
-        /// <response code="500">Error occured.</response>
-        [HttpPost]
-        [Route("create")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> CreateAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
-        {
-            entity = await this.Repository
-                .AddAsync(entity, cancellationToken);
+    /// <summary>
+    /// Create the passed model.
+    /// </summary>
+    /// <param name="entity">The model to create.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The created model.</returns>
+    /// <response code="201">Created.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("create")]
+    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> CreateAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
+    {
+        entity = await this.Repository
+            .AddAsync(entity, cancellationToken);
 
-            await this.Repository
-                .SaveChanges(cancellationToken);
+        await this.Repository
+            .SaveChanges(cancellationToken);
 
-            return this.Created("create", entity);
-        }
+        return this.Created("create", entity);
+    }
 
-        /// <summary>
-        /// Creates the passed models.
-        /// </summary>
-        /// <param name="entities">The models to create.</param>
-        /// <param name="cancellationToken">The token used when request is cancelled.</param>
-        /// <returns>The created models.</returns>
-        /// <response code="200">Ok.</response>
-        /// <response code="400">Bad Request.</response>
-        /// <response code="401">Unauthorized.</response>
-        /// <response code="500">Error occured.</response>
-        [HttpPost]
-        [Route("create/Many")]
-        [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-        [Produces(HttpContentType.JSON, HttpContentType.XML)]
-        [ProducesResponseType(typeof(IEnumerable<object>), (int)HttpStatusCode.Created)]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-        public virtual async Task<IActionResult> CreateManyAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
-        {
-            entities = await this.Repository
-                .AddManyAsync(entities, cancellationToken);
+    /// <summary>
+    /// Creates the passed models.
+    /// </summary>
+    /// <param name="entities">The models to create.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The created models.</returns>
+    /// <response code="200">Ok.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("create/Many")]
+    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [ProducesResponseType(typeof(IEnumerable<object>), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> CreateManyAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    {
+        entities = await this.Repository
+            .AddManyAsync(entities, cancellationToken);
 
-            await this.Repository
-                .SaveChanges(cancellationToken);
+        await this.Repository
+            .SaveChanges(cancellationToken);
 
-            return this.Created("create/many", entities);
-        }
+        return this.Created("create/many", entities);
     }
 }

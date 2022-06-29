@@ -1,23 +1,22 @@
 ﻿using System;
 
-namespace Nano.Security.Exceptions
+namespace Nano.Security.Exceptions;
+
+/// <summary>
+/// Unauthorized Exception.
+/// </summary>
+public class UnauthorizedException : Exception
 {
-    /// <summary>
-    /// Unauthorized Exception.
-    /// </summary>
-    public class UnauthorizedException : Exception
+    /// <inheritdoc />
+    public UnauthorizedException()
     {
-        /// <inheritdoc />
-        public UnauthorizedException()
-        {
 
-        }
+    }
 
-        /// <inheritdoc />
-        public UnauthorizedException(string message)
-            : base(message)
-        {
+    /// <inheritdoc />
+    public UnauthorizedException(string message)
+        : base(message)
+    {
 
-        }
     }
 }

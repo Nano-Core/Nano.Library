@@ -2,35 +2,34 @@
 using Nano.Models.Criterias;
 using Nano.Models.Interfaces;
 
-namespace Nano.Web.Api.Requests
+namespace Nano.Web.Api.Requests;
+
+/// <summary>
+/// Update Many Query Request.
+/// </summary>
+public class EditQueryRequest : BaseRequestPut
 {
     /// <summary>
-    /// Update Many Query Request.
+    /// Entity.
     /// </summary>
-    public class EditQueryRequest : BaseRequestPut
+    public virtual IEntityUpdatable Entity { get; set; }
+
+    /// <summary>
+    /// Query Criteria.
+    /// </summary>
+    public virtual IQueryCriteria QueryCriteria { get; set; } = new DefaultQueryCriteria();
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public EditQueryRequest()
     {
-        /// <summary>
-        /// Entity.
-        /// </summary>
-        public virtual IEntityUpdatable Entity { get; set; }
+        this.Action = "edit/query";
+    }
 
-        /// <summary>
-        /// Query Criteria.
-        /// </summary>
-        public virtual IQueryCriteria QueryCriteria { get; set; } = new DefaultQueryCriteria();
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public EditQueryRequest()
-        {
-            this.Action = "edit/query";
-        }
-
-        /// <inheritdoc />
-        public override object GetBody()
-        {
-            return (this.Entity, this.QueryCriteria);
-        }
+    /// <inheritdoc />
+    public override object GetBody()
+    {
+        return (this.Entity, this.QueryCriteria);
     }
 }

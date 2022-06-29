@@ -1,13 +1,12 @@
-﻿namespace Nano.Web.Api.Requests.Auth
+﻿namespace Nano.Web.Api.Requests.Auth;
+
+/// <inheritdoc />
+public class GetExternalSchemesRequest : BaseRequestGet
 {
     /// <inheritdoc />
-    public class GetExternalSchemesRequest : BaseRequestGet
+    public GetExternalSchemesRequest()
     {
-        /// <inheritdoc />
-        public GetExternalSchemesRequest()
-        {
-            this.Action = "external/schemes";
-            this.Controller = "auth";
-        }
+        this.Action = "external/schemes";
+        this.Controller = "auth";
     }
 }

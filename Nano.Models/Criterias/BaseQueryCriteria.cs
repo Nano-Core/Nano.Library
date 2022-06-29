@@ -2,15 +2,14 @@ using System.Collections.Generic;
 using DynamicExpression;
 using DynamicExpression.Interfaces;
 
-namespace Nano.Models.Criterias
+namespace Nano.Models.Criterias;
+
+/// <inheritdoc />
+public abstract class BaseQueryCriteria : IQueryCriteria
 {
     /// <inheritdoc />
-    public abstract class BaseQueryCriteria : IQueryCriteria
+    public virtual IList<CriteriaExpression> GetExpressions()
     {
-        /// <inheritdoc />
-        public virtual IList<CriteriaExpression> GetExpressions()
-        {
-            return new List<CriteriaExpression>();
-        }
+        return new List<CriteriaExpression>();
     }
 }
