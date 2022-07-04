@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -188,9 +187,12 @@ public static class ServiceCollectionExtensions
                     return;
                 }
 
-                services
-                    .AddHealthChecks()
-                    .AddTcpHealthCheck(y => y.AddHost(options.Host, options.Port), options.Host, HealthStatus.Degraded);
+                if (options.UseHealthCheck)
+                {
+                    services
+                        .AddHealthChecks()
+                        .AddTcpHealthCheck(y => y.AddHost(options.Host, options.Port), options.Host, options.UnhealthyStatus);
+                }
 
                 hosts
                     .Add(options.Host);

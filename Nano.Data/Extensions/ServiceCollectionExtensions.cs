@@ -225,19 +225,19 @@ public static class ServiceCollectionExtensions
         {
             services
                 .AddHealthChecks()
-                .AddMySql(options.ConnectionString);
+                .AddMySql(options.ConnectionString, failureStatus: options.UnhealthyStatus);
         }
         else if (typeof(TProvider) == typeof(SqlServerProvider))
         {
             services
                 .AddHealthChecks()
-                .AddSqlServer(options.ConnectionString);
+                .AddSqlServer(options.ConnectionString, failureStatus: options.UnhealthyStatus);
         }
         else if (typeof(TProvider) == typeof(SqliteProvider))
         {
             services
                 .AddHealthChecks()
-                .AddSqlite(options.ConnectionString);
+                .AddSqlite(options.ConnectionString, failureStatus: options.UnhealthyStatus);
         }
 
         return services;

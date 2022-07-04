@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+
 namespace Nano.Data;
 
 /// <summary>
@@ -79,6 +81,11 @@ public class DataOptions
     /// Use Health Check.
     /// </summary>
     public virtual bool UseHealthCheck { get; set; } = true;
+
+    /// <summary>
+    /// Unhealthy Status.
+    /// </summary>
+    public virtual HealthStatus UnhealthyStatus { get; set; } = HealthStatus.Unhealthy;
 
     /// <summary>
     /// Default Collation.

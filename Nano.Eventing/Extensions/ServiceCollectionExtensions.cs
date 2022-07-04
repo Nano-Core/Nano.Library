@@ -165,7 +165,7 @@ public static class ServiceCollectionExtensions
         {
             services
                 .AddHealthChecks()
-                .AddRabbitMQ(rabbitConnectionString: options.ConnectionString);
+                .AddRabbitMQ(rabbitConnectionString: options.ConnectionString, failureStatus: options.UnhealthyStatus);
         }
 
         return services;

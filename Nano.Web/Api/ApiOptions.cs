@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Nano.Web.Api;
 
@@ -36,6 +37,16 @@ public class ApiOptions
     /// Timeout In Seconds.
     /// </summary>
     public virtual int TimeoutInSeconds { get; set; } = 30;
+
+    /// <summary>
+    /// Use Health Check.
+    /// </summary>
+    public virtual bool UseHealthCheck { get; set; } = true;
+
+    /// <summary>
+    /// Unhealthy Status.
+    /// </summary>
+    public virtual HealthStatus UnhealthyStatus { get; set; } = HealthStatus.Unhealthy;
 
     /// <summary>
     /// LogIn.

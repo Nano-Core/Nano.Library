@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+
 namespace Nano.Eventing;
 
 /// <summary>
@@ -55,6 +57,11 @@ public class EventingOptions
     /// Use Health Check.
     /// </summary>
     public virtual bool UseHealthCheck { get; set; } = true;
+
+    /// <summary>
+    /// Unhealthy Status.
+    /// </summary>
+    public virtual HealthStatus UnhealthyStatus { get; set; } = HealthStatus.Unhealthy;
 
     /// <summary>
     /// ConnectionString.
