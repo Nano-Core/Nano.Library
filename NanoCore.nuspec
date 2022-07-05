@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>6.1.6</version>
+		<version>6.1.7</version>
 		<title>Nano Core</title>
 		<summary>
 			Rapidly built and deploy rich .NET 6.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.
@@ -83,7 +83,7 @@
 				<dependency id="Swashbuckle.AspNetCore" version="6.3.1" />
 				<dependency id="Swashbuckle.AspNetCore.Newtonsoft" version="6.3.1" />
 				<dependency id="Swashbuckle.AspNetCore.Annotations" version="6.3.1" />
-				<dependency id="Vivet.AspNetCore.RequestTimeZone" version="6.0.2" />
+				<dependency id="Vivet.AspNetCore.RequestTimeZone" version="6.0.3" />
 			</group>
 		</dependencies>
 	</metadata>
