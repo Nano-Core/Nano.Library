@@ -637,7 +637,7 @@ public abstract class BaseApi : IDisposable
                 if (error == null)
                     throw new NullReferenceException(nameof(error));
 
-                if (error.IsTranslated)
+                if (error.IsTranslated || httpResponse.StatusCode == HttpStatusCode.BadRequest)
                 {
                     throw new AggregateException(error.Exceptions.Select(x => new TranslationException(x)));
                 }
