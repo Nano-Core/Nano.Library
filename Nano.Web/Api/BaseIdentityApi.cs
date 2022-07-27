@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.Models.Interfaces;
 using Nano.Security.Models;
 using Nano.Web.Api.Requests.Identity;
+using Claim = Nano.Security.Models.Claim;
 
 namespace Nano.Web.Api;
 
@@ -281,19 +284,19 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
     }
 
     /// <summary>
-    /// Get Roles Async.
+    /// Get User Roles Async.
     /// </summary>
     /// <param name="request">The <see cref="GetRolesRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    public virtual async Task GetRolesAsync(GetRolesRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<string>> GetRolesAsync(GetRolesRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        await this.InvokeAsync(request, cancellationToken);
+        return await this.InvokeAsync<GetRolesRequest<TIdentity>, IEnumerable<string>>(request, cancellationToken);
     }
 
     /// <summary>
@@ -334,14 +337,14 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
     /// <param name="request">The <see cref="GetClaimsRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    public virtual async Task GetClaimsAsync(GetClaimsRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<Claim>> GetClaimsAsync(GetClaimsRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        await this.InvokeAsync(request, cancellationToken);
+        return await this.InvokeAsync<GetClaimsRequest<TIdentity>, IEnumerable<Claim>>(request, cancellationToken);
     }
 
     /// <summary>

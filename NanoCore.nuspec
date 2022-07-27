@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>6.1.7</version>
+		<version>6.1.8</version>
 		<title>Nano Core</title>
 		<summary>
 			Rapidly built and deploy rich .NET 6.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.
@@ -18,8 +18,7 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Added toggle for enabling / disabling health check for api-client.
-			- Added healthStatus severity option to appsettings for eventing, data and api-client.
+			- Fixed incorrect return type for get user claims and get roles claims for api-client.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net6.0">

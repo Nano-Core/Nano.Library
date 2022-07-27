@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 
 namespace Nano.Security.Models;
 
@@ -42,5 +41,5 @@ public class AccessTokenData
     /// <summary>
     /// Claims.
     /// </summary>
-    public virtual IEnumerable<Claim> Claims { get; set; } = new List<Claim>();
+    public virtual IEnumerable<System.Security.Claims.Claim> Claims { get; set; } = new List<System.Security.Claims.Claim>();
 }

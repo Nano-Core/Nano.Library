@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Net;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
@@ -19,6 +19,7 @@ using Nano.Security.Const;
 using Nano.Security.Models;
 using Nano.Web.Const;
 using Nano.Web.Models;
+using Claim = Nano.Security.Models.Claim;
 
 namespace Nano.Web.Controllers;
 
@@ -676,8 +677,15 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> GetClaimsAsync([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
     {
-        var claims = await this.IdentityManager
+        var userClaims = await this.IdentityManager
             .GetUserClaimsAsync(id, cancellationToken);
+
+        var claims = userClaims
+            .Select(x => new Claim
+            {
+                Type = x.Type,
+                Value = x.Value
+            });
 
         return this.Ok(claims);
     }
@@ -702,7 +710,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> AssignRoleAsync([FromBody][Required]AssignClaim<TIdentity> assignClaim, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> AssignClaimAsync([FromBody][Required]AssignClaim<TIdentity> assignClaim, CancellationToken cancellationToken = default)
     {
         await this.IdentityManager
             .AssignUserClaimAsync(assignClaim, cancellationToken);
@@ -731,7 +739,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> RemoveRoleAsync([FromBody][Required]RemoveClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> RemoveClaimAsync([FromBody][Required]RemoveClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default)
     {
         await this.IdentityManager
             .RemoveUserClaimAsync(removeClaim, cancellationToken);
