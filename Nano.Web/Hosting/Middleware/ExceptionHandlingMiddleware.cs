@@ -17,7 +17,8 @@ namespace Nano.Web.Hosting.Middleware;
 /// <inheritdoc />
 public class ExceptionHandlingMiddleware : IMiddleware
 {
-    private const string MESSAGE_TEMPLATE = "{protocol} {method} {path}{queryString} {statusCode} in {elapsed:0.0000} ms. (Id={id})";
+    // "HTTP/1.1" "POST" "/api/auth/login""" 400 in 14.3556 ms. (Id="0HMJFPOJJACE4:00000003")
+    private const string MESSAGE_TEMPLATE = "{protocol} {method} {pathAndqueryString} {statusCode} in {elapsed:0.0000} ms. (Id={id})";
 
     /// <summary>
     /// Logger.
@@ -117,19 +118,20 @@ public class ExceptionHandlingMiddleware : IMiddleware
         }
         finally
         {
+            var protocol = request.IsHttps ? request.Protocol.Replace("HTTP", "HTTPS") : request.Protocol;
             var method = request.Method;
             var path = request.Path.Value;
-            var id = httpContext.TraceIdentifier;
+            var queryString = request.QueryString.HasValue ? $"{request.QueryString.Value}" : null;
+            var pathAndqueryString = $"{path}{queryString}";
             var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
-            var protocol = request.IsHttps ? request.Protocol.Replace("HTTP", "HTTPS") : request.Protocol;
-            var queryString = request.QueryString.HasValue ? $"{request.QueryString.Value}" : string.Empty;
+            var id = httpContext.TraceIdentifier;
 
             var isHealthCheck = logLevel == LogLevel.Information && path == HealthzCheckUris.Path;
 
             if (!isHealthCheck)
             {
                 this.Logger
-                    .Log(logLevel, exception, MESSAGE_TEMPLATE, protocol, method, path, queryString, response.StatusCode, elapsed, id);
+                    .Log(logLevel, exception, MESSAGE_TEMPLATE, protocol, method, pathAndqueryString, response.StatusCode, elapsed, id);
             }
         }
     }
