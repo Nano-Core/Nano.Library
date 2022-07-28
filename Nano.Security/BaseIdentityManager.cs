@@ -798,6 +798,8 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
             {
                 this.ThrowIdentityExceptions(createResult.Errors);
             }
+
+            await this.AssignSignUpRolesAndClaims(identityUser, roles, claims);
         }
 
         var userLoginInfo = new UserLoginInfo(externalLogInData.ExternalToken.Name, externalLogInData.Id, externalLogInData.ExternalToken.Name);
@@ -809,8 +811,6 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         {
             this.ThrowIdentityExceptions(addLoginResult.Errors);
         }
-
-        await this.AssignSignUpRolesAndClaims(identityUser, roles, claims);
 
         await this.SignInManager
             .SignInAsync(identityUser, false);
