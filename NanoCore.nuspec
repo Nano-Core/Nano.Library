@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>6.1.9</version>
+		<version>6.1.10</version>
 		<title>Nano Core</title>
 		<summary>
 			Rapidly built and deploy rich .NET 6.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.
@@ -18,9 +18,8 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Removed empty quotes in requset logging, when querystring is empty.
-			- Changed to handle bad requests as translated exceptions in api-client.
-			- Added string extension method for getting Http Content Type from filename.
+			- Fixed issue with external signup, where the route in api-client wasn't set correctly for overloaded classes.
+			- Fixed issue where external signup would fail for existing users.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net6.0">

@@ -98,7 +98,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     public virtual async Task<IActionResult> SignUpExternalDirectAsync([FromBody][Required]SignUpExternalDirect<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
     {
         var identityUser = await this.IdentityManager
-            .SignUpExternalAsync(signUpExternal.ExternalLogInData, signUpExternal.User, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
+            .SignUpExternalAsync(signUpExternal.ExternalLogInData, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
 
         var user = await this.IdentityManager
             .CreateUser(signUpExternal.User, identityUser, cancellationToken);
@@ -131,7 +131,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var user = await this.IdentityManager
             .CreateUser(signUpExternal.User, identityUser, cancellationToken);
 
-        return this.Created("signup/external", user);
+        return this.Created("signup/external/google", user);
     }
 
     /// <summary>
@@ -159,7 +159,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var user = await this.IdentityManager
             .CreateUser(signUpExternal.User, identityUser, cancellationToken);
 
-        return this.Created("signup/external", user);
+        return this.Created("signup/external/facebook", user);
     }
 
     /// <summary>
@@ -187,7 +187,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var user = await this.IdentityManager
             .CreateUser(signUpExternal.User, identityUser, cancellationToken);
 
-        return this.Created("signup/external", user);
+        return this.Created("signup/external/microsoft", user);
     }
 
     /// <summary>

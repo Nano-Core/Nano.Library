@@ -764,40 +764,40 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         var externalLoginData = await this.GetExternalProviderLogInData(signUpExternal.Provider, cancellationToken);
 
-        return await this.SignUpExternalAsync(externalLoginData, signUpExternal.User, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
+        return await this.SignUpExternalAsync(externalLoginData, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
     }
 
     /// <summary>
     /// Sign-Up a new user using an external login provider data.
     /// </summary>
-    /// <typeparam name="TUser">The user type.</typeparam>
     /// <param name="externalLogInData">The <see cref="ExternalLogInData"/>.</param>
-    /// <param name="user">The user.</param>
     /// <param name="roles">The roles.</param>
     /// <param name="claims">The claims.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUser"/>.</returns>
-    public virtual async Task<IdentityUser<TIdentity>> SignUpExternalAsync<TUser>(ExternalLogInData externalLogInData, TUser user, IEnumerable<string> roles = null, IDictionary<string, string> claims = null, CancellationToken cancellationToken = default)
-        where TUser : IEntityUser<TIdentity>, new()
+    public virtual async Task<IdentityUser<TIdentity>> SignUpExternalAsync(ExternalLogInData externalLogInData, IEnumerable<string> roles = null, IDictionary<string, string> claims = null, CancellationToken cancellationToken = default)
     {
-        if (user == null)
-            throw new ArgumentNullException(nameof(user));
-
         if (externalLogInData == null)
             throw new ArgumentNullException(nameof(externalLogInData));
 
-        var identityUser = new IdentityUser<TIdentity>
-        {
-            Email = externalLogInData.Email,
-            UserName = externalLogInData.Email
-        };
+        var identityUser = await this.UserManager
+            .FindByEmailAsync(externalLogInData.Email);
 
-        var createResult = await this.UserManager
-            .CreateAsync(identityUser);
-
-        if (!createResult.Succeeded)
+        if (identityUser == null)
         {
-            this.ThrowIdentityExceptions(createResult.Errors);
+            identityUser = new IdentityUser<TIdentity>
+            {
+                Email = externalLogInData.Email,
+                UserName = externalLogInData.Email
+            };
+
+            var createResult = await this.UserManager
+                .CreateAsync(identityUser);
+
+            if (!createResult.Succeeded)
+            {
+                this.ThrowIdentityExceptions(createResult.Errors);
+            }
         }
 
         var userLoginInfo = new UserLoginInfo(externalLogInData.ExternalToken.Name, externalLogInData.Id, externalLogInData.ExternalToken.Name);

@@ -5,7 +5,7 @@ using Nano.Security.Models;
 namespace Nano.Web.Api.Requests.Identity;
 
 /// <inheritdoc />
-public class SignUpExternalGoogleRequest<TUser> : BaseSignUpExternalRequest<SignUpExternalGoogle<TUser, Guid>>
+public class SignUpExternalGoogleRequest<TUser> : SignUpExternalGoogleRequest<TUser, Guid>
     where TUser : IEntityUser<Guid>, new()
 {
 

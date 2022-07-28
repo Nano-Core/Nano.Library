@@ -5,7 +5,7 @@ using Nano.Security.Models;
 namespace Nano.Web.Api.Requests.Identity;
 
 /// <inheritdoc />
-public class SignUpExternalMicrosoftRequest<TUser> : BaseSignUpExternalRequest<SignUpExternalMicrosoft<TUser, Guid>>
+public class SignUpExternalMicrosoftRequest<TUser> : SignUpExternalMicrosoftRequest<TUser, Guid>
     where TUser : IEntityUser<Guid>, new()
 {
 
