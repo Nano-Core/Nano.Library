@@ -21,6 +21,11 @@ public static class ConfigManager
     public static string Environment { get; }
 
     /// <summary>
+    /// Version.
+    /// </summary>
+    public static string Version { get; set; }
+
+    /// <summary>
     /// Has Db-Context.
     /// </summary>
     public static bool HasDbContext { get; set; }
@@ -52,9 +57,12 @@ public static class ConfigManager
             .AddEnvironmentVariables()
             .AddCommandLine(args);
 
+        var tempConfiguration = configurationBuilder.Build();
+        var version = tempConfiguration.GetValue<string>("App:Version");
+        ConfigManager.Version = version;
+
         if (environment == "Development")
         {
-            var tempConfiguration = configurationBuilder.Build();
             var entryPoint = tempConfiguration.GetValue<string>("App:EntryPoint");
 
             if (entryPoint != null)
