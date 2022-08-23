@@ -200,6 +200,7 @@ public static class ServiceCollectionExtensions
         if (!options.UseMemoryCache)
             return services;
 
+        // BUG
         services
             .AddMemoryCache(x =>
             {
