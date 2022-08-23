@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Nano.Eventing.Interfaces;
 
 /// <summary>
@@ -9,6 +11,7 @@ public interface IEventingProvider
     /// <summary>
     /// Configures the <see cref="IEventing"/>.
     /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IEventing"/>.</returns>
-    IEventing Configure();
+    IEventing Configure(IServiceCollection services);
 }

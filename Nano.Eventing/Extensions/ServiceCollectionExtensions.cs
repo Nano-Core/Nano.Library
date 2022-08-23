@@ -36,9 +36,9 @@ public static class ServiceCollectionExtensions
 
         services
             .AddSingleton<IEventingProvider, TProvider>()
-            .AddScoped(x => x
+            .AddSingleton(x => x
                 .GetRequiredService<IEventingProvider>()
-                .Configure())
+                .Configure(services))
             .AddEventingHandlers()
             .AddEventingHandlerAttributes()
             .AddEventingHealthChecks<TProvider>(options);
@@ -73,7 +73,11 @@ public static class ServiceCollectionExtensions
         AppDomain.CurrentDomain
             .GetAssemblies()
             .SelectMany(x => x.GetTypes())
-            .SelectMany(x => x.GetInterfaces(), (x, y) => new { Type = x, GenericType = y })
+            .SelectMany(x => x.GetInterfaces(), (x, y) => new
+            {
+                Type = x,
+                GenericType = y
+            })
             .Where(x =>
                 !x.Type.IsAbstract &&
                 x.Type.IsTypeOf(typeof(IEventingHandler<>)) &&

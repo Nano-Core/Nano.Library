@@ -18,7 +18,10 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Added version to ConfigManager.
+			- Fixed issue with EasyNetQ not reconnecting to queues when RabbitMQ has been killed.
+			- Improved EasyNetQ eventing provider implementation.
+			- Improved EastNetQ Microsoft DI support.
+			- Updated EasyNetQ NuGets.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net6.0">
@@ -43,7 +46,8 @@
 				<dependency id="Serilog.Extensions.Logging" version="3.1.0" />
 				<dependency id="Serilog.Sinks.Console" version="4.0.1" />
 				<dependency id="AspNetCore.HealthChecks.Rabbitmq" version="6.0.2" />
-				<dependency id="EasyNetQ" version="6.5.2" />
+				<dependency id="EasyNetQ" version="7.0.0" />
+				<dependency id="EasyNetQ.DI.Microsoft" version="7.0.0" />
 				<dependency id="AspNetCore.HealthChecks.MySql" version="6.0.2" />
 				<dependency id="AspNetCore.HealthChecks.Sqlite" version="6.0.2" />
 				<dependency id="AspNetCore.HealthChecks.SqlServer" version="6.0.2" />

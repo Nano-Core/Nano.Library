@@ -20,29 +20,43 @@ public class EasyNetQEventing : IEventing
     protected virtual IBus Bus { get; }
 
     /// <summary>
+    /// Logger.
+    /// </summary>
+    protected virtual ILogger Logger { get; }
+
+    /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="bus">The <see cref="IBus"/>.</param>
-    public EasyNetQEventing(IBus bus)
+    /// <param name="logger">The <see cref="ILogger"/>.</param>
+    public EasyNetQEventing(IBus bus, ILogger logger)
     {
         this.Bus = bus ?? throw new ArgumentNullException(nameof(bus));
+        this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     /// <inheritdoc />
-    public virtual async Task PublishAsync<TMessage>(TMessage body, string routing = "")
+    public virtual async Task PublishAsync<TMessage>(TMessage body, string routing = "", CancellationToken cancellationToken = default)
         where TMessage : class
     {
         if (body == null)
             throw new ArgumentNullException(nameof(body));
 
         var name = typeof(TMessage).GetFriendlyName();
-        var message = new Message<TMessage>(body);
+
+        var queueName = this.GetQueueName(name, routing);
+        var queue = await this.Bus.Advanced
+            .QueueDeclareAsync($"{queueName}", cancellationToken);
 
         var exchange = await this.Bus.Advanced
-            .ExchangeDeclareAsync(name, ExchangeType.Fanout);
+            .ExchangeDeclareAsync(name, ExchangeType.Fanout, cancellationToken: cancellationToken);
 
         await this.Bus.Advanced
-            .PublishAsync(exchange, routing, true, message);
+            .BindAsync(exchange, queue, routing, cancellationToken);
+
+        var message = new Message<TMessage>(body);
+        await this.Bus.Advanced
+            .PublishAsync(exchange, routing, true, message, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -50,10 +64,8 @@ public class EasyNetQEventing : IEventing
         where TMessage : class
     {
         var name = typeof(TMessage).GetFriendlyName();
-        var route = string.IsNullOrEmpty(routing) ? string.Empty : $".{routing}";
-        var appName = Assembly.GetEntryAssembly()?.GetName().Name;
-        var queueName = $"{appName}:{name}{route}";
 
+        var queueName = this.GetQueueName(name, routing);
         var queue = await this.Bus.Advanced
             .QueueDeclareAsync($"{queueName}", cancellationToken);
 
@@ -72,14 +84,18 @@ public class EasyNetQEventing : IEventing
                 try
                 {
                     if (info.RoutingKey != routing)
+                    {
                         return;
+                    }
 
                     var eventType = message.MessageType;
                     var genericType = typeof(IEventingHandler<>)
                         .MakeGenericType(eventType);
 
-                    var eventHandler = serviceCollection
-                        .BuildServiceProvider()
+                    var serviceProvider = serviceCollection
+                        .BuildServiceProvider();
+
+                    var eventHandler = serviceProvider
                         .GetRequiredService(genericType);
 
                     var method = eventHandler
@@ -90,18 +106,18 @@ public class EasyNetQEventing : IEventing
                         throw new NullReferenceException(nameof(method));
 
                     var callbackTask = (Task)method
-                        .Invoke(eventHandler, new object[] { message.Body, info.Redelivered });
+                        .Invoke(eventHandler, new object[]
+                        {
+                            message.Body,
+                            info.Redelivered
+                        });
 
                     callbackTask?
                         .Wait(cancellationToken);
                 }
                 catch (Exception ex)
                 {
-                    var logger = serviceCollection
-                        .BuildServiceProvider()
-                        .GetRequiredService<ILogger>();
-
-                    logger
+                    this.Logger
                         .LogError(ex, ex.Message);
 
                     throw;
@@ -127,5 +143,19 @@ public class EasyNetQEventing : IEventing
         {
             this.Bus?.Dispose();
         }
+    }
+
+    private string GetQueueName(string name, string routing)
+    {
+        if (name == null)
+            throw new ArgumentNullException(nameof(name));
+
+        if (routing == null)
+            throw new ArgumentNullException(nameof(routing));
+
+        var route = string.IsNullOrEmpty(routing) ? string.Empty : $".{routing}";
+        var appName = Assembly.GetEntryAssembly()?.GetName().Name;
+
+        return $"{appName}:{name}{route}";
     }
 }

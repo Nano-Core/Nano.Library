@@ -2,6 +2,7 @@ using System;
 using EasyNetQ;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Eventing.Interfaces;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Nano.Eventing.Providers.EasyNetQ;
 
@@ -16,27 +17,29 @@ public class EasyNetQProvider : IEventingProvider
     protected virtual EventingOptions Options { get; }
 
     /// <summary>
-    /// Services.
-    /// </summary>
-    protected virtual IServiceCollection Services { get; }
-
-    /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <param name="options">The <see cref="EventingOptions"/>.</param>
-    public EasyNetQProvider(IServiceCollection services, EventingOptions options)
+    public EasyNetQProvider(EventingOptions options)
     {
-        this.Services = services ?? throw new ArgumentNullException(nameof(services));
         this.Options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
     /// <inheritdoc />
-    public virtual IEventing Configure()
+    public virtual IEventing Configure(IServiceCollection services)
     {
-        var bus = RabbitHutch.CreateBus(this.Options.ConnectionString, x => x
-            .Register(this.Services));
+        services
+            .RegisterEasyNetQ(this.Options.ConnectionString);
 
-        return new EasyNetQEventing(bus);
+        var serviceProvider = services
+            .BuildServiceProvider();
+
+        var bus = serviceProvider
+            .GetRequiredService<IBus>();
+
+        var logger = serviceProvider
+            .GetRequiredService<ILogger>();
+
+        return new EasyNetQEventing(bus, logger);
     }
 }

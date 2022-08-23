@@ -10,7 +10,7 @@ namespace Nano.Eventing;
 public class NullEventing : IEventing
 {
     /// <inheritdoc />
-    public virtual Task PublishAsync<TMessage>(TMessage body, string routing = "")
+    public virtual Task PublishAsync<TMessage>(TMessage body, string routing = "", CancellationToken cancellationToken = default)
         where TMessage : class
     {
         return Task.CompletedTask;
