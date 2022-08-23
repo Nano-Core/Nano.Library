@@ -137,7 +137,7 @@
         </member>
         <member name="M:Nano.Models.Extensions.DateTimeOffsetExtensions.GetEpochTime(System.DateTimeOffset)">
             <summary>
-            Gets the number of seconds since <see cref="F:Nano.Models.Extensions.DateTimeOffsetExtensions.epoch"/> (Unix). 
+            Gets the number of seconds since <see cref="F:Nano.Models.Extensions.DateTimeOffsetExtensions.epoch"/> (Unix).
             </summary>
             <param name="at">The <see cref="T:System.DateTimeOffset"/>.</param>
             <returns>The number of seconds</returns>
@@ -184,8 +184,8 @@
         </member>
         <member name="M:Nano.Models.Extensions.StringExtensions.Substring(System.String,System.String)">
             <summary>
-            Returns a substring consisting of all characters after the index of the passed <paramref name="indexOf"/> 
-            from the passed <paramref name="string"/>. 
+            Returns a substring consisting of all characters after the index of the passed <paramref name="indexOf"/>
+            from the passed <paramref name="string"/>.
             </summary>
             <param name="string">The <see cref="T:System.String"/>.</param>
             <param name="indexOf">The <see cref="T:System.String"/> to find indexOf in the passed <paramref name="string"/>.</param>
@@ -193,8 +193,8 @@
         </member>
         <member name="M:Nano.Models.Extensions.StringExtensions.TrySubstring(System.String,System.String,System.String@)">
             <summary>
-            Tries to get a substring consisting of all characters after the index of the passed <paramref name="indexOf"/> 
-            from the passed <paramref name="string"/>. 
+            Tries to get a substring consisting of all characters after the index of the passed <paramref name="indexOf"/>
+            from the passed <paramref name="string"/>.
             </summary>
             <param name="string">The <see cref="T:System.String"/>.</param>
             <param name="indexOf">The <see cref="T:System.String"/> to find indexOf in the passed <paramref name="string"/>.</param>

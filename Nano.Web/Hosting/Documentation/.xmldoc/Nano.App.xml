@@ -76,7 +76,7 @@
         </member>
         <member name="M:Nano.App.BaseApplication.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
-            Constructor. 
+            Constructor.
             Accepting an instance of <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.
             </summary>
             <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>

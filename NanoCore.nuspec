@@ -22,6 +22,7 @@
 			- Improved EasyNetQ eventing provider implementation.
 			- Improved EastNetQ Microsoft DI support.
 			- Updated NuGets.
+			- Updated Swagger xml-docs.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net6.0">
