@@ -31,8 +31,6 @@ public class SqliteProvider : IDataProvider
             throw new ArgumentNullException(nameof(builder));
 
         var batchSize = this.Options.BatchSize;
-        var useLazyLoading = this.Options.UseLazyLoading;
-        var useSensitiveDataLogging = this.Options.UseSensitiveDataLogging;
         var connectionString = this.Options.ConnectionString;
 
         if (connectionString == null)
@@ -41,13 +39,6 @@ public class SqliteProvider : IDataProvider
         }
 
         builder
-            .EnableSensitiveDataLogging(useSensitiveDataLogging)
-            .ConfigureWarnings(x =>
-            {
-                x.Ignore(RelationalEventId.BoolWithDefaultWarning);
-                x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
-            })
-            .UseLazyLoadingProxies(useLazyLoading)
             .UseSqlite(connectionString, x =>
             {
                 x.MaxBatchSize(batchSize);
