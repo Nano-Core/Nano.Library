@@ -1,6 +1,5 @@
 using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Nano.Data.Interfaces;
 
 namespace Nano.Data.Providers.SqlServer;

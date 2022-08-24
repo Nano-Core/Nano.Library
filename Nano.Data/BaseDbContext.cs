@@ -320,7 +320,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                 foreach (var @event in pendingEvents)
                 {
                     await eventing
-                        .PublishAsync(@event, @event.Type);
+                        .PublishAsync(@event, @event.Type, cancellationToken);
                 }
 
                 this.ChangeTracker.LazyLoadingEnabled = true;

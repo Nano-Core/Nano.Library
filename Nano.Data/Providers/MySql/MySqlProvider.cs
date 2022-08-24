@@ -1,8 +1,5 @@
 using System;
-using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using Nano.Data.Interfaces;
 
