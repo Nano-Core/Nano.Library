@@ -83,7 +83,10 @@ public static class ServiceCollectionExtensions
             .AddTimeZone(appOptions)
             .AddCompression()
             .AddContentTypeFormatters()
-            .Configure<ForwardedHeadersOptions>(options => { options.ForwardedHeaders = ForwardedHeaders.All; })
+            .Configure<ForwardedHeadersOptions>(x =>
+            {
+                x.ForwardedHeaders = ForwardedHeaders.All;
+            })
             .AddSingleton<ExceptionHandlingMiddleware>()
             .AddSingleton<HttpRequestOptionsMiddleware>()
             .AddSingleton<HttpRequestIdentifierMiddleware>()
@@ -338,18 +341,17 @@ public static class ServiceCollectionExtensions
         if (options.Hosting.HealthCheck.UseHealthCheckUI)
         {
             var port = options.Hosting.Ports.FirstOrDefault();
-            var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-            config[HostDefaults.ContentRootKey] = Directory.GetCurrentDirectory();
-
-            // TODO: HealthChecks UI: Doesn't poll: JS: Configured polling interval: NaN milliseconds (seems like knowm issue)
+            // TODO: HealthChecks UI: Doesn't poll: JS: Configured polling interval: NaN milliseconds (https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/issues/636)
             services
                 .AddHealthChecksUI(x =>
                 {
                     x.AddHealthCheckEndpoint(appOptions.Name.ToLower(), $"http://localhost:{port}/healthz");
 
+                    x.SetApiMaxActiveRequests(1);
                     x.SetEvaluationTimeInSeconds(options.Hosting.HealthCheck.EvaluationInterval);
                     x.SetMinimumSecondsBetweenFailureNotifications(options.Hosting.HealthCheck.FailureNotificationInterval);
+                    x.MaximumHistoryEntriesPerEndpoint(options.Hosting.HealthCheck.MaximumHistoryEntriesPerEndpoint);
 
                     foreach (var webHook in options.Hosting.HealthCheck.WebHooks)
                     {

@@ -24,7 +24,8 @@
 			- Updated NuGets.
 			- Updated Swagger xml-docs.
 			- Added Second-Level Memory Cache for Entity Framework.
-			- Added NetTopologySuite for MySql.
+			- Added NetTopologySuite support for MySql.
+            - Added MaximumHistoryEntriesPerEndpoint to health-check configuration.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net6.0">
