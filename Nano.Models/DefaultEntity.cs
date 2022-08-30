@@ -24,5 +24,5 @@ public class DefaultEntity<TIdentity> : BaseEntityIdentity<TIdentity>, IEntityWr
     /// <summary>
     /// Created At.
     /// </summary>
-    public virtual DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public virtual DateTimeOffset CreatedAt { get; } = DateTimeOffset.UtcNow;
 }
