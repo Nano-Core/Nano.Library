@@ -39,6 +39,16 @@
             Timeout In Seconds.
             </summary>
         </member>
+        <member name="P:Nano.Web.Api.ApiOptions.UseHealthCheck">
+            <summary>
+            Use Health Check.
+            </summary>
+        </member>
+        <member name="P:Nano.Web.Api.ApiOptions.UnhealthyStatus">
+            <summary>
+            Unhealthy Status.
+            </summary>
+        </member>
         <member name="P:Nano.Web.Api.ApiOptions.LogIn">
             <summary>
             LogIn.
@@ -102,11 +112,11 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void..</returns>
         </member>
-        <member name="M:Nano.Web.Api.BaseApi.GetExternalLogInDataAsync``1(Nano.Web.Api.Requests.Auth.GetExternalLoginDataRequest{``0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Api.BaseApi.GetExternalLogInDataAsync``1(Nano.Web.Api.Requests.Auth.BaseGetExternalLoginDataRequest{``0},System.Threading.CancellationToken)">
             <summary>
             Get External Log-In Data Async.
             </summary>
-            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.GetExternalLoginDataRequest`1"/>.</param>
+            <param name="request">The <see cref="T:Nano.Web.Api.Requests.Auth.BaseGetExternalLoginDataRequest`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
         </member>
@@ -552,7 +562,7 @@
         </member>
         <member name="M:Nano.Web.Api.BaseIdentityApi`2.GetRolesAsync(Nano.Web.Api.Requests.Identity.GetRolesRequest{`1},System.Threading.CancellationToken)">
             <summary>
-            Get Roles Async.
+            Get User Roles Async.
             </summary>
             <param name="request">The <see cref="T:Nano.Web.Api.Requests.Identity.GetRolesRequest`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
@@ -682,6 +692,20 @@
             Order.
             </summary>
         </member>
+        <member name="T:Nano.Web.Api.Requests.Auth.BaseGetExternalLoginDataRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.Web.Api.Requests.Auth.BaseGetExternalLoginDataRequest`1.Provider">
+            <summary>
+            Provider.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.BaseGetExternalLoginDataRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.BaseGetExternalLoginDataRequest`1.GetBody">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.Web.Api.Requests.Auth.BaseLogInExternalRequest">
             <inheritdoc />
         </member>
@@ -696,18 +720,22 @@
         <member name="M:Nano.Web.Api.Requests.Auth.BaseLogInExternalRequest`1.GetBody">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Api.Requests.Auth.GetExternalLoginDataRequest`1">
+        <member name="T:Nano.Web.Api.Requests.Auth.GetExternalLoginDataFacebookRequest">
             <inheritdoc />
         </member>
-        <member name="P:Nano.Web.Api.Requests.Auth.GetExternalLoginDataRequest`1.Provider">
-            <summary>
-            Provider.
-            </summary>
-        </member>
-        <member name="M:Nano.Web.Api.Requests.Auth.GetExternalLoginDataRequest`1.#ctor">
+        <member name="M:Nano.Web.Api.Requests.Auth.GetExternalLoginDataFacebookRequest.#ctor">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Web.Api.Requests.Auth.GetExternalLoginDataRequest`1.GetBody">
+        <member name="T:Nano.Web.Api.Requests.Auth.GetExternalLoginDataGoogleRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.GetExternalLoginDataGoogleRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Web.Api.Requests.Auth.GetExternalLoginDataMicrosoftRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Web.Api.Requests.Auth.GetExternalLoginDataMicrosoftRequest.#ctor">
             <inheritdoc />
         </member>
         <member name="T:Nano.Web.Api.Requests.Auth.GetExternalSchemesRequest">
@@ -1617,11 +1645,6 @@
             Value.
             </summary>
         </member>
-        <member name="P:Nano.Web.Api.Requests.Types.FormItem.Type">
-            <summary>
-            Type.
-            </summary>
-        </member>
         <member name="T:Nano.Web.Attributes.FromFormBody">
             <summary>
             From Form Body.
@@ -1760,7 +1783,7 @@
         </member>
         <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInExternalDirectAsync(Nano.Security.Models.LogInExternalDirect,System.Threading.CancellationToken)">
             <summary>
-            Sign-in a user transient, from data recieved from a separate authentication.
+            Sign-in a user, from data received from a separate authentication.
             </summary>
             <param name="logInExternalDirect">The external login direct.</param>
             <param name="cancellationToken">The cancellation token.</param>
@@ -1773,7 +1796,7 @@
         </member>
         <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInExternalDirectTransientAsync(Nano.Security.Models.LogInExternalDirect,System.Threading.CancellationToken)">
             <summary>
-            Sign-in a user, from data recieved from a separate authentication.
+            Sign-in a user, from data received from a separate authentication.
             </summary>
             <param name="logInExternalDirect">The external login direct.</param>
             <param name="cancellationToken">The cancellation token.</param>
@@ -1873,12 +1896,35 @@
             <response code="401">Unauthorized.</response>
             <response code="500">Error occurred.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseAuthController`1.GetExternalLoginData(Nano.Security.Models.BaseLogInExternalProvider,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.GetExternalLoginData(Nano.Security.Models.LogInExternalProviderGoogle,System.Threading.CancellationToken)">
             <summary>
-            Get external login data from an external authentication provider.
-            E.g. Google, Facebook, etc.
+            Get external login data from an external Google authentication provider.
             </summary>
-            <param name="logInExternalProvider">The external login data.</param>
+            <param name="logInExternalProvider">The external login provider.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The external login data.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.GetExternalLoginData(Nano.Security.Models.LogInExternalProviderFacebook,System.Threading.CancellationToken)">
+            <summary>
+            Get external login data from an external Facebook authentication provider.
+            </summary>
+            <param name="logInExternalProvider">The external login provider.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The external login data.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occurred.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseAuthController`1.GetExternalLoginData(Nano.Security.Models.LogInExternalProviderMicrosoft,System.Threading.CancellationToken)">
+            <summary>
+            Get external login data from an external Microsoft authentication provider.
+            </summary>
+            <param name="logInExternalProvider">The external login provider.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The external login data.</returns>
             <response code="200">Success.</response>
@@ -2707,7 +2753,7 @@
         <member name="M:Nano.Web.Controllers.BaseIdentityController`4.SignUpExternalDirectAsync(Nano.Security.Models.SignUpExternalDirect{`1,`2},System.Threading.CancellationToken)">
             <summary>
             Sign-up a user based on external login data directly.
-            This can be used when the external provider is verified separately, and the data is passed instead of retrieved from the external provider. 
+            This can be used when the external provider is verified separately, and the data is passed instead of retrieved from the external provider.
             </summary>
             <param name="signUpExternal">The signup external direct.</param>
             <param name="cancellationToken">The cancellation token.</param>
@@ -2983,7 +3029,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.AssignRoleAsync(Nano.Security.Models.AssignClaim{`2},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.AssignClaimAsync(Nano.Security.Models.AssignClaim{`2},System.Threading.CancellationToken)">
             <summary>
             Assign a claim to a user.
             </summary>
@@ -2996,7 +3042,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.RemoveRoleAsync(Nano.Security.Models.RemoveClaim{`2},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.RemoveClaimAsync(Nano.Security.Models.RemoveClaim{`2},System.Threading.CancellationToken)">
             <summary>
             Remove a claim from a user.
             </summary>
@@ -3456,6 +3502,19 @@
             <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
             <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
         </member>
+        <member name="T:Nano.Web.Extensions.StringExtensions">
+            <summary>
+            String Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Extensions.StringExtensions.GetHttpContentType(System.String)">
+            <summary>
+            Get Http Content Type.
+            Gets the http content type mathcing the extension og the passed <paramref name="filename"/>.
+            </summary>
+            <param name="filename">The filename.</param>
+            <returns>The http content type.</returns>
+        </member>
         <member name="T:Nano.Web.Hosting.Conventions.AuditControllerDisabledConvention">
             <inheritdoc />
         </member>
@@ -3507,6 +3566,18 @@
             <summary>
             Model State Validation Filter.
             </summary>
+        </member>
+        <member name="P:Nano.Web.Hosting.Filters.ModelStateValidationFilter.Logger">
+            <summary>
+            Logger.
+            </summary>
+        </member>
+        <member name="M:Nano.Web.Hosting.Filters.ModelStateValidationFilter.#ctor(Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
+            <exception cref="T:System.ArgumentNullException"></exception>
         </member>
         <member name="M:Nano.Web.Hosting.Filters.ModelStateValidationFilter.OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext)">
             <summary>

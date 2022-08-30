@@ -1,6 +1,5 @@
 using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Nano.Data.Interfaces;
 
 namespace Nano.Data.Providers.Memory;
@@ -30,8 +29,6 @@ public class InMemoryProvider : IDataProvider
         if (builder == null)
             throw new ArgumentNullException(nameof(builder));
 
-        var useLazyLoading = this.Options.UseLazyLoading;
-        var useSensitiveDataLogging = this.Options.UseSensitiveDataLogging;
         var connectionString = this.Options.ConnectionString;
 
         if (connectionString == null)
@@ -40,13 +37,6 @@ public class InMemoryProvider : IDataProvider
         }
 
         builder
-            .EnableSensitiveDataLogging(useSensitiveDataLogging)
-            .ConfigureWarnings(x =>
-            {
-                x.Ignore(RelationalEventId.BoolWithDefaultWarning);
-                x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
-            })
-            .UseLazyLoadingProxies(useLazyLoading)
             .UseInMemoryDatabase(connectionString);
     }
 }

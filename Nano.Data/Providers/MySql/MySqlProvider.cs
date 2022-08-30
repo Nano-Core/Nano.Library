@@ -1,6 +1,5 @@
 using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using MySqlConnector;
 using Nano.Data.Interfaces;
 
@@ -33,8 +32,6 @@ public class MySqlProvider : IDataProvider
 
         var batchSize = this.Options.BatchSize;
         var retryCount = this.Options.QueryRetryCount;
-        var useLazyLoading = this.Options.UseLazyLoading;
-        var useSensitiveDataLogging = this.Options.UseSensitiveDataLogging;
         var connectionString = this.Options.ConnectionString;
 
         var connection = new MySqlConnection(connectionString);
@@ -46,18 +43,11 @@ public class MySqlProvider : IDataProvider
         }
 
         builder
-            .EnableSensitiveDataLogging(useSensitiveDataLogging)
-            .ConfigureWarnings(x =>
-            {
-                x.Ignore(RelationalEventId.BoolWithDefaultWarning);
-                x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
-            })
-            .UseLazyLoadingProxies(useLazyLoading)
             .UseMySql(connection, serverVersion, x =>
             {
                 x.MaxBatchSize(batchSize);
                 x.EnableRetryOnFailure(retryCount);
-                // x.UseNetTopologySuite(); // TODO: UseNetTopologySuite, Waiting for Pomelo.
+                x.UseNetTopologySuite();
             });
     }
 }

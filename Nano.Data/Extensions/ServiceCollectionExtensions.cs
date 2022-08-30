@@ -11,7 +11,9 @@ using Nano.Models.Interfaces;
 using Nano.Security.Extensions;
 using System;
 using System.Linq;
+using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Nano.Config;
 using Nano.Data.Models;
 using Nano.Data.Providers.Sqlite;
@@ -73,6 +75,24 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IDataProvider, TProvider>()
             .AddDbContext<TContext>((provider, builder) =>
             {
+                builder
+                    .EnableSensitiveDataLogging(options.UseSensitiveDataLogging)
+                    .ConfigureWarnings(x =>
+                    {
+                        x.Ignore(RelationalEventId.BoolWithDefaultWarning);
+                        x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
+                    })
+                    .UseLazyLoadingProxies(options.UseLazyLoading);
+
+                if (options.UseMemoryCache)
+                {
+                    var secondLevelCacheInterceptor = provider
+                        .GetRequiredService<SecondLevelCacheInterceptor>();
+
+                    builder
+                        .AddInterceptors(secondLevelCacheInterceptor);
+                }
+
                 provider
                     .GetRequiredService<IDataProvider>()
                     .Configure(builder);
@@ -137,6 +157,7 @@ public static class ServiceCollectionExtensions
 
         if (options.UseAudit)
         {
+            AuditManager.DefaultConfiguration.UseUtcDateTime = true;
             AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
             AuditManager.DefaultConfiguration.IncludeProperty<IEntityAuditable>();
             AuditManager.DefaultConfiguration.IncludeDataAnnotation();
@@ -198,13 +219,25 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(options));
 
         if (!options.UseMemoryCache)
+        {
             return services;
+        }
+
+        const string CACHE_KEY_PREFIX = "EF_";
+
+        services
+            .AddEFSecondLevelCache(x => x
+                .SkipCachingCommands(y => y.ToLower().Contains("__ef"))
+                .CacheAllQueriesExceptContainingTypes(options.MemoryCache.ExpirationMode, TimeSpan.FromMinutes(options.MemoryCache.ExpirationTimeoutInSeconds))
+                .CacheAllQueriesExceptContainingTableNames(options.MemoryCache.ExpirationMode, TimeSpan.FromMinutes(options.MemoryCache.ExpirationTimeoutInSeconds), options.MemoryCache.IgnoredTableNames)
+                .UseMemoryCacheProvider()
+                .UseCacheKeyPrefix(CACHE_KEY_PREFIX));
 
         services
             .AddMemoryCache(x =>
             {
-                x.CompactionPercentage = 25;
-                x.ExpirationScanFrequency = TimeSpan.FromMinutes(15);
+                x.SizeLimit = options.MemoryCache.MaxEntries;
+                x.ExpirationScanFrequency = TimeSpan.FromMinutes(options.MemoryCache.ExpirationScanFrequencyInSeconds);
             });
 
         return services;

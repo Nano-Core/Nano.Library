@@ -175,13 +175,11 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Microsoft.AspNetCore.Identity.IdentityUser"/>.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.SignUpExternalAsync``1(Nano.Security.Models.ExternalLogInData,``0,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IDictionary{System.String,System.String},System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.SignUpExternalAsync(Nano.Security.Models.ExternalLogInData,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IDictionary{System.String,System.String},System.Threading.CancellationToken)">
             <summary>
             Sign-Up a new user using an external login provider data.
             </summary>
-            <typeparam name="TUser">The user type.</typeparam>
             <param name="externalLogInData">The <see cref="T:Nano.Security.Models.ExternalLogInData"/>.</param>
-            <param name="user">The user.</param>
             <param name="roles">The roles.</param>
             <param name="claims">The claims.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
@@ -1027,6 +1025,21 @@
             New Phone Number.
             </summary>
         </member>
+        <member name="T:Nano.Security.Models.Claim">
+            <summary>
+            Claim.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.Claim.Type">
+            <summary>
+            Type.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.Claim.Value">
+            <summary>
+            Value.
+            </summary>
+        </member>
         <member name="T:Nano.Security.Models.ConfirmEmail">
             <summary>
             Confirm Email.
@@ -1456,7 +1469,7 @@
         </member>
         <member name="P:Nano.Security.Models.SignUp.ConfirmPassword">
             <summary>
-            Confirm Password. 
+            Confirm Password.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.SignUp`1">

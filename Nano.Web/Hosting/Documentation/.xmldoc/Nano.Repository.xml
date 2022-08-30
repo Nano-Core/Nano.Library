@@ -239,7 +239,7 @@
             <summary>
             (Base) Interface for a repository.
             Defines methods for the most rudamentory operations (get, criteria2, add, update, delete) on instances of <see cref="T:Nano.Models.Interfaces.IEntity"/>.
-            <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/>, <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/> and <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>). 
+            <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/>, <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/> and <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>).
             </summary>
         </member>
         <member name="M:Nano.Repository.Interfaces.IRepository.GetEntitySet``1">

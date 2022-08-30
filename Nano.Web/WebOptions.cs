@@ -1119,6 +1119,12 @@ public class WebOptions
             public virtual int FailureNotificationInterval { get; set; } = 60;
 
             /// <summary>
+            /// Maximum History Entries Per Endpoint.
+            /// The maximum number of historical entries per endpoint in the UI database.
+            /// </summary>
+            public virtual int MaximumHistoryEntriesPerEndpoint { get; set; } = 50;
+
+            /// <summary>
             /// Web-Hooks.
             /// </summary>
             public virtual HealthCheckWebHookOptions[] WebHooks { get; set; } = Array.Empty<HealthCheckWebHookOptions>();

@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Nano.App;
@@ -66,10 +65,17 @@ public static class ServiceCollectionExtensions
         services
             .AddConfigOptions<WebOptions>(configuration, WebOptions.SectionName, out var webOptions);
 
-        var serviceProvider = services.BuildServiceProvider();
-        var appOptions = serviceProvider.GetService<AppOptions>() ?? new AppOptions();
-        var dataOptions = serviceProvider.GetService<DataOptions>() ?? new DataOptions();
-        var securityOptions = serviceProvider.GetService<SecurityOptions>() ?? new SecurityOptions();
+        var serviceProvider = services
+            .BuildServiceProvider();
+
+        var appOptions = serviceProvider
+            .GetService<AppOptions>() ?? new AppOptions();
+
+        var dataOptions = serviceProvider
+            .GetService<DataOptions>() ?? new DataOptions();
+
+        var securityOptions = serviceProvider
+            .GetService<SecurityOptions>() ?? new SecurityOptions();
 
         services
             .AddCors()
@@ -83,7 +89,10 @@ public static class ServiceCollectionExtensions
             .AddTimeZone(appOptions)
             .AddCompression()
             .AddContentTypeFormatters()
-            .Configure<ForwardedHeadersOptions>(options => { options.ForwardedHeaders = ForwardedHeaders.All; })
+            .Configure<ForwardedHeadersOptions>(x =>
+            {
+                x.ForwardedHeaders = ForwardedHeaders.All;
+            })
             .AddSingleton<ExceptionHandlingMiddleware>()
             .AddSingleton<HttpRequestOptionsMiddleware>()
             .AddSingleton<HttpRequestIdentifierMiddleware>()
@@ -338,18 +347,17 @@ public static class ServiceCollectionExtensions
         if (options.Hosting.HealthCheck.UseHealthCheckUI)
         {
             var port = options.Hosting.Ports.FirstOrDefault();
-            var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-            config[HostDefaults.ContentRootKey] = Directory.GetCurrentDirectory();
-
-            // TODO: HealthChecks UI: Doesn't poll: JS: Configured polling interval: NaN milliseconds (seems like knowm issue)
+            // TODO: HealthChecks UI: Doesn't poll: JS: Configured polling interval: NaN milliseconds (https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/issues/636)
             services
                 .AddHealthChecksUI(x =>
                 {
                     x.AddHealthCheckEndpoint(appOptions.Name.ToLower(), $"http://localhost:{port}/healthz");
 
+                    x.SetApiMaxActiveRequests(1);
                     x.SetEvaluationTimeInSeconds(options.Hosting.HealthCheck.EvaluationInterval);
                     x.SetMinimumSecondsBetweenFailureNotifications(options.Hosting.HealthCheck.FailureNotificationInterval);
+                    x.MaximumHistoryEntriesPerEndpoint(options.Hosting.HealthCheck.MaximumHistoryEntriesPerEndpoint);
 
                     foreach (var webHook in options.Hosting.HealthCheck.WebHooks)
                     {

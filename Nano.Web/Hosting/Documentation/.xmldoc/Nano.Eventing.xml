@@ -7,13 +7,13 @@
         <member name="T:Nano.Eventing.Attributes.PublishAttribute">
             <summary>
             Publish Attribute.
-            Types with this annotation, defines that an event will be published for the entity when it changes. 
+            Types with this annotation, defines that an event will be published for the entity when it changes.
             </summary>
         </member>
         <member name="T:Nano.Eventing.Attributes.SubscribeAttribute">
             <summary>
             Subscribe Attribute.
-            Types with this annotation, subscribes to events of the declaring type. 
+            Types with this annotation, subscribes to events of the declaring type.
             </summary>
         </member>
         <member name="T:Nano.Eventing.EntityEvent">
@@ -100,6 +100,11 @@
             Use Health Check.
             </summary>
         </member>
+        <member name="P:Nano.Eventing.EventingOptions.UnhealthyStatus">
+            <summary>
+            Unhealthy Status.
+            </summary>
+        </member>
         <member name="P:Nano.Eventing.EventingOptions.ConnectionString">
             <summary>
             ConnectionString.
@@ -156,13 +161,14 @@
             Eventing interface.
             </summary>
         </member>
-        <member name="M:Nano.Eventing.Interfaces.IEventing.PublishAsync``1(``0,System.String)">
+        <member name="M:Nano.Eventing.Interfaces.IEventing.PublishAsync``1(``0,System.String,System.Threading.CancellationToken)">
             <summary>
             Publishes a message to an exchange using 'fanout' publish/subscribe topology.
             </summary>
             <typeparam name="TMessage">The type of the message body.</typeparam>
             <param name="body">The message body.</param>
             <param name="routing">The routing key (if any).</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>
         <member name="M:Nano.Eventing.Interfaces.IEventing.SubscribeAsync``1(System.String,System.Threading.CancellationToken)">
@@ -194,10 +200,11 @@
             Defines the provider used for eventing in the application.
             </summary>
         </member>
-        <member name="M:Nano.Eventing.Interfaces.IEventingProvider.Configure">
+        <member name="M:Nano.Eventing.Interfaces.IEventingProvider.Configure(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             Configures the <see cref="T:Nano.Eventing.Interfaces.IEventing"/>.
             </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
             <returns>The <see cref="T:Nano.Eventing.Interfaces.IEventing"/>.</returns>
         </member>
         <member name="T:Nano.Eventing.NullEventing">
@@ -205,7 +212,7 @@
             Null Eventing.
             </summary>
         </member>
-        <member name="M:Nano.Eventing.NullEventing.PublishAsync``1(``0,System.String)">
+        <member name="M:Nano.Eventing.NullEventing.PublishAsync``1(``0,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Eventing.NullEventing.SubscribeAsync``1(System.String,System.Threading.CancellationToken)">
@@ -222,13 +229,19 @@
             Bus.
             </summary>
         </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.#ctor(EasyNetQ.IBus)">
+        <member name="P:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.Logger">
+            <summary>
+            Logger.
+            </summary>
+        </member>
+        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.#ctor(EasyNetQ.IBus,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             Constructor.
             </summary>
             <param name="bus">The <see cref="T:EasyNetQ.IBus"/>.</param>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
         </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.PublishAsync``1(``0,System.String)">
+        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.PublishAsync``1(``0,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.SubscribeAsync``1(System.String,System.Threading.CancellationToken)">
@@ -254,19 +267,13 @@
             Options.
             </summary>
         </member>
-        <member name="P:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.Services">
-            <summary>
-            Services.
-            </summary>
-        </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.#ctor(Microsoft.Extensions.DependencyInjection.IServiceCollection,Nano.Eventing.EventingOptions)">
+        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.#ctor(Nano.Eventing.EventingOptions)">
             <summary>
             Constructor.
             </summary>
-            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
             <param name="options">The <see cref="T:Nano.Eventing.EventingOptions"/>.</param>
         </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.Configure">
+        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQProvider.Configure(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <inheritdoc />
         </member>
     </members>

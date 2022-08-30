@@ -19,6 +19,11 @@
             Environment.
             </summary>
         </member>
+        <member name="P:Nano.Config.ConfigManager.Version">
+            <summary>
+            Version.
+            </summary>
+        </member>
         <member name="P:Nano.Config.ConfigManager.HasDbContext">
             <summary>
             Has Db-Context.
