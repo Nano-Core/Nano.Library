@@ -292,6 +292,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public virtual async Task<IActionResult> GetResetPasswordTokenAsync([FromQuery][Required]string emailAddress, CancellationToken cancellationToken = default)
     {
         var resetPasswordToken = await this.IdentityManager
@@ -374,6 +375,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public virtual async Task<IActionResult> GetChangeEmailTokenAsync([FromQuery][Required]string emailAddress, [Required][FromQuery]string newEmailAddress, CancellationToken cancellationToken = default)
     {
         var changeEmailToken = await this.IdentityManager
@@ -427,6 +429,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public virtual async Task<IActionResult> GetConfirmEmailTokenAsync([FromQuery][Required]string emailAddress, CancellationToken cancellationToken = default)
     {
         var confirmEmailToken = await this.IdentityManager
@@ -482,6 +485,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public virtual async Task<IActionResult> GetChangePhoneTokenAsync([FromQuery][Required]string phoneNumber, [Required][FromQuery]string newPhoneNumber, CancellationToken cancellationToken = default)
     {
         var changeEmailToken = await this.IdentityManager
@@ -535,6 +539,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public virtual async Task<IActionResult> GetConfirmPhoneTokenAsync([FromQuery][Required]string phoneNumber, CancellationToken cancellationToken = default)
     {
         var confirmEmailToken = await this.IdentityManager

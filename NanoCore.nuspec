@@ -25,7 +25,11 @@
 			- Updated Swagger xml-docs.
 			- Added Second-Level Memory Cache for Entity Framework.
 			- Added NetTopologySuite support for MySql.
+			- Fixed and re-enabled audit logging.
+            - Improved DbContext implementation, using events, and moving methods to extensions. 
             - Added MaximumHistoryEntriesPerEndpoint to health-check configuration.
+            - Removed setter on DefaultEntity.CreatedAt.
+            - Added no chache for identity endpoints that generates tokens.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net6.0">
