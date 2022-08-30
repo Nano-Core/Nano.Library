@@ -4,13 +4,13 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using EntityFrameworkCore.Triggers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Nano.Config;
+using Nano.Data.Const;
 using Nano.Data.Models;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
@@ -30,20 +30,12 @@ namespace Nano.Data;
 public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserTokenExpiry<TIdentity>>
     where TIdentity : IEquatable<TIdentity>
 {
+    private IEnumerable<EntityEvent> pendingEvents;
+
     /// <summary>
     /// Options.
     /// </summary>
-    public DataOptions Options { get; set; }
-
-    /// <summary>
-    /// Audit Entries.
-    /// </summary>
-    public virtual DbSet<DefaultAuditEntry> Audit { get; set; }
-
-    /// <summary>
-    /// Audit Entry Properties.
-    /// </summary>
-    public virtual DbSet<DefaultAuditEntryProperty> AuditProperties { get; set; }
+    public DataOptions Options { get; }
 
     /// <summary>
     /// Auto Save.
@@ -55,6 +47,125 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         : base(contextOptions)
     {
         this.Options = dataOptions ?? throw new ArgumentNullException(nameof(dataOptions));
+
+        this.SavingChanges += (_, _) => this.SavePendingEntityEvents();
+        this.SavingChanges += (_, _) => this.SaveSoftDeletion();
+        this.SavedChanges += async (_, _) => await this.ExecuteEntityEvents();
+    }
+
+    /// <inheritdoc />
+    public override EntityEntry Update(object entity)
+    {
+        if (entity == null)
+            throw new ArgumentNullException(nameof(entity));
+
+        if (this.Options.UseAudit)
+        {
+            // TODO: Audit is not aware of existing values when updating. We need to pull the existing entity and compare properties.
+
+            //var type = entity
+            //    .GetType();
+
+            //var key = typeof(TIdentity)
+            //    .GetProperty(nameof(IEntityIdentity<TIdentity>.Id));
+
+            //var keyValue = key?
+            //    .GetValue(entity);
+
+            //var existingEntity = this.Find(type, keyValue);
+
+            //if (existingEntity == null)
+            //{
+            //    return base.Update(entity);
+            //}
+
+            //var properties = type
+            //    .GetProperties();
+
+            //foreach (var property in properties)
+            //{
+            //    var value = property
+            //        .GetValue(entity);
+
+            //    if (property.CanWrite)
+            //    {
+            //        property
+            //            .SetValue(existingEntity, value);
+            //    }
+            //}
+
+            //return base.Update(existingEntity);
+        }
+
+        return base.Update(entity);
+    }
+
+    /// <inheritdoc />
+    public override EntityEntry<TEntity> Update<TEntity>(TEntity entity)
+    {
+        if (entity == null)
+            throw new ArgumentNullException(nameof(entity));
+
+        if (this.Options.UseAudit)
+        {
+            // TODO: Audit is not aware of existing values when updating. We need to pull the existing entity and compare properties.
+
+            //var key = typeof(TEntity)
+            //    .GetProperty(nameof(IEntityIdentity<TIdentity>.Id));
+
+            //var keyValue = key?
+            //    .GetValue(entity);
+
+            //var existingEntity = this.Find<TEntity>(keyValue);
+
+            //if (existingEntity == null)
+            //{
+            //    return base.Update(entity);
+            //}
+
+            //var properties = typeof(TEntity)
+            //    .GetProperties();//.Where(x => x.PropertyType.IsValueType || x.PropertyType == typeof(string));
+
+            //foreach (var property in properties)
+            //{
+            //    var value = property
+            //        .GetValue(entity);
+
+            //    if (property.CanWrite)
+            //    {
+            //        property
+            //            .SetValue(existingEntity, value);
+            //    }
+            //}
+
+            //return base.Update(existingEntity);
+        }
+
+        return base.Update(entity);
+    }
+
+    /// <inheritdoc />
+    public override void UpdateRange(params object[] entities)
+    {
+        if (entities == null)
+            throw new ArgumentNullException(nameof(entities));
+
+        foreach (var entity in entities)
+        {
+            this.Update(entity);
+        }
+    }
+
+    /// <inheritdoc />
+    public override void UpdateRange(IEnumerable<object> entities)
+    {
+        if (entities == null)
+            throw new ArgumentNullException(nameof(entities));
+
+        foreach (var entity in entities)
+        {
+            this.Update(entity);
+        }
     }
 
     /// <inheritdoc />
@@ -77,23 +188,23 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         modelBuilder
             .Entity<IdentityUserLogin<TIdentity>>()
-            .ToTable("__EFAuthUserLogin");
+            .ToTable(TableNames.IDENTITY_USER_LOGIN_TABLE_NAME);
 
         modelBuilder
             .Entity<IdentityUserRole<TIdentity>>()
-            .ToTable("__EFAuthUserRole");
+            .ToTable(TableNames.IDENTITY_USER_ROLE);
 
         modelBuilder
             .Entity<IdentityUserTokenExpiry<TIdentity>>()
-            .ToTable("__EFAuthUserToken");
+            .ToTable(TableNames.IDENTITY_USER_TOKEN_EXPIRY);
 
         modelBuilder
             .Entity<IdentityUserClaim<TIdentity>>()
-            .ToTable("__EFAuthUserClaim");
+            .ToTable(TableNames.IDENTITY_USER_CLAIM);
 
         modelBuilder
-            .Entity<IdentityUser<Guid>>()
-            .ToTable("__EFAuthUser");
+            .Entity<IdentityUser<TIdentity>>()
+            .ToTable(TableNames.IDENTITY_USER);
 
         modelBuilder
             .Entity<IdentityUser<TIdentity>>()
@@ -107,11 +218,11 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         modelBuilder
             .Entity<IdentityRoleClaim<TIdentity>>()
-            .ToTable("__EFAuthRoleClaim");
+            .ToTable(TableNames.IDENTITY_ROLE_CLAIM);
 
         modelBuilder
             .Entity<IdentityRole<TIdentity>>()
-            .ToTable("__EFAuthRole");
+            .ToTable(TableNames.IDENTITY_ROLE);
     }
 
     /// <summary>
@@ -119,7 +230,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="Task"/> (void).</returns>
-    public virtual async Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
+    internal virtual async Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
     {
         if (!ConfigManager.HasDbContext)
             return;
@@ -139,7 +250,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="Task"/> (void).</returns>
-    public virtual async Task EnsureMigratedAsync(CancellationToken cancellationToken = default)
+    internal virtual async Task EnsureMigratedAsync(CancellationToken cancellationToken = default)
     {
         if (!ConfigManager.HasDbContext)
             return;
@@ -161,7 +272,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="Task"/> (void).</returns>
-    public virtual async Task EnsureIdentityAsync(CancellationToken cancellationToken = default)
+    internal virtual async Task EnsureIdentityAsync(CancellationToken cancellationToken = default)
     {
         if (!ConfigManager.HasDbContext)
             return;
@@ -194,151 +305,67 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         await base.SaveChangesAsync(cancellationToken);
     }
 
-    /// <summary>
-    /// Adds or updates (if exists) the entity.
-    /// </summary>
-    /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
-    /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
-    /// <returns>A <see cref="EntityEntry"/>.</returns>
-    public virtual EntityEntry<TEntity> AddOrUpdate<TEntity>(TEntity entity)
-        where TEntity : class
+    private void SaveSoftDeletion()
     {
-        if (entity == null)
-            throw new ArgumentNullException(nameof(entity));
-
-        var dbSet = this.Set<TEntity>();
-        var tracked = dbSet.SingleOrDefault(x => x == entity);
-
-        if (tracked != null)
+        if (!this.Options.UseSoftDeletetion)
         {
-            this.Entry(tracked).CurrentValues.SetValues(entity);
-            return this.Entry(tracked);
+            return;
         }
 
-        return dbSet
-            .Add(entity);
+        this.ChangeTracker
+            .Entries<IEntityDeletableSoft>()
+            .Where(x => x.State == EntityState.Deleted)
+            .ToList()
+            .ForEach(x =>
+            {
+                x.State = EntityState.Modified;
+                x.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
+            });
     }
-
-    /// <summary>
-    /// Adds or updates (if exists) the entities.
-    /// </summary>
-    /// <typeparam name="TEntity">The type of <paramref name="entities"/>.</typeparam>
-    /// <param name="entities">The <see cref="object"/>'s of type <typeparamref name="TEntity"/>.</param>
-    /// <returns>A <see cref="EntityEntry{TEntity}"/>.</returns>
-    public virtual void AddOrUpdateMany<TEntity>(IEnumerable<TEntity> entities)
-        where TEntity : class
+    private void SavePendingEntityEvents()
     {
-        if (entities == null)
-            throw new ArgumentNullException(nameof(entities));
+        this.pendingEvents = this.ChangeTracker
+            .Entries<IEntity>()
+            .Where(x =>
+                x.Entity.GetType().IsTypeOf(typeof(IEntityIdentity<>)) &&
+                x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
+                x.State is EntityState.Added or EntityState.Deleted)
+            .Select(x =>
+            {
+                var type = x.Entity.GetType();
+                var state = x.State.ToString();
+                var name = type.Name.Replace("Proxy", string.Empty);
 
-        foreach (var entity in entities)
-        {
-            this.AddOrUpdate(entity);
-        }
+                return x.Entity switch
+                {
+                    IEntityIdentity<int> @int => new EntityEvent(@int.Id, name, state),
+                    IEntityIdentity<long> @long => new EntityEvent(@long.Id, name, state),
+                    IEntityIdentity<string> @string => new EntityEvent(@string.Id, name, state),
+                    IEntityIdentity<Guid> guid => new EntityEvent(guid.Id, name, state),
+                    IEntityIdentity<dynamic> dynamic => new EntityEvent(dynamic.Id, name, state),
+                    _ => null
+                };
+            })
+            .Where(x => x != null)
+            .ToList();
     }
-
-    /// <inheritdoc />
-    public override int SaveChanges()
+    private async Task ExecuteEntityEvents()
     {
-        return this.SaveChanges(true);
-    }
-
-    /// <inheritdoc />
-    public override int SaveChanges(bool acceptAllChangesOnSuccess)
-    {
-        var pendingEvents = this.GetPendingEntityEvents();
-
-        this.SaveSoftDeletion();
-
-        // TODO: Fix Audit
-        //var audit = new Audit();
-
-        //if (this.Options.UseAudit)
-        //    audit.PreSaveChanges(this);
-
-        var success = base
-            .SaveChanges(acceptAllChangesOnSuccess);
-
-        var eventing = this.GetService<IEventing>();
-
-        this.ChangeTracker.LazyLoadingEnabled = false;
-
         try
         {
-            pendingEvents
-                .ForEach(x =>
-                {
-                    eventing
-                        .PublishAsync(x, x.Type)
-                        .ConfigureAwait(false);
-                });
+            var eventing = this.GetService<IEventing>();
+
+            foreach (var @event in this.pendingEvents)
+            {
+                await eventing
+                    .PublishAsync(@event, @event.Type);
+            }
         }
         finally
         {
-            this.ChangeTracker.LazyLoadingEnabled = true;
+            this.pendingEvents = null;
         }
-
-        // TODO: Fix Audit
-        //if (this.Options.UseAudit)
-        //{
-        //    audit.PostSaveChanges();
-        //    audit.Configuration.AutoSavePreAction?.Invoke(this, audit);
-
-        //    base.SaveChanges();
-        //}
-
-        return success;
     }
-
-    /// <inheritdoc />
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        return await this.SaveChangesAsync(true, cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
-    {
-        var pendingEvents = this.GetPendingEntityEvents();
-
-        this.SaveSoftDeletion();
-
-        // TODO: Fix Audit
-        //var audit = new Audit();
-
-        //if (this.Options.UseAudit)
-        //    audit.PreSaveChanges(this);
-
-        var success = await this
-            .SaveChangesWithTriggersAsync(base.SaveChangesAsync, acceptAllChangesOnSuccess, cancellationToken)
-            .ContinueWith(async x =>
-            {
-                var eventing = this.GetService<IEventing>();
-
-                this.ChangeTracker.LazyLoadingEnabled = false;
-
-                foreach (var @event in pendingEvents)
-                {
-                    await eventing
-                        .PublishAsync(@event, @event.Type, cancellationToken);
-                }
-
-                this.ChangeTracker.LazyLoadingEnabled = true;
-
-                return await x;
-            }, cancellationToken);
-
-        //if (this.Options.UseAudit)
-        //{
-        //    audit.PostSaveChanges();
-        //    audit.Configuration.AutoSavePreAction?.Invoke(this, audit);
-
-        //    await base.SaveChangesAsync(cancellationToken);
-        //}
-
-        return await success;
-    }
-
     private async Task<IdentityRole<TIdentity>> AddRole(string role)
     {
         if (role == null)
@@ -424,48 +451,5 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             await userManager
                 .AddToRoleAsync(user, role);
         }
-    }
-
-    private void SaveSoftDeletion()
-    {
-        if (!this.Options.UseSoftDeletetion)
-            return;
-
-        this.ChangeTracker
-            .Entries<IEntityDeletableSoft>()
-            .Where(x => x.State == EntityState.Deleted)
-            .ToList()
-            .ForEach(x =>
-            {
-                x.State = EntityState.Modified;
-                x.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
-            });
-    }
-    private List<EntityEvent> GetPendingEntityEvents()
-    {
-        return this.ChangeTracker
-            .Entries<IEntity>()
-            .Where(x =>
-                x.Entity.GetType().IsTypeOf(typeof(IEntityIdentity<>)) &&
-                x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
-                x.State is EntityState.Added or EntityState.Deleted)
-            .Select(x =>
-            {
-                var type = x.Entity.GetType();
-                var state = x.State.ToString();
-                var name = type.Name.Replace("Proxy", string.Empty);
-
-                return x.Entity switch
-                {
-                    IEntityIdentity<int> @int => new EntityEvent(@int.Id, name, state),
-                    IEntityIdentity<long> @long => new EntityEvent(@long.Id, name, state),
-                    IEntityIdentity<string> @string => new EntityEvent(@string.Id, name, state),
-                    IEntityIdentity<Guid> guid => new EntityEvent(guid.Id, name, state),
-                    IEntityIdentity<dynamic> dynamic => new EntityEvent(dynamic.Id, name, state),
-                    _ => null
-                };
-            })
-            .Where(x => x != null)
-            .ToList();
     }
 }

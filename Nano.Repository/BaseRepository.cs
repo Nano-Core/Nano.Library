@@ -743,7 +743,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     public virtual async Task SaveChanges(CancellationToken cancellationToken = default)
     {
         await this.Context
-            .SaveChangesAsync(cancellationToken);
+            .SaveChangesWithAuditAndTriggersAsync(cancellationToken);
     }
 
     /// <inheritdoc />

@@ -84,10 +84,6 @@ public static class ServiceCollectionExtensions
                     })
                     .UseLazyLoadingProxies(options.UseLazyLoading);
 
-                provider
-                    .GetRequiredService<IDataProvider>()
-                    .Configure(builder);
-
                 if (options.UseMemoryCache)
                 {
                     var secondLevelCacheInterceptor = provider
@@ -96,6 +92,10 @@ public static class ServiceCollectionExtensions
                     builder
                         .AddInterceptors(secondLevelCacheInterceptor);
                 }
+
+                provider
+                    .GetRequiredService<IDataProvider>()
+                    .Configure(builder);
             })
             .AddDataHealthChecks<TProvider>(options);
 
@@ -157,6 +157,7 @@ public static class ServiceCollectionExtensions
 
         if (options.UseAudit)
         {
+            AuditManager.DefaultConfiguration.UseUtcDateTime = true;
             AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
             AuditManager.DefaultConfiguration.IncludeProperty<IEntityAuditable>();
             AuditManager.DefaultConfiguration.IncludeDataAnnotation();

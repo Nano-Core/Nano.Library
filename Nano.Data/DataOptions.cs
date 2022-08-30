@@ -122,7 +122,7 @@ public class DataOptions
 
         /// <summary>
         /// Expiration Scan Frequency.
-        /// The expiration scan internval in seconds.
+        /// The expiration scan interval in seconds.
         /// </summary>
         public virtual int ExpirationScanFrequencyInSeconds { get; set; } = 60;
 

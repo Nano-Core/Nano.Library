@@ -66,10 +66,17 @@ public static class ServiceCollectionExtensions
         services
             .AddConfigOptions<WebOptions>(configuration, WebOptions.SectionName, out var webOptions);
 
-        var serviceProvider = services.BuildServiceProvider();
-        var appOptions = serviceProvider.GetService<AppOptions>() ?? new AppOptions();
-        var dataOptions = serviceProvider.GetService<DataOptions>() ?? new DataOptions();
-        var securityOptions = serviceProvider.GetService<SecurityOptions>() ?? new SecurityOptions();
+        var serviceProvider = services
+            .BuildServiceProvider();
+
+        var appOptions = serviceProvider
+            .GetService<AppOptions>() ?? new AppOptions();
+
+        var dataOptions = serviceProvider
+            .GetService<DataOptions>() ?? new DataOptions();
+
+        var securityOptions = serviceProvider
+            .GetService<SecurityOptions>() ?? new SecurityOptions();
 
         services
             .AddCors()
