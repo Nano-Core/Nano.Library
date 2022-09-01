@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>6.2.0</version>
+		<version>6.2.1</version>
 		<title>Nano Core</title>
 		<summary>
 			Rapidly built and deploy rich .NET 6.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.
@@ -18,14 +18,7 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Fixed issue with EasyNetQ not reconnecting to queues when RabbitMQ has been killed.
-			- Improved EasyNetQ eventing provider implementation.
-			- Improved EastNetQ Microsoft DI support.
-			- Updated NuGets.
-			- Updated Swagger xml-docs.
-			- Added Second-Level Memory Cache for Entity Framework.
-			- Added NetTopologySuite support for MySql.
-			- Fixed and re-enabled audit logging.
+			- Audit logging tracks modified properties.
             - Improved DbContext implementation, using events, and moving methods to extensions. 
             - Added MaximumHistoryEntriesPerEndpoint to health-check configuration.
             - Removed setter on DefaultEntity.CreatedAt.

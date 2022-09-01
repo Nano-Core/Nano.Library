@@ -61,40 +61,45 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         if (this.Options.UseAudit)
         {
-            // TODO: Audit is not aware of existing values when updating. We need to pull the existing entity and compare properties.
+            var key = entity.GetType()
+                .GetProperty(nameof(IEntityIdentity<TIdentity>.Id));
 
-            //var type = entity
-            //    .GetType();
+            var keyValue = key?
+                .GetValue(entity);
 
-            //var key = typeof(TIdentity)
-            //    .GetProperty(nameof(IEntityIdentity<TIdentity>.Id));
+            var existingEntity = this.Find(entity.GetType(), keyValue);
 
-            //var keyValue = key?
-            //    .GetValue(entity);
+            if (existingEntity == null)
+            {
+                return base.Update(entity);
+            }
 
-            //var existingEntity = this.Find(type, keyValue);
+            var entry = this.Entry(existingEntity);
 
-            //if (existingEntity == null)
-            //{
-            //    return base.Update(entity);
-            //}
+            var properties = entity.GetType()
+                .GetProperties();
 
-            //var properties = type
-            //    .GetProperties();
+            var propertyAndValues = new List<(string Name, object Value)>();
+            foreach (var propertyInfo in properties)
+            {
+                if (!propertyInfo.CanWrite && propertyInfo.PropertyType.IsValueType)
+                {
+                    var value = propertyInfo
+                        .GetValue(existingEntity);
 
-            //foreach (var property in properties)
-            //{
-            //    var value = property
-            //        .GetValue(entity);
+                    propertyAndValues
+                        .Add((propertyInfo.Name, value));
+                }
+            }
+            entry.CurrentValues
+                .SetValues(entity);
 
-            //    if (property.CanWrite)
-            //    {
-            //        property
-            //            .SetValue(existingEntity, value);
-            //    }
-            //}
+            foreach (var propertyAndValue in propertyAndValues)
+            {
+                entry.Property(propertyAndValue.Name).CurrentValue = propertyAndValue.Value;
+            }
 
-            //return base.Update(existingEntity);
+            return entry;
         }
 
         return base.Update(entity);
@@ -108,37 +113,45 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         if (this.Options.UseAudit)
         {
-            // TODO: Audit is not aware of existing values when updating. We need to pull the existing entity and compare properties.
+            var key = typeof(TEntity)
+                .GetProperty(nameof(IEntityIdentity<TIdentity>.Id));
 
-            //var key = typeof(TEntity)
-            //    .GetProperty(nameof(IEntityIdentity<TIdentity>.Id));
+            var keyValue = key?
+                .GetValue(entity);
 
-            //var keyValue = key?
-            //    .GetValue(entity);
+            var existingEntity = this.Find<TEntity>(keyValue);
 
-            //var existingEntity = this.Find<TEntity>(keyValue);
+            if (existingEntity == null)
+            {
+                return base.Update(entity);
+            }
 
-            //if (existingEntity == null)
-            //{
-            //    return base.Update(entity);
-            //}
+            var entry = this.Entry(existingEntity);
 
-            //var properties = typeof(TEntity)
-            //    .GetProperties();//.Where(x => x.PropertyType.IsValueType || x.PropertyType == typeof(string));
+            var properties = typeof(TEntity)
+                .GetProperties();
 
-            //foreach (var property in properties)
-            //{
-            //    var value = property
-            //        .GetValue(entity);
+            var propertyAndValues = new List<(string Name, object Value)>();
+            foreach (var propertyInfo in properties)
+            {
+                if (!propertyInfo.CanWrite && propertyInfo.PropertyType.IsValueType)
+                {
+                    var value = propertyInfo
+                        .GetValue(existingEntity);
 
-            //    if (property.CanWrite)
-            //    {
-            //        property
-            //            .SetValue(existingEntity, value);
-            //    }
-            //}
+                    propertyAndValues
+                        .Add((propertyInfo.Name, value));
+                }
+            }
+            entry.CurrentValues
+                .SetValues(entity);
 
-            //return base.Update(existingEntity);
+            foreach (var propertyAndValue in propertyAndValues)
+            {
+                entry.Property(propertyAndValue.Name).CurrentValue = propertyAndValue.Value;
+            }
+
+            return entry;
         }
 
         return base.Update(entity);
