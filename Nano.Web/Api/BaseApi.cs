@@ -29,6 +29,7 @@ using Newtonsoft.Json.Serialization;
 using Vivet.AspNetCore.RequestTimeZone;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 using StringWithQualityHeaderValue = System.Net.Http.Headers.StringWithQualityHeaderValue;
+using Nano.Web.Api.Responses;
 
 namespace Nano.Web.Api;
 
@@ -700,8 +701,22 @@ public abstract class BaseApi : IDisposable
             case HttpContentType.JPEG:
             case HttpContentType.PNG:
             case HttpContentType.ZIP:
-                return await httpResponse.Content
-                    .ReadAsStreamAsync(cancellationToken) as TResponse;
+                var stream = await httpResponse.Content
+                    .ReadAsStreamAsync(cancellationToken);
+
+                if (typeof(TResponse) == typeof(NamedStream))
+                {
+                    var name = httpResponse.Content.Headers.ContentDisposition?.FileName;
+                    var namedStream = new NamedStream
+                    {
+                        Name = name,
+                        Stream = stream
+                    };
+
+                    return namedStream as TResponse;
+                }
+
+                return stream as TResponse;
 
             default:
                 var content = await httpResponse.Content
