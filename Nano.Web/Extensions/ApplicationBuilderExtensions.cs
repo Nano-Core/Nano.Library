@@ -744,7 +744,7 @@ public static class ApplicationBuilderExtensions
 
                 x.AllowAnyHeader();
                 x.AllowAnyMethod();
-                x.WithExposedHeaders("RequestId", "TZ");
+                x.WithExposedHeaders("RequestId", "TZ", "Content-Disposition");
             });
 
         return applicationBuilder;
