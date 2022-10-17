@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using EasyNetQ;
@@ -46,7 +45,7 @@ public class EasyNetQEventing : IEventing
 
         var queueName = this.GetQueueName(name, routing);
         var queue = await this.Bus.Advanced
-            .QueueDeclareAsync($"{queueName}", cancellationToken);
+            .QueueDeclareAsync($"{queueName}", true, false, false, cancellationToken);
 
         var exchange = await this.Bus.Advanced
             .ExchangeDeclareAsync(name, ExchangeType.Fanout, cancellationToken: cancellationToken);
@@ -67,7 +66,7 @@ public class EasyNetQEventing : IEventing
 
         var queueName = this.GetQueueName(name, routing);
         var queue = await this.Bus.Advanced
-            .QueueDeclareAsync($"{queueName}", cancellationToken);
+            .QueueDeclareAsync($"{queueName}", true, false, false, cancellationToken);
 
         var exchange = await this.Bus.Advanced
             .ExchangeDeclareAsync(name, ExchangeType.Fanout, cancellationToken: cancellationToken);
@@ -153,9 +152,10 @@ public class EasyNetQEventing : IEventing
         if (routing == null)
             throw new ArgumentNullException(nameof(routing));
 
-        var route = string.IsNullOrEmpty(routing) ? string.Empty : $".{routing}";
-        var appName = Assembly.GetEntryAssembly()?.GetName().Name;
+        var route = string.IsNullOrEmpty(routing)
+            ? string.Empty
+            : $".{routing}";
 
-        return $"{appName}:{name}{route}";
+        return $"{name}{route}";
     }
 }
