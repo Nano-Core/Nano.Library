@@ -14,6 +14,13 @@ namespace Nano.Web.Api.Requests;
 public abstract class BaseRequest
 {
     /// <summary>
+    /// Jwt Token Override.
+    /// Used to override the Jwt-Token for the specific request.
+    /// </summary>
+    [JsonIgnore]
+    protected internal string JwtTokenOverride { get; set; }
+
+    /// <summary>
     /// Controller.
     /// </summary>
     [JsonIgnore]

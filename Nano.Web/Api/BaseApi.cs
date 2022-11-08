@@ -38,7 +38,8 @@ namespace Nano.Web.Api;
 /// </summary>
 public abstract class BaseApi : IDisposable
 {
-    private AccessToken accessToken;
+    private volatile AccessToken accessToken;
+
     private readonly ApiOptions apiOptions;
     private readonly HttpClient httpClient;
     private readonly HttpClientHandler httpClientHandler = new()
@@ -288,8 +289,14 @@ public abstract class BaseApi : IDisposable
         };
     }
 
-    private async Task<string> AuthenticateAsync(CancellationToken cancellationToken = default)
+    private async Task<string> AuthenticateAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+        where TRequest : BaseRequest
     {
+        if (request.JwtTokenOverride != null)
+        {
+            return request.JwtTokenOverride;
+        }
+
         var httpContextAccess = HttpContextAccess.Current;
 
         if (httpContextAccess != null)
@@ -327,8 +334,6 @@ public abstract class BaseApi : IDisposable
                 };
 
                 this.accessToken = await this.InvokeAsync<LogInRequest, AccessToken>(logInRequest, cancellationToken);
-
-                return this.accessToken?.Token;
             }
         }
 
@@ -597,7 +602,7 @@ public abstract class BaseApi : IDisposable
 
         var uri = this.GetUri(request);
         var method = this.GetMethod(request);
-        var jwtToken = await this.AuthenticateAsync(cancellationToken);
+        var jwtToken = await this.AuthenticateAsync(request, cancellationToken);
 
         var httpRequest = new HttpRequestMessage(method, uri);
 

@@ -3814,7 +3814,7 @@
             Culture.
             </summary>
         </member>
-        <member name="P:Nano.Web.Models.UserInformation.JwtToken">
+        <member name="P:Nano.Web.Models.UserInformation.JwtTokenOverride">
             <summary>
             Jwt Token.
             </summary>
