@@ -1,4 +1,4 @@
-version: 6.2.6.{build}
+version: 6.2.7.{build}
 skip_tags: true
 max_jobs: 1
 image: Visual Studio 2022
