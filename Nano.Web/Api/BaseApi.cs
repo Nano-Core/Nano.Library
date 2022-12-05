@@ -9,6 +9,8 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
@@ -23,13 +25,12 @@ using Nano.Web.Api.Requests.Spatial;
 using Nano.Web.Const;
 using Nano.Web.Hosting;
 using Nano.Web.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using Vivet.AspNetCore.RequestTimeZone;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
-using StringWithQualityHeaderValue = System.Net.Http.Headers.StringWithQualityHeaderValue;
 using Nano.Web.Api.Responses;
+using System.Text.Json.Serialization.Metadata;
+using Nano.Web.Hosting.Serialization.Json;
+using StringWithQualityHeaderValue = System.Net.Http.Headers.StringWithQualityHeaderValue;
 
 namespace Nano.Web.Api;
 
@@ -48,15 +49,21 @@ public abstract class BaseApi : IDisposable
         AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
     };
 
-    private static readonly JsonSerializerSettings jsonSerializerSettings = new()
+    private static readonly JsonSerializerOptions jsonSerializerSettings = new()
     {
-        NullValueHandling = NullValueHandling.Ignore,
-        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-        PreserveReferencesHandling = PreserveReferencesHandling.None,
-        ContractResolver = new DefaultContractResolver(),
-        Converters = new List<JsonConverter>
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        PropertyNamingPolicy = null,
+        TypeInfoResolver = new DefaultJsonTypeInfoResolver
         {
-            new StringEnumConverter()
+            Modifiers =
+            {
+                EnumerableTypeInfoResolver.IgnoreEmptyCollections
+            }
+        },
+        Converters =
+        {
+            new JsonStringEnumConverter()
         }
     };
 
@@ -380,7 +387,7 @@ public abstract class BaseApi : IDisposable
             var body = request.GetBody();
             var content = body == null
                 ? string.Empty
-                : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
+                : JsonSerializer.Serialize(body, BaseApi.jsonSerializerSettings);
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -400,7 +407,7 @@ public abstract class BaseApi : IDisposable
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
             var body = request.GetBody();
-            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
+            var content = body == null ? string.Empty : JsonSerializer.Serialize(body, BaseApi.jsonSerializerSettings);
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -421,7 +428,7 @@ public abstract class BaseApi : IDisposable
             var body = request.GetBody();
             var content = body == null
                 ? string.Empty
-                : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
+                : JsonSerializer.Serialize(body, BaseApi.jsonSerializerSettings);
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -443,7 +450,7 @@ public abstract class BaseApi : IDisposable
             var body = request.GetBody();
             var content = body == null
                 ? string.Empty
-                : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
+                : JsonSerializer.Serialize(body, BaseApi.jsonSerializerSettings);
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -513,7 +520,7 @@ public abstract class BaseApi : IDisposable
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
             var body = request.GetBody();
-            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
+            var content = body == null ? string.Empty : JsonSerializer.Serialize(body, BaseApi.jsonSerializerSettings);
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -533,7 +540,7 @@ public abstract class BaseApi : IDisposable
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
             var body = request.GetBody();
-            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, BaseApi.jsonSerializerSettings);
+            var content = body == null ? string.Empty : JsonSerializer.Serialize(body, BaseApi.jsonSerializerSettings);
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -638,7 +645,7 @@ public abstract class BaseApi : IDisposable
             case HttpStatusCode.BadRequest:
             case HttpStatusCode.InternalServerError:
                 var errorContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
-                var error = JsonConvert.DeserializeObject<Error>(errorContent);
+                var error = JsonSerializer.Deserialize<Error>(errorContent);
 
                 if (error == null)
                     throw new NullReferenceException(nameof(error));
@@ -675,7 +682,7 @@ public abstract class BaseApi : IDisposable
             case HttpStatusCode.BadRequest:
             case HttpStatusCode.InternalServerError:
                 var errorContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
-                var error = JsonConvert.DeserializeObject<Error>(errorContent);
+                var error = JsonSerializer.Deserialize<Error>(errorContent);
 
                 if (error == null)
                     throw new NullReferenceException(nameof(error));
@@ -727,7 +734,7 @@ public abstract class BaseApi : IDisposable
                 var content = await httpResponse.Content
                     .ReadAsStringAsync(cancellationToken);
 
-                return JsonConvert.DeserializeObject<TResponse>(content);
+                return JsonSerializer.Deserialize<TResponse>(content);
         }
     }
     private void SetAuthorizationHeader(string token)

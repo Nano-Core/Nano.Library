@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using System.Xml.XPath;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -34,9 +35,8 @@ using Nano.Web.Hosting.Filters;
 using Nano.Web.Hosting.HealthChecks;
 using Nano.Web.Hosting.Middleware;
 using Nano.Web.Hosting.ModelBinders;
-using Nano.Web.Hosting.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using Nano.Web.Hosting.Serialization.Json;
+using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 
 namespace Nano.Web.Extensions;
@@ -125,18 +125,22 @@ public static class ServiceCollectionExtensions
                 x.Filters.Add<IsAnonymousFilter>();
                 x.Filters.Add<ModelStateValidationFilter>();
             })
-            .AddNewtonsoftJson(x =>
+            .AddJsonOptions(x =>
             {
                 x.AllowInputFormatterExceptionMessages = true;
 
-                x.SerializerSettings.Culture = CultureInfo.CurrentCulture;
-                x.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                x.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
-                x.SerializerSettings.ContractResolver = new EntityContractResolver();
-
-                x.SerializerSettings.Converters
-                    .Add(new StringEnumConverter());
+                x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                x.JsonSerializerOptions.PropertyNamingPolicy = null;
+                x.JsonSerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver
+                {
+                    Modifiers =
+                    {
+                        EnumerableTypeInfoResolver.IgnoreEmptyCollections
+                    }
+                };
+                x.JsonSerializerOptions.Converters
+                    .Add(new JsonStringEnumConverter());
             })
             .AddControllersAsServices()
             .AddViewComponentsAsServices()
@@ -145,11 +149,9 @@ public static class ServiceCollectionExtensions
         services
             .AddScoped<AuditController>();
 
-        services
+        return services
             .AddApis()
             .AddHealthChecking(appOptions, webOptions);
-
-        return services;
     }
 
     private static IServiceCollection AddApis(this IServiceCollection services)
@@ -174,7 +176,7 @@ public static class ServiceCollectionExtensions
             .ForEach(x =>
             {
                 var section = configuration.GetSection(x.Name);
-                var options = section?.Get<ApiOptions>();
+                var options = section.Get<ApiOptions>();
 
                 if (options == null)
                 {
@@ -459,8 +461,7 @@ public static class ServiceCollectionExtensions
                                 }
                             });
                     });
-            })
-            .AddSwaggerGenNewtonsoftSupport();
+            });
     }
     private static IServiceCollection AddLocalizations(this IServiceCollection services)
     {
@@ -489,6 +490,7 @@ public static class ServiceCollectionExtensions
                 x.Id = appOptions.DefaultTimeZone;
                 x.EnableRequestToUtc = true;
                 x.EnableResponseToLocal = true;
+                x.JsonSerializerType = JsonSerializerType.Microsoft;
             });
 
         return services;

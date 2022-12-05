@@ -2,6 +2,8 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -10,15 +12,24 @@ using Nano.Web.Const;
 using Nano.Web.Extensions.Const;
 using Nano.Web.Hosting.Serialization;
 using Nano.Web.Models;
-using Newtonsoft.Json;
 
 namespace Nano.Web.Hosting.Middleware;
 
 /// <inheritdoc />
 public class ExceptionHandlingMiddleware : IMiddleware
 {
-    // "HTTP/1.1" "POST" "/api/auth/login""" 400 in 14.3556 ms. (Id="0HMJFPOJJACE4:00000003")
     private const string MESSAGE_TEMPLATE = "{protocol} {method} {pathAndqueryString} {statusCode} in {elapsed:0.0000} ms. (Id={id})";
+
+    private static readonly JsonSerializerOptions jsonSerializerSettings = new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        PropertyNamingPolicy = null,
+        Converters =
+        {
+            new JsonStringEnumConverter()
+        }
+    };
 
     /// <summary>
     /// Logger.
@@ -93,22 +104,22 @@ public class ExceptionHandlingMiddleware : IMiddleware
 
             var result = acceptHheader.Any()
                 ? acceptHheader.Contains(HttpContentType.JSON)
-                    ? JsonConvert.SerializeObject(error)
+                    ? JsonSerializer.Serialize(error, ExceptionHandlingMiddleware.jsonSerializerSettings)
                     : acceptHheader.Contains(HttpContentType.XML)
                         ? XmlConvert.SerializeObject(error)
                         : acceptHheader.Contains(HttpContentType.FORM) || acceptHheader.Contains(HttpContentType.FORM_ENCODED)
-                            ? JsonConvert.SerializeObject(error)
+                            ? JsonSerializer.Serialize(error, ExceptionHandlingMiddleware.jsonSerializerSettings)
                             : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}"
                 : contentTypeHeader.Any()
                     ? contentTypeHeader.Contains(HttpContentType.JSON)
-                        ? JsonConvert.SerializeObject(error)
+                        ? JsonSerializer.Serialize(error, ExceptionHandlingMiddleware.jsonSerializerSettings)
                         : contentTypeHeader.Contains(HttpContentType.XML)
                             ? XmlConvert.SerializeObject(error)
                             : acceptHheader.Contains(HttpContentType.FORM) || acceptHheader.Contains(HttpContentType.FORM_ENCODED)
-                                ? JsonConvert.SerializeObject(error)
+                                ? JsonSerializer.Serialize(error, ExceptionHandlingMiddleware.jsonSerializerSettings)
                                 : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}"
                     : queryString.Contains($"format={HttpContentType.JSON}")
-                        ? JsonConvert.SerializeObject(error)
+                        ? JsonSerializer.Serialize(error, ExceptionHandlingMiddleware.jsonSerializerSettings)
                         : queryString.Contains($"format={HttpContentType.XML}")
                             ? XmlConvert.SerializeObject(error)
                             : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}";

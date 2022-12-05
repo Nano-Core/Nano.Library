@@ -3,13 +3,14 @@ using System.Collections;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Nano.Models.Extensions;
 using Nano.Web.Api.Requests.Types;
 using Nano.Web.Const;
-using Newtonsoft.Json;
 
 namespace Nano.Web.Api.Extensions;
 
@@ -18,6 +19,17 @@ namespace Nano.Web.Api.Extensions;
 /// </summary>
 internal static class MultipartFormDataContentExtensions
 {
+    private static readonly JsonSerializerOptions jsonSerializerSettings = new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        PropertyNamingPolicy = null,
+        Converters =
+        {
+            new JsonStringEnumConverter()
+        }
+    };
+
     /// <summary>
     /// Add For Item.
     /// </summary>
@@ -157,30 +169,26 @@ internal static class MultipartFormDataContentExtensions
         formContent
             .Add(fileContent, name, fileStream.Name);
     }
-    private static async Task Add(this MultipartFormDataContent formContent, object value2, string name)
+    private static async Task Add(this MultipartFormDataContent formContent, object value, string name)
     {
         if (formContent == null)
             throw new ArgumentNullException(nameof(formContent));
 
-        if (value2 == null)
-            throw new ArgumentNullException(nameof(value2));
+        if (value == null)
+            throw new ArgumentNullException(nameof(value));
 
         if (name == null)
             throw new ArgumentNullException(nameof(name));
 
-        var isSimple = value2.GetType()
+        var isSimple = value.GetType()
             .IsSimple();
 
-        var value = !isSimple
-            ? JsonConvert.SerializeObject(value2, new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Error,
-                NullValueHandling = NullValueHandling.Ignore
-            })
-            : value2.ToString() ?? string.Empty;
+        var content = !isSimple
+            ? JsonSerializer.Serialize(value, MultipartFormDataContentExtensions.jsonSerializerSettings)
+            : value.ToString() ?? string.Empty;
 
         formContent
-            .Add(new StringContent(value), name);
+            .Add(new StringContent(content), name);
 
         await Task.CompletedTask;
     }

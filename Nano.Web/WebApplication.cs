@@ -139,7 +139,7 @@ public class WebApplication : DefaultApplication
                     {
                         x.ListenAnyIP(y, z =>
                         {
-                            z.Protocols = HttpProtocols.Http1AndHttp2;
+                            z.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
                         });
                     });
 

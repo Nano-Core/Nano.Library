@@ -47,6 +47,9 @@ public static class UserManagerExtensions
         if (user == null)
             throw new ArgumentNullException(nameof(user));
 
+        if (user.PhoneNumber == null)
+            throw new ArgumentNullException(nameof(user.PhoneNumber));
+
         return await userManager
             .GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber);
     }
@@ -72,6 +75,9 @@ public static class UserManagerExtensions
 
         if (token == null)
             throw new ArgumentNullException(nameof(token));
+
+        if (user.PhoneNumber == null)
+            throw new ArgumentNullException(nameof(user.PhoneNumber));
 
         return await userManager
             .ChangePhoneNumberAsync(user, user.PhoneNumber, token);

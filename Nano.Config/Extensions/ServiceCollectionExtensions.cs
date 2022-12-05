@@ -67,7 +67,7 @@ public static class ServiceCollectionExtensions
         var configuration = provider.GetRequiredService<IConfiguration>();
         var section = configuration.GetSection(name);
 
-        options = section?.Get<TOption>() ?? new TOption();
+        options = section.Get<TOption>() ?? new TOption();
 
         services
             .AddSingleton(options)
@@ -98,7 +98,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(name));
 
         var section = configuration.GetSection(name);
-        options = section?.Get<TOption>() ?? new TOption();
+        options = section.Get<TOption>() ?? new TOption();
 
         services
             .AddSingleton(options)

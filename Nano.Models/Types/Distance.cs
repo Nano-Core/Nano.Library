@@ -30,20 +30,12 @@ public class Distance
     /// </summary>
     [Required]
     [DefaultValue(0.00)]
-    public virtual double Miles
-    {
-        get => this.Meters / Distance.RATIO_METER_TO_MILE;
-        protected set { }
-    }
+    public virtual double Miles => this.Meters / Distance.RATIO_METER_TO_MILE;
 
     /// <summary>
     /// Kilometers.
     /// </summary>
     [Required]
     [DefaultValue(0.00)]
-    public virtual double Kilometers
-    {
-        get => this.Meters / Distance.RATIO_METER_TO_KILOMETER;
-        protected set { }
-    }
+    public virtual double Kilometers => this.Meters / Distance.RATIO_METER_TO_KILOMETER;
 }

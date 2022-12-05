@@ -30,11 +30,9 @@ public static class ModelBuilderExtensions
         mapping
             .Map(builder.Entity<TEntity>());
 
-        builder
+        return builder
             .UpdateSoftDeleteUniuqeIndexes<TEntity>()
             .UpdateUniuqeIndexes<TEntity>();
-
-        return builder;
     }
 
     private static ModelBuilder UpdateUniuqeIndexes<TEntity>(this ModelBuilder builder)

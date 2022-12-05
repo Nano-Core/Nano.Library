@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using DynamicExpression.Entities;
 using DynamicExpression.Enums;
@@ -8,13 +10,26 @@ using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Nano.Models.Extensions;
-using Newtonsoft.Json;
 
 namespace Nano.Web.Hosting.ModelBinders;
 
 /// <inheritdoc />
 public class QueryModelBinder : IModelBinder
 {
+    /// <summary>
+    /// Json Serializer Options.
+    /// </summary>
+    protected static JsonSerializerOptions jsonSerializerOptions = new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        PropertyNamingPolicy = null,
+        Converters =
+        {
+            new JsonStringEnumConverter()
+        }
+    };
+
     /// <inheritdoc />
     public virtual async Task BindModelAsync(ModelBindingContext bindingContext)
     {
@@ -30,17 +45,17 @@ public class QueryModelBinder : IModelBinder
                 Order = this.GetOrdering(request),
                 Paging = this.GetPagination(request)
             }
-            : JsonConvert.DeserializeObject<Query>(body);
+            : JsonSerializer.Deserialize<Query>(body, QueryModelBinder.jsonSerializerOptions);
 
         bindingContext.Result = ModelBindingResult.Success(model);
     }
 
     /// <summary>
-    /// Returns the <see cref="IOrdering"/> from the <see cref="HttpRequest.Query"/>.
+    /// Returns the <see cref="Ordering"/> from the <see cref="HttpRequest.Query"/>.
     /// </summary>
     /// <param name="request">The <see cref="HttpRequest"/>.</param>
-    /// <returns>The <see cref="IOrdering"/>.</returns>
-    protected virtual IOrdering GetOrdering(HttpRequest request)
+    /// <returns>The <see cref="Ordering"/>.</returns>
+    protected virtual Ordering GetOrdering(HttpRequest request)
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
@@ -56,11 +71,11 @@ public class QueryModelBinder : IModelBinder
     }
 
     /// <summary>
-    /// Returns the <see cref="IPagination"/> from the <see cref="HttpRequest.Query"/>.
+    /// Returns the <see cref="Pagination"/> from the <see cref="HttpRequest.Query"/>.
     /// </summary>
     /// <param name="request">The <see cref="HttpRequest"/>.</param>
-    /// <returns>The <see cref="IPagination"/>.</returns>
-    protected virtual IPagination GetPagination(HttpRequest request)
+    /// <returns>The <see cref="Pagination"/>.</returns>
+    protected virtual Pagination GetPagination(HttpRequest request)
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
@@ -145,7 +160,7 @@ public class QueryModelBinder<TCriteria> : QueryModelBinder
                 Paging = this.GetPagination(request),
                 Criteria = this.GetCriteria(request)
             }
-            : JsonConvert.DeserializeObject<Query<TCriteria>>(body);
+            : JsonSerializer.Deserialize<Query<TCriteria>>(body, QueryModelBinder.jsonSerializerOptions);
 
         bindingContext.Result = ModelBindingResult.Success(model);
     }

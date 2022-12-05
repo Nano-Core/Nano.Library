@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>6.2.7</version>
+		<version>7.0.0-beta01</version>
 		<title>Nano Core</title>
 		<summary>
 			Rapidly built and deploy rich .NET 6.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.
@@ -18,108 +18,105 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Increased max response buffer size to 268435456.
+			- Upgraded to .NET 7
+			- Replaced Newtonsoft Json.NET with System.Text.Json
 		</releaseNotes>
 		<dependencies>
-			<group targetFramework="net6.0">
-				<dependency id="Microsoft.Extensions.DependencyInjection" version="6.0.0" />
-				<dependency id="Microsoft.Extensions.Identity.Stores" version="6.0.9" />
+			<group targetFramework="net7.0">
+				<dependency id="Microsoft.Extensions.DependencyInjection" version="7.0.0" />
+				<dependency id="Microsoft.Extensions.Identity.Stores" version="7.0.0" />
 				<dependency id="DynamicExpression" version="2.2.3" />
 				<dependency id="NetTopologySuite" version="2.5.0" />
-				<dependency id="Newtonsoft.Json" version="13.0.1" />
-				<dependency id="System.ComponentModel.Annotations" version="5.0.0" />
-				<dependency id="Microsoft.Extensions.Configuration" version="6.0.1" />
-				<dependency id="Microsoft.Extensions.Configuration.Binder" version="6.0.0" />
-				<dependency id="Microsoft.Extensions.Configuration.CommandLine" version="6.0.0" />
-				<dependency id="Microsoft.Extensions.Configuration.EnvironmentVariables" version="6.0.1" />
-				<dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="6.0.0" />
-				<dependency id="Microsoft.Extensions.Configuration.Json" version="6.0.0" />
-				<dependency id="Microsoft.Extensions.Configuration.UserSecrets" version="6.0.1" />
-				<dependency id="Microsoft.Extensions.Options" version="6.0.0" />
-				<dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="6.0.0" />
-				<dependency id="Microsoft.Extensions.Logging" version="6.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration" version="7.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.Binder" version="7.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.CommandLine" version="7.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.EnvironmentVariables" version="7.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="7.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.Json" version="7.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.UserSecrets" version="7.0.0" />
+				<dependency id="Microsoft.Extensions.Options" version="7.0.0" />
+				<dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="7.0.0" />
+				<dependency id="Microsoft.Extensions.Logging" version="7.0.0" />
 				<dependency id="Microsoft.Extensions.Logging.Log4Net.AspNetCore" version="6.1.0" />
 				<dependency id="Serilog" version="2.12.0" />
 				<dependency id="Serilog.Extensions.Logging" version="3.1.0" />
 				<dependency id="Serilog.Sinks.Console" version="4.1.0" />
 				<dependency id="AspNetCore.HealthChecks.Rabbitmq" version="6.0.2" />
-				<dependency id="EasyNetQ" version="7.2.0" />
-				<dependency id="EasyNetQ.DI.Microsoft" version="7.2.0" />
+				<dependency id="EasyNetQ" version="7.3.4" />
+				<dependency id="EasyNetQ.DI.Microsoft" version="7.3.4" />
 				<dependency id="AspNetCore.HealthChecks.MySql" version="6.0.2" />
 				<dependency id="AspNetCore.HealthChecks.Sqlite" version="6.0.2" />
 				<dependency id="AspNetCore.HealthChecks.SqlServer" version="6.0.2" />
 				<dependency id="EntityFrameworkCore.Triggers" version="1.2.3" />
-				<dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="6.0.9" />
-				<dependency id="Microsoft.EntityFrameworkCore" version="6.0.9" />
-				<dependency id="Microsoft.EntityFrameworkCore.Design" version="6.0.9" />
-				<dependency id="Microsoft.EntityFrameworkCore.InMemory" version="6.0.9" />
-				<dependency id="Microsoft.EntityFrameworkCore.Proxies" version="6.0.9" />
-				<dependency id="Microsoft.EntityFrameworkCore.Relational" version="6.0.9" />
-				<dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="6.0.9" />
-				<dependency id="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" version="6.0.9" />
-				<dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="6.0.9" />
-				<dependency id="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" version="6.0.9" />
-				<dependency id="Pomelo.EntityFrameworkCore.MySql" version="6.0.2" />
-				<dependency id="Pomelo.EntityFrameworkCore.MySql.NetTopologySuite" version="6.0.2" />
-				<dependency id="EFCoreSecondLevelCacheInterceptor" version="3.7.0" />
-				<dependency id="Z.EntityFramework.Plus.EFCore" version="6.15.1" />
-				<dependency id="Microsoft.Extensions.Hosting" version="6.0.1" />
+				<dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="7.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore" version="7.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.Design" version="7.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.InMemory" version="7.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.Proxies" version="7.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.Relational" version="7.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="7.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" version="7.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="7.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" version="7.0.0" />
+				<dependency id="Pomelo.EntityFrameworkCore.MySql" version="7.0.0-alpha.1" />
+				<dependency id="Pomelo.EntityFrameworkCore.MySql.NetTopologySuite" version="7.0.0-alpha.1" />
+				<dependency id="EFCoreSecondLevelCacheInterceptor" version="3.8.0" />
+				<dependency id="Z.EntityFramework.Plus.EFCore" version="7.17.1" />
+				<dependency id="Microsoft.Extensions.Hosting" version="7.0.0" />
 				<dependency id="Google.Apis.Auth" version="1.57.0" />
-				<dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="6.0.9" />
-				<dependency id="Microsoft.IdentityModel.Protocols.OpenIdConnect" version="6.23.1" />
+				<dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="7.0.0" />
+				<dependency id="Microsoft.IdentityModel.Protocols.OpenIdConnect" version="6.25.0" />
 				<dependency id="AspNetCore.HealthChecks.Network" version="6.0.4" />
 				<dependency id="AspNetCore.HealthChecks.System" version="6.0.5" />
 				<dependency id="AspNetCore.HealthChecks.UI" version="6.0.5" />
 				<dependency id="AspNetCore.HealthChecks.UI.Client" version="6.0.5" />
 				<dependency id="AspNetCore.HealthChecks.UI.InMemory.Storage" version="6.0.5" />
 				<dependency id="JsonModelBinder" version="2.1.1" />
-				<dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="6.0.9" />
-				<dependency id="Microsoft.AspNetCore.Authentication.Google" version="6.0.9" />
-				<dependency id="Microsoft.AspNetCore.Authentication.MicrosoftAccount" version="6.0.9" />
-				<dependency id="Microsoft.AspNetCore.Authorization" version="6.0.9" />
-				<dependency id="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="6.0.9" />
+				<dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="7.0.0" />
+				<dependency id="Microsoft.AspNetCore.Authentication.Google" version="7.0.0" />
+				<dependency id="Microsoft.AspNetCore.Authentication.MicrosoftAccount" version="7.0.0" />
+				<dependency id="Microsoft.AspNetCore.Authorization" version="7.0.0" />
 				<dependency id="Microsoft.AspNetCore.Mvc.Versioning" version="5.0.0" />
 				<dependency id="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" version="5.0.0" />
 				<dependency id="NWebsec.AspNetCore.Middleware" version="3.0.0" />
 				<dependency id="NWebsec.AspNetCore.Mvc" version="3.0.0" />
 				<dependency id="Swashbuckle.AspNetCore" version="6.4.0" />
-				<dependency id="Swashbuckle.AspNetCore.Newtonsoft" version="6.4.0" />
 				<dependency id="Swashbuckle.AspNetCore.Annotations" version="6.4.0" />
-				<dependency id="Vivet.AspNetCore.RequestTimeZone" version="6.0.4" />
+				<dependency id="Vivet.AspNetCore.RequestTimeZone" version="7.0.0" />
 			</group>
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="Nano.App\bin\Release\net6.0\Nano.App.dll" target="lib\net6.0\Nano.App.dll" />
-		<file src="Nano.App\bin\Release\net6.0\Nano.App.pdb" target="lib\net6.0\Nano.App.pdb" />
-		<file src="Nano.App\bin\Release\net6.0\Nano.App.xml" target="lib\net6.0\Nano.App.xml" />
-		<file src="Nano.Config\bin\Release\net6.0\Nano.Config.dll" target="lib\net6.0\Nano.Config.dll" />
-		<file src="Nano.Config\bin\Release\net6.0\Nano.Config.pdb" target="lib\net6.0\Nano.Config.pdb" />
-		<file src="Nano.Config\bin\Release\net6.0\Nano.Config.xml" target="lib\net6.0\Nano.Config.xml" />
-		<file src="Nano.Console\bin\Release\net6.0\Nano.Console.dll" target="lib\net6.0\Nano.Console.dll" />
-		<file src="Nano.Console\bin\Release\net6.0\Nano.Console.pdb" target="lib\net6.0\Nano.Console.pdb" />
-		<file src="Nano.Console\bin\Release\net6.0\Nano.Console.xml" target="lib\net6.0\Nano.Console.xml" />
-		<file src="Nano.Data\bin\Release\net6.0\Nano.Data.dll" target="lib\net6.0\Nano.Data.dll" />
-		<file src="Nano.Data\bin\Release\net6.0\Nano.Data.pdb" target="lib\net6.0\Nano.Data.pdb" />
-		<file src="Nano.Data\bin\Release\net6.0\Nano.Data.xml" target="lib\net6.0\Nano.Data.xml" />
-		<file src="Nano.Eventing\bin\Release\net6.0\Nano.Eventing.dll" target="lib\net6.0\Nano.Eventing.dll" />
-		<file src="Nano.Eventing\bin\Release\net6.0\Nano.Eventing.pdb" target="lib\net6.0\Nano.Eventing.pdb" />
-		<file src="Nano.Eventing\bin\Release\net6.0\Nano.Eventing.xml" target="lib\net6.0\Nano.Eventing.xml" />
-		<file src="Nano.Logging\bin\Release\net6.0\Nano.Logging.dll" target="lib\net6.0\Nano.Logging.dll" />
-		<file src="Nano.Logging\bin\Release\net6.0\Nano.Logging.pdb" target="lib\net6.0\Nano.Logging.pdb" />
-		<file src="Nano.Logging\bin\Release\net6.0\Nano.Logging.xml" target="lib\net6.0\Nano.Logging.xml" />
-		<file src="Nano.Models\bin\Release\net6.0\Nano.Models.dll" target="lib\net6.0\Nano.Models.dll" />
-		<file src="Nano.Models\bin\Release\net6.0\Nano.Models.pdb" target="lib\net6.0\Nano.Models.pdb" />
-		<file src="Nano.Models\bin\Release\net6.0\Nano.Models.xml" target="lib\net6.0\Nano.Models.xml" />
-		<file src="Nano.Repository\bin\Release\net6.0\Nano.Repository.dll" target="lib\net6.0\Nano.Repository.dll" />
-		<file src="Nano.Repository\bin\Release\net6.0\Nano.Repository.pdb" target="lib\net6.0\Nano.Repository.pdb" />
-		<file src="Nano.Repository\bin\Release\net6.0\Nano.Repository.xml" target="lib\net6.0\Nano.Repository.xml" />
-		<file src="Nano.Security\bin\Release\net6.0\Nano.Security.dll" target="lib\net6.0\Nano.Security.dll" />
-		<file src="Nano.Security\bin\Release\net6.0\Nano.Security.pdb" target="lib\net6.0\Nano.Security.pdb" />
-		<file src="Nano.Security\bin\Release\net6.0\Nano.Security.xml" target="lib\net6.0\Nano.Security.xml" />
-		<file src="Nano.Web\bin\Release\net6.0\Nano.Web.dll" target="lib\net6.0\Nano.Web.dll" />
-		<file src="Nano.Web\bin\Release\net6.0\Nano.Web.pdb" target="lib\net6.0\Nano.Web.pdb" />
-		<file src="Nano.Web\bin\Release\net6.0\Nano.Web.xml" target="lib\net6.0\Nano.Web.xml" />
+		<file src="Nano.App\bin\Release\net7.0\Nano.App.dll" target="lib\net7.0\Nano.App.dll" />
+		<file src="Nano.App\bin\Release\net7.0\Nano.App.pdb" target="lib\net7.0\Nano.App.pdb" />
+		<file src="Nano.App\bin\Release\net7.0\Nano.App.xml" target="lib\net7.0\Nano.App.xml" />
+		<file src="Nano.Config\bin\Release\net7.0\Nano.Config.dll" target="lib\net7.0\Nano.Config.dll" />
+		<file src="Nano.Config\bin\Release\net7.0\Nano.Config.pdb" target="lib\net7.0\Nano.Config.pdb" />
+		<file src="Nano.Config\bin\Release\net7.0\Nano.Config.xml" target="lib\net7.0\Nano.Config.xml" />
+		<file src="Nano.Console\bin\Release\net7.0\Nano.Console.dll" target="lib\net7.0\Nano.Console.dll" />
+		<file src="Nano.Console\bin\Release\net7.0\Nano.Console.pdb" target="lib\net7.0\Nano.Console.pdb" />
+		<file src="Nano.Console\bin\Release\net7.0\Nano.Console.xml" target="lib\net7.0\Nano.Console.xml" />
+		<file src="Nano.Data\bin\Release\net7.0\Nano.Data.dll" target="lib\net7.0\Nano.Data.dll" />
+		<file src="Nano.Data\bin\Release\net7.0\Nano.Data.pdb" target="lib\net7.0\Nano.Data.pdb" />
+		<file src="Nano.Data\bin\Release\net7.0\Nano.Data.xml" target="lib\net7.0\Nano.Data.xml" />
+		<file src="Nano.Eventing\bin\Release\net7.0\Nano.Eventing.dll" target="lib\net7.0\Nano.Eventing.dll" />
+		<file src="Nano.Eventing\bin\Release\net7.0\Nano.Eventing.pdb" target="lib\net7.0\Nano.Eventing.pdb" />
+		<file src="Nano.Eventing\bin\Release\net7.0\Nano.Eventing.xml" target="lib\net7.0\Nano.Eventing.xml" />
+		<file src="Nano.Logging\bin\Release\net7.0\Nano.Logging.dll" target="lib\net7.0\Nano.Logging.dll" />
+		<file src="Nano.Logging\bin\Release\net7.0\Nano.Logging.pdb" target="lib\net7.0\Nano.Logging.pdb" />
+		<file src="Nano.Logging\bin\Release\net7.0\Nano.Logging.xml" target="lib\net7.0\Nano.Logging.xml" />
+		<file src="Nano.Models\bin\Release\net7.0\Nano.Models.dll" target="lib\net7.0\Nano.Models.dll" />
+		<file src="Nano.Models\bin\Release\net7.0\Nano.Models.pdb" target="lib\net7.0\Nano.Models.pdb" />
+		<file src="Nano.Models\bin\Release\net7.0\Nano.Models.xml" target="lib\net7.0\Nano.Models.xml" />
+		<file src="Nano.Repository\bin\Release\net7.0\Nano.Repository.dll" target="lib\net7.0\Nano.Repository.dll" />
+		<file src="Nano.Repository\bin\Release\net7.0\Nano.Repository.pdb" target="lib\net7.0\Nano.Repository.pdb" />
+		<file src="Nano.Repository\bin\Release\net7.0\Nano.Repository.xml" target="lib\net7.0\Nano.Repository.xml" />
+		<file src="Nano.Security\bin\Release\net7.0\Nano.Security.dll" target="lib\net7.0\Nano.Security.dll" />
+		<file src="Nano.Security\bin\Release\net7.0\Nano.Security.pdb" target="lib\net7.0\Nano.Security.pdb" />
+		<file src="Nano.Security\bin\Release\net7.0\Nano.Security.xml" target="lib\net7.0\Nano.Security.xml" />
+		<file src="Nano.Web\bin\Release\net7.0\Nano.Web.dll" target="lib\net7.0\Nano.Web.dll" />
+		<file src="Nano.Web\bin\Release\net7.0\Nano.Web.pdb" target="lib\net7.0\Nano.Web.pdb" />
+		<file src="Nano.Web\bin\Release\net7.0\Nano.Web.xml" target="lib\net7.0\Nano.Web.xml" />
 		<file src="LICENSE" target="lib\LICENSE" />
 		<file src="icon.png" target="lib\icon.png" />
 		<file src="README.md" target="lib\README.md" />
