@@ -50,6 +50,31 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
+    /// Gets the password options.
+    /// </summary>
+    /// <returns>The password options.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpGet]
+    [Route("password/options")]
+    [AllowAnonymous]
+    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [ProducesResponseType(typeof(SecurityOptions.PasswordOptions), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> GetPasswordOptionsAsync(CancellationToken cancellationToken = default)
+    {
+        var passwordOptions = await this.IdentityManager.GetPaswordOptionsAsync(cancellationToken);
+
+        return this.Ok(passwordOptions);
+    }
+
+    /// <summary>
     /// Sign-up a new user.
     /// </summary>
     /// <param name="signUp">The signup request.</param>

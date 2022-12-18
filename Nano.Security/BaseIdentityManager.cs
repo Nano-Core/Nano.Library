@@ -189,6 +189,16 @@ public abstract class BaseIdentityManager
     }
 
     /// <summary>
+    /// Get Pasword Options.
+    /// </summary>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="AccessToken"/>.</returns>
+    public virtual async Task<SecurityOptions.PasswordOptions> GetPaswordOptionsAsync(CancellationToken cancellationToken = default)
+    {
+        return await Task.FromResult(this.Options.Password);
+    }
+
+    /// <summary>
     /// Generate Jwt Token
     /// </summary>
     /// <param name="tokenData">The <see cref="AccessTokenData"/>.</param>

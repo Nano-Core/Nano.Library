@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.Models.Interfaces;
+using Nano.Security;
 using Nano.Security.Models;
 using Nano.Web.Api.Requests.Identity;
 using Claim = Nano.Security.Models.Claim;
@@ -264,6 +265,22 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
         return await this.InvokeAsync<GetResetPasswordTokenRequest, ResetPasswordToken>(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Get Password Options Async.
+    /// </summary>
+    /// <param name="request">The <see cref="GetPasswordOptionsRequest"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Void.</returns>
+    public virtual async Task<SecurityOptions.PasswordOptions> GetPasswordOptionsAsync(GetPasswordOptionsRequest request, CancellationToken cancellationToken = default)
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return await this.InvokeAsync<GetPasswordOptionsRequest, SecurityOptions.PasswordOptions>(request, cancellationToken);
     }
 
     /// <summary>
