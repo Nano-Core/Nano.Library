@@ -78,7 +78,7 @@ public class HomeController : BaseController
     {
         var id = this.HttpContext.GetJwtUserId();
         var appId = this.HttpContext.GetJwtAppId();
-        var name = this.HttpContext.GetJwtUserName();
+        var username = this.HttpContext.GetJwtUserName();
         var email = this.HttpContext.GetJwtUserEmail();
         var jwtToken = this.HttpContext.GetJwtToken();
         var timezone = this.HttpContext.GetUserTimeZone();
@@ -88,7 +88,7 @@ public class HomeController : BaseController
         {
             Id = id,
             AppId = appId,
-            Name = name,
+            Name = username,
             Email = email,
             JwtToken = jwtToken,
             TimeZone = timezone?.Id,

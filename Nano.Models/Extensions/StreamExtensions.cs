@@ -24,7 +24,7 @@ public static class StreamExtensions
         using var streamReader = new StreamReader(stream);
 
         return await streamReader
-            .ReadToEndAsync();
+            .ReadToEndAsync(cancellationToken);
     }
 
     /// <summary>

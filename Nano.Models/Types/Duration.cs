@@ -24,12 +24,5 @@ public class Duration
     /// Total.
     /// </summary>
     [Required]
-    public virtual TimeSpan Total
-    {
-        get => this.Time.Add(this.Adjustment);
-        protected set
-        {
-            // do nothing.
-        }
-    }
+    public virtual TimeSpan Total => this.Time.Add(this.Adjustment);
 }

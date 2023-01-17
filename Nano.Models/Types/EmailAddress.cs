@@ -20,12 +20,5 @@ public class EmailAddress
     /// <summary>
     /// Is Valid.
     /// </summary>
-    public virtual bool IsValid
-    {
-        get => this.Email != null && Regex.IsMatch(this.Email, EmailAddress.VALIDATE_PATTERN);
-        protected set
-        {
-            // do nothing.
-        }
-    }
+    public virtual bool IsValid => this.Email != null && Regex.IsMatch(this.Email, EmailAddress.VALIDATE_PATTERN);
 }

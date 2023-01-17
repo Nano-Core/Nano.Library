@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using Nano.Models.Extensions;
 using Nano.Web.Api.Requests.Attributes;
-using Newtonsoft.Json;
 
 namespace Nano.Web.Api.Requests;
 

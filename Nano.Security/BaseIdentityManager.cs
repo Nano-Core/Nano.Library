@@ -12,7 +12,6 @@ using Nano.Security.Data.Models;
 using Nano.Security.Exceptions;
 using Nano.Security.Extensions;
 using Nano.Security.Models;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,6 +20,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Claim = System.Security.Claims.Claim;
@@ -189,6 +189,16 @@ public abstract class BaseIdentityManager
     }
 
     /// <summary>
+    /// Get Pasword Options.
+    /// </summary>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="AccessToken"/>.</returns>
+    public virtual async Task<SecurityOptions.PasswordOptions> GetPaswordOptionsAsync(CancellationToken cancellationToken = default)
+    {
+        return await Task.FromResult(this.Options.Password);
+    }
+
+    /// <summary>
     /// Generate Jwt Token
     /// </summary>
     /// <param name="tokenData">The <see cref="AccessTokenData"/>.</param>
@@ -295,7 +305,7 @@ public abstract class BaseIdentityManager
                     var debugToken = await debugTokenResponse.Content
                         .ReadAsStringAsync(cancellationToken);
 
-                    var validation = JsonConvert.DeserializeObject<dynamic>(debugToken);
+                    var validation = JsonSerializer.Deserialize<dynamic>(debugToken);
 
                     if (validation == null)
                     {
@@ -321,7 +331,7 @@ public abstract class BaseIdentityManager
                     var user = await userResponse.Content
                         .ReadAsStringAsync(cancellationToken);
 
-                    var externalLoginData = JsonConvert.DeserializeObject<ExternalLogInData>(user);
+                    var externalLoginData = JsonSerializer.Deserialize<ExternalLogInData>(user);
                     if (externalLoginData != null)
                     {
                         externalLoginData.ExternalToken = new ExternalLoginTokenData
@@ -380,7 +390,7 @@ public abstract class BaseIdentityManager
                         var stringContent = await httpResponse.Content
                             .ReadAsStringAsync(cancellationToken);
 
-                        var content = JsonConvert.DeserializeObject<dynamic>(stringContent);
+                        var content = JsonSerializer.Deserialize<dynamic>(stringContent);
 
                         var error = content?.error;
                         if (error != null)
@@ -864,8 +874,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (setUsername == null)
             throw new ArgumentNullException(nameof(setUsername));
 
+        var userIdString = setUsername.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
         var user = await this.UserManager
-            .FindByIdAsync(setUsername.UserId.ToString());
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
@@ -892,8 +910,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (setPassword == null)
             throw new ArgumentNullException(nameof(setPassword));
 
+        var userIdString = setPassword.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
         var user = await this.UserManager
-            .FindByIdAsync(setPassword.UserId.ToString());
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
@@ -915,7 +941,6 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         {
             this.ThrowIdentityExceptions(result.Errors);
         }
-
     }
 
     /// <summary>
@@ -959,8 +984,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (changePassword == null)
             throw new ArgumentNullException(nameof(changePassword));
 
+        var userIdString = changePassword.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
         var user = await this.UserManager
-            .FindByIdAsync(changePassword.UserId.ToString());
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
@@ -990,8 +1023,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (changeEmail == null)
             throw new ArgumentNullException(nameof(changeEmail));
 
+        var userIdString = changeEmail.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
         var user = await this.UserManager
-            .FindByIdAsync(changeEmail.UserId.ToString());
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
@@ -1054,8 +1095,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (changePhoneNumber == null)
             throw new ArgumentNullException(nameof(changePhoneNumber));
 
+        var userIdString = changePhoneNumber.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
         var user = await this.UserManager
-            .FindByIdAsync(changePhoneNumber.UserId.ToString());
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
@@ -1366,8 +1415,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (userId == null)
             throw new ArgumentNullException(nameof(userId));
 
+        var userIdString = userId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
         var user = await this.UserManager
-            .FindByIdAsync(userId.ToString());
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
@@ -1391,8 +1448,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (assignRole == null)
             throw new ArgumentNullException(nameof(assignRole));
 
+        var userIdString = assignRole.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
         var user = await this.UserManager
-            .FindByIdAsync(assignRole.UserId.ToString());
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
@@ -1419,8 +1484,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (removeRole == null)
             throw new ArgumentNullException(nameof(removeRole));
 
+        var userIdString = removeRole.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
         var user = await this.UserManager
-            .FindByIdAsync(removeRole.UserId.ToString());
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
@@ -1464,8 +1537,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (userId == null)
             throw new ArgumentNullException(nameof(userId));
 
+        var userIdString = userId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
         var user = await this.UserManager
-            .FindByIdAsync(userId.ToString());
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
@@ -1489,8 +1570,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (assignClaim == null)
             throw new ArgumentNullException(nameof(assignClaim));
 
+        var userIdString = assignClaim.Id
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
         var user = await this.UserManager
-            .FindByIdAsync(assignClaim.Id.ToString());
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
@@ -1528,8 +1617,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (removeClaim == null)
             throw new ArgumentNullException(nameof(removeClaim));
 
+        var userIdString = removeClaim.Id
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
         var user = await this.UserManager
-            .FindByIdAsync(removeClaim.Id.ToString());
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
@@ -1584,8 +1681,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (roleId == null)
             throw new ArgumentNullException(nameof(roleId));
 
+        var roleIdString = roleId
+            .ToString();
+
+        if (roleIdString == null)
+        {
+            throw new ArgumentNullException(nameof(roleIdString));
+        }
+
         var role = await this.RoleManager
-            .FindByIdAsync(roleId.ToString());
+            .FindByIdAsync(roleIdString);
 
         if (role == null)
         {
@@ -1609,8 +1714,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (assignClaim == null)
             throw new ArgumentNullException(nameof(assignClaim));
 
+        var roleIdString = assignClaim.Id
+            .ToString();
+
+        if (roleIdString == null)
+        {
+            throw new ArgumentNullException(nameof(roleIdString));
+        }
+
         var role = await this.RoleManager
-            .FindByIdAsync(assignClaim.Id.ToString());
+            .FindByIdAsync(roleIdString);
 
         if (role == null)
         {
@@ -1648,8 +1761,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (removeClaim == null)
             throw new ArgumentNullException(nameof(removeClaim));
 
+        var roleIdString = removeClaim.Id
+            .ToString();
+
+        if (roleIdString == null)
+        {
+            throw new ArgumentNullException(nameof(roleIdString));
+        }
+
         var role = await this.RoleManager
-            .FindByIdAsync(removeClaim.Id.ToString());
+            .FindByIdAsync(roleIdString);
 
         if (role == null)
         {
@@ -1959,7 +2080,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
                     var stringContent = await httpResponse.Content
                         .ReadAsStringAsync(cancellationToken);
 
-                    var content = JsonConvert.DeserializeObject<dynamic>(stringContent);
+                    var content = JsonSerializer.Deserialize<dynamic>(stringContent);
 
                     var error = content?.error;
                     if (error != null)

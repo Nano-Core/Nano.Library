@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using DynamicExpression.Entities;
 using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Nano.Models.Interfaces;
@@ -96,7 +97,7 @@ public interface IRepository : IDisposable
     /// <param name="ordering">The order by clause</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The fist instance matching the passed <paramref name="where"/> clause.</returns>
-    Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, IOrdering ordering, CancellationToken cancellationToken = default)
+    Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -190,7 +191,7 @@ public interface IRepository : IDisposable
     /// <param name="ordering">The order by clause</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances, matching the passed parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IOrdering ordering, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -198,10 +199,10 @@ public interface IRepository : IDisposable
     /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
     /// <param name="where">The where clause</param>
-    /// <param name="pagination">The <see cref="IPagination"/>.</param>
+    /// <param name="pagination">The <see cref="Pagination"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances, matching the passed parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IPagination pagination, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -209,11 +210,11 @@ public interface IRepository : IDisposable
     /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
     /// <param name="where">The where clause</param>
-    /// <param name="pagination">The <see cref="IPagination"/>.</param>
+    /// <param name="pagination">The <see cref="Pagination"/>.</param>
     /// <param name="ordering">The order by clause</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances, matching the passed parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IPagination pagination, IOrdering ordering, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, Ordering ordering, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -222,10 +223,10 @@ public interface IRepository : IDisposable
     /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
     /// <param name="where">The where clause</param>
     /// <param name="ordering">The order by clause</param>
-    /// <param name="pagination">The <see cref="IPagination"/>.</param>
+    /// <param name="pagination">The <see cref="Pagination"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances, matching the passed parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IOrdering ordering, IPagination pagination, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, Pagination pagination, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
