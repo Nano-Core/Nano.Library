@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using Claim = System.Security.Claims.Claim;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using Nano.Models.Extensions;
+using System.Text.Json.Nodes;
 
 namespace Nano.Security;
 
@@ -390,16 +391,18 @@ public abstract class BaseIdentityManager
                         var stringContent = await httpResponse.Content
                             .ReadAsStringAsync(cancellationToken);
 
-                        var content = JsonSerializer.Deserialize<dynamic>(stringContent);
+                        var content = JsonSerializer.Deserialize<JsonObject>(stringContent);
 
-                        var error = content?.error;
+                        var error = (string)content?["error"];
+                        var errorDescription = (string)content?["error"];
+
                         if (error != null)
                         {
-                            throw new InvalidOperationException(stringContent);
+                            throw new InvalidOperationException($"{error}: {errorDescription}");
                         }
 
-                        accessToken = content?.access_token;
-                        refreshToken = content?.refresh_token;
+                        accessToken = (string)content?["access_token"];
+                        refreshToken = (string)content?["refresh_token"];
                     }
                 }
                 break;
@@ -2080,19 +2083,24 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
                     var stringContent = await httpResponse.Content
                         .ReadAsStringAsync(cancellationToken);
 
-                    var content = JsonSerializer.Deserialize<dynamic>(stringContent);
+                    var content = JsonSerializer.Deserialize<JsonObject>(stringContent);
 
-                    var error = content?.error;
+                    var error = (string)content?["error"];
+                    var errorDescription = (string)content?["error"];
+
                     if (error != null)
                     {
-                        throw new InvalidOperationException(stringContent);
+                        throw new InvalidOperationException($"{error}: {errorDescription}");
                     }
+
+                    var accessToken = (string)content?["access_token"];
+                    var refreshToken = (string)content?["refresh_token"];
 
                     return new ExternalLoginTokenData
                     {
                         Name = externalProviderName,
-                        Token = content?.access_token,
-                        RefreshToken = content?.refresh_token
+                        Token = accessToken,
+                        RefreshToken = refreshToken
                     };
                 }
             }
