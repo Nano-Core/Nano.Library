@@ -24,6 +24,7 @@ public class QueryModelBinder : IModelBinder
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
         PropertyNamingPolicy = null,
+        PropertyNameCaseInsensitive = true,
         Converters =
         {
             new JsonStringEnumConverter()

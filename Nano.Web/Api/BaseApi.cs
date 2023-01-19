@@ -54,6 +54,7 @@ public abstract class BaseApi : IDisposable
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
         PropertyNamingPolicy = null,
+        PropertyNameCaseInsensitive = true,
         TypeInfoResolver = new DefaultJsonTypeInfoResolver
         {
             Modifiers =
