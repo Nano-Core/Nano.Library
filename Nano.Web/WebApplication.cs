@@ -131,7 +131,7 @@ public class WebApplication : DefaultApplication
             .UseKestrel(x =>
             {
                 x.AddServerHeader = false;
-                x.Limits.MaxResponseBufferSize = 268435456;  
+                x.Limits.MaxResponseBufferSize = 268435456;
 
                 webOptions.Hosting.Ports
                     .ToList()
