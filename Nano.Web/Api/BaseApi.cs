@@ -646,7 +646,7 @@ public abstract class BaseApi : IDisposable
             case HttpStatusCode.BadRequest:
             case HttpStatusCode.InternalServerError:
                 var errorContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
-                var error = JsonSerializer.Deserialize<Error>(errorContent);
+                var error = JsonSerializer.Deserialize<Error>(errorContent, BaseApi.jsonSerializerSettings);
 
                 if (error == null)
                     throw new NullReferenceException(nameof(error));
@@ -683,7 +683,7 @@ public abstract class BaseApi : IDisposable
             case HttpStatusCode.BadRequest:
             case HttpStatusCode.InternalServerError:
                 var errorContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
-                var error = JsonSerializer.Deserialize<Error>(errorContent);
+                var error = JsonSerializer.Deserialize<Error>(errorContent, BaseApi.jsonSerializerSettings);
 
                 if (error == null)
                     throw new NullReferenceException(nameof(error));
@@ -735,7 +735,7 @@ public abstract class BaseApi : IDisposable
                 var content = await httpResponse.Content
                     .ReadAsStringAsync(cancellationToken);
 
-                return JsonSerializer.Deserialize<TResponse>(content);
+                return JsonSerializer.Deserialize<TResponse>(content, BaseApi.jsonSerializerSettings);
         }
     }
     private void SetAuthorizationHeader(string token)
