@@ -55,6 +55,7 @@ public abstract class BaseApi : IDisposable
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
         PropertyNamingPolicy = null,
         PropertyNameCaseInsensitive = true,
+        MaxDepth = 128,
         TypeInfoResolver = new DefaultJsonTypeInfoResolver
         {
             Modifiers =

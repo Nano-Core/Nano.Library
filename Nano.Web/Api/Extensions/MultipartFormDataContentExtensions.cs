@@ -25,6 +25,7 @@ internal static class MultipartFormDataContentExtensions
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
         PropertyNamingPolicy = null,
         PropertyNameCaseInsensitive = true,
+        MaxDepth = 128,
         Converters =
         {
             new JsonStringEnumConverter()
