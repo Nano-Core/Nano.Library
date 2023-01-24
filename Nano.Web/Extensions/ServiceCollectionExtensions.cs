@@ -133,6 +133,7 @@ public static class ServiceCollectionExtensions
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 x.JsonSerializerOptions.PropertyNamingPolicy = null;
                 x.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                x.JsonSerializerOptions.MaxDepth = 128;
                 x.JsonSerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver
                 {
                     Modifiers =
