@@ -70,10 +70,10 @@
             <param name="entities">The <see cref="T:System.Object"/>'s of type <typeparamref name="TEntity"/>.</param>
             <returns>A <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry`1"/>.</returns>
         </member>
-        <member name="M:Nano.Data.BaseDbContext`1.SaveChanges">
+        <member name="M:Nano.Data.BaseDbContext`1.SaveChangesAsync">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Data.BaseDbContext`1.SaveChanges(System.Boolean)">
+        <member name="M:Nano.Data.BaseDbContext`1.SaveChangesAsync(System.Boolean)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Data.BaseDbContext`1.SaveChangesAsync(System.Threading.CancellationToken)">

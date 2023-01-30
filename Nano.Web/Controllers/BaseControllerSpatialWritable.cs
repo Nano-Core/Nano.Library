@@ -64,7 +64,7 @@ public abstract class BaseControllerSpatialWritable<TRepository, TEntity, TIdent
             .AddAsync(entity, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Created("create", entity);
     }
@@ -93,7 +93,7 @@ public abstract class BaseControllerSpatialWritable<TRepository, TEntity, TIdent
             .AddManyAsync(entities, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Created("create/many", entities);
     }
@@ -130,7 +130,7 @@ public abstract class BaseControllerSpatialWritable<TRepository, TEntity, TIdent
         }
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok(entity);
     }
@@ -166,7 +166,7 @@ public abstract class BaseControllerSpatialWritable<TRepository, TEntity, TIdent
         }
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok(entities);
     }
@@ -205,7 +205,7 @@ public abstract class BaseControllerSpatialWritable<TRepository, TEntity, TIdent
             .DeleteAsync(entity, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
     }
@@ -240,7 +240,7 @@ public abstract class BaseControllerSpatialWritable<TRepository, TEntity, TIdent
             .DeleteManyAsync(entities, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
     }
@@ -270,7 +270,7 @@ public abstract class BaseControllerSpatialWritable<TRepository, TEntity, TIdent
             .DeleteManyAsync<TEntity, TCriteria>(select, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
     }

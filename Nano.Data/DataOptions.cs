@@ -1,3 +1,4 @@
+using System.Data;
 using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -92,6 +93,11 @@ public class DataOptions
     /// Default Collation.
     /// </summary>
     public virtual string DefaultCollation { get; set; } = null;
+
+    /// <summary>
+    /// Connection String.
+    /// </summary>
+    public virtual IsolationLevel IsolationLevel { get; set; } = IsolationLevel.ReadCommitted;
 
     /// <summary>
     /// Connection String.

@@ -527,5 +527,5 @@ public interface IRepository : IDisposable
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>Task (Void).</returns>
-    Task SaveChanges(CancellationToken cancellationToken = default);
+    Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

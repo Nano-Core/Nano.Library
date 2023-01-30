@@ -168,7 +168,7 @@
         <member name="M:Nano.Repository.BaseRepository`2.AverageAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Decimal}},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Repository.BaseRepository`2.SaveChanges(System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.BaseRepository`2.SaveChangesAsync(System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Repository.BaseRepository`2.Dispose">
@@ -690,7 +690,7 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> (optional).</param>
             <returns>The average.</returns>
         </member>
-        <member name="M:Nano.Repository.Interfaces.IRepository.SaveChanges(System.Threading.CancellationToken)">
+        <member name="M:Nano.Repository.Interfaces.IRepository.SaveChangesAsync(System.Threading.CancellationToken)">
             <summary>
             Save Changes.
             Commits the changes to the database.

@@ -71,7 +71,7 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
             .DeleteAsync<TEntity, TIdentity>(id, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
     }
@@ -103,7 +103,7 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
             .DeleteManyAsync<TEntity, TIdentity>(ids, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
     }
@@ -133,7 +133,7 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
             .DeleteManyAsync<TEntity, TCriteria>(select, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
     }

@@ -73,7 +73,7 @@ public abstract class BaseControllerSpatialDeletable<TRepository, TEntity, TIden
             .DeleteAsync(entity, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
     }
@@ -108,7 +108,7 @@ public abstract class BaseControllerSpatialDeletable<TRepository, TEntity, TIden
             .DeleteManyAsync(entities, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
     }
@@ -138,7 +138,7 @@ public abstract class BaseControllerSpatialDeletable<TRepository, TEntity, TIden
             .DeleteManyAsync<TEntity, TCriteria>(select, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
     }
