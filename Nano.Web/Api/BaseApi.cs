@@ -708,12 +708,44 @@ public abstract class BaseApi : IDisposable
 
         switch (contentType)
         {
+            // Text
             case HttpContentType.HTML:
             case HttpContentType.XHTML:
-            case HttpContentType.PDF:
+            case HttpContentType.CSV:
+
+            // Images
             case HttpContentType.BMP:
             case HttpContentType.JPEG:
             case HttpContentType.PNG:
+            case HttpContentType.GIF:
+            case HttpContentType.TIFF:
+            case HttpContentType.ICON:
+            case HttpContentType.SVG:
+
+            // Audio
+            case HttpContentType.AUDIO_MPEG:
+            case HttpContentType.WMA:
+            case HttpContentType.REAL_AUDIO:
+            case HttpContentType.WAV:
+
+            // Viddo
+            case HttpContentType.VIDOE_MPEG:
+            case HttpContentType.MP4:
+            case HttpContentType.QUICK_TIME:
+            case HttpContentType.WMV:
+            case HttpContentType.MS_VIDEO:
+            case HttpContentType.FLV:
+            case HttpContentType.WEB_M:
+
+            // Other
+            case HttpContentType.OCTET_STREM:
+            case HttpContentType.EXCEL:
+            case HttpContentType.EXCEL_OPEN_FROMAT:
+            case HttpContentType.POWERPOINT:
+            case HttpContentType.POWERPOINT_OPEN_FROMAT:
+            case HttpContentType.WORD:
+            case HttpContentType.WORD_OPEN_FROMAT:
+            case HttpContentType.PDF:
             case HttpContentType.ZIP:
                 var stream = await httpResponse.Content
                     .ReadAsStreamAsync(cancellationToken);
