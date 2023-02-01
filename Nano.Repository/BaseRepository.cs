@@ -8,7 +8,6 @@ using DynamicExpression.Entities;
 using DynamicExpression.Extensions;
 using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Nano.Data;
 using Nano.Data.Extensions;
 using Nano.Models.Interfaces;
@@ -33,12 +32,10 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     where TContext : BaseDbContext<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
-    private readonly IDbContextTransaction transaction;
-
     /// <summary>
     /// Context.
     /// </summary>
-    public TContext Context { get; }
+    internal virtual TContext Context { get; }
 
     /// <summary>
     /// Constructor.
@@ -47,9 +44,12 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     protected BaseRepository(TContext context)
     {
         this.Context = context ?? throw new ArgumentNullException(nameof(context));
+    }
 
-        this.transaction = this.Context.Database
-            .BeginTransaction(this.Context.Options.IsolationLevel);
+    /// <inheritdoc />
+    public virtual DbContext GetContext()
+    {
+        return this.Context;
     }
 
     /// <inheritdoc />
@@ -756,9 +756,6 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     /// <inheritdoc />
     public void Dispose()
     {
-        this.transaction
-            .Commit();
-
         this.Dispose(true);
         GC.SuppressFinalize(this);
     }
