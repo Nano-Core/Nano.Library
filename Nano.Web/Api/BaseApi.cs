@@ -704,72 +704,30 @@ public abstract class BaseApi : IDisposable
         httpResponse
             .EnsureSuccessStatusCode();
 
-        var contentType = httpResponse.Content.Headers.ContentType?.MediaType;
-
-        switch (contentType)
+        if (httpResponse.Content.Headers.ContentDisposition != null)
         {
-            // Text
-            case HttpContentType.HTML:
-            case HttpContentType.XHTML:
-            case HttpContentType.CSV:
+            var stream = await httpResponse.Content
+                .ReadAsStreamAsync(cancellationToken);
 
-            // Images
-            case HttpContentType.BMP:
-            case HttpContentType.JPEG:
-            case HttpContentType.PNG:
-            case HttpContentType.GIF:
-            case HttpContentType.TIFF:
-            case HttpContentType.ICON:
-            case HttpContentType.SVG:
-
-            // Audio
-            case HttpContentType.AUDIO_MPEG:
-            case HttpContentType.WMA:
-            case HttpContentType.REAL_AUDIO:
-            case HttpContentType.WAV:
-
-            // Viddo
-            case HttpContentType.VIDOE_MPEG:
-            case HttpContentType.MP4:
-            case HttpContentType.QUICK_TIME:
-            case HttpContentType.WMV:
-            case HttpContentType.MS_VIDEO:
-            case HttpContentType.FLV:
-            case HttpContentType.WEB_M:
-
-            // Other
-            case HttpContentType.OCTET_STREM:
-            case HttpContentType.EXCEL:
-            case HttpContentType.EXCEL_OPEN_FROMAT:
-            case HttpContentType.POWERPOINT:
-            case HttpContentType.POWERPOINT_OPEN_FROMAT:
-            case HttpContentType.WORD:
-            case HttpContentType.WORD_OPEN_FROMAT:
-            case HttpContentType.PDF:
-            case HttpContentType.ZIP:
-                var stream = await httpResponse.Content
-                    .ReadAsStreamAsync(cancellationToken);
-
-                if (typeof(TResponse) == typeof(NamedStream))
+            if (typeof(TResponse) == typeof(NamedStream))
+            {
+                var name = httpResponse.Content.Headers.ContentDisposition?.FileName;
+                var namedStream = new NamedStream
                 {
-                    var name = httpResponse.Content.Headers.ContentDisposition?.FileName;
-                    var namedStream = new NamedStream
-                    {
-                        Name = name,
-                        Stream = stream
-                    };
+                    Name = name,
+                    Stream = stream
+                };
 
-                    return namedStream as TResponse;
-                }
+                return namedStream as TResponse;
+            }
 
-                return stream as TResponse;
-
-            default:
-                var content = await httpResponse.Content
-                    .ReadAsStringAsync(cancellationToken);
-
-                return JsonSerializer.Deserialize<TResponse>(content, BaseApi.jsonSerializerSettings);
+            return stream as TResponse;
         }
+
+        var content = await httpResponse.Content
+            .ReadAsStringAsync(cancellationToken);
+
+        return JsonSerializer.Deserialize<TResponse>(content, BaseApi.jsonSerializerSettings);
     }
     private void SetAuthorizationHeader(string token)
     {

@@ -68,6 +68,11 @@ internal static class MultipartFormDataContentExtensions
                             .Add(fileStream, formItem.Name, cancellationToken);
                         break;
 
+                    case Stream stream:
+                        await formContent
+                            .Add(stream, formItem.Name, cancellationToken);
+                        break;
+
                     default:
                         await formContent
                             .Add(formItem.Value, formItem.Name);
@@ -92,6 +97,11 @@ internal static class MultipartFormDataContentExtensions
                 case FileStream fileStream:
                     await formContent
                         .Add(fileStream, formItem.Name, cancellationToken);
+                    break;
+
+                case Stream stream:
+                    await formContent
+                        .Add(stream, formItem.Name, cancellationToken);
                     break;
 
                 default:
@@ -150,6 +160,26 @@ internal static class MultipartFormDataContentExtensions
             formContent
                 .Add(fileContent, name, formFile.FileName);
         }
+    }
+    private static async Task Add(this MultipartFormDataContent formContent, Stream stream, string name, CancellationToken cancellationToken = default)
+    {
+        if (formContent == null)
+            throw new ArgumentNullException(nameof(formContent));
+
+        if (stream == null)
+            throw new ArgumentNullException(nameof(stream));
+
+        if (name == null)
+            throw new ArgumentNullException(nameof(name));
+
+        var bytes = await stream
+            .ReadAllBytesAsync(cancellationToken);
+
+        var fileContent = new ByteArrayContent(bytes);
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue(HttpContentType.FORM);
+
+        formContent
+            .Add(fileContent, name, "fileStream.Name");
     }
     private static async Task Add(this MultipartFormDataContent formContent, FileStream fileStream, string name, CancellationToken cancellationToken = default)
     {
