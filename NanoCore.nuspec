@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>7.0.7</version>
+		<version>7.0.8</version>
 		<title>Nano Core</title>
 		<summary>
 			Rapidly built and deploy rich .NET 7.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.
@@ -19,6 +19,7 @@
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
 			- Refactored Api-Client to support all file types in file (stream) responses.
+			- Added support for Stream and NamedStream for form uploads.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net7.0">
