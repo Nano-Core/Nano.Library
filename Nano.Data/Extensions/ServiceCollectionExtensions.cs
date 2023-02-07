@@ -72,32 +72,25 @@ public static class ServiceCollectionExtensions
             .AddScoped<DbContext, TContext>()
             .AddScoped<BaseDbContext<TIdentity>, TContext>()
             .AddScoped<DbContextOptions, DbContextOptions<TContext>>()
-            .AddSingleton<IDataProvider, TProvider>()
-            .AddDbContext<TContext>((provider, builder) =>
-            {
-                builder
-                    .EnableSensitiveDataLogging(options.UseSensitiveDataLogging)
-                    .ConfigureWarnings(x =>
-                    {
-                        x.Ignore(RelationalEventId.BoolWithDefaultWarning);
-                        x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
-                    })
-                    .UseLazyLoadingProxies(options.UseLazyLoading);
+            .AddSingleton<IDataProvider, TProvider>();
 
-                if (options.UseMemoryCache)
+        if (options.UseConnectionPooling)
+        {
+            services
+                .AddDbContextPool<TContext>((provider, builder) =>
                 {
-                    var secondLevelCacheInterceptor = provider
-                        .GetRequiredService<SecondLevelCacheInterceptor>();
-
-                    builder
-                        .AddInterceptors(secondLevelCacheInterceptor);
-                }
-
-                provider
-                    .GetRequiredService<IDataProvider>()
-                    .Configure(builder);
-            })
-            .AddDataHealthChecks<TProvider>(options);
+                    ServiceCollectionExtensions.AddDataContext(provider, builder, options);
+                });
+        }
+        else
+        {
+            services
+                .AddDbContext<TContext>((provider, builder) =>
+                {
+                    ServiceCollectionExtensions.AddDataContext(provider, builder, options);
+                })
+                .AddDataHealthChecks<TProvider>(options);
+        }
 
         services
             .AddIdentity<IdentityUser<TIdentity>, IdentityRole<TIdentity>>()
@@ -274,5 +267,30 @@ public static class ServiceCollectionExtensions
         }
 
         return services;
+    }
+
+    private static void AddDataContext(IServiceProvider provider, DbContextOptionsBuilder builder, DataOptions options)
+    {
+        builder
+            .EnableSensitiveDataLogging(options.UseSensitiveDataLogging)
+            .ConfigureWarnings(x =>
+            {
+                x.Ignore(RelationalEventId.BoolWithDefaultWarning);
+                x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
+            })
+            .UseLazyLoadingProxies(options.UseLazyLoading);
+
+        if (options.UseMemoryCache)
+        {
+            var secondLevelCacheInterceptor = provider
+                .GetRequiredService<SecondLevelCacheInterceptor>();
+
+            builder
+                .AddInterceptors(secondLevelCacheInterceptor);
+        }
+
+        provider
+            .GetRequiredService<IDataProvider>()
+            .Configure(builder);
     }
 }

@@ -74,9 +74,14 @@ public class DataOptions
     public virtual bool UseMigrateDatabase { get; set; } = true;
 
     /// <summary>
-    /// Use Sensitive Data Logging .
+    /// Use Sensitive Data Logging.
     /// </summary>
     public virtual bool UseSensitiveDataLogging { get; set; } = false;
+
+    /// <summary>
+    /// Use Connection Pooling.
+    /// </summary>
+    public virtual bool UseConnectionPooling { get; set; } = true;
 
     /// <summary>
     /// Use Health Check.
