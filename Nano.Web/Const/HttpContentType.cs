@@ -158,7 +158,7 @@ public static class HttpContentType
     /// <summary>
     /// Excel Open Document Format ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet").
     /// </summary>
-    public const string EXCEL_OPEN_FROMAT = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    public const string EXCEL_OPEN_FORMAT = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
     /// <summary>
     /// Powerpoint ("application/vnd.ms-powerpoint").
@@ -168,7 +168,7 @@ public static class HttpContentType
     /// <summary>
     /// Powerpoint Open Document Format ("application/vnd.openxmlformats-officedocument.presentationml.presentation").
     /// </summary>
-    public const string POWERPOINT_OPEN_FROMAT = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+    public const string POWERPOINT_OPEN_FORMAT = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
 
     /// <summary>
     /// Word ("application/msword").
@@ -178,5 +178,5 @@ public static class HttpContentType
     /// <summary>
     /// Word Open Document Format ("application/vnd.openxmlformats-officedocument.wordprocessingml.document").
     /// </summary>
-    public const string WORD_OPEN_FROMAT = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    public const string WORD_OPEN_FORMAT = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 }
