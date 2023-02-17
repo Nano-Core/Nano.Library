@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Text.Json.Serialization.Metadata;
 
 namespace Nano.Web.Hosting.Serialization.Json
@@ -14,6 +15,9 @@ namespace Nano.Web.Hosting.Serialization.Json
         /// <param name="typeInfo"></param>
         internal static void IgnoreEmptyCollections(JsonTypeInfo typeInfo)
         {
+            if (typeInfo == null)
+                throw new ArgumentNullException(nameof(typeInfo));
+
             foreach (var property in typeInfo.Properties)
             {
                 if (property.PropertyType == typeof(string))

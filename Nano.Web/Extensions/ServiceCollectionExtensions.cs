@@ -107,7 +107,7 @@ public static class ServiceCollectionExtensions
                 x.Conventions.Insert(0, routePrefixConvention);
                 x.ModelBinderProviders.Insert(0, queryModelBinderProvider);
 
-                if (!securityOptions.IsAuth || dataOptions.ConnectionString == null)
+                if (dataOptions.ConnectionString == null || !securityOptions.IsAuth)
                 {
                     x.Conventions.Insert(1, new AuthControllerDisabledConvention());
                 }
@@ -138,7 +138,8 @@ public static class ServiceCollectionExtensions
                 {
                     Modifiers =
                     {
-                        EnumerableTypeInfoResolver.IgnoreEmptyCollections
+                        LazyLoaderTypeInfoResolver.IgnoreLazyLoader,
+                        EnumerableTypeInfoResolver.IgnoreEmptyCollections,
                     }
                 };
                 x.JsonSerializerOptions.Converters

@@ -60,6 +60,7 @@ public abstract class BaseApi : IDisposable
         {
             Modifiers =
             {
+                LazyLoaderTypeInfoResolver.IgnoreLazyLoader,
                 EnumerableTypeInfoResolver.IgnoreEmptyCollections
             }
         },
