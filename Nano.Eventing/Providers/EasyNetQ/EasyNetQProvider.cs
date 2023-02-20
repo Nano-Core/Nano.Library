@@ -1,8 +1,8 @@
 using System;
 using EasyNetQ;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Nano.Eventing.Providers.EasyNetQ;
 
