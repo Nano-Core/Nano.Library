@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.Models.Interfaces;
@@ -14,8 +15,8 @@ public class DefaultIdentityApi<TUser> : BaseIdentityApi<TUser, Guid>
     where TUser : class, IEntityUser<Guid>
 {
     /// <inheritdoc />
-    public DefaultIdentityApi(ApiOptions apiOptions)
-        : base(apiOptions)
+    public DefaultIdentityApi(HttpClient httpClient, ApiOptions apiOptions)
+        : base(httpClient, apiOptions)
     {
 
     }

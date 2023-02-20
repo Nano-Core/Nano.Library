@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -186,15 +187,21 @@ public static class ServiceCollectionExtensions
                     return;
                 }
 
-                var instance = Activator.CreateInstance(x, options);
-
-                if (instance == null)
-                {
-                    return;
-                }
+                services
+                    .AddHttpClient(nameof(x), y => HttpClientFactory.ConfigureDefaultHttpClient(y, options))
+                    .ConfigurePrimaryHttpMessageHandler(HttpClientFactory.GetDefaultHttpClientHandler)
+                    .SetHandlerLifetime(TimeSpan.FromMinutes(5));
 
                 services
-                    .AddSingleton(x, instance);
+                    .AddTransient(x, y =>
+                    {
+                        var httpClientFactory = y.GetRequiredService<IHttpClientFactory>();
+                        var httpClient = httpClientFactory.CreateClient(nameof(x));
+
+                        var instance = Activator.CreateInstance(x, httpClient, options);
+
+                        return instance;
+                    });
 
                 if (hosts.Contains(options.Host))
                 {

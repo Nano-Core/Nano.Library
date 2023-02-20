@@ -19,6 +19,7 @@
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
 			- Added ignore ILazyLoader type from serialization. 
+			- Changed dependency registration for HttpClient to use HttpClientFactory for api-clients.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net7.0">
