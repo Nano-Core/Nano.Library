@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.Web.Api.Requests;
@@ -13,8 +12,8 @@ namespace Nano.Web.Api;
 public class DefaultApi : BaseApi<Guid>
 {
     /// <inheritdoc />
-    public DefaultApi(HttpClient httpClient, ApiOptions apiOptions)
-        : base(httpClient, apiOptions)
+    public DefaultApi(ApiOptions apiOptions)
+        : base(apiOptions)
     {
 
     }

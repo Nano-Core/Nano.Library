@@ -37,12 +37,17 @@ namespace Nano.Web.Api;
 /// <summary>
 /// Base Api (abstract).
 /// </summary>
-public abstract class BaseApi
+public abstract class BaseApi : IDisposable
 {
     private volatile AccessToken accessToken;
 
     private readonly ApiOptions apiOptions;
     private readonly HttpClient httpClient;
+    private readonly HttpClientHandler httpClientHandler = new()
+    {
+        AllowAutoRedirect = true,
+        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+    };
 
     private static readonly JsonSerializerOptions jsonSerializerSettings = new()
     {
@@ -68,12 +73,19 @@ public abstract class BaseApi
     /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="httpClient">The <see cref="HttpClient"/>.</param>
     /// <param name="apiOptions">The <see cref="ApiOptions"/>.</param>
-    protected BaseApi(HttpClient httpClient, ApiOptions apiOptions)
+    protected BaseApi(ApiOptions apiOptions)
     {
-        this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         this.apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
+
+        this.httpClient = new HttpClient(this.httpClientHandler)
+        {
+            Timeout = new TimeSpan(0, 0, this.apiOptions.TimeoutInSeconds),
+            DefaultRequestVersion = new Version(2, 0)
+        };
+
+        this.httpClient.DefaultRequestHeaders.Accept
+            .Add(new MediaTypeWithQualityHeaderValue(HttpContentType.JSON));
     }
 
     /// <summary>
@@ -732,6 +744,16 @@ public abstract class BaseApi
 
         httpContext.Request.Headers[HeaderNames.Authorization] = $"Bearer {token}";
     }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.httpClient?
+            .Dispose();
+
+        this.httpClientHandler?
+            .Dispose();
+    }
 }
 
 /// <inheritdoc />
@@ -739,8 +761,8 @@ public abstract class BaseApi<TIdentity> : BaseApi
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseApi(HttpClient httpClient, ApiOptions apiOptions)
-        : base(httpClient, apiOptions)
+    protected BaseApi(ApiOptions apiOptions)
+        : base(apiOptions)
     {
 
     }
