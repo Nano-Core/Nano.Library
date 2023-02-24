@@ -1,11 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Nano.Web.Api.Responses;
 
 /// <summary>
 /// Named Stream.
 /// </summary>
-public class NamedStream
+public class NamedStream : IDisposable
 {
     /// <summary>
     /// Name.
@@ -16,4 +17,11 @@ public class NamedStream
     /// Stream.
     /// </summary>
     public virtual Stream Stream { get; set; }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.Stream?
+            .Dispose();
+    }
 }
