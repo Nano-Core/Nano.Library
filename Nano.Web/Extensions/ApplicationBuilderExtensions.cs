@@ -739,11 +739,12 @@ public static class ApplicationBuilderExtensions
                 }
                 else
                 {
-                    x.AllowAnyOrigin();
+                    x.SetIsOriginAllowed(_ => true);
                 }
 
                 x.AllowAnyHeader();
                 x.AllowAnyMethod();
+                x.AllowCredentials();
                 x.WithExposedHeaders("RequestId", "TZ", "Content-Disposition");
             });
 
