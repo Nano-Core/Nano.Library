@@ -1,11 +1,8 @@
 using System;
 using System.Linq;
-using System.Reflection;
-using System.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Config.Extensions;
-using Nano.Eventing.Attributes;
 using Nano.Eventing.Handlers;
 using Nano.Eventing.Interfaces;
 using Nano.Eventing.Providers.EasyNetQ;
@@ -94,23 +91,9 @@ public static class ServiceCollectionExtensions
             {
                 var handlerType = x.Type;
                 var genericHandlerType = x.GenericType;
-                var eventType = genericHandlerType.GetGenericArguments()[0];
 
                 services
                     .AddScoped(genericHandlerType, handlerType);
-
-                var provider = services.BuildServiceProvider();
-                var eventing = provider.GetRequiredService<IEventing>();
-
-                eventing
-                    .GetType()
-                    .GetMethod(nameof(IEventing.SubscribeAsync))?
-                    .MakeGenericMethod(eventType)
-                    .Invoke(eventing, new object[]
-                    {
-                        string.Empty,
-                        CancellationToken.None
-                    });
             });
 
         return services;
@@ -120,39 +103,11 @@ public static class ServiceCollectionExtensions
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        AppDomain.CurrentDomain
-            .GetAssemblies()
-            .SelectMany(x => x.GetTypes())
-            .Where(x =>
-                !x.IsAbstract &&
-                !x.Name.EndsWith("Proxy") &&
-                x.GetCustomAttributes<SubscribeAttribute>().Any())
-            .GroupBy(x => x.FullName)
-            .Select(x => x.FirstOrDefault())
-            .Where(x => x != null)
-            .ToList()
-            .ForEach(x =>
-            {
-                var eventType = typeof(EntityEvent);
-                var handlerType = typeof(EntityEventHandler);
-                var genericHandlerType = typeof(IEventingHandler<EntityEvent>);
+        var handlerType = typeof(EntityEventHandler);
+        var genericHandlerType = typeof(IEventingHandler<EntityEvent>);
 
-                services
-                    .AddScoped(genericHandlerType, handlerType);
-
-                var provider = services.BuildServiceProvider();
-                var eventing = provider.GetRequiredService<IEventing>();
-
-                eventing
-                    .GetType()
-                    .GetMethod(nameof(IEventing.SubscribeAsync))?
-                    .MakeGenericMethod(eventType)
-                    .Invoke(eventing, new object[]
-                    {
-                        x.Name,
-                        CancellationToken.None
-                    });
-            });
+        services
+            .AddScoped(genericHandlerType, handlerType);
 
         return services;
     }
