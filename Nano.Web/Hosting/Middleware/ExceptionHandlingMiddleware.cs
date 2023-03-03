@@ -134,6 +134,14 @@ public class ExceptionHandlingMiddleware : IMiddleware
             var method = request.Method;
             var path = request.Path.Value;
             var queryString = request.QueryString.HasValue ? $"{request.QueryString.Value}" : null;
+
+            var success = request.Query.TryGetValue("access_token", out var accessToken);
+            if (success)
+            {
+                queryString = queryString?
+                    .Replace(accessToken, "<<secret>>");
+            }
+
             var pathAndqueryString = $"{path}{queryString}";
             var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
             var id = httpContext.TraceIdentifier;
