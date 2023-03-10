@@ -13,6 +13,7 @@ using System;
 using System.Linq;
 using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Nano.Config;
 using Nano.Data.Models;
@@ -94,9 +95,13 @@ public static class ServiceCollectionExtensions
 
         services
             .AddIdentity<IdentityUser<TIdentity>, IdentityRole<TIdentity>>()
-            .AddEntityFrameworkStores<BaseDbContext<TIdentity>>()
-            .AddTokenProvider<DataProtectorTokenProvider<IdentityUser<TIdentity>>>(JwtBearerDefaults.AuthenticationScheme)
-            .AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<BaseDbContext<TIdentity>>()
+                    .AddTokenProvider<DataProtectorTokenProvider<IdentityUser<TIdentity>>>(JwtBearerDefaults.AuthenticationScheme)
+                        .AddDefaultTokenProviders();
+
+        services
+            .AddDataProtection()
+                .PersistKeysToDbContext<TContext>();
 
         services
             .AddIdentityManager<TIdentity>();
