@@ -8,10 +8,16 @@ namespace Nano.Web.Api.Responses;
 /// </summary>
 public class NamedStream : IDisposable
 {
+    private string name;
+
     /// <summary>
     /// Name.
     /// </summary>
-    public virtual string Name { get; set; }
+    public virtual string Name
+    {
+        get => this.name;
+        set => this.name = Path.GetFileName(value);
+    }
 
     /// <summary>
     /// Stream.
