@@ -1,5 +1,6 @@
 using System;
 using EasyNetQ;
+using EasyNetQ.DI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
@@ -29,7 +30,22 @@ public class EasyNetQProvider : IEventingProvider
     public virtual IEventing Configure(IServiceCollection services)
     {
         services
-            .RegisterEasyNetQ(this.Options.ConnectionString);
+            .RegisterEasyNetQ(x => new ConnectionConfiguration
+            {
+                Hosts =
+                {
+                    new HostConfiguration
+                    {
+                        Host = this.Options.Host,
+                        Port = this.Options.Port
+                    }
+                },
+                VirtualHost = this.Options.VHost,
+                UserName = this.Options.Username,
+                Password = this.Options.Password,
+                RequestedHeartbeat = TimeSpan.FromSeconds(this.Options.Heartbeat),
+                Timeout = TimeSpan.FromSeconds(this.Options.Timeout)
+            });
 
         var serviceProvider = services
             .BuildServiceProvider();
