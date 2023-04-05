@@ -78,7 +78,7 @@ public class EasyNetQEventing : IEventing
             .Resolve<IServiceCollection>();
 
         this.Bus.Advanced
-            .Consume<TMessage>(queue, (message, info) =>
+            .Consume<TMessage>(queue, async (message, info) =>
             {
                 try
                 {
@@ -111,8 +111,12 @@ public class EasyNetQEventing : IEventing
                             info.Redelivered
                         });
 
-                    callbackTask?
-                        .Wait(cancellationToken);
+                    if (callbackTask == null)
+                    {
+                        throw new NullReferenceException(nameof(callbackTask));
+                    }
+
+                    await callbackTask;
                 }
                 catch (Exception ex)
                 {
