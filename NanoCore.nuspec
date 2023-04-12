@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>7.1.8</version>
+		<version>7.1.9</version>
 		<title>Nano Core</title>
 		<summary>
 			Rapidly built and deploy rich .NET 7.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.
@@ -18,17 +18,16 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Fixed missing eventing options being used when connecting to RabbitMq. (Timeout, PrefetchCount [new], heartbeat)
-			- Proper async for eventing subscribers
+			- Updated NuGets
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net7.0">
 				<dependency id="Microsoft.Extensions.DependencyInjection" version="7.0.0" />
-				<dependency id="Microsoft.Extensions.Identity.Stores" version="7.0.3" />
+				<dependency id="Microsoft.Extensions.Identity.Stores" version="7.0.5" />
 				<dependency id="DynamicExpression" version="2.3.0" />
 				<dependency id="NetTopologySuite" version="2.5.0" />
 				<dependency id="Microsoft.Extensions.Configuration" version="7.0.0" />
-				<dependency id="Microsoft.Extensions.Configuration.Binder" version="7.0.3" />
+				<dependency id="Microsoft.Extensions.Configuration.Binder" version="7.0.4" />
 				<dependency id="Microsoft.Extensions.Configuration.CommandLine" version="7.0.0" />
 				<dependency id="Microsoft.Extensions.Configuration.EnvironmentVariables" version="7.0.0" />
 				<dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="7.0.0" />
@@ -48,34 +47,34 @@
 				<dependency id="AspNetCore.HealthChecks.Sqlite" version="6.0.2" />
 				<dependency id="AspNetCore.HealthChecks.SqlServer" version="6.0.2" />
 				<dependency id="EntityFrameworkCore.Triggers" version="1.2.3" />
-				<dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="7.0.3" />
-				<dependency id="Microsoft.EntityFrameworkCore" version="7.0.3" />
-				<dependency id="Microsoft.EntityFrameworkCore.Design" version="7.0.3" />
-				<dependency id="Microsoft.EntityFrameworkCore.InMemory" version="7.0.3" />
-				<dependency id="Microsoft.EntityFrameworkCore.Proxies" version="7.0.3" />
-				<dependency id="Microsoft.EntityFrameworkCore.Relational" version="7.0.3" />
-				<dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="7.0.3" />
-				<dependency id="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" version="7.0.3" />
-				<dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="7.0.3" />
-				<dependency id="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" version="7.0.3" />
+				<dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="7.0.5" />
+				<dependency id="Microsoft.EntityFrameworkCore" version="7.0.5" />
+				<dependency id="Microsoft.EntityFrameworkCore.Design" version="7.0.5" />
+				<dependency id="Microsoft.EntityFrameworkCore.InMemory" version="7.0.5" />
+				<dependency id="Microsoft.EntityFrameworkCore.Proxies" version="7.0.5" />
+				<dependency id="Microsoft.EntityFrameworkCore.Relational" version="7.0.5" />
+				<dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="7.0.5" />
+				<dependency id="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" version="7.0.5" />
+				<dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="7.0.5" />
+				<dependency id="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" version="7.0.5" />
 				<dependency id="Pomelo.EntityFrameworkCore.MySql" version="7.0.0" />
 				<dependency id="Pomelo.EntityFrameworkCore.MySql.NetTopologySuite" version="7.0.0" />
-				<dependency id="EFCoreSecondLevelCacheInterceptor" version="3.8.5" />
-				<dependency id="Z.EntityFramework.Plus.EFCore" version="7.19.0" />
+				<dependency id="EFCoreSecondLevelCacheInterceptor" version="3.8.6" />
+				<dependency id="Z.EntityFramework.Plus.EFCore" version="7.20.0" />
 				<dependency id="Microsoft.Extensions.Hosting" version="7.0.1" />
 				<dependency id="Google.Apis.Auth" version="1.60.0" />
-				<dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="7.0.3" />
-				<dependency id="Microsoft.IdentityModel.Protocols.OpenIdConnect" version="6.27.0" />
+				<dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="7.0.5" />
+				<dependency id="Microsoft.IdentityModel.Protocols.OpenIdConnect" version="6.28.1" />
 				<dependency id="AspNetCore.HealthChecks.Network" version="6.0.4" />
 				<dependency id="AspNetCore.HealthChecks.System" version="6.0.5" />
 				<dependency id="AspNetCore.HealthChecks.UI" version="6.0.5" />
 				<dependency id="AspNetCore.HealthChecks.UI.Client" version="6.0.5" />
 				<dependency id="AspNetCore.HealthChecks.UI.InMemory.Storage" version="6.0.5" />
 				<dependency id="JsonModelBinder" version="2.1.1" />
-				<dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="7.0.3" />
-				<dependency id="Microsoft.AspNetCore.Authentication.Google" version="7.0.3" />
-				<dependency id="Microsoft.AspNetCore.Authentication.MicrosoftAccount" version="7.0.3" />
-				<dependency id="Microsoft.AspNetCore.Authorization" version="7.0.3" />
+				<dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="7.0.5" />
+				<dependency id="Microsoft.AspNetCore.Authentication.Google" version="7.0.5" />
+				<dependency id="Microsoft.AspNetCore.Authentication.MicrosoftAccount" version="7.0.5" />
+				<dependency id="Microsoft.AspNetCore.Authorization" version="7.0.5" />
 				<dependency id="Microsoft.AspNetCore.Mvc.Versioning" version="5.0.0" />
 				<dependency id="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" version="5.0.0" />
 				<dependency id="Microsoft.AspNetCore.Http.Abstractions" version="2.2.0" />
@@ -83,8 +82,8 @@
 				<dependency id="NWebsec.AspNetCore.Mvc" version="3.0.0" />
 				<dependency id="Swashbuckle.AspNetCore" version="6.5.0" />
 				<dependency id="Swashbuckle.AspNetCore.Annotations" version="6.5.0" />
-				<dependency id="Vivet.AspNetCore.RequestTimeZone" version="7.0.0" />
-				<dependency id="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" version="7.0.3" />
+				<dependency id="Vivet.AspNetCore.RequestTimeZone" version="7.0.2" />
+				<dependency id="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" version="7.0.5" />
 			</group>
 		</dependencies>
 	</metadata>
