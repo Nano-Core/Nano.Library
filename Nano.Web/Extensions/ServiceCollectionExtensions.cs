@@ -250,7 +250,7 @@ public static class ServiceCollectionExtensions
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer (x =>
+            .AddJwtBearer(x =>
             {
                 var rsaSecurityKey = services
                     .BuildServiceProvider()
