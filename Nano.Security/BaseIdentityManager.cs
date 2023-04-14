@@ -210,6 +210,11 @@ public abstract class BaseIdentityManager
         if (tokenData == null)
             throw new ArgumentNullException(nameof(tokenData));
 
+        if (this.Options.Jwt.PrivateKey == null)
+        {
+            return null;
+        }
+
         var appId = tokenData.AppId ?? BaseIdentityManager.DEFAULT_APP_ID;
 
         var claims = new Collection<Claim>
