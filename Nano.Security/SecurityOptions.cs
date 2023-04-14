@@ -64,9 +64,16 @@ public class SecurityOptions
         public virtual string Audience { get; set; } = "audience";
 
         /// <summary>
-        /// Secret Key.
+        /// Public Key.
+        /// Base64 encoded.
         /// </summary>
-        public virtual string SecretKey { get; set; } = "verysecretkey";
+        public virtual string PublicKey { get; set; } = "verysecretkey";
+
+        /// <summary>
+        /// Private Key.
+        /// Base64 encoded.
+        /// </summary>
+        public virtual string PrivateKey { get; set; } = "veryprivatesecretkey";
 
         /// <summary>
         /// Expiration In Hours.

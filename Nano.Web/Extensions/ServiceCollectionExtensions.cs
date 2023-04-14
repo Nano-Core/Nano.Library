@@ -4,7 +4,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
@@ -251,8 +250,12 @@ public static class ServiceCollectionExtensions
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(x =>
+            .AddJwtBearer (x =>
             {
+                var rsaSecurityKey = services
+                    .BuildServiceProvider()
+                    .GetRequiredService<RsaSecurityKey>();
+
                 x.SaveToken = true;
                 x.IncludeErrorDetails = true;
                 x.RequireHttpsMetadata = false;
@@ -269,7 +272,7 @@ public static class ServiceCollectionExtensions
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = securityOptions.Jwt.Issuer,
                     ValidAudience = securityOptions.Jwt.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityOptions.Jwt.SecretKey)),
+                    IssuerSigningKey = rsaSecurityKey,
                     ClockSkew = TimeSpan.FromMinutes(5)
                 };
 
