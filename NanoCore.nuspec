@@ -18,7 +18,7 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Updated NuGets
+			- Changed Data.UseConnectionPooling to default false.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net7.0">

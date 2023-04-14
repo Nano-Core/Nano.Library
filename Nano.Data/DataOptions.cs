@@ -81,7 +81,7 @@ public class DataOptions
     /// <summary>
     /// Use Connection Pooling.
     /// </summary>
-    public virtual bool UseConnectionPooling { get; set; } = true;
+    public virtual bool UseConnectionPooling { get; set; } = false;
 
     /// <summary>
     /// Use Health Check.
