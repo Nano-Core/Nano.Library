@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>7.2.1</version>
+		<version>7.2.2</version>
 		<title>Nano Core</title>
 		<summary>
 			Rapidly built and deploy rich .NET 7.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.
@@ -18,8 +18,7 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Changed Data.UseConnectionPooling to default false.
-			- Changed jwt token encryption algorithm to asymmetric RS512.
+			- Removed possibility for overriding the ConfigureServices(IServiceCollection services) method of BaseApplication.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net7.0">
