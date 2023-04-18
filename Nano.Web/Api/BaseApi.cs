@@ -570,8 +570,8 @@ public abstract class BaseApi : IDisposable
         var root = this.apiOptions.Root.EndsWith("/")
             ? this.apiOptions.Root[..^1]
             : this.apiOptions.Root;
-        var controller = request.Controller == null ? null : $"{request.Controller}/";
-        var action = request.Action == null ? null : $"{request.Action}/";
+        var controller = string.IsNullOrEmpty(request.Controller) ? null : $"{request.Controller}/";
+        var action = string.IsNullOrEmpty(request.Action) ? null : $"{request.Action}/";
         var route = request.GetRoute();
         var queryString = request.GetQuerystring();
         var uri = $"{protocol}{host}:{port}/{root}/{controller}{action}{route}?{queryString}";
