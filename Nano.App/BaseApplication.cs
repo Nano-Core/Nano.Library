@@ -28,7 +28,7 @@ public abstract class BaseApplication : IApplication
     }
 
     /// <inheritdoc />
-    public IServiceProvider ConfigureServices(IServiceCollection services)
+    public virtual IServiceProvider ConfigureServices(IServiceCollection services)
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
