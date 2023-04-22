@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
 
 namespace Nano.Security;
@@ -27,40 +28,61 @@ public static class PasswordGenerator
             RequireUppercase = true
         };
 
-        var randomChars = new[] { "ABCDEFGHJKLMNOPQRSTUVWXYZ", "abcdefghijkmnopqrstuvwxyz", "0123456789", "@#$%!?_-" };
+        var randomCharArrays = new[]
+        {
+            "ABCDEFGHJKLMNOPQRSTUVWXYZ",
+            "abcdefghijkmnopqrstuvwxyz",
+            "0123456789",
+            "@#$%!?_-"
+        };
+
         var random = new Random();
         var chars = new List<char>();
+        var bytes = new byte[passwordOptions.RequiredLength];
+
+        var randomNumberGenerator = RandomNumberGenerator.Create();
+        randomNumberGenerator
+            .GetBytes(bytes);
 
         if (passwordOptions.RequireUppercase)
         {
+            var index = bytes[chars.Count] % randomCharArrays[0].Length;
+
             chars
-                .Insert(random.Next(0, chars.Count), randomChars[0][random.Next(0, randomChars[0].Length)]);
+                .Insert(random.Next(0, chars.Count), randomCharArrays[0][index]);
         }
 
         if (passwordOptions.RequireLowercase)
         {
+            var index = bytes[chars.Count] % randomCharArrays[1].Length;
+
             chars
-                .Insert(random.Next(0, chars.Count), randomChars[1][random.Next(0, randomChars[1].Length)]);
+                .Insert(random.Next(0, chars.Count), randomCharArrays[1][index]);
         }
 
         if (passwordOptions.RequireDigit)
         {
+            var index = bytes[chars.Count] % randomCharArrays[2].Length;
+
             chars
-                .Insert(random.Next(0, chars.Count), randomChars[2][random.Next(0, randomChars[2].Length)]);
+                .Insert(random.Next(0, chars.Count), randomCharArrays[2][index]);
         }
 
         if (passwordOptions.RequireNonAlphanumeric)
         {
+            var index = bytes[chars.Count] % randomCharArrays[3].Length;
+
             chars
-                .Insert(random.Next(0, chars.Count), randomChars[3][random.Next(0, randomChars[3].Length)]);
+                .Insert(random.Next(0, chars.Count), randomCharArrays[3][index]);
         }
 
         for (var i = chars.Count; i < passwordOptions.RequiredLength || chars.Distinct().Count() < passwordOptions.RequiredUniqueChars; i++)
         {
-            var randomChar = randomChars[random.Next(0, randomChars.Length)];
+            var charArray = randomCharArrays[random.Next(0, randomCharArrays.Length)];
+            var index = bytes[chars.Count] % charArray.Length;
 
             chars
-                .Insert(random.Next(0, chars.Count), randomChar[random.Next(0, randomChar.Length)]);
+                .Insert(random.Next(0, chars.Count), charArray[index]);
         }
 
         return new string(chars.ToArray());
