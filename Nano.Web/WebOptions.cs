@@ -1158,6 +1158,11 @@ public class WebOptions
     public class DocumentationOptions
     {
         /// <summary>
+        /// Csp Nonce.
+        /// </summary>
+        public virtual string CspNonce { get; set; }
+
+        /// <summary>
         /// Contact.
         /// </summary>
         public virtual OpenApiContact Contact { get; set; } = new();

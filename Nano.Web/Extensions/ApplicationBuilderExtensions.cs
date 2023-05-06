@@ -1,6 +1,8 @@
 using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -131,6 +133,7 @@ public static class ApplicationBuilderExtensions
 
         var services = applicationBuilder.ApplicationServices;
         var appOptions = services.GetService<AppOptions>() ?? new AppOptions();
+        var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
         applicationBuilder
             .UseSwagger(x =>
@@ -139,6 +142,11 @@ public static class ApplicationBuilderExtensions
             })
             .UseSwaggerUI(x =>
             {
+                x.RoutePrefix = "docs";
+                x.DocumentTitle = $"Nano - {appOptions.Name} Docs v{appOptions.Version} ({ConfigManager.Environment})";
+
+                x.SwaggerEndpoint($"{appOptions.Version}/swagger.json", $"Nano - {appOptions.Name} v{appOptions.Version} ({ConfigManager.Environment})");
+
                 x.EnableFilter();
                 x.EnableDeepLinking();
                 x.EnableValidator(null);
@@ -151,9 +159,27 @@ public static class ApplicationBuilderExtensions
                 x.DefaultModelRendering(ModelRendering.Example);
                 x.DocExpansion(DocExpansion.None);
 
-                x.RoutePrefix = "docs";
-                x.DocumentTitle = $"Nano - {appOptions.Name} Docs v{appOptions.Version} ({ConfigManager.Environment})";
-                x.SwaggerEndpoint($"{appOptions.Version}/swagger.json", $"Nano - {appOptions.Name} v{appOptions.Version} ({ConfigManager.Environment})");
+                if (webOptions.Documentation.CspNonce != null)
+                {
+                    var originalIndexStreamFactory = x.IndexStream;
+
+                    x.IndexStream = () =>
+                    {
+                        using var originalStream = originalIndexStreamFactory();
+                        using var originalStreamReader = new StreamReader(originalStream);
+                        var originalIndexHtmlContents = originalStreamReader
+                            .ReadToEnd();
+
+                        var nonceEnabledIndexHtmlContents = originalIndexHtmlContents
+                            .Replace("<script>", $"<script nonce=\"{webOptions.Documentation.CspNonce}\">", StringComparison.OrdinalIgnoreCase)
+                            .Replace("<style>", $"<style nonce=\"{webOptions.Documentation.CspNonce}\">", StringComparison.OrdinalIgnoreCase);
+
+                        var bytes = Encoding.UTF8
+                            .GetBytes(nonceEnabledIndexHtmlContents);
+
+                        return new MemoryStream(bytes);
+                    };
+                }
             });
 
         return applicationBuilder;
