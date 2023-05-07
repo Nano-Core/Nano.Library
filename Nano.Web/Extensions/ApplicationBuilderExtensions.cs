@@ -132,55 +132,59 @@ public static class ApplicationBuilderExtensions
             throw new ArgumentNullException(nameof(applicationBuilder));
 
         var services = applicationBuilder.ApplicationServices;
-        var appOptions = services.GetService<AppOptions>() ?? new AppOptions();
         var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
-        applicationBuilder
-            .UseSwagger(x =>
-            {
-                x.RouteTemplate = "docs/{documentName}/swagger.json";
-            })
-            .UseSwaggerUI(x =>
-            {
-                x.RoutePrefix = "docs";
-                x.DocumentTitle = $"Nano - {appOptions.Name} Docs v{appOptions.Version} ({ConfigManager.Environment})";
+        if (webOptions.Documentation.IsEnabled)
+        {
+            var appOptions = services.GetService<AppOptions>() ?? new AppOptions();
 
-                x.SwaggerEndpoint($"{appOptions.Version}/swagger.json", $"Nano - {appOptions.Name} v{appOptions.Version} ({ConfigManager.Environment})");
-
-                x.EnableFilter();
-                x.EnableDeepLinking();
-                x.EnableValidator(null);
-                x.ShowExtensions();
-                x.DisplayOperationId();
-                x.DisplayRequestDuration();
-                x.MaxDisplayedTags(-1);
-                x.DefaultModelExpandDepth(2);
-                x.DefaultModelsExpandDepth(1);
-                x.DefaultModelRendering(ModelRendering.Example);
-                x.DocExpansion(DocExpansion.None);
-
-                if (webOptions.Documentation.CspNonce != null)
+            applicationBuilder
+                .UseSwagger(x =>
                 {
-                    var originalIndexStreamFactory = x.IndexStream;
+                    x.RouteTemplate = "docs/{documentName}/swagger.json";
+                })
+                .UseSwaggerUI(x =>
+                {
+                    x.RoutePrefix = "docs";
+                    x.DocumentTitle = $"Nano - {appOptions.Name} Docs v{appOptions.Version} ({ConfigManager.Environment})";
 
-                    x.IndexStream = () =>
+                    x.SwaggerEndpoint($"{appOptions.Version}/swagger.json", $"Nano - {appOptions.Name} v{appOptions.Version} ({ConfigManager.Environment})");
+
+                    x.EnableFilter();
+                    x.EnableDeepLinking();
+                    x.EnableValidator(null);
+                    x.ShowExtensions();
+                    x.DisplayOperationId();
+                    x.DisplayRequestDuration();
+                    x.MaxDisplayedTags(-1);
+                    x.DefaultModelExpandDepth(2);
+                    x.DefaultModelsExpandDepth(1);
+                    x.DefaultModelRendering(ModelRendering.Example);
+                    x.DocExpansion(DocExpansion.None);
+
+                    if (webOptions.Documentation.CspNonce != null)
                     {
-                        using var originalStream = originalIndexStreamFactory();
-                        using var originalStreamReader = new StreamReader(originalStream);
-                        var originalIndexHtmlContents = originalStreamReader
-                            .ReadToEnd();
+                        var originalIndexStreamFactory = x.IndexStream;
 
-                        var nonceEnabledIndexHtmlContents = originalIndexHtmlContents
-                            .Replace("<script>", $"<script nonce=\"{webOptions.Documentation.CspNonce}\">", StringComparison.OrdinalIgnoreCase)
-                            .Replace("<style>", $"<style nonce=\"{webOptions.Documentation.CspNonce}\">", StringComparison.OrdinalIgnoreCase);
+                        x.IndexStream = () =>
+                        {
+                            using var originalStream = originalIndexStreamFactory();
+                            using var originalStreamReader = new StreamReader(originalStream);
+                            var originalIndexHtmlContents = originalStreamReader
+                                .ReadToEnd();
 
-                        var bytes = Encoding.UTF8
-                            .GetBytes(nonceEnabledIndexHtmlContents);
+                            var nonceEnabledIndexHtmlContents = originalIndexHtmlContents
+                                .Replace("<script>", $"<script nonce=\"{webOptions.Documentation.CspNonce}\">", StringComparison.OrdinalIgnoreCase)
+                                .Replace("<style>", $"<style nonce=\"{webOptions.Documentation.CspNonce}\">", StringComparison.OrdinalIgnoreCase);
 
-                        return new MemoryStream(bytes);
-                    };
-                }
-            });
+                            var bytes = Encoding.UTF8
+                                .GetBytes(nonceEnabledIndexHtmlContents);
+
+                            return new MemoryStream(bytes);
+                        };
+                    }
+                });
+        }
 
         return applicationBuilder;
     }
