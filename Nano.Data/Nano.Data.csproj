@@ -25,7 +25,7 @@
 		<PackageReference Include="AspNetCore.HealthChecks.MySql" Version="6.0.2" />
 		<PackageReference Include="AspNetCore.HealthChecks.Sqlite" Version="6.0.2" />
 		<PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="6.0.2" />
-		<PackageReference Include="EFCoreSecondLevelCacheInterceptor" Version="3.8.6" />
+		<PackageReference Include="EFCoreSecondLevelCacheInterceptor" Version="3.9.1" />
 		<PackageReference Include="EntityFrameworkCore.Triggers" Version="1.2.3" />
 		<PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="7.0.5" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.5" />
@@ -43,7 +43,7 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="7.0.5" />
 		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
 		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql.NetTopologySuite" Version="7.0.0" />
-		<PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="7.20.0" />
+		<PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="7.22.0" />
 	</ItemGroup>
 
 	<ItemGroup>
