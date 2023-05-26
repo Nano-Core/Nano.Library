@@ -42,7 +42,6 @@
 		<PackageReference Include="AspNetCore.HealthChecks.UI" Version="6.0.5" />
 		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.5" />
 		<PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="6.0.5" />
-		<PackageReference Include="JsonModelBinder" Version="2.1.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="7.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="7.0.2" />
