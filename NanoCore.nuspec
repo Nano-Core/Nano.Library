@@ -70,7 +70,6 @@
 				<dependency id="AspNetCore.HealthChecks.UI" version="6.0.5" />
 				<dependency id="AspNetCore.HealthChecks.UI.Client" version="6.0.5" />
 				<dependency id="AspNetCore.HealthChecks.UI.InMemory.Storage" version="6.0.5" />
-				<dependency id="JsonModelBinder" version="2.1.1" />
 				<dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="7.0.5" />
 				<dependency id="Microsoft.AspNetCore.Authentication.Google" version="7.0.5" />
 				<dependency id="Microsoft.AspNetCore.Authentication.MicrosoftAccount" version="7.0.5" />
