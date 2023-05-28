@@ -4,7 +4,6 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -20,19 +19,6 @@ namespace Nano.Web.Api.Extensions;
 /// </summary>
 internal static class MultipartFormDataContentExtensions
 {
-    private static readonly JsonSerializerOptions jsonSerializerSettings = new()
-    {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        ReferenceHandler = ReferenceHandler.IgnoreCycles,
-        PropertyNamingPolicy = null,
-        PropertyNameCaseInsensitive = true,
-        MaxDepth = 128,
-        Converters =
-        {
-            new JsonStringEnumConverter()
-        }
-    };
-
     /// <summary>
     /// Add For Item.
     /// </summary>
@@ -250,7 +236,7 @@ internal static class MultipartFormDataContentExtensions
             .IsSimple();
 
         var content = !isSimple
-            ? JsonSerializer.Serialize(value, MultipartFormDataContentExtensions.jsonSerializerSettings)
+            ? JsonSerializer.Serialize(value, Globals.jsonSerializerSettings)
             : value.ToString() ?? string.Empty;
 
         formContent

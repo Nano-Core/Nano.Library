@@ -1648,9 +1648,9 @@
         <member name="T:Nano.Web.Attributes.FromFormBody">
             <summary>
             From Form Body.
-            Using a specialized <see cref="T:BrunoZell.ModelBinding.JsonModelBinder"/>, that allows json post with a form.
+            Using a specialized <see cref="T:BrunoZell.ModelBinding.JsonFormModelBinder"/>, that allows json post with a form.
             Use when both files and json body are needed for parameters to a controller action.
-            https://github.com/BrunoZell/JsonModelBinder
+            https://github.com/BrunoZell/JsonFormModelBinder
             </summary>
         </member>
         <member name="M:Nano.Web.Attributes.FromFormBody.#ctor">

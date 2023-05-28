@@ -1,5 +1,4 @@
-﻿#nullable enable
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -8,39 +7,23 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Nano.Web.Const;
 
 namespace Nano.Web.Hosting.ModelBinders;
 
 /// <summary>
-/// Json binder.
+/// Json Form binder.
 /// </summary>
-public class JsonModelBinder : IModelBinder
+public class JsonFormModelBinder : IModelBinder
 {
-    /// <summary>
-    /// Json Serializer Options.
-    /// </summary>
-    protected static JsonSerializerOptions jsonSerializerOptions = new()
-    {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        ReferenceHandler = ReferenceHandler.IgnoreCycles,
-        PropertyNamingPolicy = null,
-        PropertyNameCaseInsensitive = true,
-        MaxDepth = 128,
-        Converters =
-        {
-            new JsonStringEnumConverter()
-        }
-    };
-
     /// <summary>
     /// Deserializes the json value and binds it to it's type.
     /// </summary>
     /// <param name="bindingContext">The <see cref="ModelBindingContext"/>.</param>
     public async Task BindModelAsync(ModelBindingContext bindingContext)
     {
-        if (bindingContext is null)
+        if (bindingContext == null)
             throw new ArgumentNullException(nameof(bindingContext));
 
         var valueProviderResult = bindingContext.ValueProvider
@@ -65,11 +48,11 @@ public class JsonModelBinder : IModelBinder
 
         try
         {
-            object? deserialized;
+            object deserialized;
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(serialized));
             {
                 deserialized = await JsonSerializer
-                    .DeserializeAsync(stream, bindingContext.ModelType, jsonSerializerOptions);
+                    .DeserializeAsync(stream, bindingContext.ModelType, Globals.jsonSerializerSettings);
             }
 
             if (deserialized == null)

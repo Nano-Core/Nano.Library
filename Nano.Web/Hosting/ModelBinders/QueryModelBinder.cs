@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using DynamicExpression.Entities;
 using DynamicExpression.Enums;
@@ -10,27 +9,13 @@ using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Nano.Models.Extensions;
+using Nano.Web.Const;
 
 namespace Nano.Web.Hosting.ModelBinders;
 
 /// <inheritdoc />
 public class QueryModelBinder : IModelBinder
 {
-    /// <summary>
-    /// Json Serializer Options.
-    /// </summary>
-    protected static JsonSerializerOptions jsonSerializerOptions = new()
-    {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        ReferenceHandler = ReferenceHandler.IgnoreCycles,
-        PropertyNamingPolicy = null,
-        PropertyNameCaseInsensitive = true,
-        Converters =
-        {
-            new JsonStringEnumConverter()
-        }
-    };
-
     /// <inheritdoc />
     public virtual async Task BindModelAsync(ModelBindingContext bindingContext)
     {
@@ -46,7 +31,7 @@ public class QueryModelBinder : IModelBinder
                 Order = this.GetOrdering(request),
                 Paging = this.GetPagination(request)
             }
-            : JsonSerializer.Deserialize<Query>(body, QueryModelBinder.jsonSerializerOptions);
+            : JsonSerializer.Deserialize<Query>(body, Globals.jsonSerializerSettings);
 
         bindingContext.Result = ModelBindingResult.Success(model);
     }
@@ -161,7 +146,7 @@ public class QueryModelBinder<TCriteria> : QueryModelBinder
                 Paging = this.GetPagination(request),
                 Criteria = this.GetCriteria(request)
             }
-            : JsonSerializer.Deserialize<Query<TCriteria>>(body, QueryModelBinder.jsonSerializerOptions);
+            : JsonSerializer.Deserialize<Query<TCriteria>>(body, Globals.jsonSerializerSettings);
 
         bindingContext.Result = ModelBindingResult.Success(model);
     }
