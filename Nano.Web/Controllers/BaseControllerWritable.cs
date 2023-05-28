@@ -70,7 +70,7 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
             .AddAsync(entity, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Created("create", entity);
     }
@@ -99,7 +99,7 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
             .AddManyAsync(entities, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Created("create/many", entities);
     }
@@ -136,7 +136,7 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
         }
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok(entity);
     }
@@ -172,7 +172,7 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
         }
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok(entities);
     }
@@ -203,7 +203,7 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
             .DeleteAsync<TEntity, TIdentity>(id, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
     }
@@ -235,7 +235,7 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
             .DeleteManyAsync<TEntity, TIdentity>(ids, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
     }
@@ -265,7 +265,7 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
             .DeleteManyAsync<TEntity, TCriteria>(select, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
     }

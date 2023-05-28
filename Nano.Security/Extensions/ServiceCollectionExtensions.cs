@@ -1,7 +1,9 @@
 using System;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Nano.Config.Extensions;
 
 namespace Nano.Security.Extensions;
@@ -62,7 +64,21 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
 
         if (options == null)
+        {
             return services;
+        }
+
+        services
+            .AddSingleton(_ =>
+            {
+                var rsaSecurityKey = RSA.Create();
+                var publicKey = Convert.FromBase64String(options.Jwt.PublicKey);
+
+                rsaSecurityKey
+                    .ImportRSAPublicKey(publicKey, out var _);
+
+                return new RsaSecurityKey(rsaSecurityKey);
+            });
 
         services
             .Configure<IdentityOptions>(x =>

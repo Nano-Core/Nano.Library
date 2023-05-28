@@ -18,6 +18,14 @@ namespace Nano.Repository.Interfaces;
 public interface IRepository : IDisposable
 {
     /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    DbContext GetContext();
+
+
+
+    /// <summary>
     /// Gets the <see cref="DbSet{TEntity}"/> mathcing the type of <typeparamref name="TEntity"/>.
     /// </summary>
     /// <typeparam name="TEntity">The type</typeparam>
@@ -527,5 +535,5 @@ public interface IRepository : IDisposable
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>Task (Void).</returns>
-    Task SaveChanges(CancellationToken cancellationToken = default);
+    Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

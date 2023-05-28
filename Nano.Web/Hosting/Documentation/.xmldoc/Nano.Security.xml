@@ -1631,7 +1631,7 @@
             Audience.
             </summary>
         </member>
-        <member name="P:Nano.Security.SecurityOptions.JwtOptions.SecretKey">
+        <member name="P:Nano.Security.SecurityOptions.JwtOptions.PublicKey">
             <summary>
             Secret Key.
             </summary>

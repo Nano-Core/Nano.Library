@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using Microsoft.AspNetCore.Authorization;
@@ -96,40 +95,6 @@ public class HomeController : BaseController
         };
 
         return this.Ok(userInfo);
-    }
-
-    /// <summary>
-    /// Get Services.
-    /// The services dependencies registered during application start-up.
-    /// </summary>
-    /// <param name="filter">The filter on service or implementation name.</param>
-    /// <returns>The services.</returns>
-    /// <response code="200">OK.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
-    [HttpGet]
-    [Route("services")]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
-    [ProducesResponseType(typeof(IEnumerable<ServiceDependency>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual IActionResult GetServices([FromQuery]string filter = "")
-    {
-        var serviceDescriptors = this.Services
-            .Where(x =>
-                x.ServiceType.FullName != null && x.ServiceType.FullName?.IndexOf(filter) >= 0 ||
-                x.ImplementationType?.FullName != null && x.ImplementationType?.FullName?.IndexOf(filter) >= 0)
-            .Select(x => new ServiceDependency
-            {
-                Service = x.ServiceType.FullName,
-                Implementation = x.ImplementationType?.FullName,
-                LifeTime = x.Lifetime
-            })
-            .OrderBy(x => x.Service);
-
-        return this.Ok(serviceDescriptors);
     }
 
     /// <summary>

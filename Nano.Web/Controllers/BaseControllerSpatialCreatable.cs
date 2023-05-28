@@ -64,7 +64,7 @@ public abstract class BaseControllerSpatialCreatable<TRepository, TEntity, TIden
             .AddAsync(entity, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Created("create", entity);
     }
@@ -93,7 +93,7 @@ public abstract class BaseControllerSpatialCreatable<TRepository, TEntity, TIden
             .AddManyAsync(entities, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Created("create/many", entities);
     }

@@ -70,7 +70,7 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
             .AddAsync(entity, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Created("create", entity);
     }
@@ -99,7 +99,7 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
             .AddManyAsync(entities, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Created("create/many", entities);
     }

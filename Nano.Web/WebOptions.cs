@@ -1158,6 +1158,16 @@ public class WebOptions
     public class DocumentationOptions
     {
         /// <summary>
+        /// Is Enabled.
+        /// </summary>
+        public virtual bool IsEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Csp Nonce.
+        /// </summary>
+        public virtual string CspNonce { get; set; }
+
+        /// <summary>
         /// Contact.
         /// </summary>
         public virtual OpenApiContact Contact { get; set; } = new();

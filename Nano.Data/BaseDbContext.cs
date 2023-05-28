@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -26,8 +27,11 @@ using Serilog;
 
 namespace Nano.Data;
 
-/// <inheritdoc />
-public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserTokenExpiry<TIdentity>>
+/// <summary>
+/// Base Db Context (abstract).
+/// </summary>
+/// <typeparam name="TIdentity"></typeparam>
+public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserTokenExpiry<TIdentity>>, IDataProtectionKeyContext
     where TIdentity : IEquatable<TIdentity>
 {
     private IEnumerable<EntityEvent> pendingEvents;
@@ -41,6 +45,12 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     /// Auto Save.
     /// </summary>
     public virtual bool AutoSave => this.Options.UseAutoSave;
+
+    /// <summary>
+    /// Data Protection Keys.
+    /// Required by <see cref="IDataProtectionKeyContext"/>.
+    /// </summary>
+    public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
     /// <inheritdoc />
     protected BaseDbContext(DbContextOptions contextOptions, DataOptions dataOptions)
@@ -236,6 +246,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         modelBuilder
             .Entity<IdentityRole<TIdentity>>()
             .ToTable(TableNames.IDENTITY_ROLE);
+
+        modelBuilder
+            .Entity<DataProtectionKey>()
+            .ToTable(TableNames.IDENTITY_DATA_PROTECTION_KEYS);
     }
 
     /// <summary>

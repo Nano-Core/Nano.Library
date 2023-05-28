@@ -4,7 +4,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
@@ -108,7 +107,7 @@ public static class ServiceCollectionExtensions
                 x.Conventions.Insert(0, routePrefixConvention);
                 x.ModelBinderProviders.Insert(0, queryModelBinderProvider);
 
-                if (!securityOptions.IsAuth || dataOptions.ConnectionString == null)
+                if (dataOptions.ConnectionString == null || !securityOptions.IsAuth)
                 {
                     x.Conventions.Insert(1, new AuthControllerDisabledConvention());
                 }
@@ -136,11 +135,13 @@ public static class ServiceCollectionExtensions
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 x.JsonSerializerOptions.PropertyNamingPolicy = null;
                 x.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                x.JsonSerializerOptions.MaxDepth = 128;
                 x.JsonSerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver
                 {
                     Modifiers =
                     {
-                        EnumerableTypeInfoResolver.IgnoreEmptyCollections
+                        LazyLoaderTypeInfoResolver.IgnoreLazyLoader,
+                        EnumerableTypeInfoResolver.IgnoreEmptyCollections,
                     }
                 };
                 x.JsonSerializerOptions.Converters
@@ -254,6 +255,10 @@ public static class ServiceCollectionExtensions
             })
             .AddJwtBearer(x =>
             {
+                var rsaSecurityKey = services
+                    .BuildServiceProvider()
+                    .GetRequiredService<RsaSecurityKey>();
+
                 x.SaveToken = true;
                 x.IncludeErrorDetails = true;
                 x.RequireHttpsMetadata = false;
@@ -270,7 +275,7 @@ public static class ServiceCollectionExtensions
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = securityOptions.Jwt.Issuer,
                     ValidAudience = securityOptions.Jwt.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityOptions.Jwt.SecretKey)),
+                    IssuerSigningKey = rsaSecurityKey,
                     ClockSkew = TimeSpan.FromMinutes(5)
                 };
 
@@ -386,86 +391,91 @@ public static class ServiceCollectionExtensions
         if (webOptions == null)
             throw new ArgumentNullException(nameof(webOptions));
 
-        return services
-            .AddSwaggerGen(x =>
-            {
-                var info = new OpenApiInfo
+        if (webOptions.Documentation.IsEnabled)
+        {
+            return services
+                .AddSwaggerGen(x =>
                 {
-                    Title = appOptions.Name,
-                    Description = appOptions.Description,
-                    Version = appOptions.Version,
-                    Contact = webOptions.Documentation.Contact,
-                    License = webOptions.Documentation.License
-                };
-
-                if (!string.IsNullOrEmpty(appOptions.TermsOfService))
-                {
-                    info.TermsOfService = new Uri(appOptions.TermsOfService);
-                }
-
-                x.SwaggerDoc(appOptions.Version, info);
-                x.IgnoreObsoleteActions();
-                x.IgnoreObsoleteProperties();
-                x.EnableAnnotations(true, true);
-                x.CustomSchemaIds(y => y.FullName);
-                x.OrderActionsBy(y => y.RelativePath);
-
-                x.SchemaFilter<SwaggerExcludeFilter>();
-
-                var securityScheme = new OpenApiSecurityScheme
-                {
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Name = "Authorization",
-                    Description = "JWT Authorization header using the Bearer scheme. Format: Authorization: Bearer [token]"
-                };
-
-                x.AddSecurityDefinition("Bearer", securityScheme);
-                x.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    { securityScheme, new string[] { } }
-                });
-
-                AppDomain.CurrentDomain
-                    .GetAssemblies()
-                    .SelectMany(y => y.GetTypes())
-                    .Where(y => y.IsTypeOf(typeof(BaseController)))
-                    .Select(y => y.Module)
-                    .Distinct()
-                    .ToList()
-                    .ForEach(y =>
+                    var info = new OpenApiInfo
                     {
-                        var name = y.Name.Replace(".dll", ".xml").Replace(".exe", ".xml");
-                        var path = Path.Combine(AppContext.BaseDirectory, name);
+                        Title = appOptions.Name,
+                        Description = appOptions.Description,
+                        Version = appOptions.Version,
+                        Contact = webOptions.Documentation.Contact,
+                        License = webOptions.Documentation.License
+                    };
 
-                        if (File.Exists(path))
-                        {
-                            x.IncludeXmlComments(path);
-                        }
+                    if (!string.IsNullOrEmpty(appOptions.TermsOfService))
+                    {
+                        info.TermsOfService = new Uri(appOptions.TermsOfService);
+                    }
 
-                        var modelsName = y.Name.Replace(".dll", "").Replace(".exe", "") + ".Models.xml";
-                        var modelsPath = Path.Combine(AppContext.BaseDirectory, modelsName);
+                    x.SwaggerDoc(appOptions.Version, info);
+                    x.IgnoreObsoleteActions();
+                    x.IgnoreObsoleteProperties();
+                    x.EnableAnnotations(true, true);
+                    x.CustomSchemaIds(y => y.FullName);
+                    x.OrderActionsBy(y => y.RelativePath);
 
-                        if (File.Exists(modelsPath))
-                        {
-                            x.IncludeXmlComments(modelsPath);
-                        }
+                    x.SchemaFilter<SwaggerExcludeFilter>();
 
-                        y.Assembly
-                            .GetManifestResourceNames()
-                            .Where(z => z.ToLower().EndsWith(".xml"))
-                            .ToList()
-                            .ForEach(z =>
-                            {
-                                var resource = y.Assembly.GetManifestResourceStream(z);
+                    var securityScheme = new OpenApiSecurityScheme
+                    {
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.ApiKey,
+                        Name = "Authorization",
+                        Description = "JWT Authorization header using the Bearer scheme. Format: Authorization: Bearer [token]"
+                    };
 
-                                if (resource != null)
-                                {
-                                    x.IncludeXmlComments(() => new XPathDocument(resource));
-                                }
-                            });
+                    x.AddSecurityDefinition("Bearer", securityScheme);
+                    x.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                    { securityScheme, new string[] { } }
                     });
-            });
+
+                    AppDomain.CurrentDomain
+                        .GetAssemblies()
+                        .SelectMany(y => y.GetTypes())
+                        .Where(y => y.IsTypeOf(typeof(BaseController)))
+                        .Select(y => y.Module)
+                        .Distinct()
+                        .ToList()
+                        .ForEach(y =>
+                        {
+                            var name = y.Name.Replace(".dll", ".xml").Replace(".exe", ".xml");
+                            var path = Path.Combine(AppContext.BaseDirectory, name);
+
+                            if (File.Exists(path))
+                            {
+                                x.IncludeXmlComments(path);
+                            }
+
+                            var modelsName = y.Name.Replace(".dll", "").Replace(".exe", "") + ".Models.xml";
+                            var modelsPath = Path.Combine(AppContext.BaseDirectory, modelsName);
+
+                            if (File.Exists(modelsPath))
+                            {
+                                x.IncludeXmlComments(modelsPath);
+                            }
+
+                            y.Assembly
+                                .GetManifestResourceNames()
+                                .Where(z => z.ToLower().EndsWith(".xml"))
+                                .ToList()
+                                .ForEach(z =>
+                                {
+                                    var resource = y.Assembly.GetManifestResourceStream(z);
+
+                                    if (resource != null)
+                                    {
+                                        x.IncludeXmlComments(() => new XPathDocument(resource));
+                                    }
+                                });
+                        });
+                });
+        }
+
+        return services;
     }
     private static IServiceCollection AddLocalizations(this IServiceCollection services)
     {

@@ -809,7 +809,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
             .DeleteIdentityUser(user.IdentityUser, cancellationToken);
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
     }
@@ -850,7 +850,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         }
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
     }

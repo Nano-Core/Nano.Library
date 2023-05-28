@@ -72,7 +72,7 @@ public abstract class BaseControllerSpatialUpdatable<TRepository, TEntity, TIden
         }
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok(entity);
     }
@@ -108,7 +108,7 @@ public abstract class BaseControllerSpatialUpdatable<TRepository, TEntity, TIden
         }
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok(entities);
     }

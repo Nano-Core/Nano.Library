@@ -18,10 +18,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Google.Apis.Auth" Version="1.58.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
-		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="6.25.1" />
+		<PackageReference Include="Google.Apis.Auth" Version="1.60.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
+		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="6.30.1" />
 	</ItemGroup>
 
 	<ItemGroup>

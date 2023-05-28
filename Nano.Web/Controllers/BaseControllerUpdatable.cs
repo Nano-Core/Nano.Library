@@ -78,7 +78,7 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
         }
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok(entity);
     }
@@ -112,7 +112,7 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
             return this.NotFound();
 
         await this.Repository
-            .SaveChanges(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok(entities);
     }

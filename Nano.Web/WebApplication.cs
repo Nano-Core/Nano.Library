@@ -89,7 +89,8 @@ public class WebApplication : DefaultApplication
                 return next();
             })
             .UseHttpDocumentataion()
-            .UseHealthChecks();
+            .UseHealthChecks()
+            .UseEventHandlers();
     }
 
     /// <summary>

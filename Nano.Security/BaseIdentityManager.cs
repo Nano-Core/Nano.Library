@@ -27,6 +27,7 @@ using Claim = System.Security.Claims.Claim;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using Nano.Models.Extensions;
 using System.Text.Json.Nodes;
+using System.Security.Cryptography;
 
 namespace Nano.Security;
 
@@ -209,6 +210,11 @@ public abstract class BaseIdentityManager
         if (tokenData == null)
             throw new ArgumentNullException(nameof(tokenData));
 
+        if (this.Options.Jwt.PrivateKey == null)
+        {
+            return null;
+        }
+
         var appId = tokenData.AppId ?? BaseIdentityManager.DEFAULT_APP_ID;
 
         var claims = new Collection<Claim>
@@ -227,10 +233,16 @@ public abstract class BaseIdentityManager
 
         var notBeforeAt = DateTime.UtcNow;
         var expireAt = DateTime.UtcNow.AddHours(this.Options.Jwt.ExpirationInHours);
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.Options.Jwt.SecretKey));
-        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        var rsaSecurityKey = RSA.Create();
+        var privateKey = Convert.FromBase64String(this.Options.Jwt.PrivateKey);
+
+        rsaSecurityKey
+            .ImportRSAPrivateKey(privateKey, bytesRead: out _);
+
+        var signingCredentials = new SigningCredentials(new RsaSecurityKey(rsaSecurityKey), SecurityAlgorithms.RsaSha512);
         var securityToken = new JwtSecurityToken(this.Options.Jwt.Issuer, this.Options.Jwt.Issuer, claims, notBeforeAt, expireAt, signingCredentials);
-        var token = new JwtSecurityTokenHandler().WriteToken(securityToken);
+        var token = new JwtSecurityTokenHandler()
+            .WriteToken(securityToken);
 
         return new AccessToken
         {
@@ -626,7 +638,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = this.Options.Jwt.Issuer,
                 ValidAudience = this.Options.Jwt.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.Options.Jwt.SecretKey)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.Options.Jwt.PublicKey)),
                 ClockSkew = TimeSpan.FromMinutes(5)
             };
 
@@ -634,7 +646,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
             var principal = securityTokenHandler
                 .ValidateToken(logInRefresh.Token, validationParameters, out var securityToken);
 
-            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.RsaSha512, StringComparison.InvariantCultureIgnoreCase))
             {
                 this.Logger.LogInformation("The security token is invalid.");
 

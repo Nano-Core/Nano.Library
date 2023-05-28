@@ -49,9 +49,16 @@ public class EventingOptions
 
     /// <summary>
     /// Heartbeat, in seconds.
+    /// Default: 60
     /// Zero means no hearbeat requests.
     /// </summary>
-    public virtual ushort Heartbeat { get; set; } = 0;
+    public virtual ushort Heartbeat { get; set; } = 60;
+
+    /// <summary>
+    /// Prefetch Count.
+    /// Default: 50
+    /// </summary>
+    public virtual int PrefetchCount { get; set; } = 50;
 
     /// <summary>
     /// Use Health Check.

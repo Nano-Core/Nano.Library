@@ -47,6 +47,12 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
+    public virtual DbContext GetContext()
+    {
+        return this.Context;
+    }
+
+    /// <inheritdoc />
     public virtual DbSet<TEntity> GetEntitySet<TEntity>()
         where TEntity : class, IEntity
     {
@@ -328,7 +334,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             .AddAsync(entity, cancellationToken);
 
         if (this.Context.AutoSave)
-            await this.SaveChanges(cancellationToken);
+            await this.SaveChangesAsync(cancellationToken);
 
         return entry.Entity;
     }
@@ -346,7 +352,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             .ToArray();
 
         if (this.Context.AutoSave)
-            await this.SaveChanges(cancellationToken);
+            await this.SaveChangesAsync(cancellationToken);
 
         return entities;
     }
@@ -366,7 +372,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             }, cancellationToken);
 
         if (this.Context.AutoSave)
-            await this.SaveChanges(cancellationToken);
+            await this.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
@@ -380,7 +386,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             .Update(entity);
 
         if (this.Context.AutoSave)
-            await this.SaveChanges(cancellationToken);
+            await this.SaveChangesAsync(cancellationToken);
 
         return entry.Entity;
     }
@@ -418,7 +424,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             }, cancellationToken);
 
         if (this.Context.AutoSave)
-            await this.SaveChanges(cancellationToken);
+            await this.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
@@ -432,7 +438,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             .AddOrUpdate(entity);
 
         if (this.Context.AutoSave)
-            await this.SaveChanges(cancellationToken);
+            await this.SaveChangesAsync(cancellationToken);
 
         return entry.Entity;
     }
@@ -450,7 +456,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             .ToArray();
 
         if (this.Context.AutoSave)
-            await this.SaveChanges(cancellationToken);
+            await this.SaveChangesAsync(cancellationToken);
 
         return entities;
     }
@@ -512,7 +518,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             .Remove(entity);
 
         if (this.Context.AutoSave)
-            await this.SaveChanges(cancellationToken);
+            await this.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
@@ -552,7 +558,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             .RemoveRange(entities);
 
         if (this.Context.AutoSave)
-            await this.SaveChanges(cancellationToken);
+            await this.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
@@ -572,7 +578,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
                 .RemoveRange(entities);
 
             if (this.Context.AutoSave)
-                await this.SaveChanges(cancellationToken);
+                await this.SaveChangesAsync(cancellationToken);
         }
         else
         {
@@ -598,7 +604,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
                 .RemoveRange(entities);
 
             if (this.Context.AutoSave)
-                await this.SaveChanges(cancellationToken);
+                await this.SaveChangesAsync(cancellationToken);
         }
         else
         {
@@ -741,7 +747,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task SaveChanges(CancellationToken cancellationToken = default)
+    public virtual async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         await this.Context
             .SaveChangesWithAuditAndTriggersAsync(cancellationToken);

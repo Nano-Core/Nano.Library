@@ -55,10 +55,12 @@ public abstract class BaseApi : IDisposable
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
         PropertyNamingPolicy = null,
         PropertyNameCaseInsensitive = true,
+        MaxDepth = 128,
         TypeInfoResolver = new DefaultJsonTypeInfoResolver
         {
             Modifiers =
             {
+                LazyLoaderTypeInfoResolver.IgnoreLazyLoader,
                 EnumerableTypeInfoResolver.IgnoreEmptyCollections
             }
         },
@@ -568,8 +570,8 @@ public abstract class BaseApi : IDisposable
         var root = this.apiOptions.Root.EndsWith("/")
             ? this.apiOptions.Root[..^1]
             : this.apiOptions.Root;
-        var controller = request.Controller == null ? null : $"{request.Controller}/";
-        var action = request.Action == null ? null : $"{request.Action}/";
+        var controller = string.IsNullOrEmpty(request.Controller) ? null : $"{request.Controller}/";
+        var action = string.IsNullOrEmpty(request.Action) ? null : $"{request.Action}/";
         var route = request.GetRoute();
         var queryString = request.GetQuerystring();
         var uri = $"{protocol}{host}:{port}/{root}/{controller}{action}{route}?{queryString}";
@@ -703,40 +705,30 @@ public abstract class BaseApi : IDisposable
         httpResponse
             .EnsureSuccessStatusCode();
 
-        var contentType = httpResponse.Content.Headers.ContentType?.MediaType;
-
-        switch (contentType)
+        if (httpResponse.Content.Headers.ContentDisposition != null)
         {
-            case HttpContentType.HTML:
-            case HttpContentType.XHTML:
-            case HttpContentType.PDF:
-            case HttpContentType.BMP:
-            case HttpContentType.JPEG:
-            case HttpContentType.PNG:
-            case HttpContentType.ZIP:
-                var stream = await httpResponse.Content
-                    .ReadAsStreamAsync(cancellationToken);
+            var stream = await httpResponse.Content
+                .ReadAsStreamAsync(cancellationToken);
 
-                if (typeof(TResponse) == typeof(NamedStream))
+            if (typeof(TResponse) == typeof(NamedStream))
+            {
+                var name = httpResponse.Content.Headers.ContentDisposition?.FileName;
+                var namedStream = new NamedStream
                 {
-                    var name = httpResponse.Content.Headers.ContentDisposition?.FileName;
-                    var namedStream = new NamedStream
-                    {
-                        Name = name,
-                        Stream = stream
-                    };
+                    Name = name,
+                    Stream = stream
+                };
 
-                    return namedStream as TResponse;
-                }
+                return namedStream as TResponse;
+            }
 
-                return stream as TResponse;
-
-            default:
-                var content = await httpResponse.Content
-                    .ReadAsStringAsync(cancellationToken);
-
-                return JsonSerializer.Deserialize<TResponse>(content, BaseApi.jsonSerializerSettings);
+            return stream as TResponse;
         }
+
+        var content = await httpResponse.Content
+            .ReadAsStringAsync(cancellationToken);
+
+        return JsonSerializer.Deserialize<TResponse>(content, BaseApi.jsonSerializerSettings);
     }
     private void SetAuthorizationHeader(string token)
     {
@@ -765,11 +757,11 @@ public abstract class BaseApi : IDisposable
 }
 
 /// <inheritdoc />
-public class BaseApi<TIdentity> : BaseApi
+public abstract class BaseApi<TIdentity> : BaseApi
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    public BaseApi(ApiOptions apiOptions)
+    protected BaseApi(ApiOptions apiOptions)
         : base(apiOptions)
     {
 
