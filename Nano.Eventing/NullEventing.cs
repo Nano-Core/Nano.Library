@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.Eventing.Interfaces;
@@ -17,7 +18,7 @@ public class NullEventing : IEventing
     }
 
     /// <inheritdoc />
-    public virtual Task SubscribeAsync<TMessage>(string routing = "", CancellationToken cancellationToken = default)
+    public virtual Task SubscribeAsync<TMessage>(IServiceProvider serviceProvider, string routing = "", CancellationToken cancellationToken = default)
         where TMessage : class
     {
         return Task.CompletedTask;

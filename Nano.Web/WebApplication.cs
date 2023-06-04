@@ -90,7 +90,7 @@ public class WebApplication : DefaultApplication
             })
             .UseHttpDocumentataion()
             .UseHealthChecks()
-            .UseEventHandlers();
+            .UseEventHandlers(applicationBuilder.ApplicationServices);
     }
 
     /// <summary>

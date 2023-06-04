@@ -59,7 +59,7 @@ public class EasyNetQEventing : IEventing
     }
 
     /// <inheritdoc />
-    public virtual async Task SubscribeAsync<TMessage>(string routing = "", CancellationToken cancellationToken = default)
+    public virtual async Task SubscribeAsync<TMessage>(IServiceProvider serviceProvider, string routing = "", CancellationToken cancellationToken = default)
         where TMessage : class
     {
         var name = typeof(TMessage).GetFriendlyName();
@@ -74,9 +74,6 @@ public class EasyNetQEventing : IEventing
         await this.Bus.Advanced
             .BindAsync(exchange, queue, routing, cancellationToken);
 
-        var serviceCollection = this.Bus.Advanced.Container
-            .Resolve<IServiceCollection>();
-
         this.Bus.Advanced
             .Consume<TMessage>(queue, async (message, info) =>
             {
@@ -90,9 +87,6 @@ public class EasyNetQEventing : IEventing
                     var eventType = message.MessageType;
                     var genericType = typeof(IEventingHandler<>)
                         .MakeGenericType(eventType);
-
-                    var serviceProvider = serviceCollection
-                        .BuildServiceProvider();
 
                     var eventHandler = serviceProvider
                         .GetRequiredService(genericType);

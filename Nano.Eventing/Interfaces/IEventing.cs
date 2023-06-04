@@ -24,9 +24,10 @@ public interface IEventing : IDisposable
     /// Consumes messages.
     /// </summary>
     /// <typeparam name="TMessage">The type of response body.</typeparam>
+    /// <param name="serviceProvider">The <see cref="IServiceProvider"/>.</param>
     /// <param name="routing">The routing key (if any).</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>A <see cref="Task"/> (void).</returns>
-    Task SubscribeAsync<TMessage>(string routing = "", CancellationToken cancellationToken = default)
+    Task SubscribeAsync<TMessage>(IServiceProvider serviceProvider, string routing = "", CancellationToken cancellationToken = default)
         where TMessage : class;
 }

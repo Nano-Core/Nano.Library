@@ -20,8 +20,9 @@ public static class ApplicationBuilderExtensions
     /// Adds Eventing subscribers to the <see cref="IApplicationBuilder"/>.
     /// </summary>
     /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+    /// <param name="serviceProvider">The <see cref="IServiceProvider"/>.</param>
     /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
-    internal static IApplicationBuilder UseEventHandlers(this IApplicationBuilder applicationBuilder)
+    internal static IApplicationBuilder UseEventHandlers(this IApplicationBuilder applicationBuilder, IServiceProvider serviceProvider)
     {
         if (applicationBuilder == null)
             throw new ArgumentNullException(nameof(applicationBuilder));
@@ -61,6 +62,7 @@ public static class ApplicationBuilderExtensions
                     .MakeGenericMethod(eventType)
                     .Invoke(eventing, new object[]
                     {
+                        serviceProvider,
                         string.Empty,
                         CancellationToken.None
                     });
@@ -90,6 +92,7 @@ public static class ApplicationBuilderExtensions
                     .MakeGenericMethod(eventType)
                     .Invoke(eventing, new object[]
                     {
+                        serviceProvider,
                         x.Name,
                         CancellationToken.None
                     });
