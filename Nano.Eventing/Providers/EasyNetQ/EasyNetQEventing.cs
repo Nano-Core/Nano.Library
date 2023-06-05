@@ -74,6 +74,10 @@ public class EasyNetQEventing : IEventing
         await this.Bus.Advanced
             .BindAsync(exchange, queue, routing, cancellationToken);
 
+        var eventType = typeof(TMessage);
+        var genericType = typeof(IEventingHandler<>)
+            .MakeGenericType(eventType);
+
         this.Bus.Advanced
             .Consume<TMessage>(queue, async (message, info) =>
             {
@@ -84,11 +88,10 @@ public class EasyNetQEventing : IEventing
                         return;
                     }
 
-                    var eventType = message.MessageType;
-                    var genericType = typeof(IEventingHandler<>)
-                        .MakeGenericType(eventType);
+                    await using var serviceScope = serviceProvider
+                        .CreateAsyncScope();
 
-                    var eventHandler = serviceProvider
+                    var eventHandler = serviceScope.ServiceProvider
                         .GetRequiredService(genericType);
 
                     var method = eventHandler

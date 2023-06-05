@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddSingleton<IEventingProvider, TProvider>()
-            .AddSingleton(x => x
+            .AddScoped(x => x
                 .GetRequiredService<IEventingProvider>()
                 .Configure(services))
             .AddEventingHandlers()
