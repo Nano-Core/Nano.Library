@@ -36,6 +36,7 @@ internal static class MultipartFormDataContentExtensions
 
         if (formItem.Value is IEnumerable array)
         {
+            var isAdded = false;
             foreach (var element in array)
             {
                 switch (element)
@@ -43,33 +44,44 @@ internal static class MultipartFormDataContentExtensions
                     case IFormFile formFile:
                         await formContent
                             .Add(formFile, formItem.Name, cancellationToken);
+
+                        isAdded = true;
                         break;
 
                     case FileInfo fileInfo:
                         await formContent
                             .Add(fileInfo, formItem.Name, cancellationToken);
+
+                        isAdded = true;
                         break;
 
                     case FileStream fileStream:
                         await formContent
                             .Add(fileStream, formItem.Name, cancellationToken);
+
+                        isAdded = true;
                         break;
 
                     case Stream stream:
                         await formContent
                             .Add(stream, formItem.Name, cancellationToken);
+
+                        isAdded = true;
                         break;
 
                     case NamedStream namedStream:
                         await formContent
                             .Add(namedStream, formItem.Name, cancellationToken);
-                        break;
 
-                    default:
-                        await formContent
-                            .Add(formItem.Value, formItem.Name);
+                        isAdded = true;
                         break;
                 }
+            }
+
+            if (!isAdded)
+            {
+                await formContent
+                    .Add(formItem.Value, formItem.Name);
             }
         }
         else
