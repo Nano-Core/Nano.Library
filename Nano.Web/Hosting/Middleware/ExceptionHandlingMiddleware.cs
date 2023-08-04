@@ -61,6 +61,10 @@ public class ExceptionHandlingMiddleware : IMiddleware
         {
             response.StatusCode = (int)HttpStatusCode.Unauthorized;
         }
+        catch (PermissionDeniedException)
+        {
+            response.StatusCode = (int)HttpStatusCode.Forbidden;
+        }
         catch (TaskCanceledException)
         {
             response.StatusCode = (int)HttpStatusCode.NoContent;

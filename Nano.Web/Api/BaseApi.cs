@@ -622,6 +622,9 @@ public abstract class BaseApi : IDisposable
             case HttpStatusCode.Unauthorized:
                 throw new UnauthorizedException();
 
+            case HttpStatusCode.Forbidden:
+                throw new PermissionDeniedException();
+
             case HttpStatusCode.BadRequest:
             {
                 var errorContent = await httpResponse.Content
@@ -662,6 +665,9 @@ public abstract class BaseApi : IDisposable
 
             case HttpStatusCode.Unauthorized:
                 throw new UnauthorizedException();
+
+            case HttpStatusCode.Forbidden:
+                throw new PermissionDeniedException();
 
             case HttpStatusCode.BadRequest:
             {
