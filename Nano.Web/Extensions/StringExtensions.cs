@@ -10,6 +10,26 @@ namespace Nano.Web.Extensions;
 public static class StringExtensions
 {
     /// <summary>
+    /// Remove Quotes.
+    /// </summary>
+    /// <param name="string">The string.</param>
+    /// <returns>The string without quotes.</returns>
+    public static string RemoveQuotes(this string @string)
+    {
+        if (@string.StartsWith("\""))
+        {
+            @string = @string[1..];
+        }
+
+        if (@string.EndsWith("\""))
+        {
+            @string = @string[..^1];
+        }
+
+        return @string;
+    }
+
+    /// <summary>
     /// Get Http Content Type.
     /// Gets the http content type mathcing the extension og the passed <paramref name="filename"/>.
     /// </summary>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using Nano.Models.Exceptions;
 
 namespace Nano.Web.Models;
@@ -21,14 +20,9 @@ public class Error
     public string[] Exceptions { get; set; } = Array.Empty<string>();
 
     /// <summary>
-    /// Status Code.
-    /// </summary>
-    public int StatusCode { get; set; } = 500;
-
-    /// <summary>
     /// Is Translated.
     /// </summary>
-    public bool IsTranslated { get; set; }
+    public bool IsTranslated { get; }
 
     /// <summary>
     /// Constructor.
@@ -42,43 +36,56 @@ public class Error
     /// Constructor.
     /// </summary>
     /// <param name="exception">The <see cref="Exception"/>.</param>
-    public Error(Exception exception)
+    internal Error(Exception exception)
         : this()
     {
         if (exception == null)
             throw new ArgumentNullException(nameof(exception));
 
-        var baseException = exception.GetBaseException();
+        this.Summary = exception is BadRequestException
+            ? "Bad Request"
+            : "Internal Server Error";
 
-        this.Summary = "Internal Server Error";
-        this.StatusCode = (int)HttpStatusCode.InternalServerError;
         this.Exceptions = new[]
         {
-            $"{baseException.GetType().Name} - {baseException.Message}"
+            exception.Message
         };
 
         switch (exception)
         {
             case AggregateException aggregateException:
             {
-                if (aggregateException.InnerException is TranslationException)
+                if (aggregateException.InnerException != null)
                 {
-                    this.Exceptions = aggregateException.InnerExceptions
-                        .Where(x => x is TranslationException)
-                        .Select(x => x.Message)
-                        .ToArray();
+                    switch (aggregateException.InnerException)
+                    {
+                        case BadRequestException:
+                            this.Summary = "Bad Request";
+                            this.Exceptions = aggregateException.InnerExceptions
+                                .Where(x => x is BadRequestException)
+                                .Select(x => x.Message)
+                                .ToArray();
 
-                    this.IsTranslated = true;
+                            this.IsTranslated = true;
+
+                            break;
+
+                        case TranslationException:
+                            this.Exceptions = aggregateException.InnerExceptions
+                                .Where(x => x is TranslationException)
+                                .Select(x => x.Message)
+                                .ToArray();
+
+                            this.IsTranslated = true;
+
+                            break;
+                    }
                 }
 
                 break;
             }
-            case TranslationException:
-                this.Exceptions = new[]
-                {
-                    baseException.Message
-                };
 
+            case TranslationException:
                 this.IsTranslated = true;
 
                 break;
@@ -91,6 +98,6 @@ public class Error
         var exceptionsString = this.Exceptions
             .Aggregate($"Messages:{Environment.NewLine}", (current, exception) => current + exception + Environment.NewLine);
 
-        return $"{this.StatusCode} {this.Summary}{Environment.NewLine}Messages:{Environment.NewLine}{exceptionsString}";
+        return $"{this.Summary}{Environment.NewLine}Messages:{Environment.NewLine}{exceptionsString}";
     }
 }

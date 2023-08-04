@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -51,7 +50,6 @@ public class ModelStateValidationFilter : ActionFilterAttribute
         var error = new Error
         {
             Summary = "Invalid ModelState",
-            StatusCode = (int)HttpStatusCode.BadRequest,
             Exceptions = exceptions
         };
 

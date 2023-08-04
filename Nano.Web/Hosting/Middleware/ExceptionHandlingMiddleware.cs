@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Nano.Models.Exceptions;
 using Nano.Security.Exceptions;
 using Nano.Web.Const;
 using Nano.Web.Extensions.Const;
@@ -75,10 +76,13 @@ public class ExceptionHandlingMiddleware : IMiddleware
                 response.Clear();
             }
 
-            response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            response.StatusCode = ex is BadRequestException || ex.InnerException is BadRequestException
+                ? (int)HttpStatusCode.BadRequest
+                : (int)HttpStatusCode.InternalServerError;
 
             exception = ex.GetBaseException();
-            var error = new Error(ex);
+
+            var error = new Error(exception);
 
             logLevel = error.IsTranslated
                 ? LogLevel.Information
@@ -117,12 +121,17 @@ public class ExceptionHandlingMiddleware : IMiddleware
         }
         finally
         {
-            var protocol = request.IsHttps ? request.Protocol.Replace("HTTP", "HTTPS") : request.Protocol;
+            var protocol = request.IsHttps
+                ? request.Protocol.Replace("HTTP", "HTTPS")
+                : request.Protocol;
+
             var method = request.Method;
             var path = request.Path.Value;
             var queryString = request.QueryString.HasValue ? $"{request.QueryString.Value}" : null;
 
-            var success = request.Query.TryGetValue("access_token", out var accessToken);
+            var success = request.Query
+                .TryGetValue("access_token", out var accessToken);
+
             if (success)
             {
                 queryString = queryString?

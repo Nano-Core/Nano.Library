@@ -27,6 +27,7 @@ using Nano.Web.Models;
 using Vivet.AspNetCore.RequestTimeZone;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 using Nano.Web.Api.Responses;
+using Nano.Web.Extensions;
 using StringWithQualityHeaderValue = System.Net.Http.Headers.StringWithQualityHeaderValue;
 
 namespace Nano.Web.Api;
@@ -622,23 +623,27 @@ public abstract class BaseApi : IDisposable
                 throw new UnauthorizedException();
 
             case HttpStatusCode.BadRequest:
+            {
+                var errorContent = await httpResponse.Content
+                    .ReadAsStringAsync(cancellationToken);
+
+                throw this.GetBadRequestException(errorContent);
+            }
+
             case HttpStatusCode.InternalServerError:
-                var errorContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
-                var error = JsonSerializer.Deserialize<Error>(errorContent, Globals.jsonSerializerSettings);
+            {
+                var errorContent = await httpResponse.Content
+                    .ReadAsStringAsync(cancellationToken);
 
-                if (error == null)
-                    throw new NullReferenceException(nameof(error));
+                var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
 
-                if (error.IsTranslated || httpResponse.StatusCode == HttpStatusCode.BadRequest)
+                if (internalServerErrorException != null)
                 {
-                    throw new AggregateException(error.Exceptions.Select(x => new TranslationException(x)));
-                }
-                if (this.apiOptions.UseExposeErrors)
-                {
-                    throw new AggregateException(error.Exceptions.Select(x => new InvalidOperationException(x)));
+                    throw internalServerErrorException;
                 }
 
                 break;
+            }
         }
 
         httpResponse
@@ -659,23 +664,27 @@ public abstract class BaseApi : IDisposable
                 throw new UnauthorizedException();
 
             case HttpStatusCode.BadRequest:
+            {
+                var errorContent = await httpResponse.Content
+                    .ReadAsStringAsync(cancellationToken);
+
+                throw this.GetBadRequestException(errorContent);
+            }
+
             case HttpStatusCode.InternalServerError:
-                var errorContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
-                var error = JsonSerializer.Deserialize<Error>(errorContent, Globals.jsonSerializerSettings);
+            {
+                var errorContent = await httpResponse.Content
+                    .ReadAsStringAsync(cancellationToken);
 
-                if (error == null)
-                    throw new NullReferenceException(nameof(error));
+                var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
 
-                if (error.IsTranslated)
+                if (internalServerErrorException != null)
                 {
-                    throw new AggregateException(error.Exceptions.Select(x => new TranslationException(x)));
-                }
-                if (this.apiOptions.UseExposeErrors)
-                {
-                    throw new AggregateException(error.Exceptions.Select(x => new InvalidOperationException(x)));
+                    throw internalServerErrorException;
                 }
 
                 break;
+            }
         }
 
         httpResponse
@@ -719,6 +728,83 @@ public abstract class BaseApi : IDisposable
         }
 
         httpContext.Request.Headers[HeaderNames.Authorization] = $"Bearer {token}";
+    }
+    private Exception GetBadRequestException(string content)
+    {
+        if (content == null)
+            throw new ArgumentNullException(nameof(content));
+
+        try
+        {
+            var error = JsonSerializer.Deserialize<Error>(content, Globals.jsonSerializerSettings);
+
+            if (error == null)
+            {
+                throw new NullReferenceException(nameof(error));
+            }
+
+            var badRequestExceptions = error.Exceptions
+                .Select(x => new BadRequestException(x));
+
+            return new AggregateException(badRequestExceptions);
+        }
+        catch (JsonException)
+        {
+            if (content.StartsWith("\""))
+            {
+                content = content[1..];
+            }
+
+            if (content.EndsWith("\""))
+            {
+                content = content[..^1];
+            }
+
+            var exceptionMessage = content
+                .RemoveQuotes();
+
+            return new BadRequestException(exceptionMessage);
+        }
+    }
+    private Exception GetInternalServerErrorException(string content)
+    {
+        if (content == null)
+            throw new ArgumentNullException(nameof(content));
+        try
+        {
+            var error = JsonSerializer.Deserialize<Error>(content, Globals.jsonSerializerSettings);
+
+            if (error == null)
+            {
+                throw new NullReferenceException(nameof(error));
+            }
+
+            if (error.IsTranslated)
+            {
+                var translationExceptions = error.Exceptions
+                    .Select(x => new TranslationException(x));
+
+                throw new AggregateException(translationExceptions);
+            }
+
+            if (this.apiOptions.UseExposeErrors)
+            {
+                var invalidOperationExceptions = error.Exceptions
+                    .Select(x => new InvalidOperationException(x));
+
+                return new AggregateException(invalidOperationExceptions);
+            }
+        }
+        catch (JsonException)
+        {
+
+            var exceptionMessage = content
+                .RemoveQuotes();
+
+            return new InvalidOperationException(exceptionMessage);
+        }
+
+        return null;
     }
 
     /// <inheritdoc />
