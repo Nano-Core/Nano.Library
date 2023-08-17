@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using EntityFrameworkCore.Triggers;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -24,6 +25,7 @@ using Nano.Security;
 using Nano.Security.Const;
 using Nano.Security.Data.Models;
 using Serilog;
+using Z.EntityFramework.Plus;
 
 namespace Nano.Data;
 
@@ -250,6 +252,66 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         modelBuilder
             .Entity<DataProtectionKey>()
             .ToTable(TableNames.IDENTITY_DATA_PROTECTION_KEYS);
+    }
+
+    /// <inheritdoc />
+    public override int SaveChanges()
+    {
+        var audit = new Audit();
+
+        audit
+            .PreSaveChanges(this);
+
+        var rowAffecteds = this.SaveChangesWithTriggers(this.SaveChanges);
+
+        audit
+            .PostSaveChanges();
+
+        var autoSavePreAction = audit.Configuration.AutoSavePreAction ?? AuditManager.DefaultConfiguration.AutoSavePreAction;
+
+        if (autoSavePreAction != null)
+        {
+            if (audit.Entries.Any())
+            {
+                autoSavePreAction
+                    .Invoke(this, audit);
+
+                this.SaveChanges();
+            }
+        }
+
+        return rowAffecteds;
+    }
+
+    /// <inheritdoc />
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var audit = new Audit();
+
+        audit
+            .PreSaveChanges(this);
+
+        var rowAffecteds = await this.SaveChangesWithTriggersAsync(this.SaveChangesAsync, cancellationToken)
+            .ConfigureAwait(false);
+
+        audit
+            .PostSaveChanges();
+
+        var autoSavePreAction = audit.Configuration.AutoSavePreAction ?? AuditManager.DefaultConfiguration.AutoSavePreAction;
+
+        if (autoSavePreAction != null)
+        {
+            if (audit.Entries.Any())
+            {
+                autoSavePreAction
+                    .Invoke(this, audit);
+
+                await this.SaveChangesAsync(cancellationToken)
+                    .ConfigureAwait(false);
+            }
+        }
+
+        return rowAffecteds;
     }
 
     /// <summary>

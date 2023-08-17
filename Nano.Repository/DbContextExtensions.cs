@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Z.EntityFramework.Plus;
 
 namespace Nano.Repository;
 
@@ -64,80 +60,8 @@ public static class DbContextExtensions
 
         foreach (var entity in entities)
         {
-            dbContext.AddOrUpdate(entity);
-        }
-    }
-
-    /// <summary>
-    /// Save Changes With Audit And Triggers.
-    /// </summary>
-    /// <param name="dbContext">The <see cref="DbContext"/>.</param>
-    /// <returns>The rows affected.</returns>
-    public static int SaveChangesWithAuditAndTriggers(this DbContext dbContext)
-    {
-        if (dbContext == null)
-            throw new ArgumentNullException(nameof(dbContext));
-
-        var audit = new Audit();
-
-        audit
-            .PreSaveChanges(dbContext);
-
-        var rowAffecteds = dbContext
-            .SaveChangesWithTriggers(dbContext.SaveChanges);
-
-        audit
-            .PostSaveChanges();
-
-        var autoSavePreAction = audit.Configuration.AutoSavePreAction ?? AuditManager.DefaultConfiguration.AutoSavePreAction;
-
-        if (autoSavePreAction != null)
-        {
-            autoSavePreAction
-                .Invoke(dbContext, audit);
-
             dbContext
-                .SaveChanges();
+                .AddOrUpdate(entity);
         }
-
-        return rowAffecteds;
-    }
-
-    /// <summary>
-    /// Save Changes With Audit And Triggers.
-    /// </summary>
-    /// <param name="dbContext">The <see cref="DbContext"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The rows affected.</returns>
-    public static async Task<int> SaveChangesWithAuditAndTriggersAsync(this DbContext dbContext, CancellationToken cancellationToken = default)
-    {
-        if (dbContext == null)
-            throw new ArgumentNullException(nameof(dbContext));
-
-        var audit = new Audit();
-
-        audit
-            .PreSaveChanges(dbContext);
-
-        var rowAffecteds = await dbContext
-            .SaveChangesWithTriggersAsync(dbContext.SaveChangesAsync, cancellationToken)
-            .ConfigureAwait(false);
-
-        audit
-            .PostSaveChanges();
-
-        var autoSavePreAction = audit.Configuration.AutoSavePreAction ?? AuditManager.DefaultConfiguration.AutoSavePreAction;
-
-        if (autoSavePreAction != null)
-        {
-            autoSavePreAction
-                .Invoke(dbContext, audit);
-
-            await dbContext
-                .SaveChangesAsync(cancellationToken)
-                .ConfigureAwait(false);
-        }
-
-        return rowAffecteds;
     }
 }

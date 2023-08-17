@@ -23,11 +23,10 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Claim = System.Security.Claims.Claim;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 using Nano.Models.Extensions;
 using System.Text.Json.Nodes;
 using System.Security.Cryptography;
+using Claim = System.Security.Claims.Claim;
 
 namespace Nano.Security;
 

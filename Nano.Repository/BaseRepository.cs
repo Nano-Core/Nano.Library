@@ -334,7 +334,9 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             .AddAsync(entity, cancellationToken);
 
         if (this.Context.AutoSave)
+        {
             await this.SaveChangesAsync(cancellationToken);
+        }
 
         return entry.Entity;
     }
@@ -352,7 +354,9 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             .ToArray();
 
         if (this.Context.AutoSave)
+        {
             await this.SaveChangesAsync(cancellationToken);
+        }
 
         return entities;
     }
@@ -372,7 +376,9 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             }, cancellationToken);
 
         if (this.Context.AutoSave)
+        {
             await this.SaveChangesAsync(cancellationToken);
+        }
     }
 
     /// <inheritdoc />
@@ -386,7 +392,9 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             .Update(entity);
 
         if (this.Context.AutoSave)
+        {
             await this.SaveChangesAsync(cancellationToken);
+        }
 
         return entry.Entity;
     }
@@ -403,8 +411,10 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             .Select(x => x.Entity)
             .ToArray();
 
-        await this.Context
-            .SaveChangesAsync(cancellationToken);
+        if (this.Context.AutoSave)
+        {
+            await this.SaveChangesAsync(cancellationToken);
+        }
 
         return entities;
     }
@@ -424,7 +434,9 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             }, cancellationToken);
 
         if (this.Context.AutoSave)
+        {
             await this.SaveChangesAsync(cancellationToken);
+        }
     }
 
     /// <inheritdoc />
@@ -438,7 +450,9 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             .AddOrUpdate(entity);
 
         if (this.Context.AutoSave)
+        {
             await this.SaveChangesAsync(cancellationToken);
+        }
 
         return entry.Entity;
     }
@@ -518,7 +532,9 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             .Remove(entity);
 
         if (this.Context.AutoSave)
+        {
             await this.SaveChangesAsync(cancellationToken);
+        }
     }
 
     /// <inheritdoc />
@@ -558,7 +574,9 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             .RemoveRange(entities);
 
         if (this.Context.AutoSave)
+        {
             await this.SaveChangesAsync(cancellationToken);
+        }
     }
 
     /// <inheritdoc />
@@ -578,7 +596,9 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
                 .RemoveRange(entities);
 
             if (this.Context.AutoSave)
+            {
                 await this.SaveChangesAsync(cancellationToken);
+            }
         }
         else
         {
@@ -604,7 +624,9 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
                 .RemoveRange(entities);
 
             if (this.Context.AutoSave)
+            {
                 await this.SaveChangesAsync(cancellationToken);
+            }
         }
         else
         {
@@ -750,7 +772,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     public virtual async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         await this.Context
-            .SaveChangesWithAuditAndTriggersAsync(cancellationToken);
+            .SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
