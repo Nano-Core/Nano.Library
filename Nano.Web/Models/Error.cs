@@ -22,7 +22,7 @@ public class Error
     /// <summary>
     /// Is Translated.
     /// </summary>
-    public bool IsTranslated { get; }
+    public bool IsTranslated { get; set; }
 
     /// <summary>
     /// Constructor.

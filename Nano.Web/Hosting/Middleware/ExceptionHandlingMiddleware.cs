@@ -80,13 +80,13 @@ public class ExceptionHandlingMiddleware : IMiddleware
                 response.Clear();
             }
 
+            exception = ex.GetBaseException();
+
             response.StatusCode = ex is BadRequestException || ex.InnerException is BadRequestException
                 ? (int)HttpStatusCode.BadRequest
                 : (int)HttpStatusCode.InternalServerError;
 
-            exception = ex.GetBaseException();
-
-            var error = new Error(exception);
+            var error = new Error(ex);
 
             logLevel = error.IsTranslated
                 ? LogLevel.Information

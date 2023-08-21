@@ -776,6 +776,7 @@ public abstract class BaseApi : IDisposable
     {
         if (content == null)
             throw new ArgumentNullException(nameof(content));
+
         try
         {
             var error = JsonSerializer.Deserialize<Error>(content, Globals.jsonSerializerSettings);
