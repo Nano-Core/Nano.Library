@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -63,6 +64,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         this.SavingChanges += (_, _) => this.SavePendingEntityEvents();
         this.SavingChanges += (_, _) => this.SaveSoftDeletion();
         this.SavedChanges += async (_, _) => await this.ExecuteEntityEvents();
+
+        // ReSharper disable VirtualMemberCallInConstructor
+        this.ChangeTracker.LazyLoadingEnabled = this.Options.UseLazyLoading;
+        // ReSharper restore VirtualMemberCallInConstructor
     }
 
     /// <inheritdoc />
@@ -73,45 +78,12 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         if (this.Options.UseAudit)
         {
-            var key = entity.GetType()
-                .GetProperty(nameof(IEntityIdentity<TIdentity>.Id));
+            var dbSet = this.SetDynamic(entity.GetType().Name);
 
-            var keyValue = key?
-                .GetValue(entity);
+            var tracked = dbSet
+                .SingleOrDefault(x => x == entity);
 
-            var existingEntity = this.Find(entity.GetType(), keyValue);
-
-            if (existingEntity == null)
-            {
-                return base.Update(entity);
-            }
-
-            var entry = this.Entry(existingEntity);
-
-            var properties = entity.GetType()
-                .GetProperties();
-
-            var propertyAndValues = new List<(string Name, object Value)>();
-            foreach (var propertyInfo in properties)
-            {
-                if (!propertyInfo.CanWrite && propertyInfo.PropertyType.IsValueType)
-                {
-                    var value = propertyInfo
-                        .GetValue(existingEntity);
-
-                    propertyAndValues
-                        .Add((propertyInfo.Name, value));
-                }
-            }
-            entry.CurrentValues
-                .SetValues(entity);
-
-            foreach (var propertyAndValue in propertyAndValues)
-            {
-                entry.Property(propertyAndValue.Name).CurrentValue = propertyAndValue.Value;
-            }
-
-            return entry;
+            this.SaveAudit(entity, tracked);
         }
 
         return base.Update(entity);
@@ -125,45 +97,12 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         if (this.Options.UseAudit)
         {
-            var key = typeof(TEntity)
-                .GetProperty(nameof(IEntityIdentity<TIdentity>.Id));
+            var dbSet = this.Set<TEntity>();
 
-            var keyValue = key?
-                .GetValue(entity);
+            var tracked = dbSet
+                .SingleOrDefault(x => x == entity);
 
-            var existingEntity = this.Find<TEntity>(keyValue);
-
-            if (existingEntity == null)
-            {
-                return base.Update(entity);
-            }
-
-            var entry = this.Entry(existingEntity);
-
-            var properties = typeof(TEntity)
-                .GetProperties();
-
-            var propertyAndValues = new List<(string Name, object Value)>();
-            foreach (var propertyInfo in properties)
-            {
-                if (!propertyInfo.CanWrite && propertyInfo.PropertyType.IsValueType)
-                {
-                    var value = propertyInfo
-                        .GetValue(existingEntity);
-
-                    propertyAndValues
-                        .Add((propertyInfo.Name, value));
-                }
-            }
-            entry.CurrentValues
-                .SetValues(entity);
-
-            foreach (var propertyAndValue in propertyAndValues)
-            {
-                entry.Property(propertyAndValue.Name).CurrentValue = propertyAndValue.Value;
-            }
-
-            return entry;
+            this.SaveAudit(entity, tracked);
         }
 
         return base.Update(entity);
@@ -190,6 +129,51 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         foreach (var entity in entities)
         {
             this.Update(entity);
+        }
+    }
+
+    /// <summary>
+    /// Adds or updates (if exists) the entity.
+    /// </summary>
+    /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
+    /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
+    /// <returns>A <see cref="EntityEntry"/>.</returns>
+    public virtual EntityEntry<TEntity> AddOrUpdate<TEntity>(TEntity entity)
+        where TEntity : class
+    {
+        if (entity == null)
+            throw new ArgumentNullException(nameof(entity));
+
+        var dbSet = this.Set<TEntity>();
+
+        var tracked = dbSet
+            .SingleOrDefault(x => x == entity);
+
+        if (tracked != null)
+        {
+            return this
+                .Update(entity);
+        }
+
+        return dbSet
+            .Add(entity);
+    }
+
+    /// <summary>
+    /// Adds or updates (if exists) the entities.
+    /// </summary>
+    /// <typeparam name="TEntity">The type of <paramref name="entities"/>.</typeparam>
+    /// <param name="entities">The <see cref="object"/>'s of type <typeparamref name="TEntity"/>.</param>
+    /// <returns>A <see cref="EntityEntry{TEntity}"/>.</returns>
+    public virtual void AddOrUpdateMany<TEntity>(IEnumerable<TEntity> entities)
+        where TEntity : class
+    {
+        if (entities == null)
+            throw new ArgumentNullException(nameof(entities));
+
+        foreach (var entity in entities)
+        {
+            this.AddOrUpdate(entity);
         }
     }
 
@@ -394,6 +378,56 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         await base.SaveChangesAsync(cancellationToken);
     }
 
+    private void SaveAudit(object entity, object tracked = null)
+    {
+        if (entity == null)
+            throw new ArgumentNullException(nameof(entity));
+
+        this.ChangeTracker.LazyLoadingEnabled = false;
+
+        try
+        {
+            var entry = this.Entry(entity);
+
+            if (tracked == null)
+            {
+                return;
+            }
+
+            var properties = entity
+                .GetType()
+                .GetProperties();
+
+            foreach (var propertyInfo in properties)
+            {
+                var valueTracked = propertyInfo
+                    .GetValue(tracked);
+
+                if (propertyInfo.PropertyType.IsValueType || propertyInfo.PropertyType == typeof(string))
+                {
+                    entry
+                        .Property(propertyInfo.Name).OriginalValue = valueTracked;
+                }
+                else if (!propertyInfo.PropertyType.IsTypeOf(typeof(IEnumerable)) && !propertyInfo.PropertyType.IsTypeOf(typeof(IEntity)))
+                {
+                    var value = propertyInfo
+                        .GetValue(entity);
+
+                    this.SaveAudit(value, valueTracked);
+                }
+            }
+
+            var trackedEntry = this.Entry(tracked);
+            trackedEntry.State = EntityState.Detached;
+        }
+        finally
+        {
+            if (this.Options.UseLazyLoading)
+            {
+                this.ChangeTracker.LazyLoadingEnabled = true;
+            }
+        }
+    }
     private void SaveSoftDeletion()
     {
         if (!this.Options.UseSoftDeletetion)
