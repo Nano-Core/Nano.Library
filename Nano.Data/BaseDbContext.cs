@@ -81,6 +81,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             var dbSet = this.SetDynamic(entity.GetType().Name);
 
             var tracked = dbSet
+                .AsNoTracking()
                 .SingleOrDefault(x => x == entity);
 
             this.SaveAudit(entity, tracked);
@@ -100,6 +101,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             var dbSet = this.Set<TEntity>();
 
             var tracked = dbSet
+                .AsNoTracking()
                 .SingleOrDefault(x => x == entity);
 
             this.SaveAudit(entity, tracked);
@@ -375,7 +377,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             await this.AddUserToRole(adminUser, BuiltInUserRoles.ADMINISTRATOR);
         }
 
-        await base.SaveChangesAsync(cancellationToken);
+        await this.SaveChangesAsync(cancellationToken);
     }
 
     private void SaveAudit(object entity, object tracked = null)
@@ -383,16 +385,16 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
+        if (tracked == null)
+        {
+            return;
+        }
+
         this.ChangeTracker.LazyLoadingEnabled = false;
 
         try
         {
             var entry = this.Entry(entity);
-
-            if (tracked == null)
-            {
-                return;
-            }
 
             var properties = entity
                 .GetType()
@@ -413,12 +415,14 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                     var value = propertyInfo
                         .GetValue(entity);
 
+                    if (value == null)
+                    {
+                        continue;
+                    }
+
                     this.SaveAudit(value, valueTracked);
                 }
             }
-
-            var trackedEntry = this.Entry(tracked);
-            trackedEntry.State = EntityState.Detached;
         }
         finally
         {
@@ -489,7 +493,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             this.pendingEvents = null;
         }
     }
-    private async Task<IdentityRole<TIdentity>> AddRole(string role)
+    private async Task AddRole(string role)
     {
         if (role == null)
             throw new ArgumentNullException(nameof(role));
@@ -505,12 +509,26 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
             await roleManager
                 .CreateAsync(identityRole);
-
-            return identityRole;
         }
+    }
+    private async Task AddUserToRole(IdentityUser<TIdentity> user, string role)
+    {
+        if (user == null)
+            throw new ArgumentNullException(nameof(user));
 
-        return await roleManager
-            .FindByNameAsync(role);
+        if (role == null)
+            throw new ArgumentNullException(nameof(role));
+
+        var userManager = this.GetService<UserManager<IdentityUser<TIdentity>>>();
+
+        var isInRole = await userManager
+            .IsInRoleAsync(user, role);
+
+        if (!isInRole)
+        {
+            await userManager
+                .AddToRoleAsync(user, role);
+        }
     }
     private async Task<IdentityUser<TIdentity>> AddUser(string emailAddress, string password)
     {
@@ -555,24 +573,5 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         }
 
         return user;
-    }
-    private async Task AddUserToRole(IdentityUser<TIdentity> user, string role)
-    {
-        if (user == null)
-            throw new ArgumentNullException(nameof(user));
-
-        if (role == null)
-            throw new ArgumentNullException(nameof(role));
-
-        var userManager = this.GetService<UserManager<IdentityUser<TIdentity>>>();
-
-        var isInRole = await userManager
-            .IsInRoleAsync(user, role);
-
-        if (!isInRole)
-        {
-            await userManager
-                .AddToRoleAsync(user, role);
-        }
     }
 }

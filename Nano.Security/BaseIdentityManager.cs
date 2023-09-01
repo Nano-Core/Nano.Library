@@ -1923,7 +1923,8 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         foreach (var transientRole in transientRoles)
         {
-            roles.Add(transientRole);
+            roles
+                .Add(transientRole);
         }
 
         var userClaims = await this.UserManager
@@ -1968,7 +1969,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (appId == null)
             return null;
 
-        var token = Extensions.StringExtensions.GetRandomToken();
+        var token = this.GetRandomToken();
 
         var removeResult = await this.UserManager
             .RemoveAuthenticationTokenAsync(identityUser, JwtBearerDefaults.AuthenticationScheme, appId);
@@ -2118,6 +2119,19 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         }
     }
 
+    private string GetRandomToken()
+    {
+        var bytes = new byte[32];
+
+        using var generator = RandomNumberGenerator.Create();
+
+        generator
+            .GetBytes(bytes);
+
+        var token = Convert.ToBase64String(bytes);
+
+        return token;
+    }
     private void ThrowIdentityExceptions(IEnumerable<IdentityError> errors)
     {
         if (errors == null)

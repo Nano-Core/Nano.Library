@@ -273,7 +273,6 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-
     private static void AddDataContext(IServiceProvider provider, DbContextOptionsBuilder builder, DataOptions options)
     {
         builder
