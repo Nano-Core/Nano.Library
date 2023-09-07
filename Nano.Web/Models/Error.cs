@@ -36,7 +36,7 @@ public class Error
     /// Constructor.
     /// </summary>
     /// <param name="exception">The <see cref="Exception"/>.</param>
-    internal Error(Exception exception)
+    public Error(Exception exception)
         : this()
     {
         if (exception == null)
