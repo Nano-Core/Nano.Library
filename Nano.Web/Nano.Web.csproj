@@ -39,13 +39,13 @@
 	<ItemGroup>
 		<PackageReference Include="AspNetCore.HealthChecks.Network" Version="7.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.System" Version="7.0.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.UI" Version="7.0.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="7.0.0" />
+		<PackageReference Include="AspNetCore.HealthChecks.UI" Version="7.0.2" />
+		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="7.1.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="7.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="7.0.9" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.9" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="7.0.9" />
-		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="7.0.9" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="7.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="7.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="7.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
 		<PackageReference Include="NWebsec.AspNetCore.Middleware" Version="3.0.0" />
