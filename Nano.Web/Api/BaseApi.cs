@@ -348,7 +348,7 @@ public abstract class BaseApi : IDisposable
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
-        using var httpRequest = await this.GetHttpRequestMessage(request ,cancellationToken);
+        using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
             var httpResponse = await this.httpClient
                 .SendAsync(httpRequest, cancellationToken);
@@ -626,27 +626,27 @@ public abstract class BaseApi : IDisposable
                 throw new PermissionDeniedException();
 
             case HttpStatusCode.BadRequest:
-            {
-                var errorContent = await httpResponse.Content
-                    .ReadAsStringAsync(cancellationToken);
-
-                throw this.GetBadRequestException(errorContent);
-            }
-
-            case HttpStatusCode.InternalServerError:
-            {
-                var errorContent = await httpResponse.Content
-                    .ReadAsStringAsync(cancellationToken);
-
-                var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
-
-                if (internalServerErrorException != null)
                 {
-                    throw internalServerErrorException;
+                    var errorContent = await httpResponse.Content
+                        .ReadAsStringAsync(cancellationToken);
+
+                    throw this.GetBadRequestException(errorContent);
                 }
 
-                break;
-            }
+            case HttpStatusCode.InternalServerError:
+                {
+                    var errorContent = await httpResponse.Content
+                        .ReadAsStringAsync(cancellationToken);
+
+                    var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
+
+                    if (internalServerErrorException != null)
+                    {
+                        throw internalServerErrorException;
+                    }
+
+                    break;
+                }
         }
 
         httpResponse
@@ -670,27 +670,27 @@ public abstract class BaseApi : IDisposable
                 throw new PermissionDeniedException();
 
             case HttpStatusCode.BadRequest:
-            {
-                var errorContent = await httpResponse.Content
-                    .ReadAsStringAsync(cancellationToken);
-
-                throw this.GetBadRequestException(errorContent);
-            }
-
-            case HttpStatusCode.InternalServerError:
-            {
-                var errorContent = await httpResponse.Content
-                    .ReadAsStringAsync(cancellationToken);
-
-                var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
-
-                if (internalServerErrorException != null)
                 {
-                    throw internalServerErrorException;
+                    var errorContent = await httpResponse.Content
+                        .ReadAsStringAsync(cancellationToken);
+
+                    throw this.GetBadRequestException(errorContent);
                 }
 
-                break;
-            }
+            case HttpStatusCode.InternalServerError:
+                {
+                    var errorContent = await httpResponse.Content
+                        .ReadAsStringAsync(cancellationToken);
+
+                    var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
+
+                    if (internalServerErrorException != null)
+                    {
+                        throw internalServerErrorException;
+                    }
+
+                    break;
+                }
         }
 
         httpResponse
@@ -718,6 +718,11 @@ public abstract class BaseApi : IDisposable
 
         var content = await httpResponse.Content
             .ReadAsStringAsync(cancellationToken);
+
+        if (string.IsNullOrEmpty(content))
+        {
+            return null;
+        }
 
         return JsonSerializer.Deserialize<TResponse>(content, Globals.jsonSerializerSettings);
     }
@@ -931,7 +936,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
     public virtual async Task<IEnumerable<TEntity>> QueryAsync<TEntity, TCriteria>(QueryRequest<TCriteria> request, CancellationToken cancellationToken = default)
-        where TEntity: class, IEntity
+        where TEntity : class, IEntity
         where TCriteria : IQueryCriteria, new()
     {
         if (request == null)
@@ -950,7 +955,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The first match entity.</returns>
     public virtual async Task<TEntity> QueryFirstAsync<TEntity, TCriteria>(QueryFirstRequest<TCriteria> request, CancellationToken cancellationToken = default)
-        where TEntity: class, IEntity
+        where TEntity : class, IEntity
         where TCriteria : IQueryCriteria, new()
     {
         if (request == null)
@@ -1081,7 +1086,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
-        await this.InvokeAsync(request, cancellationToken);
+        await this.InvokeAsync<DeleteRequest<TIdentity>, TEntity>(request, cancellationToken);
     }
 
     /// <summary>
@@ -1098,7 +1103,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
-        await this.InvokeAsync(request, cancellationToken);
+        await this.InvokeAsync<DeleteManyRequest<TIdentity>, TEntity>(request, cancellationToken);
     }
 
     /// <summary>
@@ -1115,7 +1120,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
-        await this.InvokeAsync(request, cancellationToken);
+        await this.InvokeAsync<DeleteQueryRequest, TEntity>(request, cancellationToken);
     }
 
     /// <summary>
@@ -1128,7 +1133,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
     public virtual async Task<IEnumerable<TEntity>> CoveredByAsync<TEntity, TCriteria>(CoveredByRequest<TCriteria> request, CancellationToken cancellationToken = default)
-        where TEntity: class, IEntitySpatial
+        where TEntity : class, IEntitySpatial
         where TCriteria : IQueryCriteriaSpatial, new()
     {
         if (request == null)
@@ -1147,7 +1152,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
     public virtual async Task<IEnumerable<TEntity>> CoversAsync<TEntity, TCriteria>(CoversRequest<TCriteria> request, CancellationToken cancellationToken = default)
-        where TEntity: class, IEntitySpatial
+        where TEntity : class, IEntitySpatial
         where TCriteria : IQueryCriteriaSpatial, new()
     {
         if (request == null)
@@ -1166,7 +1171,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
     public virtual async Task<IEnumerable<TEntity>> CrossesAsync<TEntity, TCriteria>(CrossesRequest<TCriteria> request, CancellationToken cancellationToken = default)
-        where TEntity: class, IEntitySpatial
+        where TEntity : class, IEntitySpatial
         where TCriteria : IQueryCriteriaSpatial, new()
     {
         if (request == null)
@@ -1185,7 +1190,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
     public virtual async Task<IEnumerable<TEntity>> DisjointsAsync<TEntity, TCriteria>(DisjointsRequest<TCriteria> request, CancellationToken cancellationToken = default)
-        where TEntity: class, IEntitySpatial
+        where TEntity : class, IEntitySpatial
         where TCriteria : IQueryCriteriaSpatial, new()
     {
         if (request == null)
@@ -1204,7 +1209,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
     public virtual async Task<IEnumerable<TEntity>> IntersectsAsync<TEntity, TCriteria>(IntersectsRequest<TCriteria> request, CancellationToken cancellationToken = default)
-        where TEntity: class, IEntitySpatial
+        where TEntity : class, IEntitySpatial
         where TCriteria : IQueryCriteriaSpatial, new()
     {
         if (request == null)
@@ -1223,7 +1228,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
     public virtual async Task<IEnumerable<TEntity>> OverlapsAsync<TEntity, TCriteria>(OverlapsRequest<TCriteria> request, CancellationToken cancellationToken = default)
-        where TEntity: class, IEntitySpatial
+        where TEntity : class, IEntitySpatial
         where TCriteria : IQueryCriteriaSpatial, new()
     {
         if (request == null)
@@ -1242,7 +1247,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
     public virtual async Task<IEnumerable<TEntity>> TouchesAsync<TEntity, TCriteria>(TouchesRequest<TCriteria> request, CancellationToken cancellationToken = default)
-        where TEntity: class, IEntitySpatial
+        where TEntity : class, IEntitySpatial
         where TCriteria : IQueryCriteriaSpatial, new()
     {
         if (request == null)
@@ -1261,7 +1266,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
     public virtual async Task<IEnumerable<TEntity>> WithinAsync<TEntity, TCriteria>(WithinRequest<TCriteria> request, CancellationToken cancellationToken = default)
-        where TEntity: class, IEntitySpatial
+        where TEntity : class, IEntitySpatial
         where TCriteria : IQueryCriteriaSpatial, new()
     {
         if (request == null)
