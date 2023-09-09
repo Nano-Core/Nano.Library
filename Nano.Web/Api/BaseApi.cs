@@ -1081,7 +1081,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
-        await this.InvokeAsync<DeleteRequest<TIdentity>, TEntity>(request, cancellationToken);
+        await this.InvokeAsync(request, cancellationToken);
     }
 
     /// <summary>
@@ -1098,7 +1098,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
-        await this.InvokeAsync<DeleteManyRequest<TIdentity>, TEntity>(request, cancellationToken);
+        await this.InvokeAsync(request, cancellationToken);
     }
 
     /// <summary>
@@ -1115,7 +1115,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
-        await this.InvokeAsync<DeleteQueryRequest, TEntity>(request, cancellationToken);
+        await this.InvokeAsync(request, cancellationToken);
     }
 
     /// <summary>
