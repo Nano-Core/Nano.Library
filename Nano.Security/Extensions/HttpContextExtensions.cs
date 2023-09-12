@@ -72,6 +72,11 @@ public static class HttpContextExtensions
         var jwtToken = httpContext
             .GetJwtToken();
 
+        if (jwtToken == null)
+        {
+            return null;
+        }
+
         var tokenHandler = new JwtSecurityTokenHandler();
         var securityToken = tokenHandler
             .ReadJwtToken(jwtToken);
@@ -95,6 +100,11 @@ public static class HttpContextExtensions
 
         var jwtToken = httpContext
             .GetJwtToken();
+
+        if (jwtToken == null)
+        {
+            return null;
+        }
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var securityToken = tokenHandler
@@ -129,6 +139,11 @@ public static class HttpContextExtensions
         var jwtToken = httpContext
             .GetJwtToken();
 
+        if (jwtToken == null)
+        {
+            return null;
+        }
+
         var tokenHandler = new JwtSecurityTokenHandler();
         var securityToken = tokenHandler
             .ReadJwtToken(jwtToken);
@@ -152,6 +167,11 @@ public static class HttpContextExtensions
 
         var jwtToken = httpContext
             .GetJwtToken();
+
+        if (jwtToken == null)
+        {
+            return null;
+        }
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var securityToken = tokenHandler
