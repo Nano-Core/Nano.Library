@@ -1,5 +1,6 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
@@ -27,22 +28,6 @@ public static class HttpContextExtensions
             .TryGetValue("IsAnonymous", out var value);
 
         return success && value != null && (bool)value;
-    }
-
-    /// <summary>
-    /// Get Jwt App Id.
-    /// </summary>
-    /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
-    /// <returns>The app id.</returns>
-    public static string GetJwtAppId(this HttpContext httpContext)
-    {
-        if (httpContext == null)
-            throw new ArgumentNullException(nameof(httpContext));
-
-        var value = httpContext.User
-            .FindFirstValue(ClaimTypesExtended.AppId);
-
-        return value;
     }
 
     /// <summary>
@@ -75,6 +60,30 @@ public static class HttpContextExtensions
     }
 
     /// <summary>
+    /// Get Jwt App Id.
+    /// </summary>
+    /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
+    /// <returns>The app id.</returns>
+    public static string GetJwtAppId(this HttpContext httpContext)
+    {
+        if (httpContext == null)
+            throw new ArgumentNullException(nameof(httpContext));
+
+        var jwtToken = httpContext
+            .GetJwtToken();
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var securityToken = tokenHandler
+            .ReadJwtToken(jwtToken);
+
+        var value = securityToken.Claims
+            .FirstOrDefault(x => x.Type == ClaimTypesExtended.AppId)?
+            .Value;
+
+        return value;
+    }
+
+    /// <summary>
     /// Get Jwt User Id.
     /// </summary>
     /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
@@ -84,8 +93,16 @@ public static class HttpContextExtensions
         if (httpContext == null)
             throw new ArgumentNullException(nameof(httpContext));
 
-        var value = httpContext.User
-            .FindFirstValue(JwtRegisteredClaimNames.Sub);
+        var jwtToken = httpContext
+            .GetJwtToken();
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var securityToken = tokenHandler
+            .ReadJwtToken(jwtToken);
+
+        var value = securityToken.Claims
+            .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sub)?
+            .Value;
 
         if (value == null)
         {
@@ -109,8 +126,16 @@ public static class HttpContextExtensions
         if (httpContext == null)
             throw new ArgumentNullException(nameof(httpContext));
 
-        var value = httpContext.User
-            .FindFirstValue(JwtRegisteredClaimNames.Name);
+        var jwtToken = httpContext
+            .GetJwtToken();
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var securityToken = tokenHandler
+            .ReadJwtToken(jwtToken);
+
+        var value = securityToken.Claims
+            .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Name)?
+            .Value;
 
         return value;
     }
@@ -125,8 +150,16 @@ public static class HttpContextExtensions
         if (httpContext == null)
             throw new ArgumentNullException(nameof(httpContext));
 
-        var value = httpContext.User
-            .FindFirstValue(JwtRegisteredClaimNames.Email);
+        var jwtToken = httpContext
+            .GetJwtToken();
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var securityToken = tokenHandler
+            .ReadJwtToken(jwtToken);
+
+        var value = securityToken.Claims
+            .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Email)?
+            .Value;
 
         return value;
     }
@@ -156,5 +189,28 @@ public static class HttpContextExtensions
             Token = token,
             RefreshToken = refreshToken
         };
+    }
+
+    /// <summary>
+    /// Get Jwt Claim Value.
+    /// </summary>
+    /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
+    /// <param name="claimType">The claim type.</param>
+    /// <returns>The email.</returns>
+    public static string GetJwtClaimValue(this HttpContext httpContext, string claimType)
+    {
+        if (httpContext == null)
+            throw new ArgumentNullException(nameof(httpContext));
+
+        var jwtToken = httpContext
+            .GetJwtToken();
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var securityToken = tokenHandler
+            .ReadJwtToken(jwtToken);
+
+        return securityToken.Claims
+            .FirstOrDefault(x => x.Type == claimType)?
+            .Value;
     }
 }
