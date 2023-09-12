@@ -778,6 +778,75 @@ public static class ApplicationBuilderExtensions
                 x.WithExposedHeaders("RequestId", "TZ", "Content-Disposition");
             });
 
+        applicationBuilder
+            .Use(async (context, next) =>
+            {
+                switch (webOptions.Hosting.Cors.Origin.EmbedderPolicy)
+                {
+                    case CrossOriginEmbedderPolicy.UnsafeNone:
+                        context.Response.Headers
+                            .Add("Cross-Origin-Embedder-Policy", "unsafe-none");
+                        break;
+
+                    case CrossOriginEmbedderPolicy.RequireCorp:
+                        context.Response.Headers
+                            .Add("Cross-Origin-Embedder-Policy", "require-corp");
+                        break;
+
+                    case CrossOriginEmbedderPolicy.Credentialless:
+                        context.Response.Headers
+                            .Add("Cross-Origin-Embedder-Policy", "credentialless");
+                        break;
+
+                    case null:
+                        break;
+                }
+
+                switch (webOptions.Hosting.Cors.Origin.OpenerPolicy)
+                {
+                    case CrossOriginOpenerPolicy.UnsafeNone:
+                        context.Response.Headers
+                            .Add("Cross-Origin-Opener-Policy", "unsafe-none");
+                        break;
+
+                    case CrossOriginOpenerPolicy.SameOrigin:
+                        context.Response.Headers
+                            .Add("Cross-Origin-Opener-Policy", "same-origin");
+                        break;
+
+                    case CrossOriginOpenerPolicy.SameOriginAllowPopups:
+                        context.Response.Headers
+                            .Add("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+                        break;
+
+                    case null:
+                        break;
+                }
+
+                switch (webOptions.Hosting.Cors.Origin.ResourcePolicy)
+                {
+                    case CrossOriginResourcePolicy.SameSite:
+                        context.Response.Headers
+                            .Add("Cross-Origin-Resource-Policy", "same-site");
+                        break;
+
+                    case CrossOriginResourcePolicy.SameOrigin:
+                        context.Response.Headers
+                            .Add("Cross-Origin-Resource-Policy", "same-origin");
+                        break;
+
+                    case CrossOriginResourcePolicy.CrossOrigin:
+                        context.Response.Headers
+                            .Add("Cross-Origin-Resource-Policy", "cross-origin");
+                        break;
+
+                    case null:
+                        break;
+                }
+
+                await next();
+            });
+
         return applicationBuilder;
     }
 

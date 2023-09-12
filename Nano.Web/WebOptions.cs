@@ -88,6 +88,11 @@ public class WebOptions
         public virtual CspOptions Csp { get; set; } = new();
 
         /// <summary>
+        /// Cors.
+        /// </summary>
+        public virtual CorsOptions Cors { get; set; } = new();
+
+        /// <summary>
         /// Hsts.
         /// Settings for Strict-Transport-Security.
         /// </summary>
@@ -135,6 +140,38 @@ public class WebOptions
         /// Use Xss Protection Policy Header.
         /// </summary>
         public virtual XXssProtectionPolicyBlockMode XssProtectionPolicyHeader { get; set; } = XXssProtectionPolicyBlockMode.Disabled;
+
+        /// <summary>
+        /// Cors Options.
+        /// </summary>
+        public class CorsOptions
+        {
+            /// <summary>
+            /// Origin.
+            /// </summary>
+            public virtual OriginOptions Origin { get; set; } = new();
+
+            /// <summary>
+            /// Origin Options.
+            /// </summary>
+            public class OriginOptions
+            {
+                /// <summary>
+                /// Embedder Policy.
+                /// </summary>
+                public virtual CrossOriginEmbedderPolicy? EmbedderPolicy { get; set; }
+
+                /// <summary>
+                /// Opener Policy.
+                /// </summary>
+                public virtual CrossOriginOpenerPolicy? OpenerPolicy { get; set; }
+
+                /// <summary>
+                /// Resource Policy.
+                /// </summary>
+                public virtual CrossOriginResourcePolicy? ResourcePolicy { get; set; }
+            }
+        }
 
         /// <summary>
         /// Csp Options.
