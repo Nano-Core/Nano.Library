@@ -12,7 +12,7 @@ internal static class LazyLoaderTypeInfoResolver
     /// <summary>
     /// Ignore Empty Collections.
     /// </summary>
-    /// <param name="typeInfo"></param>
+    /// <param name="typeInfo">The <see cref="JsonTypeInfo"/></param>
     internal static void IgnoreLazyLoader(JsonTypeInfo typeInfo)
     {
         if (typeInfo == null)
@@ -22,7 +22,7 @@ internal static class LazyLoaderTypeInfoResolver
         {
             property.ShouldSerialize = property.PropertyType == typeof(ILazyLoader)
                 ? (_, _) => false
-                : (_, _) => true;
+                : (_, value) => value is not null;
         }
     }
 }
