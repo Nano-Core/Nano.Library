@@ -18,7 +18,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="Nano.Data.csproj.DotSettings" />
+		<None Remove="Nano.Console.csproj.DotSettings" />
 	</ItemGroup>
 
 	<ItemGroup>
