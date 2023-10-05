@@ -52,7 +52,7 @@
 		<PackageReference Include="NWebsec.AspNetCore.Mvc" Version="3.0.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
-		<PackageReference Include="Vivet.AspNetCore.RequestTimeZone" Version="7.0.2" />
+		<PackageReference Include="Vivet.AspNetCore.RequestTimeZone" Version="7.0.4" />
 	</ItemGroup>
 
 	<ItemGroup>
