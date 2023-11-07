@@ -19,6 +19,11 @@ public class SecurityOptions
     public virtual bool IsAuth { get; set; } = true;
 
     /// <summary>
+    /// Tokens Expiration.
+    /// </summary>
+    public virtual int TokensExpirationInHours { get; set; } = 24;
+
+    /// <summary>
     /// Jwt Options.
     /// </summary>
     public virtual JwtOptions Jwt { get; set; } = new();

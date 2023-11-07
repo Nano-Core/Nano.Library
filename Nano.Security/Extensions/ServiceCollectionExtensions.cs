@@ -101,6 +101,12 @@ public static class ServiceCollectionExtensions
                 x.Lockout.MaxFailedAccessAttempts = options.Lockout.MaxFailedAccessAttempts;
             });
 
+        services
+            .Configure<DataProtectionTokenProviderOptions>(x =>
+            {
+                x.TokenLifespan = TimeSpan.FromHours(options.TokensExpirationInHours);
+            });
+
         return services;
     }
 }
