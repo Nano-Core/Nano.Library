@@ -24,7 +24,7 @@
 	<ItemGroup>
 		<PackageReference Include="DynamicExpression" Version="2.3.3" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="7.0.11" />
+		<PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="7.0.13" />
 		<PackageReference Include="NetTopologySuite" Version="2.5.0" />
 	</ItemGroup>
 

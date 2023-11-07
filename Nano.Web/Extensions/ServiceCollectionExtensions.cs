@@ -8,12 +8,12 @@ using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using System.Xml.XPath;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -311,9 +311,9 @@ public static class ServiceCollectionExtensions
         if (appOptions == null)
             throw new ArgumentNullException(nameof(appOptions));
 
-        ApiVersion.TryParse(appOptions.Version, out var apiVersion);
+        ApiVersionParser.Default.TryParse(appOptions.Version, out var apiVersion);
 
-        return services
+        services
             .AddApiVersioning(x =>
             {
                 x.ReportApiVersions = true;
@@ -321,6 +321,8 @@ public static class ServiceCollectionExtensions
                 x.AssumeDefaultVersionWhenUnspecified = true;
                 x.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
             });
+
+        return services;
     }
     private static IServiceCollection AddCompression(this IServiceCollection services)
     {
