@@ -2,9 +2,9 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>7.2.38</version>
+		<version>8.0.0</version>
 		<title>Nano Core</title>
-		<summary>Rapidly built and deploy rich .NET 7.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
+		<summary>Rapidly built and deploy rich .NET 8.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
 		<authors>Nano Contributors</authors>
 		<owners>Michael Vivet</owners>
@@ -16,66 +16,65 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Added setting more identity token expiration.
-			- Updated all NuGets.
+			- Updated to .NET 8
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net7.0">
-				<dependency id="Microsoft.Extensions.DependencyInjection" version="7.0.0" />
-				<dependency id="Microsoft.Extensions.Identity.Stores" version="7.0.13" />
+				<dependency id="Azure.Identity" version="1.10.4" />
+				<dependency id="Microsoft.Extensions.DependencyInjection" version="8.0.0" />
+				<dependency id="Microsoft.Extensions.Identity.Stores" version="8.0.0" />
 				<dependency id="DynamicExpression" version="2.3.3" />
-				<dependency id="NetTopologySuite" version="2.5.0" />
-				<dependency id="Microsoft.Extensions.Configuration" version="7.0.0" />
-				<dependency id="Microsoft.Extensions.Configuration.Binder" version="7.0.4" />
-				<dependency id="Microsoft.Extensions.Configuration.CommandLine" version="7.0.0" />
-				<dependency id="Microsoft.Extensions.Configuration.EnvironmentVariables" version="7.0.0" />
-				<dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="7.0.0" />
-				<dependency id="Microsoft.Extensions.Configuration.Json" version="7.0.0" />
-				<dependency id="Microsoft.Extensions.Configuration.UserSecrets" version="7.0.0" />
-				<dependency id="Microsoft.Extensions.Options" version="7.0.1" />
-				<dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="7.0.0" />
-				<dependency id="Microsoft.Extensions.Logging" version="7.0.0" />
-				<dependency id="Microsoft.Extensions.Logging.Log4Net.AspNetCore" version="7.0.0" />
-				<dependency id="Serilog" version="3.0.1" />
-				<dependency id="Serilog.Extensions.Logging" version="7.0.0" />
-				<dependency id="Serilog.Sinks.Console" version="4.1.0" />
+				<dependency id="Microsoft.Extensions.Configuration" version="8.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.Binder" version="8.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.CommandLine" version="8.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.EnvironmentVariables" version="8.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="8.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.Json" version="8.0.0" />
+				<dependency id="Microsoft.Extensions.Configuration.UserSecrets" version="8.0.0" />
+				<dependency id="Microsoft.Extensions.Options" version="8.0.0" />
+				<dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="8.0.0" />
+				<dependency id="Microsoft.Extensions.Logging" version="8.0.0" />
+				<dependency id="Microsoft.Extensions.Logging.Log4Net.AspNetCore" version="8.0.0" />
+				<dependency id="Serilog" version="3.1.1" />
+				<dependency id="Serilog.Extensions.Logging" version="8.0.0" />
+				<dependency id="Serilog.Sinks.Console" version="5.1.0" />
 				<dependency id="AspNetCore.HealthChecks.Rabbitmq" version="7.0.0" />
-				<dependency id="EasyNetQ" version="7.6.0" />
-				<dependency id="EasyNetQ.DI.Microsoft" version="7.6.0" />
+				<dependency id="EasyNetQ" version="7.7.0" />
+				<dependency id="EasyNetQ.DI.Microsoft" version="7.7.0" />
 				<dependency id="AspNetCore.HealthChecks.MySql" version="7.0.0" />
 				<dependency id="AspNetCore.HealthChecks.Sqlite" version="7.0.0" />
 				<dependency id="AspNetCore.HealthChecks.SqlServer" version="7.0.0" />
 				<dependency id="EntityFrameworkCore.Triggers" version="1.2.3" />
-				<dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="7.0.13" />
-				<dependency id="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" version="7.0.13" />
-				<dependency id="Microsoft.EntityFrameworkCore" version="7.0.13" />
-				<dependency id="Microsoft.EntityFrameworkCore.Design" version="7.0.13" />
-				<dependency id="Microsoft.EntityFrameworkCore.InMemory" version="7.0.13" />
-				<dependency id="Microsoft.EntityFrameworkCore.Proxies" version="7.0.13" />
-				<dependency id="Microsoft.EntityFrameworkCore.Relational" version="7.0.13" />
-				<dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="7.0.13" />
-				<dependency id="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" version="7.0.13" />
-				<dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="7.0.13" />
-				<dependency id="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" version="7.0.13" />
+				<dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="8.0.0" />
+				<dependency id="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" version="8.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore" version="8.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.Design" version="8.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.InMemory" version="8.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.Proxies" version="8.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.Relational" version="8.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="8.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" version="8.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="8.0.0" />
+				<dependency id="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" version="8.0.0" />
 				<dependency id="Pomelo.EntityFrameworkCore.MySql" version="7.0.0" />
 				<dependency id="Pomelo.EntityFrameworkCore.MySql.NetTopologySuite" version="7.0.0" />
-				<dependency id="EFCoreSecondLevelCacheInterceptor" version="4.0.0" />
-				<dependency id="Z.EntityFramework.Plus.EFCore" version="7.100.0.5" />
-				<dependency id="Microsoft.Extensions.Hosting" version="7.0.1" />
-				<dependency id="Google.Apis.Auth" version="1.63.0" />
-				<dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="7.0.13" />
+				<dependency id="EFCoreSecondLevelCacheInterceptor" version="4.1.1" />
+				<dependency id="Z.EntityFramework.Plus.EFCore" version="8.101.1.2" />
+				<dependency id="Microsoft.Extensions.Hosting" version="8.0.0" />
+				<dependency id="Google.Apis.Auth" version="1.64.0" />
+				<dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="8.0.0" />
 				<dependency id="Microsoft.IdentityModel.Protocols.OpenIdConnect" version="7.0.3" />
 				<dependency id="AspNetCore.HealthChecks.Network" version="7.0.0" />
 				<dependency id="AspNetCore.HealthChecks.System" version="7.0.0" />
 				<dependency id="AspNetCore.HealthChecks.UI" version="7.0.2" />
 				<dependency id="AspNetCore.HealthChecks.UI.Client" version="7.1.0" />
 				<dependency id="AspNetCore.HealthChecks.UI.InMemory.Storage" version="7.0.0" />
-				<dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="7.0.13" />
-				<dependency id="Microsoft.AspNetCore.Authentication.Google" version="7.0.13" />
-				<dependency id="Microsoft.AspNetCore.Authentication.MicrosoftAccount" version="7.0.13" />
-				<dependency id="Microsoft.AspNetCore.Authorization" version="7.0.13" />
-				<dependency id="Asp.Versioning.Mvc" version="7.1.0" />
-				<dependency id="Asp.Versioning.Mvc.ApiExplorer" version="7.1.0" />
+				<dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="8.0.0" />
+				<dependency id="Microsoft.AspNetCore.Authentication.Google" version="8.0.0" />
+				<dependency id="Microsoft.AspNetCore.Authentication.MicrosoftAccount" version="8.0.0" />
+				<dependency id="Microsoft.AspNetCore.Authorization" version="8.0.0" />
+				<dependency id="Asp.Versioning.Mvc" version="8.0.0" />
+				<dependency id="Asp.Versioning.Mvc.ApiExplorer" version="8.0.0" />
 				<dependency id="NWebsec.AspNetCore.Middleware" version="3.0.0" />
 				<dependency id="NWebsec.AspNetCore.Mvc" version="3.0.0" />
 				<dependency id="Swashbuckle.AspNetCore" version="6.5.0" />
