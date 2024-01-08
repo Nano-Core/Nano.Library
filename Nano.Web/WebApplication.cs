@@ -66,7 +66,6 @@ public class WebApplication : DefaultApplication
             .UseAuthentication()
             .UseAuthorization()
             .UseHttpSession()
-            .UseHttpContextAccessor()
             .UseHttpRequestOptions()
             .UseHttpRequestIdentifier()
             .UseHttpLocalization()

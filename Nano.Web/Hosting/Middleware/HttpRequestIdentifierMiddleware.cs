@@ -8,7 +8,7 @@ namespace Nano.Web.Hosting.Middleware;
 public class HttpRequestIdentifierMiddleware : IMiddleware
 {
     /// <inheritdoc />
-    public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
+    public Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
     {
         if (httpContext == null)
             throw new ArgumentNullException(nameof(httpContext));
@@ -18,6 +18,6 @@ public class HttpRequestIdentifierMiddleware : IMiddleware
 
         httpContext.Response.Headers["RequestId"] = httpContext.TraceIdentifier;
 
-        await next(httpContext);
+        return next(httpContext);
     }
 }

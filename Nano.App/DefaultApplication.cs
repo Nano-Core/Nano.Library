@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Nano.App.Extensions;
 
 namespace Nano.App;
 
@@ -40,5 +41,8 @@ public class DefaultApplication : BaseApplication
 
         if (applicationLifetime == null)
             throw new ArgumentNullException(nameof(applicationLifetime));
+
+        applicationBuilder
+            .UseHttpContextAccessor();
     }
 }

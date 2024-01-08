@@ -9,7 +9,7 @@ namespace Nano.Web.Hosting.Middleware;
 public class HttpRequestOptionsMiddleware : IMiddleware
 {
     /// <inheritdoc />
-    public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
+    public Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
     {
         if (httpContext == null)
             throw new ArgumentNullException(nameof(httpContext));
@@ -22,16 +22,25 @@ public class HttpRequestOptionsMiddleware : IMiddleware
             var response = httpContext.Response;
             var headers = response.Headers;
 
-            headers.Add("Access-Control-Allow-Origin", new[] { (string)httpContext.Request.Headers["Origin"] });
-            headers.Add("Access-Control-Allow-Headers", new[] { "Origin, Server, Date, Cache-Control, Accept, Content-Type, Transfer-Encoding, Connection, Content-Encoding, RequestId, api-supported-versions, Strict-Transport-Security, X-Frame-Options, X-XSS-Protection, X-Content-Type-Options, X-Download-Options, X-Robots-Tag, X-Requested-With" });
-            headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, PATCH, DELETE, OPTIONS" });
-            headers.Add("Access-Control-Allow-Credentials", new[] { "true" });
+            headers
+                .Add("Access-Control-Allow-Origin", new[] { (string)httpContext.Request.Headers["Origin"] });
+            
+            headers
+                .Add("Access-Control-Allow-Headers", new[] { "Origin, Server, Date, Cache-Control, Accept, Content-Type, Transfer-Encoding, Connection, Content-Encoding, RequestId, api-supported-versions, Strict-Transport-Security, X-Frame-Options, X-XSS-Protection, X-Content-Type-Options, X-Download-Options, X-Robots-Tag, X-Requested-With" });
+            
+            headers
+                .Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, PATCH, DELETE, OPTIONS" });
+            
+            headers
+                .Add("Access-Control-Allow-Credentials", new[] { "true" });
 
             response.StatusCode = (int)HttpStatusCode.OK;
 
-            await response.WriteAsync("OK");
+            return response
+                .WriteAsync("OK");
         }
-        else
-            await next.Invoke(httpContext);
+
+        return next
+            .Invoke(httpContext);
     }
 }

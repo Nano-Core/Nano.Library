@@ -3,7 +3,4 @@
 /// <summary>
 /// LogIn External Facebook.
 /// </summary>
-public class LogInExternalFacebook : LogInExternalImplicit<LogInExternalProviderFacebook>
-{
-
-}
+public class LogInExternalFacebook : LogInExternalImplicit<LogInExternalProviderFacebook>;

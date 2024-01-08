@@ -724,258 +724,162 @@ public class WebOptions
                 /// <summary>
                 /// Csp Directive Permissions Policy Accelerometer.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyAccelerometer : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyAccelerometer : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Ambient Light Sensor
                 /// </summary>
-                public class CspDirectivePermissionsPolicyAmbientLightSensor : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyAmbientLightSensor : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions PolicyAuto Play.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyAutoPlay : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyAutoPlay : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Battery.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyBattery : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyBattery : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Camera
                 /// </summary>
-                public class CspDirectivePermissionsPolicyCamera : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyCamera : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Display Capture.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyDisplayCapture : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyDisplayCapture : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Document Domain.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyDocumentDomain : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyDocumentDomain : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Encrypted Media.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyEncryptedMedia : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyEncryptedMedia : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Execution While Not Rendered.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyExecutionWhileNotRendered : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyExecutionWhileNotRendered : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Execution While Out Of Viewport.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyExecutionWhileOutOfViewport : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyExecutionWhileOutOfViewport : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Fullscreen.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyFullscreen : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyFullscreen : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Gamepad.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyGamepad : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyGamepad : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Geo location.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyGeolocation : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyGeolocation : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Gyroscope.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyGyroscope : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyGyroscope : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Layout Animations.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyLayoutAnimations : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyLayoutAnimations : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Legacy Image Formats.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyLegacyImageFormats : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyLegacyImageFormats : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Magnetometer.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyMagnetometer : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyMagnetometer : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Microphone.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyMicrophone : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyMicrophone : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Midi.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyMidi : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyMidi : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Navigation Override.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyNavigationOverride : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyNavigationOverride : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Oversized Images.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyOversizedImages : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyOversizedImages : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Payment.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyPayment : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyPayment : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Picture-In-Picture.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyPictureInPicture : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyPictureInPicture : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Public Key Credentials Get.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyPublicKeyCredentialsGet : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyPublicKeyCredentialsGet : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions PolicySpeakerSelection.
                 /// </summary>
-                public class CspDirectivePermissionsPolicySpeakerSelection : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicySpeakerSelection : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Sync Xhr.
                 /// </summary>
-                public class CspDirectivePermissionsPolicySyncXhr : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicySyncXhr : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Unoptimized Images.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyUnoptimizedImages : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyUnoptimizedImages : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Unsized Media.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyUnsizedMedia : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyUnsizedMedia : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Usb.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyUsb : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyUsb : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Screen Wake Lock.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyScreenWakeLock : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyScreenWakeLock : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Web Share.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyWebShare : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyWebShare : CspDirective;
 
                 /// <summary>
                 /// Csp Directive Permissions Policy Xr Spatial Tracking.
                 /// </summary>
-                public class CspDirectivePermissionsPolicyXrSpatialTracking : CspDirective
-                {
-
-                }
+                public class CspDirectivePermissionsPolicyXrSpatialTracking : CspDirective;
             }
         }
 

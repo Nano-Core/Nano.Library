@@ -7,6 +7,7 @@ using Nano.Eventing.Handlers;
 using Nano.Eventing.Interfaces;
 using Nano.Eventing.Providers.EasyNetQ;
 using Nano.Models.Extensions;
+using Nano.Models.Helpers;
 
 namespace Nano.Eventing.Extensions;
 
@@ -67,9 +68,7 @@ public static class ServiceCollectionExtensions
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        AppDomain.CurrentDomain
-            .GetAssemblies()
-            .SelectMany(x => x.GetTypes())
+        TypesHelper.GetAllTypes()
             .SelectMany(x => x.GetInterfaces(), (x, y) => new
             {
                 Type = x,

@@ -3,7 +3,4 @@
 /// <summary>
 /// LogIn External Google.
 /// </summary>
-public class LogInExternalGoogle : LogInExternalImplicit<LogInExternalProviderGoogle>
-{
-
-}
+public class LogInExternalGoogle : LogInExternalImplicit<LogInExternalProviderGoogle>;

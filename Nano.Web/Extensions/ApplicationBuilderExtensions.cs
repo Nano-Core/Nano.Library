@@ -15,7 +15,6 @@ using Nano.App;
 using Nano.Config;
 using Nano.Web.Enums;
 using Nano.Web.Extensions.Const;
-using Nano.Web.Hosting;
 using Nano.Web.Hosting.Middleware;
 using NWebsec.AspNetCore.Mvc;
 using NWebsec.Core.Common.Middleware.Options;
@@ -46,6 +45,8 @@ public static class ApplicationBuilderExtensions
 
         if (webOptions.Hosting.HealthCheck.UseHealthCheck)
         {
+            var appOptions = services.GetService<AppOptions>() ?? new AppOptions();
+
             applicationBuilder
                 .UseHealthChecks(HealthzCheckUris.Path, new HealthCheckOptions
                 {
@@ -59,6 +60,7 @@ public static class ApplicationBuilderExtensions
                 applicationBuilder
                     .UseHealthChecksUI(x =>
                     {
+                        x.PageTitle = $"Nano - {appOptions.Name} Healthz v{appOptions.Version} ({ConfigManager.Environment})";
                         x.UIPath = HealthzCheckUris.UiPath;
                         x.ApiPath = HealthzCheckUris.ApiPath;
                         x.ResourcesPath = HealthzCheckUris.RexPath;
@@ -230,24 +232,6 @@ public static class ApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the <see cref="IHttpContextAccessor"/> middleware, and initializes the current <see cref="HttpContext"/>.
-    /// </summary>
-    /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
-    /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
-    internal static IApplicationBuilder UseHttpContextAccessor(this IApplicationBuilder applicationBuilder)
-    {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        var httpContextAccessor = applicationBuilder.ApplicationServices
-            .GetRequiredService<IHttpContextAccessor>();
-
-        HttpContextAccess.Configure(httpContextAccessor);
-
-        return applicationBuilder;
-    }
-
-    /// <summary>
     /// Adds http session middleware to the <see cref="IApplicationBuilder"/>.
     /// </summary>
     /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
@@ -289,7 +273,7 @@ public static class ApplicationBuilderExtensions
         {
             applicationBuilder
                 .UseResponseCaching()
-                .Use(async (context, next) =>
+                .Use((context, next) =>
                 {
                     context.Response.GetTypedHeaders().CacheControl =
                         new CacheControlHeaderValue
@@ -318,7 +302,7 @@ public static class ApplicationBuilderExtensions
                         };
                     }
 
-                    await next();
+                    return next();
                 });
         }
         else
@@ -779,7 +763,7 @@ public static class ApplicationBuilderExtensions
             });
 
         applicationBuilder
-            .Use(async (context, next) =>
+            .Use((context, next) =>
             {
                 switch (webOptions.Hosting.Cors.Origin.EmbedderPolicy)
                 {
@@ -844,7 +828,7 @@ public static class ApplicationBuilderExtensions
                         break;
                 }
 
-                await next();
+                return next();
             });
 
         return applicationBuilder;
@@ -861,7 +845,7 @@ public static class ApplicationBuilderExtensions
         }
 
         applicationBuilder
-            .Use(async (context, next) =>
+            .Use((context, next) =>
             {
                 var permissionPolicyValues = string.Empty;
 
@@ -901,7 +885,7 @@ public static class ApplicationBuilderExtensions
                 context.Response.Headers
                     .Add("Permissions-Policy", permissionPolicyValues);
 
-                await next();
+                return next();
             });
 
         return applicationBuilder;

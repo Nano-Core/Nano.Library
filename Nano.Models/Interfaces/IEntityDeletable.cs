@@ -4,7 +4,4 @@
 /// Entity Deletable.
 /// Implementing entities are deletable.
 /// </summary>
-public interface IEntityDeletable : IEntity
-{
-
-}
+public interface IEntityDeletable : IEntity;

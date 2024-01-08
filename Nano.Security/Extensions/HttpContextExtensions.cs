@@ -15,22 +15,6 @@ namespace Nano.Security.Extensions;
 public static class HttpContextExtensions
 {
     /// <summary>
-    /// Get Is Anonymous.
-    /// </summary>
-    /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
-    /// <returns>Whehter the current action is anonymous.</returns>
-    public static bool GetIsAnonymous(this HttpContext httpContext)
-    {
-        if (httpContext == null)
-            throw new ArgumentNullException(nameof(httpContext));
-
-        var success = httpContext.Items
-            .TryGetValue("IsAnonymous", out var value);
-
-        return success && value != null && (bool)value;
-    }
-
-    /// <summary>
     /// Get Jwt Token.
     /// </summary>
     /// <param name="httpContext">The <see cref="HttpContext"/>.</param>

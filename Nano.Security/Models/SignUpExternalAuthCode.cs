@@ -10,10 +10,7 @@ namespace Nano.Security.Models;
 /// <typeparam name="TUser">The user type</typeparam>
 public class SignUpExternalAuthCode<TProvider, TUser> : SignUpExternalAuthCode<TProvider, TUser, Guid>
     where TProvider : LogInExternalProviderAuthCode, new()
-    where TUser : IEntityUser<Guid>, new()
-{
-
-}
+    where TUser : IEntityUser<Guid>, new();
 
 /// <summary>
 /// Sign Up External Auth Code.
@@ -24,7 +21,4 @@ public class SignUpExternalAuthCode<TProvider, TUser> : SignUpExternalAuthCode<T
 public class SignUpExternalAuthCode<TProvider, TUser, TIdentity> : BaseSignUpExternal<TProvider, TUser, TIdentity>
     where TProvider : LogInExternalProviderAuthCode, new()
     where TUser : IEntityUser<TIdentity>, new()
-    where TIdentity : IEquatable<TIdentity>
-{
-
-}
+    where TIdentity : IEquatable<TIdentity>;

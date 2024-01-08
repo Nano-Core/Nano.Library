@@ -4,7 +4,4 @@
 /// Entity Deletable.
 /// Implementing entities are updatable.
 /// </summary>
-public interface IEntityUpdatable : IEntity
-{
-
-}
+public interface IEntityUpdatable : IEntity;

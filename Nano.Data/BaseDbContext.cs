@@ -325,20 +325,20 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="Task"/> (void).</returns>
-    internal virtual async Task EnsureMigratedAsync(CancellationToken cancellationToken = default)
+    internal virtual Task EnsureMigratedAsync(CancellationToken cancellationToken = default)
     {
         if (!ConfigManager.HasDbContext)
-            return;
+            return Task.CompletedTask;
 
         if (!this.Options.UseMigrateDatabase)
-            return;
+            return Task.CompletedTask;
 
         if (this.Options.ConnectionString == null)
-            return;
+            return Task.CompletedTask;
 
         Log.Information("Applying Migrations at start-up.");
 
-        await this.Database
+        return this.Database
             .MigrateAsync(cancellationToken);
     }
 

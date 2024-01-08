@@ -5,7 +5,4 @@ namespace Nano.Models.Attributes;
 /// <summary>
 /// Include Attribute.
 /// </summary>
-public class IncludeAttribute : Attribute
-{
-
-}
+public class IncludeAttribute : Attribute;

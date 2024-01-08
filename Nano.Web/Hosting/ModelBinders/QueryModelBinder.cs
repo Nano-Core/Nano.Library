@@ -9,7 +9,7 @@ using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Nano.Models.Extensions;
-using Nano.Web.Const;
+using Nano.Models.Serialization.Const;
 
 namespace Nano.Web.Hosting.ModelBinders;
 

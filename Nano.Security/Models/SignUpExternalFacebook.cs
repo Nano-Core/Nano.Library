@@ -10,7 +10,4 @@ namespace Nano.Security.Models;
 /// <typeparam name="TIdentity"></typeparam>
 public class SignUpExternalFacebook<TUser, TIdentity> : SignUpExternalImplicit<LogInExternalProviderFacebook, TUser, TIdentity>
     where TUser : IEntityUser<TIdentity>, new()
-    where TIdentity : IEquatable<TIdentity>
-{
-
-}
+    where TIdentity : IEquatable<TIdentity>;

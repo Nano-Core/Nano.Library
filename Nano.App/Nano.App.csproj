@@ -23,6 +23,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+		<PackageReference Include="AspNetCore.HealthChecks.Network" Version="7.0.0" />
+		<PackageReference Include="Vivet.AspNetCore.RequestTimeZone" Version="8.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

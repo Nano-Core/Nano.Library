@@ -5,7 +5,4 @@ namespace Nano.Models.Exceptions;
 /// <summary>
 /// Permission Denied Exception.
 /// </summary>
-public class PermissionDeniedException : Exception
-{
-
-}
+public class PermissionDeniedException : Exception;

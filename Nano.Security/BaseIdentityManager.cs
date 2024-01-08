@@ -1,5 +1,4 @@
 using Google.Apis.Auth;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -26,6 +25,7 @@ using System.Threading.Tasks;
 using Nano.Models.Extensions;
 using System.Text.Json.Nodes;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Claim = System.Security.Claims.Claim;
 
 namespace Nano.Security;
@@ -65,7 +65,7 @@ public abstract class BaseIdentityManager
     /// <param name="logIn">The <see cref="LogIn"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="AccessToken"/>.</returns>
-    public virtual async Task<AccessToken> SignInAdminTransientAsync(LogIn logIn, CancellationToken cancellationToken = default)
+    public virtual Task<AccessToken> SignInAdminTransientAsync(LogIn logIn, CancellationToken cancellationToken = default)
     {
         if (logIn == null)
             throw new ArgumentNullException(nameof(logIn));
@@ -98,7 +98,7 @@ public abstract class BaseIdentityManager
 
         var accessToken = this.GenerateJwtToken(tokenData);
 
-        return await Task.FromResult(accessToken);
+        return Task.FromResult(accessToken);
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public abstract class BaseIdentityManager
     /// <param name="transientClaims">The claims added to the token.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="AccessToken"/>.</returns>
-    public virtual async Task<AccessToken> SignInExternalTransientAsync(ExternalLogInData externalLogInData, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default)
+    public virtual Task<AccessToken> SignInExternalTransientAsync(ExternalLogInData externalLogInData, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default)
     {
         if (externalLogInData == null)
             throw new ArgumentNullException(nameof(externalLogInData));
@@ -155,7 +155,7 @@ public abstract class BaseIdentityManager
 
         var jwtToken = this.GenerateJwtToken(tokenData);
 
-        return await Task.FromResult(jwtToken);
+        return Task.FromResult(jwtToken);
     }
 
     /// <summary>
@@ -194,9 +194,9 @@ public abstract class BaseIdentityManager
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="AccessToken"/>.</returns>
-    public virtual async Task<SecurityOptions.PasswordOptions> GetPaswordOptionsAsync(CancellationToken cancellationToken = default)
+    public virtual Task<SecurityOptions.PasswordOptions> GetPaswordOptionsAsync(CancellationToken cancellationToken = default)
     {
-        return await Task.FromResult(this.Options.Password);
+        return Task.FromResult(this.Options.Password);
     }
 
     /// <summary>
@@ -1882,7 +1882,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         var roles = roles2?
             .Union(this.Options.User.DefaultRoles)
             .Distinct()
-            .ToList() ?? new List<string>();
+            .ToList() ?? [];
 
         if (roles.Any())
         {
@@ -1897,7 +1897,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         var claims = claims2?
             .Select(x => new Claim(x.Key, x.Value))
-            .ToList() ?? new List<Claim>();
+            .ToList() ?? [];
 
         if (claims.Any())
         {
@@ -2031,7 +2031,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
             throw new UnauthorizedException();
         }
     }
-    private async Task<ExternalLoginTokenData> RefreshExternalProviderTokenGoogle(string externalProviderName, string externalProviderRefreshToken = null)
+    private Task<ExternalLoginTokenData> RefreshExternalProviderTokenGoogle(string externalProviderName, string externalProviderRefreshToken = null)
     {
         if (externalProviderName == null)
             throw new ArgumentNullException(nameof(externalProviderName));
@@ -2042,9 +2042,9 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         this.Logger
             .LogInformation($"The external provider: {externalProviderName} does not support refresh token.");
 
-        return await Task.FromResult(new ExternalLoginTokenData());
+        return Task.FromResult(new ExternalLoginTokenData());
     }
-    private async Task<ExternalLoginTokenData> RefreshExternalProviderTokenFacebook(string externalProviderName, string externalProviderRefreshToken = null)
+    private Task<ExternalLoginTokenData> RefreshExternalProviderTokenFacebook(string externalProviderName, string externalProviderRefreshToken = null)
     {
         if (externalProviderName == null)
             throw new ArgumentNullException(nameof(externalProviderName));
@@ -2055,7 +2055,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         this.Logger
             .LogInformation($"The external provider: {externalProviderName} does not support refresh token.");
 
-        return await Task.FromResult(new ExternalLoginTokenData());
+        return Task.FromResult(new ExternalLoginTokenData());
     }
     private async Task<ExternalLoginTokenData> RefreshExternalProviderTokenMicrosoft(string externalProviderName, string externalProviderRefreshToken = null, CancellationToken cancellationToken = default)
     {

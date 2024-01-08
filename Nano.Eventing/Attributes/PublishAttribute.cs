@@ -7,7 +7,4 @@ namespace Nano.Eventing.Attributes;
 /// Types with this annotation, defines that an event will be published for the entity when it changes.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
-public class PublishAttribute : Attribute
-{
-
-}
+public class PublishAttribute : Attribute;

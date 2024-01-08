@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Nano.Config.Extensions;
 using Nano.Console.Workers;
 using Nano.Models.Extensions;
+using Nano.Models.Helpers;
 using Nano.Repository.Extensions;
 
 namespace Nano.Console.Extensions
@@ -35,9 +36,7 @@ namespace Nano.Console.Extensions
             services
                 .AddRepository();
 
-            AppDomain.CurrentDomain
-                .GetAssemblies()
-                .SelectMany(x => x.GetTypes())
+            TypesHelper.GetAllTypes()
                 .Where(x =>
                     !x.IsAbstract &&
                     x.IsTypeOf(typeof(BaseWorker)))

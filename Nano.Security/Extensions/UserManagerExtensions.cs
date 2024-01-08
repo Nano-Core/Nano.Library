@@ -18,14 +18,14 @@ public static class UserManagerExtensions
     /// <param name="userManager">The <see cref="UserManager{TUser}"/>.</param>
     /// <param name="phoneNumber">the phone number.</param>
     /// <returns>The user.</returns>
-    public static async Task<TUser> FindByPhoneNumberAsync<TUser, TIdentity>(this UserManager<TUser> userManager, string phoneNumber)
+    public static Task<TUser> FindByPhoneNumberAsync<TUser, TIdentity>(this UserManager<TUser> userManager, string phoneNumber)
         where TUser : IdentityUser<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
         if (userManager == null)
             throw new ArgumentNullException(nameof(userManager));
 
-        return await userManager.Users
+        return userManager.Users
             .SingleOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
     }
 
@@ -37,7 +37,7 @@ public static class UserManagerExtensions
     /// <param name="userManager">The <see cref="UserManager{TUser}"/>.</param>
     /// <param name="user">The user.</param>
     /// <returns>The token.</returns>
-    public static async Task<string> GeneratePhoneNumberConfirmationTokenAsync<TUser, TIdentity>(this UserManager<TUser> userManager, TUser user)
+    public static Task<string> GeneratePhoneNumberConfirmationTokenAsync<TUser, TIdentity>(this UserManager<TUser> userManager, TUser user)
         where TUser : IdentityUser<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
@@ -50,7 +50,7 @@ public static class UserManagerExtensions
         if (user.PhoneNumber == null)
             throw new ArgumentNullException(nameof(user.PhoneNumber));
 
-        return await userManager
+        return userManager
             .GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber);
     }
 
@@ -63,7 +63,7 @@ public static class UserManagerExtensions
     /// <param name="user">The user.</param>
     /// <param name="token">The confirm phone number token.</param>
     /// <returns>The <see cref="IdentityResult"/>.</returns>
-    public static async Task<IdentityResult> ConfirmPhoneNumberAsync<TUser, TIdentity>(this UserManager<TUser> userManager, TUser user, string token)
+    public static Task<IdentityResult> ConfirmPhoneNumberAsync<TUser, TIdentity>(this UserManager<TUser> userManager, TUser user, string token)
         where TUser : IdentityUser<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
@@ -79,7 +79,7 @@ public static class UserManagerExtensions
         if (user.PhoneNumber == null)
             throw new ArgumentNullException(nameof(user.PhoneNumber));
 
-        return await userManager
+        return userManager
             .ChangePhoneNumberAsync(user, user.PhoneNumber, token);
     }
 }

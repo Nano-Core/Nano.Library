@@ -4,7 +4,4 @@
 /// Entity Creatable.
 /// Implementing entities are creatable.
 /// </summary>
-public interface IEntityCreatable : IEntity
-{
-
-}
+public interface IEntityCreatable : IEntity;

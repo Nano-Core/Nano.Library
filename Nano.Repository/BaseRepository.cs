@@ -60,7 +60,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<TEntity> GetAsync<TEntity, TKey>(TKey key, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity> GetAsync<TEntity, TKey>(TKey key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>
     {
@@ -69,45 +69,45 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
         var indent = this.Context.Options.QueryIncludeDepth;
 
-        return await this.GetEntitySet<TEntity>()
+        return this.GetEntitySet<TEntity>()
             .IncludeAnnotations(indent)
             .FirstOrDefaultAsync(x => x.Id.Equals(key), cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<TEntity> GetAsync<TEntity>(int key, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity> GetAsync<TEntity>(int key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<int>
     {
-        return await this
+        return this
             .GetAsync<TEntity, int>(key, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<TEntity> GetAsync<TEntity>(long key, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity> GetAsync<TEntity>(long key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<long>
     {
-        return await this
+        return this
             .GetAsync<TEntity, long>(key, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<TEntity> GetAsync<TEntity>(string key, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity> GetAsync<TEntity>(string key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<string>
     {
-        return await this
+        return this
             .GetAsync<TEntity, string>(key, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<TEntity> GetAsync<TEntity>(Guid key, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity> GetAsync<TEntity>(Guid key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<Guid>
     {
-        return await this
+        return this
             .GetAsync<TEntity, Guid>(key, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<TEntity> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : class, IQueryCriteria, new()
     {
@@ -116,7 +116,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
         var indent = this.Context.Options.QueryIncludeDepth;
 
-        return await this.GetEntitySet<TEntity>()
+        return this.GetEntitySet<TEntity>()
             .IncludeAnnotations(indent)
             .Where(query.Criteria)
             .Order(query.Order)
@@ -125,7 +125,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         if (where == null)
@@ -136,7 +136,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
         var indent = this.Context.Options.QueryIncludeDepth;
 
-        return await this.GetEntitySet<TEntity>()
+        return this.GetEntitySet<TEntity>()
             .IncludeAnnotations(indent)
             .Where(where)
             .FirstOrDefaultAsync(cancellationToken);
@@ -158,43 +158,43 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<int> keys, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<int> keys, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<int>
     {
         if (keys == null)
             throw new ArgumentNullException(nameof(keys));
 
-        return await this.GetManyAsync<TEntity, int>(keys, cancellationToken);
+        return this.GetManyAsync<TEntity, int>(keys, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<long> keys, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<long> keys, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<long>
     {
         if (keys == null)
             throw new ArgumentNullException(nameof(keys));
 
-        return await this.GetManyAsync<TEntity, long>(keys, cancellationToken);
+        return this.GetManyAsync<TEntity, long>(keys, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<string> keys, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<string> keys, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<string>
     {
         if (keys == null)
             throw new ArgumentNullException(nameof(keys));
 
-        return await this.GetManyAsync<TEntity, string>(keys, cancellationToken);
+        return this.GetManyAsync<TEntity, string>(keys, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<Guid> keys, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<Guid> keys, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<Guid>
     {
         if (keys == null)
             throw new ArgumentNullException(nameof(keys));
 
-        return await this.GetManyAsync<TEntity, Guid>(keys, cancellationToken);
+        return this.GetManyAsync<TEntity, Guid>(keys, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -308,7 +308,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, Pagination pagination, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, Pagination pagination, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         if (where == null)
@@ -320,7 +320,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (pagination == null)
             throw new ArgumentNullException(nameof(pagination));
 
-        return await this.GetManyAsync(where, pagination, ordering, cancellationToken);
+        return this.GetManyAsync(where, pagination, ordering, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -494,35 +494,35 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task DeleteAsync<TEntity>(int id, CancellationToken cancellationToken)
+    public virtual Task DeleteAsync<TEntity>(int id, CancellationToken cancellationToken)
         where TEntity : class, IEntityDeletable, IEntityIdentity<int>, new()
     {
-        await this.DeleteAsync<TEntity, int>(id, cancellationToken);
+        return this.DeleteAsync<TEntity, int>(id, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task DeleteAsync<TEntity>(long id, CancellationToken cancellationToken)
+    public virtual Task DeleteAsync<TEntity>(long id, CancellationToken cancellationToken)
         where TEntity : class, IEntityDeletable, IEntityIdentity<long>, new()
     {
-        await this.DeleteAsync<TEntity, long>(id, cancellationToken);
+        return this.DeleteAsync<TEntity, long>(id, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task DeleteAsync<TEntity>(string id, CancellationToken cancellationToken = default)
+    public virtual Task DeleteAsync<TEntity>(string id, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable, IEntityIdentity<string>, new()
     {
-        await this.DeleteAsync<TEntity, string>(id, cancellationToken);
+        return this.DeleteAsync<TEntity, string>(id, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task DeleteAsync<TEntity>(Guid id, CancellationToken cancellationToken = default)
+    public virtual Task DeleteAsync<TEntity>(Guid id, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable, IEntityIdentity<Guid>, new()
     {
-        await this.DeleteAsync<TEntity, Guid>(id, cancellationToken);
+        return this.DeleteAsync<TEntity, Guid>(id, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+    public virtual Task DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable
     {
         if (entity == null)
@@ -533,12 +533,14 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
         if (this.Context.AutoSave)
         {
-            await this.SaveChangesAsync(cancellationToken);
+            return this.SaveChangesAsync(cancellationToken);
         }
+
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
-    public virtual async Task DeleteManyAsync<TEntity, TKey>(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
+    public virtual Task DeleteManyAsync<TEntity, TKey>(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable, IEntityIdentity<TKey>, new()
         where TKey : IEquatable<TKey>
     {
@@ -560,11 +562,11 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
                 });
         }
 
-        await this.DeleteManyAsync(entities, cancellationToken);
+        return this.DeleteManyAsync(entities, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task DeleteManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual Task DeleteManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable
     {
         if (entities == null)
@@ -575,8 +577,10 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
         if (this.Context.AutoSave)
         {
-            await this.SaveChangesAsync(cancellationToken);
+            return this.SaveChangesAsync(cancellationToken);
         }
+
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
@@ -637,7 +641,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task DeleteManyBulkAsync<TEntity, TKey>(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
+    public virtual Task DeleteManyBulkAsync<TEntity, TKey>(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable, IEntityIdentity<TKey>, new()
         where TKey : IEquatable<TKey>
     {
@@ -653,51 +657,51 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
                 Id = x
             });
 
-        await this.DeleteManyBulkAsync(entities, cancellationToken);
+        return this.DeleteManyBulkAsync(entities, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task DeleteManyBulkAsync<TEntity>(IEnumerable<Guid> ids, CancellationToken cancellationToken = default)
+    public virtual Task DeleteManyBulkAsync<TEntity>(IEnumerable<Guid> ids, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable, IEntityIdentity<Guid>, new()
     {
         if (ids == null)
             throw new ArgumentNullException(nameof(ids));
 
-        await this.DeleteManyBulkAsync<TEntity, Guid>(ids, cancellationToken);
+        return this.DeleteManyBulkAsync<TEntity, Guid>(ids, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task DeleteManyBulkAsync<TEntity>(IEnumerable<int> ids, CancellationToken cancellationToken = default)
+    public virtual Task DeleteManyBulkAsync<TEntity>(IEnumerable<int> ids, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable, IEntityIdentity<int>, new()
     {
         if (ids == null)
             throw new ArgumentNullException(nameof(ids));
 
-        await this.DeleteManyBulkAsync<TEntity, int>(ids, cancellationToken);
+        return this.DeleteManyBulkAsync<TEntity, int>(ids, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task DeleteManyBulkAsync<TEntity>(IEnumerable<long> ids, CancellationToken cancellationToken = default)
+    public virtual Task DeleteManyBulkAsync<TEntity>(IEnumerable<long> ids, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable, IEntityIdentity<long>, new()
     {
         if (ids == null)
             throw new ArgumentNullException(nameof(ids));
 
-        await this.DeleteManyBulkAsync<TEntity, long>(ids, cancellationToken);
+        return this.DeleteManyBulkAsync<TEntity, long>(ids, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task DeleteManyBulkAsync<TEntity>(IEnumerable<string> ids, CancellationToken cancellationToken = default)
+    public virtual Task DeleteManyBulkAsync<TEntity>(IEnumerable<string> ids, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable, IEntityIdentity<string>, new()
     {
         if (ids == null)
             throw new ArgumentNullException(nameof(ids));
 
-        await this.DeleteManyBulkAsync<TEntity, string>(ids, cancellationToken);
+        return this.DeleteManyBulkAsync<TEntity, string>(ids, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task DeleteManyBulkAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual Task DeleteManyBulkAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable
     {
         if (entities == null)
@@ -706,7 +710,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (this.Context.Options.UseSoftDeletetion)
             throw new InvalidOperationException("Sql bulk delete operations are not allowed when having soft-delete enabled.");
 
-        await this.GetEntitySet<TEntity>()
+        return this.GetEntitySet<TEntity>()
             .BulkDeleteAsync(entities, x =>
             {
                 x.BatchSize = this.Context.Options.BulkBatchSize;
@@ -715,31 +719,31 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<long> CountAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
+    public virtual Task<long> CountAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : class, IQueryCriteria, new()
     {
         if (criteria == null)
             throw new ArgumentNullException(nameof(criteria));
 
-        return await this.GetEntitySet<TEntity>()
+        return this.GetEntitySet<TEntity>()
             .Where(criteria)
             .LongCountAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<long> CountAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
+    public virtual Task<long> CountAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         if (expression == null)
             throw new ArgumentNullException(nameof(expression));
 
-        return await this.GetEntitySet<TEntity>()
+        return this.GetEntitySet<TEntity>()
             .LongCountAsync(expression, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<decimal> SumAsync<TEntity>(Expression<Func<TEntity, bool>> whereExpr, Expression<Func<TEntity, decimal>> sumExpr, CancellationToken cancellationToken = default)
+    public virtual Task<decimal> SumAsync<TEntity>(Expression<Func<TEntity, bool>> whereExpr, Expression<Func<TEntity, decimal>> sumExpr, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         if (whereExpr == null)
@@ -748,13 +752,13 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (sumExpr == null)
             throw new ArgumentNullException(nameof(sumExpr));
 
-        return await this.GetEntitySet<TEntity>()
+        return this.GetEntitySet<TEntity>()
             .Where(whereExpr)
             .SumAsync(sumExpr, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<decimal> AverageAsync<TEntity>(Expression<Func<TEntity, bool>> whereExpr, Expression<Func<TEntity, decimal>> avgExpr, CancellationToken cancellationToken = default)
+    public virtual Task<decimal> AverageAsync<TEntity>(Expression<Func<TEntity, bool>> whereExpr, Expression<Func<TEntity, decimal>> avgExpr, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         if (whereExpr == null)
@@ -763,7 +767,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (avgExpr == null)
             throw new ArgumentNullException(nameof(avgExpr));
 
-        return await this.GetEntitySet<TEntity>()
+        return this.GetEntitySet<TEntity>()
             .Where(whereExpr)
             .AverageAsync(avgExpr, cancellationToken);
     }

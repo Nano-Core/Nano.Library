@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
-using Nano.Web.Models;
+using Nano.Models;
 
 namespace Nano.Web.Hosting.Filters;
 

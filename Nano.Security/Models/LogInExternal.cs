@@ -3,7 +3,4 @@
 /// <summary>
 /// LogIn External.
 /// </summary>
-public class LogInExternal : BaseLogIn
-{
-
-}
+public class LogInExternal : BaseLogIn;

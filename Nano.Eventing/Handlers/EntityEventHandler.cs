@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
 using Nano.Models.Extensions;
+using Nano.Models.Helpers;
 using Nano.Models.Interfaces;
 
 namespace Nano.Eventing.Handlers;
@@ -43,9 +44,7 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
 
         try
         {
-            var type = AppDomain.CurrentDomain
-                .GetAssemblies()
-                .SelectMany(x => x.GetTypes())
+            var type = TypesHelper.GetAllTypes()
                 .Where(x => x.IsTypeOf(typeof(IEntityIdentity<>)))
                 .First(x => x.Name == @event.Type);
 

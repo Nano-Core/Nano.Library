@@ -10,10 +10,7 @@ namespace Nano.Security.Models;
 /// <typeparam name="TUser">The user type</typeparam>
 public class SignUpExternalImplicit<TProvider, TUser> : SignUpExternalImplicit<TProvider, TUser, Guid>
     where TProvider : LogInExternalProviderImplicit, new()
-    where TUser : IEntityUser<Guid>, new()
-{
-
-}
+    where TUser : IEntityUser<Guid>, new();
 
 /// <summary>
 /// Sign Up External Implicit.
@@ -24,7 +21,4 @@ public class SignUpExternalImplicit<TProvider, TUser> : SignUpExternalImplicit<T
 public class SignUpExternalImplicit<TProvider, TUser, TIdentity> : BaseSignUpExternal<TProvider, TUser, TIdentity>
     where TProvider : LogInExternalProviderImplicit, new()
     where TUser : IEntityUser<TIdentity>, new()
-    where TIdentity : IEquatable<TIdentity>
-{
-
-}
+    where TIdentity : IEquatable<TIdentity>;

@@ -6,10 +6,7 @@ namespace Nano.Security.Models;
 /// <summary>
 /// Base Sign-Up External (abstract).
 /// </summary>
-public abstract class BaseSignUpExternal : BaseSignUp
-{
-
-}
+public abstract class BaseSignUpExternal : BaseSignUp;
 
 /// <summary>
 /// Base Sign-Up External (abstract).

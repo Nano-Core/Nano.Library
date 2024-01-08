@@ -6,7 +6,4 @@ namespace Nano.Models.Attributes;
 /// Swagger Exclude Attribute.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
-public class SwaggerExcludeAttribute : Attribute
-{
-
-}
+public class SwaggerExcludeAttribute : Attribute;

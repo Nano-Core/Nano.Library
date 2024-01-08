@@ -8,6 +8,7 @@ using Nano.Eventing.Attributes;
 using Nano.Eventing.Handlers;
 using Nano.Eventing.Interfaces;
 using Nano.Models.Extensions;
+using Nano.Models.Helpers;
 
 namespace Nano.Eventing.Extensions;
 
@@ -27,9 +28,7 @@ public static class ApplicationBuilderExtensions
         if (applicationBuilder == null)
             throw new ArgumentNullException(nameof(applicationBuilder));
 
-        AppDomain.CurrentDomain
-            .GetAssemblies()
-            .SelectMany(x => x.GetTypes())
+        TypesHelper.GetAllTypes()
             .SelectMany(x => x.GetInterfaces(), (x, y) => new
             {
                 Type = x,
@@ -68,9 +67,7 @@ public static class ApplicationBuilderExtensions
                     });
             });
 
-        AppDomain.CurrentDomain
-            .GetAssemblies()
-            .SelectMany(x => x.GetTypes())
+        TypesHelper.GetAllTypes()
             .Where(x =>
                 !x.IsAbstract &&
                 !x.Name.EndsWith("Proxy") &&

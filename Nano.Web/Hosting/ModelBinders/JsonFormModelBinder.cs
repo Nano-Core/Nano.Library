@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Nano.Web.Const;
+using Nano.Models.Serialization.Const;
 
 namespace Nano.Web.Hosting.ModelBinders;
 

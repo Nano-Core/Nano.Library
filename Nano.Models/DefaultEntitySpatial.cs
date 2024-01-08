@@ -5,10 +5,7 @@ using NetTopologySuite.Geometries;
 namespace Nano.Models;
 
 /// <inheritdoc />
-public abstract class DefaultEntitySpatial : DefaultEntitySpatial<Guid>
-{
-
-}
+public abstract class DefaultEntitySpatial : DefaultEntitySpatial<Guid>;
 
 /// <inheritdoc cref="IEntitySpatial"/>
 public class DefaultEntitySpatial<TIdentity> : DefaultEntity<TIdentity>, IEntitySpatial

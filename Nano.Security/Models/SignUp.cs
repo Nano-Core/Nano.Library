@@ -44,10 +44,7 @@ public abstract class SignUp : BaseSignUp
 /// </summary>
 /// <typeparam name="TUser">The user type.</typeparam>
 public class SignUp<TUser> : SignUp<TUser, Guid>
-    where TUser : IEntityUser<Guid>
-{
-
-}
+    where TUser : IEntityUser<Guid>;
 
 /// <summary>
 /// Sign Up.

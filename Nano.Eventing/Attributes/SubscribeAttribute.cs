@@ -7,7 +7,4 @@ namespace Nano.Eventing.Attributes;
 /// Types with this annotation, subscribes to events of the declaring type.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
-public class SubscribeAttribute : Attribute
-{
-
-}
+public class SubscribeAttribute : Attribute;

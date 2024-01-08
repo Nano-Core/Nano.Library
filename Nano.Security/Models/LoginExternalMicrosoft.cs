@@ -3,7 +3,4 @@
 /// <summary>
 /// LogIn External Microsoft.
 /// </summary>
-public class LogInExternalMicrosoft : LogInExternalAuthCode<LogInExternalProviderMicrosoft>
-{
-
-}
+public class LogInExternalMicrosoft : LogInExternalAuthCode<LogInExternalProviderMicrosoft>;

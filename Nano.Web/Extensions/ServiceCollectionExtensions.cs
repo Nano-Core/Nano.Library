@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
@@ -22,11 +21,12 @@ using Microsoft.OpenApi.Models;
 using Nano.App;
 using Nano.Config.Extensions;
 using Nano.Data;
+using Nano.Models.Const;
 using Nano.Models.Extensions;
+using Nano.Models.Helpers;
+using Nano.Models.Serialization.Json;
 using Nano.Repository.Extensions;
 using Nano.Security;
-using Nano.Web.Api;
-using Nano.Web.Const;
 using Nano.Web.Controllers;
 using Nano.Web.Hosting.Conventions;
 using Nano.Web.Hosting.Documentation.Filters;
@@ -34,7 +34,6 @@ using Nano.Web.Hosting.Filters;
 using Nano.Web.Hosting.HealthChecks;
 using Nano.Web.Hosting.Middleware;
 using Nano.Web.Hosting.ModelBinders;
-using Nano.Web.Hosting.Serialization.Json;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 
@@ -95,7 +94,6 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ExceptionHandlingMiddleware>()
             .AddSingleton<HttpRequestOptionsMiddleware>()
             .AddSingleton<HttpRequestIdentifierMiddleware>()
-            .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
             .AddRouting()
             .AddMvc(x =>
             {
@@ -123,7 +121,6 @@ public static class ServiceCollectionExtensions
 
                 x.MaxValidationDepth = 128;
 
-                x.Filters.Add<IsAnonymousFilter>();
                 x.Filters.Add<ModelStateValidationFilter>();
             })
             .AddJsonOptions(x =>
@@ -154,67 +151,9 @@ public static class ServiceCollectionExtensions
             .AddScoped<AuditController>();
 
         return services
-            .AddApis()
             .AddHealthChecking(appOptions, webOptions);
     }
 
-    private static IServiceCollection AddApis(this IServiceCollection services)
-    {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        var hosts = new List<string>();
-
-        var configuration = services
-            .BuildServiceProvider()
-            .GetRequiredService<IConfiguration>();
-
-        AppDomain.CurrentDomain
-            .GetAssemblies()
-            .SelectMany(x => x.GetTypes())
-            .Where(x =>
-                !x.IsAbstract &&
-                x.IsTypeOf(typeof(BaseApi)))
-            .Distinct()
-            .ToList()
-            .ForEach(x =>
-            {
-                var section = configuration.GetSection(x.Name);
-                var options = section.Get<ApiOptions>();
-
-                if (options == null)
-                {
-                    return;
-                }
-
-                var instance = Activator.CreateInstance(x, options);
-
-                if (instance == null)
-                {
-                    return;
-                }
-
-                services
-                    .AddSingleton(x, instance);
-
-                if (hosts.Contains(options.Host))
-                {
-                    return;
-                }
-
-                if (options.UseHealthCheck)
-                {
-                    services
-                        .AddHealthChecks()
-                        .AddTcpHealthCheck(y => y.AddHost(options.Host, options.Port), options.Host, options.UnhealthyStatus);
-                }
-
-                hosts
-                    .Add(options.Host);
-            });
-
-        return services;
-    }
     private static IServiceCollection AddCaching(this IServiceCollection services, WebOptions webOptions)
     {
         if (services == null)
@@ -434,9 +373,7 @@ public static class ServiceCollectionExtensions
                     { securityScheme, new string[] { } }
                     });
 
-                    AppDomain.CurrentDomain
-                        .GetAssemblies()
-                        .SelectMany(y => y.GetTypes())
+                    TypesHelper.GetAllTypes()
                         .Where(y => y.IsTypeOf(typeof(BaseController)))
                         .Select(y => y.Module)
                         .Distinct()

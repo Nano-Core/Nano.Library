@@ -3597,18 +3597,18 @@
         <member name="M:Nano.Web.Hosting.HealthChecks.StartupHealthCheck.CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:Nano.Web.Hosting.HttpContextAccess">
+        <member name="T:Nano.Web.Hosting.HttpContextAccesser">
             <summary>
             Http Context Access (Static)
             </summary>
         </member>
-        <member name="P:Nano.Web.Hosting.HttpContextAccess.Current">
+        <member name="P:Nano.Web.Hosting.HttpContextAccesser.Current">
             <summary>
             Current.
             The current <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>, fetched through the <see cref="T:Microsoft.AspNetCore.Http.IHttpContextAccessor"/>.
             </summary>
         </member>
-        <member name="M:Nano.Web.Hosting.HttpContextAccess.Configure(Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+        <member name="M:Nano.Web.Hosting.HttpContextAccesser.Configure(Microsoft.AspNetCore.Http.IHttpContextAccessor)">
             <summary>
             Configure.
             </summary>
