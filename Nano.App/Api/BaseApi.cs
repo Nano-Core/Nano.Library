@@ -284,6 +284,22 @@ public abstract class BaseApi : IDisposable
             return request.JwtTokenOverride;
         }
 
+        if (this.apiOptions.LogIn is { Username: not null, Password: not null })
+        {
+            var logInRequest = new LogInRequest
+            {
+                LogIn = new LogIn
+                {
+                    Username = this.apiOptions.LogIn.Username,
+                    Password = this.apiOptions.LogIn.Password
+                }
+            };
+
+            this.accessToken = await this.InvokeAsync<LogInRequest, AccessToken>(logInRequest, cancellationToken);
+
+            return this.accessToken?.Token;
+        }
+
         var httpContextAccessor = HttpContextAccesser.Current;
 
         var jwtToken = httpContextAccessor?
@@ -297,20 +313,6 @@ public abstract class BaseApi : IDisposable
         if (!string.IsNullOrEmpty(this.accessToken?.Token) && !this.accessToken.IsExpired)
         {
             return this.accessToken?.Token;
-        }
-
-        if (this.apiOptions.LogIn != null)
-        {
-            var logInRequest = new LogInRequest
-            {
-                LogIn = new LogIn
-                {
-                    Username = this.apiOptions.LogIn.Username,
-                    Password = this.apiOptions.LogIn.Password
-                }
-            };
-
-            this.accessToken = await this.InvokeAsync<LogInRequest, AccessToken>(logInRequest, cancellationToken);
         }
 
         return this.accessToken?.Token;
