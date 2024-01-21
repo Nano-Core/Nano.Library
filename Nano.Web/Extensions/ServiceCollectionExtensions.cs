@@ -76,7 +76,50 @@ public static class ServiceCollectionExtensions
             .GetService<SecurityOptions>() ?? new SecurityOptions();
 
         services
-            .AddCors()
+            .AddCors(x =>
+            {
+                x.AddPolicy(x.DefaultPolicyName, y =>
+                {
+                    if (webOptions.Hosting.Cors.AllowedOrigins.Any())
+                    {
+                        y.WithOrigins(webOptions.Hosting.Cors.AllowedOrigins);
+                        y.SetIsOriginAllowedToAllowWildcardSubdomains();
+                    }
+                    else
+                    {
+                        y.SetIsOriginAllowed(_ => true);
+                    }
+
+                    if (webOptions.Hosting.Cors.AllowedHeaders.Any())
+                    {
+                        y.WithHeaders(webOptions.Hosting.Cors.AllowedHeaders);
+                    }
+                    else
+                    {
+                        y.AllowAnyHeader();
+                    }
+
+                    if (webOptions.Hosting.Cors.AllowedMethods.Any())
+                    {
+                        y.WithMethods(webOptions.Hosting.Cors.AllowedMethods);
+                    }
+                    else
+                    {
+                        y.AllowAnyMethod();
+                    }
+
+                    if (webOptions.Hosting.Cors.AllowCredentials)
+                    {
+                        y.AllowCredentials();
+                    }
+                    else
+                    {
+                        y.DisallowCredentials();
+                    }
+
+                    y.WithExposedHeaders("RequestId", "TZ", "Content-Disposition");
+                });
+            })
             .AddSession()
             .AddCaching(webOptions)
             .AddSecurity(securityOptions)

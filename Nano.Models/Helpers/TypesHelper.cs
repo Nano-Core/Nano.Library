@@ -10,14 +10,27 @@ namespace Nano.Models.Helpers;
 public static class TypesHelper
 {
     /// <summary>
-    /// 
+    /// Get All Types.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>A collection of types.</returns>
     public static IEnumerable<Type> GetAllTypes()
     {
         return AppDomain.CurrentDomain
             .GetAssemblies()
-            .Where(x => x.FullName != null && x.FullName.StartsWith(nameof(Microsoft)))
+            .Select(x =>
+            {
+                var name = x.GetName().Name;
+
+                if (name == null)
+                {
+                    return null;
+                }
+
+                return name.StartsWith(nameof(Microsoft))
+                    ? null
+                    : x;
+            })
+            .Where(x => x != null)
             .SelectMany(x => x.GetTypes());
     }
 }

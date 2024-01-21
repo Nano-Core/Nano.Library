@@ -744,25 +744,7 @@ public static class ApplicationBuilderExtensions
         var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
 
         applicationBuilder
-            .UseCors(x =>
-            {
-                if (webOptions.Hosting.AllowedOrigins.Any())
-                {
-                    x.WithOrigins(webOptions.Hosting.AllowedOrigins);
-                    x.SetIsOriginAllowedToAllowWildcardSubdomains();
-                }
-                else
-                {
-                    x.SetIsOriginAllowed(_ => true);
-                }
-
-                x.AllowAnyHeader();
-                x.AllowAnyMethod();
-                x.AllowCredentials();
-                x.WithExposedHeaders("RequestId", "TZ", "Content-Disposition");
-            });
-
-        applicationBuilder
+            .UseCors()
             .Use((context, next) =>
             {
                 switch (webOptions.Hosting.Cors.Origin.EmbedderPolicy)

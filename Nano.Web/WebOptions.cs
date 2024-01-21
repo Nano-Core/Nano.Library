@@ -47,11 +47,6 @@ public class WebOptions
         public virtual int[] PortsHttps { get; set; } = Array.Empty<int>();
 
         /// <summary>
-        /// Allowed Origins.
-        /// </summary>
-        public virtual string[] AllowedOrigins { get; set; } = Array.Empty<string>();
-
-        /// <summary>
         /// Shutdown Timeout.
         /// The number of seconds the application waits after receiving a SIGTERM signal, before shutting down.
         /// </summary>
@@ -146,6 +141,26 @@ public class WebOptions
         /// </summary>
         public class CorsOptions
         {
+            /// <summary>
+            /// Allowed Origins.
+            /// </summary>
+            public virtual string[] AllowedOrigins { get; set; } = Array.Empty<string>();
+
+            /// <summary>
+            /// Allowed Headers.
+            /// </summary>
+            public virtual string[] AllowedHeaders { get; set; } = Array.Empty<string>(); 
+
+            /// <summary>
+            /// Allowed methods.
+            /// </summary>
+            public virtual string[] AllowedMethods { get; set; } = Array.Empty<string>(); 
+
+            /// <summary>
+            /// Allow Credentials.
+            /// </summary>
+            public virtual bool AllowCredentials { get; set; } = true;
+
             /// <summary>
             /// Origin.
             /// </summary>
