@@ -274,7 +274,7 @@ public abstract class BaseApi : IDisposable
     private async Task<string> AuthenticateAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequest
     {
-        if (typeof(TRequest) == typeof(LogInRequest))
+        if (request.GetType() == typeof(LogInRequest))
         {
             return null;
         }
@@ -284,6 +284,7 @@ public abstract class BaseApi : IDisposable
             return request.JwtTokenOverride;
         }
 
+        // BUG: Skip if anonymous?
         if (this.apiOptions.LogIn is { Username: not null, Password: not null })
         {
             var logInRequest = new LogInRequest
