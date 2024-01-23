@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models;
 
 /// <summary>
-/// Change Phone Number Token
+/// Generate Reset Password Token.
 /// </summary>
 /// <typeparam name="TIdentity">The identity key type</typeparam>
-public class ChangePhoneNumberToken<TIdentity>
+public class GenerateResetPasswordToken<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
@@ -15,16 +15,4 @@ public class ChangePhoneNumberToken<TIdentity>
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; }
-
-    /// <summary>
-    /// Token.
-    /// </summary>
-    [Required]
-    public virtual string Token { get; set; }
-
-    /// <summary>
-    /// New Phone Number.
-    /// </summary>
-    [Required]
-    public virtual string NewPhoneNumber { get; set; }
 }

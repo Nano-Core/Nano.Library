@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>8.0.1-beta02</version>
+		<version>8.0.1-beta03</version>
 		<title>Nano Core</title>
 		<summary>Rapidly built and deploy rich .NET 8.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
@@ -23,6 +23,10 @@
 			- Added title for health check UI.
 			- Expanded Cors configuration options and updated Http OPTIONS middleware to be based on Cors policy.
 			- BREAKING: Moved Web.Hosting.AllowedOrigins to Web.Hosting.Cors.AllowedOrigins
+			- BREAKING: Update identity implementation to use POST methods instead of GET and not expose email address as query parameter.
+			- Fixed Login Refresh that used incorrect validation key.
+			- Fixed audit exception when saving read only / not mapped properties.
+			- Added phone number to SignUp model.
 			- Resharper code issues.
 		</releaseNotes>
 		<dependencies>

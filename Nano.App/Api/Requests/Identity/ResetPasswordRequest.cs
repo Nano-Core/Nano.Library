@@ -1,14 +1,19 @@
-﻿using Nano.Security.Models;
+﻿using System;
+using Nano.Security.Models;
 
 namespace Nano.App.Api.Requests.Identity;
 
 /// <inheritdoc />
-public class ResetPasswordRequest : BaseRequestPost
+public class ResetPasswordRequest : ResetPasswordRequest<Guid>;
+
+/// <inheritdoc />
+public class ResetPasswordRequest<TIdentity> : BaseRequestPost
+    where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// Reset Password.
     /// </summary>
-    public virtual ResetPassword ResetPassword { get; set; } = new();
+    public virtual ResetPassword<TIdentity> ResetPassword { get; set; } = new();
 
     /// <inheritdoc />
     public ResetPasswordRequest()

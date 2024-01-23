@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models;
@@ -5,17 +6,19 @@ namespace Nano.Security.Models;
 /// <summary>
 /// Confirm Phone Number Token.
 /// </summary>
-public class ConfirmPhoneNumberToken
+/// <typeparam name="TIdentity">The identity key type</typeparam>
+public class ConfirmPhoneNumberToken<TIdentity>
+    where TIdentity : IEquatable<TIdentity>
 {
+    /// <summary>
+    /// User Id.
+    /// </summary>
+    [Required]
+    public virtual TIdentity UserId { get; set; }
+
     /// <summary>
     /// Token.
     /// </summary>
     [Required]
     public virtual string Token { get; set; }
-
-    /// <summary>
-    /// Phone Number.
-    /// </summary>
-    [Required]
-    public virtual string PhoneNumber { get; set; }
 }

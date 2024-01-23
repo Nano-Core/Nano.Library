@@ -18,7 +18,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -629,6 +628,12 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         try
         {
+            var rsaSecurityKey = RSA.Create();
+            var privateKey = Convert.FromBase64String(this.Options.Jwt.PrivateKey);
+
+            rsaSecurityKey
+                .ImportRSAPrivateKey(privateKey, bytesRead: out _);
+
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -637,7 +642,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = this.Options.Jwt.Issuer,
                 ValidAudience = this.Options.Jwt.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.Options.Jwt.PublicKey)),
+                IssuerSigningKey = new RsaSecurityKey(rsaSecurityKey),
                 ClockSkew = TimeSpan.FromMinutes(5)
             };
 
@@ -755,7 +760,8 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         var user = new IdentityUser<TIdentity>
         {
             Email = signUp.EmailAddress,
-            UserName = signUp.Username
+            UserName = signUp.Username,
+            PhoneNumber = signUp.PhoneNumber
         };
 
         var result = await this.UserManager
@@ -960,22 +966,28 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     /// <summary>
     /// Resets the password of a user.
     /// </summary>
-    /// <param name="resetPassword">The <see cref="ResetPassword"/>.</param>
+    /// <param name="resetPassword">The <see cref="ResetPassword{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    public virtual async Task ResetPasswordAsync(ResetPassword resetPassword, CancellationToken cancellationToken = default)
+    public virtual async Task ResetPasswordAsync(ResetPassword<TIdentity> resetPassword, CancellationToken cancellationToken = default)
     {
         if (resetPassword == null)
             throw new ArgumentNullException(nameof(resetPassword));
 
+        var userIdString = resetPassword.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
         var user = await this.UserManager
-            .FindByEmailAsync(resetPassword.EmailAddress);
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
-            var invalidEmailAddress = new IdentityErrorDescriber().InvalidEmail(resetPassword.EmailAddress);
-
-            throw new TranslationException(invalidEmailAddress.Description);
+            throw new NullReferenceException(nameof(user));
         }
 
         var result = await this.UserManager
@@ -1071,22 +1083,32 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     /// <summary>
     /// Confirms the email of a user.
     /// </summary>
-    /// <param name="confirmEmail">The <see cref="ConfirmEmail"/>.</param>
+    /// <param name="confirmEmail">The <see cref="ConfirmEmail{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    public virtual async Task ConfirmEmailAsync(ConfirmEmail confirmEmail, CancellationToken cancellationToken = default)
+    public virtual async Task ConfirmEmailAsync(ConfirmEmail<TIdentity> confirmEmail, CancellationToken cancellationToken = default)
     {
         if (confirmEmail == null)
             throw new ArgumentNullException(nameof(confirmEmail));
 
+        var userIdString = confirmEmail.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
         var user = await this.UserManager
-            .FindByEmailAsync(confirmEmail.EmailAddress);
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
-            var invalidEmailAddress = new IdentityErrorDescriber().InvalidEmail(confirmEmail.EmailAddress);
-
-            throw new TranslationException(invalidEmailAddress.Description);
+            throw new NullReferenceException(nameof(user));
+        }
+        if (user == null)
+        {
+            throw new NullReferenceException(nameof(user));
         }
 
         var result = await this.UserManager
@@ -1145,22 +1167,28 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     /// <summary>
     /// Confirms the phone number of a user.
     /// </summary>
-    /// <param name="confirmPhoneNumber">The <see cref="ConfirmPhoneNumber"/>.</param>
+    /// <param name="confirmPhoneNumber">The <see cref="ConfirmPhoneNumber{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    public virtual async Task ConfirmPhoneNumberAsync(ConfirmPhoneNumber confirmPhoneNumber, CancellationToken cancellationToken = default)
+    public virtual async Task ConfirmPhoneNumberAsync(ConfirmPhoneNumber<TIdentity> confirmPhoneNumber, CancellationToken cancellationToken = default)
     {
         if (confirmPhoneNumber == null)
             throw new ArgumentNullException(nameof(confirmPhoneNumber));
 
+        var userIdString = confirmPhoneNumber.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
         var user = await this.UserManager
-            .FindByPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(confirmPhoneNumber.PhoneNumber);
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
-            var invalidPhoneNumber = new IdentityErrorDescriber().InvalidPhoneNumber(confirmPhoneNumber.PhoneNumber);
-
-            throw new TranslationException(invalidPhoneNumber.Description);
+            throw new NullReferenceException(nameof(user));
         }
 
         var result = await this.UserManager
@@ -1175,157 +1203,183 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     /// <summary>
     /// Generates an reset password token for a user.
     /// </summary>
-    /// <param name="emailAddress">The emailAddress.</param>
+    /// <param name="generateResetPasswordToken">The <see cref="GenerateResetPasswordToken{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ResetPasswordToken"/>.</returns>
-    public virtual async Task<ResetPasswordToken> GenerateResetPasswordTokenAsync(string emailAddress, CancellationToken cancellationToken = default)
+    /// <returns>The <see cref="ResetPasswordToken{TIdentity}"/>.</returns>
+    public virtual async Task<ResetPasswordToken<TIdentity>> GenerateResetPasswordTokenAsync(GenerateResetPasswordToken<TIdentity> generateResetPasswordToken, CancellationToken cancellationToken = default)
     {
-        if (emailAddress == null)
-            throw new ArgumentNullException(nameof(emailAddress));
+        if (generateResetPasswordToken == null)
+            throw new ArgumentNullException(nameof(generateResetPasswordToken));
+
+        var userIdString = generateResetPasswordToken.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
 
         var user = await this.UserManager
-            .FindByEmailAsync(emailAddress);
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
-            var invalidEmailAddress = new IdentityErrorDescriber().InvalidEmail(emailAddress);
-
-            throw new TranslationException(invalidEmailAddress.Description);
+            throw new NullReferenceException(nameof(user));
         }
 
         var token = await this.UserManager
             .GeneratePasswordResetTokenAsync(user);
 
-        return new ResetPasswordToken
+        return new ResetPasswordToken<TIdentity>
         {
             Token = token,
-            EmailAddress = emailAddress
+            UserId = generateResetPasswordToken.UserId
         };
     }
 
     /// <summary>
     /// Generates an email confirmation token for a user.
     /// </summary>
-    /// <param name="emailAddress">The email address.</param>
+    /// <param name="generateConfirmEmailToken">The <see cref="GenerateConfirmEmailToken{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ConfirmEmailToken"/>.</returns>
-    public virtual async Task<ConfirmEmailToken> GenerateConfirmEmailTokenAsync(string emailAddress, CancellationToken cancellationToken = default)
+    /// <returns>The <see cref="ConfirmEmailToken{TIdentity}"/>.</returns>
+    public virtual async Task<ConfirmEmailToken<TIdentity>> GenerateConfirmEmailTokenAsync(GenerateConfirmEmailToken<TIdentity> generateConfirmEmailToken, CancellationToken cancellationToken = default)
     {
-        if (emailAddress == null)
-            throw new ArgumentNullException(nameof(emailAddress));
+        if (generateConfirmEmailToken == null)
+            throw new ArgumentNullException(nameof(generateConfirmEmailToken));
+
+        var userIdString = generateConfirmEmailToken.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new NullReferenceException(nameof(userIdString));
+        }
 
         var user = await this.UserManager
-            .FindByEmailAsync(emailAddress);
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
-            var invalidEmailAddress = new IdentityErrorDescriber().InvalidEmail(emailAddress);
-
-            throw new TranslationException(invalidEmailAddress.Description);
+            throw new NullReferenceException(nameof(user));
         }
 
         var token = await this.UserManager
             .GenerateEmailConfirmationTokenAsync(user);
 
-        return new ConfirmEmailToken
+        return new ConfirmEmailToken<TIdentity>
         {
-            Token = token,
-            EmailAddress = emailAddress
+            UserId = generateConfirmEmailToken.UserId,
+            Token = token
         };
     }
 
     /// <summary>
     /// Generates an change email token for a user.
     /// </summary>
-    /// <param name="emailAddress">The emailAddress.</param>
-    /// <param name="newEmailAddress">The new email address.</param>
+    /// <param name="generateChangeEmailToken">The <see cref="GenerateChangeEmailToken{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ChangeEmailToken"/>.</returns>
-    public virtual async Task<ChangeEmailToken> GenerateChangeEmailTokenAsync(string emailAddress, string newEmailAddress, CancellationToken cancellationToken = default)
+    /// <returns>The <see cref="ChangeEmailToken{TIdentity}"/>.</returns>
+    public virtual async Task<ChangeEmailToken<TIdentity>> GenerateChangeEmailTokenAsync(GenerateChangeEmailToken<TIdentity> generateChangeEmailToken, CancellationToken cancellationToken = default)
     {
-        if (emailAddress == null)
-            throw new ArgumentNullException(nameof(emailAddress));
+        if (generateChangeEmailToken == null)
+            throw new ArgumentNullException(nameof(generateChangeEmailToken));
 
-        if (newEmailAddress == null)
-            throw new ArgumentNullException(nameof(newEmailAddress));
+        var userIdString = generateChangeEmailToken.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
 
         var user = await this.UserManager
-            .FindByEmailAsync(emailAddress);
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
-            var invalidEmailAddress = new IdentityErrorDescriber().InvalidEmail(emailAddress);
-
-            throw new TranslationException(invalidEmailAddress.Description);
+            throw new NullReferenceException(nameof(user));
         }
 
         var userNew = await this.UserManager
-            .FindByEmailAsync(newEmailAddress);
+            .FindByEmailAsync(generateChangeEmailToken.NewEmailAddress);
 
         if (userNew != null)
         {
-            var duplicateEmail = new IdentityErrorDescriber().DuplicateEmail(newEmailAddress);
+            var duplicateEmail = new IdentityErrorDescriber().DuplicateEmail(generateChangeEmailToken.NewEmailAddress);
 
             throw new TranslationException(duplicateEmail.Description);
         }
 
         var token = await this.UserManager
-            .GenerateChangeEmailTokenAsync(user, newEmailAddress);
+            .GenerateChangeEmailTokenAsync(user, generateChangeEmailToken.NewEmailAddress);
 
-        return new ChangeEmailToken
+        return new ChangeEmailToken<TIdentity>
         {
+            UserId = generateChangeEmailToken.UserId,
             Token = token,
-            EmailAddress = emailAddress,
-            NewEmailAddress = newEmailAddress
+            NewEmailAddress = generateChangeEmailToken.NewEmailAddress
         };
     }
 
     /// <summary>
     /// Generates an confirm phone number token for a user.
     /// </summary>
-    /// <param name="phoneNumber">The phone number.</param>
+    /// <param name="generateConfirmPhoneNumberToken">The <see cref="GenerateConfirmPhoneNumberToken{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ResetPasswordToken"/>.</returns>
-    public virtual async Task<ConfirmPhoneNumberToken> GenerateConfirmPhoneNumberTokenAsync(string phoneNumber, CancellationToken cancellationToken = default)
+    /// <returns>The <see cref="ConfirmPhoneNumberToken{TIdentity}"/>.</returns>
+    public virtual async Task<ConfirmPhoneNumberToken<TIdentity>> GenerateConfirmPhoneNumberTokenAsync(GenerateConfirmPhoneNumberToken<TIdentity> generateConfirmPhoneNumberToken, CancellationToken cancellationToken = default)
     {
-        if (phoneNumber == null)
-            throw new ArgumentNullException(nameof(phoneNumber));
+        if (generateConfirmPhoneNumberToken == null)
+            throw new ArgumentNullException(nameof(generateConfirmPhoneNumberToken));
+
+        var userIdString = generateConfirmPhoneNumberToken.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
 
         var user = await this.UserManager
-            .FindByPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(phoneNumber);
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
             throw new NullReferenceException(nameof(user));
         }
-
+        
         var token = await this.UserManager
             .GeneratePhoneNumberConfirmationTokenAsync<IdentityUser<TIdentity>, TIdentity>(user);
 
-        return new ConfirmPhoneNumberToken
+        return new ConfirmPhoneNumberToken<TIdentity>
         {
-            Token = token,
-            PhoneNumber = phoneNumber
+            UserId = generateConfirmPhoneNumberToken.UserId,
+            Token = token
         };
     }
 
     /// <summary>
-    /// Generates an change phone number token for a user.
+    /// Generates a change phone number token for a user.
     /// </summary>
-    /// <param name="phoneNumber">The user id.</param>
-    /// <param name="newPhoneNumber">The new phone number.</param>
+    /// <param name="generateChangePhoneToken">The <see cref="GenerateChangePhoneToken{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ResetPasswordToken"/>.</returns>
-    public virtual async Task<ChangePhoneNumberToken> GenerateChangePhoneNumberTokenAsync(string phoneNumber, string newPhoneNumber, CancellationToken cancellationToken = default)
+    /// <returns>The <see cref="ChangePhoneNumberToken{TIdentity}"/>.</returns>
+    public virtual async Task<ChangePhoneNumberToken<TIdentity>> GenerateChangePhoneNumberTokenAsync(GenerateChangePhoneToken<TIdentity> generateChangePhoneToken, CancellationToken cancellationToken = default)
     {
-        if (phoneNumber == null)
-            throw new ArgumentNullException(nameof(phoneNumber));
+        if (generateChangePhoneToken == null)
+            throw new ArgumentNullException(nameof(generateChangePhoneToken));
 
-        if (newPhoneNumber == null)
-            throw new ArgumentNullException(nameof(newPhoneNumber));
+        var userIdString = generateChangePhoneToken.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
 
         var user = await this.UserManager
-            .FindByPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(phoneNumber);
+            .FindByIdAsync(userIdString);
 
         if (user == null)
         {
@@ -1333,23 +1387,23 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         }
 
         var userNew = await this.UserManager
-            .FindByPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(phoneNumber);
+            .FindByPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(generateChangePhoneToken.NewPhoneNumber);
 
         if (userNew != null)
         {
-            var duplicatePhoneNumber = new IdentityErrorDescriber().DuplicatePhoneNumber(newPhoneNumber);
+            var duplicatePhoneNumber = new IdentityErrorDescriber().DuplicatePhoneNumber(generateChangePhoneToken.NewPhoneNumber);
 
             throw new TranslationException(duplicatePhoneNumber.Description);
         }
 
         var token = await this.UserManager
-            .GenerateChangePhoneNumberTokenAsync(user, newPhoneNumber);
+            .GenerateChangePhoneNumberTokenAsync(user, generateChangePhoneToken.NewPhoneNumber);
 
-        return new ChangePhoneNumberToken
+        return new ChangePhoneNumberToken<TIdentity>
         {
+            UserId = generateChangePhoneToken.UserId,
             Token = token,
-            PhoneNumber = phoneNumber,
-            NewPhoneNumber = newPhoneNumber
+            NewPhoneNumber = generateChangePhoneToken.NewPhoneNumber
         };
     }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Nano.Config;
 using Nano.Data.Const;
 using Nano.Data.Models;
@@ -385,6 +387,14 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
+        // BUG
+#pragma warning disable EF1001
+        if (entity.GetType() == typeof(LazyLoader))
+#pragma warning restore EF1001
+        {
+            return;
+        }
+
         if (tracked == null)
         {
             return;
@@ -402,6 +412,19 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
             foreach (var propertyInfo in properties)
             {
+                if (propertyInfo.SetMethod == null)
+                {
+                    continue;
+                }
+
+                var hasNotMappedAttribute = propertyInfo
+                    .GetCustomAttribute<NotMappedAttribute>();
+
+                if (hasNotMappedAttribute != null)
+                {
+                    continue;
+                }
+
                 var valueTracked = propertyInfo
                     .GetValue(tracked);
 

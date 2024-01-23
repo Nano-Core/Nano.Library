@@ -4,27 +4,22 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models;
 
 /// <summary>
-/// Change Phone Number Token
+/// Generate Change Phone Token.
 /// </summary>
 /// <typeparam name="TIdentity">The identity key type</typeparam>
-public class ChangePhoneNumberToken<TIdentity>
+public class GenerateChangePhoneToken<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// User id.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; }
 
     /// <summary>
-    /// Token.
-    /// </summary>
-    [Required]
-    public virtual string Token { get; set; }
-
-    /// <summary>
     /// New Phone Number.
     /// </summary>
     [Required]
+    [Phone]
     public virtual string NewPhoneNumber { get; set; }
 }

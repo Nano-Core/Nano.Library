@@ -17,6 +17,12 @@ public abstract class SignUp : BaseSignUp
     public virtual string EmailAddress { get; set; }
 
     /// <summary>
+    /// Phone Number.
+    /// </summary>
+    [Phone]
+    public virtual string PhoneNumber { get; set; }
+
+    /// <summary>
     /// Username.
     /// </summary>
     [Required]
@@ -35,7 +41,7 @@ public abstract class SignUp : BaseSignUp
     /// </summary>
     [Required]
     [MaxLength(256)]
-    [Compare("Password")]
+    [Compare(nameof(Password))]
     public virtual string ConfirmPassword { get; set; }
 }
 

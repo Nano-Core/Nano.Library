@@ -1,14 +1,19 @@
-﻿using Nano.Security.Models;
+﻿using System;
+using Nano.Security.Models;
 
 namespace Nano.App.Api.Requests.Identity;
 
 /// <inheritdoc />
-public class ConfirmEmailRequest : BaseRequestPost
+public class ConfirmEmailRequest : ConfirmEmailRequest<Guid>;
+
+/// <inheritdoc />
+public class ConfirmEmailRequest<TIdentity> : BaseRequestPost
+    where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// Confirm Email.
     /// </summary>
-    public virtual ConfirmEmail ConfirmEmail { get; set; } = new();
+    public virtual ConfirmEmail<TIdentity> ConfirmEmail { get; set; } = new();
 
     /// <inheritdoc />
     public ConfirmEmailRequest()
