@@ -13,12 +13,12 @@ public class RemoveClaimRequest<TIdentity> : BaseRequestPost
     /// <summary>
     /// Assign Claim.
     /// </summary>
-    public virtual RemoveRole<TIdentity> RemoveClaim { get; set; } = new();
+    public virtual RemoveClaim<TIdentity> RemoveClaim { get; set; } = new();
 
     /// <inheritdoc />
     public RemoveClaimRequest()
     {
-        this.Action = "claim/remove";
+        this.Action = "claims/remove";
     }
 
     /// <inheritdoc />

@@ -1203,24 +1203,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     /// <summary>
     /// Generates an reset password token for a user.
     /// </summary>
-    /// <param name="generateResetPasswordToken">The <see cref="GenerateResetPasswordToken{TIdentity}"/>.</param>
+    /// <param name="generateResetPasswordToken">The <see cref="GenerateResetPasswordToken"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="ResetPasswordToken{TIdentity}"/>.</returns>
-    public virtual async Task<ResetPasswordToken<TIdentity>> GenerateResetPasswordTokenAsync(GenerateResetPasswordToken<TIdentity> generateResetPasswordToken, CancellationToken cancellationToken = default)
+    public virtual async Task<ResetPasswordToken<TIdentity>> GenerateResetPasswordTokenAsync(GenerateResetPasswordToken generateResetPasswordToken, CancellationToken cancellationToken = default)
     {
         if (generateResetPasswordToken == null)
             throw new ArgumentNullException(nameof(generateResetPasswordToken));
 
-        var userIdString = generateResetPasswordToken.UserId
-            .ToString();
-
-        if (userIdString == null)
-        {
-            throw new ArgumentNullException(nameof(userIdString));
-        }
-
         var user = await this.UserManager
-            .FindByIdAsync(userIdString);
+            .FindByEmailAsync(generateResetPasswordToken.EmailAddress);
 
         if (user == null)
         {
@@ -1233,7 +1225,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         return new ResetPasswordToken<TIdentity>
         {
             Token = token,
-            UserId = generateResetPasswordToken.UserId
+            UserId = user.Id
         };
     }
 
@@ -1325,15 +1317,15 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     /// <summary>
     /// Generates an confirm phone number token for a user.
     /// </summary>
-    /// <param name="generateConfirmPhoneNumberToken">The <see cref="GenerateConfirmPhoneNumberToken{TIdentity}"/>.</param>
+    /// <param name="generateConfirmPhoneToken">The <see cref="GenerateConfirmPhoneToken{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="ConfirmPhoneNumberToken{TIdentity}"/>.</returns>
-    public virtual async Task<ConfirmPhoneNumberToken<TIdentity>> GenerateConfirmPhoneNumberTokenAsync(GenerateConfirmPhoneNumberToken<TIdentity> generateConfirmPhoneNumberToken, CancellationToken cancellationToken = default)
+    public virtual async Task<ConfirmPhoneNumberToken<TIdentity>> GenerateConfirmPhoneNumberTokenAsync(GenerateConfirmPhoneToken<TIdentity> generateConfirmPhoneToken, CancellationToken cancellationToken = default)
     {
-        if (generateConfirmPhoneNumberToken == null)
-            throw new ArgumentNullException(nameof(generateConfirmPhoneNumberToken));
+        if (generateConfirmPhoneToken == null)
+            throw new ArgumentNullException(nameof(generateConfirmPhoneToken));
 
-        var userIdString = generateConfirmPhoneNumberToken.UserId
+        var userIdString = generateConfirmPhoneToken.UserId
             .ToString();
 
         if (userIdString == null)
@@ -1354,7 +1346,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         return new ConfirmPhoneNumberToken<TIdentity>
         {
-            UserId = generateConfirmPhoneNumberToken.UserId,
+            UserId = generateConfirmPhoneToken.UserId,
             Token = token
         };
     }
@@ -1638,7 +1630,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (assignClaim == null)
             throw new ArgumentNullException(nameof(assignClaim));
 
-        var userIdString = assignClaim.Id
+        var userIdString = assignClaim.UserId
             .ToString();
 
         if (userIdString == null)
@@ -1685,7 +1677,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (removeClaim == null)
             throw new ArgumentNullException(nameof(removeClaim));
 
-        var userIdString = removeClaim.Id
+        var userIdString = removeClaim.UserId
             .ToString();
 
         if (userIdString == null)
@@ -1782,7 +1774,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (assignClaim == null)
             throw new ArgumentNullException(nameof(assignClaim));
 
-        var roleIdString = assignClaim.Id
+        var roleIdString = assignClaim.UserId
             .ToString();
 
         if (roleIdString == null)
@@ -1829,7 +1821,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (removeClaim == null)
             throw new ArgumentNullException(nameof(removeClaim));
 
-        var roleIdString = removeClaim.Id
+        var roleIdString = removeClaim.UserId
             .ToString();
 
         if (roleIdString == null)

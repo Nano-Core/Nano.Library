@@ -11,10 +11,10 @@ public class RemoveClaim<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Id.
+    /// User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity Id { get; set; }
+    public virtual TIdentity UserId { get; set; }
 
     /// <summary>
     /// Claim Type.

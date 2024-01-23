@@ -18,7 +18,7 @@ public class RemoveRoleRequest<TIdentity> : BaseRequestPost
     /// <inheritdoc />
     public RemoveRoleRequest()
     {
-        this.Action = "role/remove";
+        this.Action = "roles/remove";
     }
 
     /// <inheritdoc />

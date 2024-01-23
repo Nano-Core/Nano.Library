@@ -7,7 +7,7 @@ namespace Nano.Security.Models;
 /// Generate Confirm Phone Number Token.
 /// </summary>
 /// <typeparam name="TIdentity">The identity key type</typeparam>
-public class GenerateConfirmPhoneNumberToken<TIdentity>
+public class GenerateConfirmPhoneToken<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

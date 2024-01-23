@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Nano.Config;
 using Nano.Data.Const;
 using Nano.Data.Models;
@@ -387,15 +386,12 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        // BUG
-#pragma warning disable EF1001
-        if (entity.GetType() == typeof(LazyLoader))
-#pragma warning restore EF1001
+        if (tracked == null)
         {
             return;
         }
 
-        if (tracked == null)
+        if (entity.GetType().IsTypeOf(typeof(ILazyLoader)))
         {
             return;
         }

@@ -254,17 +254,17 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
     /// <summary>
     /// Get Reset Password Token Async.
     /// </summary>
-    /// <param name="request">The <see cref="GenerateResetPasswordTokenRequest{TIdentity}"/>.</param>
+    /// <param name="request">The <see cref="GenerateResetPasswordTokenRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    public virtual Task<ResetPasswordToken<TIdentity>> GetResetPasswordTokenAsync(GenerateResetPasswordTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual Task<ResetPasswordToken<TIdentity>> GetResetPasswordTokenAsync(GenerateResetPasswordTokenRequest request, CancellationToken cancellationToken = default)
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<GenerateResetPasswordTokenRequest<TIdentity>, ResetPasswordToken<TIdentity>>(request, cancellationToken);
+        return this.InvokeAsync<GenerateResetPasswordTokenRequest, ResetPasswordToken<TIdentity>>(request, cancellationToken);
     }
 
     /// <summary>

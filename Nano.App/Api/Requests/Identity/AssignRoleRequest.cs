@@ -18,7 +18,7 @@ public class AssignRoleRequest<TIdentity> : BaseRequestPost
     /// <inheritdoc />
     public AssignRoleRequest()
     {
-        this.Action = "role/assign";
+        this.Action = "roles/assign";
     }
 
     /// <inheritdoc />

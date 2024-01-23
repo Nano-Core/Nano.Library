@@ -284,7 +284,6 @@ public abstract class BaseApi : IDisposable
             return request.JwtTokenOverride;
         }
 
-        // BUG: Skip if anonymous?
         if (this.apiOptions.LogIn is { Username: not null, Password: not null })
         {
             var logInRequest = new LogInRequest

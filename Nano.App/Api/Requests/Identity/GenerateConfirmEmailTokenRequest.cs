@@ -13,7 +13,7 @@ public class GenerateConfirmEmailTokenRequest<TIdentity> : BaseRequestPost
     /// <summary>
     /// Confirm Email Token.
     /// </summary>
-    public virtual GenerateResetPasswordToken<TIdentity> ConfirmEmailToken { get; set; } = new();
+    public virtual GenerateConfirmEmailToken<TIdentity> ConfirmEmailToken { get; set; } = new();
 
     /// <inheritdoc />
     public GenerateConfirmEmailTokenRequest()

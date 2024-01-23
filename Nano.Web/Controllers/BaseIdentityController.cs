@@ -317,7 +317,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public virtual async Task<IActionResult> GetResetPasswordTokenAsync([FromBody][Required]GenerateResetPasswordToken<TIdentity> generateResetPasswordToken, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> GetResetPasswordTokenAsync([FromBody][Required]GenerateResetPasswordToken generateResetPasswordToken, CancellationToken cancellationToken = default)
     {
         var resetPasswordToken = await this.IdentityManager
             .GenerateResetPasswordTokenAsync(generateResetPasswordToken, cancellationToken);
@@ -545,7 +545,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <summary>
     /// Gets the confirm phone number token, used to confirm the phone number of a user.
     /// </summary>
-    /// <param name="generateConfirmPhoneNumberToken">The generate confirm phoneNumber token.</param>
+    /// <param name="generateConfirmPhoneToken">The generate confirm phoneNumber token.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The confirm phone token.</returns>
     /// <response code="200">Success.</response>
@@ -562,10 +562,10 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public virtual async Task<IActionResult> GetConfirmPhoneTokenAsync([FromBody][Required]GenerateConfirmPhoneNumberToken<TIdentity> generateConfirmPhoneNumberToken, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> GetConfirmPhoneTokenAsync([FromBody][Required]GenerateConfirmPhoneToken<TIdentity> generateConfirmPhoneToken, CancellationToken cancellationToken = default)
     {
         var confirmEmailToken = await this.IdentityManager
-            .GenerateConfirmPhoneNumberTokenAsync(generateConfirmPhoneNumberToken, cancellationToken);
+            .GenerateConfirmPhoneNumberTokenAsync(generateConfirmPhoneToken, cancellationToken);
 
         return this.Ok(confirmEmailToken);
     }
@@ -637,7 +637,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occured.</response>
     [HttpPost]
-    [Route("role/assign")]
+    [Route("roles/assign")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Produces(HttpContentType.JSON, HttpContentType.XML)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -666,7 +666,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [HttpDelete]
-    [Route("role/remove")]
+    [Route("roles/remove")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Produces(HttpContentType.JSON, HttpContentType.XML)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -729,7 +729,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occured.</response>
     [HttpPost]
-    [Route("claim/assign")]
+    [Route("claims/assign")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Produces(HttpContentType.JSON, HttpContentType.XML)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -758,7 +758,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [HttpDelete]
-    [Route("claim/remove")]
+    [Route("claims/remove")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Produces(HttpContentType.JSON, HttpContentType.XML)]
     [ProducesResponseType((int)HttpStatusCode.OK)]

@@ -13,7 +13,7 @@ public class GenerateChangePhoneTokenRequest<TIdentity> : BaseRequestPost
     /// <summary>
     /// Change Phone Token.
     /// </summary>
-    public virtual GenerateResetPasswordToken<TIdentity> ChangePhoneToken { get; set; } = new();
+    public virtual GenerateChangePhoneToken<TIdentity> ChangePhoneToken { get; set; } = new();
 
     /// <inheritdoc />
     public GenerateChangePhoneTokenRequest()

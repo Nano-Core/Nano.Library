@@ -6,13 +6,12 @@ namespace Nano.Security.Models;
 /// <summary>
 /// Generate Reset Password Token.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
-public class GenerateResetPasswordToken<TIdentity>
-    where TIdentity : IEquatable<TIdentity>
+public class GenerateResetPasswordToken
 {
     /// <summary>
     /// User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    [EmailAddress]
+    public virtual string EmailAddress { get; set; }
 }

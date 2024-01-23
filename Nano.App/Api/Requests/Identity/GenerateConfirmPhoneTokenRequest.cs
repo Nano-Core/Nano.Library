@@ -13,7 +13,7 @@ public class GenerateConfirmPhoneTokenRequest<TIdentity> : BaseRequestPost
     /// <summary>
     /// Confirm Phone Token.
     /// </summary>
-    public virtual GenerateResetPasswordToken<TIdentity> ConfirmPhoneToken { get; set; } = new();
+    public virtual GenerateConfirmPhoneToken<TIdentity> ConfirmPhoneToken { get; set; } = new();
 
     /// <inheritdoc />
     public GenerateConfirmPhoneTokenRequest()

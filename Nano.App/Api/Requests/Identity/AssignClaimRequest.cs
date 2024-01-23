@@ -18,7 +18,7 @@ public class AssignClaimRequest<TIdentity> : BaseRequestPost
     /// <inheritdoc />
     public AssignClaimRequest()
     {
-        this.Action = "claim/assign";
+        this.Action = "claims/assign";
     }
 
     /// <inheritdoc />
