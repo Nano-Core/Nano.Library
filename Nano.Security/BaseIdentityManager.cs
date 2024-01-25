@@ -231,13 +231,16 @@ public abstract class BaseIdentityManager
 
         var notBeforeAt = DateTime.UtcNow;
         var expireAt = DateTime.UtcNow.AddHours(this.Options.Jwt.ExpirationInHours);
-        var rsaSecurityKey = RSA.Create();
+
+        var securityKey = RSA.Create();
         var privateKey = Convert.FromBase64String(this.Options.Jwt.PrivateKey);
 
-        rsaSecurityKey
+        securityKey
             .ImportRSAPrivateKey(privateKey, bytesRead: out _);
 
-        var signingCredentials = new SigningCredentials(new RsaSecurityKey(rsaSecurityKey), SecurityAlgorithms.RsaSha512);
+        var rsaSecurityKey = new RsaSecurityKey(securityKey);
+
+        var signingCredentials = new SigningCredentials(rsaSecurityKey, SecurityAlgorithms.RsaSha512);
         var securityToken = new JwtSecurityToken(this.Options.Jwt.Issuer, this.Options.Jwt.Issuer, claims, notBeforeAt, expireAt, signingCredentials);
         var token = new JwtSecurityTokenHandler()
             .WriteToken(securityToken);
@@ -628,11 +631,13 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         try
         {
-            var rsaSecurityKey = RSA.Create();
-            var privateKey = Convert.FromBase64String(this.Options.Jwt.PrivateKey);
+            var securityKey = RSA.Create();
+            var privateKey = Convert.FromBase64String(this.Options.Jwt.PublicKey);
 
-            rsaSecurityKey
-                .ImportRSAPrivateKey(privateKey, bytesRead: out _);
+            securityKey
+                .ImportRSAPublicKey(privateKey, bytesRead: out _);
+
+            var rsaSecurityKey = new RsaSecurityKey(securityKey);
 
             var validationParameters = new TokenValidationParameters
             {
@@ -642,7 +647,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = this.Options.Jwt.Issuer,
                 ValidAudience = this.Options.Jwt.Audience,
-                IssuerSigningKey = new RsaSecurityKey(rsaSecurityKey),
+                IssuerSigningKey = rsaSecurityKey,
                 ClockSkew = TimeSpan.FromMinutes(5)
             };
 

@@ -528,7 +528,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("phone/confirm")]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON, HttpContentType.XML)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]

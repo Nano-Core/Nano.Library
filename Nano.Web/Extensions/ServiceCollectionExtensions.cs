@@ -301,7 +301,15 @@ public static class ServiceCollectionExtensions
                 x.ReportApiVersions = true;
                 x.DefaultApiVersion = apiVersion ?? new ApiVersion(1, 0);
                 x.AssumeDefaultVersionWhenUnspecified = true;
-                x.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
+                x.ApiVersionReader = ApiVersionReader.Combine(
+                    new UrlSegmentApiVersionReader(),
+                    new QueryStringApiVersionReader("api-version"),
+                    new HeaderApiVersionReader("X-Api-Version"));
+            })
+            .AddApiExplorer(x =>
+            {
+                x.GroupNameFormat = "'v'V";
+                x.SubstituteApiVersionInUrl = true;
             });
 
         return services;
