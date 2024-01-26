@@ -5,21 +5,14 @@
     </assembly>
     <members>
         <member name="T:Nano.Data.BaseDbContext`1">
-            <inheritdoc />
+            <summary>
+            Base Db Context (abstract).
+            </summary>
+            <typeparam name="TIdentity"></typeparam>
         </member>
         <member name="P:Nano.Data.BaseDbContext`1.Options">
             <summary>
             Options.
-            </summary>
-        </member>
-        <member name="P:Nano.Data.BaseDbContext`1.Audit">
-            <summary>
-            Audit Entries.
-            </summary>
-        </member>
-        <member name="P:Nano.Data.BaseDbContext`1.AuditProperties">
-            <summary>
-            Audit Entry Properties.
             </summary>
         </member>
         <member name="P:Nano.Data.BaseDbContext`1.AutoSave">
@@ -27,10 +20,50 @@
             Auto Save.
             </summary>
         </member>
+        <member name="P:Nano.Data.BaseDbContext`1.DataProtectionKeys">
+            <summary>
+            Data Protection Keys.
+            Required by <see cref="T:Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.IDataProtectionKeyContext"/>.
+            </summary>
+        </member>
         <member name="M:Nano.Data.BaseDbContext`1.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions,Nano.Data.DataOptions)">
             <inheritdoc />
         </member>
+        <member name="M:Nano.Data.BaseDbContext`1.Update(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.BaseDbContext`1.Update``1(``0)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.BaseDbContext`1.UpdateRange(System.Object[])">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.BaseDbContext`1.UpdateRange(System.Collections.Generic.IEnumerable{System.Object})">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.BaseDbContext`1.AddOrUpdate``1(``0)">
+            <summary>
+            Adds or updates (if exists) the entity.
+            </summary>
+            <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
+            <param name="entity">The <see cref="T:System.Object"/> of type <typeparamref name="TEntity"/>.</param>
+            <returns>A <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry"/>.</returns>
+        </member>
+        <member name="M:Nano.Data.BaseDbContext`1.AddOrUpdateMany``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Adds or updates (if exists) the entities.
+            </summary>
+            <typeparam name="TEntity">The type of <paramref name="entities"/>.</typeparam>
+            <param name="entities">The <see cref="T:System.Object"/>'s of type <typeparamref name="TEntity"/>.</param>
+            <returns>A <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry`1"/>.</returns>
+        </member>
         <member name="M:Nano.Data.BaseDbContext`1.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.BaseDbContext`1.SaveChanges">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.Data.BaseDbContext`1.SaveChangesAsync(System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Data.BaseDbContext`1.EnsureCreatedAsync(System.Threading.CancellationToken)">
@@ -53,34 +86,6 @@
             </summary>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
-        </member>
-        <member name="M:Nano.Data.BaseDbContext`1.AddOrUpdate``1(``0)">
-            <summary>
-            Adds or updates (if exists) the entity.
-            </summary>
-            <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
-            <param name="entity">The <see cref="T:System.Object"/> of type <typeparamref name="TEntity"/>.</param>
-            <returns>A <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry"/>.</returns>
-        </member>
-        <member name="M:Nano.Data.BaseDbContext`1.AddOrUpdateMany``1(System.Collections.Generic.IEnumerable{``0})">
-            <summary>
-            Adds or updates (if exists) the entities.
-            </summary>
-            <typeparam name="TEntity">The type of <paramref name="entities"/>.</typeparam>
-            <param name="entities">The <see cref="T:System.Object"/>'s of type <typeparamref name="TEntity"/>.</param>
-            <returns>A <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry`1"/>.</returns>
-        </member>
-        <member name="M:Nano.Data.BaseDbContext`1.SaveChangesAsync">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Data.BaseDbContext`1.SaveChangesAsync(System.Boolean)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Data.BaseDbContext`1.SaveChangesAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nano.Data.BaseDbContext`1.SaveChangesAsync(System.Boolean,System.Threading.CancellationToken)">
-            <inheritdoc />
         </member>
         <member name="T:Nano.Data.BaseDbContextFactory`2">
             <inheritdoc />
@@ -160,7 +165,12 @@
         </member>
         <member name="P:Nano.Data.DataOptions.UseSensitiveDataLogging">
             <summary>
-            Use Sensitive Data Logging .
+            Use Sensitive Data Logging.
+            </summary>
+        </member>
+        <member name="P:Nano.Data.DataOptions.UseConnectionPooling">
+            <summary>
+            Use Connection Pooling.
             </summary>
         </member>
         <member name="P:Nano.Data.DataOptions.UseHealthCheck">
@@ -181,6 +191,46 @@
         <member name="P:Nano.Data.DataOptions.ConnectionString">
             <summary>
             Connection String.
+            </summary>
+        </member>
+        <member name="P:Nano.Data.DataOptions.MemoryCache">
+            <summary>
+            Cache.
+            </summary>
+        </member>
+        <member name="T:Nano.Data.DataOptions.MemoryCacheOptions">
+            <summary>
+            Memory Cache.
+            </summary>
+        </member>
+        <member name="P:Nano.Data.DataOptions.MemoryCacheOptions.MaxEntries">
+            <summary>
+            Max Entries.
+            The maximum number of cache entries.
+            </summary>
+        </member>
+        <member name="P:Nano.Data.DataOptions.MemoryCacheOptions.ExpirationTimeoutInSeconds">
+            <summary>
+            Expiration Timoeout.
+            The number of seconds before a cache entry expires.
+            </summary>
+        </member>
+        <member name="P:Nano.Data.DataOptions.MemoryCacheOptions.ExpirationScanFrequencyInSeconds">
+            <summary>
+            Expiration Scan Frequency.
+            The expiration scan interval in seconds.
+            </summary>
+        </member>
+        <member name="P:Nano.Data.DataOptions.MemoryCacheOptions.ExpirationMode">
+            <summary>
+            Expiration Mode.
+            The mode for cache expiration. Absolute or Sliding.
+            </summary>
+        </member>
+        <member name="P:Nano.Data.DataOptions.MemoryCacheOptions.IgnoredTableNames">
+            <summary>
+            Ignored Table Names.
+            The table names that is ignored from the cache.
             </summary>
         </member>
         <member name="T:Nano.Data.DefaultDbContext">

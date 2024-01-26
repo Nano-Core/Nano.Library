@@ -92,7 +92,14 @@
         <member name="P:Nano.Eventing.EventingOptions.Heartbeat">
             <summary>
             Heartbeat, in seconds.
+            Default: 60
             Zero means no hearbeat requests.
+            </summary>
+        </member>
+        <member name="P:Nano.Eventing.EventingOptions.PrefetchCount">
+            <summary>
+            Prefetch Count.
+            Default: 50
             </summary>
         </member>
         <member name="P:Nano.Eventing.EventingOptions.UseHealthCheck">
@@ -109,6 +116,19 @@
             <summary>
             ConnectionString.
             </summary>
+        </member>
+        <member name="T:Nano.Eventing.Extensions.ApplicationBuilderExtensions">
+            <summary>
+            Application Builder Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.Eventing.Extensions.ApplicationBuilderExtensions.UseEventHandlers(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.IServiceProvider)">
+            <summary>
+            Adds Eventing subscribers to the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <param name="serviceProvider">The <see cref="T:System.IServiceProvider"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
         </member>
         <member name="T:Nano.Eventing.Extensions.ServiceCollectionExtensions">
             <summary>
@@ -171,11 +191,12 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
         </member>
-        <member name="M:Nano.Eventing.Interfaces.IEventing.SubscribeAsync``1(System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Eventing.Interfaces.IEventing.SubscribeAsync``1(System.IServiceProvider,System.String,System.Threading.CancellationToken)">
             <summary>
             Consumes messages.
             </summary>
             <typeparam name="TMessage">The type of response body.</typeparam>
+            <param name="serviceProvider">The <see cref="T:System.IServiceProvider"/>.</param>
             <param name="routing">The routing key (if any).</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> (void).</returns>
@@ -215,7 +236,7 @@
         <member name="M:Nano.Eventing.NullEventing.PublishAsync``1(``0,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Eventing.NullEventing.SubscribeAsync``1(System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Eventing.NullEventing.SubscribeAsync``1(System.IServiceProvider,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Eventing.NullEventing.Dispose">
@@ -244,7 +265,7 @@
         <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.PublishAsync``1(``0,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.SubscribeAsync``1(System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.SubscribeAsync``1(System.IServiceProvider,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Nano.Eventing.Providers.EasyNetQ.EasyNetQEventing.Dispose">

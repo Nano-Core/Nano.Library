@@ -4,6 +4,1707 @@
         <name>Nano.App</name>
     </assembly>
     <members>
+        <member name="T:Nano.App.Api.ApiOptions">
+            <summary>
+            Api Options.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.ApiOptions.Host">
+            <summary>
+            Host.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.ApiOptions.Root">
+            <summary>
+            Root.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.ApiOptions.Port">
+            <summary>
+            Port.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.ApiOptions.UseSsl">
+            <summary>
+            Use Ssl.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.ApiOptions.UseExposeErrors">
+            <summary>
+            Use Expose Erros.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.ApiOptions.TimeoutInSeconds">
+            <summary>
+            Timeout In Seconds.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.ApiOptions.UseHealthCheck">
+            <summary>
+            Use Health Check.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.ApiOptions.UnhealthyStatus">
+            <summary>
+            Unhealthy Status.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.ApiOptions.LogIn">
+            <summary>
+            LogIn.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.ApiOptions.LogInCredentials">
+            <summary>
+            LogIn Credentials.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.ApiOptions.LogInCredentials.Username">
+            <summary>
+            Username.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.ApiOptions.LogInCredentials.Password">
+            <summary>
+            Password.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.BaseApi">
+            <summary>
+            Base Api (abstract).
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi.#ctor(Nano.App.Api.ApiOptions)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="apiOptions">The <see cref="T:Nano.App.Api.ApiOptions"/>.</param>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi.LogInAsync(Nano.App.Api.Requests.Auth.LogInRequest,System.Threading.CancellationToken)">
+            <summary>
+            Log-In Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Auth.LogInRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi.LogInRefreshAsync(Nano.App.Api.Requests.Auth.LogInRefreshRequest,System.Threading.CancellationToken)">
+            <summary>
+            Log-In Refresh Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Auth.LogInRefreshRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi.LogInExternalAsync``1(``0,System.Threading.CancellationToken)">
+            <summary>
+            Log-In External Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Auth.BaseLogInExternalRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi.LogOutAsync(Nano.App.Api.Requests.Auth.LogOutRequest,System.Threading.CancellationToken)">
+            <summary>
+            Log-Out Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Auth.LogOutRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void..</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi.GetExternalLogInDataAsync``1(Nano.App.Api.Requests.Auth.BaseGetExternalLoginDataRequest{``0},System.Threading.CancellationToken)">
+            <summary>
+            Get External Log-In Data Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Auth.BaseGetExternalLoginDataRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi.GetExternalSchemesAsync(Nano.App.Api.Requests.Auth.GetExternalSchemesRequest,System.Threading.CancellationToken)">
+            <summary>
+            GetAsync External Schemes Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Auth.GetExternalSchemesRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>A collection of <see cref="T:Nano.Security.Models.LogInProvider"/>'s.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi.InvokeAsync``1(``0,System.Threading.CancellationToken)">
+            <summary>
+            Invokes the request.
+            </summary>
+            <typeparam name="TRequest">The request type.</typeparam>
+            <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi.InvokeAsync``2(``0,System.Threading.CancellationToken)">
+            <summary>
+            Invokes the request, and returns the response.
+            </summary>
+            <typeparam name="TRequest">The request type.</typeparam>
+            <typeparam name="TResponse">The response type.</typeparam>
+            <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The instance of <typeparamref name="TResponse"/>.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi.InvokeAsync``3(``1,System.Threading.CancellationToken)">
+            <summary>
+            Invokes the request, and returns the response.
+            </summary>
+            <typeparam name="TEntity">The entity.</typeparam>
+            <typeparam name="TRequest">The request type.</typeparam>
+            <typeparam name="TResponse">The response type.</typeparam>
+            <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The instance of <typeparamref name="TResponse"/>.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.BaseApi`1">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.#ctor(Nano.App.Api.ApiOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.GetAsync``1(`0,System.Threading.CancellationToken)">
+            <summary>
+            Get.
+            Invokes the 'details' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="id">The id.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entity.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.GetManyAsync``1(System.Collections.Generic.ICollection{`0},System.Threading.CancellationToken)">
+            <summary>
+            Get many.
+            Invokes the 'details/many' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="ids">The ids.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entities.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.IndexAsync``1(Nano.App.Api.Requests.IndexRequest,System.Threading.CancellationToken)">
+            <summary>
+            Index.
+            Invokes the 'index' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.IndexRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entities.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.DetailsAsync``1(Nano.App.Api.Requests.DetailsRequest{`0},System.Threading.CancellationToken)">
+            <summary>
+            Details.
+            Invokes the 'details' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.DetailsRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entity.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.DetailsManyAsync``1(Nano.App.Api.Requests.DetailsManyRequest{`0},System.Threading.CancellationToken)">
+            <summary>
+            Details Many.
+            Invokes the 'details' endpoint of the api, with multiple id's.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.DetailsManyRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entities.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.QueryAsync``2(Nano.App.Api.Requests.QueryRequest{``1},System.Threading.CancellationToken)">
+            <summary>
+            Query.
+            Invokes the 'query' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <typeparam name="TCriteria">The criteria type</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.QueryRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entities.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.QueryFirstAsync``2(Nano.App.Api.Requests.QueryFirstRequest{``1},System.Threading.CancellationToken)">
+            <summary>
+            Query.
+            Invokes the 'query/first' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <typeparam name="TCriteria">The criteira type</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.QueryFirstRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The first match entity.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.QueryCountAsync``2(Nano.App.Api.Requests.QueryCountRequest{``1},System.Threading.CancellationToken)">
+            <summary>
+            Query.
+            Invokes the 'query/first' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <typeparam name="TCriteria">The criteria type</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.QueryCountRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The count of matching entities.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.CreateAsync``1(Nano.App.Api.Requests.CreateRequest,System.Threading.CancellationToken)">
+            <summary>
+            Create.
+            Invokes the 'create' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.CreateRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The created entity.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.CreateManyAsync``1(Nano.App.Api.Requests.CreateManyRequest,System.Threading.CancellationToken)">
+            <summary>
+            Create Many.
+            Invokes the 'create/many' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.CreateManyRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The created entities.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.EditAsync``1(Nano.App.Api.Requests.EditRequest,System.Threading.CancellationToken)">
+            <summary>
+            Edit.
+            Invokes the 'edit' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.EditRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The updated entity.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.EditManyAsync``1(Nano.App.Api.Requests.EditManyRequest,System.Threading.CancellationToken)">
+            <summary>
+            Edit Many.
+            Invokes the 'Edit/many' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.EditManyRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The updated entities.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.EditQueryAsync``1(Nano.App.Api.Requests.EditQueryRequest,System.Threading.CancellationToken)">
+            <summary>
+            Edit Many.
+            Invokes the 'Edit/query' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.EditManyRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The updated entities.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.DeleteAsync``1(Nano.App.Api.Requests.DeleteRequest{`0},System.Threading.CancellationToken)">
+            <summary>
+            Delete.
+            Invokes the 'delete' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.DeleteRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Nothing.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.DeleteManyAsync``1(Nano.App.Api.Requests.DeleteManyRequest{`0},System.Threading.CancellationToken)">
+            <summary>
+            Delete Many.
+            Invokes the 'delete/many' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.DeleteManyRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Nothing.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.DeleteQueryAsync``1(Nano.App.Api.Requests.DeleteQueryRequest,System.Threading.CancellationToken)">
+            <summary>
+            Delete Query.
+            Invokes the 'delete/query' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.DeleteManyRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Nothing.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.CoveredByAsync``2(Nano.App.Api.Requests.Spatial.CoveredByRequest{``1},System.Threading.CancellationToken)">
+            <summary>
+            Covered-By.
+            Invokes the 'covered-by' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <typeparam name="TCriteria">The criteria type</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Spatial.CoveredByRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entities.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.CoversAsync``2(Nano.App.Api.Requests.Spatial.CoversRequest{``1},System.Threading.CancellationToken)">
+            <summary>
+            Covers.
+            Invokes the 'covers' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <typeparam name="TCriteria">The criteria type</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Spatial.CoversRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entities.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.CrossesAsync``2(Nano.App.Api.Requests.Spatial.CrossesRequest{``1},System.Threading.CancellationToken)">
+            <summary>
+            Crosses.
+            Invokes the 'crosses' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <typeparam name="TCriteria">The criteria type</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Spatial.CrossesRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entities.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.DisjointsAsync``2(Nano.App.Api.Requests.Spatial.DisjointsRequest{``1},System.Threading.CancellationToken)">
+            <summary>
+            Disjoints.
+            Invokes the 'disjoints' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <typeparam name="TCriteria">The criteria type</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Spatial.DisjointsRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entities.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.IntersectsAsync``2(Nano.App.Api.Requests.Spatial.IntersectsRequest{``1},System.Threading.CancellationToken)">
+            <summary>
+            Intersects.
+            Invokes the 'intersects' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <typeparam name="TCriteria">The criteria type</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Spatial.IntersectsRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entities.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.OverlapsAsync``2(Nano.App.Api.Requests.Spatial.OverlapsRequest{``1},System.Threading.CancellationToken)">
+            <summary>
+            Overlaps.
+            Invokes the 'overlaps' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <typeparam name="TCriteria">The criteria type</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Spatial.OverlapsRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entities.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.TouchesAsync``2(Nano.App.Api.Requests.Spatial.TouchesRequest{``1},System.Threading.CancellationToken)">
+            <summary>
+            Touches.
+            Invokes the 'touches' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <typeparam name="TCriteria">The criteria type</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Spatial.TouchesRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entities.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseApi`1.WithinAsync``2(Nano.App.Api.Requests.Spatial.WithinRequest{``1},System.Threading.CancellationToken)">
+            <summary>
+            Within.
+            Invokes the 'within' endpoint of the api.
+            </summary>
+            <typeparam name="TEntity">The entity type.</typeparam>
+            <typeparam name="TCriteria">The criteria type</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Spatial.WithinRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The matching entities.</returns>
+        </member>
+        <member name="T:Nano.App.Api.BaseIdentityApi`2">
+            <summary>
+            Default Identity Api.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.BaseIdentityApi`2.IdentityController">
+            <summary>
+            Identity Controller.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.#ctor(Nano.App.Api.ApiOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.SignUpAsync(Nano.App.Api.Requests.Identity.SignUpRequest{`0,`1},System.Threading.CancellationToken)">
+            <summary>
+            Sign Up Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.SignUpRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The instance of <typeparamref name="TUser"/>.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.SignUpExternalAsync``1(``0,System.Threading.CancellationToken)">
+            <summary>
+            Sign Up External Callback Async.
+            </summary>
+            <typeparam name="TSignUp">The signup type.</typeparam>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.BaseSignUpExternalRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.SetUsernameAsync(Nano.App.Api.Requests.Identity.SetUsernameRequest{`1},System.Threading.CancellationToken)">
+            <summary>
+            Set Username Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.SetUsernameRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.SetPasswordAsync(Nano.App.Api.Requests.Identity.SetPasswordRequest,System.Threading.CancellationToken)">
+            <summary>
+            Set Password Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.SetPasswordRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.ResetPasswordAsync(Nano.App.Api.Requests.Identity.ResetPasswordRequest,System.Threading.CancellationToken)">
+            <summary>
+            Reset Password Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.ResetPasswordRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.ChangePasswordAsync(Nano.App.Api.Requests.Identity.ChangePasswordRequest{`1},System.Threading.CancellationToken)">
+            <summary>
+            Change Password Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.ChangePasswordRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.ChangeEmailAsync(Nano.App.Api.Requests.Identity.ChangeEmailRequest{`1},System.Threading.CancellationToken)">
+            <summary>
+            Change Email Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.ChangeEmailRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.ConfirmEmailAsync(Nano.App.Api.Requests.Identity.ConfirmEmailRequest,System.Threading.CancellationToken)">
+            <summary>
+            Confirm Email Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.ConfirmEmailRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.GetChangeEmailTokenAsync(Nano.App.Api.Requests.Identity.GetChangeEmailTokenRequest,System.Threading.CancellationToken)">
+            <summary>
+            Get Change Email Token Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.GetChangeEmailTokenRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.GetConfirmEmailTokenAsync(Nano.App.Api.Requests.Identity.GetConfirmEmailTokenRequest,System.Threading.CancellationToken)">
+            <summary>
+            Get Confirm Email Token Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.GetConfirmEmailTokenRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.ChangePhoneAsync(Nano.App.Api.Requests.Identity.ChangePhoneRequest{`1},System.Threading.CancellationToken)">
+            <summary>
+            Change Phone Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.ChangePhoneRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.ConfirmPhoneAsync(Nano.App.Api.Requests.Identity.ConfirmPhoneRequest,System.Threading.CancellationToken)">
+            <summary>
+            Confirm Phone Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.ConfirmPhoneRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.GetChangePhoneTokenAsync(Nano.App.Api.Requests.Identity.GetChangePhoneTokenRequest,System.Threading.CancellationToken)">
+            <summary>
+            Get Change Phone Token Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.GetChangePhoneTokenRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.GetConfirmPhoneTokenAsync(Nano.App.Api.Requests.Identity.GetConfirmPhoneTokenRequest,System.Threading.CancellationToken)">
+            <summary>
+            Get Confirm Phone Token Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.GetConfirmPhoneTokenRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.GetResetPasswordTokenAsync(Nano.App.Api.Requests.Identity.GetResetPasswordTokenRequest,System.Threading.CancellationToken)">
+            <summary>
+            Get Reset Password Token Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.GetResetPasswordTokenRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.GetPasswordOptionsAsync(Nano.App.Api.Requests.Identity.GetPasswordOptionsRequest,System.Threading.CancellationToken)">
+            <summary>
+            Get Password Options Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.GetPasswordOptionsRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.RemoveExternalLoginAsync(Nano.App.Api.Requests.Identity.RemoveExternalLogInRequest,System.Threading.CancellationToken)">
+            <summary>
+            Remove External Login Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.RemoveExternalLogInRequest"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.GetRolesAsync(Nano.App.Api.Requests.Identity.GetRolesRequest{`1},System.Threading.CancellationToken)">
+            <summary>
+            Get User Roles Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.GetRolesRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.AssignUserRoleAsync(Nano.App.Api.Requests.Identity.AssignRoleRequest{`1},System.Threading.CancellationToken)">
+            <summary>
+            Assign Role Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.AssignRoleRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.RemoveUserRoleAsync(Nano.App.Api.Requests.Identity.RemoveRoleRequest{`1},System.Threading.CancellationToken)">
+            <summary>
+            Remove Role Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.RemoveRoleRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.GetClaimsAsync(Nano.App.Api.Requests.Identity.GetClaimsRequest{`1},System.Threading.CancellationToken)">
+            <summary>
+            Get Claims Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.GetClaimsRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.AssignUserClaimAsync(Nano.App.Api.Requests.Identity.AssignClaimRequest{`1},System.Threading.CancellationToken)">
+            <summary>
+            Assign Claim Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.AssignClaimRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.App.Api.BaseIdentityApi`2.RemoveUserClaimAsync(Nano.App.Api.Requests.Identity.RemoveClaimRequest{`1},System.Threading.CancellationToken)">
+            <summary>
+            Remove Claim Async.
+            </summary>
+            <param name="request">The <see cref="T:Nano.App.Api.Requests.Identity.RemoveClaimRequest`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="T:Nano.App.Api.DefaultApi">
+            <summary>
+            Default Api.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.DefaultApi.#ctor(Nano.App.Api.ApiOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.DefaultApi.DetailsAsync``1(Nano.App.Api.Requests.DetailsRequest{System.Guid},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.DefaultApi.DetailsManyAsync``1(Nano.App.Api.Requests.DetailsManyRequest{System.Guid},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.DefaultApi.DeleteAsync``1(Nano.App.Api.Requests.DeleteRequest{System.Guid},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.DefaultApi.DeleteManyAsync``1(Nano.App.Api.Requests.DeleteManyRequest{System.Guid},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.DefaultIdentityApi`1">
+            <summary>
+            Default Identity Api.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.DefaultIdentityApi`1.#ctor(Nano.App.Api.ApiOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.DefaultIdentityApi`1.DetailsAsync``1(Nano.App.Api.Requests.DetailsRequest{System.Guid},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.DefaultIdentityApi`1.DetailsManyAsync``1(Nano.App.Api.Requests.DetailsManyRequest{System.Guid},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.DefaultIdentityApi`1.DeleteAsync``1(Nano.App.Api.Requests.DeleteRequest{System.Guid},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.DefaultIdentityApi`1.DeleteManyAsync``1(Nano.App.Api.Requests.DeleteManyRequest{System.Guid},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Extensions.MultipartFormDataContentExtensions">
+            <summary>
+            Multipart Form Data Content Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Extensions.MultipartFormDataContentExtensions.AddFormItem(System.Net.Http.MultipartFormDataContent,Nano.App.Api.Requests.Types.FormItem,System.Threading.CancellationToken)">
+            <summary>
+            Add For Item.
+            </summary>
+            <param name="formContent">The <see cref="T:System.Net.Http.MultipartFormDataContent"/>.</param>
+            <param name="formItem">The <see cref="T:Nano.App.Api.Requests.Types.FormItem"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="T:Nano.App.Api.Requests.Attributes.BaseHttpMethodAttribute">
+            <summary>
+            Base Http Method Attribute (abstract).
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Requests.Attributes.FormAttribute">
+            <summary>
+            Form Attribute
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Requests.Attributes.HeaderAttribute">
+            <summary>
+            Header Attribute.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.Attributes.HeaderAttribute.Name">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.Attributes.HeaderAttribute.ValuePrefix">
+            <summary>
+            Value Prefix.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Requests.Attributes.QueryAttribute">
+            <summary>
+            Query Attribute.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.Attributes.QueryAttribute.Name">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Requests.Attributes.RouteAttribute">
+            <summary>
+            Route Attribute.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.Attributes.RouteAttribute.Order">
+            <summary>
+            Order.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Requests.Auth.BaseGetExternalLoginDataRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Auth.BaseGetExternalLoginDataRequest`1.Provider">
+            <summary>
+            Provider.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.BaseGetExternalLoginDataRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.BaseGetExternalLoginDataRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Auth.BaseLogInExternalRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Auth.BaseLogInExternalRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Auth.BaseLogInExternalRequest`1.LoginExternal">
+            <summary>
+            LogIn External.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.BaseLogInExternalRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Auth.GetExternalLoginDataFacebookRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.GetExternalLoginDataFacebookRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Auth.GetExternalLoginDataGoogleRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.GetExternalLoginDataGoogleRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Auth.GetExternalLoginDataMicrosoftRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.GetExternalLoginDataMicrosoftRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Auth.GetExternalSchemesRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.GetExternalSchemesRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Auth.LogInExternalDirectRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.LogInExternalDirectRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Auth.LogInExternalFacebookRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.LogInExternalFacebookRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Auth.LogInExternalGoogleRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.LogInExternalGoogleRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Auth.LogInExternalMicrosoftRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.LogInExternalMicrosoftRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Auth.LogInRefreshRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Auth.LogInRefreshRequest.LogInRefresh">
+            <summary>
+            Login.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.LogInRefreshRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.LogInRefreshRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Auth.LogInRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Auth.LogInRequest.LogIn">
+            <summary>
+            LogIn.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.LogInRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.LogInRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Auth.LogOutRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.LogOutRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Auth.LogOutRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.BaseRequest">
+            <summary>
+            Base request (abstract).
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.BaseRequest.JwtTokenOverride">
+            <summary>
+            Jwt Token Override.
+            Used to override the Jwt-Token for the specific request.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.BaseRequest.Action">
+            <summary>
+            Controller.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.BaseRequest.Controller">
+            <summary>
+            Controller.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.BaseRequest.GetRoute">
+            <summary>
+            Get Route.
+            Get the route parameters of the request, defined by properties having <see cref="T:Nano.App.Api.Requests.Attributes.RouteAttribute"/>.
+            </summary>
+            <returns>The route as string.</returns>
+        </member>
+        <member name="M:Nano.App.Api.Requests.BaseRequest.GetHeaders">
+            <summary>
+            Get Headers.
+            Get the header parameters of the request, defined by properties having <see cref="T:Nano.App.Api.Requests.Attributes.RouteAttribute"/>.
+            </summary>
+            <returns>The route as string.</returns>
+        </member>
+        <member name="M:Nano.App.Api.Requests.BaseRequest.GetQuerystring">
+            <summary>
+            Get Querystring.
+            Get the querystring parameters of the request, defined by properties having <see cref="T:Nano.App.Api.Requests.Attributes.QueryAttribute"/>.
+            </summary>
+            <returns>The querystring as string.</returns>
+        </member>
+        <member name="T:Nano.App.Api.Requests.BaseRequestDelete">
+            <summary>
+            Base Request Delete.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.BaseRequestDelete.GetBody">
+            <summary>
+            Get Body.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Requests.BaseRequestGet">
+            <summary>
+            Base Request Get.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Requests.BaseRequestOptions">
+            <summary>
+            Base Request Delete.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Requests.BaseRequestPost">
+            <summary>
+            Base Request Post.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.BaseRequestPost.GetBody">
+            <summary>
+            Get Body.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Requests.BaseRequestPostForm">
+            <summary>
+            Base Request Post Form.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.BaseRequestPostForm.GetForm">
+            <summary>
+            Get Form.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Nano.App.Api.Requests.BaseRequestPut">
+            <summary>
+            Base Request Post.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Requests.CreateManyRequest">
+            <summary>
+            Create Many Request.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.CreateManyRequest.Entities">
+            <summary>
+            Entities.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.CreateManyRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.CreateManyRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.CreateRequest">
+            <summary>
+            Create Request.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.CreateRequest.Entity">
+            <summary>
+            Entity.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.CreateRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.CreateRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.CustomRequest">
+            <summary>
+            CustomAsync Request.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Requests.CustomRequestPost">
+            <summary>
+            CustomAsync Request Json.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.CustomRequestPost.Body">
+            <summary>
+            Body.
+            The body of the request.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.CustomRequestPost.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.DeleteManyRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.DeleteManyRequest`1">
+            <summary>
+            Delete Many Request.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.DeleteManyRequest`1.Ids">
+            <summary>
+            Ids.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.DeleteManyRequest`1.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.DeleteManyRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.DeleteQueryRequest">
+            <summary>
+            Delete Many Query Request.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.DeleteQueryRequest.QueryCriteria">
+            <summary>
+            Query Criteria.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.DeleteQueryRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.DeleteQueryRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.DeleteRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.DeleteRequest`1">
+            <summary>
+            Delete Request.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.DeleteRequest`1.Id">
+            <summary>
+            Id.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.DeleteRequest`1.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.DeleteRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.DetailsManyRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.DetailsManyRequest`1">
+            <summary>
+            Details Many Request.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.DetailsManyRequest`1.Ids">
+            <summary>
+            Ids.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.DetailsManyRequest`1.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.DetailsManyRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.DetailsRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.DetailsRequest`1">
+            <summary>
+            Details Request.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.DetailsRequest`1.Id">
+            <summary>
+            Id.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.DetailsRequest`1.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Requests.EditManyRequest">
+            <summary>
+            Update Many Request.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.EditManyRequest.Entities">
+            <summary>
+            Entities.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.EditManyRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.EditManyRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.EditQueryRequest">
+            <summary>
+            Update Many Query Request.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.EditQueryRequest.Entity">
+            <summary>
+            Entity.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.EditQueryRequest.QueryCriteria">
+            <summary>
+            Query Criteria.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.EditQueryRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.EditQueryRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.EditRequest">
+            <summary>
+            Update Request.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.EditRequest.Entity">
+            <summary>
+            Entity.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.EditRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.EditRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.AssignClaimRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.AssignClaimRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.AssignClaimRequest`1.AssignClaim">
+            <summary>
+            Assign Claim.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.AssignClaimRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.AssignClaimRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.AssignRoleRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.AssignRoleRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.AssignRoleRequest`1.AssignRole">
+            <summary>
+            Assign Role.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.AssignRoleRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.AssignRoleRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.BaseSignUpExternalRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.BaseSignUpExternalRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.BaseSignUpExternalRequest`1.SignUpExternal">
+            <summary>
+            Sign Up External.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.BaseSignUpExternalRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.ChangeEmailRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.ChangeEmailRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.ChangeEmailRequest`1.ChangeEmail">
+            <summary>
+            Change Email.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.ChangeEmailRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.ChangeEmailRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.ChangePasswordRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.ChangePasswordRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.ChangePasswordRequest`1.ChangePassword">
+            <summary>
+            Change Password.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.ChangePasswordRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.ChangePasswordRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.ChangePhoneRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.ChangePhoneRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.ChangePhoneRequest`1.ChangePhone">
+            <summary>
+            Change Phone.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.ChangePhoneRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.ChangePhoneRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.ConfirmEmailRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.ConfirmEmailRequest.ConfirmEmail">
+            <summary>
+            Confirm Email.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.ConfirmEmailRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.ConfirmEmailRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.ConfirmPhoneRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.ConfirmPhoneRequest.ConfirmPhone">
+            <summary>
+            Confirm Phone.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.ConfirmPhoneRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.ConfirmPhoneRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.GetChangeEmailTokenRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.GetChangeEmailTokenRequest.EmailAddress">
+            <summary>
+            Email Address.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.GetChangeEmailTokenRequest.NewEmailAddress">
+            <summary>
+            New Email Address.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.GetChangeEmailTokenRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.GetChangePhoneTokenRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.GetChangePhoneTokenRequest.PhoneNumber">
+            <summary>
+            Phone Number.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.GetChangePhoneTokenRequest.NewPhoneNumber">
+            <summary>
+            New Phone Number.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.GetChangePhoneTokenRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.GetClaimsRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.GetClaimsRequest`1">
+            <summary>
+            Get User Claims Request.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.GetClaimsRequest`1.Id">
+            <summary>
+            Id.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.GetClaimsRequest`1.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.GetConfirmEmailTokenRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.GetConfirmEmailTokenRequest.EmailAddress">
+            <summary>
+            Email Address.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.GetConfirmEmailTokenRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.GetConfirmPhoneTokenRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.GetConfirmPhoneTokenRequest.PhoneNumber">
+            <summary>
+            Phone Number.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.GetConfirmPhoneTokenRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.GetPasswordOptionsRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.GetPasswordOptionsRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.GetResetPasswordTokenRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.GetResetPasswordTokenRequest.EmailAddress">
+            <summary>
+            Email Address.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.GetResetPasswordTokenRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.GetRolesRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.GetRolesRequest`1">
+            <summary>
+            Get Roles Request.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.GetRolesRequest`1.Id">
+            <summary>
+            Id.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.GetRolesRequest`1.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.RemoveClaimRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.RemoveClaimRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.RemoveClaimRequest`1.RemoveClaim">
+            <summary>
+            Assign Claim.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.RemoveClaimRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.RemoveClaimRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.RemoveExternalLogInRequest">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.RemoveExternalLogInRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.RemoveExternalLogInRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.RemoveRoleRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.RemoveRoleRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.RemoveRoleRequest`1.RemoveRole">
+            <summary>
+            Assign Role.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.RemoveRoleRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.RemoveRoleRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.ResetPasswordRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.ResetPasswordRequest.ResetPassword">
+            <summary>
+            Reset Password.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.ResetPasswordRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.ResetPasswordRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.SetPasswordRequest">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.SetPasswordRequest.SetPassword">
+            <summary>
+            Set Password.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.SetPasswordRequest.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.SetPasswordRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.SetUsernameRequest">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.SetUsernameRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.SetUsernameRequest`1.SetUsername">
+            <summary>
+            Set Username.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.SetUsernameRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.SetUsernameRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.SignUpExternalDirectRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.SignUpExternalDirectRequest`2">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.SignUpExternalDirectRequest`2.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.SignUpExternalFacebookRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.SignUpExternalFacebookRequest`2">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.SignUpExternalFacebookRequest`2.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.SignUpExternalGoogleRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.SignUpExternalGoogleRequest`2">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.SignUpExternalGoogleRequest`2.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.SignUpExternalMicrosoftRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.SignUpExternalMicrosoftRequest`2">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.SignUpExternalMicrosoftRequest`2.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.SignUpRequest`1">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Identity.SignUpRequest`2">
+            <inheritdoc />
+        </member>
+        <member name="P:Nano.App.Api.Requests.Identity.SignUpRequest`2.SignUp">
+            <summary>
+            Sign Up.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.SignUpRequest`2.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="M:Nano.App.Api.Requests.Identity.SignUpRequest`2.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.IndexRequest">
+            <summary>
+            Index Request.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.IndexRequest.Query">
+            <summary>
+            Query.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.IndexRequest.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.IndexRequest.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.QueryCountRequest`1">
+            <summary>
+            Query Count Request.
+            </summary>
+            <typeparam name="TCriteria">The type of <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/>.</typeparam>
+        </member>
+        <member name="P:Nano.App.Api.Requests.QueryCountRequest`1.Criteria">
+            <summary>
+            Criteria.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.QueryCountRequest`1.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.QueryCountRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.QueryFirstRequest`1">
+            <summary>
+            Query First Request.
+            </summary>
+            <typeparam name="TCriteria">The type of <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/>.</typeparam>
+        </member>
+        <member name="P:Nano.App.Api.Requests.QueryFirstRequest`1.Query">
+            <summary>
+            Query.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.QueryFirstRequest`1.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.QueryFirstRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.QueryRequest`1">
+            <summary>
+            Query Request.
+            </summary>
+            <typeparam name="TCriteria">The type of <see cref="T:DynamicExpression.Interfaces.IQueryCriteria"/>.</typeparam>
+        </member>
+        <member name="P:Nano.App.Api.Requests.QueryRequest`1.Query">
+            <summary>
+            Query.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.QueryRequest`1.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.QueryRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Spatial.BaseSpatialRequest`1">
+            <summary>
+            Base Spatial Request (abstract).
+            </summary>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+        </member>
+        <member name="P:Nano.App.Api.Requests.Spatial.BaseSpatialRequest`1.Query">
+            <summary>
+            Query.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Spatial.BaseSpatialRequest`1.GetBody">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Spatial.CoveredByRequest`1">
+            <summary>
+            Covered-By Request.
+            </summary>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Spatial.CoveredByRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Spatial.CoversRequest`1">
+            <summary>
+            Covers Request.
+            </summary>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Spatial.CoversRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Spatial.CrossesRequest`1">
+            <summary>
+            Crosses Request.
+            </summary>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Spatial.CrossesRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Spatial.DisjointsRequest`1">
+            <summary>
+            Disjoints Request.
+            </summary>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Spatial.DisjointsRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Spatial.IntersectsRequest`1">
+            <summary>
+            Intersects Request.
+            </summary>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Spatial.IntersectsRequest`1.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Requests.Spatial.OverlapsRequest`1">
+            <summary>
+            Overlaps Request.
+            </summary>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Spatial.OverlapsRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Spatial.TouchesRequest`1">
+            <summary>
+            Touches Request.
+            </summary>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Spatial.TouchesRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Spatial.WithinRequest`1">
+            <summary>
+            Within Request.
+            </summary>
+            <typeparam name="TCriteria">The type of <see cref="T:Nano.Models.Criterias.Interfaces.IQueryCriteriaSpatial"/>.</typeparam>
+        </member>
+        <member name="P:Nano.App.Api.Requests.Spatial.WithinRequest`1.Distance">
+            <summary>
+            Distance.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Requests.Spatial.WithinRequest`1.#ctor">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.App.Api.Requests.Types.FormItem">
+            <summary>
+            Form Item.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.Types.FormItem.Name">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Requests.Types.FormItem.Value">
+            <summary>
+            Value.
+            </summary>
+        </member>
+        <member name="T:Nano.App.Api.Responses.NamedStream">
+            <summary>
+            Named Stream.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Responses.NamedStream.Name">
+            <summary>
+            Name.
+            </summary>
+        </member>
+        <member name="P:Nano.App.Api.Responses.NamedStream.Stream">
+            <summary>
+            Stream.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Api.Responses.NamedStream.Dispose">
+            <inheritdoc />
+        </member>
         <member name="T:Nano.App.AppOptions">
             <summary>
             App Options.
@@ -102,6 +1803,18 @@
         <member name="M:Nano.App.DefaultApplication.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.Extensions.Hosting.IHostEnvironment,Microsoft.Extensions.Hosting.IHostApplicationLifetime)">
             <inheritdoc />
         </member>
+        <member name="T:Nano.App.Extensions.ApplicationBuilderExtensions">
+            <summary>
+            Application Builder Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Extensions.ApplicationBuilderExtensions.UseHttpContextAccessor(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds the <see cref="T:Microsoft.AspNetCore.Http.IHttpContextAccessor"/> middleware, and initializes the current <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.
+            </summary>
+            <param name="applicationBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</returns>
+        </member>
         <member name="T:Nano.App.Extensions.ServiceCollectionExtensions">
             <summary>
             Service Collection Extensions.
@@ -114,6 +1827,43 @@
             <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
             <param name="configuration">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.</param>
             <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</returns>
+        </member>
+        <member name="T:Nano.App.Extensions.StringExtensions">
+            <summary>
+            String Extensions.
+            </summary>
+        </member>
+        <member name="M:Nano.App.Extensions.StringExtensions.RemoveQuotes(System.String)">
+            <summary>
+            Remove Quotes.
+            </summary>
+            <param name="string">The string.</param>
+            <returns>The string without quotes.</returns>
+        </member>
+        <member name="M:Nano.App.Extensions.StringExtensions.GetHttpContentType(System.String)">
+            <summary>
+            Get Http Content Type.
+            Gets the http content type mathcing the extension og the passed <paramref name="filename"/>.
+            </summary>
+            <param name="filename">The filename.</param>
+            <returns>The http content type.</returns>
+        </member>
+        <member name="T:Nano.App.HttpContextAccesser">
+            <summary>
+            Http Context Access (Static)
+            </summary>
+        </member>
+        <member name="P:Nano.App.HttpContextAccesser.Current">
+            <summary>
+            Current.
+            The current <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>, fetched through the <see cref="T:Microsoft.AspNetCore.Http.IHttpContextAccessor"/>.
+            </summary>
+        </member>
+        <member name="M:Nano.App.HttpContextAccesser.Configure(Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Configure.
+            </summary>
+            <param name="httpContextAccessor">The <inheritdoc cref="T:Microsoft.AspNetCore.Http.IHttpContextAccessor"/>.</param>
         </member>
         <member name="T:Nano.App.Interfaces.IApplication">
             <summary>

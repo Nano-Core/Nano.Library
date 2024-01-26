@@ -37,6 +37,186 @@
         <member name="P:Nano.Models.BaseEntityUser`1.IdentityUser">
             <inheritdoc />
         </member>
+        <member name="T:Nano.Models.Const.HttpContentType">
+            <summary>
+            Http Content Type.
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.HTML">
+            <summary>
+            Html ("text/html").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.XHTML">
+            <summary>
+            Xhtml ("text/xhtml").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.TEXT">
+            <summary>
+            Text ("text/plain").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.CSV">
+            <summary>
+            Csv ("text/csv").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.PNG">
+            <summary>
+            Png ("image/png").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.BMP">
+            <summary>
+            Bmp ("image/bmp").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.JPEG">
+            <summary>
+            Jpeg / Jpg ("image/jpeg").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.GIF">
+            <summary>
+            Gif ("image/gif").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.TIFF">
+            <summary>
+            Tiff ("image/tiff").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.ICON">
+            <summary>
+            Icon ("image/x-icon").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.SVG">
+            <summary>
+            Svg ("image/svg+xml").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.AUDIO_MPEG">
+            <summary>
+            Mpeg ("audio/mpeg").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.WMA">
+            <summary>
+            Wma ("audio/x-ms-wma").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.REAL_AUDIO">
+            <summary>
+            Real Audio ("audio/vnd.rn-realaudio").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.WAV">
+            <summary>
+            Wav ("audio/x-wav").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.VIDOE_MPEG">
+            <summary>
+            Video Mpeg ("video/mpeg").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.MP4">
+            <summary>
+            MP4 ("video/mp4").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.QUICK_TIME">
+            <summary>
+            Quick Time ("video/quicktime").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.WMV">
+            <summary>
+            Wav ("video/x-ms-wmv").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.MS_VIDEO">
+            <summary>
+            MS Video ("video/x-msvideo").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.FLV">
+            <summary>
+            MS VIdoe ("video/x-flv").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.WEB_M">
+            <summary>
+            Web M ("video/webm").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.PDF">
+            <summary>
+            Pdf ("application/pdf").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.ZIP">
+            <summary>
+            Pdf ("application/zip").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.XML">
+            <summary>
+            Xml ("application/xml").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.JSON">
+            <summary>
+            Json ("application/json").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.FORM_ENCODED">
+            <summary>
+            Form ("application/x-www-form-urlencoded").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.FORM">
+            <summary>
+            Form ("application/x-www-form-urlencoded").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.OCTET_STREM">
+            <summary>
+            Octet ("application/octet-stream").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.EXCEL">
+            <summary>
+            Excel ("application/vnd.ms-excel").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.EXCEL_OPEN_FORMAT">
+            <summary>
+            Excel Open Document Format ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.POWERPOINT">
+            <summary>
+            Powerpoint ("application/vnd.ms-powerpoint").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.POWERPOINT_OPEN_FORMAT">
+            <summary>
+            Powerpoint Open Document Format ("application/vnd.openxmlformats-officedocument.presentationml.presentation").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.WORD">
+            <summary>
+            Word ("application/msword").
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Const.HttpContentType.WORD_OPEN_FORMAT">
+            <summary>
+            Word Open Document Format ("application/vnd.openxmlformats-officedocument.wordprocessingml.document").
+            </summary>
+        </member>
         <member name="T:Nano.Models.Criterias.BaseQueryCriteria">
             <inheritdoc />
         </member>
@@ -117,6 +297,56 @@
         <member name="P:Nano.Models.DefaultEntityUser`1.CreatedAt">
             <summary>
             Created At.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Error">
+            <summary>
+            Error.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Error.Summary">
+            <summary>
+            Message.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Error.Exceptions">
+            <summary>
+            Description.
+            </summary>
+        </member>
+        <member name="P:Nano.Models.Error.IsTranslated">
+            <summary>
+            Is Translated.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Error.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Error.#ctor(System.Exception)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="exception">The <see cref="T:System.Exception"/>.</param>
+        </member>
+        <member name="M:Nano.Models.Error.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Nano.Models.Exceptions.BadRequestException">
+            <summary>
+            Bad Request Exception.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Exceptions.BadRequestException.#ctor(System.String)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="message">The message.</param>
+        </member>
+        <member name="T:Nano.Models.Exceptions.PermissionDeniedException">
+            <summary>
+            Permission Denied Exception.
             </summary>
         </member>
         <member name="T:Nano.Models.Exceptions.TranslationException">
@@ -230,6 +460,17 @@
             <param name="type">The <see cref="T:System.Type"/>.</param>
             <returns>Boolean indicating if the type is simple.</returns>
         </member>
+        <member name="T:Nano.Models.Helpers.TypesHelper">
+            <summary>
+            Types Helper
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Helpers.TypesHelper.GetAllTypes">
+            <summary>
+            Get All Types.
+            </summary>
+            <returns>A collection of types.</returns>
+        </member>
         <member name="T:Nano.Models.Interfaces.IEntity">
             <summary>
             Entity interface.
@@ -329,6 +570,64 @@
             Implementing entities are creatable, updatable and deletable.
             Implements <see cref="T:Nano.Models.Interfaces.IEntityCreatable"/>, <see cref="T:Nano.Models.Interfaces.IEntityUpdatable"/> and <see cref="T:Nano.Models.Interfaces.IEntityDeletable"/>.
             </summary>
+        </member>
+        <member name="T:Nano.Models.Serialization.Const.Globals">
+            <summary>
+            Globals.
+            </summary>
+        </member>
+        <member name="F:Nano.Models.Serialization.Const.Globals.jsonSerializerSettings">
+            <summary>
+            Json Serializer Settings.
+            </summary>
+        </member>
+        <member name="T:Nano.Models.Serialization.Json.EnumerableTypeInfoResolver">
+            <summary>
+            Enumerable Type Info Resolver.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Serialization.Json.EnumerableTypeInfoResolver.IgnoreEmptyCollections(System.Text.Json.Serialization.Metadata.JsonTypeInfo)">
+            <summary>
+            Ignore Empty Collections.
+            </summary>
+            <param name="typeInfo"></param>
+        </member>
+        <member name="T:Nano.Models.Serialization.Json.LazyLoaderTypeInfoResolver">
+            <summary>
+            Lazy Loader Type Info Resolver.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Serialization.Json.LazyLoaderTypeInfoResolver.IgnoreLazyLoader(System.Text.Json.Serialization.Metadata.JsonTypeInfo)">
+            <summary>
+            Ignore Empty Collections.
+            </summary>
+            <param name="typeInfo">The <see cref="T:System.Text.Json.Serialization.Metadata.JsonTypeInfo"/></param>
+        </member>
+        <member name="T:Nano.Models.Serialization.XmlConvert">
+            <summary>
+            Xml Convert.
+            </summary>
+        </member>
+        <member name="M:Nano.Models.Serialization.XmlConvert.SerializeObject``1(``0,System.String,System.Xml.Serialization.XmlSerializerNamespaces,System.Type[])">
+            <summary>
+            Serializes an instance of type <typeparamref name="T"/> to xml.
+            </summary>
+            <typeparam name="T">The type to serialize.</typeparam>
+            <param name="object">The object instance to serialize.</param>
+            <param name="defaultNamespace">The default namespace used in the xml.</param>
+            <param name="namespaces">The namespaces.</param>
+            <param name="knownTypes">The known types.</param>
+            <returns>A <see cref="T:System.String"/> formatted as xml.</returns>
+        </member>
+        <member name="M:Nano.Models.Serialization.XmlConvert.DeserializeObject``1(System.String,System.String,System.Type[])">
+            <summary>
+            Deserializes an xml strong to an instance of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type to deserialize the xml into.</typeparam>
+            <param name="xml">The xml to deserialize.</param>
+            <param name="defaultNamespace">The default namespace used in the xml.</param>
+            <param name="knownTypes">The known types.</param>
+            <returns>The instance of type <typeparamref name="T"/>.</returns>
         </member>
         <member name="T:Nano.Models.Types.Address">
             <summary>

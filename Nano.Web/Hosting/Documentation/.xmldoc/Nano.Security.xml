@@ -67,6 +67,13 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ExternalLogInData"/>.</returns>
         </member>
+        <member name="M:Nano.Security.BaseIdentityManager.GetPaswordOptionsAsync(System.Threading.CancellationToken)">
+            <summary>
+            Get Pasword Options.
+            </summary>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+        </member>
         <member name="M:Nano.Security.BaseIdentityManager.GenerateJwtToken(Nano.Security.Models.AccessTokenData)">
             <summary>
             Generate Jwt Token
@@ -208,11 +215,11 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.ResetPasswordAsync(Nano.Security.Models.ResetPassword,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.ResetPasswordAsync(Nano.Security.Models.ResetPassword{`0},System.Threading.CancellationToken)">
             <summary>
             Resets the password of a user.
             </summary>
-            <param name="resetPassword">The <see cref="T:Nano.Security.Models.ResetPassword"/>.</param>
+            <param name="resetPassword">The <see cref="T:Nano.Security.Models.ResetPassword`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
@@ -232,11 +239,11 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.ConfirmEmailAsync(Nano.Security.Models.ConfirmEmail,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.ConfirmEmailAsync(Nano.Security.Models.ConfirmEmail{`0},System.Threading.CancellationToken)">
             <summary>
             Confirms the email of a user.
             </summary>
-            <param name="confirmEmail">The <see cref="T:Nano.Security.Models.ConfirmEmail"/>.</param>
+            <param name="confirmEmail">The <see cref="T:Nano.Security.Models.ConfirmEmail`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
@@ -256,38 +263,37 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateResetPasswordTokenAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateResetPasswordTokenAsync(Nano.Security.Models.GenerateResetPasswordToken{`0},System.Threading.CancellationToken)">
             <summary>
             Generates an reset password token for a user.
             </summary>
-            <param name="emailAddress">The emailAddress.</param>
+            <param name="generateResetPasswordToken">The <see cref="T:Nano.Security.Models.GenerateResetPasswordToken`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.ResetPasswordToken"/>.</returns>
+            <returns>The <see cref="T:Nano.Security.Models.ResetPasswordToken`1"/>.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateConfirmEmailTokenAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateConfirmEmailTokenAsync(Nano.Security.Models.GenerateConfirmEmailToken{`0},System.Threading.CancellationToken)">
             <summary>
             Generates an email confirmation token for a user.
             </summary>
-            <param name="emailAddress">The email address.</param>
+            <param name="generateConfirmEmailToken">The <see cref="T:Nano.Security.Models.GenerateConfirmEmailToken`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.ConfirmEmailToken"/>.</returns>
+            <returns>The <see cref="T:Nano.Security.Models.ConfirmEmailToken`1"/>.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateChangeEmailTokenAsync(System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateChangeEmailTokenAsync(Nano.Security.Models.GenerateChangeEmailToken{`0},System.Threading.CancellationToken)">
             <summary>
             Generates an change email token for a user.
             </summary>
-            <param name="emailAddress">The emailAddress.</param>
-            <param name="newEmailAddress">The new email address.</param>
+            <param name="generateChangeEmailToken">The <see cref="T:Nano.Security.Models.GenerateChangeEmailToken`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.ChangeEmailToken"/>.</returns>
+            <returns>The <see cref="T:Nano.Security.Models.ChangeEmailToken`1"/>.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateConfirmPhoneNumberTokenAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateConfirmPhoneNumberTokenAsync(Nano.Security.Models.GenerateConfirmPhoneNumberToken{`0},System.Threading.CancellationToken)">
             <summary>
             Generates an confirm phone number token for a user.
             </summary>
-            <param name="phoneNumber">The phone number.</param>
+            <param name="generateConfirmPhoneNumberToken">The <see cref="T:Nano.Security.Models.GenerateConfirmPhoneNumberToken`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.ResetPasswordToken"/>.</returns>
+            <returns>The <see cref="T:Nano.Security.Models.ConfirmPhoneNumberToken`1"/>.</returns>
         </member>
         <member name="M:Nano.Security.BaseIdentityManager`1.GenerateChangePhoneNumberTokenAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
@@ -296,7 +302,7 @@
             <param name="phoneNumber">The user id.</param>
             <param name="newPhoneNumber">The new phone number.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.ResetPasswordToken"/>.</returns>
+            <returns>The <see cref="T:Nano.Security.Models.ChangePhoneNumberToken"/>.</returns>
         </member>
         <member name="M:Nano.Security.BaseIdentityManager`1.GetRolesAsync(System.Threading.CancellationToken)">
             <summary>
@@ -544,12 +550,12 @@
             Http Context Extensions.
             </summary>
         </member>
-        <member name="M:Nano.Security.Extensions.HttpContextExtensions.GetIsAnonymous(Microsoft.AspNetCore.Http.HttpContext)">
+        <member name="M:Nano.Security.Extensions.HttpContextExtensions.GetJwtToken(Microsoft.AspNetCore.Http.HttpContext)">
             <summary>
-            Get Is Anonymous.
+            Get Jwt Token.
             </summary>
             <param name="httpContext">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.</param>
-            <returns>Whehter the current action is anonymous.</returns>
+            <returns>The token.</returns>
         </member>
         <member name="M:Nano.Security.Extensions.HttpContextExtensions.GetJwtAppId(Microsoft.AspNetCore.Http.HttpContext)">
             <summary>
@@ -557,13 +563,6 @@
             </summary>
             <param name="httpContext">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.</param>
             <returns>The app id.</returns>
-        </member>
-        <member name="M:Nano.Security.Extensions.HttpContextExtensions.GetJwtToken(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            Get Jwt Token.
-            </summary>
-            <param name="httpContext">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.</param>
-            <returns>The token.</returns>
         </member>
         <member name="M:Nano.Security.Extensions.HttpContextExtensions.GetJwtUserId(Microsoft.AspNetCore.Http.HttpContext)">
             <summary>
@@ -592,6 +591,14 @@
             </summary>
             <param name="httpContext">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.AccessToken"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.Extensions.HttpContextExtensions.GetJwtClaimValue(Microsoft.AspNetCore.Http.HttpContext,System.String)">
+            <summary>
+            Get Jwt Claim Value.
+            </summary>
+            <param name="httpContext">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/>.</param>
+            <param name="claimType">The claim type.</param>
+            <returns>The email.</returns>
         </member>
         <member name="T:Nano.Security.Extensions.IdentityErrorDescriberExtensions">
             <summary>
@@ -652,13 +659,6 @@
             <summary>
             String Extensions.
             </summary>
-        </member>
-        <member name="M:Nano.Security.Extensions.StringExtensions.GetRandomToken">
-            <summary>
-            Get Random Token.
-            Generates and returns a random base64 token.
-            </summary>
-            <returns>A random base64 token.</returns>
         </member>
         <member name="M:Nano.Security.Extensions.StringExtensions.GetJwtSecurityToken(System.String)">
             <summary>
@@ -938,22 +938,23 @@
             New Email Address.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.ChangeEmailToken">
+        <member name="T:Nano.Security.Models.ChangeEmailToken`1">
             <summary>
             Change Email Token
             </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.ChangeEmailToken.Token">
+        <member name="P:Nano.Security.Models.ChangeEmailToken`1.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangeEmailToken`1.Token">
             <summary>
             Token.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ChangeEmailToken.EmailAddress">
-            <summary>
-            Email Address.
-            </summary>
-        </member>
-        <member name="P:Nano.Security.Models.ChangeEmailToken.NewEmailAddress">
+        <member name="P:Nano.Security.Models.ChangeEmailToken`1.NewEmailAddress">
             <summary>
             New Email Address.
             </summary>
@@ -1040,34 +1041,36 @@
             Value.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.ConfirmEmail">
+        <member name="T:Nano.Security.Models.ConfirmEmail`1">
             <summary>
             Confirm Email.
             </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.ConfirmEmail.Token">
+        <member name="P:Nano.Security.Models.ConfirmEmail`1.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ConfirmEmail`1.Token">
             <summary>
             Token.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ConfirmEmail.EmailAddress">
-            <summary>
-            Email Address.
-            </summary>
-        </member>
-        <member name="T:Nano.Security.Models.ConfirmEmailToken">
+        <member name="T:Nano.Security.Models.ConfirmEmailToken`1">
             <summary>
             Confirm Email Token.
             </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.ConfirmEmailToken.Token">
+        <member name="P:Nano.Security.Models.ConfirmEmailToken`1.UserId">
             <summary>
-            Token.
+            User Id.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ConfirmEmailToken.EmailAddress">
+        <member name="P:Nano.Security.Models.ConfirmEmailToken`1.Token">
             <summary>
-            Email Address.
+            Token.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.ConfirmPhoneNumber">
@@ -1085,19 +1088,20 @@
             Phone Number.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.ConfirmPhoneNumberToken">
+        <member name="T:Nano.Security.Models.ConfirmPhoneNumberToken`1">
             <summary>
             Confirm Phone Number Token.
             </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.ConfirmPhoneNumberToken.Token">
+        <member name="P:Nano.Security.Models.ConfirmPhoneNumberToken`1.UserId">
             <summary>
-            Token.
+            User Id.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ConfirmPhoneNumberToken.PhoneNumber">
+        <member name="P:Nano.Security.Models.ConfirmPhoneNumberToken`1.Token">
             <summary>
-            Phone Number.
+            Token.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.ExternalLogInData">
@@ -1143,6 +1147,55 @@
         <member name="P:Nano.Security.Models.ExternalLoginTokenData.RefreshToken">
             <summary>
             Refresh Token.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.GenerateChangeEmailToken`1">
+            <summary>
+            Generate Change Email Token.
+            </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.GenerateChangeEmailToken`1.UserId">
+            <summary>
+            User id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.GenerateChangeEmailToken`1.NewEmailAddress">
+            <summary>
+            User id.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.GenerateConfirmEmailToken`1">
+            <summary>
+            Generate Confirm Email Token.
+            </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.GenerateConfirmEmailToken`1.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.GenerateConfirmPhoneNumberToken`1">
+            <summary>
+            Generate Confirm Phone Number Token.
+            </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.GenerateConfirmPhoneNumberToken`1.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.GenerateResetPasswordToken`1">
+            <summary>
+            Generate Reset Password Token.
+            </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.GenerateResetPasswordToken`1.UserId">
+            <summary>
+            User Id.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.GetClaim`1">
@@ -1380,39 +1433,41 @@
             Role Name.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.ResetPassword">
+        <member name="T:Nano.Security.Models.ResetPassword`1">
             <summary>
             Reset Password.
             </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.ResetPassword.Token">
+        <member name="P:Nano.Security.Models.ResetPassword`1.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ResetPassword`1.Token">
             <summary>
             Token.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ResetPassword.EmailAddress">
-            <summary>
-            Email Address.
-            </summary>
-        </member>
-        <member name="P:Nano.Security.Models.ResetPassword.Password">
+        <member name="P:Nano.Security.Models.ResetPassword`1.Password">
             <summary>
             Password.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.ResetPasswordToken">
+        <member name="T:Nano.Security.Models.ResetPasswordToken`1">
             <summary>
             Reset Password Token.
             </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.ResetPasswordToken.Token">
+        <member name="P:Nano.Security.Models.ResetPasswordToken`1.UserId">
             <summary>
-            Token.
+            User Id.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ResetPasswordToken.EmailAddress">
+        <member name="P:Nano.Security.Models.ResetPasswordToken`1.Token">
             <summary>
-            Email Address.
+            Token.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.SetPassword`1">
@@ -1586,6 +1641,11 @@
             Is Auth.
             </summary>
         </member>
+        <member name="P:Nano.Security.SecurityOptions.TokensExpirationInHours">
+            <summary>
+            Tokens Expiration.
+            </summary>
+        </member>
         <member name="P:Nano.Security.SecurityOptions.Jwt">
             <summary>
             Jwt Options.
@@ -1633,7 +1693,14 @@
         </member>
         <member name="P:Nano.Security.SecurityOptions.JwtOptions.PublicKey">
             <summary>
-            Secret Key.
+            Public Key.
+            Base64 encoded.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.SecurityOptions.JwtOptions.PrivateKey">
+            <summary>
+            Private Key.
+            Base64 encoded.
             </summary>
         </member>
         <member name="P:Nano.Security.SecurityOptions.JwtOptions.ExpirationInHours">
