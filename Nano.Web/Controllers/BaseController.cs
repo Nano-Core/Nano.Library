@@ -1,12 +1,10 @@
 using System;
-using System.Net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing;
 using Nano.Eventing.Interfaces;
-using Nano.Models.Const;
 using Nano.Repository.Interfaces;
 using Nano.Security.Const;
 using Nano.Security.Extensions;
@@ -17,7 +15,9 @@ namespace Nano.Web.Controllers;
 /// <summary>
 /// Base controller.
 /// </summary>
+[ApiController]
 [Route("[controller]")]
+[Route("v{v:apiVersion}/[controller]")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE)]
 public abstract class BaseController : Controller
 {
@@ -48,23 +48,6 @@ public abstract class BaseController : Controller
     protected BaseController(ILogger logger)
     {
         this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
-    /// <summary>
-    /// Options.
-    /// Any route can be called with http options, to return options header information.
-    /// </summary>
-    /// <returns>Void.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="401">Unauthorized.</response>
-    [HttpOptions]
-    [Route("")]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    public virtual IActionResult Options()
-    {
-        return this.Ok();
     }
 }
 

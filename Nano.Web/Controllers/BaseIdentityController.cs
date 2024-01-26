@@ -311,7 +311,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [Route("password/reset/token")]
     [AllowAnonymous]
     [Produces(HttpContentType.JSON, HttpContentType.XML)]
-    [ProducesResponseType(typeof(ResetPasswordToken<>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -393,13 +393,13 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpPost]
     [Route("email/change/token")]
     [Produces(HttpContentType.JSON, HttpContentType.XML)]
-    [ProducesResponseType(typeof(ChangeEmailToken<>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public virtual async Task<IActionResult> GetChangeEmailTokenAsync([FromBody][Required]GenerateChangeEmailToken<TIdentity> generateChangeEmailToken, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> GetChangeEmailTokenAsync([FromBody][Required] GenerateChangeEmailToken<TIdentity> generateChangeEmailToken, CancellationToken cancellationToken = default)
     {
         var changeEmailToken = await this.IdentityManager
             .GenerateChangeEmailTokenAsync(generateChangeEmailToken, cancellationToken);
@@ -447,7 +447,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpPost]
     [Route("email/confirm/token")]
     [Produces(HttpContentType.JSON, HttpContentType.XML)]
-    [ProducesResponseType(typeof(ConfirmEmailToken<>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -502,7 +502,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpPost]
     [Route("phone/change/token")]
     [Produces(HttpContentType.JSON, HttpContentType.XML)]
-    [ProducesResponseType(typeof(ChangePhoneNumberToken<>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -555,13 +555,13 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpPost]
     [Route("phone/confirm/token")]
     [Produces(HttpContentType.JSON, HttpContentType.XML)]
-    [ProducesResponseType(typeof(ConfirmPhoneNumberToken<>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public virtual async Task<IActionResult> GetConfirmPhoneTokenAsync([FromBody][Required]GenerateConfirmPhoneToken<TIdentity> generateConfirmPhoneToken, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> GetConfirmPhoneTokenAsync([FromBody][Required] GenerateConfirmPhoneToken<TIdentity> generateConfirmPhoneToken, CancellationToken cancellationToken = default)
     {
         var confirmEmailToken = await this.IdentityManager
             .GenerateConfirmPhoneNumberTokenAsync(generateConfirmPhoneToken, cancellationToken);

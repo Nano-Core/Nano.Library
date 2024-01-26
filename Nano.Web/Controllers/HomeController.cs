@@ -55,6 +55,7 @@ public class HomeController : BaseController
     [AllowAnonymous]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public virtual IActionResult Ping()
     {
         return this.Ok();

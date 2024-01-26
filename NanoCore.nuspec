@@ -16,17 +16,18 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Updated to .NET 8
+			- Updated to .NET 8.
 			- Added Header annotation for Api-Client.
 			- Added Api-Client service registration to console application (Nano.Web -> Nano.App).
 			- Reordered api-client authentication types.
 			- Added title for health check UI.
 			- Expanded Cors configuration options and updated Http OPTIONS middleware to be based on Cors policy.
-			- BREAKING: Moved Web.Hosting.AllowedOrigins to Web.Hosting.Cors.AllowedOrigins
+			- BREAKING: Moved Web.Hosting.AllowedOrigins to Web.Hosting.Cors.AllowedOrigins.
 			- BREAKING: Update identity implementation to use POST methods instead of GET and not expose email address as query parameter.
 			- Fixed Login Refresh that used incorrect validation key.
 			- Fixed audit exception when saving read only / not mapped properties.
 			- Added phone number to SignUp model.
+			- Improved version implementation to extend to query parameter and route. Also added to swagger.
 			- Resharper code issues.
 		</releaseNotes>
 		<dependencies>

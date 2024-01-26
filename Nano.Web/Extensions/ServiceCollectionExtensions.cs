@@ -117,7 +117,7 @@ public static class ServiceCollectionExtensions
                         y.DisallowCredentials();
                     }
 
-                    y.WithExposedHeaders("RequestId", "TZ", "Content-Disposition");
+                    y.WithExposedHeaders("RequestId", "TZ", "Content-Disposition", "api-supported-versions");
                 });
             })
             .AddSession()
@@ -293,18 +293,20 @@ public static class ServiceCollectionExtensions
         if (appOptions == null)
             throw new ArgumentNullException(nameof(appOptions));
 
-        ApiVersionParser.Default.TryParse(appOptions.Version, out var apiVersion);
+        var version = appOptions.Version == null 
+            ? new Version(1, 0) 
+            : new Version(appOptions.Version);
 
         services
             .AddApiVersioning(x =>
             {
                 x.ReportApiVersions = true;
-                x.DefaultApiVersion = apiVersion ?? new ApiVersion(1, 0);
+                x.DefaultApiVersion = new ApiVersion(version.Major, version.Minor);
                 x.AssumeDefaultVersionWhenUnspecified = true;
                 x.ApiVersionReader = ApiVersionReader.Combine(
                     new UrlSegmentApiVersionReader(),
-                    new QueryStringApiVersionReader("api-version"),
-                    new HeaderApiVersionReader("X-Api-Version"));
+                    new QueryStringApiVersionReader("api-version"), 
+                    new HeaderApiVersionReader("Api-Version"));
             })
             .AddApiExplorer(x =>
             {
