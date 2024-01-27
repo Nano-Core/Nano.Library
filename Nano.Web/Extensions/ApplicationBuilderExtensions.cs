@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Asp.Versioning.ApiExplorer;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -60,7 +61,7 @@ public static class ApplicationBuilderExtensions
                 applicationBuilder
                     .UseHealthChecksUI(x =>
                     {
-                        x.PageTitle = $"Nano - {appOptions.Name} Healthz v{appOptions.Version} ({ConfigManager.Environment})";
+                        x.PageTitle = $"{nameof(Nano)} - {appOptions.Name} Healthz v{appOptions.Version} ({ConfigManager.Environment})";
                         x.UIPath = HealthzCheckUris.UiPath;
                         x.ApiPath = HealthzCheckUris.ApiPath;
                         x.ResourcesPath = HealthzCheckUris.RexPath;
@@ -147,10 +148,16 @@ public static class ApplicationBuilderExtensions
                 })
                 .UseSwaggerUI(x =>
                 {
-                    x.RoutePrefix = "docs";
-                    x.DocumentTitle = $"Nano - {appOptions.Name} Docs v{appOptions.Version} ({ConfigManager.Environment})";
+                    var apiVersionDescriptionProvider = applicationBuilder.ApplicationServices
+                        .GetRequiredService<IApiVersionDescriptionProvider>();
 
-                    x.SwaggerEndpoint($"{appOptions.Version}/swagger.json", $"Nano - {appOptions.Name} v{appOptions.Version} ({ConfigManager.Environment})");
+                    foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+                    {
+                        x.SwaggerEndpoint($"{description.GroupName}/swagger.json", $"{nameof(Nano)} - {appOptions.Name} {description.GroupName} ({ConfigManager.Environment})");
+                    }
+
+                    x.RoutePrefix = "docs";
+                    x.DocumentTitle = $"{nameof(Nano)} - {appOptions.Name} Docs ({ConfigManager.Environment})";
 
                     x.EnableFilter();
                     x.EnableDeepLinking();

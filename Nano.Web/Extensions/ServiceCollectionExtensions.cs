@@ -8,6 +8,7 @@ using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using System.Xml.XPath;
 using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -297,20 +298,23 @@ public static class ServiceCollectionExtensions
             ? new Version(1, 0) 
             : new Version(appOptions.Version);
 
+        var apiVersion = new ApiVersion(version.Major, version.Minor);
+
         services
             .AddApiVersioning(x =>
             {
                 x.ReportApiVersions = true;
-                x.DefaultApiVersion = new ApiVersion(version.Major, version.Minor);
+                x.DefaultApiVersion = apiVersion;
                 x.AssumeDefaultVersionWhenUnspecified = true;
                 x.ApiVersionReader = ApiVersionReader.Combine(
                     new UrlSegmentApiVersionReader(),
-                    new QueryStringApiVersionReader("api-version"), 
+                    new QueryStringApiVersionReader("api-version"),
                     new HeaderApiVersionReader("Api-Version"));
             })
             .AddApiExplorer(x =>
             {
                 x.GroupNameFormat = "'v'V";
+                x.DefaultApiVersion = apiVersion;
                 x.SubstituteApiVersionInUrl = true;
             });
 
@@ -389,21 +393,34 @@ public static class ServiceCollectionExtensions
             return services
                 .AddSwaggerGen(x =>
                 {
-                    var info = new OpenApiInfo
-                    {
-                        Title = appOptions.Name,
-                        Description = appOptions.Description,
-                        Version = appOptions.Version,
-                        Contact = webOptions.Documentation.Contact,
-                        License = webOptions.Documentation.License
-                    };
+                    var apiVersionDescriptionProvider = services
+                        .BuildServiceProvider()
+                        .GetService<IApiVersionDescriptionProvider>();
 
-                    if (!string.IsNullOrEmpty(appOptions.TermsOfService))
+                    foreach (var provider in apiVersionDescriptionProvider.ApiVersionDescriptions)
                     {
-                        info.TermsOfService = new Uri(appOptions.TermsOfService);
+                        var info = new OpenApiInfo
+                        {
+                            Title = appOptions.Name,
+                            Description = appOptions.Description,
+                            Version = provider.ApiVersion.ToString(),
+                            Contact = webOptions.Documentation.Contact,
+                            License = webOptions.Documentation.License
+                        };
+
+                        if (provider.IsDeprecated)
+                        {
+                            info.Description += " This version has been deprecated.";
+                        }
+
+                        if (!string.IsNullOrEmpty(appOptions.TermsOfService))
+                        {
+                            info.TermsOfService = new Uri(appOptions.TermsOfService);
+                        }
+
+                        x.SwaggerDoc(provider.GroupName, info);
                     }
 
-                    x.SwaggerDoc(appOptions.Version, info);
                     x.IgnoreObsoleteActions();
                     x.IgnoreObsoleteProperties();
                     x.EnableAnnotations(true, true);
@@ -423,7 +440,7 @@ public static class ServiceCollectionExtensions
                     x.AddSecurityDefinition("Bearer", securityScheme);
                     x.AddSecurityRequirement(new OpenApiSecurityRequirement
                     {
-                    { securityScheme, new string[] { } }
+                        { securityScheme, new string[] { } }
                     });
 
                     TypesHelper.GetAllTypes()
