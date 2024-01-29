@@ -49,7 +49,7 @@
 				<dependency id="Microsoft.Extensions.Logging.Log4Net.AspNetCore" version="8.0.0" />
 				<dependency id="Serilog" version="3.1.1" />
 				<dependency id="Serilog.Extensions.Logging" version="8.0.0" />
-				<dependency id="Serilog.Sinks.Console" version="5.1.0" />
+				<dependency id="Serilog.Sinks.Console" version="5.0.1" />
 				<dependency id="AspNetCore.HealthChecks.Rabbitmq" version="8.0.0" />
 				<dependency id="EasyNetQ" version="7.8.0" />
 				<dependency id="EasyNetQ.DI.Microsoft" version="7.8.0" />
