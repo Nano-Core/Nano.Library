@@ -28,7 +28,7 @@
 			- Fixed audit exception when saving read only / not mapped properties.
 			- Added phone number to SignUp model.
 			- Improved version implementation to extend to query parameter and route. Also added to swagger.
-			- Added genereate and verify custom token to IdentityManager and BaseIdentityController.
+			- Added generate and verify custom token to IdentityManager and BaseIdentityController.
 			- Resharper code issues.
 		</releaseNotes>
 		<dependencies>
