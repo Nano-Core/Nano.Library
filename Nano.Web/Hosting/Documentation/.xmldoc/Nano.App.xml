@@ -1231,7 +1231,7 @@
         <member name="T:Nano.App.Api.Requests.Identity.ConfirmEmailRequest">
             <inheritdoc />
         </member>
-        <member name="P:Nano.App.Api.Requests.Identity.ConfirmEmailRequest.ConfirmEmail">
+        <member name="P:Nano.App.Api.Requests.Identity.ConfirmEmailRequest.CustomPurposeToken">
             <summary>
             Confirm Email.
             </summary>

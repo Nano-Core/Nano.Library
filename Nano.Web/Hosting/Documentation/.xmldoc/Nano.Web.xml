@@ -1182,7 +1182,7 @@
             <summary>
             Get the change email token, used to change the email address of a user.
             </summary>
-            <param name="generateChangeEmailToken">The genereate change email token.</param>
+            <param name="generateCustomPurposeToken">The genereate change email token.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The change email token.</returns>
             <response code="200">Success.</response>
@@ -1191,11 +1191,11 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.ConfirmEmailAsync(Nano.Security.Models.ConfirmEmail{`2},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.ConfirmEmailAsync(Nano.Security.Models.CustomPurposeToken{`2},System.Threading.CancellationToken)">
             <summary>
             Confirms the email address of a user.
             </summary>
-            <param name="confirmEmail">The confirm email.</param>
+            <param name="customToken">The confirm email.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>Void.</returns>
             <response code="200">Success.</response>
@@ -1207,7 +1207,7 @@
             <summary>
             Get the confirm email token, used to confirm the email address of a user.
             </summary>
-            <param name="generateConfirmEmailToken">The generate confirm email token.</param>
+            <param name="customPurposeToken">The generate confirm email token.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The confirm email token.</returns>
             <response code="200">Success.</response>

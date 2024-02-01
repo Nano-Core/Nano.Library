@@ -570,6 +570,61 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
+    /// Generates a cstuom purpose token of a user.
+    /// </summary>
+    /// <param name="confirmEmail">The custom purpose token.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The custom purpose token.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("token/custom")]
+    [AllowAnonymous]
+    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+    [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> VerifyCustomPurposeTokenAsync([FromBody][Required]GenerateCustomPurposeToken<TIdentity> confirmEmail, CancellationToken cancellationToken = default)
+    {
+        var customPurposeToken = await this.IdentityManager
+            .GenerateCustomTokenAsync(confirmEmail, cancellationToken);
+
+        return this.Ok(customPurposeToken);
+    }
+
+    /// <summary>
+    /// Verifies a cstuom purpose token of a user.
+    /// </summary>
+    /// <param name="customPurposeToken">The generate confirm email token.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("token/custom/verify")]
+    [AllowAnonymous]
+    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public virtual async Task<IActionResult> GetConfirmEmailTokenAsync([FromBody][Required]CustomPurposeToken<TIdentity> customPurposeToken, CancellationToken cancellationToken = default)
+    {
+        await this.IdentityManager
+            .VerifyCustomTokenAsync(customPurposeToken, cancellationToken);
+
+        return this.Ok();
+    }
+
+    /// <summary>
     /// Removes an external logIn for a user.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>

@@ -1111,10 +1111,6 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         {
             throw new NullReferenceException(nameof(user));
         }
-        if (user == null)
-        {
-            throw new NullReferenceException(nameof(user));
-        }
 
         var result = await this.UserManager
             .ConfirmEmailAsync(user, confirmEmail.Token);
@@ -1202,6 +1198,42 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (!result.Succeeded)
         {
             this.ThrowIdentityExceptions(result.Errors);
+        }
+    }
+
+    /// <summary>
+    /// Verifies the custom token of a user.
+    /// </summary>
+    /// <param name="customToken">The <see cref="CustomPurposeToken{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Void.</returns>
+    public virtual async Task VerifyCustomTokenAsync(CustomPurposeToken<TIdentity> customToken, CancellationToken cancellationToken = default)
+    {
+        if (customToken == null)
+            throw new ArgumentNullException(nameof(customToken));
+
+        var userIdString = customToken.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
+        var user = await this.UserManager
+            .FindByIdAsync(userIdString);
+
+        if (user == null)
+        {
+            throw new NullReferenceException(nameof(user));
+        }
+
+        var success = await this.UserManager
+            .VerifyUserTokenAsync(user, customToken.Purpose, TokenOptions.DefaultProvider, customToken.Token);
+
+        if (!success)
+        {
+            this.ThrowIdentityExceptions(new []{ new IdentityError { Description = "Invalid Token." } });
         }
     }
 
@@ -1401,6 +1433,44 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
             UserId = generateChangePhoneToken.UserId,
             Token = token,
             NewPhoneNumber = generateChangePhoneToken.NewPhoneNumber
+        };
+    }
+
+    /// <summary>
+    /// Generates an custom token for a user.
+    /// </summary>
+    /// <param name="generateCustomPurposeToken">The <see cref="GenerateCustomPurposeToken{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="CustomPurposeToken{TIdentity}"/>.</returns>
+    public virtual async Task<CustomPurposeToken<TIdentity>> GenerateCustomTokenAsync(GenerateCustomPurposeToken<TIdentity> generateCustomPurposeToken, CancellationToken cancellationToken = default)
+    {
+        if (generateCustomPurposeToken == null)
+            throw new ArgumentNullException(nameof(generateCustomPurposeToken));
+
+        var userIdString = generateCustomPurposeToken.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
+        var user = await this.UserManager
+            .FindByIdAsync(userIdString);
+
+        if (user == null)
+        {
+            throw new NullReferenceException(nameof(user));
+        }
+
+        var token = await this.UserManager
+            .GenerateUserTokenAsync(user, this.UserManager.Options.Tokens.ChangeEmailTokenProvider, generateCustomPurposeToken.Purpose);
+
+        return new CustomPurposeToken<TIdentity>
+        {
+            UserId = generateCustomPurposeToken.UserId,
+            Token = token,
+            Purpose = generateCustomPurposeToken.Purpose
         };
     }
 

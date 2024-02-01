@@ -239,11 +239,11 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.ConfirmEmailAsync(Nano.Security.Models.ConfirmEmail{`0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.ConfirmEmailAsync(Nano.Security.Models.CustomPurposeToken{`0},System.Threading.CancellationToken)">
             <summary>
             Confirms the email of a user.
             </summary>
-            <param name="confirmEmail">The <see cref="T:Nano.Security.Models.ConfirmEmail`1"/>.</param>
+            <param name="customToken">The <see cref="T:Nano.Security.Models.CustomPurposeToken`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
@@ -275,7 +275,7 @@
             <summary>
             Generates an email confirmation token for a user.
             </summary>
-            <param name="generateConfirmEmailToken">The <see cref="T:Nano.Security.Models.GenerateConfirmEmailToken`1"/>.</param>
+            <param name="customPurposeToken">The <see cref="T:Nano.Security.Models.GenerateConfirmEmailToken`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ConfirmEmailToken`1"/>.</returns>
         </member>
@@ -283,7 +283,7 @@
             <summary>
             Generates an change email token for a user.
             </summary>
-            <param name="generateChangeEmailToken">The <see cref="T:Nano.Security.Models.GenerateChangeEmailToken`1"/>.</param>
+            <param name="generateCustomPurposeToken">The <see cref="T:Nano.Security.Models.GenerateChangeEmailToken`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ChangeEmailToken`1"/>.</returns>
         </member>
@@ -1041,18 +1041,18 @@
             Value.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.ConfirmEmail`1">
+        <member name="T:Nano.Security.Models.CustomPurposeToken`1">
             <summary>
             Confirm Email.
             </summary>
             <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.ConfirmEmail`1.UserId">
+        <member name="P:Nano.Security.Models.CustomPurposeToken`1.UserId">
             <summary>
             User Id.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ConfirmEmail`1.Token">
+        <member name="P:Nano.Security.Models.CustomPurposeToken`1.Token">
             <summary>
             Token.
             </summary>

@@ -284,6 +284,38 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
     }
 
     /// <summary>
+    /// Get Custom Purpose Token Async.
+    /// </summary>
+    /// <param name="request">The <see cref="GenerateChangeEmailTokenRequest"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="ChangeEmailToken{TIdentity}"/>.</returns>
+    public virtual Task<CustomPurposeToken<TIdentity>> GetCustomPurposeTokenAsync(GenerateCustomPurposeTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return this.InvokeAsync<GenerateCustomPurposeTokenRequest<TIdentity>, CustomPurposeToken<TIdentity>>(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Verify Custom Token Async.
+    /// </summary>
+    /// <param name="request">The <see cref="VerifyCustomTokenRequest{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Void.</returns>
+    public virtual Task VerifyCustomTokenAsync(VerifyCustomTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return this.InvokeAsync(request, cancellationToken);
+    }
+
+    /// <summary>
     /// Remove External Login Async.
     /// </summary>
     /// <param name="request">The <see cref="RemoveExternalLogInRequest"/>.</param>
