@@ -11,7 +11,7 @@ public class VerifyCustomTokenRequest<TIdentity> : BaseRequestPost
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Confirm Email.
+    /// Custom Purpose Token.
     /// </summary>
     public virtual CustomPurposeToken<TIdentity> CustomPurposeToken { get; set; } = new();
 
