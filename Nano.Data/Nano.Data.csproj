@@ -41,7 +41,7 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="8.0.1" />
 		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0-beta.2" />
 		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql.NetTopologySuite" Version="8.0.0-beta.2" />
-		<PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="8.101.2.1" />
+		<PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="8.102.0" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>8.0.1-beta06</version>
+		<version>8.0.1-beta07</version>
 		<title>Nano Core</title>
 		<summary>Rapidly built and deploy rich .NET 8.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
@@ -73,7 +73,7 @@
 				<dependency id="Pomelo.EntityFrameworkCore.MySql" version="8.0.0-beta.2" />
 				<dependency id="Pomelo.EntityFrameworkCore.MySql.NetTopologySuite" version="8.0.0-beta.2" />
 				<dependency id="EFCoreSecondLevelCacheInterceptor" version="4.2.0" />
-				<dependency id="Z.EntityFramework.Plus.EFCore" version="8.101.1.2" />
+				<dependency id="Z.EntityFramework.Plus.EFCore" version="8.102.0" />
 				<dependency id="Microsoft.Extensions.Hosting" version="8.0.0" />
 				<dependency id="Google.Apis.Auth" version="1.66.0" />
 				<dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="8.0.1" />
