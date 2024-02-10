@@ -18,7 +18,7 @@ namespace Nano.Web.Hosting.ModelBinders;
 public class JsonFormModelBinder : IModelBinder
 {
     /// <summary>
-    /// Deserializes the json value and binds it to it's type.
+    /// Deserializes the json value and binds it to its type.
     /// </summary>
     /// <param name="bindingContext">The <see cref="ModelBindingContext"/>.</param>
     public async Task BindModelAsync(ModelBindingContext bindingContext)

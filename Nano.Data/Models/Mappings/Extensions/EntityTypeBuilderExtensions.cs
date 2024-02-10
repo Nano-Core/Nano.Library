@@ -78,7 +78,7 @@ public static class EntityTypeBuilderExtensions
     }
 
     /// <summary>
-    /// Adds an deleted event trigger to the model.
+    /// Adds a deleted event trigger to the model.
     /// The passed <paramref name="action"/> will be invoked, after the entity of type <typeparamref name="TEntity"/> is deleted.
     /// </summary>
     /// <typeparam name="TEntity">the type of entity.</typeparam>

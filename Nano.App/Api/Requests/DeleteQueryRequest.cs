@@ -1,17 +1,18 @@
 ﻿using DynamicExpression.Interfaces;
-using Nano.Models.Criterias;
 
 namespace Nano.App.Api.Requests;
 
 /// <summary>
 /// Delete Many Query Request.
 /// </summary>
-public class DeleteQueryRequest : BaseRequestDelete
+/// <typeparam name="TCriteria">The type of <see cref="IQueryCriteria"/>.</typeparam>
+public class DeleteQueryRequest<TCriteria> : BaseRequestDelete
+    where TCriteria : IQueryCriteria, new()
 {
     /// <summary>
     /// Query Criteria.
     /// </summary>
-    public virtual IQueryCriteria QueryCriteria { get; set; } = new DefaultQueryCriteria();
+    public virtual TCriteria Criteria { get; set; } = new();
 
     /// <summary>
     /// Constructor.
@@ -24,6 +25,6 @@ public class DeleteQueryRequest : BaseRequestDelete
     /// <inheritdoc />
     public override object GetBody()
     {
-        return this.QueryCriteria;
+        return this.Criteria;
     }
 }

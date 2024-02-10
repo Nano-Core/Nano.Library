@@ -523,7 +523,7 @@ public class WebOptions
 
                 /// <summary>
                 /// Display Capture.
-                /// Controls whether or not the current document is permitted to use the getDisplayMedia() method to capture screen contents.
+                /// Controls whether the current document is permitted to use the getDisplayMedia() method to capture screen contents.
                 /// When this policy is disabled, the promise returned by getDisplayMedia() will reject with a NotAllowedError
                 /// if permission is not obtained to capture the display's contents.
                 /// </summary>
@@ -551,7 +551,7 @@ public class WebOptions
 
                 /// <summary>
                 /// Execution While Out Of Viewport.
-                /// Controls whether tasks should execute in frames while they're outside of the visible viewport.
+                /// Controls whether tasks should execute in frames while they're outside the visible viewport.
                 /// </summary>
                 public virtual CspDirectivePermissionsPolicyExecutionWhileOutOfViewport ExecutionWhileOutOfViewport { get; set; } = new();
 
@@ -689,14 +689,14 @@ public class WebOptions
 
                 /// <summary>
                 /// Web Share.
-                /// Controls whether or not the current document is allowed to use the Navigator.share() of Web Share API to
+                /// Controls whether the current document is allowed to use the Navigator.share() of Web Share API to
                 /// share text, links, images, and other content to arbitrary destinations of user's choice, e.g. mobile apps.
                 /// </summary>
                 public virtual CspDirectivePermissionsPolicyWebShare WebShare { get; set; } = new();
 
                 /// <summary>
                 /// Xr Spatial Tracking.
-                /// Controls whether or not the current document is allowed to use the WebXR Device API to interact with a WebXR session.
+                /// Controls whether the current document is allowed to use the WebXR Device API to interact with a WebXR session.
                 /// </summary>
                 public virtual CspDirectivePermissionsPolicyXrSpatialTracking XrSpatialTracking { get; set; } = new();
 

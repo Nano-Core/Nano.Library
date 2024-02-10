@@ -199,12 +199,12 @@
         </member>
         <member name="F:Nano.Models.Const.HttpContentType.POWERPOINT">
             <summary>
-            Powerpoint ("application/vnd.ms-powerpoint").
+            PowerPoint ("application/vnd.ms-powerpoint").
             </summary>
         </member>
         <member name="F:Nano.Models.Const.HttpContentType.POWERPOINT_OPEN_FORMAT">
             <summary>
-            Powerpoint Open Document Format ("application/vnd.openxmlformats-officedocument.presentationml.presentation").
+            PowerPoint Open Document Format ("application/vnd.openxmlformats-officedocument.presentationml.presentation").
             </summary>
         </member>
         <member name="F:Nano.Models.Const.HttpContentType.WORD">
@@ -418,8 +418,8 @@
             from the passed <paramref name="string"/>.
             </summary>
             <param name="string">The <see cref="T:System.String"/>.</param>
-            <param name="indexOf">The <see cref="T:System.String"/> to find indexOf in the passed <paramref name="string"/>.</param>
-            <returns>The sustring.</returns>
+            <param name="indexOf">The <see cref="T:System.String"/> to find indexOf in the <paramref name="string"/>.</param>
+            <returns>The substring.</returns>
         </member>
         <member name="M:Nano.Models.Extensions.StringExtensions.TrySubstring(System.String,System.String,System.String@)">
             <summary>
@@ -427,8 +427,8 @@
             from the passed <paramref name="string"/>.
             </summary>
             <param name="string">The <see cref="T:System.String"/>.</param>
-            <param name="indexOf">The <see cref="T:System.String"/> to find indexOf in the passed <paramref name="string"/>.</param>
-            <param name="result">The sustring.</param>
+            <param name="indexOf">The <see cref="T:System.String"/> to find indexOf in the <paramref name="string"/>.</param>
+            <param name="result">The substring.</param>
             <returns>A <see cref="T:System.Boolean"/> indicating success or not.</returns>
         </member>
         <member name="T:Nano.Models.Extensions.TypeExtensions">
@@ -621,7 +621,7 @@
         </member>
         <member name="M:Nano.Models.Serialization.XmlConvert.DeserializeObject``1(System.String,System.String,System.Type[])">
             <summary>
-            Deserializes an xml strong to an instance of type <typeparamref name="T"/>.
+            Deserializes a xml strong to an instance of type <typeparamref name="T"/>.
             </summary>
             <typeparam name="T">The type to deserialize the xml into.</typeparam>
             <param name="xml">The xml to deserialize.</param>
@@ -741,7 +741,7 @@
         </member>
         <member name="P:Nano.Models.Types.Percentage.AsDecimal">
             <summary>
-            Gets the percentage value as an <see cref="T:System.Decimal"/>.
+            Gets the percentage value as a <see cref="T:System.Decimal"/>.
             </summary>
         </member>
         <member name="M:Nano.Models.Types.Percentage.#ctor">
@@ -751,13 +751,13 @@
         </member>
         <member name="M:Nano.Models.Types.Percentage.#ctor(System.Double)">
             <summary>
-            Constructor that accepts an <see cref="T:System.Double"/>.
+            Constructor that accepts a <see cref="T:System.Double"/>.
             </summary>
             <param name="double"></param>
         </member>
         <member name="M:Nano.Models.Types.Percentage.#ctor(System.Decimal)">
             <summary>
-            Constructor that accepts an <see cref="T:System.Decimal"/>.
+            Constructor that accepts a <see cref="T:System.Decimal"/>.
             </summary>
             <param name="decimal"></param>
         </member>

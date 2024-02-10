@@ -300,7 +300,7 @@ public abstract class BaseApi : IDisposable
             return this.accessToken?.Token;
         }
 
-        var httpContextAccessor = HttpContextAccesser.Current;
+        var httpContextAccessor = HttpContextAccessor.Current;
 
         var jwtToken = httpContextAccessor?
             .GetJwtToken();
@@ -626,27 +626,27 @@ public abstract class BaseApi : IDisposable
                 throw new PermissionDeniedException();
 
             case HttpStatusCode.BadRequest:
-                {
-                    var errorContent = await httpResponse.Content
-                        .ReadAsStringAsync(cancellationToken);
+            {
+                var errorContent = await httpResponse.Content
+                    .ReadAsStringAsync(cancellationToken);
 
-                    throw this.GetBadRequestException(errorContent);
-                }
+                throw this.GetBadRequestException(errorContent);
+            }
 
             case HttpStatusCode.InternalServerError:
+            {
+                var errorContent = await httpResponse.Content
+                    .ReadAsStringAsync(cancellationToken);
+
+                var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
+
+                if (internalServerErrorException != null)
                 {
-                    var errorContent = await httpResponse.Content
-                        .ReadAsStringAsync(cancellationToken);
-
-                    var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
-
-                    if (internalServerErrorException != null)
-                    {
-                        throw internalServerErrorException;
-                    }
-
-                    break;
+                    throw internalServerErrorException;
                 }
+
+                break;
+            }
         }
 
         httpResponse
@@ -670,27 +670,27 @@ public abstract class BaseApi : IDisposable
                 throw new PermissionDeniedException();
 
             case HttpStatusCode.BadRequest:
-                {
-                    var errorContent = await httpResponse.Content
-                        .ReadAsStringAsync(cancellationToken);
+            {
+                var errorContent = await httpResponse.Content
+                    .ReadAsStringAsync(cancellationToken);
 
-                    throw this.GetBadRequestException(errorContent);
-                }
+                throw this.GetBadRequestException(errorContent);
+            }
 
             case HttpStatusCode.InternalServerError:
+            {
+                var errorContent = await httpResponse.Content
+                    .ReadAsStringAsync(cancellationToken);
+
+                var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
+
+                if (internalServerErrorException != null)
                 {
-                    var errorContent = await httpResponse.Content
-                        .ReadAsStringAsync(cancellationToken);
-
-                    var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
-
-                    if (internalServerErrorException != null)
-                    {
-                        throw internalServerErrorException;
-                    }
-
-                    break;
+                    throw internalServerErrorException;
                 }
+
+                break;
+            }
         }
 
         httpResponse
@@ -731,7 +731,7 @@ public abstract class BaseApi : IDisposable
         if (token == null)
             throw new ArgumentNullException(nameof(token));
 
-        var httpContext = HttpContextAccesser.Current;
+        var httpContext = HttpContextAccessor.Current;
 
         if (httpContext == null)
         {
@@ -809,7 +809,6 @@ public abstract class BaseApi : IDisposable
         }
         catch (JsonException)
         {
-
             var exceptionMessage = content
                 .RemoveQuotes();
 
@@ -838,7 +837,6 @@ public abstract class BaseApi<TIdentity> : BaseApi
     protected BaseApi(ApiOptions apiOptions)
         : base(apiOptions)
     {
-
     }
 
     /// <summary>
@@ -950,7 +948,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// Invokes the 'query/first' endpoint of the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteira type</typeparam>
+    /// <typeparam name="TCriteria">The criteria type</typeparam>
     /// <param name="request">The <see cref="QueryFirstRequest{TCriteria}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The first match entity.</returns>
@@ -1111,16 +1109,18 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// Invokes the 'delete/query' endpoint of the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="DeleteManyRequest{TIdentity}"/>.</param>
+    /// <typeparam name="TCriteria">The criteria type</typeparam>
+    /// <param name="request">The <see cref="DeleteQueryRequest{TCriteria}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Nothing.</returns>
-    public virtual async Task DeleteQueryAsync<TEntity>(DeleteQueryRequest request, CancellationToken cancellationToken = default)
+    public virtual async Task DeleteQueryAsync<TEntity, TCriteria>(DeleteQueryRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable
+        where TCriteria : IQueryCriteria, new()
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
-        await this.InvokeAsync<DeleteQueryRequest, TEntity>(request, cancellationToken);
+        await this.InvokeAsync<DeleteQueryRequest<TCriteria>, TEntity>(request, cancellationToken);
     }
 
     /// <summary>

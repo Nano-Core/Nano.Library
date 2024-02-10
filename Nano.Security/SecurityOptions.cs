@@ -114,7 +114,12 @@ public class SecurityOptions
         /// <summary>
         /// Default Roles.
         /// </summary>
-        public virtual string[] DefaultRoles { get; set; } = { BuiltInUserRoles.READER, BuiltInUserRoles.WRITER, BuiltInUserRoles.SERVICE };
+        public virtual string[] DefaultRoles { get; set; } =
+        [
+            BuiltInUserRoles.READER, 
+            BuiltInUserRoles.WRITER, 
+            BuiltInUserRoles.SERVICE
+        ];
     }
 
     /// <summary>

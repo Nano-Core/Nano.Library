@@ -1238,7 +1238,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     }
 
     /// <summary>
-    /// Generates an reset password token for a user.
+    /// Generates a reset password token for a user.
     /// </summary>
     /// <param name="generateResetPasswordToken">The <see cref="GenerateResetPasswordToken"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
@@ -1352,7 +1352,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     }
 
     /// <summary>
-    /// Generates an confirm phone number token for a user.
+    /// Generates a confirm phone number token for a user.
     /// </summary>
     /// <param name="generateConfirmPhoneToken">The <see cref="GenerateConfirmPhoneToken{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
@@ -1437,7 +1437,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     }
 
     /// <summary>
-    /// Generates an custom token for a user.
+    /// Generates a custom token for a user.
     /// </summary>
     /// <param name="generateCustomPurposeToken">The <see cref="GenerateCustomPurposeToken{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>

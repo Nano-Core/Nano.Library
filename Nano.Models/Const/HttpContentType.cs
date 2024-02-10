@@ -161,12 +161,12 @@ public static class HttpContentType
     public const string EXCEL_OPEN_FORMAT = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
     /// <summary>
-    /// Powerpoint ("application/vnd.ms-powerpoint").
+    /// PowerPoint ("application/vnd.ms-powerpoint").
     /// </summary>
     public const string POWERPOINT = "application/vnd.ms-powerpoint";
 
     /// <summary>
-    /// Powerpoint Open Document Format ("application/vnd.openxmlformats-officedocument.presentationml.presentation").
+    /// PowerPoint Open Document Format ("application/vnd.openxmlformats-officedocument.presentationml.presentation").
     /// </summary>
     public const string POWERPOINT_OPEN_FORMAT = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
 

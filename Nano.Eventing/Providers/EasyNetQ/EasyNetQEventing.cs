@@ -96,11 +96,10 @@ public class EasyNetQEventing : IEventing
                         throw new NullReferenceException(nameof(method));
 
                     var callbackTask = (Task)method
-                        .Invoke(eventHandler, new object[]
-                        {
+                        .Invoke(eventHandler, [
                             message.Body,
                             info.Redelivered
-                        });
+                        ]);
 
                     if (callbackTask == null)
                     {

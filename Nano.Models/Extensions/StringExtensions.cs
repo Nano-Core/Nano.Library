@@ -12,8 +12,8 @@ public static class StringExtensions
     /// from the passed <paramref name="string"/>.
     /// </summary>
     /// <param name="string">The <see cref="string"/>.</param>
-    /// <param name="indexOf">The <see cref="string"/> to find indexOf in the passed <paramref name="string"/>.</param>
-    /// <returns>The sustring.</returns>
+    /// <param name="indexOf">The <see cref="string"/> to find indexOf in the <paramref name="string"/>.</param>
+    /// <returns>The substring.</returns>
     public static string Substring(this string @string, string indexOf)
     {
         if (@string == null)
@@ -38,8 +38,8 @@ public static class StringExtensions
     /// from the passed <paramref name="string"/>.
     /// </summary>
     /// <param name="string">The <see cref="string"/>.</param>
-    /// <param name="indexOf">The <see cref="string"/> to find indexOf in the passed <paramref name="string"/>.</param>
-    /// <param name="result">The sustring.</param>
+    /// <param name="indexOf">The <see cref="string"/> to find indexOf in the <paramref name="string"/>.</param>
+    /// <param name="result">The substring.</param>
     /// <returns>A <see cref="bool"/> indicating success or not.</returns>
     public static bool TrySubstring(this string @string, string indexOf, out string result)
     {

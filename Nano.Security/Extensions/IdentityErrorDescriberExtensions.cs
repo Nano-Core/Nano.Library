@@ -9,11 +9,11 @@ namespace Nano.Security.Extensions;
 public static class IdentityErrorDescriberExtensions
 {
     /// <summary>
-    /// Returns an <see cref="IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is invalid.
+    /// Returns a <see cref="IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is invalid.
     /// </summary>
     /// <param name="errorDescriber">The <see cref="IdentityErrorDescriber"/>.</param>
     /// <param name="phoneNumber">The phone number that is invalid.</param>
-    /// <returns>An <see cref="IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is invalid.</returns>
+    /// <returns>A <see cref="IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is invalid.</returns>
     public static IdentityError InvalidPhoneNumber(this IdentityErrorDescriber errorDescriber, string phoneNumber)
     {
         if (errorDescriber == null)
@@ -27,11 +27,11 @@ public static class IdentityErrorDescriberExtensions
     }
 
     /// <summary>
-    /// Returns an <see cref="IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is already associated with an account.
+    /// Returns a <see cref="IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is already associated with an account.
     /// </summary>
     /// <param name="errorDescriber">The <see cref="IdentityErrorDescriber"/>.</param>
     /// <param name="phoneNumber">The phone number that is already associated with an account.</param>
-    /// <returns>An <see cref="IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is already associated with an account.</returns>
+    /// <returns>A <see cref="IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is already associated with an account.</returns>
     public static IdentityError DuplicatePhoneNumber(this IdentityErrorDescriber errorDescriber, string phoneNumber)
     {
         if (errorDescriber == null)

@@ -349,7 +349,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// </summary>
     /// <param name="criteria">The criteria model, containing filters used in the criteria.</param>
     /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The count of models..</returns>
+    /// <returns>The count of models.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
@@ -376,7 +376,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// </summary>
     /// <param name="criteria">The criteria model, containing filters used in the criteria.</param>
     /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The count of models..</returns>
+    /// <returns>The count of models.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>

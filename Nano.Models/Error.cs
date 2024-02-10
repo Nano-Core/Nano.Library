@@ -46,10 +46,10 @@ public class Error
             ? "Bad Request"
             : "Internal Server Error";
 
-        this.Exceptions = new[]
-        {
+        this.Exceptions =
+        [
             exception.Message
-        };
+        ];
 
         switch (exception)
         {

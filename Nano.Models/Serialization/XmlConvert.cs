@@ -33,7 +33,7 @@ public static class XmlConvert
     }
 
     /// <summary>
-    /// Deserializes an xml strong to an instance of type <typeparamref name="T"/>.
+    /// Deserializes a xml strong to an instance of type <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">The type to deserialize the xml into.</typeparam>
     /// <param name="xml">The xml to deserialize.</param>

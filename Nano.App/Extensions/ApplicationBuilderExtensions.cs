@@ -24,7 +24,7 @@ public static class ApplicationBuilderExtensions
         var httpContextAccessor = applicationBuilder.ApplicationServices
             .GetRequiredService<IHttpContextAccessor>();
 
-        HttpContextAccesser.Configure(httpContextAccessor);
+        HttpContextAccessor.Configure(httpContextAccessor);
 
         return applicationBuilder;
     }

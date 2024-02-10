@@ -24,19 +24,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.App.xml" />
-		<EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Config.xml" />
-		<EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Console.xml" />
-		<EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Data.xml" />
-		<EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Eventing.xml" />
-		<EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Logging.xml" />
-		<EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Models.xml" />
-		<EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Repository.xml" />
-		<EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Security.xml" />
-		<EmbeddedResource Include="Hosting\Documentation\.xmldoc\Nano.Web.xml" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Asp.Versioning.Mvc" Version="8.0.0" />
 		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.Network" Version="8.0.0" />
@@ -61,5 +48,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Hosting\Documentation\.xmldoc\" />
 	</ItemGroup>
 </Project>

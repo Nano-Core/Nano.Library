@@ -70,7 +70,7 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
 
                     if (property == null)
                     {
-                        this.Logger.LogWarning($"Nano: Subscribed to entity: {type.Name}, does not cotnain an 'Id' property. Add entity ignored.");
+                        this.Logger.LogWarning($"Nano: Subscribed to entity: {type.Name}, does not contain an 'Id' property. Add entity ignored.");
                         return;
                     }
 

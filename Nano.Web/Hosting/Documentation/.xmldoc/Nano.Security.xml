@@ -239,11 +239,11 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.ConfirmEmailAsync(Nano.Security.Models.CustomPurposeToken{`0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.ConfirmEmailAsync(Nano.Security.Models.ConfirmEmail{`0},System.Threading.CancellationToken)">
             <summary>
             Confirms the email of a user.
             </summary>
-            <param name="customToken">The <see cref="T:Nano.Security.Models.CustomPurposeToken`1"/>.</param>
+            <param name="confirmEmail">The <see cref="T:Nano.Security.Models.ConfirmEmail`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
@@ -255,19 +255,27 @@
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.ConfirmPhoneNumberAsync(Nano.Security.Models.ConfirmPhoneNumber,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.ConfirmPhoneNumberAsync(Nano.Security.Models.ConfirmPhoneNumber{`0},System.Threading.CancellationToken)">
             <summary>
             Confirms the phone number of a user.
             </summary>
-            <param name="confirmPhoneNumber">The <see cref="T:Nano.Security.Models.ConfirmPhoneNumber"/>.</param>
+            <param name="confirmPhoneNumber">The <see cref="T:Nano.Security.Models.ConfirmPhoneNumber`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>Void.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateResetPasswordTokenAsync(Nano.Security.Models.GenerateResetPasswordToken{`0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.VerifyCustomTokenAsync(Nano.Security.Models.CustomPurposeToken{`0},System.Threading.CancellationToken)">
             <summary>
-            Generates an reset password token for a user.
+            Verifies the custom token of a user.
             </summary>
-            <param name="generateResetPasswordToken">The <see cref="T:Nano.Security.Models.GenerateResetPasswordToken`1"/>.</param>
+            <param name="customToken">The <see cref="T:Nano.Security.Models.CustomPurposeToken`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>Void.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateResetPasswordTokenAsync(Nano.Security.Models.GenerateResetPasswordToken,System.Threading.CancellationToken)">
+            <summary>
+            Generates a reset password token for a user.
+            </summary>
+            <param name="generateResetPasswordToken">The <see cref="T:Nano.Security.Models.GenerateResetPasswordToken"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ResetPasswordToken`1"/>.</returns>
         </member>
@@ -275,7 +283,7 @@
             <summary>
             Generates an email confirmation token for a user.
             </summary>
-            <param name="customPurposeToken">The <see cref="T:Nano.Security.Models.GenerateConfirmEmailToken`1"/>.</param>
+            <param name="generateConfirmEmailToken">The <see cref="T:Nano.Security.Models.GenerateConfirmEmailToken`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ConfirmEmailToken`1"/>.</returns>
         </member>
@@ -283,26 +291,33 @@
             <summary>
             Generates an change email token for a user.
             </summary>
-            <param name="generateCustomPurposeToken">The <see cref="T:Nano.Security.Models.GenerateChangeEmailToken`1"/>.</param>
+            <param name="generateChangeEmailToken">The <see cref="T:Nano.Security.Models.GenerateChangeEmailToken`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ChangeEmailToken`1"/>.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateConfirmPhoneNumberTokenAsync(Nano.Security.Models.GenerateConfirmPhoneNumberToken{`0},System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateConfirmPhoneNumberTokenAsync(Nano.Security.Models.GenerateConfirmPhoneToken{`0},System.Threading.CancellationToken)">
             <summary>
-            Generates an confirm phone number token for a user.
+            Generates a confirm phone number token for a user.
             </summary>
-            <param name="generateConfirmPhoneNumberToken">The <see cref="T:Nano.Security.Models.GenerateConfirmPhoneNumberToken`1"/>.</param>
+            <param name="generateConfirmPhoneToken">The <see cref="T:Nano.Security.Models.GenerateConfirmPhoneToken`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
             <returns>The <see cref="T:Nano.Security.Models.ConfirmPhoneNumberToken`1"/>.</returns>
         </member>
-        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateChangePhoneNumberTokenAsync(System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateChangePhoneNumberTokenAsync(Nano.Security.Models.GenerateChangePhoneToken{`0},System.Threading.CancellationToken)">
             <summary>
-            Generates an change phone number token for a user.
+            Generates a change phone number token for a user.
             </summary>
-            <param name="phoneNumber">The user id.</param>
-            <param name="newPhoneNumber">The new phone number.</param>
+            <param name="generateChangePhoneToken">The <see cref="T:Nano.Security.Models.GenerateChangePhoneToken`1"/>.</param>
             <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
-            <returns>The <see cref="T:Nano.Security.Models.ChangePhoneNumberToken"/>.</returns>
+            <returns>The <see cref="T:Nano.Security.Models.ChangePhoneNumberToken`1"/>.</returns>
+        </member>
+        <member name="M:Nano.Security.BaseIdentityManager`1.GenerateCustomTokenAsync(Nano.Security.Models.GenerateCustomPurposeToken{`0},System.Threading.CancellationToken)">
+            <summary>
+            Generates a custom token for a user.
+            </summary>
+            <param name="generateCustomPurposeToken">The <see cref="T:Nano.Security.Models.GenerateCustomPurposeToken`1"/>.</param>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/>.</param>
+            <returns>The <see cref="T:Nano.Security.Models.CustomPurposeToken`1"/>.</returns>
         </member>
         <member name="M:Nano.Security.BaseIdentityManager`1.GetRolesAsync(System.Threading.CancellationToken)">
             <summary>
@@ -507,7 +522,7 @@
         </member>
         <member name="T:Nano.Security.Exceptions.UnauthorizedEmailAddressNotFoundException">
             <summary>
-            Unauthorized Unauthorized Email Address Not Found Exception.
+            Unauthorized Email Address Not Found Exception.
             </summary>
         </member>
         <member name="T:Nano.Security.Exceptions.UnauthorizedException">
@@ -607,19 +622,19 @@
         </member>
         <member name="M:Nano.Security.Extensions.IdentityErrorDescriberExtensions.InvalidPhoneNumber(Microsoft.AspNetCore.Identity.IdentityErrorDescriber,System.String)">
             <summary>
-            Returns an <see cref="T:Microsoft.AspNetCore.Identity.IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is invalid.
+            Returns a <see cref="T:Microsoft.AspNetCore.Identity.IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is invalid.
             </summary>
             <param name="errorDescriber">The <see cref="T:Microsoft.AspNetCore.Identity.IdentityErrorDescriber"/>.</param>
             <param name="phoneNumber">The phone number that is invalid.</param>
-            <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is invalid.</returns>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Identity.IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is invalid.</returns>
         </member>
         <member name="M:Nano.Security.Extensions.IdentityErrorDescriberExtensions.DuplicatePhoneNumber(Microsoft.AspNetCore.Identity.IdentityErrorDescriber,System.String)">
             <summary>
-            Returns an <see cref="T:Microsoft.AspNetCore.Identity.IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is already associated with an account.
+            Returns a <see cref="T:Microsoft.AspNetCore.Identity.IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is already associated with an account.
             </summary>
             <param name="errorDescriber">The <see cref="T:Microsoft.AspNetCore.Identity.IdentityErrorDescriber"/>.</param>
             <param name="phoneNumber">The phone number that is already associated with an account.</param>
-            <returns>An <see cref="T:Microsoft.AspNetCore.Identity.IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is already associated with an account.</returns>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Identity.IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is already associated with an account.</returns>
         </member>
         <member name="T:Nano.Security.Extensions.JwtSecurityTokenExtensions">
             <summary>
@@ -784,9 +799,9 @@
             </summary>
             <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.AssignClaim`1.Id">
+        <member name="P:Nano.Security.Models.AssignClaim`1.UserId">
             <summary>
-            Id.
+            User Id.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.AssignClaim`1.ClaimType">
@@ -1006,22 +1021,23 @@
             New Phone Number.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.ChangePhoneNumberToken">
+        <member name="T:Nano.Security.Models.ChangePhoneNumberToken`1">
             <summary>
             Change Phone Number Token
             </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.ChangePhoneNumberToken.Token">
+        <member name="P:Nano.Security.Models.ChangePhoneNumberToken`1.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.ChangePhoneNumberToken`1.Token">
             <summary>
             Token.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ChangePhoneNumberToken.PhoneNumber">
-            <summary>
-            Phone Number.
-            </summary>
-        </member>
-        <member name="P:Nano.Security.Models.ChangePhoneNumberToken.NewPhoneNumber">
+        <member name="P:Nano.Security.Models.ChangePhoneNumberToken`1.NewPhoneNumber">
             <summary>
             New Phone Number.
             </summary>
@@ -1041,18 +1057,18 @@
             Value.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.CustomPurposeToken`1">
+        <member name="T:Nano.Security.Models.ConfirmEmail`1">
             <summary>
             Confirm Email.
             </summary>
             <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.CustomPurposeToken`1.UserId">
+        <member name="P:Nano.Security.Models.ConfirmEmail`1.UserId">
             <summary>
             User Id.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.CustomPurposeToken`1.Token">
+        <member name="P:Nano.Security.Models.ConfirmEmail`1.Token">
             <summary>
             Token.
             </summary>
@@ -1073,19 +1089,20 @@
             Token.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.ConfirmPhoneNumber">
+        <member name="T:Nano.Security.Models.ConfirmPhoneNumber`1">
             <summary>
             Confirm Phone Number.
             </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.ConfirmPhoneNumber.Token">
+        <member name="P:Nano.Security.Models.ConfirmPhoneNumber`1.UserId">
             <summary>
-            Token.
+            User Id.
             </summary>
         </member>
-        <member name="P:Nano.Security.Models.ConfirmPhoneNumber.PhoneNumber">
+        <member name="P:Nano.Security.Models.ConfirmPhoneNumber`1.Token">
             <summary>
-            Phone Number.
+            Token.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.ConfirmPhoneNumberToken`1">
@@ -1102,6 +1119,27 @@
         <member name="P:Nano.Security.Models.ConfirmPhoneNumberToken`1.Token">
             <summary>
             Token.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.CustomPurposeToken`1">
+            <summary>
+            Custom Purpose Token
+            </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.CustomPurposeToken`1.UserId">
+            <summary>
+            User Id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.CustomPurposeToken`1.Token">
+            <summary>
+            Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.CustomPurposeToken`1.Purpose">
+            <summary>
+            Purpose.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.ExternalLogInData">
@@ -1162,7 +1200,23 @@
         </member>
         <member name="P:Nano.Security.Models.GenerateChangeEmailToken`1.NewEmailAddress">
             <summary>
+            New Email Address.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.GenerateChangePhoneToken`1">
+            <summary>
+            Generate Change Phone Token.
+            </summary>
+            <typeparam name="TIdentity">The identity key type</typeparam>
+        </member>
+        <member name="P:Nano.Security.Models.GenerateChangePhoneToken`1.UserId">
+            <summary>
             User id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.GenerateChangePhoneToken`1.NewPhoneNumber">
+            <summary>
+            New Phone Number.
             </summary>
         </member>
         <member name="T:Nano.Security.Models.GenerateConfirmEmailToken`1">
@@ -1176,24 +1230,39 @@
             User Id.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.GenerateConfirmPhoneNumberToken`1">
+        <member name="T:Nano.Security.Models.GenerateConfirmPhoneToken`1">
             <summary>
             Generate Confirm Phone Number Token.
             </summary>
             <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.GenerateConfirmPhoneNumberToken`1.UserId">
+        <member name="P:Nano.Security.Models.GenerateConfirmPhoneToken`1.UserId">
             <summary>
             User Id.
             </summary>
         </member>
-        <member name="T:Nano.Security.Models.GenerateResetPasswordToken`1">
+        <member name="T:Nano.Security.Models.GenerateCustomPurposeToken`1">
             <summary>
-            Generate Reset Password Token.
+            Generate Custom Token.
             </summary>
             <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.GenerateResetPasswordToken`1.UserId">
+        <member name="P:Nano.Security.Models.GenerateCustomPurposeToken`1.UserId">
+            <summary>
+            User id.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.GenerateCustomPurposeToken`1.Purpose">
+            <summary>
+            Purpose.
+            </summary>
+        </member>
+        <member name="T:Nano.Security.Models.GenerateResetPasswordToken">
+            <summary>
+            Generate Reset Password Token.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.GenerateResetPasswordToken.EmailAddress">
             <summary>
             User Id.
             </summary>
@@ -1407,9 +1476,9 @@
             </summary>
             <typeparam name="TIdentity">The identity key type</typeparam>
         </member>
-        <member name="P:Nano.Security.Models.RemoveClaim`1.Id">
+        <member name="P:Nano.Security.Models.RemoveClaim`1.UserId">
             <summary>
-            Id.
+            User Id.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.RemoveClaim`1.ClaimType">
@@ -1510,6 +1579,11 @@
         <member name="P:Nano.Security.Models.SignUp.EmailAddress">
             <summary>
             Email.
+            </summary>
+        </member>
+        <member name="P:Nano.Security.Models.SignUp.PhoneNumber">
+            <summary>
+            Phone Number.
             </summary>
         </member>
         <member name="P:Nano.Security.Models.SignUp.Username">

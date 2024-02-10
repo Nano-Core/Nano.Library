@@ -59,12 +59,11 @@ public static class ApplicationBuilderExtensions
                     .GetType()
                     .GetMethod(nameof(IEventing.SubscribeAsync))?
                     .MakeGenericMethod(eventType)
-                    .Invoke(eventing, new object[]
-                    {
+                    .Invoke(eventing, [
                         serviceProvider,
                         string.Empty,
                         CancellationToken.None
-                    });
+                    ]);
             });
 
         TypesHelper.GetAllTypes()
@@ -87,12 +86,11 @@ public static class ApplicationBuilderExtensions
                     .GetType()
                     .GetMethod(nameof(IEventing.SubscribeAsync))?
                     .MakeGenericMethod(eventType)
-                    .Invoke(eventing, new object[]
-                    {
+                    .Invoke(eventing, [
                         serviceProvider,
                         x.Name,
                         CancellationToken.None
-                    });
+                    ]);
             });
 
         return applicationBuilder;

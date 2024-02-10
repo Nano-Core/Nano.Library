@@ -39,14 +39,6 @@
             <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
             <param name="baseIdentityManager">The <see cref="P:Nano.Web.Controllers.BaseAuthController`1.BaseIdentityManager"/>.</param>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseAuthController`1.Options">
-            <summary>
-            Options.
-            Any route can be called with http options, to return options header information.
-            </summary>
-            <returns>Void.</returns>
-            <response code="200">Success.</response>
-        </member>
         <member name="M:Nano.Web.Controllers.BaseAuthController`1.LogInAsync(Nano.Security.Models.LogIn,System.Threading.CancellationToken)">
             <summary>
             Authenticates and signs in a user.
@@ -267,15 +259,6 @@
             Constructor.
             </summary>
             <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
-        </member>
-        <member name="M:Nano.Web.Controllers.BaseController.Options">
-            <summary>
-            Options.
-            Any route can be called with http options, to return options header information.
-            </summary>
-            <returns>Void.</returns>
-            <response code="200">Success.</response>
-            <response code="401">Unauthorized.</response>
         </member>
         <member name="T:Nano.Web.Controllers.BaseController`1">
             <summary>
@@ -532,7 +515,7 @@
             </summary>
             <param name="criteria">The criteria model, containing filters used in the criteria.</param>
             <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>The count of models..</returns>
+            <returns>The count of models.</returns>
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
             <response code="401">Unauthorized.</response>
@@ -545,7 +528,7 @@
             </summary>
             <param name="criteria">The criteria model, containing filters used in the criteria.</param>
             <param name="cancellationToken">The token used when request is cancelled.</param>
-            <returns>The count of models..</returns>
+            <returns>The count of models.</returns>
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
             <response code="401">Unauthorized.</response>
@@ -1139,7 +1122,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.GetResetPasswordTokenAsync(Nano.Security.Models.GenerateResetPasswordToken{`2},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.GetResetPasswordTokenAsync(Nano.Security.Models.GenerateResetPasswordToken,System.Threading.CancellationToken)">
             <summary>
             Get the password reset token, used to change the password of a user.
             </summary>
@@ -1182,7 +1165,7 @@
             <summary>
             Get the change email token, used to change the email address of a user.
             </summary>
-            <param name="generateCustomPurposeToken">The genereate change email token.</param>
+            <param name="generateChangeEmailToken">The genereate change email token.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The change email token.</returns>
             <response code="200">Success.</response>
@@ -1191,11 +1174,11 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.ConfirmEmailAsync(Nano.Security.Models.CustomPurposeToken{`2},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.ConfirmEmailAsync(Nano.Security.Models.ConfirmEmail{`2},System.Threading.CancellationToken)">
             <summary>
             Confirms the email address of a user.
             </summary>
-            <param name="customToken">The confirm email.</param>
+            <param name="confirmEmail">The confirm email.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>Void.</returns>
             <response code="200">Success.</response>
@@ -1207,7 +1190,7 @@
             <summary>
             Get the confirm email token, used to confirm the email address of a user.
             </summary>
-            <param name="customPurposeToken">The generate confirm email token.</param>
+            <param name="generateConfirmEmailToken">The generate confirm email token.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The confirm email token.</returns>
             <response code="200">Success.</response>
@@ -1229,12 +1212,11 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.GetChangePhoneTokenAsync(System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.GetChangePhoneTokenAsync(Nano.Security.Models.GenerateChangePhoneToken{`2},System.Threading.CancellationToken)">
             <summary>
             Gets the change phone number token, used to change the phone number of a user.
             </summary>
-            <param name="phoneNumber">The phone number.</param>
-            <param name="newPhoneNumber">The new phone number.</param>
+            <param name="generateChangePhoneToken">The generate change phone token.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The change phone number token.</returns>
             <response code="200">Success.</response>
@@ -1243,7 +1225,7 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.ConfirmPhoneAsync(Nano.Security.Models.ConfirmPhoneNumber,System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.ConfirmPhoneAsync(Nano.Security.Models.ConfirmPhoneNumber{`2},System.Threading.CancellationToken)">
             <summary>
             Confirms the phone number of a user.
             </summary>
@@ -1255,13 +1237,38 @@
             <response code="404">Not Found.</response>
             <response code="500">Error occured.</response>
         </member>
-        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.GetConfirmPhoneTokenAsync(Nano.Security.Models.GenerateConfirmPhoneNumberToken{`2},System.Threading.CancellationToken)">
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.GetConfirmPhoneTokenAsync(Nano.Security.Models.GenerateConfirmPhoneToken{`2},System.Threading.CancellationToken)">
             <summary>
             Gets the confirm phone number token, used to confirm the phone number of a user.
             </summary>
-            <param name="generateConfirmPhoneNumberToken">The generate confirm phoneNumber token.</param>
+            <param name="generateConfirmPhoneToken">The generate confirm phoneNumber token.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns>The confirm phone token.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="401">Unauthorized.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.VerifyCustomPurposeTokenAsync(Nano.Security.Models.GenerateCustomPurposeToken{`2},System.Threading.CancellationToken)">
+            <summary>
+            Generates a cstuom purpose token of a user.
+            </summary>
+            <param name="confirmEmail">The custom purpose token.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The custom purpose token.</returns>
+            <response code="200">Success.</response>
+            <response code="400">Bad Request.</response>
+            <response code="404">Not Found.</response>
+            <response code="500">Error occured.</response>
+        </member>
+        <member name="M:Nano.Web.Controllers.BaseIdentityController`4.GetConfirmEmailTokenAsync(Nano.Security.Models.CustomPurposeToken{`2},System.Threading.CancellationToken)">
+            <summary>
+            Verifies a cstuom purpose token of a user.
+            </summary>
+            <param name="customPurposeToken">The generate confirm email token.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>Void.</returns>
             <response code="200">Success.</response>
             <response code="400">Bad Request.</response>
             <response code="401">Unauthorized.</response>
@@ -1959,7 +1966,7 @@
         </member>
         <member name="M:Nano.Web.Hosting.ModelBinders.JsonFormModelBinder.BindModelAsync(Microsoft.AspNetCore.Mvc.ModelBinding.ModelBindingContext)">
             <summary>
-            Deserializes the json value and binds it to it's type.
+            Deserializes the json value and binds it to its type.
             </summary>
             <param name="bindingContext">The <see cref="T:Microsoft.AspNetCore.Mvc.ModelBinding.ModelBindingContext"/>.</param>
         </member>
@@ -2555,7 +2562,7 @@
         <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.DisplayCapture">
             <summary>
             Display Capture.
-            Controls whether or not the current document is permitted to use the getDisplayMedia() method to capture screen contents.
+            Controls whether the current document is permitted to use the getDisplayMedia() method to capture screen contents.
             When this policy is disabled, the promise returned by getDisplayMedia() will reject with a NotAllowedError
             if permission is not obtained to capture the display's contents.
             </summary>
@@ -2583,7 +2590,7 @@
         <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.ExecutionWhileOutOfViewport">
             <summary>
             Execution While Out Of Viewport.
-            Controls whether tasks should execute in frames while they're outside of the visible viewport.
+            Controls whether tasks should execute in frames while they're outside the visible viewport.
             </summary>
         </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.FullScreen">
@@ -2721,14 +2728,14 @@
         <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.WebShare">
             <summary>
             Web Share.
-            Controls whether or not the current document is allowed to use the Navigator.share() of Web Share API to
+            Controls whether the current document is allowed to use the Navigator.share() of Web Share API to
             share text, links, images, and other content to arbitrary destinations of user's choice, e.g. mobile apps.
             </summary>
         </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.XrSpatialTracking">
             <summary>
             Xr Spatial Tracking.
-            Controls whether or not the current document is allowed to use the WebXR Device API to interact with a WebXR session.
+            Controls whether the current document is allowed to use the WebXR Device API to interact with a WebXR session.
             </summary>
         </member>
         <member name="P:Nano.Web.WebOptions.HostingOptions.CspOptions.CspDirectivePermissionsPolicy.IsEnabled">

@@ -6,7 +6,7 @@ namespace Nano.App;
 /// <summary>
 /// Http Context Access (Static)
 /// </summary>
-internal static class HttpContextAccesser
+internal static class HttpContextAccessor
 {
     private static IHttpContextAccessor accessor;
 
@@ -22,6 +22,6 @@ internal static class HttpContextAccesser
     /// <param name="httpContextAccessor">The <inheritdoc cref="IHttpContextAccessor"/>.</param>
     internal static void Configure(IHttpContextAccessor httpContextAccessor)
     {
-        HttpContextAccesser.accessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        HttpContextAccessor.accessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }
 }

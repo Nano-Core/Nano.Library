@@ -303,10 +303,10 @@ public static class ApplicationBuilderExtensions
 
                     if (responseCachingFeature != null)
                     {
-                        responseCachingFeature.VaryByQueryKeys = new[]
-                        {
+                        responseCachingFeature.VaryByQueryKeys =
+                        [
                             "*"
-                        };
+                        ];
                     }
 
                     return next();
