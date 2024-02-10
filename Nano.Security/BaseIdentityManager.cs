@@ -230,7 +230,7 @@ public abstract class BaseIdentityManager
             .Distinct();
 
         var notBeforeAt = DateTime.UtcNow;
-        var expireAt = DateTime.UtcNow.AddHours(this.Options.Jwt.ExpirationInHours);
+        var expireAt = DateTime.UtcNow.AddMinutes(this.Options.Jwt.ExpirationInMinutes);
 
         var securityKey = RSA.Create();
         var privateKey = Convert.FromBase64String(this.Options.Jwt.PrivateKey);

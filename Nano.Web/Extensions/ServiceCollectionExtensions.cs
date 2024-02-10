@@ -281,7 +281,7 @@ public static class ServiceCollectionExtensions
             .AddCookie(x =>
             {
                 x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                x.Cookie.Expiration = TimeSpan.FromHours(securityOptions.Jwt.ExpirationInHours);
+                x.Cookie.Expiration = TimeSpan.FromMinutes(securityOptions.Jwt.ExpirationInMinutes);
             });
 
         return services;

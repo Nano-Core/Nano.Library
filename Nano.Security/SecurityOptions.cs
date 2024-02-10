@@ -81,9 +81,9 @@ public class SecurityOptions
         public virtual string PrivateKey { get; set; } = "veryprivatesecretkey";
 
         /// <summary>
-        /// Expiration In Hours.
+        /// Expiration In Minutes.
         /// </summary>
-        public virtual int ExpirationInHours { get; set; } = 72;
+        public virtual int ExpirationInMinutes { get; set; } = 60;
 
         /// <summary>
         /// Refresh Expiration In Hours.

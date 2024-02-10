@@ -29,6 +29,7 @@
 			- Added phone number to SignUp model.
 			- Improved version implementation to extend to query parameter and route. Also added to swagger.
 			- Added generate and verify custom token to IdentityManager and BaseIdentityController.
+			- Changed SecurityOptions.Jwt.ExpirationInHours to SecurityOptions.Jwt.ExpirationInMinutes.
 			- Resharper code issues.
 		</releaseNotes>
 		<dependencies>
