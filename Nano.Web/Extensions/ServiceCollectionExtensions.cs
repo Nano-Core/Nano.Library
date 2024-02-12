@@ -145,27 +145,34 @@ public static class ServiceCollectionExtensions
                 var routePrefixConvention = new RoutePrefixConvention(routeAttribute);
                 var queryModelBinderProvider = new QueryModelBinderProvider();
 
-                x.Conventions.Insert(0, routePrefixConvention);
-                x.ModelBinderProviders.Insert(0, queryModelBinderProvider);
+                x.Conventions
+                    .Insert(0, routePrefixConvention);
+
+                x.ModelBinderProviders
+                    .Insert(0, queryModelBinderProvider);
 
                 if (dataOptions.ConnectionString == null || !securityOptions.IsAuth)
                 {
-                    x.Conventions.Insert(1, new AuthControllerDisabledConvention());
+                    x.Conventions
+                        .Add(new AuthActionHidingConvention());
                 }
 
                 if (dataOptions.ConnectionString == null || !dataOptions.UseAudit)
                 {
-                    x.Conventions.Insert(2, new AuditControllerDisabledConvention());
+                    x.Conventions
+                        .Add(new AuditActionHidingConvention());
                 }
 
                 if (webOptions.Hosting.UseHttpsRequired)
                 {
-                    x.Filters.Add<RequireHttpsAttribute>();
+                    x.Filters
+                        .Add<RequireHttpsAttribute>();
                 }
 
                 x.MaxValidationDepth = 128;
 
-                x.Filters.Add<ModelStateValidationFilter>();
+                x.Filters
+                    .Add<ModelStateValidationFilter>();
             })
             .AddJsonOptions(x =>
             {
@@ -313,7 +320,7 @@ public static class ServiceCollectionExtensions
             })
             .AddApiExplorer(x =>
             {
-                x.GroupNameFormat = "'v'V";
+                x.GroupNameFormat = "'v'VV";
                 x.DefaultApiVersion = apiVersion;
                 x.SubstituteApiVersionInUrl = true;
             });
