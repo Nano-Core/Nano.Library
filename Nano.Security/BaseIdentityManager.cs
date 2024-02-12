@@ -1655,7 +1655,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (getClaim == null)
             throw new ArgumentNullException(nameof(getClaim));
 
-        var claims = await this.GetUserClaimsAsync(getClaim.Id, cancellationToken);
+        var claims = await this.GetUserClaimsAsync(getClaim.UserId, cancellationToken);
 
         return claims
             .FirstOrDefault(x => x.Type == getClaim.ClaimType);
@@ -1742,6 +1742,59 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     }
 
     /// <summary>
+    /// Replace a <see cref="IdentityUserClaim{TIdentity}"/> to a user.
+    /// </summary>
+    /// <param name="replaceClaim">The <see cref="ReplaceClaim{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IdentityUserClaim{TIdentity}"/>.</returns>
+    public virtual async Task<IdentityUserClaim<TIdentity>> ReplaceUserClaimAsync(ReplaceClaim<TIdentity> replaceClaim, CancellationToken cancellationToken = default)
+    {
+        if (replaceClaim == null)
+            throw new ArgumentNullException(nameof(replaceClaim));
+
+        var userIdString = replaceClaim.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
+        var user = await this.UserManager
+            .FindByIdAsync(userIdString);
+
+        if (user == null)
+        {
+            throw new NullReferenceException(nameof(user));
+        }
+
+        var existingClaim = await this.GetUserClaimAsync(new GetClaim<TIdentity>
+        {
+            UserId = user.Id,
+            ClaimType = replaceClaim.ClaimType
+        }, cancellationToken);
+
+        var newClaim = new IdentityUserClaim<TIdentity>
+        {
+            ClaimType = replaceClaim.ClaimType,
+            ClaimValue = replaceClaim.NewClaimValue
+        };
+
+        var claim = newClaim
+            .ToClaim();
+
+        var result = await this.UserManager
+            .ReplaceClaimAsync(user, existingClaim, claim);
+
+        if (!result.Succeeded)
+        {
+            this.ThrowIdentityExceptions(result.Errors);
+        }
+
+        return newClaim;
+    }
+
+    /// <summary>
     /// Removes a <see cref="IdentityUserClaim{TIdentity}"/> from a user.
     /// </summary>
     /// <param name="removeClaim">The <see cref="RemoveClaim{TIdentity}"/>.</param>
@@ -1799,7 +1852,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (getClaim == null)
             throw new ArgumentNullException(nameof(getClaim));
 
-        var claims = await this.GetRoleClaimsAsync(getClaim.Id, cancellationToken);
+        var claims = await this.GetRoleClaimsAsync(getClaim.UserId, cancellationToken);
 
         return claims
             .FirstOrDefault(x => x.Type == getClaim.ClaimType);

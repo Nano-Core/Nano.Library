@@ -426,4 +426,20 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
 
         return this.InvokeAsync(request, cancellationToken);
     }
+
+    /// <summary>
+    /// Replace Claim Async.
+    /// </summary>
+    /// <param name="request">The <see cref="ReplaceClaimRequest{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Void.</returns>
+    public virtual Task ReplaceUserClaimAsync(ReplaceClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return this.InvokeAsync(request, cancellationToken);
+    }
 }

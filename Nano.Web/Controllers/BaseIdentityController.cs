@@ -829,6 +829,34 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
+    /// Replace a claim to a user.
+    /// </summary>
+    /// <param name="replaceClaim">The replace claim.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPut]
+    [Route("claims/replace")]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
+    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> ReplaceClaimAsync([FromBody][Required]ReplaceClaim<TIdentity> replaceClaim, CancellationToken cancellationToken = default)
+    {
+        await this.IdentityManager
+            .ReplaceUserClaimAsync(replaceClaim, cancellationToken);
+
+        return this.Ok();
+    }
+
+    /// <summary>
     /// Delete the model with the passed identifier.
     /// </summary>
     /// <param name="id">The identifier of the model to delete.</param>

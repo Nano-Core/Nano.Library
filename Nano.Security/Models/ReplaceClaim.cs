@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models;
 
 /// <summary>
-/// Get Claim.
+/// Replace Claim.
 /// </summary>
 /// <typeparam name="TIdentity">The identity key type</typeparam>
-public class GetClaim<TIdentity>
+public class ReplaceClaim<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
@@ -21,4 +21,10 @@ public class GetClaim<TIdentity>
     /// </summary>
     [Required]
     public virtual string ClaimType { get; set; }
+
+    /// <summary>
+    /// New Claim Value.
+    /// </summary>
+    [Required]
+    public virtual string NewClaimValue { get; set; }
 }
