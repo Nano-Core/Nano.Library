@@ -56,12 +56,11 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// 
+    /// Add Apis to the <see cref="IServiceCollection"/>..
     /// </summary>
-    /// <param name="services"></param>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
+    /// <returns>The <see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection AddApis(this IServiceCollection services, IConfiguration configuration)
     {
         if (services == null)

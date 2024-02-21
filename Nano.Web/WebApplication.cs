@@ -176,7 +176,7 @@ public class WebApplication : DefaultApplication
                 x.AddSecurity(config);
                 x.AddEventing(config);
                 x.AddWeb(config);
-                x.AddApis(config); // BUG
+                x.AddApis(config);
 
                 x.AddSingleton(x);
             })
