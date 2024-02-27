@@ -19,13 +19,11 @@ public abstract class DefaultIdentityController<TEntity, TCriteria> : BaseIdenti
     protected DefaultIdentityController(ILogger logger, IRepository repository, DefaultIdentityManager baseIdentityManager)
         : this(logger, repository, new NullEventing(), baseIdentityManager)
     {
-
     }
 
     /// <inheritdoc />
     protected DefaultIdentityController(ILogger logger, IRepository repository, IEventing eventing, DefaultIdentityManager baseIdentityManager)
         : base(logger, repository, eventing, baseIdentityManager)
     {
-
     }
 }

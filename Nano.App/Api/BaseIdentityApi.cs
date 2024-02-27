@@ -26,7 +26,6 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
     protected BaseIdentityApi(ApiOptions apiOptions)
         : base(apiOptions)
     {
-
     }
 
     /// <summary>

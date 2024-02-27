@@ -35,14 +35,12 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
     protected BaseControllerDeletable(ILogger logger, TRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected BaseControllerDeletable(ILogger logger, TRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 
     /// <summary>

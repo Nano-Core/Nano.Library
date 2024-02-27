@@ -23,7 +23,6 @@ public abstract class BaseRepository<TContext> : BaseRepository<TContext, Guid>
     protected BaseRepository(TContext context)
         : base(context)
     {
-
     }
 }
 
@@ -64,9 +63,6 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         where TEntity : class, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>
     {
-        if (key == null)
-            throw new ArgumentNullException(nameof(key));
-
         var indent = this.Context.Options.QueryIncludeDepth;
 
         return this.GetEntitySet<TEntity>()
@@ -480,9 +476,6 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         where TEntity : class, IEntityDeletable, IEntityIdentity<TKey>, new()
         where TKey : IEquatable<TKey>
     {
-        if (id == null)
-            throw new ArgumentNullException(nameof(id));
-
         var entity = this.Context.Options.UseSoftDeletetion
             ? await this.Context.FindAsync<TEntity>(id)
             : new TEntity

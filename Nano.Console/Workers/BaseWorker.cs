@@ -49,7 +49,6 @@ namespace Nano.Console.Workers
         /// <inheritdoc />
         public void Dispose()
         {
-
         }
     }
 

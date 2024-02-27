@@ -29,7 +29,6 @@ public class Error
     /// </summary>
     public Error()
     {
-
     }
 
     /// <summary>

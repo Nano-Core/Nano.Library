@@ -10,6 +10,5 @@ public class DefaultRepository : BaseRepository<BaseDbContext<Guid>, Guid>
     public DefaultRepository(BaseDbContext<Guid> context)
         : base(context)
     {
-
     }
 }

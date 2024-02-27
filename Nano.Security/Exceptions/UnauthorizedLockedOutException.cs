@@ -11,6 +11,5 @@ public class UnauthorizedLockedOutException : UnauthorizedException
     public UnauthorizedLockedOutException()
         : base(UnauthorizedLockedOutException.CODE)
     {
-
     }
 }

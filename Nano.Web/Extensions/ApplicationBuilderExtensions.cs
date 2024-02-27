@@ -1255,7 +1255,6 @@ public static class ApplicationBuilderExtensions
             });
 
         return configurer;
-
     }
     private static IFluentCspOptions UseCspConnections(this IFluentCspOptions configurer, WebOptions.HostingOptions.CspOptions.CspDirective cspDirective)
     {

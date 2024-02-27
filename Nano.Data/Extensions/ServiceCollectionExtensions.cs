@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Nano.Config;
+using Nano.Data.Identity.Extensions;
 using Nano.Data.Models;
 using Nano.Data.Providers.Sqlite;
 using Z.EntityFramework.Plus;
@@ -95,13 +96,14 @@ public static class ServiceCollectionExtensions
 
         services
             .AddIdentity<IdentityUser<TIdentity>, IdentityRole<TIdentity>>()
-                .AddEntityFrameworkStores<BaseDbContext<TIdentity>>()
-                    .AddTokenProvider<DataProtectorTokenProvider<IdentityUser<TIdentity>>>(JwtBearerDefaults.AuthenticationScheme)
-                        .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<BaseDbContext<TIdentity>>()
+            .AddTokenProvider<DataProtectorTokenProvider<IdentityUser<TIdentity>>>(JwtBearerDefaults.AuthenticationScheme)
+            .AddDefaultTokenProviders()
+            .AddCustomTokenProvider();
 
         services
             .AddDataProtection()
-                .PersistKeysToDbContext<TContext>();
+            .PersistKeysToDbContext<TContext>();
 
         services
             .AddIdentityManager<TIdentity>();
@@ -273,6 +275,7 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
     private static void AddDataContext(IServiceProvider provider, DbContextOptionsBuilder builder, DataOptions options)
     {
         builder

@@ -14,7 +14,6 @@ public class DefaultApplication : BaseApplication
     public DefaultApplication(IConfiguration configuration)
         : base(configuration)
     {
-
     }
 
     /// <inheritdoc />

@@ -11,6 +11,5 @@ public class UnauthorizedSetPasswordException : UnauthorizedException
     public UnauthorizedSetPasswordException()
         : base(UnauthorizedSetPasswordException.CODE)
     {
-
     }
 }

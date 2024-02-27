@@ -71,7 +71,7 @@ public class Log4NetProvider : ILoggingProvider
             ExternalConfigurationSetup = true,
             LoggerRepository = hierarchy.Name
         };
-
-        return  new Microsoft.Extensions.Logging.Log4NetProvider(providerOptions);
+        
+        return new Microsoft.Extensions.Logging.Log4NetProvider(providerOptions);
     }
 }

@@ -19,6 +19,7 @@ public static class XmlConvert
     /// <param name="knownTypes">The known types.</param>
     /// <returns>A <see cref="string"/> formatted as xml.</returns>
     public static string SerializeObject<T>(T @object, string defaultNamespace = null, XmlSerializerNamespaces namespaces = null, Type[] knownTypes = null)
+        where T : class
     {
         if (@object == null)
             throw new ArgumentNullException(nameof(@object));

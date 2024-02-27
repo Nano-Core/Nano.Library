@@ -36,14 +36,12 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     protected BaseControllerUpdatable(ILogger logger, TRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected BaseControllerUpdatable(ILogger logger, TRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 
     /// <summary>

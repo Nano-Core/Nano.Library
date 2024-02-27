@@ -12,6 +12,5 @@ public class BadRequestException : TranslationException
     public BadRequestException(string message)
         : base(message)
     {
-
     }
 }

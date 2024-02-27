@@ -17,14 +17,12 @@ public class DefaultControllerReadOnly<TEntity, TCriteria> : DefaultControllerRe
     protected DefaultControllerReadOnly(ILogger logger, IRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected DefaultControllerReadOnly(ILogger logger, IRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 }
 
@@ -38,13 +36,11 @@ public class DefaultControllerReadOnly<TEntity, TIdentity, TCriteria> : BaseCont
     protected DefaultControllerReadOnly(ILogger logger, IRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected DefaultControllerReadOnly(ILogger logger, IRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 }

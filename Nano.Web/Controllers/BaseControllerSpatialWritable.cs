@@ -30,14 +30,12 @@ public abstract class BaseControllerSpatialWritable<TRepository, TEntity, TIdent
     protected BaseControllerSpatialWritable(ILogger logger, TRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected BaseControllerSpatialWritable(ILogger logger, TRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 
     /// <summary>

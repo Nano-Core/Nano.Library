@@ -10,6 +10,5 @@ public class DefaultRepositorySpatial : BaseRepositorySpatial<BaseDbContext<Guid
     public DefaultRepositorySpatial(BaseDbContext<Guid> context)
         : base(context)
     {
-
     }
 }

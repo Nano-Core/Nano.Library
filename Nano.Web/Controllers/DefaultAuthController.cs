@@ -11,6 +11,5 @@ public class DefaultAuthController : BaseAuthController<Guid>
     public DefaultAuthController(ILogger logger, DefaultIdentityManager baseIdentityManager)
         : base(logger, baseIdentityManager)
     {
-
     }
 }

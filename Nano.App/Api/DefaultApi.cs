@@ -15,7 +15,6 @@ public class DefaultApi : BaseApi<Guid>
     public DefaultApi(ApiOptions apiOptions)
         : base(apiOptions)
     {
-
     }
 
     /// <inheritdoc />

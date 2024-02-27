@@ -18,14 +18,12 @@ public class DefaultController<TEntity, TCriteria> : DefaultController<TEntity, 
     protected DefaultController(ILogger logger, IRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected DefaultController(ILogger logger, IRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 }
 
@@ -39,13 +37,11 @@ public class DefaultController<TEntity, TIdentity, TCriteria> : BaseControllerWr
     protected DefaultController(ILogger logger, IRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected DefaultController(ILogger logger, IRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 }

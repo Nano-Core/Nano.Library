@@ -29,5 +29,4 @@ internal static class HealthzCheckUris
     /// WebHooks Path.
     /// </summary>
     internal static string WebHooksPath => $"{HealthzCheckUris.Path}-hooks";
-
 }

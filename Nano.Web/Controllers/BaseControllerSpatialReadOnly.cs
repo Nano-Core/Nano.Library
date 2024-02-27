@@ -30,14 +30,12 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     protected BaseControllerSpatialReadOnly(ILogger logger, TRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected BaseControllerSpatialReadOnly(ILogger logger, TRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 
     /// <summary>

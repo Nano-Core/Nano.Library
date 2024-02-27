@@ -17,14 +17,12 @@ public class DefaultControllerCreatable<TEntity, TCriteria> : DefaultControllerC
     protected DefaultControllerCreatable(ILogger logger, IRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected DefaultControllerCreatable(ILogger logger, IRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 }
 
@@ -38,13 +36,11 @@ public class DefaultControllerCreatable<TEntity, TIdentity, TCriteria> : BaseCon
     protected DefaultControllerCreatable(ILogger logger, IRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected DefaultControllerCreatable(ILogger logger, IRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 }

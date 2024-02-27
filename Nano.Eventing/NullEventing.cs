@@ -27,6 +27,5 @@ public class NullEventing : IEventing
     /// <inheritdoc />
     public void Dispose()
     {
-
     }
 }

@@ -11,6 +11,5 @@ public class TransientIdentityManager : BaseIdentityManager
     public TransientIdentityManager(ILogger logger, SecurityOptions options)
         : base(logger, options)
     {
-
     }
 }

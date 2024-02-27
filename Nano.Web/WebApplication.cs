@@ -29,7 +29,6 @@ public class WebApplication : DefaultApplication
     public WebApplication(IConfiguration configuration)
         : base(configuration)
     {
-
     }
 
     /// <inheritdoc />

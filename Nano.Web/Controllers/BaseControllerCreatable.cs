@@ -36,14 +36,12 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     protected BaseControllerCreatable(ILogger logger, TRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected BaseControllerCreatable(ILogger logger, TRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 
     /// <summary>

@@ -10,7 +10,6 @@ namespace Nano.App.Extensions;
 /// </summary>
 public static class ApplicationBuilderExtensions
 {
-
     /// <summary>
     /// Adds the <see cref="IHttpContextAccessor"/> middleware, and initializes the current <see cref="HttpContext"/>.
     /// </summary>
@@ -28,5 +27,4 @@ public static class ApplicationBuilderExtensions
 
         return applicationBuilder;
     }
-
 }

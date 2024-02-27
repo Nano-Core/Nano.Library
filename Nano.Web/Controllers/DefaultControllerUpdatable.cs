@@ -17,16 +17,13 @@ public class DefaultControllerUpdatable<TEntity, TCriteria> : DefaultControllerU
     protected DefaultControllerUpdatable(ILogger logger, IRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected DefaultControllerUpdatable(ILogger logger, IRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
-
 }
 
 /// <inheritdoc />
@@ -39,13 +36,11 @@ public class DefaultControllerUpdatable<TEntity, TIdentity, TCriteria> : BaseCon
     protected DefaultControllerUpdatable(ILogger logger, IRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected DefaultControllerUpdatable(ILogger logger, IRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 }

@@ -10,7 +10,6 @@ public class NullDbContext : DefaultDbContext
     public NullDbContext(DbContextOptions<NullDbContext> dbContextOptions, DataOptions dataOptions)
         : base(dbContextOptions, dataOptions)
     {
-
     }
 
     /// <inheritdoc />

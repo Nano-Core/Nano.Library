@@ -11,6 +11,5 @@ public class UnauthorizedTwoFactorRequiredException : UnauthorizedException
     public UnauthorizedTwoFactorRequiredException()
         : base(UnauthorizedTwoFactorRequiredException.CODE)
     {
-
     }
 }

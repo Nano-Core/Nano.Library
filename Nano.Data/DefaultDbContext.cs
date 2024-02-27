@@ -10,6 +10,5 @@ public class DefaultDbContext : BaseDbContext<Guid>
     public DefaultDbContext(DbContextOptions contextOptions, DataOptions dataOptions)
         : base(contextOptions, dataOptions)
     {
-
     }
 }

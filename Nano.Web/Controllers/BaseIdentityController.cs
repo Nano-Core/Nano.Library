@@ -38,7 +38,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     protected BaseIdentityController(ILogger logger, TRepository repository, BaseIdentityManager<TIdentity> baseIdentityManager)
         : this(logger, repository, new NullEventing(), baseIdentityManager)
     {
-
     }
 
     /// <inheritdoc />
@@ -561,7 +560,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public virtual async Task<IActionResult> GetConfirmPhoneTokenAsync([FromBody][Required] GenerateConfirmPhoneToken<TIdentity> generateConfirmPhoneToken, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> GetConfirmPhoneTokenAsync([FromBody][Required]GenerateConfirmPhoneToken<TIdentity> generateConfirmPhoneToken, CancellationToken cancellationToken = default)
     {
         var confirmEmailToken = await this.IdentityManager
             .GenerateConfirmPhoneNumberTokenAsync(generateConfirmPhoneToken, cancellationToken);

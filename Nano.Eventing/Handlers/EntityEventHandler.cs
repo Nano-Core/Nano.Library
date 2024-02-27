@@ -92,7 +92,7 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                     return;
 
                 case "Deleted":
-                    var isSoftDeleted = entity is IEntityDeletableSoft {IsDeleted: > 0L};
+                    var isSoftDeleted = entity is IEntityDeletableSoft { IsDeleted: > 0L };
 
                     if (entity == null || isSoftDeleted)
                     {

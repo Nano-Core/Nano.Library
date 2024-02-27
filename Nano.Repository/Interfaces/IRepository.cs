@@ -18,12 +18,10 @@ namespace Nano.Repository.Interfaces;
 public interface IRepository : IDisposable
 {
     /// <summary>
-    /// 
+    /// Get Context.
     /// </summary>
     /// <returns></returns>
     DbContext GetContext();
-
-
 
     /// <summary>
     /// Gets the <see cref="DbSet{TEntity}"/> mathcing the type of <typeparamref name="TEntity"/>.

@@ -17,14 +17,12 @@ public class DefaultControllerSpatial<TEntity, TCriteria> : DefaultControllerSpa
     protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 }
 
@@ -38,13 +36,11 @@ public class DefaultControllerSpatial<TEntity, TIdentity, TCriteria> : BaseContr
     protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected DefaultControllerSpatial(ILogger logger, IRepositorySpatial repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 }

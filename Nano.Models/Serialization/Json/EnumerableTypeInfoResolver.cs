@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using System.Text.Json.Serialization.Metadata;
 
 namespace Nano.Models.Serialization.Json
@@ -18,19 +19,11 @@ namespace Nano.Models.Serialization.Json
             if (typeInfo == null)
                 throw new ArgumentNullException(nameof(typeInfo));
 
-            foreach (var property in typeInfo.Properties)
+            foreach (var property in typeInfo.Properties.Where(x => x.PropertyType != typeof(string)).Where(x => typeof(IEnumerable).IsAssignableFrom(x.PropertyType)))
             {
-                if (property.PropertyType == typeof(string))
-                {
-                    continue;
-                }
-
-                if (typeof(IEnumerable).IsAssignableFrom(property.PropertyType))
-                {
-                    // ReSharper disable NotDisposedResource
-                    property.ShouldSerialize = (_, value) => value is IEnumerable collection && collection.GetEnumerator().MoveNext();
-                    // ReSharper restore NotDisposedResource
-                }
+                // ReSharper disable NotDisposedResource
+                property.ShouldSerialize = (_, value) => value is IEnumerable collection && collection.GetEnumerator().MoveNext();
+                // ReSharper restore NotDisposedResource
             }
         }
     }

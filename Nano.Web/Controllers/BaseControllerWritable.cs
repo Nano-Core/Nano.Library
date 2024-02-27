@@ -36,14 +36,12 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     protected BaseControllerWritable(ILogger logger, TRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected BaseControllerWritable(ILogger logger, TRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 
     /// <summary>

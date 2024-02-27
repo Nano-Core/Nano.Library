@@ -26,13 +26,10 @@ public class SwaggerExcludeFilter : ISchemaFilter
             .Where(x => x
                 .GetCustomAttribute<SwaggerExcludeAttribute>() != null);
 
-        foreach (var excludedProperty in excludedProperties)
+        foreach (var excludedProperty in excludedProperties.Where(x => schema.Properties.ContainsKey(x.Name)))
         {
-            if (schema.Properties.ContainsKey(excludedProperty.Name))
-            {
-                schema.Properties
-                    .Remove(excludedProperty.Name);
-            }
+            schema.Properties
+                .Remove(excludedProperty.Name);
         }
     }
 }

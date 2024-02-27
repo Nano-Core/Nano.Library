@@ -23,7 +23,6 @@ namespace Nano.Console
         public ConsoleApplication(IConfiguration configuration)
             : base(configuration)
         {
-
         }
 
         /// <summary>

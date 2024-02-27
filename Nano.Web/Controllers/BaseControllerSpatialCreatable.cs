@@ -30,14 +30,12 @@ public abstract class BaseControllerSpatialCreatable<TRepository, TEntity, TIden
     protected BaseControllerSpatialCreatable(ILogger logger, TRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected BaseControllerSpatialCreatable(ILogger logger, TRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 
     /// <summary>

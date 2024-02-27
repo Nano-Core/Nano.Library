@@ -30,14 +30,12 @@ public abstract class BaseControllerSpatialUpdatable<TRepository, TEntity, TIden
     protected BaseControllerSpatialUpdatable(ILogger logger, TRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected BaseControllerSpatialUpdatable(ILogger logger, TRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 
     /// <summary>

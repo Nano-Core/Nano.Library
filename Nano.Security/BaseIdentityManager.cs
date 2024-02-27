@@ -1229,11 +1229,11 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         }
 
         var success = await this.UserManager
-            .VerifyUserTokenAsync(user, customToken.Purpose, TokenOptions.DefaultProvider, customToken.Token);
+            .VerifyUserTokenAsync(user, CustomTokenOptions.CustomTokenProvider, customToken.Purpose, customToken.Token);
 
         if (!success)
         {
-            this.ThrowIdentityExceptions(new []{ new IdentityError { Description = "Invalid Token." } });
+            this.ThrowIdentityExceptions(new[] { new IdentityError { Description = "Invalid Token." } });
         }
     }
 
@@ -1464,7 +1464,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         }
 
         var token = await this.UserManager
-            .GenerateUserTokenAsync(user, this.UserManager.Options.Tokens.ChangeEmailTokenProvider, generateCustomPurposeToken.Purpose);
+            .GenerateUserTokenAsync(user, CustomTokenOptions.CustomTokenProvider, generateCustomPurposeToken.Purpose);
 
         return new CustomPurposeToken<TIdentity>
         {
@@ -1547,9 +1547,6 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     /// <returns>The role names.</returns>
     public virtual async Task<IEnumerable<string>> GetUserRolesAsync(TIdentity userId, CancellationToken cancellationToken = default)
     {
-        if (userId == null)
-            throw new ArgumentNullException(nameof(userId));
-
         var userIdString = userId
             .ToString();
 
@@ -1669,9 +1666,6 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     /// <returns>The <see cref="Claim"/>'s.</returns>
     public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(TIdentity userId, CancellationToken cancellationToken = default)
     {
-        if (userId == null)
-            throw new ArgumentNullException(nameof(userId));
-
         var userIdString = userId
             .ToString();
 
@@ -1866,9 +1860,6 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     /// <returns>The <see cref="Claim"/>'s.</returns>
     public virtual async Task<IEnumerable<Claim>> GetRoleClaimsAsync(TIdentity roleId, CancellationToken cancellationToken = default)
     {
-        if (roleId == null)
-            throw new ArgumentNullException(nameof(roleId));
-
         var roleIdString = roleId
             .ToString();
 
@@ -1996,9 +1987,6 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     public virtual async Task<TUser> CreateUser<TUser>(TUser user, IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default)
         where TUser : IEntityUser<TIdentity>
     {
-        if (user == null)
-            throw new ArgumentNullException(nameof(user));
-
         if (identityUser == null)
             throw new ArgumentNullException(nameof(identityUser));
 

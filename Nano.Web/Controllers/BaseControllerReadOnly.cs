@@ -30,14 +30,12 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     protected BaseControllerReadOnly(ILogger logger, TRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected BaseControllerReadOnly(ILogger logger, TRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 
     /// <summary>

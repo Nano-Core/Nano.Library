@@ -17,7 +17,6 @@ public class DefaultIdentityApi<TUser> : BaseIdentityApi<TUser, Guid>
     public DefaultIdentityApi(ApiOptions apiOptions)
         : base(apiOptions)
     {
-
     }
 
     /// <inheritdoc />

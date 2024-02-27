@@ -23,7 +23,6 @@ public abstract class BaseRepositorySpatial<TContext, TIdentity> : BaseRepositor
     protected BaseRepositorySpatial(TContext context)
         : base(context)
     {
-
     }
 
     /// <inheritdoc />

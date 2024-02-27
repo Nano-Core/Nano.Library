@@ -16,6 +16,5 @@ public class AuditController : DefaultControllerReadOnly<DefaultAuditEntry, Audi
     public AuditController(ILogger logger, IRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 }

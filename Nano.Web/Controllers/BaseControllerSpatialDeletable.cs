@@ -29,14 +29,12 @@ public abstract class BaseControllerSpatialDeletable<TRepository, TEntity, TIden
     protected BaseControllerSpatialDeletable(ILogger logger, TRepository repository)
         : this(logger, repository, new NullEventing())
     {
-
     }
 
     /// <inheritdoc />
     protected BaseControllerSpatialDeletable(ILogger logger, TRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
-
     }
 
     /// <summary>
