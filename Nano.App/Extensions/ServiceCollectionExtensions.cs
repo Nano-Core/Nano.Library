@@ -52,13 +52,16 @@ public static class ServiceCollectionExtensions
             .AddSingleton<StartupTaskContext>()
             .AddHostedService<InitializeApplicationStartupTask>();
 
-        services
-            .AddApis(configuration);
-
         return services;
     }
 
-    private static IServiceCollection AddApis(this IServiceCollection services, IConfiguration configuration)
+    /// <summary>
+    /// Add Apis to the <see cref="IServiceCollection"/>..
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
+    /// <returns>The <see cref="IServiceCollection"/>.</returns>
+    public static IServiceCollection AddApis(this IServiceCollection services, IConfiguration configuration)
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
