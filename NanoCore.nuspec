@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>8.0.2</version>
+		<version>8.0.3</version>
 		<title>Nano Core</title>
 		<summary>Rapidly built and deploy rich .NET 8.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
@@ -16,20 +16,7 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Updated to .NET 8.
-			- Added Header annotation for Api-Client.
-			- Added Api-Client service registration to console application (Nano.Web -> Nano.App).
-			- Reordered api-client authentication types.
-			- Added title for health check UI.
-			- Expanded Cors configuration options and updated Http OPTIONS middleware to be based on Cors policy.
-			- BREAKING: Moved Web.Hosting.AllowedOrigins to Web.Hosting.Cors.AllowedOrigins.
-			- BREAKING: Update identity implementation to use POST methods instead of GET and not expose email address as query parameter.
-			- Fixed Login Refresh that used incorrect validation key.
-			- Fixed audit exception when saving read only / not mapped properties.
-			- Added phone number to SignUp model.
-			- Improved version implementation to extend to query parameter and route. Also added to swagger.
-			- Added generate and verify custom token to IdentityManager and BaseIdentityController.
-			- Changed SecurityOptions.Jwt.ExpirationInHours to SecurityOptions.Jwt.ExpirationInMinutes.
+			- Fixed Custom Token Provider.
 			- Resharper code issues.
 		</releaseNotes>
 		<dependencies>
