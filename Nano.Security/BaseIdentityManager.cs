@@ -2005,9 +2005,6 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         {
             await this.DeleteIdentityUser(identityUser, cancellationToken);
 
-            await this.DbContext
-                .SaveChangesAsync(cancellationToken);
-
             throw;
         }
 

@@ -126,7 +126,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var user = await this.IdentityManager
             .CreateUser(signUpExternal.User, identityUser, cancellationToken);
 
-        return this.Created("signup/external", user);
+        return this.Created("signup/external/direct", user);
     }
 
     /// <summary>

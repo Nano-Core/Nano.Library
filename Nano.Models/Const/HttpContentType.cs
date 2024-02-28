@@ -13,7 +13,7 @@ public static class HttpContentType
     /// <summary>
     /// Xhtml ("text/xhtml").
     /// </summary>
-    public const string XHTML = "text/xhtml";
+    public const string XHTML = "application/xhtml+xml";
 
     /// <summary>
     /// Text ("text/plain").
