@@ -229,8 +229,8 @@ public abstract class BaseIdentityManager
             .Union(tokenData.Claims)
             .Distinct();
 
-        var notBeforeAt = DateTime.UtcNow;
-        var expireAt = DateTime.UtcNow.AddMinutes(this.Options.Jwt.ExpirationInMinutes);
+        var notBeforeAt = DateTimeOffset.UtcNow;
+        var expireAt = DateTimeOffset.UtcNow.AddMinutes(this.Options.Jwt.ExpirationInMinutes);
 
         var securityKey = RSA.Create();
         var privateKey = Convert.FromBase64String(this.Options.Jwt.PrivateKey);
@@ -241,7 +241,7 @@ public abstract class BaseIdentityManager
         var rsaSecurityKey = new RsaSecurityKey(securityKey);
 
         var signingCredentials = new SigningCredentials(rsaSecurityKey, SecurityAlgorithms.RsaSha512);
-        var securityToken = new JwtSecurityToken(this.Options.Jwt.Issuer, this.Options.Jwt.Issuer, claims, notBeforeAt, expireAt, signingCredentials);
+        var securityToken = new JwtSecurityToken(this.Options.Jwt.Issuer, this.Options.Jwt.Issuer, claims, notBeforeAt.DateTime, expireAt.DateTime, signingCredentials);
         var token = new JwtSecurityTokenHandler()
             .WriteToken(securityToken);
 
@@ -2138,13 +2138,16 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
             this.ThrowIdentityExceptions(removeResult.Errors);
         }
 
+        var expireAt = DateTimeOffset.UtcNow
+            .AddHours(this.Options.Jwt.RefreshExpirationInHours);
+        
         var identityUserToken = new IdentityUserTokenExpiry<TIdentity>
         {
             UserId = identityUser.Id,
             Name = appId,
             Value = token,
             LoginProvider = JwtBearerDefaults.AuthenticationScheme,
-            ExpireAt = DateTimeOffset.UtcNow.AddHours(this.Options.Jwt.RefreshExpirationInHours)
+            ExpireAt = expireAt
         };
 
         await this.DbContext
