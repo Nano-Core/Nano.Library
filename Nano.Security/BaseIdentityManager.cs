@@ -736,15 +736,30 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     /// <returns>Void.</returns>
     public virtual async Task SignOutAsync(CancellationToken cancellationToken = default)
     {
-        var username = this.SignInManager.Context
-            .GetJwtUserName();
+        var userId = this.SignInManager.Context
+            .GetJwtUserId();
 
-        var user = await this.UserManager
-            .FindByNameAsync(username);
-
-        if (user == null)
+        if (userId == null)
         {
-            throw new NullReferenceException(nameof(user));
+            throw new NullReferenceException(nameof(userId));
+        }
+
+        var dbSet = this.DbContext
+            .Set<IdentityUserTokenExpiry<TIdentity>>();
+
+        var refreshTokens = dbSet
+            .Where(x => x.UserId.Equals(userId.Value));
+
+        if (refreshTokens.Any())
+        {
+            foreach (var identityUserTokenExpiry in refreshTokens)
+            {
+                this.DbContext
+                    .Remove(identityUserTokenExpiry);
+            }
+
+            await this.DbContext
+                .SaveChangesAsync(cancellationToken);
         }
 
         await this.SignInManager
