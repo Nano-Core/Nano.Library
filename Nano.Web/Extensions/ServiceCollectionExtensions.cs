@@ -3,8 +3,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using System.Xml.XPath;
 using Asp.Versioning;
@@ -25,7 +23,7 @@ using Nano.Data;
 using Nano.Models.Const;
 using Nano.Models.Extensions;
 using Nano.Models.Helpers;
-using Nano.Models.Serialization.Json;
+using Nano.Models.Serialization.Json.Const;
 using Nano.Repository.Extensions;
 using Nano.Security;
 using Nano.Web.Controllers;
@@ -130,7 +128,6 @@ public static class ServiceCollectionExtensions
             .AddLocalizations()
             .AddTimeZone(appOptions)
             .AddCompression()
-            .AddContentTypeFormatters()
             .Configure<ForwardedHeadersOptions>(x =>
             {
                 x.ForwardedHeaders = ForwardedHeaders.All;
@@ -139,8 +136,13 @@ public static class ServiceCollectionExtensions
             .AddSingleton<HttpRequestOptionsMiddleware>()
             .AddSingleton<HttpRequestIdentifierMiddleware>()
             .AddRouting()
+            .AddContentTypeFormatters()
             .AddMvc(x =>
             {
+                x.ReturnHttpNotAcceptable = true;
+                x.RespectBrowserAcceptHeader = true;
+                x.MaxValidationDepth = 128;
+
                 var routeAttribute = new RouteAttribute(webOptions.Hosting.Root);
                 var routePrefixConvention = new RoutePrefixConvention(routeAttribute);
                 var queryModelBinderProvider = new QueryModelBinderProvider();
@@ -169,30 +171,27 @@ public static class ServiceCollectionExtensions
                         .Add<RequireHttpsAttribute>();
                 }
 
-                x.MaxValidationDepth = 128;
-
                 x.Filters
                     .Add<ModelStateValidationFilter>();
             })
-            .AddJsonOptions(x =>
+            .AddNewtonsoftJson(x =>
             {
                 x.AllowInputFormatterExceptionMessages = true;
 
-                x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-                x.JsonSerializerOptions.PropertyNamingPolicy = null;
-                x.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                x.JsonSerializerOptions.MaxDepth = 128;
-                x.JsonSerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver
+                var serializerSettings = Globals.GetJsonSerializerSettings();
+
+                x.SerializerSettings.Culture = serializerSettings.Culture;
+                x.SerializerSettings.NullValueHandling = serializerSettings.NullValueHandling;
+                x.SerializerSettings.ReferenceLoopHandling = serializerSettings.ReferenceLoopHandling;
+                x.SerializerSettings.PreserveReferencesHandling = serializerSettings.PreserveReferencesHandling;
+                x.SerializerSettings.ContractResolver = serializerSettings.ContractResolver;
+
+                foreach (var converter in serializerSettings.Converters)
                 {
-                    Modifiers =
-                    {
-                        LazyLoaderTypeInfoResolver.IgnoreLazyLoader,
-                        EnumerableTypeInfoResolver.IgnoreEmptyCollections,
-                    }
-                };
-                x.JsonSerializerOptions.Converters
-                    .Add(new JsonStringEnumConverter());
+                    x.SerializerSettings.Converters
+                        .Add(converter);
+
+                }
             })
             .AddControllersAsServices()
             .AddViewComponentsAsServices()
@@ -532,14 +531,10 @@ public static class ServiceCollectionExtensions
         services
             .AddMvc(x =>
             {
-                x.ReturnHttpNotAcceptable = true;
-                x.RespectBrowserAcceptHeader = true;
-
                 x.FormatterMappings.SetMediaTypeMappingForFormat("xml", HttpContentType.XML);
                 x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JSON);
                 x.FormatterMappings.SetMediaTypeMappingForFormat("html", HttpContentType.HTML);
             })
-            .AddXmlSerializerFormatters()
             .AddXmlDataContractSerializerFormatters();
 
         return services;

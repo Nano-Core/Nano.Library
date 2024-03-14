@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Text.Json;
 using System.Threading.Tasks;
 using DynamicExpression.Entities;
 using DynamicExpression.Enums;
@@ -9,7 +8,8 @@ using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Nano.Models.Extensions;
-using Nano.Models.Serialization.Const;
+using Nano.Models.Serialization.Json.Const;
+using Newtonsoft.Json;
 
 namespace Nano.Web.Hosting.ModelBinders;
 
@@ -31,7 +31,7 @@ public class QueryModelBinder : IModelBinder
                 Order = this.GetOrdering(request),
                 Paging = this.GetPagination(request)
             }
-            : JsonSerializer.Deserialize<Query>(body, Globals.jsonSerializerSettings);
+            : JsonConvert.DeserializeObject(body, Globals.GetJsonSerializerSettings());
 
         bindingContext.Result = ModelBindingResult.Success(model);
     }
@@ -146,7 +146,7 @@ public class QueryModelBinder<TCriteria> : QueryModelBinder
                 Paging = this.GetPagination(request),
                 Criteria = this.GetCriteria(request)
             }
-            : JsonSerializer.Deserialize<Query<TCriteria>>(body, Globals.jsonSerializerSettings);
+            : JsonConvert.DeserializeObject(body, Globals.GetJsonSerializerSettings());
 
         bindingContext.Result = ModelBindingResult.Success(model);
     }

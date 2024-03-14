@@ -3,7 +3,6 @@ using System.Collections;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +10,8 @@ using Nano.App.Api.Requests.Types;
 using Nano.App.Api.Responses;
 using Nano.Models.Const;
 using Nano.Models.Extensions;
-using Nano.Models.Serialization.Const;
+using Nano.Models.Serialization.Json.Const;
+using Newtonsoft.Json;
 
 namespace Nano.App.Api.Extensions;
 
@@ -249,7 +249,7 @@ internal static class MultipartFormDataContentExtensions
             .IsSimple();
 
         var content = !isSimple
-            ? JsonSerializer.Serialize(value, Globals.jsonSerializerSettings)
+            ? JsonConvert.SerializeObject(value, Globals.GetJsonSerializerSettings())
             : value.ToString() ?? string.Empty;
 
         formContent

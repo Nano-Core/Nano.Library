@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Xml.Serialization;
 
-namespace Nano.Models.Serialization;
+namespace Nano.Models.Serialization.Xml;
 
 /// <summary>
 /// Xml Convert.
