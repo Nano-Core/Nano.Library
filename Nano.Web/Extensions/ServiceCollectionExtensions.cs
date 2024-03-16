@@ -32,9 +32,10 @@ using Nano.Web.Hosting.Documentation.Filters;
 using Nano.Web.Hosting.Filters;
 using Nano.Web.Hosting.HealthChecks;
 using Nano.Web.Hosting.Middleware;
-using Nano.Web.Hosting.ModelBinders;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
+using DynamicExpression.Extensions;
+using DynamicExpression.ModelBinders;
 
 namespace Nano.Web.Extensions;
 
@@ -44,7 +45,7 @@ namespace Nano.Web.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds <see cref="WebOptions"/> and services to the <see cref="IServiceCollection"/>.
+    /// Adds web dependicies and services to the <see cref="IServiceCollection"/>.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
@@ -137,6 +138,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<HttpRequestIdentifierMiddleware>()
             .AddRouting()
             .AddContentTypeFormatters()
+            .AddQueryModelBinders()
             .AddMvc(x =>
             {
                 x.ReturnHttpNotAcceptable = true;
@@ -145,13 +147,9 @@ public static class ServiceCollectionExtensions
 
                 var routeAttribute = new RouteAttribute(webOptions.Hosting.Root);
                 var routePrefixConvention = new RoutePrefixConvention(routeAttribute);
-                var queryModelBinderProvider = new QueryModelBinderProvider();
 
                 x.Conventions
                     .Insert(0, routePrefixConvention);
-
-                x.ModelBinderProviders
-                    .Insert(0, queryModelBinderProvider);
 
                 if (dataOptions.ConnectionString == null || !securityOptions.IsAuth)
                 {
