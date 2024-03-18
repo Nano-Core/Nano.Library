@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -48,81 +49,112 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                 .Where(x => x.IsTypeOf(typeof(IEntityIdentity<>)))
                 .First(x => x.Name == @event.Type);
 
-            Guid.TryParse(@event.Id.ToString(), out var guid);
+            var isGuid = Guid.TryParse(@event.Id.ToString(), out var guid);
+            var id = isGuid ? guid : @event.Id;
 
-            var id = type.IsTypeOf(typeof(IEntityIdentity<Guid>))
-                ? guid
-                : @event.Id;
+            var property = type
+                .GetProperty(nameof(IEntityIdentity<dynamic>.Id));
 
-            var entity = await this.Context
-                .FindAsync(type, id);
+            if (property == null)
+            {
+                throw new NullReferenceException(nameof(property));
+            }
 
             switch (@event.State)
             {
                 case "Added":
-                    if (entity != null)
+                {
+                    var entityAdded = Activator.CreateInstance(type);
+
+                    if (entityAdded == null)
                     {
-                        this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} already exists. Add entity ignored.");
-                        return;
+                        throw new NullReferenceException(nameof(entityAdded));
                     }
 
-                    var property = type.GetProperty("Id");
+                    property
+                        .SetValue(entityAdded, id);
 
-                    if (property == null)
+                    foreach (var pair in @event.Data)
                     {
-                        this.Logger.LogWarning($"Nano: Subscribed to entity: {type.Name}, does not contain an 'Id' property. Add entity ignored.");
-                        return;
+                        var dataProperty = type
+                            .GetProperty(pair.Key, BindingFlags.Public | BindingFlags.Instance);
+
+                        if (dataProperty == null)
+                        {
+                            continue;
+                        }
+
+                        dataProperty
+                            .SetValue(entityAdded, pair.Value);
                     }
-
-                    entity = Activator.CreateInstance(type);
-
-                    if (entity == null)
-                        throw new NullReferenceException(nameof(entity));
-
-                    property.SetValue(entity, id);
 
                     await this.Context
-                        .AddAsync(entity);
+                        .AddAsync(entityAdded);
 
                     await this.Context
                         .SaveChangesAsync();
 
-                    this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} has been added.");
+                    break;
+                }
+                case "Modified":
+                    var entityModified = await this.Context
+                        .FindAsync(type, id);
 
-                    return;
-
-                case "Deleted":
-                    var isSoftDeleted = entity is IEntityDeletableSoft { IsDeleted: > 0L };
-
-                    if (entity == null || isSoftDeleted)
+                    if (entityModified == null)
                     {
-                        this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} doesn't exists. Remove entity ignored.");
-                        return;
+                        throw new NullReferenceException(nameof(entityModified));
+                    }
+
+                    foreach (var pair in @event.Data)
+                    {
+                        var dataProperty = type
+                            .GetProperty(pair.Key, BindingFlags.Public | BindingFlags.Instance);
+
+                        if (dataProperty == null)
+                        {
+                            continue;
+                        }
+
+                        dataProperty
+                            .SetValue(entityModified, pair.Value);
                     }
 
                     this.Context
-                        .Remove(entity);
+                        .Update(entityModified);
 
                     await this.Context
                         .SaveChangesAsync();
 
-                    this.Logger.LogInformation($"Nano: Subscribed to entity: {type.Name}, with Id: {id} has been removed.");
+                    break;
 
-                    return;
+                case "Deleted":
+                    var entityDeleted = await this.Context
+                        .FindAsync(type, id);
+
+                    var isSoftDeleted = entityDeleted is IEntityDeletableSoft { IsDeleted: > 0L };
+
+                    if (entityDeleted == null || isSoftDeleted)
+                    {
+                        break;
+                    }
+
+                    this.Context
+                        .Remove(entityDeleted);
+
+                    await this.Context
+                        .SaveChangesAsync();
+
+                    break;
 
                 case "Detached":
                 case "Unchanged":
-                case "Modified":
-                    return;
-
-                default:
-                    return;
+                    break;
             }
         }
         catch (Exception ex)
         {
-            this.Logger.Log(LogLevel.Error, ex, ex.Message);
-            this.Logger.LogError($"Nano: Entity with id '{@event.Id}' of type: {@event.Type} with state: {@event.State} threw an exception.");
+            this.Logger
+                .LogError(ex, ex.Message);
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Nano.Eventing;
 
@@ -21,6 +22,11 @@ public class EntityEvent
     /// State.
     /// </summary>
     public string State { get; set; }
+
+    /// <summary>
+    /// Data.
+    /// </summary>
+    public IDictionary<string, object> Data { get; set; } = new Dictionary<string, object>();
 
     /// <summary>
     /// Constructor.

@@ -480,17 +480,50 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             {
                 var type = x.Entity.GetType();
                 var state = x.State.ToString();
-                var name = type.Name.Replace("Proxy", string.Empty);
+                var typeName = type.Name.Replace("Proxy", string.Empty);
 
-                return x.Entity switch
+                var entityEvent = x.Entity switch
                 {
-                    IEntityIdentity<int> @int => new EntityEvent(@int.Id, name, state),
-                    IEntityIdentity<long> @long => new EntityEvent(@long.Id, name, state),
-                    IEntityIdentity<string> @string => new EntityEvent(@string.Id, name, state),
-                    IEntityIdentity<Guid> guid => new EntityEvent(guid.Id, name, state),
-                    IEntityIdentity<dynamic> dynamic => new EntityEvent(dynamic.Id, name, state),
+                    IEntityIdentity<int> @int => new EntityEvent(@int.Id, typeName, state),
+                    IEntityIdentity<long> @long => new EntityEvent(@long.Id, typeName, state),
+                    IEntityIdentity<string> @string => new EntityEvent(@string.Id, typeName, state),
+                    IEntityIdentity<Guid> guid => new EntityEvent(guid.Id, typeName, state),
+                    IEntityIdentity<dynamic> dynamic => new EntityEvent(dynamic.Id, typeName, state),
                     _ => null
                 };
+
+                if (entityEvent == null)
+                {
+                    return null;
+                }
+
+                if (x.State == EntityState.Deleted)
+                {
+                    return entityEvent;
+                }
+
+                var publishAttribute = type
+                    .GetCustomAttribute<PublishAttribute>();
+
+                if (publishAttribute == null)
+                {
+                    return entityEvent;
+                }
+
+                var properties = type
+                    .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                    .Where(y => publishAttribute.PropertyNames.Contains(y.Name));
+
+                foreach (var propertyInfo in properties)
+                {
+                    var value = propertyInfo
+                        .GetValue(x.Entity);
+
+                    entityEvent.Data
+                        .Add(new KeyValuePair<string, object>(propertyInfo.Name, value));
+                }
+
+                return entityEvent;
             })
             .Where(x => x != null)
             .ToList();
