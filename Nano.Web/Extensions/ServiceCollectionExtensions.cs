@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
@@ -35,7 +36,6 @@ using Nano.Web.Hosting.Middleware;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using DynamicExpression.Extensions;
-using DynamicExpression.ModelBinders;
 
 namespace Nano.Web.Extensions;
 
@@ -178,7 +178,7 @@ public static class ServiceCollectionExtensions
 
                 var serializerSettings = Globals.GetJsonSerializerSettings();
 
-                x.SerializerSettings.Culture = serializerSettings.Culture;
+                x.SerializerSettings.Culture = CultureInfo.CurrentCulture;
                 x.SerializerSettings.NullValueHandling = serializerSettings.NullValueHandling;
                 x.SerializerSettings.ReferenceLoopHandling = serializerSettings.ReferenceLoopHandling;
                 x.SerializerSettings.PreserveReferencesHandling = serializerSettings.PreserveReferencesHandling;

@@ -24,18 +24,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Asp.Versioning.Mvc" Version="8.0.0" />
 		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.0.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.Network" Version="8.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.System" Version="8.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.UI" Version="8.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="8.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.2" />
 		<PackageReference Include="NWebsec.AspNetCore.Middleware" Version="3.0.0" />
 		<PackageReference Include="NWebsec.AspNetCore.Mvc" Version="3.0.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />

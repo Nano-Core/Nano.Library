@@ -8,5 +8,5 @@ public static class CustomTokenOptions
     /// <summary>
     /// Custom Token Provider.
     /// </summary>
-    public static string CustomTokenProvider = "CustomTokenProvider";
+    public static string CustomTokenProvider => "CustomTokenProvider";
 }
