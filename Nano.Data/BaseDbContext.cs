@@ -502,31 +502,94 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                     return entityEvent;
                 }
 
-                var publishAttribute = type
-                    .GetCustomAttribute<PublishAttribute>();
-
-                if (publishAttribute == null)
-                {
-                    return entityEvent;
-                }
-
-                var properties = type
-                    .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                    .Where(y => publishAttribute.PropertyNames.Contains(y.Name));
-
-                foreach (var propertyInfo in properties)
-                {
-                    var value = propertyInfo
-                        .GetValue(x.Entity);
-
-                    entityEvent.Data
-                        .Add(new KeyValuePair<string, object>(propertyInfo.Name, value));
-                }
+                entityEvent.Data = this.GetEntityEventData(x.Entity);
 
                 return entityEvent;
+
             })
             .Where(x => x != null)
             .ToList();
+    }
+    private IDictionary<string, object> GetEntityEventData(object model)
+    {
+        if (model == null)
+            throw new ArgumentNullException(nameof(model));
+
+        var attribute = (PublishAttribute)model
+            .GetType()
+            .GetCustomAttributes(typeof(PublishAttribute), true).FirstOrDefault();
+
+        if (attribute == null)
+        {
+            return null;
+        }
+
+        var result = new Dictionary<string, object>();
+        foreach (var propertyExpression in attribute.PropertyNames)
+        {
+            var indexOfDot = propertyExpression
+                .IndexOf(".", StringComparison.Ordinal);
+
+            var name = indexOfDot > -1
+                ? propertyExpression[..indexOfDot]
+                : propertyExpression;
+
+            var property = model
+                .GetType()
+                .GetProperty(name);
+
+            if (property == null)
+            {
+                throw new NullReferenceException(nameof(property));
+            }
+
+            var value = property
+                .GetValue(model);
+
+            var expression = propertyExpression;
+            while (true)
+            {
+                indexOfDot = expression
+                    .IndexOf(".", StringComparison.Ordinal);
+
+                if (indexOfDot > -1)
+                {
+                    expression = expression[(indexOfDot + 1)..];
+                    value = this.GetNestedPropertyValue(property, expression, value);
+
+                    continue;
+                }
+
+                result
+                    .Add(expression, value);
+
+                break;
+            }
+        }
+
+        return result;
+    }
+    private object GetNestedPropertyValue(PropertyInfo property, string propertyName, object parent)
+    {
+        if (property == null)
+            throw new ArgumentNullException(nameof(property));
+
+        if (propertyName == null)
+            throw new ArgumentNullException(nameof(propertyName));
+
+        if (parent == null)
+            throw new ArgumentNullException(nameof(parent));
+
+        var propertyNested = property.PropertyType
+            .GetProperty(propertyName);
+
+        if (propertyNested == null)
+        {
+            throw new NullReferenceException(nameof(propertyNested));
+        }
+
+        return propertyNested
+            .GetValue(parent);
     }
     private async Task ExecuteEntityEvents()
     {
