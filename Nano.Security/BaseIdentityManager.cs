@@ -2007,6 +2007,8 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         user.Id = identityUser.Id.Parse<TIdentity>();
         user.IdentityUserId = identityUser.Id;
+        user.IdentityUser = this.DbContext
+            .Find<IdentityUser<TIdentity>>(identityUser.Id);
 
         try
         {
@@ -2022,8 +2024,6 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
             throw;
         }
-
-        user.IdentityUser = identityUser;
 
         return user;
     }

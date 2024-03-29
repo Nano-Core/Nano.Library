@@ -22,8 +22,9 @@ public static class ApplicationBuilderExtensions
     /// </summary>
     /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
     /// <param name="serviceProvider">The <see cref="IServiceProvider"/>.</param>
+    /// <param name="useEntityEventHandlers">Use entity event handlers.</param>
     /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
-    internal static IApplicationBuilder UseEventHandlers(this IApplicationBuilder applicationBuilder, IServiceProvider serviceProvider)
+    internal static IApplicationBuilder UseEventHandlers(this IApplicationBuilder applicationBuilder, IServiceProvider serviceProvider, bool useEntityEventHandlers)
     {
         if (applicationBuilder == null)
             throw new ArgumentNullException(nameof(applicationBuilder));
@@ -66,32 +67,35 @@ public static class ApplicationBuilderExtensions
                     ]);
             });
 
-        TypesHelper.GetAllTypes()
-            .Where(x =>
-                !x.IsAbstract &&
-                !x.Name.EndsWith("Proxy") &&
-                x.GetCustomAttributes<SubscribeAttribute>().Any())
-            .GroupBy(x => x.FullName)
-            .Select(x => x.FirstOrDefault())
-            .Where(x => x != null)
-            .ToList()
-            .ForEach(x =>
-            {
-                var eventType = typeof(EntityEvent);
+        if (useEntityEventHandlers)
+        {
+            TypesHelper.GetAllTypes()
+                .Where(x =>
+                    !x.IsAbstract &&
+                    !x.Name.EndsWith("Proxy") &&
+                    x.GetCustomAttributes<SubscribeAttribute>().Any())
+                .GroupBy(x => x.FullName)
+                .Select(x => x.FirstOrDefault())
+                .Where(x => x != null)
+                .ToList()
+                .ForEach(x =>
+                {
+                    var eventType = typeof(EntityEvent);
 
-                var eventing = applicationBuilder.ApplicationServices
-                    .GetRequiredService<IEventing>();
+                    var eventing = applicationBuilder.ApplicationServices
+                        .GetRequiredService<IEventing>();
 
-                eventing
-                    .GetType()
-                    .GetMethod(nameof(IEventing.SubscribeAsync))?
-                    .MakeGenericMethod(eventType)
-                    .Invoke(eventing, [
-                        serviceProvider,
-                        x.Name,
-                        CancellationToken.None
-                    ]);
-            });
+                    eventing
+                        .GetType()
+                        .GetMethod(nameof(IEventing.SubscribeAsync))?
+                        .MakeGenericMethod(eventType)
+                        .Invoke(eventing, [
+                            serviceProvider,
+                            x.Name,
+                            CancellationToken.None
+                        ]);
+                });
+        }
 
         return applicationBuilder;
     }

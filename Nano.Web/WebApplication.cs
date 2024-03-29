@@ -14,6 +14,7 @@ using Nano.App.Extensions;
 using Nano.App.Interfaces;
 using Nano.Config;
 using Nano.Config.Extensions;
+using Nano.Data;
 using Nano.Data.Extensions;
 using Nano.Eventing.Extensions;
 using Nano.Logging.Extensions;
@@ -44,6 +45,9 @@ public class WebApplication : DefaultApplication
             throw new ArgumentNullException(nameof(applicationLifetime));
 
         base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
+
+        var dataOptions = applicationBuilder.ApplicationServices
+            .GetService<DataOptions>();
 
         applicationBuilder
             .UseExceptionHandling()
@@ -88,7 +92,8 @@ public class WebApplication : DefaultApplication
             })
             .UseHttpDocumentataion()
             .UseHealthChecks()
-            .UseEventHandlers(applicationBuilder.ApplicationServices);
+            .UseEventHandlers(applicationBuilder.ApplicationServices, dataOptions.ConnectionString != null);
+
     }
 
     /// <summary>

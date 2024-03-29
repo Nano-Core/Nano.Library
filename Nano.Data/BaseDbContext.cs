@@ -475,7 +475,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             .Where(x =>
                 x.Entity.GetType().IsTypeOf(typeof(IEntityIdentity<>)) &&
                 x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
-                x.State is EntityState.Added or EntityState.Deleted)
+                x.State is EntityState.Added or EntityState.Deleted or EntityState.Modified)
             .Select(x =>
             {
                 var type = x.Entity.GetType();

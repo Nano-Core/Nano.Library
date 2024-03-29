@@ -97,6 +97,7 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                     break;
                 }
                 case "Modified":
+                {
                     var entityModified = await this.Context
                         .FindAsync(type, id);
 
@@ -126,8 +127,10 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                         .SaveChangesAsync();
 
                     break;
+                }
 
                 case "Deleted":
+                {
                     var entityDeleted = await this.Context
                         .FindAsync(type, id);
 
@@ -145,10 +148,7 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                         .SaveChangesAsync();
 
                     break;
-
-                case "Detached":
-                case "Unchanged":
-                    break;
+                }
             }
         }
         catch (Exception ex)
