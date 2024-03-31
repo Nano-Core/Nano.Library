@@ -92,8 +92,7 @@ public class WebApplication : DefaultApplication
             })
             .UseHttpDocumentataion()
             .UseHealthChecks()
-            .UseEventHandlers(applicationBuilder.ApplicationServices, dataOptions.ConnectionString != null);
-
+            .UseEventHandlers(dataOptions.ConnectionString != null);
     }
 
     /// <summary>
