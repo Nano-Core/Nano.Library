@@ -21,6 +21,7 @@ using Nano.Data.Models.Mappings.Extensions;
 using Nano.Eventing;
 using Nano.Eventing.Attributes;
 using Nano.Eventing.Interfaces;
+using Nano.Models;
 using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Security;
@@ -479,6 +480,28 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             .Select(x =>
             {
                 var type = x.Entity.GetType();
+
+                var isAttributeDirectlyApplied = false;
+                while (!isAttributeDirectlyApplied)
+                {
+                    if (type == null)
+                    {
+                        break;
+                    }
+
+                    isAttributeDirectlyApplied = Attribute.IsDefined(type, typeof(PublishAttribute), false);
+
+                    if (!isAttributeDirectlyApplied)
+                    {
+                        type = type.BaseType;
+                    }
+                }
+
+                if (type == null)
+                {
+                    throw new NullReferenceException(nameof(type));
+                }
+
                 var state = x.State.ToString();
                 var typeName = type.Name.Replace("Proxy", string.Empty);
 

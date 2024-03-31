@@ -74,19 +74,7 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                     property
                         .SetValue(entityAdded, id);
 
-                    foreach (var pair in @event.Data)
-                    {
-                        var dataProperty = type
-                            .GetProperty(pair.Key, BindingFlags.Public | BindingFlags.Instance);
-
-                        if (dataProperty == null)
-                        {
-                            continue;
-                        }
-
-                        dataProperty
-                            .SetValue(entityAdded, pair.Value);
-                    }
+                    this.SetEntityEventProperties(@event, type, entityAdded);
 
                     await this.Context
                         .AddAsync(entityAdded);
@@ -106,19 +94,7 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                         throw new NullReferenceException(nameof(entityModified));
                     }
 
-                    foreach (var pair in @event.Data)
-                    {
-                        var dataProperty = type
-                            .GetProperty(pair.Key, BindingFlags.Public | BindingFlags.Instance);
-
-                        if (dataProperty == null)
-                        {
-                            continue;
-                        }
-
-                        dataProperty
-                            .SetValue(entityModified, pair.Value);
-                    }
+                    this.SetEntityEventProperties(@event, type, entityModified);
 
                     this.Context
                         .Update(entityModified);
@@ -156,5 +132,111 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
             this.Logger
                 .LogError(ex, ex.Message);
         }
+    }
+
+    private void SetEntityEventProperties(EntityEvent @event, Type type, object entity)
+    {
+        foreach (var pair in @event.Data)
+        {
+            if (pair.Value == null)
+            {
+                continue;
+            }
+
+            var dataProperty = type
+                .GetProperty(pair.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty);
+
+            if (dataProperty == null)
+            {
+                this.Logger
+                    .LogWarning($"Data Property: {pair.Key} not found when subscribing to entity: {type}.");
+
+                continue;
+            }
+
+            var value = pair.Value.ToString();
+
+            if (value == null)
+            {
+                continue;
+            }
+
+            if (dataProperty.PropertyType == typeof(Guid))
+            {
+                var guidValue = Guid.Parse(value);
+
+                dataProperty
+                    .SetValue(entity, guidValue);
+            }
+            else if (dataProperty.PropertyType == typeof(DateTime))
+            {
+                var dateTimeValue = DateTime.Parse(value);
+
+                dataProperty
+                    .SetValue(entity, dateTimeValue);
+            }
+            else if (dataProperty.PropertyType == typeof(DateTimeOffset))
+            {
+                var dateTimeOffsetValue = DateTimeOffset.Parse(value);
+
+                dataProperty
+                    .SetValue(entity, dateTimeOffsetValue);
+            }
+            else if (dataProperty.PropertyType == typeof(int))
+            {
+                var intValue = int.Parse(value);
+
+                dataProperty
+                    .SetValue(entity, intValue);
+            }
+            else if (dataProperty.PropertyType == typeof(short))
+            {
+                var shortValue = short.Parse(value);
+
+                dataProperty
+                    .SetValue(entity, shortValue);
+            }
+            else if (dataProperty.PropertyType == typeof(byte))
+            {
+                var byteValue = byte.Parse(value);
+
+                dataProperty
+                    .SetValue(entity, byteValue);
+            }
+            else if (dataProperty.PropertyType == typeof(bool))
+            {
+                var boolValue = bool.Parse(value);
+
+                dataProperty
+                    .SetValue(entity, boolValue);
+            }
+            else if (dataProperty.PropertyType == typeof(float))
+            {
+                var floatValue = float.Parse(value);
+
+                dataProperty
+                    .SetValue(entity, floatValue);
+            }
+            else if (dataProperty.PropertyType == typeof(double))
+            {
+                var doubleValue = double.Parse(value);
+
+                dataProperty
+                    .SetValue(entity, doubleValue);
+            }
+            else if (dataProperty.PropertyType == typeof(decimal))
+            {
+                var decimalValue = decimal.Parse(value);
+
+                dataProperty
+                    .SetValue(entity, decimalValue);
+            }
+            else
+            {
+                dataProperty
+                    .SetValue(entity, value);
+            }
+        }
+
     }
 }
