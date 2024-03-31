@@ -148,9 +148,6 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
 
             if (dataProperty == null)
             {
-                this.Logger
-                    .LogWarning($"Data Property: {pair.Key} not found when subscribing to entity: {type}.");
-
                 continue;
             }
 
