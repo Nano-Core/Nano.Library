@@ -73,26 +73,25 @@ public abstract class BaseControllerSpatialCreatable<TRepository, TEntity, TIden
     /// <param name="entities">The models to create.</param>
     /// <param name="cancellationToken">The token used when request is cancelled.</param>
     /// <returns>The created models.</returns>
-    /// <response code="200">Ok.</response>
+    /// <response code="201">Created.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("create/Many")]
     [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
-    [ProducesResponseType(typeof(IEnumerable<object>), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> CreateManyAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        entities = await this.Repository
+        await this.Repository
             .AddManyAsync(entities, cancellationToken);
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
 
-        return this.Created("create/many", entities);
+        return this.Created();
     }
 }

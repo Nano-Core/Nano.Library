@@ -252,7 +252,7 @@ public interface IRepository : IDisposable
     /// <param name="entities">The instances of <see cref="IEntityCreatable"/>'s.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The added entities.</returns>
-    Task<IEnumerable<TEntity>> AddManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    Task AddManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable;
 
     /// <summary>
@@ -282,7 +282,7 @@ public interface IRepository : IDisposable
     /// <param name="entities">The instances of <see cref="IEntityUpdatable"/>'s.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The updated entities.</returns>
-    Task<IEnumerable<TEntity>> UpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    Task UpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable;
 
     /// <summary>
@@ -312,7 +312,7 @@ public interface IRepository : IDisposable
     /// <param name="entities">The instances of <see cref="IEntityCreatableAndUpdatable"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The <see cref="Task"/> (void).</returns>
-    Task<IEnumerable<TEntity>> AddOrUpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    Task AddOrUpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatableAndUpdatable;
 
     /// <summary>
@@ -481,6 +481,28 @@ public interface IRepository : IDisposable
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The <see cref="Task"/> (void).</returns>
     Task DeleteManyBulkAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityDeletable;
+
+    /// <summary>
+    /// Delete Many Bulk Async.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
+    /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> type.</typeparam>
+    /// <param name="criteria">The <see cref="IQueryCriteria"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>Void.</returns>
+    Task DeleteManyBulkAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityDeletable
+        where TCriteria : class, IQueryCriteria, new();
+
+    /// <summary>
+    /// Delete Many Bulk Async.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
+    /// <param name="expression">The <see cref="Expression"/> to evaulate entities to be included in the count.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>Void.</returns>
+    Task DeleteManyBulkAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable;
 
     /// <summary>

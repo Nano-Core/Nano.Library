@@ -10,7 +10,7 @@ namespace Nano.Web.Controllers;
 
 /// <inheritdoc />
 public class DefaultControllerSpatial<TEntity, TCriteria> : DefaultControllerSpatial<TEntity, Guid, TCriteria>
-    where TEntity : class, IEntityIdentity<Guid>, IEntitySpatial, IEntityWritable
+    where TEntity : class, IEntityIdentity<Guid>, IEntitySpatial, IEntityWritable, new()
     where TCriteria : class, IQueryCriteriaSpatial, new()
 {
     /// <inheritdoc />
@@ -28,7 +28,7 @@ public class DefaultControllerSpatial<TEntity, TCriteria> : DefaultControllerSpa
 
 /// <inheritdoc />
 public class DefaultControllerSpatial<TEntity, TIdentity, TCriteria> : BaseControllerSpatialWritable<IRepositorySpatial, TEntity, TIdentity, TCriteria>
-    where TEntity : class, IEntityIdentity<TIdentity>, IEntitySpatial, IEntityWritable
+    where TEntity : class, IEntityIdentity<TIdentity>, IEntitySpatial, IEntityWritable, new()
     where TCriteria : class, IQueryCriteriaSpatial, new()
     where TIdentity : IEquatable<TIdentity>
 {

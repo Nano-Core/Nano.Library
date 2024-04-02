@@ -86,19 +86,18 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     [HttpPost]
     [Route("create/Many")]
     [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
-    [ProducesResponseType(typeof(IEnumerable<object>), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> CreateManyAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        entities = await this.Repository
+        await this.Repository
             .AddManyAsync(entities, cancellationToken);
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
 
-        return this.Created("create/many", entities);
+        return this.Created();
     }
 }

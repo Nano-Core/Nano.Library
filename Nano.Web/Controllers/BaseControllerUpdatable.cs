@@ -95,23 +95,24 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     [HttpPost]
     [Route("edit/many")]
     [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
-    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditManyAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        entities = await this.Repository
+        await this.Repository
             .UpdateManyAsync(entities, cancellationToken);
 
         if (entities == null)
+        {
             return this.NotFound();
+        }
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
 
-        return this.Ok(entities);
+        return this.Ok();
     }
 }

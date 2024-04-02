@@ -338,23 +338,24 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> AddManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual async Task AddManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable
     {
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        entities = entities
-            .Select(x => this.Context.Add(x))
-            .Select(x => x.Entity)
-            .ToArray();
+        foreach (var entity in entities)
+        {
+            this.Context
+                .Add(entity);
+        }
 
         if (this.Context.AutoSave)
         {
             await this.SaveChangesAsync(cancellationToken);
         }
 
-        return entities;
+        await Task.CompletedTask;
     }
 
     /// <inheritdoc />
@@ -396,23 +397,24 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> UpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual async Task UpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        entities = entities
-            .Select(x => this.Context.Update(x))
-            .Select(x => x.Entity)
-            .ToArray();
+        foreach (var entity in entities)
+        {
+            this.Context
+                .Update(entity);
+        }
 
         if (this.Context.AutoSave)
         {
             await this.SaveChangesAsync(cancellationToken);
         }
 
-        return entities;
+        await Task.CompletedTask;
     }
 
     /// <inheritdoc />
@@ -454,21 +456,24 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> AddOrUpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual async Task AddOrUpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatableAndUpdatable
     {
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        entities = entities
-            .Select(x => this.Context.AddOrUpdate(x))
-            .Select(x => x.Entity)
-            .ToArray();
+        foreach (var entity in entities)
+        {
+            this.Context
+                .AddOrUpdate(entity);
+        }
 
         if (this.Context.AutoSave)
+        {
             await this.SaveChangesAsync(cancellationToken);
+        }
 
-        return entities;
+        await Task.CompletedTask;
     }
 
     /// <inheritdoc />
@@ -540,20 +545,8 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (ids == null)
             throw new ArgumentNullException(nameof(ids));
 
-        IEnumerable<TEntity> entities;
-        if (this.Context.Options.UseSoftDeletetion)
-        {
-            entities = this.GetEntitySet<TEntity>()
-                .Where(x => ids.Contains(x.Id));
-        }
-        else
-        {
-            entities = ids
-                .Select(x => new TEntity
-                {
-                    Id = x
-                });
-        }
+        var entities = this.GetEntitySet<TEntity>()
+            .Where(x => ids.Contains(x.Id));
 
         return this.DeleteManyAsync(entities, cancellationToken);
     }
@@ -584,25 +577,12 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (criteria == null)
             throw new ArgumentNullException(nameof(criteria));
 
-        if (this.Context.Options.UseSoftDeletetion)
+        var entities = await this.GetManyAsync<TEntity, TCriteria>(new Query<TCriteria>
         {
-            var entities = this.GetEntitySet<TEntity>()
-                .Where(criteria);
+            Criteria = criteria
+        }, cancellationToken);
 
-            this.Context
-                .RemoveRange(entities);
-
-            if (this.Context.AutoSave)
-            {
-                await this.SaveChangesAsync(cancellationToken);
-            }
-        }
-        else
-        {
-            await this.GetEntitySet<TEntity>()
-                .Where(criteria)
-                .DeleteFromQueryAsync(cancellationToken);
-        }
+        await this.DeleteManyAsync(entities, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -612,25 +592,9 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (expression == null)
             throw new ArgumentNullException(nameof(expression));
 
-        if (this.Context.Options.UseSoftDeletetion)
-        {
-            var entities = this.GetEntitySet<TEntity>()
-                .Where(expression);
+        var entities = await this.GetManyAsync(expression, cancellationToken);
 
-            this.Context
-                .RemoveRange(entities);
-
-            if (this.Context.AutoSave)
-            {
-                await this.SaveChangesAsync(cancellationToken);
-            }
-        }
-        else
-        {
-            await this.GetEntitySet<TEntity>()
-                .Where(expression)
-                .DeleteFromQueryAsync(cancellationToken);
-        }
+        await this.DeleteManyAsync(entities, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -640,9 +604,6 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     {
         if (ids == null)
             throw new ArgumentNullException(nameof(ids));
-
-        if (this.Context.Options.UseSoftDeletetion)
-            throw new InvalidOperationException("Sql bulk delete operations are not allowed when having soft-delete enabled.");
 
         var entities = ids
             .Select(x => new TEntity
@@ -700,15 +661,37 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        if (this.Context.Options.UseSoftDeletetion)
-            throw new InvalidOperationException("Sql bulk delete operations are not allowed when having soft-delete enabled.");
-
         return this.GetEntitySet<TEntity>()
             .BulkDeleteAsync(entities, x =>
             {
                 x.BatchSize = this.Context.Options.BulkBatchSize;
                 x.BatchDelayInterval = this.Context.Options.BulkBatchDelay;
             }, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task DeleteManyBulkAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityDeletable
+        where TCriteria : class, IQueryCriteria, new()
+    {
+        if (criteria == null)
+            throw new ArgumentNullException(nameof(criteria));
+
+        return this.GetEntitySet<TEntity>()
+            .Where(criteria)
+            .DeleteFromQueryAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task DeleteManyBulkAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityDeletable
+    {
+        if (expression == null)
+            throw new ArgumentNullException(nameof(expression));
+
+        return this.GetEntitySet<TEntity>()
+            .Where(expression)
+            .DeleteFromQueryAsync(cancellationToken);
     }
 
     /// <inheritdoc />
