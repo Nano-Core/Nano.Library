@@ -63,68 +63,66 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
             switch (@event.State)
             {
                 case "Added":
-                {
-                    var entityAdded = Activator.CreateInstance(type);
-
-                    if (entityAdded == null)
                     {
-                        throw new NullReferenceException(nameof(entityAdded));
+                        var entityAdded = Activator.CreateInstance(type);
+
+                        if (entityAdded == null)
+                        {
+                            throw new NullReferenceException(nameof(entityAdded));
+                        }
+
+                        property
+                            .SetValue(entityAdded, id);
+
+                        this.SetEntityEventProperties(@event, type, entityAdded);
+
+                        await this.Context
+                            .AddAsync(entityAdded);
+
+                        await this.Context
+                            .SaveChangesAsync();
+
+                        break;
                     }
-
-                    property
-                        .SetValue(entityAdded, id);
-
-                    this.SetEntityEventProperties(@event, type, entityAdded);
-
-                    await this.Context
-                        .AddAsync(entityAdded);
-
-                    await this.Context
-                        .SaveChangesAsync();
-
-                    break;
-                }
                 case "Modified":
-                {
-                    var entityModified = await this.Context
-                        .FindAsync(type, id);
-
-                    if (entityModified == null)
                     {
-                        throw new NullReferenceException(nameof(entityModified));
-                    }
+                        var entityModified = await this.Context
+                            .FindAsync(type, id);
 
-                    this.SetEntityEventProperties(@event, type, entityModified);
+                        if (entityModified == null)
+                        {
+                            throw new NullReferenceException(nameof(entityModified));
+                        }
 
-                    this.Context
-                        .Update(entityModified);
+                        this.SetEntityEventProperties(@event, type, entityModified);
 
-                    await this.Context
-                        .SaveChangesAsync();
+                        this.Context
+                            .Update(entityModified);
 
-                    break;
-                }
+                        await this.Context
+                            .SaveChangesAsync();
 
-                case "Deleted":
-                {
-                    var entityDeleted = await this.Context
-                        .FindAsync(type, id);
-
-                    var isSoftDeleted = entityDeleted is IEntityDeletableSoft { IsDeleted: > 0L };
-
-                    if (entityDeleted == null || isSoftDeleted)
-                    {
                         break;
                     }
 
-                    this.Context
-                        .Remove(entityDeleted);
+                case "Deleted":
+                    {
+                        var entityDeleted = await this.Context
+                            .FindAsync(type, id);
 
-                    await this.Context
-                        .SaveChangesAsync();
+                        if (entityDeleted == null)
+                        {
+                            break;
+                        }
 
-                    break;
-                }
+                        this.Context
+                            .Remove(entityDeleted);
+
+                        await this.Context
+                            .SaveChangesAsync();
+
+                        break;
+                    }
             }
         }
         catch (Exception ex)
