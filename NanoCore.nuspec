@@ -18,7 +18,7 @@
 		<releaseNotes>
 			- Cleaned up NuGet dependencies.
 			- Added Data to Entity Events to be able to synchronize more than just Id between servies.
-			- Publish Attribute on a parent class will no publish that type instead of the derived type, if the Publish annotation is placed on the parent class.
+			- Publish Attribute on a parent class will now publish that type instead of the derived type, if the Publish annotation is placed on the parent class.
 			- Changed System.Text.Json to Newtonsoft. (Microsoft won't solve this: https://github.com/dotnet/runtime/issues/99444).
 		</releaseNotes>
 		<dependencies>
