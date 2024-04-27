@@ -20,7 +20,7 @@
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net8.0">
-				<dependency id="Azure.Identity" version="1.10.4" />
+				<dependency id="Azure.Identity" version="1.11.2" />
 				<dependency id="Microsoft.Data.SqlClient" version="5.1.5" />
 				<dependency id="Microsoft.Extensions.Identity.Stores" version="8.0.2" />
 				<dependency id="DynamicExpression" version="8.0.2" />

@@ -22,7 +22,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Azure.Identity" Version="1.10.4" />
+		<PackageReference Include="Azure.Identity" Version="1.11.2" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.5" />
 		<PackageReference Include="AspNetCore.HealthChecks.MySql" Version="8.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.Sqlite" Version="8.0.0" />
