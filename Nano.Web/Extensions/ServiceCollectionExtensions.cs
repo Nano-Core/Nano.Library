@@ -431,6 +431,7 @@ public static class ServiceCollectionExtensions
                     x.CustomSchemaIds(y => y.FullName);
                     x.OrderActionsBy(y => y.RelativePath);
 
+                    x.SchemaFilter<EnumSchemaFilter>();
                     x.SchemaFilter<SwaggerExcludeFilter>();
 
                     var securityScheme = new OpenApiSecurityScheme
@@ -538,3 +539,4 @@ public static class ServiceCollectionExtensions
         return services;
     }
 }
+
