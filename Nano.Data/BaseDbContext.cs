@@ -181,67 +181,6 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     }
 
     /// <inheritdoc />
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        if (modelBuilder == null)
-            throw new ArgumentNullException(nameof(modelBuilder));
-
-        base.OnModelCreating(modelBuilder);
-
-        if (!string.IsNullOrEmpty(this.Options.DefaultCollation))
-        {
-            modelBuilder
-                .UseCollation(this.Options.DefaultCollation);
-        }
-
-        modelBuilder
-            .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()
-            .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>();
-
-        modelBuilder
-            .Entity<IdentityUserLogin<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER_LOGIN_TABLE_NAME);
-
-        modelBuilder
-            .Entity<IdentityUserRole<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER_ROLE);
-
-        modelBuilder
-            .Entity<IdentityUserTokenExpiry<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER_TOKEN_EXPIRY);
-
-        modelBuilder
-            .Entity<IdentityUserClaim<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER_CLAIM);
-
-        modelBuilder
-            .Entity<IdentityUser<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER);
-
-        modelBuilder
-            .Entity<IdentityUser<TIdentity>>()
-            .HasIndex(x => x.Email)
-            .IsUnique();
-
-        modelBuilder
-            .Entity<IdentityUser<TIdentity>>()
-            .HasIndex(x => x.PhoneNumber)
-            .IsUnique();
-
-        modelBuilder
-            .Entity<IdentityRoleClaim<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_ROLE_CLAIM);
-
-        modelBuilder
-            .Entity<IdentityRole<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_ROLE);
-
-        modelBuilder
-            .Entity<DataProtectionKey>()
-            .ToTable(TableNames.IDENTITY_DATA_PROTECTION_KEYS);
-    }
-
-    /// <inheritdoc />
     public override int SaveChanges()
     {
         var audit = new Audit();
@@ -379,6 +318,67 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         }
 
         await this.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        if (modelBuilder == null)
+            throw new ArgumentNullException(nameof(modelBuilder));
+
+        base.OnModelCreating(modelBuilder);
+
+        if (!string.IsNullOrEmpty(this.Options.DefaultCollation))
+        {
+            modelBuilder
+                .UseCollation(this.Options.DefaultCollation);
+        }
+
+        modelBuilder
+            .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()
+            .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>();
+
+        modelBuilder
+            .Entity<IdentityUserLogin<TIdentity>>()
+            .ToTable(TableNames.IDENTITY_USER_LOGIN_TABLE_NAME);
+
+        modelBuilder
+            .Entity<IdentityUserRole<TIdentity>>()
+            .ToTable(TableNames.IDENTITY_USER_ROLE);
+
+        modelBuilder
+            .Entity<IdentityUserTokenExpiry<TIdentity>>()
+            .ToTable(TableNames.IDENTITY_USER_TOKEN_EXPIRY);
+
+        modelBuilder
+            .Entity<IdentityUserClaim<TIdentity>>()
+            .ToTable(TableNames.IDENTITY_USER_CLAIM);
+
+        modelBuilder
+            .Entity<IdentityUser<TIdentity>>()
+            .ToTable(TableNames.IDENTITY_USER);
+
+        modelBuilder
+            .Entity<IdentityUser<TIdentity>>()
+            .HasIndex(x => x.Email)
+            .IsUnique();
+
+        modelBuilder
+            .Entity<IdentityUser<TIdentity>>()
+            .HasIndex(x => x.PhoneNumber)
+            .IsUnique();
+
+        modelBuilder
+            .Entity<IdentityRoleClaim<TIdentity>>()
+            .ToTable(TableNames.IDENTITY_ROLE_CLAIM);
+
+        modelBuilder
+            .Entity<IdentityRole<TIdentity>>()
+            .ToTable(TableNames.IDENTITY_ROLE);
+
+        modelBuilder
+            .Entity<DataProtectionKey>()
+            .ToTable(TableNames.IDENTITY_DATA_PROTECTION_KEYS);
     }
 
     private void SaveAudit(object entity, object tracked = null)
@@ -527,7 +527,6 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                 entityEvent.Data = this.GetEntityEventData(x.Entity);
 
                 return entityEvent;
-
             })
             .Where(x => x != null)
             .ToList();
@@ -539,7 +538,8 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         var attribute = (PublishAttribute)model
             .GetType()
-            .GetCustomAttributes(typeof(PublishAttribute), true).FirstOrDefault();
+            .GetCustomAttributes(typeof(PublishAttribute), true)
+            .FirstOrDefault();
 
         if (attribute == null)
         {
@@ -550,7 +550,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         foreach (var propertyExpression in attribute.PropertyNames)
         {
             var indexOfDot = propertyExpression
-                .IndexOf(".", StringComparison.Ordinal);
+                .IndexOf('.');
 
             var name = indexOfDot > -1
                 ? propertyExpression[..indexOfDot]
@@ -572,7 +572,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             while (true)
             {
                 indexOfDot = expression
-                    .IndexOf(".", StringComparison.Ordinal);
+                    .IndexOf('.');
 
                 if (indexOfDot > -1)
                 {
@@ -591,7 +591,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         return result;
     }
-    private object GetNestedPropertyValue(PropertyInfo property, string propertyName, object parent)
+    private object GetNestedPropertyValue(PropertyInfo property, string propertyName, object parent = null)
     {
         if (property == null)
             throw new ArgumentNullException(nameof(property));
@@ -600,7 +600,9 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             throw new ArgumentNullException(nameof(propertyName));
 
         if (parent == null)
-            throw new ArgumentNullException(nameof(parent));
+        {
+            return null;
+        }
 
         var propertyNested = property.PropertyType
             .GetProperty(propertyName);

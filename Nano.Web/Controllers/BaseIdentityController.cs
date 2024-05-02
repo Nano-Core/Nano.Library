@@ -375,6 +375,8 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         await this.IdentityManager
             .ChangeEmailAsync(changeEmail, cancellationToken);
 
+        await this.UpdateEntityUserWhenIdentityUserChanges(changeEmail.UserId, cancellationToken);
+
         return this.Ok();
     }
 
@@ -428,6 +430,8 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         await this.IdentityManager
             .ConfirmEmailAsync(confirmEmail, cancellationToken);
+
+        await this.UpdateEntityUserWhenIdentityUserChanges(confirmEmail.UserId, cancellationToken);
 
         return this.Ok();
     }
@@ -484,6 +488,8 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         await this.IdentityManager
             .ChangePhoneNumberAsync(changePhoneNumber, cancellationToken);
 
+        await this.UpdateEntityUserWhenIdentityUserChanges(changePhoneNumber.UserId, cancellationToken);
+
         return this.Ok();
     }
 
@@ -536,6 +542,8 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         await this.IdentityManager
             .ConfirmPhoneNumberAsync(confirmPhoneNumber, cancellationToken);
+
+        await this.UpdateEntityUserWhenIdentityUserChanges(confirmPhoneNumber.UserId, cancellationToken);
 
         return this.Ok();
     }
@@ -931,5 +939,14 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
             .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
+    }
+
+    private async Task UpdateEntityUserWhenIdentityUserChanges(TIdentity userId, CancellationToken cancellationToken)
+    {
+        var user = await this.Repository
+            .GetAsync<TEntity, TIdentity>(userId, cancellationToken);
+
+        await this.Repository
+            .UpdateAsync(user, cancellationToken);
     }
 }

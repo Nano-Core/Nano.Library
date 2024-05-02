@@ -17,6 +17,7 @@
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
 			- Added better versioning in swagger, allowing to enable or disable default version. Impacts version in routes exposed to swagger.
+			- Improved Publish / Subscribe annotations to better support nested properties.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net8.0">
