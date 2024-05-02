@@ -153,7 +153,11 @@ public static class ApplicationBuilderExtensions
 
                     foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
                     {
-                        x.SwaggerEndpoint($"{description.GroupName}/swagger.json", $"{nameof(Nano)} - {appOptions.Name} {description.GroupName} ({ConfigManager.Environment})");
+                        var defaultVersionText = webOptions.Documentation.UseDefaultVersion && description.ApiVersion.IsDefault() 
+                            ? " (Default)" 
+                            : string.Empty;
+
+                        x.SwaggerEndpoint($"{description.GroupName}/swagger.json", $"{nameof(Nano)} - {appOptions.Name} {description.ApiVersion}{defaultVersionText} ({ConfigManager.Environment})");
                     }
 
                     x.RoutePrefix = "docs";

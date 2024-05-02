@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
@@ -23,7 +24,7 @@ public static class ConfigManager
     /// <summary>
     /// Version.
     /// </summary>
-    public static string Version { get; set; }
+    public static Version Version { get; set; }
 
     /// <summary>
     /// Has Db-Context.
@@ -59,7 +60,7 @@ public static class ConfigManager
 
         var tempConfiguration = configurationBuilder.Build();
         var version = tempConfiguration.GetValue<string>("App:Version");
-        ConfigManager.Version = version;
+        ConfigManager.Version = new Version(version);
 
         if (environment == "Development")
         {

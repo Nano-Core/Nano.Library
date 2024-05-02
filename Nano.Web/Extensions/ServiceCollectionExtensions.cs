@@ -36,6 +36,7 @@ using Nano.Web.Hosting.Middleware;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using DynamicExpression.Extensions;
+using Nano.Config;
 
 namespace Nano.Web.Extensions;
 
@@ -124,7 +125,7 @@ public static class ServiceCollectionExtensions
             .AddCaching(webOptions)
             .AddSecurity(securityOptions)
             .AddRepository()
-            .AddVersioning(appOptions)
+            .AddVersioning(webOptions)
             .AddDocumentation(appOptions, webOptions)
             .AddLocalizations()
             .AddTimeZone(appOptions)
@@ -290,26 +291,27 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    private static IServiceCollection AddVersioning(this IServiceCollection services, AppOptions appOptions)
+    private static IServiceCollection AddVersioning(this IServiceCollection services, WebOptions webOptions)
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        if (appOptions == null)
-            throw new ArgumentNullException(nameof(appOptions));
+        if (webOptions == null)
+            throw new ArgumentNullException(nameof(webOptions));
 
-        var version = appOptions.Version == null 
-            ? new Version(1, 0) 
-            : new Version(appOptions.Version);
-
-        var apiVersion = new ApiVersion(version.Major, version.Minor);
+        var apiVersion = new ApiVersion(ConfigManager.Version.Major, ConfigManager.Version.Minor);
 
         services
             .AddApiVersioning(x =>
             {
                 x.ReportApiVersions = true;
-                x.DefaultApiVersion = apiVersion;
-                x.AssumeDefaultVersionWhenUnspecified = true;
+
+                if (webOptions.Documentation.UseDefaultVersion)
+                {
+                    x.DefaultApiVersion = apiVersion;
+                    x.AssumeDefaultVersionWhenUnspecified = true;
+                }
+
                 x.ApiVersionReader = ApiVersionReader.Combine(
                     new UrlSegmentApiVersionReader(),
                     new QueryStringApiVersionReader("api-version"),
@@ -318,8 +320,13 @@ public static class ServiceCollectionExtensions
             .AddApiExplorer(x =>
             {
                 x.GroupNameFormat = "'v'VV";
-                x.DefaultApiVersion = apiVersion;
                 x.SubstituteApiVersionInUrl = true;
+
+                if (webOptions.Documentation.UseDefaultVersion)
+                {
+                    x.DefaultApiVersion = apiVersion;
+                    x.AssumeDefaultVersionWhenUnspecified = true;
+                }
             });
 
         return services;
@@ -433,6 +440,7 @@ public static class ServiceCollectionExtensions
 
                     x.SchemaFilter<EnumSchemaFilter>();
                     x.SchemaFilter<SwaggerExcludeFilter>();
+                    x.DocumentFilter<RemoveVersionsRoutesFilter>();
 
                     var securityScheme = new OpenApiSecurityScheme
                     {
@@ -539,4 +547,3 @@ public static class ServiceCollectionExtensions
         return services;
     }
 }
-

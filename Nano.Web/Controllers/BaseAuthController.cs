@@ -20,7 +20,6 @@ namespace Nano.Web.Controllers;
 /// <summary>
 /// Auth Controller.
 /// </summary>
-[Route("Auth")]
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.READER)]
 public abstract class BaseAuthController<TIdentity> : BaseController
     where TIdentity : IEquatable<TIdentity>

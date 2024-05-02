@@ -27,16 +27,20 @@ public class RoutePrefixConvention : IApplicationModelConvention
     {
         foreach (var controller in application.Controllers)
         {
-            var matched = controller.Selectors.Where(x => x.AttributeRouteModel != null);
+            var matched = controller.Selectors
+                .Where(x => x.AttributeRouteModel != null);
+
             foreach (var model in matched)
             {
-                model.AttributeRouteModel = AttributeRouteModel.CombineAttributeRouteModel(prefix, model.AttributeRouteModel);
+                model.AttributeRouteModel = AttributeRouteModel.CombineAttributeRouteModel(this.prefix, model.AttributeRouteModel);
             }
 
-            var unmatched = controller.Selectors.Where(x => x.AttributeRouteModel == null);
+            var unmatched = controller.Selectors
+                .Where(x => x.AttributeRouteModel == null);
+
             foreach (var model in unmatched)
             {
-                model.AttributeRouteModel = prefix;
+                model.AttributeRouteModel = this.prefix;
             }
         }
     }

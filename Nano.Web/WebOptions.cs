@@ -1124,6 +1124,11 @@ public class WebOptions
         public virtual string CspNonce { get; set; }
 
         /// <summary>
+        /// Use Default Version.
+        /// </summary>
+        public virtual bool UseDefaultVersion { get; set; } = true;
+        
+        /// <summary>
         /// Contact.
         /// </summary>
         public virtual OpenApiContact Contact { get; set; } = new();

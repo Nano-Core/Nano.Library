@@ -21,7 +21,6 @@ using Nano.Data.Models.Mappings.Extensions;
 using Nano.Eventing;
 using Nano.Eventing.Attributes;
 using Nano.Eventing.Interfaces;
-using Nano.Models;
 using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Security;

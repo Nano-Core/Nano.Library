@@ -1,10 +1,12 @@
 using System;
+using Asp.Versioning;
 using Microsoft.Extensions.Logging;
 using Nano.Security;
 
 namespace Nano.Web.Controllers;
 
 /// <inheritdoc />
+[ControllerName("Auth")]
 public class DefaultAuthController : BaseAuthController<Guid>
 {
     /// <inheritdoc />
