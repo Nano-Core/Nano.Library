@@ -191,26 +191,15 @@ public abstract class BaseApi : IDisposable
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
-        switch (request)
+        return request switch
         {
-            case BaseRequestGet requestGet:
-                return this.GetAsync(requestGet, cancellationToken);
-
-            case BaseRequestPut requestPut:
-                return this.PutAsync(requestPut, cancellationToken);
-
-            case BaseRequestPost requestPost:
-                return this.PostAsync(requestPost, cancellationToken);
-
-            case BaseRequestPostForm requestPostForm:
-                return this.PostFormAsync(requestPostForm, cancellationToken);
-
-            case BaseRequestDelete requestDelete:
-                return this.DeleteAsync(requestDelete, cancellationToken);
-
-            default:
-                throw new NotSupportedException($"Not supported: {nameof(request)}");
-        }
+            BaseRequestGet requestGet => this.GetAsync(requestGet, cancellationToken),
+            BaseRequestPut requestPut => this.PutAsync(requestPut, cancellationToken),
+            BaseRequestPost requestPost => this.PostAsync(requestPost, cancellationToken),
+            BaseRequestPostForm requestPostForm => this.PostFormAsync(requestPostForm, cancellationToken),
+            BaseRequestDelete requestDelete => this.DeleteAsync(requestDelete, cancellationToken),
+            _ => throw new NotSupportedException($"Not supported: {nameof(request)}")
+        };
     }
 
     /// <summary>

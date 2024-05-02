@@ -149,12 +149,12 @@ public class WebOptions
             /// <summary>
             /// Allowed Headers.
             /// </summary>
-            public virtual string[] AllowedHeaders { get; set; } = Array.Empty<string>(); 
+            public virtual string[] AllowedHeaders { get; set; } = Array.Empty<string>();
 
             /// <summary>
             /// Allowed methods.
             /// </summary>
-            public virtual string[] AllowedMethods { get; set; } = Array.Empty<string>(); 
+            public virtual string[] AllowedMethods { get; set; } = Array.Empty<string>();
 
             /// <summary>
             /// Allow Credentials.
@@ -1127,7 +1127,7 @@ public class WebOptions
         /// Use Default Version.
         /// </summary>
         public virtual bool UseDefaultVersion { get; set; } = true;
-        
+
         /// <summary>
         /// Contact.
         /// </summary>

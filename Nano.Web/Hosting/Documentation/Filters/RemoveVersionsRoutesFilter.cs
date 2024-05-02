@@ -32,7 +32,7 @@ public class RemoveVersionsRoutesFilter : IDocumentFilter
             throw new ArgumentNullException(nameof(context));
 
         var defaultVersion = new ApiVersion(ConfigManager.Version.Major, ConfigManager.Version.Minor == 0 ? null : ConfigManager.Version.Minor);
-        
+
         var defaultDocumentName = $"v{defaultVersion}";
         var currentDocumentName = context.DocumentName.Replace(".0", string.Empty);
 

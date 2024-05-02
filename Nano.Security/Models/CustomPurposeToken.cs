@@ -21,7 +21,7 @@ public class CustomPurposeToken<TIdentity>
     /// </summary>
     [Required]
     public virtual string Token { get; set; }
-    
+
     /// <summary>
     /// Purpose.
     /// </summary>

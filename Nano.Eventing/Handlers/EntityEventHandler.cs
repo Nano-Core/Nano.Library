@@ -63,66 +63,66 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
             switch (@event.State)
             {
                 case "Added":
+                {
+                    var entityAdded = Activator.CreateInstance(type);
+
+                    if (entityAdded == null)
                     {
-                        var entityAdded = Activator.CreateInstance(type);
-
-                        if (entityAdded == null)
-                        {
-                            throw new NullReferenceException(nameof(entityAdded));
-                        }
-
-                        property
-                            .SetValue(entityAdded, id);
-
-                        this.SetEntityEventProperties(@event, type, entityAdded);
-
-                        await this.Context
-                            .AddAsync(entityAdded);
-
-                        await this.Context
-                            .SaveChangesAsync();
-
-                        break;
+                        throw new NullReferenceException(nameof(entityAdded));
                     }
+
+                    property
+                        .SetValue(entityAdded, id);
+
+                    this.SetEntityEventProperties(@event, type, entityAdded);
+
+                    await this.Context
+                        .AddAsync(entityAdded);
+
+                    await this.Context
+                        .SaveChangesAsync();
+
+                    break;
+                }
                 case "Modified":
+                {
+                    var entityModified = await this.Context
+                        .FindAsync(type, id);
+
+                    if (entityModified == null)
                     {
-                        var entityModified = await this.Context
-                            .FindAsync(type, id);
-
-                        if (entityModified == null)
-                        {
-                            throw new NullReferenceException(nameof(entityModified));
-                        }
-
-                        this.SetEntityEventProperties(@event, type, entityModified);
-
-                        this.Context
-                            .Update(entityModified);
-
-                        await this.Context
-                            .SaveChangesAsync();
-
-                        break;
+                        throw new NullReferenceException(nameof(entityModified));
                     }
+
+                    this.SetEntityEventProperties(@event, type, entityModified);
+
+                    this.Context
+                        .Update(entityModified);
+
+                    await this.Context
+                        .SaveChangesAsync();
+
+                    break;
+                }
 
                 case "Deleted":
+                {
+                    var entityDeleted = await this.Context
+                        .FindAsync(type, id);
+
+                    if (entityDeleted == null)
                     {
-                        var entityDeleted = await this.Context
-                            .FindAsync(type, id);
-
-                        if (entityDeleted == null)
-                        {
-                            break;
-                        }
-
-                        this.Context
-                            .Remove(entityDeleted);
-
-                        await this.Context
-                            .SaveChangesAsync();
-
                         break;
                     }
+
+                    this.Context
+                        .Remove(entityDeleted);
+
+                    await this.Context
+                        .SaveChangesAsync();
+
+                    break;
+                }
             }
         }
         catch (Exception ex)
@@ -132,7 +132,7 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
         }
     }
 
-    private void SetEntityEventProperties(EntityEvent @event, Type type, object entity)
+    private void SetEntityEventProperties(EntityEvent @event, IReflect type, object entity)
     {
         foreach (var pair in @event.Data)
         {
@@ -232,6 +232,5 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                     .SetValue(entity, value);
             }
         }
-
     }
 }

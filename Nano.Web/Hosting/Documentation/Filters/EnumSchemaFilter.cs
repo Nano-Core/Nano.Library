@@ -17,15 +17,15 @@ public class EnumSchemaFilter : ISchemaFilter
     {
         if (model == null)
             throw new ArgumentNullException(nameof(model));
-        
-        if (context == null) 
+
+        if (context == null)
             throw new ArgumentNullException(nameof(context));
 
         if (!context.Type.IsEnum)
         {
             return;
         }
-        
+
         model.Enum
             .Clear();
 
@@ -36,7 +36,7 @@ public class EnumSchemaFilter : ISchemaFilter
             var memberInfo = context.Type
                 .GetMember(enumName)
                 .FirstOrDefault(m => m.DeclaringType == context.Type);
-                
+
             var enumMemberAttribute = memberInfo == null
                 ? null
                 : memberInfo

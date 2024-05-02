@@ -22,5 +22,5 @@ public class PublishAttribute : Attribute
     public PublishAttribute(params string[] propertyNames)
     {
         this.PropertyNames = propertyNames ?? Array.Empty<string>();
-    } 
+    }
 }

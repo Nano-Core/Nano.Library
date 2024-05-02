@@ -189,7 +189,6 @@ public static class ServiceCollectionExtensions
                 {
                     x.SerializerSettings.Converters
                         .Add(converter);
-
                 }
             })
             .AddControllersAsServices()

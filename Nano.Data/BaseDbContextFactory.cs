@@ -25,9 +25,7 @@ public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbC
         var provider = Activator.CreateInstance(typeof(TProvider), dataOptions) as TProvider;
         provider?.Configure(builder);
 
-        var dbContext = Activator.CreateInstance(typeof(TContext), builder.Options, dataOptions) as TContext;
-
-        if (dbContext == null)
+        if (Activator.CreateInstance(typeof(TContext), builder.Options, dataOptions) is not TContext dbContext)
         {
             throw new NullReferenceException(nameof(dbContext));
         }

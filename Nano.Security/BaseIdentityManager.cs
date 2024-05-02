@@ -1392,7 +1392,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         {
             throw new NullReferenceException(nameof(user));
         }
-        
+
         var token = await this.UserManager
             .GeneratePhoneNumberConfirmationTokenAsync<IdentityUser<TIdentity>, TIdentity>(user);
 
@@ -2155,7 +2155,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         var expireAt = DateTimeOffset.UtcNow
             .AddHours(this.Options.Jwt.RefreshExpirationInHours);
-        
+
         var identityUserToken = new IdentityUserTokenExpiry<TIdentity>
         {
             UserId = identityUser.Id,

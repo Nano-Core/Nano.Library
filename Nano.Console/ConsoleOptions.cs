@@ -1,13 +1,12 @@
-namespace Nano.Console
+namespace Nano.Console;
+
+/// <summary>
+/// Console Options.
+/// </summary>
+public class ConsoleOptions
 {
     /// <summary>
-    /// Console Options.
+    /// Section Name.
     /// </summary>
-    public class ConsoleOptions
-    {
-        /// <summary>
-        /// Section Name.
-        /// </summary>
-        public static string SectionName => "Console";
-    }
+    public static string SectionName => "Console";
 }

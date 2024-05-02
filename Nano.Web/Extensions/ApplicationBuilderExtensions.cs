@@ -153,8 +153,8 @@ public static class ApplicationBuilderExtensions
 
                     foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
                     {
-                        var defaultVersionText = webOptions.Documentation.UseDefaultVersion && description.ApiVersion.IsDefault() 
-                            ? " (Default)" 
+                        var defaultVersionText = webOptions.Documentation.UseDefaultVersion && description.ApiVersion.IsDefault()
+                            ? " (Default)"
                             : string.Empty;
 
                         x.SwaggerEndpoint($"{description.GroupName}/swagger.json", $"{nameof(Nano)} - {appOptions.Name} {description.ApiVersion}{defaultVersionText} ({ConfigManager.Environment})");
@@ -777,6 +777,9 @@ public static class ApplicationBuilderExtensions
 
                     case null:
                         break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
 
                 switch (webOptions.Hosting.Cors.Origin.OpenerPolicy)
@@ -798,6 +801,9 @@ public static class ApplicationBuilderExtensions
 
                     case null:
                         break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
 
                 switch (webOptions.Hosting.Cors.Origin.ResourcePolicy)
@@ -819,6 +825,9 @@ public static class ApplicationBuilderExtensions
 
                     case null:
                         break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
 
                 return next();

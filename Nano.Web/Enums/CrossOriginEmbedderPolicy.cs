@@ -18,5 +18,5 @@ public enum CrossOriginEmbedderPolicy
     /// <summary>
     /// Credentialless
     /// </summary>
-    Credentialless,
+    Credentialless
 }
