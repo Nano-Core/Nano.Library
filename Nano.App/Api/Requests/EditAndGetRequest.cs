@@ -3,9 +3,9 @@
 namespace Nano.App.Api.Requests;
 
 /// <summary>
-/// Edit Request.
+/// Edit And Get Request.
 /// </summary>
-public class EditRequest : BaseRequestPut
+public class EditAndGetRequest : BaseRequestPut
 {
     /// <summary>
     /// Entity.
@@ -15,9 +15,9 @@ public class EditRequest : BaseRequestPut
     /// <summary>
     /// Constructor.
     /// </summary>
-    public EditRequest()
+    public EditAndGetRequest()
     {
-        this.Action = "edit";
+        this.Action = "edit/get";
     }
 
     /// <inheritdoc />

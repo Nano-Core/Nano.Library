@@ -74,6 +74,35 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     }
 
     /// <summary>
+    /// Create the passed model, and reload.
+    /// </summary>
+    /// <param name="entity">The model to create.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The created model.</returns>
+    /// <response code="201">Created.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("create/get")]
+    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> CreateAndGetAsync([FromBody][Required] TEntity entity, CancellationToken cancellationToken = default)
+    {
+        entity = await this.Repository
+            .AddAndGetAsync<TEntity, TIdentity>(entity, cancellationToken);
+
+        await this.Repository
+            .SaveChangesAsync(cancellationToken);
+
+        return this.Created("create/get", entity);
+    }
+
+    /// <summary>
     /// Creates the passed models.
     /// </summary>
     /// <param name="entities">The models to create.</param>

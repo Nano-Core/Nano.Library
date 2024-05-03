@@ -992,6 +992,23 @@ public abstract class BaseApi<TIdentity> : BaseApi
     }
 
     /// <summary>
+    /// Create And Get.
+    /// Invokes the 'create/get' endpoint of the api.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type.</typeparam>
+    /// <param name="request">The <see cref="CreateAndGetRequest"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The created entity.</returns>
+    public virtual Task<TEntity> CreateAndGetAsync<TEntity>(CreateAndGetRequest request, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityCreatable, IEntityIdentity<TIdentity>
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        return this.InvokeAsync<CreateAndGetRequest, TEntity>(request, cancellationToken);
+    }
+
+    /// <summary>
     /// Create Many.
     /// Invokes the 'create/many' endpoint of the api.
     /// </summary>
@@ -1023,6 +1040,23 @@ public abstract class BaseApi<TIdentity> : BaseApi
             throw new ArgumentNullException(nameof(request));
 
         return this.InvokeAsync<EditRequest, TEntity>(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Edit And Get.
+    /// Invokes the 'edit/get' endpoint of the api.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type.</typeparam>
+    /// <param name="request">The <see cref="EditAndGetRequest"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The updated entity.</returns>
+    public virtual Task<TEntity> EditAsync<TEntity>(EditAndGetRequest request, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityUpdatable, IEntityIdentity<TIdentity>
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        return this.InvokeAsync<EditAndGetRequest, TEntity>(request, cancellationToken);
     }
 
     /// <summary>

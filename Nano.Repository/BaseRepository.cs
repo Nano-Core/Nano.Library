@@ -338,6 +338,16 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
+    public virtual async Task<TEntity> AddAndGetAsync<TEntity, TKey>(TEntity entity, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityCreatable, IEntityIdentity<TKey>
+        where TKey : IEquatable<TKey>
+    {
+        entity = await this.AddAsync(entity, cancellationToken);
+
+        return await this.GetAsync<TEntity, TKey>(entity.Id, cancellationToken);
+    }
+
+    /// <inheritdoc />
     public virtual async Task AddManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable
     {
@@ -394,6 +404,16 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         }
 
         return entry.Entity;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<TEntity> UpdateAndGetAsync<TEntity, TKey>(TEntity entity, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityUpdatable, IEntityIdentity<TKey>
+        where TKey : IEquatable<TKey>
+    {
+        entity = await this.UpdateAsync(entity, cancellationToken);
+
+        return await this.GetAsync<TEntity, TKey>(entity.Id, cancellationToken);
     }
 
     /// <inheritdoc />

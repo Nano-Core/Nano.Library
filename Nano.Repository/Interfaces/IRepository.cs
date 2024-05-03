@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DynamicExpression.Entities;
 using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Nano.Models.Attributes;
 using Nano.Models.Interfaces;
 
 namespace Nano.Repository.Interfaces;
@@ -246,6 +247,19 @@ public interface IRepository : IDisposable
         where TEntity : class, IEntityCreatable;
 
     /// <summary>
+    /// Adds the instance of the passed <see cref="IEntityCreatable"/>.
+    /// After adding the <see cref="IEntityCreatable"/> it will be reloaded, to get <see cref="IncludeAttribute"/> relations.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntityCreatable"/> type.</typeparam>
+    /// <typeparam name="TKey">The identity type.</typeparam>
+    /// <param name="entity">The instance of <see cref="IEntityCreatable"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The <see cref="Task{TEntity}"/>.</returns>
+    Task<TEntity> AddAndGetAsync<TEntity, TKey>(TEntity entity, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityCreatable, IEntityIdentity<TKey>
+        where TKey : IEquatable<TKey>;
+
+    /// <summary>
     /// Adds all instances of the passed <see cref="IEntityCreatable"/>'s.
     /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntityCreatable"/> type.</typeparam>
@@ -274,6 +288,19 @@ public interface IRepository : IDisposable
     /// <returns>The <see cref="Task{TEntity}"/>.</returns>
     Task<TEntity> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable;
+
+    /// <summary>
+    /// Updates the instance of the passed <see cref="IEntityUpdatable"/>.
+    /// After updating the <see cref="IEntityUpdatable"/> it will be reloaded, to get <see cref="IncludeAttribute"/> relations.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntityUpdatable"/> type.</typeparam>
+    /// <typeparam name="TKey">The identity type.</typeparam>
+    /// <param name="entity">The instance of <see cref="IEntityUpdatable"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The <see cref="Task{TEntity}"/>.</returns>
+    Task<TEntity> UpdateAndGetAsync<TEntity, TKey>(TEntity entity, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityUpdatable, IEntityIdentity<TKey>
+        where TKey : IEquatable<TKey>;
 
     /// <summary>
     /// Updates all instances of the passed <see cref="IEntityUpdatable"/>'s.

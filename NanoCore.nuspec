@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>8.0.17</version>
+		<version>8.0.18</version>
 		<title>Nano Core</title>
 		<summary>Rapidly built and deploy rich .NET 8.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
@@ -16,8 +16,7 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Added better versioning in swagger, allowing to enable or disable default version. Impacts version in routes exposed to swagger.
-			- Improved Publish / Subscribe annotations to better support nested properties.
+			- Added AddAndGet and UpdateAndGet methods in Repository, Controller, Api-Client.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net8.0">
