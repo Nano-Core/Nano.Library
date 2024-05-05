@@ -1050,7 +1050,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="request">The <see cref="EditAndGetRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The updated entity.</returns>
-    public virtual Task<TEntity> EditAsync<TEntity>(EditAndGetRequest request, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity> EditAndGetAsync<TEntity>(EditAndGetRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable, IEntityIdentity<TIdentity>
     {
         if (request == null)
