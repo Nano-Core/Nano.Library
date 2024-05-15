@@ -36,6 +36,7 @@ using Nano.Web.Hosting.Middleware;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using DynamicExpression.Extensions;
+using Microsoft.AspNetCore.Http.Features;
 using Nano.Config;
 
 namespace Nano.Web.Extensions;
@@ -133,6 +134,12 @@ public static class ServiceCollectionExtensions
             .Configure<ForwardedHeadersOptions>(x =>
             {
                 x.ForwardedHeaders = ForwardedHeaders.All;
+            })
+            .Configure<FormOptions>(x =>
+            {
+                x.ValueLengthLimit = int.MaxValue;
+                x.MultipartBodyLengthLimit = int.MaxValue;
+                x.MultipartHeadersLengthLimit = int.MaxValue;
             })
             .AddSingleton<ExceptionHandlingMiddleware>()
             .AddSingleton<HttpRequestOptionsMiddleware>()

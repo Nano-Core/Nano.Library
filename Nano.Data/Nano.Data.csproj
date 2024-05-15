@@ -22,24 +22,24 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Azure.Identity" Version="1.11.2" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.5" />
-		<PackageReference Include="AspNetCore.HealthChecks.MySql" Version="8.0.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.Sqlite" Version="8.0.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="8.0.0" />
-		<PackageReference Include="EFCoreSecondLevelCacheInterceptor" Version="4.2.0" />
+		<PackageReference Include="Azure.Identity" Version="1.11.3" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.0" />
+		<PackageReference Include="AspNetCore.HealthChecks.MySql" Version="8.0.1" />
+		<PackageReference Include="AspNetCore.HealthChecks.Sqlite" Version="8.0.1" />
+		<PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="8.0.2" />
+		<PackageReference Include="EFCoreSecondLevelCacheInterceptor" Version="4.4.3" />
 		<PackageReference Include="EntityFrameworkCore.Triggers" Version="1.2.3" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="8.0.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" Version="8.0.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="8.0.2" />
-		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0" />
-		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql.NetTopologySuite" Version="8.0.0" />
-		<PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="8.102.1" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="8.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" Version="8.0.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="8.0.5" />
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql.NetTopologySuite" Version="8.0.2" />
+		<PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="8.102.2.4" />
 	</ItemGroup>
 
 	<ItemGroup>

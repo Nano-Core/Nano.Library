@@ -134,6 +134,7 @@ public class WebApplication : DefaultApplication
             .UseKestrel(x =>
             {
                 x.AddServerHeader = false;
+
                 x.Limits.MaxRequestBodySize = null;
                 x.Limits.MaxResponseBufferSize = null;
 
