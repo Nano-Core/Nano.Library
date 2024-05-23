@@ -30,7 +30,6 @@ using Nano.Security;
 using Nano.Web.Controllers;
 using Nano.Web.Hosting.Conventions;
 using Nano.Web.Hosting.Documentation.Filters;
-using Nano.Web.Hosting.Filters;
 using Nano.Web.Hosting.HealthChecks;
 using Nano.Web.Hosting.Middleware;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
@@ -38,6 +37,7 @@ using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using DynamicExpression.Extensions;
 using Microsoft.AspNetCore.Http.Features;
 using Nano.Config;
+using Nano.Models;
 
 namespace Nano.Web.Extensions;
 
@@ -147,6 +147,21 @@ public static class ServiceCollectionExtensions
             .AddRouting()
             .AddContentTypeFormatters()
             .AddQueryModelBinders()
+            .Configure<ApiBehaviorOptions>(x =>
+            {
+                x.InvalidModelStateResponseFactory = context =>
+                {
+                    return new BadRequestObjectResult(new Error
+                    {
+                        Summary = "ModelState Validation Error",
+                        Exceptions = context.ModelState.Values
+                            .SelectMany(y => y.Errors)
+                            .Select(y => y.ErrorMessage)
+                            .ToArray(),
+                        IsTranslated = true
+                    });
+                };
+            })
             .AddMvc(x =>
             {
                 x.ReturnHttpNotAcceptable = true;
@@ -176,9 +191,6 @@ public static class ServiceCollectionExtensions
                     x.Filters
                         .Add<RequireHttpsAttribute>();
                 }
-
-                x.Filters
-                    .Add<ModelStateValidationFilter>();
             })
             .AddNewtonsoftJson(x =>
             {
