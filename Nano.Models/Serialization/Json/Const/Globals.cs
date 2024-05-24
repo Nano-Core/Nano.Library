@@ -20,7 +20,8 @@ public static class Globals
             Culture = CultureInfo.CurrentCulture,
             NullValueHandling = NullValueHandling.Ignore,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            PreserveReferencesHandling = PreserveReferencesHandling.None
+            PreserveReferencesHandling = PreserveReferencesHandling.None,
+            ContractResolver = new EntityContractResolver()
         };
 
         serializerSettings.Converters
