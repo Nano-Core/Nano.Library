@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>8.0.22</version>
+		<version>8.0.23</version>
 		<title>Nano Core</title>
 		<summary>Rapidly built and deploy rich .NET 8.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
@@ -46,7 +46,7 @@
 				<dependency id="Microsoft.EntityFrameworkCore.Design" version="8.0.0" />
 				<dependency id="Microsoft.EntityFrameworkCore.InMemory" version="8.0.5" />
 				<dependency id="Microsoft.EntityFrameworkCore.Proxies" version="8.0.5" />
-				<dependency id="Microsoft.EntityFrameworkCore.Relational" version="8.0.2" />
+				<dependency id="Microsoft.EntityFrameworkCore.Relational" version="8.0.5" />
 				<dependency id="Microsoft.EntityFrameworkCore.Sqlite" version="8.0.5" />
 				<dependency id="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" version="8.0.5" />
 				<dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="8.0.5" />

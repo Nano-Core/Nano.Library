@@ -33,6 +33,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" Version="8.0.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.5" />
