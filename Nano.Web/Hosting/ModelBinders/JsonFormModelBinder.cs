@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Nano.Models.Serialization.Json.Const;
 
 namespace Nano.Web.Hosting.ModelBinders;
 
@@ -24,6 +23,8 @@ public class JsonFormModelBinder : IModelBinder
     {
         if (bindingContext == null)
             throw new ArgumentNullException(nameof(bindingContext));
+
+        await Task.CompletedTask;
 
         var valueProviderResult = bindingContext.ValueProvider
             .GetValue(bindingContext.ModelName);
@@ -47,12 +48,8 @@ public class JsonFormModelBinder : IModelBinder
 
         try
         {
-            object deserialized;
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(serialized));
-            {
-                deserialized = await JsonSerializer
-                    .DeserializeAsync(stream, bindingContext.ModelType);
-            }
+            var deserialized = JsonConvert
+                .DeserializeObject(serialized, bindingContext.ModelType, Globals.GetJsonSerializerSettings());
 
             if (deserialized == null)
             {
