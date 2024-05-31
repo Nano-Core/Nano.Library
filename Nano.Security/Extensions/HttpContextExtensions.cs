@@ -40,7 +40,9 @@ public static class HttpContextExtensions
 
         var value = authorizationHeader[PREFIX.Length..];
 
-        return value;
+        return value == string.Empty
+            ? null
+            : value;
     }
 
     /// <summary>
@@ -53,23 +55,8 @@ public static class HttpContextExtensions
         if (httpContext == null)
             throw new ArgumentNullException(nameof(httpContext));
 
-        var jwtToken = httpContext
-            .GetJwtToken();
-
-        if (jwtToken == null)
-        {
-            return null;
-        }
-
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var securityToken = tokenHandler
-            .ReadJwtToken(jwtToken);
-
-        var value = securityToken.Claims
-            .FirstOrDefault(x => x.Type == ClaimTypesExtended.AppId)?
-            .Value;
-
-        return value;
+        return httpContext
+            .GetJwtClaimValue(ClaimTypesExtended.AppId);
     }
 
     /// <summary>
@@ -82,21 +69,8 @@ public static class HttpContextExtensions
         if (httpContext == null)
             throw new ArgumentNullException(nameof(httpContext));
 
-        var jwtToken = httpContext
-            .GetJwtToken();
-
-        if (jwtToken == null)
-        {
-            return null;
-        }
-
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var securityToken = tokenHandler
-            .ReadJwtToken(jwtToken);
-
-        var value = securityToken.Claims
-            .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sub)?
-            .Value;
+        var value = httpContext
+            .GetJwtClaimValue(JwtRegisteredClaimNames.Sub);
 
         if (value == null)
         {
@@ -120,23 +94,8 @@ public static class HttpContextExtensions
         if (httpContext == null)
             throw new ArgumentNullException(nameof(httpContext));
 
-        var jwtToken = httpContext
-            .GetJwtToken();
-
-        if (jwtToken == null)
-        {
-            return null;
-        }
-
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var securityToken = tokenHandler
-            .ReadJwtToken(jwtToken);
-
-        var value = securityToken.Claims
-            .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Name)?
-            .Value;
-
-        return value;
+        return httpContext
+            .GetJwtClaimValue(JwtRegisteredClaimNames.Name);
     }
 
     /// <summary>
@@ -149,23 +108,8 @@ public static class HttpContextExtensions
         if (httpContext == null)
             throw new ArgumentNullException(nameof(httpContext));
 
-        var jwtToken = httpContext
-            .GetJwtToken();
-
-        if (jwtToken == null)
-        {
-            return null;
-        }
-
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var securityToken = tokenHandler
-            .ReadJwtToken(jwtToken);
-
-        var value = securityToken.Claims
-            .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Email)?
-            .Value;
-
-        return value;
+        return httpContext
+            .GetJwtClaimValue(JwtRegisteredClaimNames.Email);
     }
 
     /// <summary>
@@ -209,7 +153,18 @@ public static class HttpContextExtensions
         var jwtToken = httpContext
             .GetJwtToken();
 
+        if (jwtToken == null)
+        {
+            return null;
+        }
+
         var tokenHandler = new JwtSecurityTokenHandler();
+
+        if (!tokenHandler.CanReadToken(jwtToken))
+        {
+            return null;
+        }
+
         var securityToken = tokenHandler
             .ReadJwtToken(jwtToken);
 
