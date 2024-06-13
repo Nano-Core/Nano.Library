@@ -110,7 +110,7 @@ public class ExceptionHandlingMiddleware : IMiddleware
 
             var error = uxExceptionAttribute == null
                 ? new Error(ex)
-                : new Error(uxExceptionAttribute.Message, true);
+                : new Error(uxExceptionAttribute.Message);
 
             logLevel = error.IsTranslated
                 ? LogLevel.Information

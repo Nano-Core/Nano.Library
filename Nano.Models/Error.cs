@@ -10,12 +10,12 @@ namespace Nano.Models;
 public class Error
 {
     /// <summary>
-    /// Message.
+    /// Summary.
     /// </summary>
     public string Summary { get; set; }
 
     /// <summary>
-    /// Description.
+    /// Exceptions.
     /// </summary>
     public string[] Exceptions { get; set; } = [];
 
@@ -36,19 +36,16 @@ public class Error
     /// Constructor.
     /// </summary>
     /// <param name="message">The message.</param>
-    /// <param name="isTranslated">Is translated</param>
-    /// <exception cref="ArgumentNullException"></exception>
-    public Error(string message, bool isTranslated = false)
+    public Error(string message)
         : this()
     {
-        if (message == null) 
+        if (message == null)
             throw new ArgumentNullException(nameof(message));
 
         this.Exceptions =
         [
             message
         ];
-        this.IsTranslated = isTranslated;
     }
 
     /// <summary>
