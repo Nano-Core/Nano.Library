@@ -5,6 +5,7 @@ namespace Nano.Models.Attributes;
 /// <summary>
 /// Ux Exception Attribute.
 /// </summary>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public class UxExceptionAttribute : Attribute
 {
     /// <summary>

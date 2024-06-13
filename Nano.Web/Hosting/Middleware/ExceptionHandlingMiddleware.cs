@@ -90,7 +90,7 @@ public class ExceptionHandlingMiddleware : IMiddleware
             response.StatusCode = ex is BadRequestException || ex.InnerException is BadRequestException
                 ? (int)HttpStatusCode.BadRequest
                 : (int)HttpStatusCode.InternalServerError;
-            
+
             var endpoint = httpContext
                 .GetEndpoint();
 
@@ -99,16 +99,18 @@ public class ExceptionHandlingMiddleware : IMiddleware
 
             var type = actionDescriptor?.ControllerTypeInfo.BaseType?.GenericTypeArguments
                 .FirstOrDefault();
-                
-            var uXattribute = type?.GetCustomAttributes<UxExceptionAttribute>(true)
-                .FirstOrDefault();
 
-            var pattern = uXattribute?.Properties
-                .Aggregate($"UX_{type.Name}", (current, x) => current + $"_{x}");
+            var uxExceptionAttributes = type?
+                .GetCustomAttributes<UxExceptionAttribute>(true);
 
-            var error = uXattribute != null && exception.Message.Contains(pattern) 
-                ? new Error(uXattribute.Message, true) 
-                : new Error(ex);
+            var uxExceptionAttribute = uxExceptionAttributes?
+                .FirstOrDefault(x => exception.Message
+                    .Contains(x.Properties
+                        .Aggregate($"UX_{type.Name}", (current, y) => current + $"_{y}")));
+
+            var error = uxExceptionAttribute == null
+                ? new Error(ex)
+                : new Error(uxExceptionAttribute.Message, true);
 
             logLevel = error.IsTranslated
                 ? LogLevel.Information
