@@ -17,7 +17,7 @@ public class Error
     /// <summary>
     /// Description.
     /// </summary>
-    public string[] Exceptions { get; set; } = Array.Empty<string>();
+    public string[] Exceptions { get; set; } = [];
 
     /// <summary>
     /// Is Translated.
@@ -29,6 +29,26 @@ public class Error
     /// </summary>
     public Error()
     {
+        this.Summary = "Internal Server Error";
+    }
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="message">The message.</param>
+    /// <param name="isTranslated">Is translated</param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public Error(string message, bool isTranslated = false)
+        : this()
+    {
+        if (message == null) 
+            throw new ArgumentNullException(nameof(message));
+
+        this.Exceptions =
+        [
+            message
+        ];
+        this.IsTranslated = isTranslated;
     }
 
     /// <summary>
@@ -41,9 +61,10 @@ public class Error
         if (exception == null)
             throw new ArgumentNullException(nameof(exception));
 
-        this.Summary = exception is BadRequestException
-            ? "Bad Request"
-            : "Internal Server Error";
+        if (exception is BadRequestException)
+        {
+            this.Summary = "Bad Request";
+        }
 
         this.Exceptions =
         [

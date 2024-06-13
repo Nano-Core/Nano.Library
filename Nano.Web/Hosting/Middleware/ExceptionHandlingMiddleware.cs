@@ -2,10 +2,14 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 using Nano.Models;
+using Nano.Models.Attributes;
 using Nano.Models.Const;
 using Nano.Models.Exceptions;
 using Nano.Models.Serialization.Json.Const;
@@ -76,25 +80,42 @@ public class ExceptionHandlingMiddleware : IMiddleware
         }
         catch (Exception ex)
         {
+            exception = ex.GetBaseException();
+
             if (response.HasStarted)
             {
                 response.Clear();
             }
 
-            exception = ex.GetBaseException();
-
             response.StatusCode = ex is BadRequestException || ex.InnerException is BadRequestException
                 ? (int)HttpStatusCode.BadRequest
                 : (int)HttpStatusCode.InternalServerError;
+            
+            var endpoint = httpContext
+                .GetEndpoint();
 
-            var error = new Error(ex);
+            var actionDescriptor = endpoint?.Metadata
+                .GetMetadata<ControllerActionDescriptor>();
+
+            var type = actionDescriptor?.ControllerTypeInfo.BaseType?.GenericTypeArguments
+                .FirstOrDefault();
+                
+            var uXattribute = type?.GetCustomAttributes<UxExceptionAttribute>(true)
+                .FirstOrDefault();
+
+            var pattern = uXattribute?.Properties
+                .Aggregate($"UX_{type.Name}", (current, x) => current + $"_{x}");
+
+            var error = uXattribute != null && exception.Message.Contains(pattern) 
+                ? new Error(uXattribute.Message, true) 
+                : new Error(ex);
 
             logLevel = error.IsTranslated
                 ? LogLevel.Information
                 : LogLevel.Error;
 
-            var acceptHheader = request.Headers["Accept"];
-            var contentTypeHeader = request.Headers["Content-Type"];
+            var acceptHheader = request.Headers[HeaderNames.Accept];
+            var contentTypeHeader = request.Headers[HeaderNames.ContentType];
             var queryString = request.QueryString.HasValue
                 ? request.QueryString.Value ?? string.Empty
                 : string.Empty;
