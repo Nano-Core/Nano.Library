@@ -20,7 +20,7 @@ public static class HttpContextAccessor
     /// Configure.
     /// </summary>
     /// <param name="httpContextAccessor">The <inheritdoc cref="IHttpContextAccessor"/>.</param>
-    public static void Configure(IHttpContextAccessor httpContextAccessor)
+    internal static void Configure(IHttpContextAccessor httpContextAccessor)
     {
         HttpContextAccessor.accessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }
