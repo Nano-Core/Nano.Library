@@ -47,11 +47,35 @@ public interface IRepository : IDisposable
     /// <summary>
     /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
     /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <typeparam name="TKey">The identity type.</typeparam>
+    /// <param name="key">The <typeparamref name="TKey"/> type, uniquely identify the <see cref="IEntity"/>.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
+    Task<TEntity> GetAsync<TEntity, TKey>(TKey key, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<TKey>
+        where TKey : IEquatable<TKey>;
+
+    /// <summary>
+    /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
+    /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntityIdentity{Int32}"/> type.</typeparam>
     /// <param name="key">The unique key.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
     Task<TEntity> GetAsync<TEntity>(int key, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<int>;
+
+    /// <summary>
+    /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntityIdentity{Int32}"/> type.</typeparam>
+    /// <param name="key">The unique key.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
+    Task<TEntity> GetAsync<TEntity>(int key, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<int>;
 
     /// <summary>
@@ -67,6 +91,17 @@ public interface IRepository : IDisposable
     /// <summary>
     /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
     /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntityIdentity{Int64}"/> type.</typeparam>
+    /// <param name="key">The unique key.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
+    Task<TEntity> GetAsync<TEntity>(long key, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<long>;
+
+    /// <summary>
+    /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
+    /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntityIdentity{String}"/> type.</typeparam>
     /// <param name="key">The unique key.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
@@ -77,11 +112,33 @@ public interface IRepository : IDisposable
     /// <summary>
     /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
     /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntityIdentity{String}"/> type.</typeparam>
+    /// <param name="key">The unique key.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
+    Task<TEntity> GetAsync<TEntity>(string key, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<string>;
+
+    /// <summary>
+    /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
+    /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntityIdentity{Guid}"/> type.</typeparam>
     /// <param name="key">The unique key.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
     Task<TEntity> GetAsync<TEntity>(Guid key, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<Guid>;
+
+    /// <summary>
+    /// Gets an instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="key"/> of the <see cref="IEntity"/>
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntityIdentity{Guid}"/> type.</typeparam>
+    /// <param name="key">The unique key.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
+    Task<TEntity> GetAsync<TEntity>(Guid key, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<Guid>;
 
     /// <summary>
@@ -97,6 +154,19 @@ public interface IRepository : IDisposable
         where TCriteria : class, IQueryCriteria, new();
 
     /// <summary>
+    /// Gets the first instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="criteria"/>.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/>.</typeparam>
+    /// <param name="criteria">The <see cref="IQuery{TCriteria}"/>.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The instances, matching the passed <paramref name="criteria"/>.</returns>
+    Task<TEntity> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> criteria, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+        where TCriteria : class, IQueryCriteria, new();
+
+    /// <summary>
     /// Gets the fist or default instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> of the <see cref="IEntity"/>
     /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
@@ -105,6 +175,18 @@ public interface IRepository : IDisposable
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The fist instance matching the passed <paramref name="where"/> clause.</returns>
     Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity;
+
+    /// <summary>
+    /// Gets the fist or default instance of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> of the <see cref="IEntity"/>
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <param name="where">The where clause.</param>
+    /// <param name="ordering">The order by clause</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The fist instance matching the passed <paramref name="where"/> clause.</returns>
+    Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -122,10 +204,33 @@ public interface IRepository : IDisposable
     /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
     /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
+    /// <param name="keys">The keys uniquely identifying the <see cref="IEntity"/>.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(IEnumerable<TKey> keys, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<TKey>;
+
+    /// <summary>
+    /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
     /// <param name="keys">The keys uniquely identifying the <see cref="IEntity"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
     Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<int> keys, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<int>;
+
+    /// <summary>
+    /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <param name="keys">The keys uniquely identifying the <see cref="IEntity"/>.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<int> keys, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<int>;
 
     /// <summary>
@@ -143,9 +248,31 @@ public interface IRepository : IDisposable
     /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
     /// <param name="keys">The keys uniquely identifying the <see cref="IEntity"/>.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<long> keys, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<long>;
+
+    /// <summary>
+    /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <param name="keys">The keys uniquely identifying the <see cref="IEntity"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
     Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<string> keys, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<string>;
+
+    /// <summary>
+    /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <param name="keys">The keys uniquely identifying the <see cref="IEntity"/>.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<string> keys, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<string>;
 
     /// <summary>
@@ -159,6 +286,17 @@ public interface IRepository : IDisposable
         where TEntity : class, IEntityIdentity<Guid>;
 
     /// <summary>
+    /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="keys"/>.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <param name="keys">The keys uniquely identifying the <see cref="IEntity"/>.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The instances, matching the passed <paramref name="keys"/>.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<Guid> keys, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<Guid>;
+
+    /// <summary>
     /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="query"/>.
     /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
@@ -166,6 +304,17 @@ public interface IRepository : IDisposable
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances, matching the passed <paramref name="query"/>.</returns>
     Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IQuery query, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity;
+
+    /// <summary>
+    /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="query"/>.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <param name="query">The <see cref="IQuery"/>.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The instances, matching the passed <paramref name="query"/>.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IQuery query, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -181,6 +330,19 @@ public interface IRepository : IDisposable
         where TCriteria : class, IQueryCriteria, new();
 
     /// <summary>
+    /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="criteria"/>.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/>.</typeparam>
+    /// <param name="criteria">The <see cref="IQuery{TCriteria}"/>.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The instances, matching the passed <paramref name="criteria"/>.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> criteria, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+        where TCriteria : class, IQueryCriteria, new();
+
+    /// <summary>
     /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause.
     /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
@@ -188,6 +350,17 @@ public interface IRepository : IDisposable
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances, matching the passed parameters.</returns>
     Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity;
+
+    /// <summary>
+    /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <param name="where">The where clause</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The instances, matching the passed parameters.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -202,6 +375,18 @@ public interface IRepository : IDisposable
         where TEntity : class, IEntity;
 
     /// <summary>
+    /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause, ordering by the passed <paramref name="ordering"/>
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <param name="where">The where clause</param>
+    /// <param name="ordering">The order by clause</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The instances, matching the passed parameters.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity;
+
+    /// <summary>
     /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause.
     /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
@@ -210,6 +395,18 @@ public interface IRepository : IDisposable
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances, matching the passed parameters.</returns>
     Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity;
+
+    /// <summary>
+    /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <param name="where">The where clause</param>
+    /// <param name="pagination">The <see cref="Pagination"/>.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The instances, matching the passed parameters.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -229,11 +426,37 @@ public interface IRepository : IDisposable
     /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
     /// <param name="where">The where clause</param>
+    /// <param name="pagination">The <see cref="Pagination"/>.</param>
+    /// <param name="ordering">The order by clause</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The instances, matching the passed parameters.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, Ordering ordering, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity;
+
+    /// <summary>
+    /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause, ordering by the passed <paramref name="ordering"/>
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <param name="where">The where clause</param>
     /// <param name="ordering">The order by clause</param>
     /// <param name="pagination">The <see cref="Pagination"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances, matching the passed parameters.</returns>
     Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, Pagination pagination, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity;
+
+    /// <summary>
+    /// Gets all instances of type <typeparamref name="TEntity"/>, matching the passed <paramref name="where"/> clause, ordering by the passed <paramref name="ordering"/>
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <param name="where">The where clause</param>
+    /// <param name="ordering">The order by clause</param>
+    /// <param name="pagination">The <see cref="Pagination"/>.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>The instances, matching the passed parameters.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, Pagination pagination, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>

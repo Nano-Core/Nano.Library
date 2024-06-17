@@ -19,6 +19,11 @@ public class DetailsRequest<TIdentity> : BaseRequestGet
     public virtual TIdentity Id { get; set; }
 
     /// <summary>
+    /// Include Depth.
+    /// </summary>
+    public virtual int? IncludeDepth { get; set; }
+
+    /// <summary>
     /// Constructor.
     /// </summary>
     public DetailsRequest()

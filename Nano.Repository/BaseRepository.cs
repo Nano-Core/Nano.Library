@@ -59,15 +59,23 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
+    public virtual Task<TEntity> GetAsync<TEntity, TKey>(TKey key, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<TKey>
+        where TKey : IEquatable<TKey>
+    {
+        return this.GetEntitySet<TEntity>()
+            .IncludeAnnotations(includeDepth)
+            .FirstOrDefaultAsync(x => x.Id.Equals(key), cancellationToken);
+    }
+
+    /// <inheritdoc />
     public virtual Task<TEntity> GetAsync<TEntity, TKey>(TKey key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>
     {
-        var indent = this.Context.Options.QueryIncludeDepth;
+        var includeDepth = this.Context.Options.QueryIncludeDepth;
 
-        return this.GetEntitySet<TEntity>()
-            .IncludeAnnotations(indent)
-            .FirstOrDefaultAsync(x => x.Id.Equals(key), cancellationToken);
+        return this.GetAsync<TEntity, TKey>(key, includeDepth, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -79,11 +87,27 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
+    public virtual Task<TEntity> GetAsync<TEntity>(int key, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<int>
+    {
+        return this
+            .GetAsync<TEntity, int>(key, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
     public virtual Task<TEntity> GetAsync<TEntity>(long key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<long>
     {
         return this
             .GetAsync<TEntity, long>(key, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task<TEntity> GetAsync<TEntity>(long key, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<long>
+    {
+        return this
+            .GetAsync<TEntity, long>(key, includeDepth, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -95,11 +119,27 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
+    public virtual Task<TEntity> GetAsync<TEntity>(string key, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<string>
+    {
+        return this
+            .GetAsync<TEntity, string>(key, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
     public virtual Task<TEntity> GetAsync<TEntity>(Guid key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<Guid>
     {
         return this
             .GetAsync<TEntity, Guid>(key, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task<TEntity> GetAsync<TEntity>(Guid key, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<Guid>
+    {
+        return this
+            .GetAsync<TEntity, Guid>(key, includeDepth, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -110,10 +150,21 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (query == null)
             throw new ArgumentNullException(nameof(query));
 
-        var indent = this.Context.Options.QueryIncludeDepth;
+        var includeDepth = this.Context.Options.QueryIncludeDepth;
+
+        return this.GetFirstAsync<TEntity, TCriteria>(query, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task<TEntity> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+        where TCriteria : class, IQueryCriteria, new()
+    {
+        if (query == null)
+            throw new ArgumentNullException(nameof(query));
 
         return this.GetEntitySet<TEntity>()
-            .IncludeAnnotations(indent)
+            .IncludeAnnotations(includeDepth)
             .Where(query.Criteria)
             .Order(query.Order)
             .Limit(query.Paging)
@@ -130,25 +181,48 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (ordering == null)
             throw new ArgumentNullException(nameof(ordering));
 
-        var indent = this.Context.Options.QueryIncludeDepth;
+        var includeDepth = this.Context.Options.QueryIncludeDepth;
+
+        return this.GetFirstAsync(where, ordering, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+    {
+        if (where == null)
+            throw new ArgumentNullException(nameof(where));
+
+        if (ordering == null)
+            throw new ArgumentNullException(nameof(ordering));
 
         return this.GetEntitySet<TEntity>()
-            .IncludeAnnotations(indent)
+            .IncludeAnnotations(includeDepth)
             .Where(where)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(IEnumerable<TKey> keys, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(IEnumerable<TKey> keys, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TKey>
     {
         if (keys == null)
             throw new ArgumentNullException(nameof(keys));
 
-        var indent = this.Context.Options.QueryIncludeDepth;
+        var includeDepth = this.Context.Options.QueryIncludeDepth;
+
+        return this.GetManyAsync<TEntity, TKey>(keys, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(IEnumerable<TKey> keys, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<TKey>
+    {
+        if (keys == null)
+            throw new ArgumentNullException(nameof(keys));
 
         return await this.GetEntitySet<TEntity>()
-            .IncludeAnnotations(indent)
+            .IncludeAnnotations(includeDepth)
             .Where(x => keys.Contains(x.Id))
             .ToArrayAsync(cancellationToken);
     }
@@ -164,6 +238,16 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<int> keys, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<int>
+    {
+        if (keys == null)
+            throw new ArgumentNullException(nameof(keys));
+
+        return this.GetManyAsync<TEntity, int>(keys, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
     public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<long> keys, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<long>
     {
@@ -171,6 +255,16 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             throw new ArgumentNullException(nameof(keys));
 
         return this.GetManyAsync<TEntity, long>(keys, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<long> keys, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<long>
+    {
+        if (keys == null)
+            throw new ArgumentNullException(nameof(keys));
+
+        return this.GetManyAsync<TEntity, long>(keys, includeDepth, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -184,6 +278,16 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<string> keys, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<string>
+    {
+        if (keys == null)
+            throw new ArgumentNullException(nameof(keys));
+
+        return this.GetManyAsync<TEntity, string>(keys, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
     public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<Guid> keys, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<Guid>
     {
@@ -194,33 +298,64 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IQuery query, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<Guid> keys, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<Guid>
+    {
+        if (keys == null)
+            throw new ArgumentNullException(nameof(keys));
+
+        return this.GetManyAsync<TEntity, Guid>(keys, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IQuery query, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         if (query == null)
             throw new ArgumentNullException(nameof(query));
 
-        var indent = this.Context.Options.QueryIncludeDepth;
+        var includeDepth = this.Context.Options.QueryIncludeDepth;
+
+        return this.GetManyAsync<TEntity>(query, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IQuery query, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+    {
+        if (query == null)
+            throw new ArgumentNullException(nameof(query));
 
         return await this.GetEntitySet<TEntity>()
-            .IncludeAnnotations(indent)
+            .IncludeAnnotations(includeDepth)
             .Order(query.Order)
             .Limit(query.Paging)
             .ToArrayAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : class, IQueryCriteria, new()
     {
         if (query == null)
             throw new ArgumentNullException(nameof(query));
 
-        var indent = this.Context.Options.QueryIncludeDepth;
+        var includeDepth = this.Context.Options.QueryIncludeDepth;
+
+        return this.GetManyAsync<TEntity, TCriteria>(query, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+        where TCriteria : class, IQueryCriteria, new()
+    {
+        if (query == null)
+            throw new ArgumentNullException(nameof(query));
 
         return await this.GetEntitySet<TEntity>()
-            .IncludeAnnotations(indent)
+            .IncludeAnnotations(includeDepth)
             .Where(query.Criteria)
             .Order(query.Order)
             .Limit(query.Paging)
@@ -228,22 +363,32 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         if (where == null)
             throw new ArgumentNullException(nameof(where));
 
-        var indent = this.Context.Options.QueryIncludeDepth;
+        var includeDepth = this.Context.Options.QueryIncludeDepth;
+
+        return this.GetManyAsync(where, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+    {
+        if (where == null)
+            throw new ArgumentNullException(nameof(where));
 
         return await this.GetEntitySet<TEntity>()
-            .IncludeAnnotations(indent)
+            .IncludeAnnotations(includeDepth)
             .Where(where)
             .ToArrayAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         if (where == null)
@@ -252,17 +397,30 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (ordering == null)
             throw new ArgumentNullException(nameof(ordering));
 
-        var indent = this.Context.Options.QueryIncludeDepth;
+        var includeDepth = this.Context.Options.QueryIncludeDepth;
+
+        return this.GetManyAsync(where, ordering, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+    {
+        if (where == null)
+            throw new ArgumentNullException(nameof(where));
+
+        if (ordering == null)
+            throw new ArgumentNullException(nameof(ordering));
 
         return await this.GetEntitySet<TEntity>()
-            .IncludeAnnotations(indent)
+            .IncludeAnnotations(includeDepth)
             .Where(where)
             .Order(ordering)
             .ToArrayAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         if (where == null)
@@ -271,17 +429,30 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (pagination == null)
             throw new ArgumentNullException(nameof(pagination));
 
-        var indent = this.Context.Options.QueryIncludeDepth;
+        var includeDepth = this.Context.Options.QueryIncludeDepth;
+
+        return this.GetManyAsync(where, pagination, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+    {
+        if (where == null)
+            throw new ArgumentNullException(nameof(where));
+
+        if (pagination == null)
+            throw new ArgumentNullException(nameof(pagination));
 
         return await this.GetEntitySet<TEntity>()
-            .IncludeAnnotations(indent)
+            .IncludeAnnotations(includeDepth)
             .Where(where)
             .Limit(pagination)
             .ToArrayAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, Ordering ordering, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, Ordering ordering, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         if (where == null)
@@ -293,10 +464,26 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (ordering == null)
             throw new ArgumentNullException(nameof(ordering));
 
-        var indent = this.Context.Options.QueryIncludeDepth;
+        var includeDepth = this.Context.Options.QueryIncludeDepth;
+
+        return this.GetManyAsync(where, pagination, ordering, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, Ordering ordering, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+    {
+        if (where == null)
+            throw new ArgumentNullException(nameof(where));
+
+        if (pagination == null)
+            throw new ArgumentNullException(nameof(pagination));
+
+        if (ordering == null)
+            throw new ArgumentNullException(nameof(ordering));
 
         return await this.GetEntitySet<TEntity>()
-            .IncludeAnnotations(indent)
+            .IncludeAnnotations(includeDepth)
             .Where(where)
             .Limit(pagination)
             .Order(ordering)
@@ -317,6 +504,22 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             throw new ArgumentNullException(nameof(pagination));
 
         return this.GetManyAsync(where, pagination, ordering, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, Pagination pagination, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+    {
+        if (where == null)
+            throw new ArgumentNullException(nameof(where));
+
+        if (ordering == null)
+            throw new ArgumentNullException(nameof(ordering));
+
+        if (pagination == null)
+            throw new ArgumentNullException(nameof(pagination));
+
+        return this.GetManyAsync(where, pagination, ordering, includeDepth, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -342,9 +545,14 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         where TEntity : class, IEntityCreatable, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>
     {
+        if (entity == null)
+            throw new ArgumentNullException(nameof(entity));
+
+        var includeDepth = this.Context.Options.QueryIncludeDepth;
+
         entity = await this.AddAsync(entity, cancellationToken);
 
-        return await this.GetAsync<TEntity, TKey>(entity.Id, cancellationToken);
+        return await this.GetAsync<TEntity, TKey>(entity.Id, includeDepth, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -411,9 +619,11 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         where TEntity : class, IEntityUpdatable, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>
     {
+        var includeDepth = this.Context.Options.QueryIncludeDepth;
+
         entity = await this.UpdateAsync(entity, cancellationToken);
 
-        return await this.GetAsync<TEntity, TKey>(entity.Id, cancellationToken);
+        return await this.GetAsync<TEntity, TKey>(entity.Id, includeDepth, cancellationToken);
     }
 
     /// <inheritdoc />

@@ -14,6 +14,11 @@ public class IndexRequest : BaseRequestPost
     public virtual IQuery Query { get; set; } = new Query();
 
     /// <summary>
+    /// Include Depth.
+    /// </summary>
+    public virtual int? IncludeDepth { get; set; }
+
+    /// <summary>
     /// Constructor.
     /// </summary>
     public IndexRequest()

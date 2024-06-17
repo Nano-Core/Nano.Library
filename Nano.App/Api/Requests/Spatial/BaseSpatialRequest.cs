@@ -1,5 +1,6 @@
 ﻿using DynamicExpression.Entities;
 using DynamicExpression.Interfaces;
+using Nano.App.Api.Requests.Attributes;
 using Nano.Models.Criterias.Interfaces;
 
 namespace Nano.App.Api.Requests.Spatial;
@@ -15,6 +16,12 @@ public abstract class BaseSpatialRequest<TCriteria> : BaseRequestPost
     /// Query.
     /// </summary>
     public virtual IQuery<TCriteria> Query { get; set; } = new Query<TCriteria>();
+
+    /// <summary>
+    /// Include Depth.
+    /// </summary>
+    [Query]
+    public virtual int? IncludeDepth { get; set; }
 
     /// <inheritdoc />
     public override object GetBody()

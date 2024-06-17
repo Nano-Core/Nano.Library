@@ -829,6 +829,23 @@ public abstract class BaseApi<TIdentity> : BaseApi
     }
 
     /// <summary>
+    /// Index.
+    /// Invokes the 'index' endpoint of the api.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type.</typeparam>
+    /// <param name="request">The <see cref="IndexRequest"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The matching entities.</returns>
+    public virtual Task<IEnumerable<TEntity>> IndexAsync<TEntity>(IndexRequest request, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        return this.InvokeAsync<IndexRequest, IEnumerable<TEntity>>(request, cancellationToken);
+    }
+
+    /// <summary>
     /// Get.
     /// Invokes the 'details' endpoint of the api.
     /// </summary>
@@ -842,6 +859,25 @@ public abstract class BaseApi<TIdentity> : BaseApi
         return this.DetailsAsync<TEntity>(new DetailsRequest<TIdentity>
         {
             Id = id
+        }, cancellationToken);
+    }
+
+    /// <summary>
+    /// Get.
+    /// Invokes the 'details' endpoint of the api.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type.</typeparam>
+    /// <param name="id">The id.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The matching entity.</returns>
+    public virtual Task<TEntity> GetAsync<TEntity>(TIdentity id, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<TIdentity>
+    {
+        return this.DetailsAsync<TEntity>(new DetailsRequest<TIdentity>
+        {
+            Id = id,
+            IncludeDepth = includeDepth
         }, cancellationToken);
     }
 
@@ -863,20 +899,22 @@ public abstract class BaseApi<TIdentity> : BaseApi
     }
 
     /// <summary>
-    /// Index.
-    /// Invokes the 'index' endpoint of the api.
+    /// Get many.
+    /// Invokes the 'details/many' endpoint of the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="IndexRequest"/>.</param>
+    /// <param name="ids">The ids.</param>
+    /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
-    public virtual Task<IEnumerable<TEntity>> IndexAsync<TEntity>(IndexRequest request, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntity
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(ICollection<TIdentity> ids, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<TIdentity>
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
-
-        return this.InvokeAsync<IndexRequest, IEnumerable<TEntity>>(request, cancellationToken);
+        return this.DetailsManyAsync<TEntity>(new DetailsManyRequest<TIdentity>
+        {
+            Ids = ids,
+            IncludeDepth = includeDepth
+        }, cancellationToken);
     }
 
     /// <summary>

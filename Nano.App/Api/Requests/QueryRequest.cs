@@ -16,6 +16,11 @@ public class QueryRequest<TCriteria> : BaseRequestPost
     public virtual IQuery<TCriteria> Query { get; set; } = new Query<TCriteria>();
 
     /// <summary>
+    /// Include Depth.
+    /// </summary>
+    public virtual int? IncludeDepth { get; set; }
+
+    /// <summary>
     /// Constructor.
     /// </summary>
     public QueryRequest()

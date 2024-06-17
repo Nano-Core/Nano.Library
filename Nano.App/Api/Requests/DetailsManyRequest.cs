@@ -17,6 +17,11 @@ public class DetailsManyRequest<TIdentity> : BaseRequestPost
     public virtual ICollection<TIdentity> Ids { get; set; }
 
     /// <summary>
+    /// Include Depth.
+    /// </summary>
+    public virtual int? IncludeDepth { get; set; }
+
+    /// <summary>
     /// Constructor.
     /// </summary>
     public DetailsManyRequest()
