@@ -784,12 +784,25 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
             PhoneNumber = signUp.PhoneNumber
         };
 
-        var result = await this.UserManager
-            .CreateAsync(user, signUp.Password);
-
-        if (!result.Succeeded)
+        IdentityResult createResult;
+        try
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            createResult = await this.UserManager
+                .CreateAsync(user, signUp.Password);
+        }
+        catch (DbUpdateException ex)
+        {
+            if (ex.Message.Contains("IX___EFAuthUser_PhoneNumber"))
+            {
+                this.ThrowIdentityExceptions(new[] { new IdentityErrorDescriber().DuplicatePhoneNumber(signUp.PhoneNumber) });
+            }
+
+            throw;
+        }
+
+        if (!createResult.Succeeded)
+        {
+            this.ThrowIdentityExceptions(createResult.Errors);
         }
 
         await this.AssignSignUpRolesAndClaims(user, signUp.Roles, signUp.Claims);
