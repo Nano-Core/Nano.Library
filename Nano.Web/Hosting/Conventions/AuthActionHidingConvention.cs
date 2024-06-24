@@ -9,7 +9,7 @@ public class AuthActionHidingConvention : IActionModelConvention
     /// <inheritdoc />
     public void Apply(ActionModel action)
     {
-        if (action.Controller.ControllerName == nameof(DefaultAuthController).Replace("Controller", string.Empty))
+        if (action.Controller.ControllerType == typeof(DefaultAuthController))
         {
             action.ApiExplorer.IsVisible = false;
         }
