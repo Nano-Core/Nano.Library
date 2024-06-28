@@ -156,70 +156,70 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                 continue;
             }
 
-            if (dataProperty.PropertyType == typeof(Guid))
+            if (dataProperty.PropertyType == typeof(Guid) || dataProperty.PropertyType == typeof(Guid?))
             {
                 var guidValue = Guid.Parse(value);
 
                 dataProperty
                     .SetValue(entity, guidValue);
             }
-            else if (dataProperty.PropertyType == typeof(DateTime))
+            else if (dataProperty.PropertyType == typeof(DateTime) || dataProperty.PropertyType == typeof(DateTime?))
             {
                 var dateTimeValue = DateTime.Parse(value);
 
                 dataProperty
                     .SetValue(entity, dateTimeValue);
             }
-            else if (dataProperty.PropertyType == typeof(DateTimeOffset))
+            else if (dataProperty.PropertyType == typeof(DateTimeOffset) || dataProperty.PropertyType == typeof(DateTimeOffset?))
             {
                 var dateTimeOffsetValue = DateTimeOffset.Parse(value);
 
                 dataProperty
                     .SetValue(entity, dateTimeOffsetValue);
             }
-            else if (dataProperty.PropertyType == typeof(int))
+            else if (dataProperty.PropertyType == typeof(int) || dataProperty.PropertyType == typeof(int?))
             {
                 var intValue = int.Parse(value);
 
                 dataProperty
                     .SetValue(entity, intValue);
             }
-            else if (dataProperty.PropertyType == typeof(short))
+            else if (dataProperty.PropertyType == typeof(short) || dataProperty.PropertyType == typeof(short?))
             {
                 var shortValue = short.Parse(value);
 
                 dataProperty
                     .SetValue(entity, shortValue);
             }
-            else if (dataProperty.PropertyType == typeof(byte))
+            else if (dataProperty.PropertyType == typeof(byte) || dataProperty.PropertyType == typeof(byte?))
             {
                 var byteValue = byte.Parse(value);
 
                 dataProperty
                     .SetValue(entity, byteValue);
             }
-            else if (dataProperty.PropertyType == typeof(bool))
+            else if (dataProperty.PropertyType == typeof(bool) || dataProperty.PropertyType == typeof(bool?))
             {
                 var boolValue = bool.Parse(value);
 
                 dataProperty
                     .SetValue(entity, boolValue);
             }
-            else if (dataProperty.PropertyType == typeof(float))
+            else if (dataProperty.PropertyType == typeof(float) || dataProperty.PropertyType == typeof(float?))
             {
                 var floatValue = float.Parse(value);
 
                 dataProperty
                     .SetValue(entity, floatValue);
             }
-            else if (dataProperty.PropertyType == typeof(double))
+            else if (dataProperty.PropertyType == typeof(double) || dataProperty.PropertyType == typeof(double?))
             {
                 var doubleValue = double.Parse(value);
 
                 dataProperty
                     .SetValue(entity, doubleValue);
             }
-            else if (dataProperty.PropertyType == typeof(decimal))
+            else if (dataProperty.PropertyType == typeof(decimal) || dataProperty.PropertyType == typeof(decimal?))
             {
                 var decimalValue = decimal.Parse(value);
 
