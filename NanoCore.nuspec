@@ -16,12 +16,8 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Updated DynamicExpression NuGet, fixing In and Contains expressions.
-			- Added support for nullable simple types in entity event handler.
-			- Fixed mvc conventions disabling audit and/or auth controllers in swagger.
-			- Add exception handling for duplicate phone number in signup.
-			- Changed static HttpContextAccessor to public visibility.
-			- Added include-depth parameter to repository / controllers / api-client, that will override the DataOptions.QueryIncludeDepth for specific requests.
+			- Changed serialization to newtonsoft for Swagger Gen.
+			- Removed Edit Query from api-client. No endpoint for that.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net8.0">
@@ -74,6 +70,7 @@
 				<dependency id="NWebsec.AspNetCore.Mvc" version="3.0.0" />
 				<dependency id="Swashbuckle.AspNetCore" version="6.6.2" />
 				<dependency id="Swashbuckle.AspNetCore.Annotations" version="6.6.2" />
+				<dependency id="Swashbuckle.AspNetCore.Newtonsoft" version="6.6.2" />
 			</group>
 		</dependencies>
 	</metadata>

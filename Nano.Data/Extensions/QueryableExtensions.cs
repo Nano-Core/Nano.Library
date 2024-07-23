@@ -51,25 +51,25 @@ public static class QueryableExtensions
             return queryable;
         }
 
-        type
+        var propertyInfos = type
             .GetProperties()
-            .Where(x => x.GetCustomAttribute<IncludeAttribute>() != null)
-            .ToList()
-            .ForEach(x =>
-            {
-                var navigationName = string.IsNullOrEmpty(name)
-                    ? x.Name
-                    : $"{name}.{x.Name}";
+            .Where(x => x.GetCustomAttribute<IncludeAttribute>() != null);
 
-                var nextType = x.PropertyType.IsGenericType
-                    ? x.PropertyType.GenericTypeArguments[0]
-                    : x.PropertyType;
+        foreach (var propertyInfo in propertyInfos)
+        {
+            var navigationName = string.IsNullOrEmpty(name)
+                ? propertyInfo.Name
+                : $"{name}.{propertyInfo.Name}";
 
-                queryable = queryable
-                    .Include(navigationName)
-                    .IncludeAnnotations(nextType, navigationName, depth - 1);
-            });
+            var nextType = propertyInfo.PropertyType.IsGenericType
+                ? propertyInfo.PropertyType.GenericTypeArguments[0]
+                : propertyInfo.PropertyType;
 
+            queryable = queryable
+                .Include(navigationName)
+                .IncludeAnnotations(nextType, navigationName, depth - 1);
+        }
+            
         return queryable;
     }
 }

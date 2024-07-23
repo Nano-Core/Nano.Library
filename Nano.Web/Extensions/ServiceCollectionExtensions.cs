@@ -511,7 +511,8 @@ public static class ServiceCollectionExtensions
                                     }
                                 });
                         });
-                });
+                })
+                .AddSwaggerGenNewtonsoftSupport();
         }
 
         return services;

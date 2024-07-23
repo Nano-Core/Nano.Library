@@ -1115,23 +1115,6 @@ public abstract class BaseApi<TIdentity> : BaseApi
     }
 
     /// <summary>
-    /// Edit Many.
-    /// Invokes the 'Edit/query' endpoint of the api.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="EditManyRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The updated entities.</returns>
-    public virtual Task<IEnumerable<TEntity>> EditQueryAsync<TEntity>(EditQueryRequest request, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityUpdatable
-    {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
-
-        return this.InvokeAsync<EditQueryRequest, IEnumerable<TEntity>>(request, cancellationToken);
-    }
-
-    /// <summary>
     /// Delete.
     /// Invokes the 'delete' endpoint of the api.
     /// </summary>

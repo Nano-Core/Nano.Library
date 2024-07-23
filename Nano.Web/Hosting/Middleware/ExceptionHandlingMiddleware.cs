@@ -100,17 +100,18 @@ public class ExceptionHandlingMiddleware : IMiddleware
             var type = actionDescriptor?.ControllerTypeInfo.BaseType?.GenericTypeArguments
                 .FirstOrDefault();
 
-            var uxExceptionAttributes = type?
-                .GetCustomAttributes<UxExceptionAttribute>(true);
-
-            var uxExceptionAttribute = uxExceptionAttributes?
+            var uxExceptionAttribute = type?
+                .GetCustomAttributes<UxExceptionAttribute>(true)
                 .FirstOrDefault(x => exception.Message
                     .Contains(x.Properties
                         .Aggregate($"UX_{type.Name}", (current, y) => current + $"_{y}")));
 
             var error = uxExceptionAttribute == null
                 ? new Error(ex)
-                : new Error(uxExceptionAttribute.Message) { IsTranslated = true };
+                : new Error(uxExceptionAttribute.Message)
+                {
+                    IsTranslated = true
+                };
 
             logLevel = error.IsTranslated
                 ? LogLevel.Information
