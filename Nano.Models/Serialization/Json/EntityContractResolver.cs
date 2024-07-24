@@ -34,7 +34,7 @@ public class EntityContractResolver : DefaultContractResolver
 
         if (propertyType.IsTypeOf(typeof(IEntity)) || (propertyType.IsGenericType && propertyType.GenericTypeArguments[0].IsTypeOf(typeof(IEntity))))
         {
-            var includeAnnotation = propertyType
+            var includeAnnotation = member
                 .GetCustomAttribute<IncludeAttribute>();
 
             if (includeAnnotation == null)
