@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Nano.Models.Interfaces;
 
 namespace Nano.Models;
@@ -6,5 +7,6 @@ namespace Nano.Models;
 public abstract class BaseEntityIdentity<TIdentity> : BaseEntity, IEntityIdentity<TIdentity>
 {
     /// <inheritdoc />
+    [Required]
     public TIdentity Id { get; set; }
 }

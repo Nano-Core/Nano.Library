@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Nano.Models.Interfaces;
 
 /// <summary>
@@ -11,5 +13,6 @@ public interface IEntityIdentity<TIdentity> : IEntityAuditable
     /// Id.
     /// Uniquely identifies the <see cref="IEntity"/>.
     /// </summary>
+    [Required]
     TIdentity Id { get; set; }
 }

@@ -18,9 +18,6 @@ using Nano.Data.Const;
 using Nano.Data.Models;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
-using Nano.Eventing;
-using Nano.Eventing.Attributes;
-using Nano.Eventing.Interfaces;
 using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Security;
@@ -38,8 +35,6 @@ namespace Nano.Data;
 public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserTokenExpiry<TIdentity>>, IDataProtectionKeyContext
     where TIdentity : IEquatable<TIdentity>
 {
-    private IEnumerable<EntityEvent> pendingEvents;
-
     /// <summary>
     /// Options.
     /// </summary>
@@ -62,9 +57,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     {
         this.Options = dataOptions ?? throw new ArgumentNullException(nameof(dataOptions));
 
-        this.SavingChanges += (_, _) => this.SavePendingEntityEvents();
         this.SavingChanges += (_, _) => this.SaveSoftDeletion();
-        this.SavedChanges += async (_, _) => await this.ExecuteEntityEvents();
 
         // ReSharper disable VirtualMemberCallInConstructor
         this.ChangeTracker.LazyLoadingEnabled = this.Options.UseLazyLoading;
@@ -391,11 +384,6 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             return;
         }
 
-        if (entity.GetType().IsTypeOf(typeof(ILazyLoader)))
-        {
-            return;
-        }
-
         this.ChangeTracker.LazyLoadingEnabled = false;
 
         try
@@ -429,7 +417,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                     entry
                         .Property(propertyInfo.Name).OriginalValue = valueTracked;
                 }
-                else if (!propertyInfo.PropertyType.IsTypeOf(typeof(IEnumerable)) && !propertyInfo.PropertyType.IsTypeOf(typeof(IEntity)))
+                else if (!propertyInfo.PropertyType.IsAssignableFrom(typeof(IEnumerable)) && !propertyInfo.PropertyType.IsAssignableFrom(typeof(IEntity)))
                 {
                     var value = propertyInfo
                         .GetValue(entity);
@@ -467,170 +455,6 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                 x.State = EntityState.Modified;
                 x.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
             });
-    }
-    private void SavePendingEntityEvents()
-    {
-        this.pendingEvents = this.ChangeTracker
-            .Entries<IEntity>()
-            .Where(x =>
-                x.Entity.GetType().IsTypeOf(typeof(IEntityIdentity<>)) &&
-                x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
-                x.State is EntityState.Added or EntityState.Deleted or EntityState.Modified)
-            .Select(x =>
-            {
-                var type = x.Entity.GetType();
-
-                var isAttributeDirectlyApplied = false;
-                while (!isAttributeDirectlyApplied)
-                {
-                    if (type == null)
-                    {
-                        break;
-                    }
-
-                    isAttributeDirectlyApplied = Attribute.IsDefined(type, typeof(PublishAttribute), false);
-
-                    if (!isAttributeDirectlyApplied)
-                    {
-                        type = type.BaseType;
-                    }
-                }
-
-                if (type == null)
-                {
-                    throw new NullReferenceException(nameof(type));
-                }
-
-                var state = x.State.ToString();
-                var typeName = type.Name.Replace("Proxy", string.Empty);
-
-                var entityEvent = x.Entity switch
-                {
-                    IEntityIdentity<int> @int => new EntityEvent(@int.Id, typeName, state),
-                    IEntityIdentity<long> @long => new EntityEvent(@long.Id, typeName, state),
-                    IEntityIdentity<string> @string => new EntityEvent(@string.Id, typeName, state),
-                    IEntityIdentity<Guid> guid => new EntityEvent(guid.Id, typeName, state),
-                    IEntityIdentity<dynamic> dynamic => new EntityEvent(dynamic.Id, typeName, state),
-                    _ => null
-                };
-
-                if (entityEvent == null)
-                {
-                    return null;
-                }
-
-                if (x.State == EntityState.Deleted)
-                {
-                    return entityEvent;
-                }
-
-                entityEvent.Data = this.GetEntityEventData(x.Entity);
-
-                return entityEvent;
-            })
-            .Where(x => x != null)
-            .ToList();
-    }
-    private IDictionary<string, object> GetEntityEventData(object model)
-    {
-        if (model == null)
-            throw new ArgumentNullException(nameof(model));
-
-        var attribute = (PublishAttribute)model
-            .GetType()
-            .GetCustomAttributes(typeof(PublishAttribute), true)
-            .FirstOrDefault();
-
-        if (attribute == null)
-        {
-            return null;
-        }
-
-        var result = new Dictionary<string, object>();
-        foreach (var propertyExpression in attribute.PropertyNames)
-        {
-            var indexOfDot = propertyExpression
-                .IndexOf('.');
-
-            var name = indexOfDot > -1
-                ? propertyExpression[..indexOfDot]
-                : propertyExpression;
-
-            var property = model
-                .GetType()
-                .GetProperty(name);
-
-            if (property == null)
-            {
-                throw new NullReferenceException(nameof(property));
-            }
-
-            var value = property
-                .GetValue(model);
-
-            var expression = propertyExpression;
-            while (true)
-            {
-                indexOfDot = expression
-                    .IndexOf('.');
-
-                if (indexOfDot > -1)
-                {
-                    expression = expression[(indexOfDot + 1)..];
-                    value = this.GetNestedPropertyValue(property, expression, value);
-
-                    continue;
-                }
-
-                result
-                    .Add(expression, value);
-
-                break;
-            }
-        }
-
-        return result;
-    }
-    private object GetNestedPropertyValue(PropertyInfo property, string propertyName, object parent = null)
-    {
-        if (property == null)
-            throw new ArgumentNullException(nameof(property));
-
-        if (propertyName == null)
-            throw new ArgumentNullException(nameof(propertyName));
-
-        if (parent == null)
-        {
-            return null;
-        }
-
-        var propertyNested = property.PropertyType
-            .GetProperty(propertyName);
-
-        if (propertyNested == null)
-        {
-            throw new NullReferenceException(nameof(propertyNested));
-        }
-
-        return propertyNested
-            .GetValue(parent);
-    }
-    private async Task ExecuteEntityEvents()
-    {
-        try
-        {
-            var eventing = this.GetService<IEventing>();
-
-            foreach (var @event in this.pendingEvents)
-            {
-                await eventing
-                    .PublishAsync(@event, @event.Type);
-            }
-        }
-        finally
-        {
-            this.pendingEvents = null;
-        }
     }
     private async Task AddRole(string role)
     {

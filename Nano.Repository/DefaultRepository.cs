@@ -1,5 +1,6 @@
 using System;
 using Nano.Data;
+using Nano.Eventing.Interfaces;
 
 namespace Nano.Repository;
 
@@ -7,8 +8,8 @@ namespace Nano.Repository;
 public class DefaultRepository : BaseRepository<BaseDbContext<Guid>, Guid>
 {
     /// <inheritdoc />
-    public DefaultRepository(BaseDbContext<Guid> context)
-        : base(context)
+    public DefaultRepository(BaseDbContext<Guid> context, IEventing eventing)
+        : base(context, eventing)
     {
     }
 }

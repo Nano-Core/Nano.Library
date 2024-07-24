@@ -23,6 +23,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Nano.Data\Nano.Data.csproj" />
+		<ProjectReference Include="..\Nano.Eventing\Nano.Eventing.csproj" />
 		<ProjectReference Include="..\Nano.Models\Nano.Models.csproj" />
 	</ItemGroup>
 

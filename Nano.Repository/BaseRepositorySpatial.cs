@@ -8,6 +8,7 @@ using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Nano.Data;
 using Nano.Data.Extensions;
+using Nano.Eventing.Interfaces;
 using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
@@ -20,8 +21,8 @@ public abstract class BaseRepositorySpatial<TContext, TIdentity> : BaseRepositor
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseRepositorySpatial(TContext context)
-        : base(context)
+    protected BaseRepositorySpatial(TContext context, IEventing eventing)
+        : base(context, eventing)
     {
     }
 

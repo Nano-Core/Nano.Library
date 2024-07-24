@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Reflection;
+using Nano.Models.Attributes;
+using Nano.Models.Extensions;
+using Nano.Models.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -24,7 +27,23 @@ public class EntityContractResolver : DefaultContractResolver
         var property = base.CreateProperty(member, memberSerialization);
         var propertyType = property.PropertyType;
 
-        // TODO: Properties are Lazy-Loaded, when enabled. It should filter out properties that will be Lazy-Loaded. Seems there is no solution.
+        if (propertyType == null)
+        {
+            throw new NullReferenceException(nameof(propertyType));
+        }
+
+        if (propertyType.IsTypeOf(typeof(IEntity)) || (propertyType.IsGenericType && propertyType.GenericTypeArguments[0].IsTypeOf(typeof(IEntity))))
+        {
+            var includeAnnotation = propertyType
+                .GetCustomAttribute<IncludeAttribute>();
+
+            if (includeAnnotation == null)
+            {
+                property.ShouldSerialize = _ => false;
+
+                return property;
+            }
+        }
 
         if (propertyType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(propertyType))
         {
@@ -36,14 +55,13 @@ public class EntityContractResolver : DefaultContractResolver
                         .GetType()
                         .GetField(member.Name)?
                         .GetValue(instance) as IEnumerable,
-
-                    MemberTypes.Property => instance.GetType().GetProperty(member.Name)?.GetValue(instance, null) as
-                        IEnumerable,
-
+                    MemberTypes.Property => instance.GetType().GetProperty(member.Name)?.GetValue(instance, null) as IEnumerable,
                     _ => null
                 };
 
+                // ReSharper disable NotDisposedResource
                 return enumerable == null || enumerable.GetEnumerator().MoveNext();
+                // ReSharper restore NotDisposedResource
             };
         }
 

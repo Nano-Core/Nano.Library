@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Entities;
@@ -10,6 +11,10 @@ using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Nano.Data;
 using Nano.Data.Extensions;
+using Nano.Eventing.Attributes;
+using Nano.Eventing.Interfaces;
+using Nano.Eventing;
+using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 
@@ -20,8 +25,8 @@ public abstract class BaseRepository<TContext> : BaseRepository<TContext, Guid>
     where TContext : BaseDbContext<Guid>
 {
     /// <inheritdoc />
-    protected BaseRepository(TContext context)
-        : base(context)
+    protected BaseRepository(TContext context, IEventing eventing)
+        : base(context, eventing)
     {
     }
 }
@@ -31,18 +36,27 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     where TContext : BaseDbContext<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
+    private IList<EntityEvent> pendingEvents;
+
     /// <summary>
     /// Context.
     /// </summary>
     internal virtual TContext Context { get; }
 
     /// <summary>
+    /// Eventing.
+    /// </summary>
+    internal virtual IEventing Eventing { get; }
+
+    /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="context">The <see cref="DbContext"/>.</param>
-    protected BaseRepository(TContext context)
+    /// <param name="eventing">The <see cref="IEventing"/>.</param>
+    protected BaseRepository(TContext context, IEventing eventing)
     {
         this.Context = context ?? throw new ArgumentNullException(nameof(context));
+        this.Eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
     }
 
     /// <inheritdoc />
@@ -981,8 +995,12 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     /// <inheritdoc />
     public virtual async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        this.pendingEvents = this.GetPendingEntityEvents();
+
         await this.Context
             .SaveChangesAsync(cancellationToken);
+
+        await this.ExecuteEntityEvents();
     }
 
     /// <inheritdoc />
@@ -1003,5 +1021,179 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             return;
 
         this.Context?.Dispose();
+    }
+
+    private List<EntityEvent> GetPendingEntityEvents()
+    {
+        return this.Context.ChangeTracker
+            .Entries<IEntity>()
+            .Where(x =>
+                x.Entity.GetType().IsTypeOf(typeof(IEntityIdentity<>)) &&
+                x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
+                x.State is EntityState.Added or EntityState.Deleted or EntityState.Modified)
+            .Select(x =>
+            {
+                var type = x.Entity.GetType();
+
+                var isAttributeDirectlyApplied = false;
+                while (!isAttributeDirectlyApplied)
+                {
+                    if (type == null)
+                    {
+                        break;
+                    }
+
+                    isAttributeDirectlyApplied = Attribute.IsDefined(type, typeof(PublishAttribute), false);
+
+                    if (!isAttributeDirectlyApplied)
+                    {
+                        type = type.BaseType;
+                    }
+                }
+
+                if (type == null)
+                {
+                    throw new NullReferenceException(nameof(type));
+                }
+
+                var state = x.State.ToString();
+                var typeName = type.Name.Replace("Proxy", string.Empty);
+
+                var entityEvent = x.Entity switch
+                {
+                    IEntityIdentity<int> @int => new EntityEvent(@int.Id, typeName, state),
+                    IEntityIdentity<long> @long => new EntityEvent(@long.Id, typeName, state),
+                    IEntityIdentity<string> @string => new EntityEvent(@string.Id, typeName, state),
+                    IEntityIdentity<Guid> guid => new EntityEvent(guid.Id, typeName, state),
+                    IEntityIdentity<dynamic> dynamic => new EntityEvent(dynamic.Id, typeName, state),
+                    _ => null
+                };
+
+                if (entityEvent == null)
+                {
+                    return null;
+                }
+
+                if (x.State == EntityState.Deleted)
+                {
+                    return entityEvent;
+                }
+
+                entityEvent.Data = this.GetEntityEventData(x.Entity);
+
+                return entityEvent;
+            })
+            .Where(x => x != null)
+            .ToList();
+    }
+    private IDictionary<string, object> GetEntityEventData(object model)
+    {
+        if (model == null)
+            throw new ArgumentNullException(nameof(model));
+
+        var type = model.GetType();
+
+        var propertyNames = new List<string>();
+        while (type is { IsAbstract: false } && type.IsTypeOf(typeof(IEntity)))
+        {
+            var attribute = (PublishAttribute)type 
+                .GetCustomAttributes(typeof(PublishAttribute))
+                .FirstOrDefault();
+
+            if (attribute == null)
+            {
+                type = type.BaseType;
+                continue;
+            }
+
+            propertyNames
+                .AddRange(attribute.PropertyNames);
+
+            type = type.BaseType;
+        }
+
+        var result = new Dictionary<string, object>();
+        foreach (var propertyExpression in propertyNames.Distinct())
+        {
+            var indexOfDot = propertyExpression
+                .IndexOf('.');
+
+            var name = indexOfDot > -1
+                ? propertyExpression[..indexOfDot]
+                : propertyExpression;
+
+            var property = model
+                .GetType()
+                .GetProperty(name);
+
+            if (property == null)
+            {
+                throw new NullReferenceException(nameof(property));
+            }
+
+            var value = property
+                .GetValue(model);
+
+            var expression = propertyExpression;
+            while (true)
+            {
+                indexOfDot = expression
+                    .IndexOf('.');
+
+                if (indexOfDot > -1)
+                {
+                    expression = expression[(indexOfDot + 1)..];
+                    value = this.GetNestedPropertyValue(property, expression, value);
+
+                    continue;
+                }
+
+                result
+                    .Add(expression, value);
+
+                break;
+            }
+        }
+
+        return result;
+    }
+    private object GetNestedPropertyValue(PropertyInfo property, string propertyName, object parent = null)
+    {
+        if (property == null)
+            throw new ArgumentNullException(nameof(property));
+
+        if (propertyName == null)
+            throw new ArgumentNullException(nameof(propertyName));
+
+        if (parent == null)
+        {
+            return null;
+        }
+
+        var propertyNested = property.PropertyType
+            .GetProperty(propertyName);
+
+        if (propertyNested == null)
+        {
+            throw new NullReferenceException(nameof(propertyNested));
+        }
+
+        return propertyNested
+            .GetValue(parent);
+    }
+    private async Task ExecuteEntityEvents()
+    {
+        try
+        {
+            foreach (var @event in this.pendingEvents)
+            {
+                await this.Eventing
+                    .PublishAsync(@event, @event.Type);
+            }
+        }
+        finally
+        {
+            this.pendingEvents = null;
+        }
     }
 }
