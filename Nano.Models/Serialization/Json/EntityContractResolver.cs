@@ -45,7 +45,7 @@ public class EntityContractResolver : DefaultContractResolver
             }
         }
 
-        if (propertyType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(propertyType))
+        if (propertyType != typeof(string) && typeof(IEnumerable).IsTypeOf(propertyType))
         {
             property.ShouldSerialize = instance =>
             {

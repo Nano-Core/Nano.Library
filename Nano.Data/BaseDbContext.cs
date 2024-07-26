@@ -417,7 +417,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                     entry
                         .Property(propertyInfo.Name).OriginalValue = valueTracked;
                 }
-                else if (!propertyInfo.PropertyType.IsAssignableFrom(typeof(IEnumerable)) && !propertyInfo.PropertyType.IsAssignableFrom(typeof(IEntity)))
+                else if (!propertyInfo.PropertyType.IsTypeOf(typeof(IEnumerable)) && !propertyInfo.PropertyType.IsTypeOf(typeof(IEntity)))
                 {
                     var value = propertyInfo
                         .GetValue(entity);
