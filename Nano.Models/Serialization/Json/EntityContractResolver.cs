@@ -32,6 +32,23 @@ public class EntityContractResolver : DefaultContractResolver
             throw new NullReferenceException(nameof(propertyType));
         }
 
+        this.SerializeOnlyNonEmptyEnumerables(member, propertyType, ref property);
+        this.SerializeOnlyIncludedProperties(member, propertyType, ref property);
+
+        return property;
+    }
+
+    private void SerializeOnlyIncludedProperties(MemberInfo member, Type propertyType, ref JsonProperty property)
+    {
+        if (member == null)
+            throw new ArgumentNullException(nameof(member));
+
+        if (propertyType == null)
+            throw new ArgumentNullException(nameof(propertyType));
+
+        if (property == null)
+            throw new ArgumentNullException(nameof(property));
+
         if (propertyType.IsTypeOf(typeof(IEntity)) || (propertyType.IsGenericType && propertyType.GenericTypeArguments[0].IsTypeOf(typeof(IEntity))))
         {
             var includeAnnotation = member
@@ -40,12 +57,21 @@ public class EntityContractResolver : DefaultContractResolver
             if (includeAnnotation == null)
             {
                 property.ShouldSerialize = _ => false;
-
-                return property;
             }
         }
+    }
+    private void SerializeOnlyNonEmptyEnumerables(MemberInfo member, Type propertyType, ref JsonProperty property)
+    {
+        if (member == null) 
+            throw new ArgumentNullException(nameof(member));
+        
+        if (propertyType == null) 
+            throw new ArgumentNullException(nameof(propertyType));
+        
+        if (property == null) 
+            throw new ArgumentNullException(nameof(property));
 
-        if (propertyType != typeof(string) && typeof(IEnumerable).IsTypeOf(propertyType))
+        if (propertyType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(propertyType))
         {
             property.ShouldSerialize = instance =>
             {
@@ -55,7 +81,10 @@ public class EntityContractResolver : DefaultContractResolver
                         .GetType()
                         .GetField(member.Name)?
                         .GetValue(instance) as IEnumerable,
-                    MemberTypes.Property => instance.GetType().GetProperty(member.Name)?.GetValue(instance, null) as IEnumerable,
+                    MemberTypes.Property => instance
+                        .GetType()
+                        .GetProperty(member.Name)?
+                        .GetValue(instance, null) as IEnumerable,
                     _ => null
                 };
 
@@ -64,7 +93,5 @@ public class EntityContractResolver : DefaultContractResolver
                 // ReSharper restore NotDisposedResource
             };
         }
-
-        return property;
     }
 }
