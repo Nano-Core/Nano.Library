@@ -56,8 +56,8 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("create")]
-    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -85,8 +85,8 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("create/get")]
-    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -114,7 +114,7 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("create/Many")]
-    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+    [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]

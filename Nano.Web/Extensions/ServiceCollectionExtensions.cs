@@ -21,7 +21,6 @@ using Microsoft.OpenApi.Models;
 using Nano.App;
 using Nano.Config.Extensions;
 using Nano.Data;
-using Nano.Models.Const;
 using Nano.Models.Extensions;
 using Nano.Models.Helpers;
 using Nano.Models.Serialization.Json.Const;
@@ -38,6 +37,7 @@ using DynamicExpression.Extensions;
 using Microsoft.AspNetCore.Http.Features;
 using Nano.Config;
 using Nano.Models;
+using Nano.Models.Const;
 
 namespace Nano.Web.Extensions;
 
@@ -145,7 +145,6 @@ public static class ServiceCollectionExtensions
             .AddSingleton<HttpRequestOptionsMiddleware>()
             .AddSingleton<HttpRequestIdentifierMiddleware>()
             .AddRouting()
-            .AddContentTypeFormatters()
             .AddQueryModelBinders()
             .Configure<ApiBehaviorOptions>(x =>
             {
@@ -167,6 +166,9 @@ public static class ServiceCollectionExtensions
                 x.ReturnHttpNotAcceptable = true;
                 x.RespectBrowserAcceptHeader = true;
                 x.MaxValidationDepth = 128;
+
+                x.FormatterMappings
+                    .SetMediaTypeMappingForFormat("json", HttpContentType.JSON);
 
                 var routeAttribute = new RouteAttribute(webOptions.Hosting.Root);
                 var routePrefixConvention = new RoutePrefixConvention(routeAttribute);
@@ -546,22 +548,6 @@ public static class ServiceCollectionExtensions
                 x.EnableResponseToLocal = true;
                 x.JsonSerializerType = JsonSerializerType.Microsoft;
             });
-
-        return services;
-    }
-    private static IServiceCollection AddContentTypeFormatters(this IServiceCollection services)
-    {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        services
-            .AddMvc(x =>
-            {
-                x.FormatterMappings.SetMediaTypeMappingForFormat("xml", HttpContentType.XML);
-                x.FormatterMappings.SetMediaTypeMappingForFormat("json", HttpContentType.JSON);
-                x.FormatterMappings.SetMediaTypeMappingForFormat("html", HttpContentType.HTML);
-            })
-            .AddXmlDataContractSerializerFormatters();
 
         return services;
     }

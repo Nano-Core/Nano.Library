@@ -53,7 +53,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpGet]
     [Route("index")]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -97,8 +97,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("index")]
-    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -142,7 +142,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpGet]
     [Route("details/{id}")]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -184,7 +184,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpGet]
     [Route("details/many")]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -226,8 +226,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("details/many")]
-    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -269,7 +269,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpGet]
     [Route("query")]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -313,8 +313,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("query")]
-    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
@@ -358,7 +358,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpGet]
     [Route("query/first")]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
@@ -402,8 +402,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("query/first")]
-    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
@@ -446,7 +446,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpGet]
     [Route("query/count")]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
@@ -473,8 +473,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("query/count")]
-    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]

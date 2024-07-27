@@ -7,13 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Logging;
-using Microsoft.Net.Http.Headers;
 using Nano.Models;
 using Nano.Models.Attributes;
-using Nano.Models.Const;
 using Nano.Models.Exceptions;
 using Nano.Models.Serialization.Json.Const;
-using Nano.Models.Serialization.Xml;
 using Nano.Security.Exceptions;
 using Nano.Web.Extensions.Const;
 using Newtonsoft.Json;
@@ -117,35 +114,7 @@ public class ExceptionHandlingMiddleware : IMiddleware
                 ? LogLevel.Information
                 : LogLevel.Error;
 
-            var acceptHheader = request.Headers[HeaderNames.Accept];
-            var contentTypeHeader = request.Headers[HeaderNames.ContentType];
-            var queryString = request.QueryString.HasValue
-                ? request.QueryString.Value ?? string.Empty
-                : string.Empty;
-
-            var serializerSettings = Globals.GetJsonSerializerSettings();
-
-            var result = acceptHheader.Any()
-                ? acceptHheader.Contains(HttpContentType.JSON)
-                    ? JsonConvert.SerializeObject(error, serializerSettings)
-                    : acceptHheader.Contains(HttpContentType.XML)
-                        ? XmlConvert.SerializeObject(error)
-                        : acceptHheader.Contains(HttpContentType.FORM) || acceptHheader.Contains(HttpContentType.FORM_ENCODED)
-                            ? JsonConvert.SerializeObject(error, serializerSettings)
-                            : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}"
-                : contentTypeHeader.Any()
-                    ? contentTypeHeader.Contains(HttpContentType.JSON)
-                        ? JsonConvert.SerializeObject(error, serializerSettings)
-                        : contentTypeHeader.Contains(HttpContentType.XML)
-                            ? XmlConvert.SerializeObject(error)
-                            : acceptHheader.Contains(HttpContentType.FORM) || acceptHheader.Contains(HttpContentType.FORM_ENCODED)
-                                ? JsonConvert.SerializeObject(error, serializerSettings)
-                                : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}"
-                    : queryString.Contains($"format={HttpContentType.JSON}")
-                        ? JsonConvert.SerializeObject(error, serializerSettings)
-                        : queryString.Contains($"format={HttpContentType.XML}")
-                            ? XmlConvert.SerializeObject(error)
-                            : $"{error.Summary}: {error.Exceptions.FirstOrDefault()}";
+            var result = JsonConvert.SerializeObject(error, Globals.GetJsonSerializerSettings());
 
             await response
                 .WriteAsync(result);

@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Models.Types;
 
+// BUG: REmove types from Nano.
+
 /// <summary>
 /// Percentage.
 /// </summary>

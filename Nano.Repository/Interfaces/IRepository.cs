@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Entities;
+using DynamicExpression.Enums;
 using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Nano.Models.Attributes;
@@ -457,6 +458,62 @@ public interface IRepository : IDisposable
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances, matching the passed parameters.</returns>
     Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, Pagination pagination, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity;
+
+    /// <summary>
+    /// Get Many Async.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <typeparam name="TKey">The order by key type.</typeparam>
+    /// <param name="where">The where clause</param>
+    /// <param name="orderBy">The order by expression.</param>
+    /// <param name="orderingDirection">The <see cref="OrderingDirection"/>.</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The instances, matching the passed parameters.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity;
+
+    /// <summary>
+    /// Get Many Async.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <typeparam name="TKey">The order by key type.</typeparam>
+    /// <param name="where">The where clause</param>
+    /// <param name="orderBy">The order by expression.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="orderingDirection">The <see cref="OrderingDirection"/>.</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The instances, matching the passed parameters.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, int includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity;
+
+    /// <summary>
+    /// Get Many Async.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <typeparam name="TKey">The order by key type.</typeparam>
+    /// <param name="where">The where clause</param>
+    /// <param name="orderBy">The order by expression.</param>
+    /// <param name="pagination">The <see cref="Pagination"/>.</param>
+    /// <param name="orderingDirection">The <see cref="OrderingDirection"/>.</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The instances, matching the passed parameters.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination pagination, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity;
+
+    /// <summary>
+    /// Get Many Async.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntity"/> type.</typeparam>
+    /// <typeparam name="TKey">The order by key type.</typeparam>
+    /// <param name="where">The where clause</param>
+    /// <param name="orderBy">The order by expression.</param>
+    /// <param name="pagination">The <see cref="Pagination"/>.</param>
+    /// <param name="includeDepth">The include depth.</param>
+    /// <param name="orderingDirection">The <see cref="OrderingDirection"/>.</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The instances, matching the passed parameters.</returns>
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination pagination, int includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>

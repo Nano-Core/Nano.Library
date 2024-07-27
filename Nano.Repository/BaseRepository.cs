@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Entities;
+using DynamicExpression.Enums;
 using DynamicExpression.Extensions;
 using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -534,6 +535,82 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             throw new ArgumentNullException(nameof(pagination));
 
         return this.GetManyAsync(where, pagination, ordering, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default) 
+        where TEntity : class, IEntity
+    {
+        if (where == null) 
+            throw new ArgumentNullException(nameof(where));
+        
+        if (orderBy == null) 
+            throw new ArgumentNullException(nameof(orderBy));
+        
+        var includeDepth = this.Context.Options.QueryIncludeDepth;
+
+        return this.GetManyAsync(where, orderBy, includeDepth, orderingDirection, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, int includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+    {
+        if (where == null)
+            throw new ArgumentNullException(nameof(where));
+
+        if (orderBy == null)
+            throw new ArgumentNullException(nameof(orderBy));
+
+        return this.GetManyAsync(where, orderBy, new Pagination(), includeDepth, orderingDirection, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination pagination, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default) 
+        where TEntity : class, IEntity
+    {
+        if (where == null)
+            throw new ArgumentNullException(nameof(where));
+
+        if (orderBy == null)
+            throw new ArgumentNullException(nameof(orderBy));
+
+        if (pagination == null)
+            throw new ArgumentNullException(nameof(pagination));
+
+        var includeDepth = this.Context.Options.QueryIncludeDepth;
+
+        return this.GetManyAsync(where, orderBy, pagination, includeDepth, orderingDirection, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination pagination, int includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+    {
+        if (where == null)
+            throw new ArgumentNullException(nameof(where));
+
+        if (orderBy == null)
+            throw new ArgumentNullException(nameof(orderBy));
+
+        await Task.CompletedTask;
+
+        var entities = this.GetEntitySet<TEntity>()
+            .IncludeAnnotations(includeDepth)
+            .Where(where)
+            .Limit(pagination)
+            .AsEnumerable();
+
+        return orderingDirection switch
+        {
+            OrderingDirection.Asc => entities
+                .OrderBy(orderBy)
+                .ToArray(),
+            OrderingDirection.Desc => entities
+                .OrderBy(orderBy)
+                .ToArray(),
+            _ => entities
+        };
     }
 
     /// <inheritdoc />

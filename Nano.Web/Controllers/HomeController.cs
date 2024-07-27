@@ -71,7 +71,7 @@ public class HomeController : BaseController
     [HttpGet]
     [Route("user")]
     [AllowAnonymous]
-    [Produces(HttpContentType.JSON, HttpContentType.XML)]
+    [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<UserInformation>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
@@ -110,7 +110,7 @@ public class HomeController : BaseController
     [HttpPost]
     [Route("language")]
     [AllowAnonymous]
-    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+    [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual IActionResult SetLanguage([FromQuery][Required]string code, CancellationToken cancellationToken = default)
@@ -139,7 +139,7 @@ public class HomeController : BaseController
     [HttpPost]
     [Route("timezone")]
     [AllowAnonymous]
-    [Consumes(HttpContentType.JSON, HttpContentType.XML)]
+    [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual IActionResult SetTimeZone([FromQuery][Required]string name, CancellationToken cancellationToken = default)
