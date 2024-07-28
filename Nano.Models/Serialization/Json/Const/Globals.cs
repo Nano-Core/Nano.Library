@@ -12,7 +12,7 @@ public static class Globals
     /// <summary>
     /// Get Json Serializer Settings.
     /// </summary>
-    public static JsonSerializerSettings GetJsonSerializerSettings()
+    public static JsonSerializerSettings GetMVcJsonSerializerSettings()
     {
         var serializerSettings = new JsonSerializerSettings
         {
@@ -21,7 +21,28 @@ public static class Globals
             NullValueHandling = NullValueHandling.Ignore,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             PreserveReferencesHandling = PreserveReferencesHandling.None,
-            ContractResolver = new EntityContractResolver()
+            ContractResolver = new MvcEntityContractResolver()
+        };
+
+        serializerSettings.Converters
+            .Add(new StringEnumConverter());
+
+        return serializerSettings;
+    }
+
+    /// <summary>
+    /// Get Json Serializer Settings.
+    /// </summary>
+    public static JsonSerializerSettings GetDefaultJsonSerializerSettings()
+    {
+        var serializerSettings = new JsonSerializerSettings
+        {
+            MaxDepth = 128,
+            Culture = CultureInfo.CurrentCulture,
+            NullValueHandling = NullValueHandling.Ignore,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            PreserveReferencesHandling = PreserveReferencesHandling.None,
+            ContractResolver = new DefaultEntityContractResolver()
         };
 
         serializerSettings.Converters

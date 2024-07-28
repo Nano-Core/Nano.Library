@@ -49,7 +49,7 @@ public class JsonFormModelBinder : IModelBinder
         try
         {
             var deserialized = JsonConvert
-                .DeserializeObject(serialized, bindingContext.ModelType, Globals.GetJsonSerializerSettings());
+                .DeserializeObject(serialized, bindingContext.ModelType, Globals.GetDefaultJsonSerializerSettings());
 
             if (deserialized == null)
             {
@@ -59,7 +59,7 @@ public class JsonFormModelBinder : IModelBinder
                 return;
             }
 
-            var validationResultProps = TypeDescriptor
+            var validationResultProperties = TypeDescriptor
                 .GetProperties(deserialized)
                 .Cast<PropertyDescriptor>()
                 .SelectMany(property => property.Attributes
@@ -84,7 +84,7 @@ public class JsonFormModelBinder : IModelBinder
                 });
 
             var errors = validationResultFields
-                .Concat(validationResultProps);
+                .Concat(validationResultProperties);
 
             foreach (var validationResultItem in errors)
             {

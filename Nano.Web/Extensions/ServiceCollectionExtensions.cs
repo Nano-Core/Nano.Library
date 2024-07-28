@@ -198,7 +198,7 @@ public static class ServiceCollectionExtensions
             {
                 x.AllowInputFormatterExceptionMessages = true;
 
-                var serializerSettings = Globals.GetJsonSerializerSettings();
+                var serializerSettings = Globals.GetMVcJsonSerializerSettings();
 
                 x.SerializerSettings.Culture = CultureInfo.CurrentCulture;
                 x.SerializerSettings.NullValueHandling = serializerSettings.NullValueHandling;

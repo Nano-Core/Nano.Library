@@ -346,7 +346,7 @@ public abstract class BaseApi : IDisposable
             var body = request.GetBody();
             var content = body == null
                 ? string.Empty
-                : JsonConvert.SerializeObject(body, Globals.GetJsonSerializerSettings());
+                : JsonConvert.SerializeObject(body, Globals.GetDefaultJsonSerializerSettings());
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -366,7 +366,7 @@ public abstract class BaseApi : IDisposable
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
             var body = request.GetBody();
-            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, Globals.GetJsonSerializerSettings());
+            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, Globals.GetDefaultJsonSerializerSettings());
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -387,7 +387,7 @@ public abstract class BaseApi : IDisposable
             var body = request.GetBody();
             var content = body == null
                 ? string.Empty
-                : JsonConvert.SerializeObject(body, Globals.GetJsonSerializerSettings());
+                : JsonConvert.SerializeObject(body, Globals.GetDefaultJsonSerializerSettings());
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -409,7 +409,7 @@ public abstract class BaseApi : IDisposable
             var body = request.GetBody();
             var content = body == null
                 ? string.Empty
-                : JsonConvert.SerializeObject(body, Globals.GetJsonSerializerSettings());
+                : JsonConvert.SerializeObject(body, Globals.GetDefaultJsonSerializerSettings());
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -479,7 +479,7 @@ public abstract class BaseApi : IDisposable
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
             var body = request.GetBody();
-            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, Globals.GetJsonSerializerSettings());
+            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, Globals.GetDefaultJsonSerializerSettings());
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -499,7 +499,7 @@ public abstract class BaseApi : IDisposable
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
             var body = request.GetBody();
-            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, Globals.GetJsonSerializerSettings());
+            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, Globals.GetDefaultJsonSerializerSettings());
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -713,7 +713,7 @@ public abstract class BaseApi : IDisposable
             return null;
         }
 
-        return JsonConvert.DeserializeObject<TResponse>(content, Globals.GetJsonSerializerSettings());
+        return JsonConvert.DeserializeObject<TResponse>(content, Globals.GetDefaultJsonSerializerSettings());
     }
     private void SetAuthorizationHeader(string token)
     {
@@ -736,7 +736,7 @@ public abstract class BaseApi : IDisposable
 
         try
         {
-            var error = JsonConvert.DeserializeObject<Error>(content, Globals.GetJsonSerializerSettings());
+            var error = JsonConvert.DeserializeObject<Error>(content, Globals.GetDefaultJsonSerializerSettings());
 
             if (error == null)
             {
@@ -773,7 +773,7 @@ public abstract class BaseApi : IDisposable
 
         try
         {
-            var error = JsonConvert.DeserializeObject<Error>(content, Globals.GetJsonSerializerSettings());
+            var error = JsonConvert.DeserializeObject<Error>(content, Globals.GetDefaultJsonSerializerSettings());
 
             if (error == null)
             {

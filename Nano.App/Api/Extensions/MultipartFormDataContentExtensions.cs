@@ -249,7 +249,7 @@ internal static class MultipartFormDataContentExtensions
             .IsSimple();
 
         var content = !isSimple
-            ? JsonConvert.SerializeObject(value, Globals.GetJsonSerializerSettings())
+            ? JsonConvert.SerializeObject(value, Globals.GetDefaultJsonSerializerSettings())
             : value.ToString() ?? string.Empty;
 
         formContent

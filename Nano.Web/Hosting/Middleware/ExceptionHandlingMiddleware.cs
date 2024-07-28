@@ -114,7 +114,7 @@ public class ExceptionHandlingMiddleware : IMiddleware
                 ? LogLevel.Information
                 : LogLevel.Error;
 
-            var result = JsonConvert.SerializeObject(error, Globals.GetJsonSerializerSettings());
+            var result = JsonConvert.SerializeObject(error, Globals.GetDefaultJsonSerializerSettings());
 
             await response
                 .WriteAsync(result);
