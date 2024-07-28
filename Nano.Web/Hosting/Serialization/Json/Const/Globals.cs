@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Nano.Models.Serialization.Json.Const;
+namespace Nano.Web.Hosting.Serialization.Json.Const;
 
 /// <summary>
 /// Globals.
@@ -12,7 +12,7 @@ public static class Globals
     /// <summary>
     /// Get Json Serializer Settings.
     /// </summary>
-    public static JsonSerializerSettings GetDefaultJsonSerializerSettings()
+    internal static JsonSerializerSettings GetMVcJsonSerializerSettings()
     {
         var serializerSettings = new JsonSerializerSettings
         {
@@ -21,7 +21,7 @@ public static class Globals
             NullValueHandling = NullValueHandling.Ignore,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             PreserveReferencesHandling = PreserveReferencesHandling.None,
-            ContractResolver = new DefaultEntityContractResolver()
+            ContractResolver = new MvcEntityContractResolver()
         };
 
         serializerSettings.Converters

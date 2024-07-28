@@ -3,10 +3,11 @@ using System.Reflection;
 using Nano.Models.Attributes;
 using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
+using Nano.Models.Serialization.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Nano.Models.Serialization.Json;
+namespace Nano.Web.Hosting.Serialization.Json;
 
 /// <inheritdoc />
 public class MvcEntityContractResolver : BaseEntityContractResolver

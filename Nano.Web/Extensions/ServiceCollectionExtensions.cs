@@ -23,7 +23,6 @@ using Nano.Config.Extensions;
 using Nano.Data;
 using Nano.Models.Extensions;
 using Nano.Models.Helpers;
-using Nano.Models.Serialization.Json.Const;
 using Nano.Repository.Extensions;
 using Nano.Security;
 using Nano.Web.Controllers;
@@ -38,6 +37,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Nano.Config;
 using Nano.Models;
 using Nano.Models.Const;
+using Globals = Nano.Web.Hosting.Serialization.Json.Const.Globals;
 
 namespace Nano.Web.Extensions;
 
