@@ -546,7 +546,7 @@ public static class ServiceCollectionExtensions
                 x.Id = appOptions.DefaultTimeZone;
                 x.EnableRequestToUtc = true;
                 x.EnableResponseToLocal = true;
-                x.JsonSerializerType = JsonSerializerType.Microsoft;
+                x.JsonSerializerType = JsonSerializerType.Newtonsoft;
             });
 
         return services;
