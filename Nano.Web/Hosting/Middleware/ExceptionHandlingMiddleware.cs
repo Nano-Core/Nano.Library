@@ -101,7 +101,7 @@ public class ExceptionHandlingMiddleware : IMiddleware
                 .GetCustomAttributes<UxExceptionAttribute>(true)
                 .FirstOrDefault(x => exception.Message
                     .Contains(x.Properties
-                        .Aggregate($"UX_{type.Name}", (current, y) => current + $"_{y}")));
+                        .Aggregate(string.Empty, (current, y) => current + $"_{y}")));
 
             var error = uxExceptionAttribute == null
                 ? new Error(ex)
