@@ -37,7 +37,8 @@ using Microsoft.AspNetCore.Http.Features;
 using Nano.Config;
 using Nano.Models;
 using Nano.Models.Const;
-using Globals = Nano.Web.Hosting.Serialization.Json.Const.Globals;
+using Nano.Web.Hosting.ModelValidators;
+using Nano.Web.Hosting.Serialization.Json.Const;
 
 namespace Nano.Web.Extensions;
 
@@ -193,6 +194,9 @@ public static class ServiceCollectionExtensions
                     x.Filters
                         .Add<RequireHttpsAttribute>();
                 }
+
+                x.ModelValidatorProviders
+                    .Insert(0, new GuidValidatorProvider());
             })
             .AddNewtonsoftJson(x =>
             {
