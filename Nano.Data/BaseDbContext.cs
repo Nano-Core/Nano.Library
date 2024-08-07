@@ -62,9 +62,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     {
         this.Options = dataOptions ?? throw new ArgumentNullException(nameof(dataOptions));
 
-        this.SavingChanges += (_, _) => this.pendingEvents = this.GetPendingEntityEvents();
+        this.SavingChanges += (_, _) => this.SetPendingEntityEvents();
         this.SavingChanges += (_, _) => this.SaveSoftDeletion();
         this.SavedChanges += async (_, _) => await this.ExecuteEntityEvents();
+
         // ReSharper disable VirtualMemberCallInConstructor
         this.ChangeTracker.LazyLoadingEnabled = this.Options.UseLazyLoading;
         // ReSharper restore VirtualMemberCallInConstructor
@@ -462,9 +463,9 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                 x.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
             });
     }
-    private List<EntityEvent> GetPendingEntityEvents()
+    private void SetPendingEntityEvents()
     {
-        return this.ChangeTracker
+        this.pendingEvents = this.ChangeTracker
             .Entries<IEntity>()
             .Where(x =>
                 x.Entity.GetType().IsTypeOf(typeof(IEntityIdentity<>)) &&
