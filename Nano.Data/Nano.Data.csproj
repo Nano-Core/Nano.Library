@@ -45,6 +45,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Nano.Config\Nano.Config.csproj" />
+		<ProjectReference Include="..\Nano.Eventing\Nano.Eventing.csproj" />
 		<ProjectReference Include="..\Nano.Models\Nano.Models.csproj" />
 		<ProjectReference Include="..\Nano.Security\Nano.Security.csproj" />
 	</ItemGroup>
