@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing;
-using Nano.Eventing.Interfaces;
 using Nano.Models;
 using Nano.Models.Const;
+using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security.Const;
@@ -54,7 +54,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [HttpGet]
     [Route("index")]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -99,7 +99,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [Route("index")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -143,7 +143,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [HttpGet]
     [Route("details/{id}")]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -185,7 +185,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [HttpGet]
     [Route("details/many")]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -228,7 +228,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [Route("details/many")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -270,7 +270,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [HttpGet]
     [Route("query")]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -317,7 +317,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryPostAsync([FromBody][Required]IQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
@@ -361,7 +361,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryFirstAsync([FromQuery][Required]IQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
@@ -406,7 +406,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryFirstPostAsync([FromBody][Required]IQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)

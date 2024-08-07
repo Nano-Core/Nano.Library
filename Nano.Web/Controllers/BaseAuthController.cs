@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
@@ -523,7 +524,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [Route("external/schemes")]
     [AllowAnonymous]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(LogInProvider), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<LogInProvider>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]

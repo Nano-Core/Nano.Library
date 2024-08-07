@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Nano.Eventing.Attributes;
+namespace Nano.Models.Attributes;
 
 /// <summary>
 /// Publish Attribute.

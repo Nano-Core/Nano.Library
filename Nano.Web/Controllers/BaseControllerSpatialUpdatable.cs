@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing;
-using Nano.Eventing.Interfaces;
 using Nano.Models;
 using Nano.Models.Const;
 using Nano.Models.Criterias.Interfaces;
+using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security.Const;
@@ -54,7 +54,7 @@ public abstract class BaseControllerSpatialUpdatable<TRepository, TEntity, TIden
     [Route("edit")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -90,7 +90,7 @@ public abstract class BaseControllerSpatialUpdatable<TRepository, TEntity, TIden
     [Route("edit/get")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object), (int)HttpStatusCode.Created)]
+    [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]

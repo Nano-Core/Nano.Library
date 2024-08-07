@@ -7,6 +7,7 @@ using EasyNetQ.Topology;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
+using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Extensions;
 
 namespace Nano.Eventing.Providers.EasyNetQ;

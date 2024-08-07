@@ -4,13 +4,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing;
-using Nano.Eventing.Interfaces;
+using Nano.Models.Eventing.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security.Const;
 using Nano.Security.Extensions;
 
 namespace Nano.Web.Controllers;
-// TODO: Swagger: Triple-slash Xml documentation not working for methods with generic types: https://github.com/domaindrivendev/Swashbuckle.WebApi/issues/749
 
 /// <summary>
 /// Base controller.

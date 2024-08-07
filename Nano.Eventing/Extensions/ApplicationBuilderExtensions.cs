@@ -4,9 +4,11 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.Eventing.Attributes;
 using Nano.Eventing.Handlers;
 using Nano.Eventing.Interfaces;
+using Nano.Models;
+using Nano.Models.Attributes;
+using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Extensions;
 using Nano.Models.Helpers;
 

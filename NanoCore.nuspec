@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>8.1.10</version>
+		<version>8.1.11</version>
 		<title>Nano Core</title>
 		<summary>Rapidly built and deploy rich .NET 8.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
@@ -16,6 +16,10 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
+			- Removed try/catch in entity event handlers, to allow retries.
+			- Fallback to update when adding in entity event handlers. Just in case the entity already exists.
+			- Fixed Minor Swagger issues.
+			- Fixed duplicate phone not being caught by exception handler.
 			- Added custom Guid model-state validator, to return bad request when Required Guid's are Guid.Empty.
 			- Removed type name for checking UX exceptions. Conflicted when using ToTable in mappings, so the table name and type name was not matching.
 			- Fixed Request TimeZone, using Microsoft serialization. Changed to Newtonsoft.
@@ -24,7 +28,6 @@
 			- Added additional IRepository methods, for complex order by expressions.
 			- Added Required annotation to Id property of BaseEntityIdentity.
 			- Property names of Publish annotation will now be concated when defined in a inheritance hierarchy.
-			- Moved entity events to repository, to allow bypassing the events if having bi-directional publish/subscribe.
 			- Changed serialization to newtonsoft for Swagger Gen.
 			- Removed Edit Query from api-client. No endpoint for that.
 			- Updated response serializer to only include IEntity references, when they are specifically included with include annotation.

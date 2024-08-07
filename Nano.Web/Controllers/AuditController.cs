@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Nano.Data.Models;
 using Nano.Data.Models.Criterias;
-using Nano.Eventing.Interfaces;
+using Nano.Models.Eventing.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security.Const;
 

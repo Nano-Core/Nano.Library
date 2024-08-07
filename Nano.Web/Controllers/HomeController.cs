@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Net;
@@ -72,7 +71,7 @@ public class HomeController : BaseController
     [Route("user")]
     [AllowAnonymous]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<UserInformation>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(UserInformation), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual IActionResult GetUser()

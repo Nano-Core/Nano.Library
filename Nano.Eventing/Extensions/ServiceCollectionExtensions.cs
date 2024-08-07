@@ -6,6 +6,8 @@ using Nano.Config.Extensions;
 using Nano.Eventing.Handlers;
 using Nano.Eventing.Interfaces;
 using Nano.Eventing.Providers.EasyNetQ;
+using Nano.Models;
+using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Extensions;
 using Nano.Models.Helpers;
 

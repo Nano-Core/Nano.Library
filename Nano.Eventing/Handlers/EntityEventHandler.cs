@@ -4,7 +4,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Nano.Data;
 using Nano.Eventing.Interfaces;
+using Nano.Models;
 using Nano.Models.Extensions;
 using Nano.Models.Helpers;
 using Nano.Models.Interfaces;
@@ -24,14 +26,14 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
     /// <summary>
     /// Context.
     /// </summary>
-    protected virtual DbContext Context { get; }
+    protected virtual DefaultDbContext Context { get; }
 
     /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="logger">The <see cref="ILogger"/>.</param>
     /// <param name="context">The <see cref="DbContext"/>.</param>
-    public EntityEventHandler(ILogger logger, DbContext context)
+    public EntityEventHandler(ILogger logger, DefaultDbContext context)
     {
         this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this.Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -43,93 +45,102 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
         if (@event == null)
             throw new ArgumentNullException(nameof(@event));
 
-        try
+        this.Context.IsEntityEventEnabled = false;
+
+        var type = TypesHelper.GetAllTypes()
+            .Where(x => x.IsTypeOf(typeof(IEntityIdentity<>)))
+            .First(x => x.Name == @event.Type);
+
+        var isGuid = Guid.TryParse(@event.Id.ToString(), out var guid);
+        var id = isGuid ? guid : @event.Id;
+
+        var property = type
+            .GetProperty(nameof(IEntityIdentity<dynamic>.Id));
+
+        if (property == null)
         {
-            var type = TypesHelper.GetAllTypes()
-                .Where(x => x.IsTypeOf(typeof(IEntityIdentity<>)))
-                .First(x => x.Name == @event.Type);
+            throw new NullReferenceException(nameof(property));
+        }
 
-            var isGuid = Guid.TryParse(@event.Id.ToString(), out var guid);
-            var id = isGuid ? guid : @event.Id;
-
-            var property = type
-                .GetProperty(nameof(IEntityIdentity<dynamic>.Id));
-
-            if (property == null)
+        switch (@event.State)
+        {
+            case "Added":
             {
-                throw new NullReferenceException(nameof(property));
-            }
+                var existingEntity = await this.Context
+                    .FindAsync(type, id);
 
-            switch (@event.State)
-            {
-                case "Added":
+                if (existingEntity != null)
                 {
-                    var entityAdded = Activator.CreateInstance(type);
-
-                    if (entityAdded == null)
-                    {
-                        throw new NullReferenceException(nameof(entityAdded));
-                    }
-
-                    property
-                        .SetValue(entityAdded, id);
-
-                    this.SetEntityEventProperties(@event, type, entityAdded);
-
-                    await this.Context
-                        .AddAsync(entityAdded);
-
-                    await this.Context
-                        .SaveChangesAsync();
-
-                    break;
-                }
-                case "Modified":
-                {
-                    var entityModified = await this.Context
-                        .FindAsync(type, id);
-
-                    if (entityModified == null)
-                    {
-                        throw new NullReferenceException(nameof(entityModified));
-                    }
-
-                    this.SetEntityEventProperties(@event, type, entityModified);
+                    this.SetEntityEventProperties(@event, type, existingEntity);
 
                     this.Context
-                        .Update(entityModified);
-
-                    await this.Context
-                        .SaveChangesAsync();
+                        .Update(existingEntity);
 
                     break;
                 }
 
-                case "Deleted":
+                var entityAdded = Activator.CreateInstance(type);
+
+                if (entityAdded == null)
                 {
-                    var entityDeleted = await this.Context
-                        .FindAsync(type, id);
+                    throw new NullReferenceException(nameof(entityAdded));
+                }
 
-                    if (entityDeleted == null)
-                    {
-                        break;
-                    }
+                property
+                    .SetValue(entityAdded, id);
 
-                    this.Context
-                        .Remove(entityDeleted);
+                this.SetEntityEventProperties(@event, type, entityAdded);
 
-                    await this.Context
-                        .SaveChangesAsync();
+                await this.Context
+                    .AddAsync(entityAdded);
 
+                await this.Context
+                    .SaveChangesAsync();
+
+                break;
+            }
+            case "Modified":
+            {
+                var entityModified = await this.Context
+                    .FindAsync(type, id);
+
+                if (entityModified == null)
+                {
+                    throw new NullReferenceException(nameof(entityModified));
+                }
+
+                this.SetEntityEventProperties(@event, type, entityModified);
+
+                this.Context
+                    .Update(entityModified);
+
+                await this.Context
+                    .SaveChangesAsync();
+
+                break;
+            }
+
+            case "Deleted":
+            {
+                var entityDeleted = await this.Context
+                    .FindAsync(type, id);
+
+                if (entityDeleted == null)
+                {
                     break;
                 }
+
+                this.Context
+                    .Remove(entityDeleted);
+
+                await this.Context
+                    .SaveChangesAsync();
+
+                break;
             }
         }
-        catch (Exception ex)
-        {
-            this.Logger
-                .LogError(ex, ex.Message);
-        }
+
+        this.Context.IsEntityEventEnabled = true;
     }
 
     private void SetEntityEventProperties(EntityEvent @event, IReflect type, object entity)

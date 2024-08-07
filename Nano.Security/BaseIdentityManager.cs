@@ -792,9 +792,9 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         }
         catch (DbUpdateException ex)
         {
-            var message = "IX___EFAuthUser_PhoneNumber";
+            const string MESSAGE = "IX___EFAuthUser_PhoneNumber";
 
-            if (ex.Message.Contains(message) || ex.InnerException != null && ex.InnerException.Message.Contains(message))
+            if (ex.Message.Contains(MESSAGE) || ex.InnerException != null && ex.InnerException.Message.Contains(MESSAGE))
             {
                 this.ThrowIdentityExceptions(new[] { new IdentityErrorDescriber().DuplicatePhoneNumber(signUp.PhoneNumber) });
             }

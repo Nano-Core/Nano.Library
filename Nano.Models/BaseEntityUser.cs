@@ -19,6 +19,6 @@ public abstract class BaseEntityUser<TIdentity> : BaseEntityIdentity<TIdentity>,
 
     /// <inheritdoc />
     [Include]
-    [SwaggerExclude]
+    [SwaggerResponseOnly]
     public virtual IdentityUser<TIdentity> IdentityUser { get; set; }
 }

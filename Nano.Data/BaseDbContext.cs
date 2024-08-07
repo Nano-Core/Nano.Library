@@ -18,9 +18,9 @@ using Nano.Data.Const;
 using Nano.Data.Models;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
-using Nano.Eventing;
-using Nano.Eventing.Attributes;
-using Nano.Eventing.Interfaces;
+using Nano.Models;
+using Nano.Models.Attributes;
+using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Security;
@@ -38,7 +38,7 @@ namespace Nano.Data;
 public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserTokenExpiry<TIdentity>>, IDataProtectionKeyContext
     where TIdentity : IEquatable<TIdentity>
 {
-    private IList<EntityEvent> pendingEvents;
+    private IList<EntityEvent> pendingEvents = new List<EntityEvent>();
 
     /// <summary>
     /// Options.
@@ -49,6 +49,11 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     /// Auto Save.
     /// </summary>
     public virtual bool AutoSave => this.Options.UseAutoSave;
+
+    /// <summary>
+    /// Auto Save.
+    /// </summary>
+    public virtual bool IsEntityEventEnabled { get; set; } = true;
 
     /// <summary>
     /// Data Protection Keys.
@@ -465,6 +470,11 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     }
     private void SetPendingEntityEvents()
     {
+        if (!this.IsEntityEventEnabled)
+        {
+            return;
+        }
+
         this.pendingEvents = this.ChangeTracker
             .Entries<IEntity>()
             .Where(x =>

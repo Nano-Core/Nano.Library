@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing;
-using Nano.Eventing.Interfaces;
 using Nano.Models;
 using Nano.Models.Const;
 using Nano.Models.Criterias.Interfaces;
+using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security.Const;
@@ -55,7 +55,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [Route("intersects")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -98,7 +98,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [Route("covers")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -141,7 +141,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [Route("covered-by")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -184,7 +184,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [Route("overlaps")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -227,7 +227,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [Route("touches")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -270,7 +270,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [Route("crosses")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -313,7 +313,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [Route("disjoints")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -357,7 +357,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [Route("within")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(object[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]

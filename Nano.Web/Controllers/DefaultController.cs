@@ -2,8 +2,8 @@ using System;
 using DynamicExpression.Interfaces;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing;
-using Nano.Eventing.Interfaces;
 using Nano.Models;
+using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 

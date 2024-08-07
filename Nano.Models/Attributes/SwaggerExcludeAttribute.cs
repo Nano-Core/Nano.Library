@@ -3,7 +3,7 @@ using System;
 namespace Nano.Models.Attributes;
 
 /// <summary>
-/// Swagger Exclude Attribute.
+/// Swagger Response Only Attribute.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
-public class SwaggerExcludeAttribute : Attribute;
+public class SwaggerResponseOnlyAttribute : Attribute;

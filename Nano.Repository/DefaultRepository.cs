@@ -1,6 +1,6 @@
 using System;
 using Nano.Data;
-using Nano.Eventing.Interfaces;
+using Nano.Models.Eventing.Interfaces;
 
 namespace Nano.Repository;
 

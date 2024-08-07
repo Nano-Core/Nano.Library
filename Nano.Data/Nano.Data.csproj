@@ -4,7 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ApplicationIcon>..\icon.ico</ApplicationIcon>
 		<Configurations>Debug;Release</Configurations>
-		<Version>1.0.0.0</Version>
+		<Version>8.0.0.0</Version>
 		<LangVersion>latest</LangVersion>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningsAsErrors></WarningsAsErrors>
@@ -44,8 +44,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Nano.Config\Nano.Config.csproj" />
-		<ProjectReference Include="..\Nano.Eventing\Nano.Eventing.csproj" />
 		<ProjectReference Include="..\Nano.Models\Nano.Models.csproj" />
 		<ProjectReference Include="..\Nano.Security\Nano.Security.csproj" />
 	</ItemGroup>

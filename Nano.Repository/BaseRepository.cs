@@ -11,7 +11,7 @@ using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Nano.Data;
 using Nano.Data.Extensions;
-using Nano.Eventing.Interfaces;
+using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 

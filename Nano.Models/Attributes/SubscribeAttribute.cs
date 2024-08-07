@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.Eventing.Attributes;
+namespace Nano.Models.Attributes;
 
 /// <summary>
 /// Subscribe Attribute.

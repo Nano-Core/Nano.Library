@@ -463,7 +463,8 @@ public static class ServiceCollectionExtensions
                     x.OrderActionsBy(y => y.RelativePath);
 
                     x.SchemaFilter<EnumSchemaFilter>();
-                    x.SchemaFilter<SwaggerExcludeFilter>();
+                    x.SchemaFilter<SwaggerResponseOnlySchemaFilter>();
+                    x.OperationFilter<SwaggerResponseOnlyOperationFilter>();
                     x.DocumentFilter<RemoveVersionsRoutesFilter>();
 
                     var securityScheme = new OpenApiSecurityScheme
