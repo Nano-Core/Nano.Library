@@ -6,7 +6,7 @@ namespace Nano.Models.Attributes;
 /// <summary>
 /// Guid Not Empty Attribute.
 /// </summary>
-public class GuidNotEmpty2Attribute : ValidationAttribute
+public class GuidNotEmptyAttribute : ValidationAttribute
 {
     /// <inheritdoc />
     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
