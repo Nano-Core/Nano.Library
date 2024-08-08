@@ -38,7 +38,7 @@ namespace Nano.Data;
 public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserTokenExpiry<TIdentity>>, IDataProtectionKeyContext
     where TIdentity : IEquatable<TIdentity>
 {
-    private IList<EntityEvent> pendingEvents;
+    private IList<EntityEvent> pendingEvents = new List<EntityEvent>();
 
     /// <summary>
     /// Options.
@@ -645,7 +645,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         }
         finally
         {
-            this.pendingEvents = null;
+            this.pendingEvents = new List<EntityEvent>();
         }
     }
 
