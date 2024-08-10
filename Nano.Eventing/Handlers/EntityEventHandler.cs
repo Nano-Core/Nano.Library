@@ -237,6 +237,13 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                 dataProperty
                     .SetValue(entity, decimalValue);
             }
+            else if (dataProperty.PropertyType.IsEnum)
+            {
+                var enumValue = Enum.Parse(dataProperty.PropertyType, value);
+
+                dataProperty
+                    .SetValue(entity, enumValue);
+            }
             else
             {
                 dataProperty
