@@ -63,11 +63,6 @@ public class Error
             this.Summary = "Bad Request";
         }
 
-        this.Exceptions =
-        [
-            exception.Message
-        ];
-
         switch (exception)
         {
             case AggregateException aggregateException:
@@ -103,9 +98,21 @@ public class Error
             }
 
             case TranslationException:
+                this.Exceptions =
+                [
+                    exception.Message
+                ];
                 this.IsTranslated = true;
 
                 break;
+
+            default:
+                this.Exceptions =
+                [
+                    $"{exception.GetType().Name} - {exception.Message}"
+                ];
+
+                break;  
         }
     }
 
