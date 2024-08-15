@@ -148,7 +148,7 @@ public static class HttpContentType
     /// <summary>
     /// Octet ("application/octet-stream").
     /// </summary>
-    public const string OCTET_STREM = "application/octet-stream";
+    public const string OCTET_STREAM = "application/octet-stream";
 
     /// <summary>
     /// Excel ("application/vnd.ms-excel").
