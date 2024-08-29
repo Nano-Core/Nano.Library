@@ -117,6 +117,11 @@ public class WebOptions
         public virtual CertificateOptions Certificate { get; set; } = new();
 
         /// <summary>
+        /// Virus Scan.
+        /// </summary>
+        public virtual VirusScanOptions VirusScan { get; set; } = new();
+
+        /// <summary>
         /// Health-Check.
         /// </summary>
         public virtual HealthCheckOptions HealthCheck { get; set; } = new();
@@ -1043,6 +1048,32 @@ public class WebOptions
             /// Password
             /// </summary>
             public virtual string Password { get; set; } = null;
+        }
+
+        /// <summary>
+        /// Virus Scan Options.
+        /// </summary>
+        public class VirusScanOptions
+        {
+            /// <summary>
+            /// Is Enabled.
+            /// </summary>
+            public virtual bool IsEnabled { get; set; } = false;
+
+            /// <summary>
+            /// Host.
+            /// </summary>
+            public virtual string Host { get; set; } = "clamav";
+
+            /// <summary>
+            /// Port.
+            /// </summary>
+            public virtual int Port { get; set; } = 3310;
+
+            /// <summary>
+            /// Use Health Check.
+            /// </summary>
+            public virtual bool UseHealthCheck { get; set; } = true;
         }
 
         /// <summary>

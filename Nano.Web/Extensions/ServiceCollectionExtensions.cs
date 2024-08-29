@@ -38,6 +38,7 @@ using Nano.Config;
 using Nano.Models;
 using Nano.Models.Const;
 using Nano.Web.Hosting.Serialization.Json.Const;
+using Vivet.AspNetCore.RequestVirusScan.Extensions;
 
 namespace Nano.Web.Extensions;
 
@@ -130,6 +131,7 @@ public static class ServiceCollectionExtensions
             .AddDocumentation(appOptions, webOptions)
             .AddLocalizations()
             .AddTimeZone(appOptions)
+            .AddVirusScan(webOptions)
             .AddCompression()
             .Configure<ForwardedHeadersOptions>(x =>
             {
@@ -549,6 +551,29 @@ public static class ServiceCollectionExtensions
                 x.EnableResponseToLocal = true;
                 x.JsonSerializerType = JsonSerializerType.Newtonsoft;
             });
+
+        return services;
+    }
+    private static IServiceCollection AddVirusScan(this IServiceCollection services, WebOptions webOptions)
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        if (webOptions == null)
+            throw new ArgumentNullException(nameof(webOptions));
+
+        var virusScanOptions = webOptions.Hosting.VirusScan;
+
+        if (virusScanOptions.IsEnabled)
+        {
+            services
+                .AddRequestVirusScan(x =>
+                {
+                    x.Host = virusScanOptions.Host;
+                    x.Port = virusScanOptions.Port;
+                    x.UseHealthCheck = virusScanOptions.UseHealthCheck;
+                });
+        }
 
         return services;
     }

@@ -22,6 +22,7 @@ using NWebsec.Core.Common.Middleware.Options;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
+using Vivet.AspNetCore.RequestVirusScan.Extensions;
 using ReferrerPolicy = NWebsec.AspNetCore.Mvc.ReferrerPolicy;
 
 namespace Nano.Web.Extensions;
@@ -207,7 +208,7 @@ public static class ApplicationBuilderExtensions
     /// </summary>
     /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
     /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
-    internal static IApplicationBuilder UseHttpLocalization(this IApplicationBuilder applicationBuilder)
+    internal static IApplicationBuilder UseHttpRequestLocalization(this IApplicationBuilder applicationBuilder)
     {
         if (applicationBuilder == null)
             throw new ArgumentNullException(nameof(applicationBuilder));
@@ -238,6 +239,28 @@ public static class ApplicationBuilderExtensions
 
         applicationBuilder
             .UseRequestTimeZone();
+
+        return applicationBuilder;
+    }
+
+    /// <summary>
+    /// Adds virus scan middleware to the <see cref="IApplicationBuilder"/>.
+    /// </summary>
+    /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+    /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+    internal static IApplicationBuilder UseHttpRequestVirusScan(this IApplicationBuilder applicationBuilder)
+    {
+        if (applicationBuilder == null)
+            throw new ArgumentNullException(nameof(applicationBuilder));
+
+        var services = applicationBuilder.ApplicationServices;
+        var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
+
+        if (webOptions.Hosting.VirusScan.IsEnabled)
+        {
+            applicationBuilder
+                .UseRequestVirusScan();
+        }
 
         return applicationBuilder;
     }

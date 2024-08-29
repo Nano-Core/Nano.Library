@@ -14,6 +14,7 @@ using Nano.Models.Serialization.Json.Const;
 using Nano.Security.Exceptions;
 using Nano.Web.Extensions.Const;
 using Newtonsoft.Json;
+using Vivet.AspNetCore.RequestVirusScan.Exceptions;
 
 namespace Nano.Web.Hosting.Middleware;
 
@@ -84,37 +85,70 @@ public class ExceptionHandlingMiddleware : IMiddleware
                 response.Clear();
             }
 
-            response.StatusCode = ex is BadRequestException || ex.InnerException is BadRequestException
+            response.StatusCode = exception is BadRequestException
                 ? (int)HttpStatusCode.BadRequest
                 : (int)HttpStatusCode.InternalServerError;
 
-            var endpoint = httpContext
-                .GetEndpoint();
+            var error = new Error();
+            var uxExceptionAttribute = this.GetUxExceptionAttribute(httpContext, exception);
 
-            var actionDescriptor = endpoint?.Metadata
-                .GetMetadata<ControllerActionDescriptor>();
-
-            var type = actionDescriptor?.ControllerTypeInfo.BaseType?.GenericTypeArguments
-                .FirstOrDefault();
-
-            var uxExceptionAttribute = type?
-                .GetCustomAttributes<UxExceptionAttribute>(true)
-                .FirstOrDefault(x => exception.Message
-                    .Contains(x.Properties
-                        .Aggregate(string.Empty, (current, y) => current + $"_{y}")));
-
-            var error = uxExceptionAttribute == null
-                ? new Error(ex)
-                : new Error(uxExceptionAttribute.Message)
+            if (uxExceptionAttribute == null)
+            {
+                switch (exception)
                 {
-                    IsTranslated = true
-                };
+                    case BadRequestException:
+                        error.Summary = "Bad Request";
+                        error.Exceptions =
+                        [
+                            exception.Message
+                        ];
+                        error.IsTranslated = true;
+
+                        break;
+
+                    case VirusScanException:
+                        error.Summary = "Virus Scan Error";
+                        error.Exceptions =
+                        [
+                            ex.Message
+                        ];
+
+                        break;
+
+                    case TranslationException:
+                        error.Summary = "Translated Error";
+                        error.Exceptions =
+                        [
+                            exception.Message
+                        ];
+                        error.IsTranslated = true;
+
+                        break;
+
+                    default:
+                        error.Summary = "Internal Server Error";
+                        error.Exceptions =
+                        [
+                            $"{exception.GetType().Name} - {exception.Message}"
+                        ];
+
+                        break;
+                }
+            }
+            else
+            {
+                error.Exceptions =
+                [
+                    uxExceptionAttribute.Message
+                ];
+            }
 
             logLevel = error.IsTranslated
                 ? LogLevel.Information
                 : LogLevel.Error;
 
-            var result = JsonConvert.SerializeObject(error, Globals.GetDefaultJsonSerializerSettings());
+            var serializerSettings = Globals.GetDefaultJsonSerializerSettings();
+            var result = JsonConvert.SerializeObject(error, serializerSettings);
 
             await response
                 .WriteAsync(result);
@@ -150,5 +184,29 @@ public class ExceptionHandlingMiddleware : IMiddleware
                     .Log(logLevel, exception, MESSAGE_TEMPLATE, protocol, method, pathAndqueryString, response.StatusCode, elapsed, id);
             }
         }
+    }
+
+    private UxExceptionAttribute GetUxExceptionAttribute(HttpContext httpContext, Exception exception)
+    {
+        if (httpContext == null)
+            throw new ArgumentNullException(nameof(httpContext));
+        
+        var endpoint = httpContext
+            .GetEndpoint();
+
+        var actionDescriptor = endpoint?.Metadata
+            .GetMetadata<ControllerActionDescriptor>();
+
+        var type = actionDescriptor?.ControllerTypeInfo.BaseType?.GenericTypeArguments
+            .FirstOrDefault();
+
+        return type?
+            .GetCustomAttributes<UxExceptionAttribute>(true)
+            .FirstOrDefault(x =>
+                exception.Message
+                    .Contains("UX") &&
+                exception.Message
+                    .Contains(x.Properties
+                        .Aggregate(string.Empty, (current, y) => current + $"_{y}")));
     }
 }
