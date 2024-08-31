@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Asp.Versioning.ApiExplorer;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
@@ -184,12 +185,13 @@ public static class ApplicationBuilderExtensions
                         {
                             using var originalStream = originalIndexStreamFactory();
                             using var originalStreamReader = new StreamReader(originalStream);
+                            
                             var originalIndexHtmlContents = originalStreamReader
                                 .ReadToEnd();
 
-                            var nonceEnabledIndexHtmlContents = originalIndexHtmlContents
-                                .Replace("<script>", $"<script nonce=\"{webOptions.Documentation.CspNonce}\">", StringComparison.OrdinalIgnoreCase)
-                                .Replace("<style>", $"<style nonce=\"{webOptions.Documentation.CspNonce}\">", StringComparison.OrdinalIgnoreCase);
+                            var pattern = @"<(script|style)([^>]*)>";
+                            var replacement = $"<$1$2 nonce=\"{webOptions.Documentation.CspNonce}\">";
+                            var nonceEnabledIndexHtmlContents = Regex.Replace(originalIndexHtmlContents, pattern, replacement, RegexOptions.IgnoreCase);
 
                             var bytes = Encoding.UTF8
                                 .GetBytes(nonceEnabledIndexHtmlContents);
