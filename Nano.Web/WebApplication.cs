@@ -19,6 +19,7 @@ using Nano.Data.Extensions;
 using Nano.Eventing.Extensions;
 using Nano.Logging.Extensions;
 using Nano.Security.Extensions;
+using Nano.Storage.Extensions;
 using Nano.Web.Extensions;
 
 namespace Nano.Web;
@@ -180,6 +181,7 @@ public class WebApplication : DefaultApplication
                 x.AddData(config);
                 x.AddSecurity(config);
                 x.AddEventing(config);
+                x.AddStorage(config);
                 x.AddWeb(config);
                 x.AddApis(config);
 

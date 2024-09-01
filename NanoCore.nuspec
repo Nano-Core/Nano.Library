@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>8.1.25</version>
+		<version>8.1.26</version>
 		<title>Nano Core</title>
 		<summary>Rapidly built and deploy rich .NET 8.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
@@ -16,6 +16,7 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
+			- Added Storage provider and configuration.
 			- Fixed CSP error with style and script nonce token.
 			- Update error and exception handling. UX exceptions is no longer exposed as translated.
 			- Added Virus scan option
@@ -41,6 +42,7 @@
 		<dependencies>
 			<group targetFramework="net8.0">
 				<dependency id="Azure.Identity" version="1.12.0" />
+				<dependency id="Azure.Storage.Files.Shares" version="12.19.1" />
 				<dependency id="Microsoft.Data.SqlClient" version="5.2.2" />
 				<dependency id="Microsoft.Extensions.Identity.Stores" version="8.0.8" />
 				<dependency id="DynamicExpression" version="8.0.9" />
@@ -121,6 +123,9 @@
 		<file src="Nano.Security\bin\Release\net8.0\Nano.Security.dll" target="lib\net8.0\Nano.Security.dll" />
 		<file src="Nano.Security\bin\Release\net8.0\Nano.Security.pdb" target="lib\net8.0\Nano.Security.pdb" />
 		<file src="Nano.Security\bin\Release\net8.0\Nano.Security.xml" target="lib\net8.0\Nano.Security.xml" />
+		<file src="Nano.Security\bin\Release\net8.0\Nano.Storage.dll" target="lib\net8.0\Nano.Storage.dll" />
+		<file src="Nano.Security\bin\Release\net8.0\Nano.Storage.pdb" target="lib\net8.0\Nano.Storage.pdb" />
+		<file src="Nano.Security\bin\Release\net8.0\Nano.Storage.xml" target="lib\net8.0\Nano.Storage.xml" />
 		<file src="Nano.Web\bin\Release\net8.0\Nano.Web.dll" target="lib\net8.0\Nano.Web.dll" />
 		<file src="Nano.Web\bin\Release\net8.0\Nano.Web.pdb" target="lib\net8.0\Nano.Web.pdb" />
 		<file src="Nano.Web\bin\Release\net8.0\Nano.Web.xml" target="lib\net8.0\Nano.Web.xml" />

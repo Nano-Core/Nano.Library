@@ -13,6 +13,7 @@ using Nano.Data.Extensions;
 using Nano.Eventing.Extensions;
 using Nano.Logging.Extensions;
 using Nano.Security.Extensions;
+using Nano.Storage.Extensions;
 
 namespace Nano.Console;
 
@@ -64,6 +65,7 @@ public class ConsoleApplication : DefaultApplication
                 x.AddLogging(config);
                 x.AddSecurity(config);
                 x.AddEventing(config);
+                x.AddStorage(config);
                 x.AddConsole(config);
                 x.AddApis(config);
 

@@ -9,7 +9,7 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningsAsErrors></WarningsAsErrors>
 		<NoWarn />
-		<DocumentationFile>$(MSBuildThisFileDirectory)\bin\$(Configuration)\Nano.App.xml</DocumentationFile>
+		<DocumentationFile>$(MSBuildThisFileDirectory)\bin\$(Configuration)\Nano.Storage.xml</DocumentationFile>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<EmbedAllSources>true</EmbedAllSources>
@@ -22,19 +22,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AspNetCore.HealthChecks.Network" Version="8.0.1" />
-		<PackageReference Include="Vivet.AspNetCore.RequestTimeZone" Version="8.1.1" />
+		<PackageReference Include="Azure.Storage.Files.Shares" Version="12.19.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Nano.Config\Nano.Config.csproj" />
-		<ProjectReference Include="..\Nano.Data\Nano.Data.csproj" />
-		<ProjectReference Include="..\Nano.Eventing\Nano.Eventing.csproj" />
-		<ProjectReference Include="..\Nano.Logging\Nano.Logging.csproj" />
 		<ProjectReference Include="..\Nano.Models\Nano.Models.csproj" />
-		<ProjectReference Include="..\Nano.Repository\Nano.Repository.csproj" />
-		<ProjectReference Include="..\Nano.Security\Nano.Security.csproj" />
-		<ProjectReference Include="..\Nano.Storage\Nano.Storage.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
