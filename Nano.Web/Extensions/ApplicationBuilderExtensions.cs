@@ -189,9 +189,9 @@ public static class ApplicationBuilderExtensions
                             var originalIndexHtmlContents = originalStreamReader
                                 .ReadToEnd();
 
-                            var pattern = "<(script|style)([^>]*)>";
+                            const string PATTERN = "<(script|style)([^>]*)>";
                             var replacement = $"<$1$2 nonce=\"{webOptions.Documentation.CspNonce}\">";
-                            var nonceEnabledIndexHtmlContents = Regex.Replace(originalIndexHtmlContents, pattern, replacement, RegexOptions.IgnoreCase);
+                            var nonceEnabledIndexHtmlContents = Regex.Replace(originalIndexHtmlContents, PATTERN, replacement, RegexOptions.IgnoreCase);
 
                             var bytes = Encoding.UTF8
                                 .GetBytes(nonceEnabledIndexHtmlContents);
