@@ -123,9 +123,9 @@
 		<file src="Nano.Security\bin\Release\net8.0\Nano.Security.dll" target="lib\net8.0\Nano.Security.dll" />
 		<file src="Nano.Security\bin\Release\net8.0\Nano.Security.pdb" target="lib\net8.0\Nano.Security.pdb" />
 		<file src="Nano.Security\bin\Release\net8.0\Nano.Security.xml" target="lib\net8.0\Nano.Security.xml" />
-		<file src="Nano.Security\bin\Release\net8.0\Nano.Storage.dll" target="lib\net8.0\Nano.Storage.dll" />
-		<file src="Nano.Security\bin\Release\net8.0\Nano.Storage.pdb" target="lib\net8.0\Nano.Storage.pdb" />
-		<file src="Nano.Security\bin\Release\net8.0\Nano.Storage.xml" target="lib\net8.0\Nano.Storage.xml" />
+		<file src="Nano.Storage\bin\Release\net8.0\Nano.Storage.dll" target="lib\net8.0\Nano.Storage.dll" />
+		<file src="Nano.Storage\bin\Release\net8.0\Nano.Storage.pdb" target="lib\net8.0\Nano.Storage.pdb" />
+		<file src="Nano.Storage\bin\Release\net8.0\Nano.Storage.xml" target="lib\net8.0\Nano.Storage.xml" />
 		<file src="Nano.Web\bin\Release\net8.0\Nano.Web.dll" target="lib\net8.0\Nano.Web.dll" />
 		<file src="Nano.Web\bin\Release\net8.0\Nano.Web.pdb" target="lib\net8.0\Nano.Web.pdb" />
 		<file src="Nano.Web\bin\Release\net8.0\Nano.Web.xml" target="lib\net8.0\Nano.Web.xml" />
