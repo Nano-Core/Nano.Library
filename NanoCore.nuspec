@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>8.1.26</version>
+		<version>8.1.27</version>
 		<title>Nano Core</title>
 		<summary>Rapidly built and deploy rich .NET 8.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
@@ -16,28 +16,7 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Added Storage provider and configuration.
-			- Fixed CSP error with style and script nonce token.
-			- Update error and exception handling. UX exceptions is no longer exposed as translated.
-			- Added Virus scan option
-			- Fixed typo.
-			- Improved Error response for exceptions, now including the type of exception in the messages.
-			- Fixed handling enum values in entity event handler.
-			- Added GuidNotEmpty validation attribute.
-			- Removed try/catch in entity event handlers, to allow retries.
-			- Fallback to update when adding in entity event handlers. Just in case the entity already exists.
-			- Fixed Minor Swagger issues.
-			- Fixed duplicate phone not being caught by exception handler.
-			- Removed type name for checking UX exceptions. Conflicted when using ToTable in mappings, so the table name and type name was not matching.
-			- Fixed Request TimeZone, using Microsoft serialization. Changed to Newtonsoft.
-			- Removed Simple types (Percentage, Address, Location, PhoneNumber, EmailAddress, etc).
-			- Removed support for Xml output formatter.
-			- Added additional IRepository methods, for complex order by expressions.
-			- Added Required annotation to Id property of BaseEntityIdentity.
-			- Property names of Publish annotation will now be concated when defined in a inheritance hierarchy.
-			- Changed serialization to newtonsoft for Swagger Gen.
-			- Removed Edit Query from api-client. No endpoint for that.
-			- Updated response serializer to only include IEntity references, when they are specifically included with include annotation.
+			- Fixed audit logging when having shares owned types, that can not be found exclusively with context.GetEntry(entity).
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net8.0">

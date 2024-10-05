@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Logging;
 using Nano.Config;
 using Nano.Data.Const;
 using Nano.Data.Models;
@@ -26,7 +27,6 @@ using Nano.Models.Interfaces;
 using Nano.Security;
 using Nano.Security.Const;
 using Nano.Security.Data.Models;
-using Serilog;
 using Z.EntityFramework.Plus;
 
 namespace Nano.Data;
@@ -44,6 +44,11 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     /// Options.
     /// </summary>
     public DataOptions Options { get; }
+
+    /// <summary>
+    /// Logger.
+    /// </summary>
+    public ILogger Logger { get; }
 
     /// <summary>
     /// Auto Save.
@@ -66,6 +71,8 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         : base(contextOptions)
     {
         this.Options = dataOptions ?? throw new ArgumentNullException(nameof(dataOptions));
+
+        this.Logger = this.GetService<ILogger>();
 
         this.SavingChanges += (_, _) => this.SetPendingEntityEvents();
         this.SavingChanges += (_, _) => this.SaveSoftDeletion();
@@ -281,7 +288,8 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (this.Options.ConnectionString == null)
             return Task.CompletedTask;
 
-        Log.Information("Applying Migrations at start-up.");
+        this.Logger
+            .LogInformation("Applying Migrations at start-up.");
 
         return this.Database
             .MigrateAsync(cancellationToken);
@@ -386,7 +394,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             .ToTable(TableNames.IDENTITY_DATA_PROTECTION_KEYS);
     }
 
-    private void SaveAudit(object entity, object tracked = null)
+    private void SaveAudit(object entity, object tracked = null, EntityEntry owner = null, string propertName = null)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -400,7 +408,16 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         try
         {
-            var entry = this.Entry(entity);
+            var entry = owner == null 
+                ? this.Entry(entity) 
+                : propertName == null 
+                    ? this.Entry(entity) 
+                    : owner.Reference(propertName).TargetEntry;
+
+            if (entry == null)
+            {
+                throw new NullReferenceException(nameof(entry));
+            }
 
             var properties = entity
                 .GetType()
@@ -439,7 +456,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                         continue;
                     }
 
-                    this.SaveAudit(value, valueTracked);
+                    this.SaveAudit(value, valueTracked, entry, propertyInfo.Name);
                 }
             }
         }
