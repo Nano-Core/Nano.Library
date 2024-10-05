@@ -174,6 +174,20 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                 dataProperty
                     .SetValue(entity, guidValue);
             }
+            else if (dataProperty.PropertyType == typeof(TimeOnly) || dataProperty.PropertyType == typeof(TimeOnly?))
+            {
+                var guidValue = TimeOnly.Parse(value);
+
+                dataProperty
+                    .SetValue(entity, guidValue);
+            }
+            else if (dataProperty.PropertyType == typeof(DateOnly) || dataProperty.PropertyType == typeof(DateOnly?))
+            {
+                var guidValue = DateOnly.Parse(value);
+
+                dataProperty
+                    .SetValue(entity, guidValue);
+            }
             else if (dataProperty.PropertyType == typeof(DateTime) || dataProperty.PropertyType == typeof(DateTime?))
             {
                 var dateTimeValue = DateTime.Parse(value);
@@ -247,7 +261,7 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
             else
             {
                 dataProperty
-                    .SetValue(entity, value);
+                    .SetValue(entity, pair.Value);
             }
         }
     }
