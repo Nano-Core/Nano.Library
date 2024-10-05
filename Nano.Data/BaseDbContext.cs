@@ -46,11 +46,6 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     public DataOptions Options { get; }
 
     /// <summary>
-    /// Logger.
-    /// </summary>
-    public ILogger Logger { get; }
-
-    /// <summary>
     /// Auto Save.
     /// </summary>
     public virtual bool AutoSave => this.Options.UseAutoSave;
@@ -72,11 +67,9 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     {
         this.Options = dataOptions ?? throw new ArgumentNullException(nameof(dataOptions));
 
-        this.Logger = this.GetService<ILogger>();
-
         this.SavingChanges += (_, _) => this.SetPendingEntityEvents();
         this.SavingChanges += (_, _) => this.SaveSoftDeletion();
-        this.SavedChanges += async (_, _) => await this.ExecuteEntityEvents();
+        this.SavedChanges += async (_, _) => await this.PublishEntityEvents();
 
         // ReSharper disable VirtualMemberCallInConstructor
         this.ChangeTracker.LazyLoadingEnabled = this.Options.UseLazyLoading;
@@ -288,7 +281,9 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (this.Options.ConnectionString == null)
             return Task.CompletedTask;
 
-        this.Logger
+        var logger = this.GetService<ILogger>();
+
+        logger
             .LogInformation("Applying Migrations at start-up.");
 
         return this.Database
@@ -408,15 +403,15 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         try
         {
-            var entry = owner == null 
-                ? this.Entry(entity) 
-                : propertName == null 
-                    ? this.Entry(entity) 
+            var entry = owner == null
+                ? this.Entry(entity)
+                : propertName == null
+                    ? this.Entry(entity)
                     : owner.Reference(propertName).TargetEntry;
 
             if (entry == null)
             {
-                throw new NullReferenceException(nameof(entry));
+                return;
             }
 
             var properties = entity
@@ -648,7 +643,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         return propertyNested
             .GetValue(parent);
     }
-    private async Task ExecuteEntityEvents()
+    private async Task PublishEntityEvents()
     {
         try
         {
