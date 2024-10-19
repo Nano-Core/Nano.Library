@@ -18,6 +18,7 @@
 		<releaseNotes>
 			- Added auth disabled middleware, to return 404 when auth is disabled.
 			- Added constant for "Auth", for all uses of Auth Controller.
+			- Removed unused TransientIdentityManger.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net8.0">

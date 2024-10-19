@@ -31,9 +31,6 @@ public static class ServiceCollectionExtensions
             .AddConfigOptions<SecurityOptions>(configuration, SecurityOptions.SectionName, out var options);
 
         services
-            .AddScoped<TransientIdentityManager>();
-
-        services
             .AddSecurityIdentity(options);
 
         return services;
