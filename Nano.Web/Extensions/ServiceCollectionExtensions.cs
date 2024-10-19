@@ -143,8 +143,9 @@ public static class ServiceCollectionExtensions
                 x.MultipartBodyLengthLimit = int.MaxValue;
                 x.MultipartHeadersLengthLimit = int.MaxValue;
             })
-            .AddSingleton<DisableAuthControllerMiddleware>()
             .AddSingleton<ExceptionHandlingMiddleware>()
+            .AddSingleton<DisableAuthControllerMiddleware>()
+            .AddSingleton<DisableAuditControllerMiddleware>()
             .AddSingleton<HttpRequestOptionsMiddleware>()
             .AddSingleton<HttpRequestIdentifierMiddleware>()
             .AddRouting()

@@ -53,6 +53,7 @@ public class WebApplication : DefaultApplication
         applicationBuilder
             .UseExceptionHandling()
             .UseDisableAuthController()
+            .UseDisableAuditController()
             .UseHttpCorsPolicy()
             .UseHttpXForwardedHeaders()
             .UseHttpXRobotsTagHeaders()

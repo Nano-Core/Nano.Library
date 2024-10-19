@@ -1,26 +1,26 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Nano.App.Consts;
-using Nano.Security;
+using Nano.Data;
+using Nano.Web.Controllers;
 
 namespace Nano.Web.Hosting.Middleware;
 
 /// <inheritdoc />
-public class DisableAuthControllerMiddleware : IMiddleware
+public class DisableAuditControllerMiddleware : IMiddleware
 {
     private readonly WebOptions webOptions;
-    private readonly SecurityOptions securityOptions;
+    private readonly DataOptions dataOptions;
 
     /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="webOptions">The <see cref="WebOptions"/>.</param>
-    /// <param name="securityOptions">The <see cref="SecurityOptions"/>.</param>
-    public DisableAuthControllerMiddleware(WebOptions webOptions, SecurityOptions securityOptions)
+    /// <param name="dataOptions">The <see cref="DataOptions"/>.</param>
+    public DisableAuditControllerMiddleware(WebOptions webOptions, DataOptions dataOptions)
     {
         this.webOptions = webOptions ?? throw new ArgumentNullException(nameof(webOptions));
-        this.securityOptions = securityOptions ?? throw new ArgumentNullException(nameof(securityOptions));
+        this.dataOptions = dataOptions ?? throw new ArgumentNullException(nameof(dataOptions));
     }
 
     /// <inheritdoc />
@@ -32,9 +32,11 @@ public class DisableAuthControllerMiddleware : IMiddleware
         if (next == null)
             throw new ArgumentNullException(nameof(next));
 
-        if (!this.securityOptions.IsAuth)
+        if (this.dataOptions.ConnectionString == null || !this.dataOptions.UseAudit)
         {
-            if (httpContext.Request.Path.StartsWithSegments($"/{this.webOptions.Hosting.Root}/{Constants.AUTH_CONTROLLER_ROUTE}")) 
+            var controllerRoute = nameof(AuditController).Replace("Controller", string.Empty);
+
+            if (httpContext.Request.Path.StartsWithSegments($"/{this.webOptions.Hosting.Root}/{controllerRoute}"))
             {
                 httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
 

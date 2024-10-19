@@ -111,6 +111,22 @@ public static class ApplicationBuilderExtensions
     }
 
     /// <summary>
+    /// Adds disable audit middleware to the <see cref="IApplicationBuilder"/>.
+    /// </summary>
+    /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+    /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+    internal static IApplicationBuilder UseDisableAuditController(this IApplicationBuilder applicationBuilder)
+    {
+        if (applicationBuilder == null)
+            throw new ArgumentNullException(nameof(applicationBuilder));
+
+        applicationBuilder
+            .UseMiddleware<DisableAuditControllerMiddleware>();
+
+        return applicationBuilder;
+    }
+
+    /// <summary>
     /// Adds options action middleware to the <see cref="IApplicationBuilder"/>.
     /// </summary>
     /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
