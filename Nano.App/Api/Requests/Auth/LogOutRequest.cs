@@ -1,4 +1,6 @@
-﻿namespace Nano.App.Api.Requests.Auth;
+﻿using Nano.App.Consts;
+
+namespace Nano.App.Api.Requests.Auth;
 
 /// <inheritdoc />
 public class LogOutRequest : BaseRequestPost
@@ -7,7 +9,7 @@ public class LogOutRequest : BaseRequestPost
     public LogOutRequest()
     {
         this.Action = "logout";
-        this.Controller = "auth";
+        this.Controller = Constants.AUTH_CONTROLLER_ROUTE;
     }
 
     /// <inheritdoc />

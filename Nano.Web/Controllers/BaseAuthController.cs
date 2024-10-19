@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Nano.App.Consts;
 using Nano.Models;
 using Nano.Models.Const;
 using Nano.Security;
@@ -63,7 +64,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(Tags = ["Auth"])]
+    [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInAsync([FromBody][Required]LogIn logIn, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.BaseIdentityManager
@@ -98,7 +99,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(Tags = ["Auth"])]
+    [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInRefreshAsync([FromBody][Required]LogInRefresh logInRefresh, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.BaseIdentityManager
@@ -132,7 +133,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(Tags = ["Auth"])]
+    [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalDirectAsync([FromBody][Required]LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.BaseIdentityManager
@@ -166,7 +167,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(Tags = ["Auth"])]
+    [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalDirectTransientAsync([FromBody][Required]LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.BaseIdentityManager
@@ -200,7 +201,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(Tags = ["Auth"])]
+    [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalGoogleAsync([FromBody][Required]LogInExternalGoogle logInExternal, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.BaseIdentityManager
@@ -234,7 +235,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(Tags = ["Auth"])]
+    [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalGoogleTransientAsync([FromBody][Required]LogInExternalGoogle logInExternal, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.BaseIdentityManager
@@ -268,7 +269,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(Tags = ["Auth"])]
+    [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalFacebookAsync([FromBody][Required]LogInExternalFacebook logInExternal, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.BaseIdentityManager
@@ -302,7 +303,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(Tags = ["Auth"])]
+    [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalFacebookTransientAsync([FromBody][Required]LogInExternalFacebook logInExternal, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.BaseIdentityManager
@@ -336,7 +337,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(Tags = ["Auth"])]
+    [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalMicrosoftAsync([FromBody][Required]LogInExternalMicrosoft logInExternal, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.BaseIdentityManager
@@ -370,7 +371,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(Tags = ["Auth"])]
+    [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalMicrosoftTransientAsync([FromBody][Required]LogInExternalMicrosoft logInExternal, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.BaseIdentityManager
@@ -399,7 +400,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(Tags = ["Auth"])]
+    [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogOutAsync(CancellationToken cancellationToken = default)
     {
         await this.BaseIdentityManager
@@ -430,7 +431,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(Tags = ["Auth"])]
+    [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> GetExternalLoginData([FromBody][Required]LogInExternalProviderGoogle logInExternalProvider, CancellationToken cancellationToken = default)
     {
         var externalLoginData = await this.BaseIdentityManager
@@ -463,7 +464,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(Tags = ["Auth"])]
+    [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> GetExternalLoginData([FromBody][Required]LogInExternalProviderFacebook logInExternalProvider, CancellationToken cancellationToken = default)
     {
         var externalLoginData = await this.BaseIdentityManager
@@ -496,7 +497,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(Tags = ["Auth"])]
+    [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> GetExternalLoginData([FromBody][Required]LogInExternalProviderMicrosoft logInExternalProvider, CancellationToken cancellationToken = default)
     {
         var externalLoginData = await this.BaseIdentityManager
@@ -528,7 +529,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    [SwaggerOperation(Tags = ["Auth"])]
+    [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> GetExternalSchemesAsync(CancellationToken cancellationToken = default)
     {
         var logInProviders = await this.BaseIdentityManager

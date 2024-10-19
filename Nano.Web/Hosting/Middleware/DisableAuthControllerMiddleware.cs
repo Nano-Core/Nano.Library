@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Nano.App.Consts;
 
 namespace Nano.Web.Hosting.Middleware;
 
@@ -32,7 +33,7 @@ public class DisableAuthControllerMiddleware : IMiddleware
 
         if (!this.isAuthEnabled)
         {
-            if (httpContext.Request.Path.StartsWithSegments($"{this.rootPath}/auth"))
+            if (httpContext.Request.Path.StartsWithSegments($"{this.rootPath}/{Constants.AUTH_CONTROLLER_ROUTE}"))
             {
                 httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
 

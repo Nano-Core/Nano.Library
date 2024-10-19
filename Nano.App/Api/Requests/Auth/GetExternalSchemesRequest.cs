@@ -1,4 +1,6 @@
-﻿namespace Nano.App.Api.Requests.Auth;
+﻿using Nano.App.Consts;
+
+namespace Nano.App.Api.Requests.Auth;
 
 /// <inheritdoc />
 public class GetExternalSchemesRequest : BaseRequestGet
@@ -7,6 +9,6 @@ public class GetExternalSchemesRequest : BaseRequestGet
     public GetExternalSchemesRequest()
     {
         this.Action = "external/schemes";
-        this.Controller = "auth";
+        this.Controller = Constants.AUTH_CONTROLLER_ROUTE;
     }
 }

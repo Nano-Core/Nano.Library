@@ -1,4 +1,5 @@
-﻿using Nano.Security.Models;
+﻿using Nano.App.Consts;
+using Nano.Security.Models;
 
 namespace Nano.App.Api.Requests.Auth;
 
@@ -14,7 +15,7 @@ public class LogInRequest : BaseRequestPost
     public LogInRequest()
     {
         this.Action = "login";
-        this.Controller = "auth";
+        this.Controller = Constants.AUTH_CONTROLLER_ROUTE;
     }
 
     /// <inheritdoc />

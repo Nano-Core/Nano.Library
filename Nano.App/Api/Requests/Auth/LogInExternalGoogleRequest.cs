@@ -1,4 +1,5 @@
-﻿using Nano.Security.Models;
+﻿using Nano.App.Consts;
+using Nano.Security.Models;
 
 namespace Nano.App.Api.Requests.Auth;
 
@@ -9,6 +10,6 @@ public class LogInExternalGoogleRequest : BaseLogInExternalRequest<LogInExternal
     public LogInExternalGoogleRequest()
     {
         this.Action = "login/external/google";
-        this.Controller = "auth";
+        this.Controller = Constants.AUTH_CONTROLLER_ROUTE;
     }
 }

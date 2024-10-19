@@ -1,4 +1,5 @@
-﻿using Nano.Security.Models;
+﻿using Nano.App.Consts;
+using Nano.Security.Models;
 
 namespace Nano.App.Api.Requests.Auth;
 
@@ -9,6 +10,6 @@ public class LogInExternalFacebookRequest : BaseLogInExternalRequest<LogInExtern
     public LogInExternalFacebookRequest()
     {
         this.Action = "login/external/facebook";
-        this.Controller = "auth";
+        this.Controller = Constants.AUTH_CONTROLLER_ROUTE;
     }
 }
