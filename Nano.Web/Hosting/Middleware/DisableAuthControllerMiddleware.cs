@@ -2,24 +2,25 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Nano.App.Consts;
+using Nano.Security;
 
 namespace Nano.Web.Hosting.Middleware;
 
 /// <inheritdoc />
 public class DisableAuthControllerMiddleware : IMiddleware
 {
-    private readonly string rootPath;
-    private readonly bool isAuthEnabled;
+    private readonly WebOptions webOptions;
+    private readonly SecurityOptions securityOptions;
 
     /// <summary>
-    /// 
+    /// Constructor.
     /// </summary>
-    /// <param name="rootPath"></param>
-    /// <param name="isAuthEnabled"></param>
-    public DisableAuthControllerMiddleware(string rootPath, bool isAuthEnabled)
+    /// <param name="webOptions"></param>
+    /// <param name="securityOptions"></param>
+    public DisableAuthControllerMiddleware(WebOptions webOptions, SecurityOptions securityOptions)
     {
-        this.isAuthEnabled = isAuthEnabled;
-        this.rootPath = rootPath;
+        this.webOptions = webOptions ?? throw new ArgumentNullException(nameof(webOptions));
+        this.securityOptions = securityOptions ?? throw new ArgumentNullException(nameof(securityOptions));
     }
 
     /// <inheritdoc />
@@ -31,9 +32,9 @@ public class DisableAuthControllerMiddleware : IMiddleware
         if (next == null)
             throw new ArgumentNullException(nameof(next));
 
-        if (!this.isAuthEnabled)
+        if (!this.securityOptions.IsAuth)
         {
-            if (httpContext.Request.Path.StartsWithSegments($"{this.rootPath}/{Constants.AUTH_CONTROLLER_ROUTE}"))
+            if (httpContext.Request.Path.StartsWithSegments($"/{this.webOptions.Hosting.Root}/{Constants.AUTH_CONTROLLER_ROUTE}"))
             {
                 httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
 
