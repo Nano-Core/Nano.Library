@@ -16,7 +16,7 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Added support for setting objects over publish / subscribe of entity events.
+			- Added auth disabled middleware, to return 404 when auth is disabled.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net8.0">

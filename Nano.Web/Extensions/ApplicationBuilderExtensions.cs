@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Nano.App;
 using Nano.Config;
+using Nano.Security;
 using Nano.Web.Enums;
 using Nano.Web.Extensions.Const;
 using Nano.Web.Hosting.Middleware;
@@ -74,6 +75,26 @@ public static class ApplicationBuilderExtensions
                     });
             }
         }
+
+        return applicationBuilder;
+    }
+
+    /// <summary>
+    /// Adds disable auth middleware to the <see cref="IApplicationBuilder"/>.
+    /// </summary>
+    /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+    /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
+    internal static IApplicationBuilder UseDisableAuthController(this IApplicationBuilder applicationBuilder)
+    {
+        if (applicationBuilder == null)
+            throw new ArgumentNullException(nameof(applicationBuilder));
+
+        var services = applicationBuilder.ApplicationServices;
+        var webOptions = services.GetService<WebOptions>() ?? new WebOptions();
+        var securityOptions = services.GetService<SecurityOptions>() ?? new SecurityOptions();
+
+        applicationBuilder
+            .UseMiddleware<DisableAuthControllerMiddleware>(securityOptions.IsAuth, webOptions.Hosting.Root);
 
         return applicationBuilder;
     }

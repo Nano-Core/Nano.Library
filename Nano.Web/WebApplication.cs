@@ -18,6 +18,7 @@ using Nano.Data;
 using Nano.Data.Extensions;
 using Nano.Eventing.Extensions;
 using Nano.Logging.Extensions;
+using Nano.Security;
 using Nano.Security.Extensions;
 using Nano.Storage.Extensions;
 using Nano.Web.Extensions;
@@ -50,7 +51,14 @@ public class WebApplication : DefaultApplication
         var dataOptions = applicationBuilder.ApplicationServices
             .GetService<DataOptions>();
 
+        var securityOptions = applicationBuilder.ApplicationServices
+            .GetService<SecurityOptions>();
+
+        var webOptions = applicationBuilder.ApplicationServices
+            .GetService<WebOptions>();
+
         applicationBuilder
+            .UseDisableAuthController()
             .UseExceptionHandling()
             .UseHttpCorsPolicy()
             .UseHttpXForwardedHeaders()
