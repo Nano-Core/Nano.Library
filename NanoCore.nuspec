@@ -20,6 +20,7 @@
 			- Added audit disabled middleware, to return 404 when audit is disabled.
 			- Added constant for "Auth", for all uses of Auth Controller.
 			- Removed unused TransientIdentityManger.
+			- Renamed DefaultIdentityController to BaseIdentityGuidController.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net8.0">
