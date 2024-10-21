@@ -24,7 +24,7 @@
 				<dependency id="Azure.Storage.Files.Shares" version="12.19.1" />
 				<dependency id="Microsoft.Data.SqlClient" version="5.2.2" />
 				<dependency id="Microsoft.Extensions.Identity.Stores" version="8.0.8" />
-				<dependency id="DynamicExpression" version="8.0.10" />
+				<dependency id="DynamicExpression" version="8.0.11" />
 				<dependency id="NetTopologySuite" version="2.5.0" />
 				<dependency id="Newtonsoft.Json" version="13.0.3" />
 				<dependency id="Microsoft.Extensions.Logging.Log4Net.AspNetCore" version="8.0.0" />
