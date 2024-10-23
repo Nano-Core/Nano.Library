@@ -11,18 +11,18 @@ using Nano.Security;
 namespace Nano.Web.Controllers;
 
 /// <inheritdoc />
-public abstract class BaseIdentityGuidController<TEntity, TCriteria> : BaseIdentityController<IRepository, TEntity, Guid, TCriteria>
+public abstract class BaseDefaultIdentityController<TEntity, TCriteria> : BaseIdentityController<IRepository, TEntity, Guid, TCriteria>
     where TEntity : DefaultEntityUser, IEntityUpdatable, new()
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected BaseIdentityGuidController(ILogger logger, IRepository repository, DefaultIdentityManager baseIdentityManager)
+    protected BaseDefaultIdentityController(ILogger logger, IRepository repository, DefaultIdentityManager baseIdentityManager)
         : this(logger, repository, new NullEventing(), baseIdentityManager)
     {
     }
 
     /// <inheritdoc />
-    protected BaseIdentityGuidController(ILogger logger, IRepository repository, IEventing eventing, DefaultIdentityManager baseIdentityManager)
+    protected BaseDefaultIdentityController(ILogger logger, IRepository repository, IEventing eventing, DefaultIdentityManager baseIdentityManager)
         : base(logger, repository, eventing, baseIdentityManager)
     {
     }

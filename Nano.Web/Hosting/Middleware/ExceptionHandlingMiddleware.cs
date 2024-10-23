@@ -110,8 +110,18 @@ public class ExceptionHandlingMiddleware : IMiddleware
                         error.Summary = "Virus Scan Error";
                         error.Exceptions =
                         [
-                            ex.Message
+                            exception.Message
                         ];
+
+                        break;
+
+                    case CodedException:
+                        error.Summary = "Coded Error";
+                        error.Exceptions =
+                        [
+                            exception.Message
+                        ];
+                        error.IsCoded = true;
 
                         break;
 
@@ -137,10 +147,12 @@ public class ExceptionHandlingMiddleware : IMiddleware
             }
             else
             {
+                error.Summary = "Internal Server Error";
                 error.Exceptions =
                 [
                     uxExceptionAttribute.Message
                 ];
+                error.IsCoded = true;
             }
 
             logLevel = error.IsTranslated

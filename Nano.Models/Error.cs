@@ -19,4 +19,9 @@ public class Error
     /// Is Translated.
     /// </summary>
     public bool IsTranslated { get; set; }
+
+    /// <summary>
+    /// Is Coded.
+    /// </summary>
+    public bool IsCoded { get; set; }
 }
