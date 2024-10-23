@@ -26,18 +26,18 @@
 	<ItemGroup>
 		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.System" Version="8.0.1" />
-		<PackageReference Include="AspNetCore.HealthChecks.UI" Version="8.0.1" />
+		<PackageReference Include="AspNetCore.HealthChecks.UI" Version="8.0.2" />
 		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1" />
 		<PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="8.0.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.8" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.8" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.8" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.8" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.10" />
 		<PackageReference Include="NWebsec.AspNetCore.Middleware" Version="3.0.0" />
 		<PackageReference Include="NWebsec.AspNetCore.Mvc" Version="3.0.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.7.3" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.7.3" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.9.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.9.0" />
 		<PackageReference Include="Vivet.AspNetCore.RequestVirusScan" Version="0.1.1" />
 	</ItemGroup>
 

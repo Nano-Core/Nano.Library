@@ -780,6 +780,14 @@ public abstract class BaseApi : IDisposable
                 throw new NullReferenceException(nameof(error));
             }
 
+            if (error.IsCoded)
+            {
+                var codeExceptions = error.Exceptions
+                    .Select(x => new CodedException(x));
+
+                throw new AggregateException(codeExceptions);
+            }
+
             if (error.IsTranslated)
             {
                 var translationExceptions = error.Exceptions
