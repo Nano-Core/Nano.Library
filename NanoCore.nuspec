@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>8.2.4</version>
+		<version>8.2.5</version>
 		<title>Nano Core</title>
 		<summary>Rapidly built and deploy rich .NET 8.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
@@ -16,9 +16,7 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Updated All NuGets.
-			- Added IRepository.GetFirstAsync(...) with default Ordering.
-			- Added Error.IsCoded and CodedException, to expose coded errors that the client can react on.
+			- Fixed missing Ordering for IRepository.GetFirst(...).
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net8.0">

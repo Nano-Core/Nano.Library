@@ -220,6 +220,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         return this.GetEntitySet<TEntity>()
             .IncludeAnnotations(includeDepth)
             .Where(where)
+            .Order(ordering)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
