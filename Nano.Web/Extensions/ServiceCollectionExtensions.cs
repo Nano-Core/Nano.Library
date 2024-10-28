@@ -465,6 +465,7 @@ public static class ServiceCollectionExtensions
                     x.SchemaFilter<EnumSchemaFilter>();
                     x.SchemaFilter<SwaggerResponseOnlySchemaFilter>();
                     x.OperationFilter<SwaggerResponseOnlyOperationFilter>();
+                    x.DocumentFilter<LowercaseRoutesDocumentFilter>();
                     x.DocumentFilter<RemoveVersionsRoutesFilter>();
 
                     var securityScheme = new OpenApiSecurityScheme
