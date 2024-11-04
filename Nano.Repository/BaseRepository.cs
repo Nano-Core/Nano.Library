@@ -9,6 +9,7 @@ using DynamicExpression.Enums;
 using DynamicExpression.Extensions;
 using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Nano.Data;
 using Nano.Data.Extensions;
 using Nano.Models.Eventing.Interfaces;
@@ -675,23 +676,18 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task AddManyBulkAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual Task AddManyBulkAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable
     {
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        await this.Context
+        return this.Context
             .BulkInsertAsync(entities, x =>
             {
                 x.BatchSize = this.Context.Options.BulkBatchSize;
                 x.BatchDelayInterval = this.Context.Options.BulkBatchDelay;
             }, cancellationToken);
-
-        if (this.Context.AutoSave)
-        {
-            await this.SaveChangesAsync(cancellationToken);
-        }
     }
 
     /// <inheritdoc />
@@ -746,23 +742,37 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task UpdateManyBulkAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual Task UpdateManyBulkAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        await this.Context
+        return this.Context
             .BulkUpdateAsync(entities, x =>
             {
                 x.BatchSize = this.Context.Options.BulkBatchSize;
                 x.BatchDelayInterval = this.Context.Options.BulkBatchDelay;
             }, cancellationToken);
+    }
 
-        if (this.Context.AutoSave)
-        {
-            await this.SaveChangesAsync(cancellationToken);
-        }
+    /// <inheritdoc />
+    public virtual Task UpdateManyBulkAsync<TEntity, TCriteria>(TCriteria criteria, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityUpdatable
+        where TCriteria : class, IQueryCriteria, new()
+    {
+        return this.GetEntitySet<TEntity>()
+            .Where(criteria)
+            .ExecuteUpdateAsync(x => this.GetSetPropertyCalls(x, propertyUpdates), cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task UpdateManyBulkAsync<TEntity>(Expression<Func<TEntity, bool>> where, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityUpdatable
+    {
+        return this.GetEntitySet<TEntity>()
+            .Where(where)
+            .ExecuteUpdateAsync(x => this.GetSetPropertyCalls(x, propertyUpdates), cancellationToken);
     }
 
     /// <inheritdoc />
@@ -1101,5 +1111,23 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
             return;
 
         this.Context?.Dispose();
+    }
+
+    private SetPropertyCalls<TEntity> GetSetPropertyCalls<TEntity>(SetPropertyCalls<TEntity> setPropertyCalls, Dictionary<string, object> propertyUpdates)
+        where TEntity : class, IEntityUpdatable
+    {
+        if (setPropertyCalls == null) 
+            throw new ArgumentNullException(nameof(setPropertyCalls));
+
+        if (propertyUpdates == null) 
+            throw new ArgumentNullException(nameof(propertyUpdates));
+
+        foreach (var keyValuePair in propertyUpdates)
+        {
+            setPropertyCalls = setPropertyCalls
+                .SetProperty(x => EF.Property<object>(x, keyValuePair.Key), keyValuePair.Value);
+        }
+
+        return setPropertyCalls;
     }
 }

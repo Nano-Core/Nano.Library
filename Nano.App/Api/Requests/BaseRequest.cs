@@ -102,44 +102,67 @@ public abstract class BaseRequest
     /// <returns>The querystring as string.</returns>
     public virtual string GetQuerystring()
     {
-        var parameters = this
-            .GetType()
-            .GetProperties()
-            .Select(x =>
+        var querystring = this.GetQuerystringRecursive(this);
+
+        return querystring.EndsWith('&') 
+            ? querystring[..^1] 
+            : querystring;
+    }
+
+    private string GetQuerystringRecursive(object value, string parentName = "")
+    {
+        if (value == null)
+            throw new ArgumentNullException(nameof(value));
+
+        var str = string.Empty;
+
+        foreach (var propertyInfo in value.GetType().GetProperties())
+        {
+            var attribute = propertyInfo
+                .GetCustomAttribute<QueryAttribute>();
+
+            if (attribute == null && parentName == "")
             {
-                var property = x;
-                var attribute = x.GetCustomAttribute<QueryAttribute>();
+                continue;
+            }
 
-                return (property, attribute);
-            })
-            .Where(x => x.attribute != null)
-            .Select(x =>
+            var propertyValue = propertyInfo
+                .GetValue(value);
+
+            if (propertyInfo.PropertyType.IsSimple())
             {
-                var (property, attribute) = x;
-
-                var key = attribute.Name ?? property.Name;
-                var type = property.PropertyType;
-
-                var value = property
-                    .GetValue(this);
-
-                if (value == null)
+                str += $"{parentName}{propertyInfo.Name}={Uri.EscapeDataString(propertyValue?.ToString() ?? string.Empty)}&";
+            }
+            else if (propertyInfo.PropertyType.IsTypeOf(typeof(IEnumerable)))
+            {
+                if (propertyValue == null)
                 {
-                    return key;
+                    continue;
                 }
 
-                if (type.IsTypeOf(typeof(IEnumerable)) && type != typeof(string))
-                {
-                    var querystringPart = ((IEnumerable)value)
-                        .Cast<object>()
-                        .Aggregate(string.Empty, (current, item) => current + $"{key}={Uri.EscapeDataString(item?.ToString() ?? string.Empty)}&");
+                str += ((IEnumerable)propertyValue)
+                    .Cast<object>()
+                    .Aggregate(string.Empty, (current, item) =>
+                    {
+                        if (item.GetType().IsSimple())
+                        {
+                            return $"{current}{parentName}{propertyInfo.Name}={Uri.EscapeDataString(item.ToString() ?? string.Empty)}&";
+                        }
 
-                    return querystringPart[..^1];
+                        return current + this.GetQuerystringRecursive(item, $"{parentName}{propertyInfo.Name}.");
+                    });
+            }
+            else
+            {
+                if (propertyValue == null)
+                {
+                    continue;
                 }
 
-                return $"{key}={Uri.EscapeDataString(value.ToString() ?? string.Empty)}";
-            });
+                str += this.GetQuerystringRecursive(propertyValue, $"{parentName}{propertyInfo.Name}.");
+            }
+        }
 
-        return string.Join("&", parameters);
+        return str;
     }
 }

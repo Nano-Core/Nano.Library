@@ -174,19 +174,26 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                 dataProperty
                     .SetValue(entity, guidValue);
             }
-            else if (dataProperty.PropertyType == typeof(TimeOnly) || dataProperty.PropertyType == typeof(TimeOnly?))
+            else if (dataProperty.PropertyType == typeof(TimeSpan) || dataProperty.PropertyType == typeof(TimeSpan?))
             {
-                var guidValue = TimeOnly.Parse(value);
+                var timeSpanValue = TimeSpan.Parse(value);
 
                 dataProperty
-                    .SetValue(entity, guidValue);
+                    .SetValue(entity, timeSpanValue);
+            }
+            else if (dataProperty.PropertyType == typeof(TimeOnly) || dataProperty.PropertyType == typeof(TimeOnly?))
+            {
+                var timeOnlyValue = TimeOnly.Parse(value);
+
+                dataProperty
+                    .SetValue(entity, timeOnlyValue);
             }
             else if (dataProperty.PropertyType == typeof(DateOnly) || dataProperty.PropertyType == typeof(DateOnly?))
             {
-                var guidValue = DateOnly.Parse(value);
+                var dateOnlyValue = DateOnly.Parse(value);
 
                 dataProperty
-                    .SetValue(entity, guidValue);
+                    .SetValue(entity, dateOnlyValue);
             }
             else if (dataProperty.PropertyType == typeof(DateTime) || dataProperty.PropertyType == typeof(DateTime?))
             {
@@ -202,14 +209,14 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                 dataProperty
                     .SetValue(entity, dateTimeOffsetValue);
             }
-            else if (dataProperty.PropertyType == typeof(int) || dataProperty.PropertyType == typeof(int?))
+            else if (dataProperty.PropertyType == typeof(int) || dataProperty.PropertyType == typeof(uint?) || dataProperty.PropertyType == typeof(uint) || dataProperty.PropertyType == typeof(uint?))
             {
                 var intValue = int.Parse(value);
 
                 dataProperty
                     .SetValue(entity, intValue);
             }
-            else if (dataProperty.PropertyType == typeof(short) || dataProperty.PropertyType == typeof(short?))
+            else if (dataProperty.PropertyType == typeof(short) || dataProperty.PropertyType == typeof(short?) || dataProperty.PropertyType == typeof(ushort) || dataProperty.PropertyType == typeof(ushort?))
             {
                 var shortValue = short.Parse(value);
 

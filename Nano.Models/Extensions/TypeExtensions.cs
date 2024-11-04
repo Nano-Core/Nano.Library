@@ -66,11 +66,12 @@ public static class TypeExtensions
         return type.IsPrimitive
                || type.IsEnum
                || type == typeof(string)
+               || type == typeof(Guid)
+               || type == typeof(TimeSpan)
+               || type == typeof(TimeOnly)
+               || type == typeof(DateOnly)
                || type == typeof(DateTime)
                || type == typeof(DateTimeOffset)
-               || type == typeof(TimeSpan)
-               || type == typeof(Guid)
-               || type == typeof(DateTime)
                || type == typeof(Nullable<>);
     }
 
