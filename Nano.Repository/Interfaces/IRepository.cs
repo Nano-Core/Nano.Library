@@ -9,6 +9,7 @@ using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Nano.Models.Attributes;
 using Nano.Models.Interfaces;
+using Z.EntityFramework.Extensions;
 
 namespace Nano.Repository.Interfaces;
 
@@ -561,6 +562,8 @@ public interface IRepository : IDisposable
 
     /// <summary>
     /// Bulk adds all instances of the passed <see cref="IEntityCreatable"/>'s.
+    /// This method requires Entity Framework Plus Enterprise, and <see cref="EntityFrameworkManager.IsCommunity"/> set to false.
+    /// Read more here: https://entityframework-plus.net/download
     /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntityCreatable"/> type.</typeparam>
     /// <param name="entities">The instances of <see cref="IEntityCreatable"/>'s.</param>
@@ -604,12 +607,38 @@ public interface IRepository : IDisposable
 
     /// <summary>
     /// Bulk updates all instances of the passed <see cref="IEntityUpdatable"/>'s.
+    /// This method requires Entity Framework Plus Enterprise, and <see cref="EntityFrameworkManager.IsCommunity"/> set to false.
+    /// Read more here: https://entityframework-plus.net/download
     /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntityUpdatable"/> type.</typeparam>
     /// <param name="entities">The instances of <see cref="IEntityUpdatable"/>'s.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The updated entities.</returns>
     Task UpdateManyBulkAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityUpdatable;
+
+    /// <summary>
+    /// Update Many Bulk Async.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntityUpdatable"/> type.</typeparam>
+    /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> type.</typeparam>
+    /// <param name="criteria">The <see cref="IQueryCriteria"/>.</param>
+    /// <param name="propertyUpdates">The properties to update.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>Void.</returns>
+    Task UpdateManyBulkAsync<TEntity, TCriteria>(TCriteria criteria, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityUpdatable
+        where TCriteria : class, IQueryCriteria, new();
+
+    /// <summary>
+    /// Update Many Bulk Async.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntityUpdatable"/> type.</typeparam>
+    /// <param name="where">The where clause</param>
+    /// <param name="propertyUpdates">The properties to update.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
+    /// <returns>Void.</returns>
+    Task UpdateManyBulkAsync<TEntity>(Expression<Func<TEntity, bool>> where, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable;
 
     /// <summary>
@@ -792,6 +821,8 @@ public interface IRepository : IDisposable
 
     /// <summary>
     /// Bulk deletes all instances of the passed <see cref="IEntityDeletable"/>'s.
+    /// This method requires Entity Framework Plus Enterprise, and <see cref="EntityFrameworkManager.IsCommunity"/> set to false.
+    /// Read more here: https://entityframework-plus.net/download
     /// </summary>
     /// <typeparam name="TEntity">The <see cref="IEntityDeletable"/> type.</typeparam>
     /// <param name="entities">The instances of <see cref="IEntityDeletable"/>'s.</param>

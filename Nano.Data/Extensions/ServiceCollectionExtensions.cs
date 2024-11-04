@@ -20,6 +20,7 @@ using Nano.Data.Identity.Extensions;
 using Nano.Data.Models;
 using Nano.Data.Providers.Sqlite;
 using Z.EntityFramework.Plus;
+using Z.EntityFramework.Extensions;
 
 namespace Nano.Data.Extensions;
 
@@ -126,6 +127,8 @@ public static class ServiceCollectionExtensions
 
         if (configuration == null)
             throw new ArgumentNullException(nameof(configuration));
+
+        EntityFrameworkManager.IsCommunity = true;
 
         services
             .AddConfigOptions<DataOptions>(configuration, DataOptions.SectionName, out var options);

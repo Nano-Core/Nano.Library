@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Nano.App.Api.Responses;
+namespace Nano.Models;
 
 /// <summary>
 /// Named Stream.

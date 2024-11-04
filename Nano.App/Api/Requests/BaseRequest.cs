@@ -19,7 +19,7 @@ public abstract class BaseRequest
     /// Used to override the Jwt-Token for the specific request.
     /// </summary>
     [JsonIgnore]
-    protected internal string JwtTokenOverride { get; set; }
+    public virtual string JwtTokenOverride { get; set; }
 
     /// <summary>
     /// Controller.

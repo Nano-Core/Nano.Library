@@ -105,6 +105,34 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
     }
 
     /// <summary>
+    /// Delete the models with the passed identifiers bulk.
+    /// </summary>
+    /// <param name="ids">The identifiers of the models to delete.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Ok.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [HttpDelete]
+    [Route("delete/many/bulk")]
+    [Consumes(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> DeleteManyBulkAsync([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
+    {
+        await this.Repository
+            .DeleteManyBulkAsync<TEntity, TIdentity>(ids, cancellationToken);
+
+        return this.Ok();
+    }
+
+    /// <summary>
     /// Deletes the models matching the passed 'select' criteria.
     /// </summary>
     /// <param name="select">The crtieria for selecting models to delete.</param>

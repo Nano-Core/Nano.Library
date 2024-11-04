@@ -14,7 +14,6 @@ using Nano.App.Api.Extensions;
 using Nano.App.Api.Requests;
 using Nano.App.Api.Requests.Auth;
 using Nano.App.Api.Requests.Spatial;
-using Nano.App.Api.Responses;
 using Nano.App.Extensions;
 using Nano.Models;
 using Nano.Models.Const;
@@ -1061,14 +1060,31 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <param name="request">The <see cref="CreateManyRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The created entities.</returns>
-    public virtual Task<IEnumerable<TEntity>> CreateManyAsync<TEntity>(CreateManyRequest request, CancellationToken cancellationToken = default)
+    /// <returns>Nothing.</returns>
+    public virtual Task CreateManyAsync<TEntity>(CreateManyRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
         return this.InvokeAsync<CreateManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Create Many Bulk.
+    /// Invokes the 'create/many/bulk' endpoint of the api.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type.</typeparam>
+    /// <param name="request">The <see cref="CreateManyBulkRequest"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Nothing.</returns>
+    public virtual Task CreateManyBulkAsync<TEntity>(CreateManyBulkRequest request, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityCreatable
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        return this.InvokeAsync<CreateManyBulkRequest, IEnumerable<TEntity>>(request, cancellationToken);
     }
 
     /// <summary>
@@ -1112,14 +1128,50 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <param name="request">The <see cref="EditManyRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The updated entities.</returns>
-    public virtual Task<IEnumerable<TEntity>> EditManyAsync<TEntity>(EditManyRequest request, CancellationToken cancellationToken = default)
+    /// <returns>Nothing.</returns>
+    public virtual Task EditManyAsync<TEntity>(EditManyRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
         return this.InvokeAsync<EditManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Edit Many Bulk.
+    /// Invokes the 'Edit/many/bulk' endpoint of the api.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type.</typeparam>
+    /// <param name="request">The <see cref="EditManyBulkRequest"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Nothing.</returns>
+    public virtual Task EditManyBulkAsync<TEntity>(EditManyBulkRequest request, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityUpdatable
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        return this.InvokeAsync<EditManyBulkRequest, IEnumerable<TEntity>>(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Edit Query.
+    /// Invokes the 'edit/query' endpoint of the api.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type.</typeparam>
+    /// <typeparam name="TCriteria">The criteria type</typeparam>
+    /// <param name="request">The <see cref="EditQueryRequest{TCriteria}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Nothing.</returns>
+    public virtual async Task EditQueryAsync<TEntity, TCriteria>(EditQueryRequest<TCriteria> request, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityDeletable
+        where TCriteria : IQueryCriteria, new()
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        await this.InvokeAsync<EditQueryRequest<TCriteria>, TEntity>(request, cancellationToken);
     }
 
     /// <summary>
@@ -1154,6 +1206,23 @@ public abstract class BaseApi<TIdentity> : BaseApi
             throw new ArgumentNullException(nameof(request));
 
         await this.InvokeAsync<DeleteManyRequest<TIdentity>, TEntity>(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Delete Many Bulk.
+    /// Invokes the 'delete/many/bulk' endpoint of the api.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type.</typeparam>
+    /// <param name="request">The <see cref="DeleteManyBulkRequest{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Nothing.</returns>
+    public virtual async Task DeleteManyBulkAsync<TEntity>(DeleteManyBulkRequest<TIdentity> request, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        await this.InvokeAsync<DeleteManyBulkRequest<TIdentity>, TEntity>(request, cancellationToken);
     }
 
     /// <summary>
