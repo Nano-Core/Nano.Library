@@ -288,9 +288,7 @@ public abstract class BaseApi : IDisposable
             return this.accessToken?.Token;
         }
 
-        var httpContextAccessor = HttpContextAccessor.Current;
-
-        var jwtToken = httpContextAccessor?
+        var jwtToken = HttpContextAccessor.Current?
             .GetJwtToken();
 
         if (jwtToken != null)
