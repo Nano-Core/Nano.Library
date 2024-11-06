@@ -277,7 +277,7 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> EditManyBulkAsync([FromBody][Required] IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> EditManyBulkAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         await this.Repository
             .UpdateManyBulkAsync(entities, cancellationToken);
@@ -296,6 +296,7 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     /// <response code="401">Unauthorized.</response>
     /// <response code="500">Error occured.</response>
     [HttpPut]
+    [HttpPost]
     [Route("edit/query")]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]

@@ -661,18 +661,13 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        foreach (var entity in entities)
-        {
-            this.Context
-                .Add(entity);
-        }
+        await this.Context
+            .AddRangeAsync(entities, cancellationToken);
 
         if (this.Context.AutoSave)
         {
             await this.SaveChangesAsync(cancellationToken);
         }
-
-        await Task.CompletedTask;
     }
 
     /// <inheritdoc />
@@ -721,24 +716,21 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task UpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual Task UpdateManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        foreach (var entity in entities)
-        {
-            this.Context
-                .Update(entity);
-        }
+        this.Context
+            .UpdateRange(entities);
 
         if (this.Context.AutoSave)
         {
-            await this.SaveChangesAsync(cancellationToken);
+            return this.SaveChangesAsync(cancellationToken);
         }
 
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
@@ -761,18 +753,34 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         where TEntity : class, IEntityUpdatable
         where TCriteria : class, IQueryCriteria, new()
     {
+        if (criteria == null) 
+            throw new ArgumentNullException(nameof(criteria));
+        
+        if (propertyUpdates == null) 
+            throw new ArgumentNullException(nameof(propertyUpdates));
+
+        var updateExpression = this.BuildUpdateExpression<TEntity>(propertyUpdates);
+
         return this.GetEntitySet<TEntity>()
             .Where(criteria)
-            .ExecuteUpdateAsync(x => this.GetSetPropertyCalls(x, propertyUpdates), cancellationToken);
+            .ExecuteUpdateAsync(updateExpression, cancellationToken);
     }
 
     /// <inheritdoc />
     public virtual Task UpdateManyBulkAsync<TEntity>(Expression<Func<TEntity, bool>> where, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
+        if (where == null) 
+            throw new ArgumentNullException(nameof(where));
+
+        if (propertyUpdates == null)
+            throw new ArgumentNullException(nameof(propertyUpdates));
+
+        var updateExpression = this.BuildUpdateExpression<TEntity>(propertyUpdates);
+
         return this.GetEntitySet<TEntity>()
             .Where(where)
-            .ExecuteUpdateAsync(x => this.GetSetPropertyCalls(x, propertyUpdates), cancellationToken);
+            .ExecuteUpdateAsync(updateExpression, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -1113,21 +1121,45 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         this.Context?.Dispose();
     }
 
-    private SetPropertyCalls<TEntity> GetSetPropertyCalls<TEntity>(SetPropertyCalls<TEntity> setPropertyCalls, Dictionary<string, object> propertyUpdates)
-        where TEntity : class, IEntityUpdatable
+    private Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> BuildUpdateExpression<TEntity>(Dictionary<string, object> updates)
+        where TEntity : class
     {
-        if (setPropertyCalls == null) 
-            throw new ArgumentNullException(nameof(setPropertyCalls));
+        if (updates == null) 
+            throw new ArgumentNullException(nameof(updates));
+        
+        var parameter = Expression.Parameter(typeof(SetPropertyCalls<TEntity>), "instance");
 
-        if (propertyUpdates == null) 
-            throw new ArgumentNullException(nameof(propertyUpdates));
-
-        foreach (var keyValuePair in propertyUpdates)
+        Expression expression = parameter;
+        foreach (var (propertyName, value) in updates)
         {
-            setPropertyCalls = setPropertyCalls
-                .SetProperty(x => EF.Property<object>(x, keyValuePair.Key), keyValuePair.Value);
+            var entityParameter = Expression.Parameter(typeof(TEntity), "x");
+            var property = Expression.Property(entityParameter, propertyName);
+
+            var propertyType = property.Type;
+            var genericType = typeof(Func<,>).MakeGenericType(typeof(TEntity), propertyType);
+            var propertyLambda = Expression.Lambda(genericType, property, entityParameter);
+            var constantValue = Expression.Constant(value, propertyType);
+            var valueLambda = Expression.Lambda(genericType, constantValue, entityParameter);
+
+            var setPropertyMethod = typeof(SetPropertyCalls<TEntity>)
+                .GetMethods()
+                .FirstOrDefault(x =>
+                    x.Name == "SetProperty" &&
+                    x.IsGenericMethod &&
+                    x.GetParameters().Length == 2 &&
+                    x.GetParameters()[0].ParameterType.GetGenericArguments()[0] == typeof(TEntity));
+
+            if (setPropertyMethod == null)
+            {
+                throw new NullReferenceException(nameof(setPropertyMethod));
+            }
+
+            var genericSetPropertyMethod = setPropertyMethod
+                .MakeGenericMethod(propertyType);
+
+            expression = Expression.Call(expression, genericSetPropertyMethod, propertyLambda, valueLambda);
         }
 
-        return setPropertyCalls;
+        return Expression.Lambda<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>>(expression, parameter);
     }
 }

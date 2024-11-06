@@ -603,6 +603,7 @@ public abstract class BaseApi : IDisposable
         switch (httpResponse.StatusCode)
         {
             case HttpStatusCode.NotFound:
+            case HttpStatusCode.NoContent:
                 return;
 
             case HttpStatusCode.Unauthorized:
@@ -647,7 +648,8 @@ public abstract class BaseApi : IDisposable
         switch (httpResponse.StatusCode)
         {
             case HttpStatusCode.NotFound:
-                return default;
+            case HttpStatusCode.NoContent:
+                return null;
 
             case HttpStatusCode.Unauthorized:
                 throw new UnauthorizedException();
@@ -1059,13 +1061,13 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="request">The <see cref="CreateManyRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Nothing.</returns>
-    public virtual Task CreateManyAsync<TEntity>(CreateManyRequest request, CancellationToken cancellationToken = default)
+    public virtual async Task CreateManyAsync<TEntity>(CreateManyRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
-        return this.InvokeAsync<CreateManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
+        await this.InvokeAsync<CreateManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
     }
 
     /// <summary>
@@ -1127,13 +1129,13 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="request">The <see cref="EditManyRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Nothing.</returns>
-    public virtual Task EditManyAsync<TEntity>(EditManyRequest request, CancellationToken cancellationToken = default)
+    public virtual async Task EditManyAsync<TEntity>(EditManyRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
-        return this.InvokeAsync<EditManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
+        await this.InvokeAsync<EditManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
     }
 
     /// <summary>
