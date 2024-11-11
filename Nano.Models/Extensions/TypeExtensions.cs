@@ -67,11 +67,17 @@ public static class TypeExtensions
                || type.IsEnum
                || type == typeof(string)
                || type == typeof(Guid)
+               || type == typeof(Guid?)
                || type == typeof(TimeSpan)
+               || type == typeof(TimeSpan?)
                || type == typeof(TimeOnly)
+               || type == typeof(TimeOnly?)
                || type == typeof(DateOnly)
+               || type == typeof(DateOnly?)
                || type == typeof(DateTime)
+               || type == typeof(DateTime?)
                || type == typeof(DateTimeOffset)
+               || type == typeof(DateTimeOffset?)
                || type == typeof(Nullable<>);
     }
 
