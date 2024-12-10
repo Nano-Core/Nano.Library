@@ -72,7 +72,6 @@ public class WebApplication : DefaultApplication
             .UseAuthentication()
             .UseAuthorization()
             .UseHttpSession()
-            .UseHttpRequestVirusScan()
             .UseHttpRequestOptions()
             .UseHttpRequestIdentifier()
             .UseHttpRequestLocalization()
@@ -85,6 +84,7 @@ public class WebApplication : DefaultApplication
                 x.MapDefaultControllerRoute();
                 x.MapRazorPages();
             })
+            .UseHttpRequestVirusScan()
             .Use((context, next) =>
             {
                 if (context.Request.Path == "/signin-facebook")
