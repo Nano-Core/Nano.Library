@@ -21,7 +21,7 @@
 			- Updated all NuGets (missing Entity Framework NuGets... Waiting for dependencies)
 		</releaseNotes>
 		<dependencies>
-			<group targetFramework="net8.0">
+			<group targetFramework="net9.0">
 				<dependency id="Azure.Storage.Files.Shares" version="12.21.0" />
 				<dependency id="Microsoft.Data.SqlClient" version="5.2.2" />
 				<dependency id="Microsoft.Extensions.Identity.Stores" version="9.0.0" />
