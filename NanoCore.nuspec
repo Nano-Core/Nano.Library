@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>9.0.0</version>
+		<version>9.0.1</version>
 		<title>Nano Core</title>
 		<summary>Rapidly built and deploy rich .NET 9.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
@@ -40,7 +40,7 @@
 				<dependency id="AspNetCore.HealthChecks.MySql" version="8.0.1" />
 				<dependency id="AspNetCore.HealthChecks.Sqlite" version="8.1.0" />
 				<dependency id="AspNetCore.HealthChecks.SqlServer" version="8.0.2" />
-				<dependency id="EFCoreSecondLevelCacheInterceptor" version="4.9.0" />
+				<dependency id="EFCoreSecondLevelCacheInterceptor" version="4.8.3" />
 				<dependency id="EntityFrameworkCore.Triggers" version="1.2.3" />
 				<dependency id="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" version="8.0.10" />
 				<dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="8.0.10" />
