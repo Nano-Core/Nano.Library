@@ -1,5 +1,3 @@
-using System;
-
 namespace Nano.App;
 
 /// <summary>
@@ -60,6 +58,6 @@ public class AppOptions
         /// <summary>
         /// Supported.
         /// </summary>
-        public virtual string[] Supported { get; set; } = Array.Empty<string>();
+        public virtual string[] Supported { get; set; } = [];
     }
 }

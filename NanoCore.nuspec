@@ -16,13 +16,14 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Added Api Keys for authentication and authorization.
+			- Added Api Key authentication and authorization.
 			- Added Web.Hosting.ExposeAuditController (default: true).
 			- Added Web.Hosting.ExposeAuthController (default: true).
 			- Added Security.Jwt.IsEnabled (default: true).
 			- Added Security.ApiKey.IsEnabled (default: false).
 			- Added Security.ApiKey.Secret (default: null).
 			- removed SecurityOptions.IsAuth.
+			- Resharper Code issues
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net9.0">

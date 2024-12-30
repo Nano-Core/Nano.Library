@@ -823,18 +823,18 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task DeleteAsync<TEntity, TKey>(TKey id, CancellationToken cancellationToken = default)
+    public virtual Task DeleteAsync<TEntity, TKey>(TKey id, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable, IEntityIdentity<TKey>, new()
         where TKey : IEquatable<TKey>
     {
         var entity = this.Context.Options.UseSoftDeletetion
-            ? await this.Context.FindAsync<TEntity>(id)
+            ? this.Context.Find<TEntity>(id)
             : new TEntity
             {
                 Id = id
             };
 
-        await this.DeleteAsync(entity, cancellationToken);
+        return this.DeleteAsync(entity, cancellationToken);
     }
 
     /// <inheritdoc />

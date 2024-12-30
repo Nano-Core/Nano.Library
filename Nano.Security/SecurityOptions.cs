@@ -254,7 +254,7 @@ public class SecurityOptions
             /// <summary>
             /// Scopes.
             /// </summary>
-            public virtual string[] Scopes { get; set; } = Array.Empty<string>();
+            public virtual string[] Scopes { get; set; } = [];
         }
 
         /// <summary>
@@ -275,7 +275,7 @@ public class SecurityOptions
             /// <summary>
             /// Scopes.
             /// </summary>
-            public virtual string[] Scopes { get; set; } = Array.Empty<string>();
+            public virtual string[] Scopes { get; set; } = [];
         }
 
         /// <summary>
@@ -301,7 +301,7 @@ public class SecurityOptions
             /// <summary>
             /// Scopes.
             /// </summary>
-            public virtual string[] Scopes { get; set; } = Array.Empty<string>();
+            public virtual string[] Scopes { get; set; } = [];
         }
     }
 }

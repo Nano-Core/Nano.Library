@@ -1,5 +1,3 @@
-using System;
-
 namespace Nano.Logging;
 
 /// <summary>
@@ -20,7 +18,7 @@ public class LoggingOptions
     /// <summary>
     /// Log Level Overrides.
     /// </summary>
-    public virtual LogLevelOverride[] LogLevelOverrides { get; set; } = Array.Empty<LogLevelOverride>();
+    public virtual LogLevelOverride[] LogLevelOverrides { get; set; } = [];
 
     /// <summary>
     /// Log Level Override (nested class).

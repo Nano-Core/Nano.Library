@@ -97,7 +97,7 @@ public static class ModelBuilderExtensions
 
                     var columns = x.Properties
                         .Select(y => y.Name)
-                        .Union(new[] { "IsDeleted" })
+                        .Union(["IsDeleted"])
                         .ToArray();
 
                     entity

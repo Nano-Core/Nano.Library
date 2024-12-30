@@ -524,7 +524,7 @@ public static class ServiceCollectionExtensions
                             In = ParameterLocation.Header,
                             Type = SecuritySchemeType.ApiKey,
                             Name = "Authorization",
-                            Description = "JWT Authorization header using the Bearer scheme. Format: Authorization: Bearer [token]",
+                            Description = "JWT Authorization header using the Bearer scheme. Format: Authorization: Bearer [token]"
                         };
 
                         x.AddSecurityDefinition("Bearer", jwtSecurityScheme);

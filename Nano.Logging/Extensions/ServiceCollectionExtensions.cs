@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
             {
                 var loggerProvider = x.GetRequiredService<ILoggerProvider>();
 
-                return new LoggerFactory(new[] { loggerProvider });
+                return new LoggerFactory([loggerProvider]);
             })
             .AddSingleton(x =>
             {

@@ -21,6 +21,6 @@ public class PublishAttribute : Attribute
     /// <param name="propertyNames">The property names.</param>
     public PublishAttribute(params string[] propertyNames)
     {
-        this.PropertyNames = propertyNames ?? Array.Empty<string>();
+        this.PropertyNames = propertyNames ?? [];
     }
 }

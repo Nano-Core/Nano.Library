@@ -39,12 +39,12 @@ public class WebOptions
         /// <summary>
         /// Ports.
         /// </summary>
-        public virtual int[] Ports { get; set; } = Array.Empty<int>();
+        public virtual int[] Ports { get; set; } = [];
 
         /// <summary>
         /// Ports Https.
         /// </summary>
-        public virtual int[] PortsHttps { get; set; } = Array.Empty<int>();
+        public virtual int[] PortsHttps { get; set; } = [];
 
         /// <summary>
         /// Shutdown Timeout.
@@ -159,17 +159,17 @@ public class WebOptions
             /// <summary>
             /// Allowed Origins.
             /// </summary>
-            public virtual string[] AllowedOrigins { get; set; } = Array.Empty<string>();
+            public virtual string[] AllowedOrigins { get; set; } = [];
 
             /// <summary>
             /// Allowed Headers.
             /// </summary>
-            public virtual string[] AllowedHeaders { get; set; } = Array.Empty<string>();
+            public virtual string[] AllowedHeaders { get; set; } = [];
 
             /// <summary>
             /// Allowed methods.
             /// </summary>
-            public virtual string[] AllowedMethods { get; set; } = Array.Empty<string>();
+            public virtual string[] AllowedMethods { get; set; } = [];
 
             /// <summary>
             /// Allow Credentials.
@@ -306,12 +306,12 @@ public class WebOptions
             /// <summary>
             /// Report Uris.
             /// </summary>
-            public virtual string[] ReportUris { get; set; } = Array.Empty<string>();
+            public virtual string[] ReportUris { get; set; } = [];
 
             /// <summary>
             /// Plugin Types.
             /// </summary>
-            public virtual string[] PluginTypes { get; set; } = Array.Empty<string>();
+            public virtual string[] PluginTypes { get; set; } = [];
 
             /// <summary>
             /// Is Enabled.
@@ -358,7 +358,7 @@ public class WebOptions
                 /// Sources.
                 /// Adds the array of custom sources.
                 /// </summary>
-                public virtual string[] Sources { get; set; } = Array.Empty<string>();
+                public virtual string[] Sources { get; set; } = [];
 
                 /// <summary>
                 /// Is Enabled.
@@ -1124,7 +1124,7 @@ public class WebOptions
             /// <summary>
             /// Web-Hooks.
             /// </summary>
-            public virtual HealthCheckWebHookOptions[] WebHooks { get; set; } = Array.Empty<HealthCheckWebHookOptions>();
+            public virtual HealthCheckWebHookOptions[] WebHooks { get; set; } = [];
 
             /// <summary>
             /// Health-Check Web-Hook Options.
