@@ -14,11 +14,6 @@ public class SecurityOptions
     public static string SectionName => "Security";
 
     /// <summary>
-    /// Is Auth.
-    /// </summary>
-    public virtual bool IsAuth { get; set; } = true;
-
-    /// <summary>
     /// Tokens Expiration.
     /// </summary>
     public virtual int TokensExpirationInHours { get; set; } = 24;
@@ -27,6 +22,11 @@ public class SecurityOptions
     /// Jwt Options.
     /// </summary>
     public virtual JwtOptions Jwt { get; set; } = new();
+
+    /// <summary>
+    /// Api Key.
+    /// </summary>
+    public virtual ApiKeyOptions ApiKey { get; set; } = new();
 
     /// <summary>
     /// User Options.
@@ -59,6 +59,11 @@ public class SecurityOptions
     public class JwtOptions
     {
         /// <summary>
+        /// Is Enabled.
+        /// </summary>
+        public virtual bool IsEnabled { get; set; } = true;
+
+        /// <summary>
         /// Issuer.
         /// </summary>
         public virtual string Issuer { get; set; } = "issuer";
@@ -89,6 +94,22 @@ public class SecurityOptions
         /// Refresh Expiration In Hours.
         /// </summary>
         public virtual int RefreshExpirationInHours { get; set; } = 72;
+    }
+
+    /// <summary>
+    /// Api Key Options (nested class)
+    /// </summary>
+    public class ApiKeyOptions
+    {
+        /// <summary>
+        /// Is Enabled.
+        /// </summary>
+        public virtual bool IsEnabled { get; set; } = false;
+
+        /// <summary>
+        /// Secret.
+        /// </summary>
+        public virtual string Secret { get; set; } = null;
     }
 
     /// <summary>

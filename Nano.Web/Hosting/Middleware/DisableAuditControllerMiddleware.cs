@@ -32,7 +32,7 @@ public class DisableAuditControllerMiddleware : IMiddleware
         if (next == null)
             throw new ArgumentNullException(nameof(next));
 
-        if (this.dataOptions.ConnectionString == null || !this.dataOptions.UseAudit)
+        if (this.dataOptions.ConnectionString == null || !this.webOptions.Hosting.ExposeAuditController)
         {
             var controllerRoute = nameof(AuditController).Replace("Controller", string.Empty);
 

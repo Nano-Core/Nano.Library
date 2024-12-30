@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Nano.App.Consts;
-using Nano.Security;
 
 namespace Nano.Web.Hosting.Middleware;
 
@@ -10,17 +9,14 @@ namespace Nano.Web.Hosting.Middleware;
 public class DisableAuthControllerMiddleware : IMiddleware
 {
     private readonly WebOptions webOptions;
-    private readonly SecurityOptions securityOptions;
 
     /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="webOptions">The <see cref="WebOptions"/>.</param>
-    /// <param name="securityOptions">The <see cref="SecurityOptions"/>.</param>
-    public DisableAuthControllerMiddleware(WebOptions webOptions, SecurityOptions securityOptions)
+    public DisableAuthControllerMiddleware(WebOptions webOptions)
     {
         this.webOptions = webOptions ?? throw new ArgumentNullException(nameof(webOptions));
-        this.securityOptions = securityOptions ?? throw new ArgumentNullException(nameof(securityOptions));
     }
 
     /// <inheritdoc />
@@ -32,7 +28,7 @@ public class DisableAuthControllerMiddleware : IMiddleware
         if (next == null)
             throw new ArgumentNullException(nameof(next));
 
-        if (!this.securityOptions.IsAuth)
+        if (!this.webOptions.Hosting.ExposeAuthController)
         {
             if (httpContext.Request.Path.StartsWithSegments($"/{this.webOptions.Hosting.Root}/{Constants.AUTH_CONTROLLER_ROUTE}")) 
             {

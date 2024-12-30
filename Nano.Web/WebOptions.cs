@@ -77,6 +77,16 @@ public class WebOptions
         public virtual bool UseContentTypeOptions { get; set; } = true;
 
         /// <summary>
+        /// Expose Auth Controller.
+        /// </summary>
+        public virtual bool ExposeAuthController { get; set; } = true;
+
+        /// <summary>
+        /// Expose Audit Controller.
+        /// </summary>
+        public virtual bool ExposeAuditController { get; set; } = true;
+
+        /// <summary>
         /// Csp.
         /// Settings for Content-Security-Policy.
         /// </summary>

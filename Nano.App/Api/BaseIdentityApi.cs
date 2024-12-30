@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Nano.App.Api.Requests.Identity;
 using Nano.Models.Interfaces;
 using Nano.Security;
+using Nano.Security.Data.Models;
 using Nano.Security.Models;
 using Claim = Nano.Security.Models.Claim;
 
@@ -328,6 +329,70 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
         return this.InvokeAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Get Api Keys Async.
+    /// </summary>
+    /// <param name="request">The <see cref="GetApiKeysRequest{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The collection of <see cref="IdentityApiKey{TIdentity}"/>.</returns>
+    public virtual Task<IEnumerable<IdentityApiKey<TIdentity>>> GetApiKeysAsync(GetApiKeysRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return this.InvokeAsync<GetApiKeysRequest<TIdentity>, IEnumerable<IdentityApiKey<TIdentity>>>(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Create Api Keys Async.
+    /// </summary>
+    /// <param name="request">The <see cref="CreateApiKeyRequest{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="ChangeEmailToken{TIdentity}"/>.</returns>
+    public virtual Task<IdentityApiKeyCreated<TIdentity>> CreateApiKeysAsync(CreateApiKeyRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return this.InvokeAsync<CreateApiKeyRequest<TIdentity>, IdentityApiKeyCreated<TIdentity>>(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Edit Api Keys Async.
+    /// </summary>
+    /// <param name="request">The <see cref="EditApiKeyRequest{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
+    public virtual Task<IdentityApiKey<TIdentity>> EditApiKeysAsync(EditApiKeyRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return this.InvokeAsync<EditApiKeyRequest<TIdentity>, IdentityApiKey<TIdentity>>(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Revoke Api Keys Async.
+    /// </summary>
+    /// <param name="request">The <see cref="RevokeApiKeyRequest{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
+    public virtual Task<IdentityApiKey<TIdentity>> RevokeApiKeysAsync(RevokeApiKeyRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return this.InvokeAsync<RevokeApiKeyRequest<TIdentity>, IdentityApiKey<TIdentity>>(request, cancellationToken);
     }
 
     /// <summary>

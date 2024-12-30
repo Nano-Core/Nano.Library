@@ -26,6 +26,7 @@ using System.Text.Json.Nodes;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Claim = System.Security.Claims.Claim;
+using System.Text;
 
 namespace Nano.Security;
 
@@ -89,10 +90,10 @@ public abstract class BaseIdentityManager
             UserId = Guid.NewGuid().ToString(),
             UserName = this.Options.User.AdminEmailAddress,
             UserEmail = this.Options.User.AdminEmailAddress,
-            Claims = new[]
-            {
+            Claims =
+            [
                 new Claim(ClaimTypes.Role, BuiltInUserRoles.ADMINISTRATOR)
-            }
+            ]
         };
 
         var accessToken = this.GenerateJwtToken(tokenData);
@@ -268,10 +269,10 @@ public abstract class BaseIdentityManager
             case LogInExternalProviderImplicit implicitLogin:
                 var settings = new GoogleJsonWebSignature.ValidationSettings
                 {
-                    Audience = new[]
-                    {
+                    Audience =
+                    [
                         externalLoginOptions.ClientId
-                    }
+                    ]
                 };
 
                 var payload = await GoogleJsonWebSignature
@@ -491,6 +492,26 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
     }
 
     /// <summary>
+    /// Gets the identity user.
+    /// </summary>
+    /// <param name="userId">The user id.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
+    public virtual Task<IdentityUser<TIdentity>> GetUserAsync(TIdentity userId, CancellationToken cancellationToken = default)
+    {
+        var userIdString = userId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
+        return this.UserManager
+            .FindByIdAsync(userIdString);
+    }
+
+    /// <summary>
     /// Signs in a user.
     /// </summary>
     /// <param name="logIn">The <see cref="LogIn"/>.</param>
@@ -513,7 +534,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
                 var identityUser = await this.UserManager
                     .FindByNameAsync(logIn.Username);
 
-                return await this.GenerateJwtToken(identityUser, appId, logIn.IsRefreshable, null, null, null, logIn.TransientClaims, logIn.TransientRoles);
+                return await this.GenerateJwtToken(identityUser, appId, logIn.IsRefreshable, null, null, null, logIn.TransientClaims, logIn.TransientRoles, cancellationToken);
             }
 
             if (result.IsLockedOut)
@@ -597,7 +618,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         await this.SignInManager
             .SignInAsync(identityUser, logInExternalDirect.IsRememberMe);
 
-        return await this.GenerateJwtToken(identityUser, appId, logInExternalDirect.IsRefreshable, logInExternalDirect.ExternalLogInData.ExternalToken.Name, logInExternalDirect.ExternalLogInData.ExternalToken.Token, logInExternalDirect.ExternalLogInData.ExternalToken.RefreshToken, logInExternalDirect.TransientClaims, logInExternalDirect.TransientRoles);
+        return await this.GenerateJwtToken(identityUser, appId, logInExternalDirect.IsRefreshable, logInExternalDirect.ExternalLogInData.ExternalToken.Name, logInExternalDirect.ExternalLogInData.ExternalToken.Token, logInExternalDirect.ExternalLogInData.ExternalToken.RefreshToken, logInExternalDirect.TransientClaims, logInExternalDirect.TransientRoles, cancellationToken);
     }
 
     /// <summary>
@@ -719,7 +740,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
             var externalProviderData = await this.RefreshExternalProviderTokenOrDefault(externalProviderName, externalProviderRefreshToken, cancellationToken);
 
-            return await this.GenerateJwtToken(identityUser, identityUserToken.Name, true, externalProviderData.Name, externalProviderData.Token, externalProviderData.RefreshToken, logInRefresh.TransientClaims, logInRefresh.TransientRoles);
+            return await this.GenerateJwtToken(identityUser, identityUserToken.Name, true, externalProviderData.Name, externalProviderData.Token, externalProviderData.RefreshToken, logInRefresh.TransientClaims, logInRefresh.TransientRoles, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -796,7 +817,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
             if (ex.Message.Contains(MESSAGE) || ex.InnerException != null && ex.InnerException.Message.Contains(MESSAGE))
             {
-                this.ThrowIdentityExceptions(new[] { new IdentityErrorDescriber().DuplicatePhoneNumber(signUp.PhoneNumber) });
+                this.ThrowIdentityExceptions([new IdentityErrorDescriber().DuplicatePhoneNumber(signUp.PhoneNumber)]);
             }
 
             throw;
@@ -916,6 +937,188 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         {
             this.ThrowIdentityExceptions(result.Errors);
         }
+    }
+
+    /// <summary>
+    /// Gets api key of a user.
+    /// </summary>
+    /// <param name="id">The id.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>>.</returns>
+    public virtual async Task<IdentityApiKey<TIdentity>> GetApiKeyAsync(TIdentity id, CancellationToken cancellationToken = default)
+    {
+        var userIdString = id
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
+        var identityApiKey = await this.DbContext
+            .Set<IdentityApiKey<TIdentity>>()
+            .FirstOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
+
+        return identityApiKey;
+    }
+
+    /// <summary>
+    /// Gets the api keys of a user.
+    /// </summary>
+    /// <param name="userId">The user id.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IEnumerable{IdentityApiKey}"/>>.</returns>
+    public virtual async Task<IEnumerable<IdentityApiKey<TIdentity>>> GetApiKeysAsync(TIdentity userId, CancellationToken cancellationToken = default)
+    {
+        var userIdString = userId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
+        var user = await this.UserManager
+            .FindByIdAsync(userIdString);
+
+        if (user == null)
+        {
+            throw new NullReferenceException(nameof(user));
+        }
+
+        var identityApiKeys = this.DbContext
+            .Set<IdentityApiKey<TIdentity>>()
+            .Where(x => x.IdentityUserId.Equals(userId));
+
+        return identityApiKeys;
+    }
+
+    /// <summary>
+    /// Create Api Key.
+    /// </summary>
+    /// <param name="createApiKey">The create the key.</param>
+    /// <param name="apiKey">The generated api key.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
+    public virtual IdentityApiKey<TIdentity> CreateApiKeyAsync(CreateApiKey<TIdentity> createApiKey, out string apiKey, CancellationToken cancellationToken = default)
+    {
+        if (createApiKey == null)
+            throw new ArgumentNullException(nameof(createApiKey));
+
+        if (this.Options.ApiKey.Secret == null)
+        {
+            throw new NullReferenceException(nameof(this.Options.ApiKey.Secret));
+        }
+
+        apiKey = PasswordGenerator.Generate(new PasswordOptions { RequiredLength = 48 });
+
+        var base64Hash = apiKey
+            .HmacEncrypt(this.Options.ApiKey.Secret);
+
+        var identityApiKey = new IdentityApiKey<TIdentity>
+        {
+            IdentityUserId = createApiKey.UserId,
+            Name = createApiKey.Name,
+            ExpireAt = createApiKey.ExpireAt,
+            Hash = base64Hash
+        };
+
+        var createdEntry = this.DbContext
+            .Add(identityApiKey);
+
+        this.DbContext
+            .SaveChanges();
+
+        return createdEntry.Entity;
+    }
+
+    /// <summary>
+    /// Validate Api Key.
+    /// </summary>
+    /// <param name="apiKey">The api key.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
+    public async Task<IdentityApiKey<TIdentity>> ValidateApiKeyAsync(string apiKey, CancellationToken cancellationToken = default)
+    {
+        if (apiKey == null)
+            throw new ArgumentNullException(nameof(apiKey));
+
+        if (this.Options.ApiKey.Secret == null)
+        {
+            throw new NullReferenceException(nameof(this.Options.ApiKey.Secret));
+        }
+
+        var base64Hash = apiKey.HmacEncrypt(this.Options.ApiKey.Secret);
+
+        var now = DateTimeOffset.UtcNow;
+
+        var identityApiKey = await this.DbContext
+            .Set<IdentityApiKey<TIdentity>>()
+            .Include(x => x.IdentityUser)
+            .FirstOrDefaultAsync(x => x.Hash == base64Hash && (x.RevokedAt == null || x.RevokedAt > now) && (x.ExpireAt == null || x.ExpireAt > now), cancellationToken);
+
+        if (identityApiKey == null)
+        {
+            return null;
+        }
+
+        var isValid = CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(base64Hash), Encoding.UTF8.GetBytes(identityApiKey.Hash));
+
+        if (!isValid)
+        {
+            return null;
+        }
+
+        return identityApiKey;
+    }
+
+    /// <summary>
+    /// Revoke Api Key.
+    /// </summary>
+    /// <param name="id">The id.</param>
+    /// <param name="revokeAt">The revoke at.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
+    public virtual async Task<IdentityApiKey<TIdentity>> RevokeApiKeyAsync(TIdentity id, DateTimeOffset? revokeAt = null, CancellationToken cancellationToken = default)
+    {
+        var identityApiKey = await this.DbContext
+            .Set<IdentityApiKey<TIdentity>>()
+            .FirstOrDefaultAsync(x => x.Id.Equals(id) && x.RevokedAt == null, cancellationToken);
+
+        identityApiKey.RevokedAt = revokeAt ?? DateTimeOffset.UtcNow;
+
+        this.DbContext
+            .Update(identityApiKey);
+
+        await this.DbContext
+            .SaveChangesAsync(cancellationToken);
+
+        return identityApiKey;
+    }
+
+    /// <summary>
+    /// Edit Api Key.
+    /// </summary>
+    /// <param name="id">The api key id.</param>
+    /// <param name="editApiKey">The update api key.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
+    public virtual async Task<IdentityApiKey<TIdentity>> EditApiKeyAsync(TIdentity id, EditApiKey editApiKey, CancellationToken cancellationToken = default)
+    {
+        var identityApiKey = await this.DbContext
+            .Set<IdentityApiKey<TIdentity>>()
+            .FirstOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
+
+        identityApiKey.Name = editApiKey.Name;
+        identityApiKey.ExpireAt = editApiKey.ExpireAt;
+
+        this.DbContext
+            .Update(identityApiKey);
+
+        await this.DbContext
+            .SaveChangesAsync(cancellationToken);
+
+        return identityApiKey;
     }
 
     /// <summary>
@@ -1263,7 +1466,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         if (!success)
         {
-            this.ThrowIdentityExceptions(new[] { new IdentityError { Description = "Invalid Token." } });
+            this.ThrowIdentityExceptions([new IdentityError { Description = "Invalid Token." }]);
         }
     }
 
@@ -2063,6 +2266,49 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         }
     }
 
+    internal async Task<IList<Claim>> GetAllClaims(IdentityUser<TIdentity> identityUser, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default)
+    {
+        if (identityUser == null)
+            throw new ArgumentNullException(nameof(identityUser));
+
+        transientRoles ??= new List<string>();
+        transientClaims ??= new Dictionary<string, string>();
+
+        var userClaims = await this.UserManager
+            .GetClaimsAsync(identityUser);
+
+        var query = from userRole in this.DbContext.Set<IdentityUserRole<TIdentity>>()
+            join role in this.DbContext.Set<IdentityRole<TIdentity>>() on userRole.RoleId equals role.Id
+            where userRole.UserId.Equals(identityUser.Id)
+            select new
+            {
+                role.Id,
+                role.Name
+            };
+
+        var roles = await query
+            .ToListAsync(cancellationToken);
+
+        var roleClaims = await this.DbContext
+            .Set<IdentityRoleClaim<TIdentity>>()
+            .Where(rc => roles.Select(y => y.Id).Contains(rc.RoleId))
+            .Select(c => new Claim(c.ClaimType, c.ClaimValue))
+            .ToListAsync(cancellationToken);
+
+        var rolesAsClaims = roles
+            .Select(y => new Claim(ClaimTypes.Role, y.Name))
+            .Concat(transientRoles.Select(x => new Claim(ClaimTypes.Role, x)));
+
+        var claims = userClaims
+            .Union(roleClaims)
+            .Union(rolesAsClaims)
+            .Union(transientClaims
+                .Select(x => new Claim(x.Key, x.Value)))
+            .ToList();
+
+        return claims;
+    }
+
     private async Task AssignSignUpRolesAndClaims(IdentityUser<TIdentity> identityUser, IEnumerable<string> roles2 = null, IDictionary<string, string> claims2 = null)
     {
         if (identityUser == null)
@@ -2099,7 +2345,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
             }
         }
     }
-    private async Task<AccessToken> GenerateJwtToken(IdentityUser<TIdentity> identityUser, string appId, bool isRefreshable, string externalProviderName, string externalProviderToken, string externalProviderRefreshToken, IDictionary<string, string> transientClaims, IEnumerable<string> transientRoles)
+    private async Task<AccessToken> GenerateJwtToken(IdentityUser<TIdentity> identityUser, string appId, bool isRefreshable, string externalProviderName, string externalProviderToken, string externalProviderRefreshToken, IDictionary<string, string> transientClaims, IEnumerable<string> transientRoles, CancellationToken cancellationToken = default)
     {
         if (identityUser == null)
             throw new ArgumentNullException(nameof(identityUser));
@@ -2107,25 +2353,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (appId == null)
             throw new ArgumentNullException(nameof(appId));
 
-        var roles = await this.UserManager
-            .GetRolesAsync(identityUser);
-
-        foreach (var transientRole in transientRoles)
-        {
-            roles
-                .Add(transientRole);
-        }
-
-        var userClaims = await this.UserManager
-            .GetClaimsAsync(identityUser);
-
-        var roleClaims = roles
-            .Select(y => new Claim(ClaimTypes.Role, y));
-
-        var claims = userClaims
-            .Union(roleClaims)
-            .Union(transientClaims
-                .Select(x => new Claim(x.Key, x.Value)));
+        var claims = await this.GetAllClaims(identityUser, transientRoles, transientClaims, cancellationToken);
 
         var tokenData = new AccessTokenData
         {

@@ -305,9 +305,6 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         var securityOptions = this.GetService<SecurityOptions>();
 
-        if (!securityOptions.IsAuth)
-            return;
-
         await this.AddRole(BuiltInUserRoles.GUEST);
         await this.AddRole(BuiltInUserRoles.READER);
         await this.AddRole(BuiltInUserRoles.WRITER);
@@ -344,7 +341,8 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         modelBuilder
             .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()
-            .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>();
+            .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>()
+            .AddMapping<IdentityApiKey<TIdentity>, IdentityApiKeyMapping<TIdentity>>();
 
         modelBuilder
             .Entity<IdentityUserLogin<TIdentity>>()
@@ -356,7 +354,8 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         modelBuilder
             .Entity<IdentityUserTokenExpiry<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER_TOKEN_EXPIRY);
+            .ToTable(TableNames.IDENTITY_USER_TOKEN_EXPIRY)
+            .Property(x => x.ExpireAt);
 
         modelBuilder
             .Entity<IdentityUserClaim<TIdentity>>()

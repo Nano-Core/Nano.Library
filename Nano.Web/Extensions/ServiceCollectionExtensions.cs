@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
@@ -33,11 +34,14 @@ using Nano.Web.Hosting.Middleware;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using DynamicExpression.Extensions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.Features;
 using Nano.Config;
 using Nano.Models;
 using Nano.Models.Const;
 using Nano.Web.Hosting.ActionFilters;
+using Nano.Web.Hosting.Authentication;
+using Nano.Web.Hosting.Authentication.Const;
 using Nano.Web.Hosting.Serialization.Json.Const;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
 
@@ -129,7 +133,7 @@ public static class ServiceCollectionExtensions
             .AddSecurity(securityOptions)
             .AddRepository()
             .AddVersioning(webOptions)
-            .AddDocumentation(appOptions, webOptions)
+            .AddDocumentation(appOptions, webOptions, securityOptions)
             .AddLocalizations()
             .AddTimeZone(appOptions)
             .AddVirusScan(webOptions)
@@ -181,13 +185,13 @@ public static class ServiceCollectionExtensions
                 x.Conventions
                     .Insert(0, routePrefixConvention);
 
-                if (dataOptions.ConnectionString == null || !securityOptions.IsAuth)
+                if (dataOptions.ConnectionString == null || !webOptions.Hosting.ExposeAuthController)
                 {
                     x.Conventions
                         .Add(new AuthActionHidingConvention());
                 }
 
-                if (dataOptions.ConnectionString == null || !dataOptions.UseAudit)
+                if (dataOptions.ConnectionString == null || !webOptions.Hosting.ExposeAuditController)
                 {
                     x.Conventions
                         .Add(new AuditActionHidingConvention());
@@ -258,64 +262,103 @@ public static class ServiceCollectionExtensions
         if (securityOptions == null)
             throw new ArgumentNullException(nameof(securityOptions));
 
-        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap
+            .Clear();
+
+        var authenticationSchemes = new List<string>();
+
+        if (securityOptions.Jwt.IsEnabled)
+        {
+            authenticationSchemes
+                .Add(JwtBearerDefaults.AuthenticationScheme);
+        }
+
+        if (securityOptions.ApiKey.IsEnabled)
+        {
+            authenticationSchemes
+                .Add(ApiKeyDefaults.AuthenticationScheme);
+        }
 
         services
-            .AddAuthorization()
+            .AddAuthorization(x =>
+            {
+                x.AddPolicy(AuthenticationPolicyDefaults.POLICY, y => y
+                    .AddAuthenticationSchemes(authenticationSchemes.ToArray())
+                    .RequireAuthenticatedUser());
+            });
+
+        var defaultAuthenticationScheme = securityOptions.Jwt.IsEnabled
+            ? JwtBearerDefaults.AuthenticationScheme
+            : securityOptions.ApiKey.IsEnabled 
+                ? ApiKeyDefaults.AuthenticationScheme 
+                : null;
+
+        var authenticationBuilder = services
             .AddAuthentication(x =>
             {
-                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x =>
-            {
-                var rsaSecurityKey = services
-                    .BuildServiceProvider()
-                    .GetRequiredService<RsaSecurityKey>();
-
-                x.SaveToken = true;
-                x.IncludeErrorDetails = true;
-                x.RequireHttpsMetadata = false;
-
-                x.Audience = securityOptions.Jwt.Audience;
-                x.ClaimsIssuer = securityOptions.Jwt.Issuer;
-
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateActor = true,
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = securityOptions.Jwt.Issuer,
-                    ValidAudience = securityOptions.Jwt.Audience,
-                    IssuerSigningKey = rsaSecurityKey,
-                    ClockSkew = TimeSpan.FromMinutes(5)
-                };
-
-                x.Events = new JwtBearerEvents
-                {
-                    OnAuthenticationFailed = context =>
-                    {
-                        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                        {
-                            const string KEY = "Token-Expired";
-
-                            context.Response.Headers
-                                .Add(KEY, true.ToString());
-                        }
-
-                        return Task.CompletedTask;
-                    }
-                };
-            })
-            .AddExternalLogins(securityOptions)
-            .AddCookie(x =>
-            {
-                x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                x.Cookie.Expiration = TimeSpan.FromMinutes(securityOptions.Jwt.ExpirationInMinutes);
+                x.DefaultScheme = defaultAuthenticationScheme;
+                x.DefaultChallengeScheme = defaultAuthenticationScheme;
+                x.DefaultAuthenticateScheme = defaultAuthenticationScheme;
             });
+
+        if (securityOptions.Jwt.IsEnabled)
+        {
+            authenticationBuilder
+                .AddJwtBearer(x =>
+                {
+                    var rsaSecurityKey = services
+                        .BuildServiceProvider()
+                        .GetRequiredService<RsaSecurityKey>();
+
+                    x.SaveToken = true;
+                    x.IncludeErrorDetails = true;
+                    x.RequireHttpsMetadata = false;
+
+                    x.Audience = securityOptions.Jwt.Audience;
+                    x.ClaimsIssuer = securityOptions.Jwt.Issuer;
+
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateActor = true,
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = securityOptions.Jwt.Issuer,
+                        ValidAudience = securityOptions.Jwt.Audience,
+                        IssuerSigningKey = rsaSecurityKey,
+                        ClockSkew = TimeSpan.FromMinutes(5)
+                    };
+
+                    x.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                            {
+                                const string KEY = "Token-Expired";
+
+                                context.Response.Headers
+                                    .Add(KEY, true.ToString());
+                            }
+
+                            return Task.CompletedTask;
+                        }
+                    };
+                })
+                .AddExternalLogins(securityOptions)
+                .AddCookie(x =>
+                {
+                    x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    x.Cookie.Expiration = TimeSpan.FromMinutes(securityOptions.Jwt.ExpirationInMinutes);
+                });
+        }
+
+        if (securityOptions.ApiKey.IsEnabled)
+        {
+            authenticationBuilder
+                .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(ApiKeyDefaults.AuthenticationScheme, _ => { });
+        }
 
         return services;
     }
@@ -416,7 +459,7 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    private static IServiceCollection AddDocumentation(this IServiceCollection services, AppOptions appOptions, WebOptions webOptions)
+    private static IServiceCollection AddDocumentation(this IServiceCollection services, AppOptions appOptions, WebOptions webOptions, SecurityOptions securityOptions)
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
@@ -472,19 +515,41 @@ public static class ServiceCollectionExtensions
                     x.DocumentFilter<RemoveVersionsRoutesFilter>();
                     x.DocumentFilter<LowercaseRoutesDocumentFilter>();
 
-                    var securityScheme = new OpenApiSecurityScheme
-                    {
-                        In = ParameterLocation.Header,
-                        Type = SecuritySchemeType.ApiKey,
-                        Name = "Authorization",
-                        Description = "JWT Authorization header using the Bearer scheme. Format: Authorization: Bearer [token]"
-                    };
+                    var openApiSecurityRequirement = new OpenApiSecurityRequirement();
 
-                    x.AddSecurityDefinition("Bearer", securityScheme);
-                    x.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    if (securityOptions.Jwt.IsEnabled)
                     {
-                        { securityScheme, new string[] { } }
-                    });
+                        var jwtSecurityScheme = new OpenApiSecurityScheme
+                        {
+                            In = ParameterLocation.Header,
+                            Type = SecuritySchemeType.ApiKey,
+                            Name = "Authorization",
+                            Description = "JWT Authorization header using the Bearer scheme. Format: Authorization: Bearer [token]",
+                        };
+
+                        x.AddSecurityDefinition("Bearer", jwtSecurityScheme);
+
+                        openApiSecurityRequirement
+                            .Add(jwtSecurityScheme, new List<string>());
+                    }
+
+                    if (securityOptions.ApiKey.IsEnabled)
+                    {
+                        var apiKeySecurityScheme = new OpenApiSecurityScheme
+                        {
+                            Name = "x-api-key",
+                            Type = SecuritySchemeType.ApiKey,
+                            In = ParameterLocation.Header,
+                            Description = "API Key needed to access endpoints."
+                        };
+
+                        x.AddSecurityDefinition("Api-Key", apiKeySecurityScheme);
+                        
+                        openApiSecurityRequirement
+                            .Add(apiKeySecurityScheme, new List<string>());
+                    }
+
+                    x.AddSecurityRequirement(openApiSecurityRequirement);
 
                     TypesHelper.GetAllTypes()
                         .Where(y => y.IsTypeOf(typeof(BaseController)))

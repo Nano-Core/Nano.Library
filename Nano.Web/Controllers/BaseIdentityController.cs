@@ -17,6 +17,7 @@ using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security;
 using Nano.Security.Const;
+using Nano.Security.Data.Models;
 using Nano.Security.Models;
 using Claim = Nano.Security.Models.Claim;
 
@@ -656,6 +657,127 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
             .RemoveExternalLoginAsync(cancellationToken);
 
         return this.Ok();
+    }
+
+    /// <summary>
+    /// Get Api Keys.
+    /// </summary>
+    /// <param name="userId">The user id.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The api keys.</returns>
+    /// <response code="200">Ok.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpGet]
+    [Route("api-keys/{userId}")]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IEnumerable<IdentityApiKey<Guid>>), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> GetApiKeysAsync([FromRoute][Required]TIdentity userId, CancellationToken cancellationToken = default)
+    {
+        var apiKey = await this.IdentityManager
+            .GetApiKeysAsync(userId, cancellationToken);
+
+        return this.Ok(apiKey);
+    }
+
+    /// <summary>
+    /// Create Api Key.
+    /// </summary>
+    /// <param name="createApiKey">The create api key.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The create api key response.</returns>
+    /// <response code="201">Created.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("api-keys/create")]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IdentityApiKeyCreated<Guid>), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> CreateApiKeyAsync([FromBody][Required]CreateApiKey<TIdentity> createApiKey, CancellationToken cancellationToken = default)
+    {
+        await Task.CompletedTask;
+
+        var identityApiKey = this.IdentityManager
+            .CreateApiKeyAsync(createApiKey, out var apiKey, cancellationToken);
+
+        var identityApiKeyCreated = new IdentityApiKeyCreated<TIdentity>
+        {
+            IdentityApiKey = identityApiKey,
+            UnencryptedHash = apiKey
+        };
+
+        return this.Created("api-keys/create", identityApiKeyCreated);
+    }
+
+    /// <summary>
+    /// Edit Api Key.
+    /// </summary>
+    /// <param name="id">The api key apiKeyId.</param>
+    /// <param name="editApiKey">The edit api key.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The identity api key.</returns>
+    /// <response code="200">Ok.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPut]
+    [HttpPost]
+    [Route("api-keys/edit/{id}")]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IdentityApiKey<Guid>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> EditApiKeyAsync([FromRoute][Required]TIdentity id, [FromBody][Required]EditApiKey editApiKey, CancellationToken cancellationToken = default)
+    {
+        var identityApiKey = await this.IdentityManager
+            .EditApiKeyAsync(id, editApiKey, cancellationToken);
+
+        return this.Ok(identityApiKey);
+    }
+
+    /// <summary>
+    /// Revoke Api Key.
+    /// </summary>
+    /// <param name="id">The api key id.</param>
+    /// <param name="revokeAt">The date time when the api key will be revoked.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The identity api key.</returns>
+    /// <response code="200">Ok.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpDelete]
+    [Route("api-keys/revoke/{id}")]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IdentityApiKey<Guid>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> RevokeApiKeyAsync([FromRoute][Required]TIdentity id, [FromQuery]DateTimeOffset? revokeAt, CancellationToken cancellationToken = default)
+    {
+        var identityApiKey = await this.IdentityManager
+            .RevokeApiKeyAsync(id, revokeAt, cancellationToken);
+
+        return this.Ok(identityApiKey);
     }
 
     /// <summary>
