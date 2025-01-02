@@ -798,7 +798,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (signUp == null)
             throw new ArgumentNullException(nameof(signUp));
 
-        var user = new IdentityUser<TIdentity>
+        var identityUser = new IdentityUser<TIdentity>
         {
             Email = signUp.EmailAddress,
             UserName = signUp.Username,
@@ -809,7 +809,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         try
         {
             createResult = await this.UserManager
-                .CreateAsync(user, signUp.Password);
+                .CreateAsync(identityUser, signUp.Password);
         }
         catch (DbUpdateException ex)
         {
@@ -828,7 +828,26 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
             this.ThrowIdentityExceptions(createResult.Errors);
         }
 
-        await this.AssignSignUpRolesAndClaims(user, signUp.Roles, signUp.Claims);
+        await this.AssignSignUpRolesAndClaims(identityUser, signUp.Roles, signUp.Claims);
+
+        return identityUser;
+    }
+
+    /// <summary>
+    /// Sign-Up a new user.
+    /// </summary>
+    /// <typeparam name="TUser">The user type.</typeparam>
+    /// <param name="signUp">The <see cref="SignUp"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IdentityUser"/>.</returns>
+    public virtual async Task<TUser> SignUpAsync<TUser>(SignUp<TUser, TIdentity> signUp, CancellationToken cancellationToken = default) 
+        where TUser : IEntityUser<TIdentity>
+    {
+        if (signUp == null)
+            throw new ArgumentNullException(nameof(signUp));
+
+        var identityUser = await this.SignUpAsync(signUp as SignUp, cancellationToken);
+        var user = await this.CreateUser(signUp.User, identityUser, cancellationToken);
 
         return user;
     }

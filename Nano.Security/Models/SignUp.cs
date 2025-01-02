@@ -7,7 +7,7 @@ namespace Nano.Security.Models;
 /// <summary>
 /// Sign Up.
 /// </summary>
-public abstract class SignUp : BaseSignUp
+public class SignUp : BaseSignUp
 {
     /// <summary>
     /// Email.
