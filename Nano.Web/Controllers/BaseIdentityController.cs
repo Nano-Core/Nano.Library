@@ -92,11 +92,8 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpAsync([FromBody][Required]SignUp<TEntity, TIdentity> signUp, CancellationToken cancellationToken = default)
     {
-        var identityUser = await this.IdentityManager
-            .SignUpAsync(signUp, cancellationToken);
-
         var user = await this.IdentityManager
-            .CreateUser(signUp.User, identityUser, cancellationToken);
+            .SignUpAsync(signUp, cancellationToken);
 
         return this.Created("signup", user);
     }
