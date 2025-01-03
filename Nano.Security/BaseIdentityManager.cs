@@ -1038,7 +1038,6 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         {
             IdentityUserId = createApiKey.UserId,
             Name = createApiKey.Name,
-            ExpireAt = createApiKey.ExpireAt,
             Hash = base64Hash
         };
 
@@ -1074,7 +1073,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         var identityApiKey = await this.DbContext
             .Set<IdentityApiKey<TIdentity>>()
             .Include(x => x.IdentityUser)
-            .FirstOrDefaultAsync(x => x.Hash == base64Hash && (x.RevokedAt == null || x.RevokedAt > now) && (x.ExpireAt == null || x.ExpireAt > now), cancellationToken);
+            .FirstOrDefaultAsync(x => x.Hash == base64Hash && (x.RevokedAt == null || x.RevokedAt > now), cancellationToken);
 
         if (identityApiKey == null)
         {
@@ -1129,7 +1128,6 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
             .FirstOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
 
         identityApiKey.Name = editApiKey.Name;
-        identityApiKey.ExpireAt = editApiKey.ExpireAt;
 
         this.DbContext
             .Update(identityApiKey);
@@ -2020,6 +2018,11 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
             ClaimType = replaceClaim.ClaimType
         }, cancellationToken);
 
+        if (existingClaim == null)
+        {
+            throw new NullReferenceException(nameof(existingClaim));
+        }
+
         var newClaim = new IdentityUserClaim<TIdentity>
         {
             ClaimType = replaceClaim.ClaimType,
@@ -2031,6 +2034,62 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         var result = await this.UserManager
             .ReplaceClaimAsync(user, existingClaim, claim);
+
+        if (!result.Succeeded)
+        {
+            this.ThrowIdentityExceptions(result.Errors);
+        }
+
+        return newClaim;
+    }
+
+    /// <summary>
+    /// Add or Replace a <see cref="IdentityUserClaim{TIdentity}"/> to a user.
+    /// </summary>
+    /// <param name="replaceClaim">The <see cref="ReplaceClaim{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IdentityUserClaim{TIdentity}"/>.</returns>
+    public virtual async Task<IdentityUserClaim<TIdentity>> AddOrReplaceUserClaimAsync(ReplaceClaim<TIdentity> replaceClaim, CancellationToken cancellationToken = default)
+    {
+        if (replaceClaim == null)
+            throw new ArgumentNullException(nameof(replaceClaim));
+
+        var userIdString = replaceClaim.UserId
+            .ToString();
+
+        if (userIdString == null)
+        {
+            throw new ArgumentNullException(nameof(userIdString));
+        }
+
+        var user = await this.UserManager
+            .FindByIdAsync(userIdString);
+
+        if (user == null)
+        {
+            throw new NullReferenceException(nameof(user));
+        }
+
+        var existingClaim = await this.GetUserClaimAsync(new GetClaim<TIdentity>
+        {
+            UserId = user.Id,
+            ClaimType = replaceClaim.ClaimType
+        }, cancellationToken);
+
+        var newClaim = new IdentityUserClaim<TIdentity>
+        {
+            ClaimType = replaceClaim.ClaimType,
+            ClaimValue = replaceClaim.NewClaimValue
+        };
+
+        var claim = newClaim
+            .ToClaim();
+
+        var result = existingClaim == null
+            ? await this.UserManager
+                .AddClaimAsync(user, claim)
+            : await this.UserManager
+                .ReplaceClaimAsync(user, existingClaim, claim);
 
         if (!result.Succeeded)
         {

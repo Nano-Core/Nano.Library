@@ -49,6 +49,11 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationS
         var identityApiKey = await this.identityManager
             .ValidateApiKeyAsync(apiKey);
 
+        if (identityApiKey == null)
+        {
+            return AuthenticateResult.Fail("Invalid API Key");
+        }
+
         var identityUser = await this.identityManager
             .GetUserAsync(identityApiKey.IdentityUserId);
 

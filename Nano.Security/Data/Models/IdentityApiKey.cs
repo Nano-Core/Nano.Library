@@ -41,11 +41,6 @@ public class IdentityApiKey<TIdentity> : BaseEntityIdentity<TIdentity>
     public virtual DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
     /// <summary>
-    /// Expire At.
-    /// </summary>
-    public virtual DateTimeOffset? ExpireAt { get; set; }
-
-    /// <summary>
     /// Is Revoked.
     /// </summary>
     public virtual DateTimeOffset? RevokedAt { get; set; }

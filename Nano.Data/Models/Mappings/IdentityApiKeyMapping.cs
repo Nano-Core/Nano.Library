@@ -40,12 +40,6 @@ public class IdentityApiKeyMapping<TIdentity> : BaseEntityIdentityMapping<Identi
             .IsRequired();
 
         builder
-            .Property(x => x.ExpireAt);
-
-        builder
-            .HasIndex(x => x.ExpireAt);
-
-        builder
             .Property(x => x.RevokedAt);
 
         builder
