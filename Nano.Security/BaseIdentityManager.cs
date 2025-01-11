@@ -450,7 +450,7 @@ public abstract class BaseIdentityManager
 /// <summary>
 /// Base Identity Manager.
 /// </summary>
-public class BaseIdentityManager<TIdentity> : BaseIdentityManager
+public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
@@ -1479,7 +1479,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         }
 
         var success = await this.UserManager
-            .VerifyUserTokenAsync(user, CustomTokenOptions.CustomTokenProvider, customToken.Purpose, customToken.Token);
+            .VerifyUserTokenAsync(user, CustomTokenOptions.CUSTOM_TOKEN_PROVIDER, customToken.Purpose, customToken.Token);
 
         if (!success)
         {
@@ -1714,7 +1714,7 @@ public class BaseIdentityManager<TIdentity> : BaseIdentityManager
         }
 
         var token = await this.UserManager
-            .GenerateUserTokenAsync(user, CustomTokenOptions.CustomTokenProvider, generateCustomPurposeToken.Purpose);
+            .GenerateUserTokenAsync(user, CustomTokenOptions.CUSTOM_TOKEN_PROVIDER, generateCustomPurposeToken.Purpose);
 
         return new CustomPurposeToken<TIdentity>
         {

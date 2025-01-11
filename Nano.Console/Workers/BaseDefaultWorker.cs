@@ -8,12 +8,12 @@ using Nano.Repository.Interfaces;
 namespace Nano.Console.Workers;
 
 /// <summary>
-/// Default Worker.
+/// Base Default Worker (abstract).
 /// </summary>
-public class DefaultWorker : BaseWorker<IRepository>
+public abstract class BaseDefaultWorker : BaseWorker<IRepository>
 {
     /// <inheritdoc />
-    public DefaultWorker(ILogger logger, IRepository repository, IEventing eventing, IHostApplicationLifetime applicationLifetime)
+    protected BaseDefaultWorker(ILogger logger, IRepository repository, IEventing eventing, IHostApplicationLifetime applicationLifetime)
         : base(logger, repository, eventing, applicationLifetime)
     {
     }

@@ -49,7 +49,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
 
         services
-            .AddScoped<BaseIdentityManager<TIdentity>>()
+            .AddScoped<DefaultIdentityManager<TIdentity>>()
             .AddScoped<DefaultIdentityManager>();
 
         return services;

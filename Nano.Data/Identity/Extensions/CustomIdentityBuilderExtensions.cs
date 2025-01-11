@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Identity;
 using Nano.Security;
+using Nano.Security.Const;
 
 namespace Nano.Data.Identity.Extensions;
 
@@ -23,6 +24,6 @@ public static class CustomIdentityBuilderExtensions
         var totpProvider = typeof(CustomTokenProvider<>).MakeGenericType(userType);
 
         return builder
-            .AddTokenProvider(CustomTokenOptions.CustomTokenProvider, totpProvider);
+            .AddTokenProvider(CustomTokenOptions.CUSTOM_TOKEN_PROVIDER, totpProvider);
     }
 }

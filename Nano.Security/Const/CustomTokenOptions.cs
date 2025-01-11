@@ -1,4 +1,4 @@
-﻿namespace Nano.Security;
+﻿namespace Nano.Security.Const;
 
 /// <summary>
 /// Custom Token Options.
@@ -8,5 +8,5 @@ public static class CustomTokenOptions
     /// <summary>
     /// Custom Token Provider.
     /// </summary>
-    public static string CustomTokenProvider => "CustomTokenProvider";
+    public const string CUSTOM_TOKEN_PROVIDER = "CustomTokenProvider";
 }
