@@ -54,6 +54,7 @@ public class ConsoleApplication : DefaultApplication
         return new HostBuilder()
             .UseContentRoot(root)
             .UseEnvironment(environment)
+            .UseDefaultServiceProvider(_ => { })
             .UseConsoleLifetime()
             .ConfigureServices(x =>
             {
