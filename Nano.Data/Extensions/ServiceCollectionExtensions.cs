@@ -286,6 +286,7 @@ public static class ServiceCollectionExtensions
             .ConfigureWarnings(x =>
             {
                 x.Ignore(RelationalEventId.BoolWithDefaultWarning);
+                x.Log(RelationalEventId.MultipleCollectionIncludeWarning);
                 x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
             })
             .UseLazyLoadingProxies(options.UseLazyLoading);
