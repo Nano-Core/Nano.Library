@@ -44,7 +44,8 @@ public class EasyNetQProvider : IEventingProvider
                 UserName = this.Options.Username,
                 Password = this.Options.Password,
                 RequestedHeartbeat = TimeSpan.FromSeconds(this.Options.Heartbeat),
-                Timeout = TimeSpan.FromSeconds(this.Options.Timeout)
+                Timeout = TimeSpan.FromSeconds(this.Options.Timeout),
+                PrefetchCount = this.Options.PrefetchCount
             });
 
         var serviceProvider = services
@@ -56,6 +57,6 @@ public class EasyNetQProvider : IEventingProvider
         var logger = serviceProvider
             .GetRequiredService<ILogger>();
 
-        return new EasyNetQEventing(bus, logger, this.Options);
+        return new EasyNetQEventing(bus, logger);
     }
 }
