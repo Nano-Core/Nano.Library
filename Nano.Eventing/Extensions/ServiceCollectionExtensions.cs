@@ -123,9 +123,13 @@ public static class ServiceCollectionExtensions
 
         if (typeof(TProvider) == typeof(EasyNetQProvider))
         {
+            var connectionString = string.IsNullOrEmpty(options.Username) || string.IsNullOrEmpty(options.Password)
+                ? $"amqp://{options.Host}:{options.Port}{options.VHost}"
+                : $"amqp://{options.Username}:{options.Password}@{options.Host}:{options.Port}{options.VHost}";
+
             services
                 .AddHealthChecks()
-                .AddRabbitMQ(rabbitConnectionString: options.ConnectionString, failureStatus: options.UnhealthyStatus);
+                .AddRabbitMQ(rabbitConnectionString: connectionString, failureStatus: options.UnhealthyStatus);
         }
 
         return services;

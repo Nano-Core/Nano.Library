@@ -61,7 +61,8 @@ public static class ApplicationBuilderExtensions
                     .GetType()
                     .GetMethod(nameof(IEventing.SubscribeAsync))?
                     .MakeGenericMethod(eventType)
-                    .Invoke(eventing, [
+                    .Invoke(eventing, 
+                    [
                         applicationBuilder.ApplicationServices,
                         string.Empty,
                         CancellationToken.None
