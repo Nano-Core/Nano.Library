@@ -58,7 +58,7 @@ public class EventingOptions
     /// Prefetch Count.
     /// Default: 50
     /// </summary>
-    public virtual int PrefetchCount { get; set; } = 50;
+    public virtual ushort PrefetchCount { get; set; } = 50;
 
     /// <summary>
     /// Use Health Check.

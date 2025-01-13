@@ -56,6 +56,6 @@ public class EasyNetQProvider : IEventingProvider
         var logger = serviceProvider
             .GetRequiredService<ILogger>();
 
-        return new EasyNetQEventing(bus, logger);
+        return new EasyNetQEventing(bus, logger, this.Options);
     }
 }

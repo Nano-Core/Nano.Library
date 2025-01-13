@@ -26,14 +26,21 @@ public class EasyNetQEventing : IEventing
     protected virtual ILogger Logger { get; }
 
     /// <summary>
+    /// Options.
+    /// </summary>
+    protected virtual EventingOptions Options { get; }
+
+    /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="bus">The <see cref="IBus"/>.</param>
     /// <param name="logger">The <see cref="ILogger"/>.</param>
-    public EasyNetQEventing(IBus bus, ILogger logger)
+    /// <param name="options">The <see cref="EventingOptions"/>.</param>
+    public EasyNetQEventing(IBus bus, ILogger logger, EventingOptions options)
     {
         this.Bus = bus ?? throw new ArgumentNullException(nameof(bus));
         this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.Options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
     /// <inheritdoc />
@@ -116,7 +123,7 @@ public class EasyNetQEventing : IEventing
 
                     throw;
                 }
-            });
+            }, x => x.WithPrefetchCount(this.Options.PrefetchCount));
     }
 
     /// <inheritdoc />
