@@ -11,7 +11,6 @@ using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -35,6 +34,7 @@ using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using DynamicExpression.Extensions;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Nano.Config;
 using Nano.Models;
@@ -282,6 +282,9 @@ public static class ServiceCollectionExtensions
         services
             .AddAuthorization(x =>
             {
+                x.FallbackPolicy = null;
+                x.InvokeHandlersAfterFailure = false;
+
                 x.AddPolicy(AuthenticationPolicyDefaults.POLICY, y => y
                     .AddAuthenticationSchemes(authenticationSchemes.ToArray())
                     .RequireAuthenticatedUser());
@@ -299,6 +302,9 @@ public static class ServiceCollectionExtensions
                 x.DefaultScheme = defaultAuthenticationScheme;
                 x.DefaultChallengeScheme = defaultAuthenticationScheme;
                 x.DefaultAuthenticateScheme = defaultAuthenticationScheme;
+                x.DefaultForbidScheme = defaultAuthenticationScheme;
+                x.DefaultSignInScheme = defaultAuthenticationScheme;
+                x.DefaultSignOutScheme = defaultAuthenticationScheme;
             });
 
         if (securityOptions.Jwt.IsEnabled)
