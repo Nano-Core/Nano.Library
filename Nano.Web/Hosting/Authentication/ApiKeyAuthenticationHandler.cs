@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
@@ -57,14 +58,16 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationS
         var identityUser = await this.identityManager
             .GetUserAsync(identityApiKey.IdentityUserId);
 
-        var claims = await this.identityManager
-            .GetAllClaims(identityUser);
-        
-        claims
-            .Add(new Claim(ApiKeyClaimTypes.ApiKeyId, identityApiKey.Id.ToString()));
+        var transientClaims = new Dictionary<string, string>
+        {
+            { ApiKeyClaimTypes.UserId, identityUser.Id.ToString() },
+            { ApiKeyClaimTypes.UserEmail, identityUser.Email },
+            { ApiKeyClaimTypes.ApiKeyId, identityApiKey.Id.ToString() },
+            { ApiKeyClaimTypes.ApiKeyName, identityApiKey.Name },
+        };
 
-        claims
-            .Add(new Claim(ApiKeyClaimTypes.ApiKeyName, identityApiKey.Name));
+        var claims = await this.identityManager
+            .GetAllClaims(identityUser, transientClaims: transientClaims);
 
         var identity = new ClaimsIdentity(claims, nameof(ApiKeyAuthenticationHandler));
         var ticket = new AuthenticationTicket(new ClaimsPrincipal(identity), this.Scheme.Name);
