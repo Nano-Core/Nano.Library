@@ -29,11 +29,6 @@ public class ApiOptions
     public virtual bool UseSsl { get; set; } = false;
 
     /// <summary>
-    /// Use Expose Erros.
-    /// </summary>
-    public virtual bool UseExposeErrors { get; set; } = false;
-
-    /// <summary>
     /// Timeout In Seconds.
     /// </summary>
     public virtual int TimeoutInSeconds { get; set; } = 30;

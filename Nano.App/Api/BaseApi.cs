@@ -794,14 +794,6 @@ public abstract class BaseApi : IDisposable
 
                 throw new AggregateException(translationExceptions);
             }
-
-            if (this.apiOptions.UseExposeErrors)
-            {
-                var invalidOperationExceptions = error.Exceptions
-                    .Select(x => new InvalidOperationException(x));
-
-                return new AggregateException(invalidOperationExceptions);
-            }
         }
         catch (JsonException)
         {

@@ -77,6 +77,11 @@ public class WebOptions
         public virtual bool UseContentTypeOptions { get; set; } = true;
 
         /// <summary>
+        /// Expose Errors.
+        /// </summary>
+        public virtual bool ExposeErrors { get; set; } = false;
+
+        /// <summary>
         /// Expose Auth Controller.
         /// </summary>
         public virtual bool ExposeAuthController { get; set; } = true;

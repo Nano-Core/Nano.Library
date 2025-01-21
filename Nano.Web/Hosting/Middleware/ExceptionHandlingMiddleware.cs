@@ -29,12 +29,19 @@ public class ExceptionHandlingMiddleware : IMiddleware
     protected virtual ILogger Logger { get; }
 
     /// <summary>
+    /// Web Options.
+    /// </summary>
+    protected virtual WebOptions WebOptions { get; }
+
+    /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="logger">the <see cref="ILogger"/></param>
-    public ExceptionHandlingMiddleware(ILogger logger)
+    /// <param name="webOptions">The <see cref="Nano.Web.WebOptions"/>.</param>
+    public ExceptionHandlingMiddleware(ILogger logger, WebOptions webOptions)
     {
         this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.WebOptions = webOptions ?? throw new ArgumentNullException(nameof(webOptions));
     }
 
     /// <inheritdoc />
@@ -136,10 +143,18 @@ public class ExceptionHandlingMiddleware : IMiddleware
                         break;
 
                     default:
+                        var message = "An error occurred.";
+
+                        if (this.WebOptions.Hosting.ExposeErrors)
+                        {
+                            message =
+                                $"{exception.GetType().Name} - {exception.Message}";
+                        }
+                        
                         error.Summary = "Internal Server Error";
                         error.Exceptions =
                         [
-                            $"{exception.GetType().Name} - {exception.Message}"
+                            message
                         ];
 
                         break;
