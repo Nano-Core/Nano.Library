@@ -147,8 +147,7 @@ public class ExceptionHandlingMiddleware : IMiddleware
 
                         if (this.WebOptions.Hosting.ExposeErrors)
                         {
-                            message =
-                                $"{exception.GetType().Name} - {exception.Message}";
+                            message = $"{exception.GetType().Name} - {exception.Message}";
                         }
                         
                         error.Summary = "Internal Server Error";
