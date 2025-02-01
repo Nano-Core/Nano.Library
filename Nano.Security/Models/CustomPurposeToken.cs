@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models;
 
+/// <inheritdoc />
+public class CustomPurposeToken : CustomPurposeToken<Guid>;
+
 /// <summary>
 /// Custom Purpose Token
 /// </summary>

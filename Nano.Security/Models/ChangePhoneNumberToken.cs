@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models;
 
+/// <inheritdoc />
+public class ChangePhoneNumberToken : ChangePhoneNumberToken<Guid>;
+
 /// <summary>
 /// Change Phone Number Token
 /// </summary>

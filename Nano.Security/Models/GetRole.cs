@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models;
 
+/// <inheritdoc />
+public class GetRole : GetRole<Guid>;
+
 /// <summary>
 /// Get Role.
 /// </summary>

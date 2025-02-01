@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models;
 
+/// <inheritdoc />
+public class ConfirmEmailToken : ConfirmEmailToken<Guid>;
+
 /// <summary>
 /// Confirm Email Token.
 /// </summary>

@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models;
 
+/// <inheritdoc />
+public class RemoveRole : RemoveRole<Guid>;
+
 /// <summary>
 /// Remove Role.
 /// </summary>

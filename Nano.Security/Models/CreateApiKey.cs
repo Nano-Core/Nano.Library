@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models;
 
+/// <inheritdoc />
+public class CreateApiKey : CreateApiKey<Guid>;
+
 /// <summary>
 /// Create Api Key.
 /// </summary>

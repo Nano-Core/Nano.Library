@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models;
 
+/// <inheritdoc />
+public class ChangeEmailToken : ChangeEmailToken<Guid>;
+
 /// <summary>
 /// Change Email Token
 /// </summary>

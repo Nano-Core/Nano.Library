@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models;
 
+/// <inheritdoc />
+public class GenerateConfirmPhoneToken : GenerateConfirmPhoneToken<Guid>;
+
 /// <summary>
 /// Generate Confirm Phone Number Token.
 /// </summary>

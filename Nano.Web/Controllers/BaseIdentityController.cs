@@ -722,7 +722,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <summary>
     /// Edit Api Key.
     /// </summary>
-    /// <param name="id">The api key apiKeyId.</param>
     /// <param name="editApiKey">The edit api key.</param>
     /// <param name="cancellationToken">The token used when request is cancelled.</param>
     /// <returns>The identity api key.</returns>
@@ -733,7 +732,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPut]
     [HttpPost]
-    [Route("api-keys/edit/{id}")]
+    [Route("api-keys/edit")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IdentityApiKey<Guid>), (int)HttpStatusCode.OK)]
@@ -741,10 +740,10 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> EditApiKeyAsync([FromRoute][Required]TIdentity id, [FromBody][Required]EditApiKey editApiKey, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> EditApiKeyAsync([FromBody][Required]EditApiKey<TIdentity> editApiKey, CancellationToken cancellationToken = default)
     {
         var identityApiKey = await this.IdentityManager
-            .EditApiKeyAsync(id, editApiKey, cancellationToken);
+            .EditApiKeyAsync(editApiKey, cancellationToken);
 
         return this.Ok(identityApiKey);
     }
@@ -772,7 +771,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     public virtual async Task<IActionResult> RevokeApiKeyAsync([FromRoute][Required]TIdentity id, [FromQuery]DateTimeOffset? revokeAt, CancellationToken cancellationToken = default)
     {
         var identityApiKey = await this.IdentityManager
-            .RevokeApiKeyAsync(id, revokeAt, cancellationToken);
+            .RevokeApiKeyAsync(new RevokeApiKey<TIdentity>
+            {
+                Id = id,
+                RevokeAt = revokeAt
+            }, cancellationToken);
 
         return this.Ok(identityApiKey);
     }

@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models;
 
+/// <inheritdoc />
+public class ResetPasswordToken : ResetPasswordToken<Guid>;
+
 /// <summary>
 /// Reset Password Token.
 /// </summary>

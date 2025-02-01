@@ -1093,17 +1093,16 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
     /// <summary>
     /// Revoke Api Key.
     /// </summary>
-    /// <param name="id">The id.</param>
-    /// <param name="revokeAt">The revoke at.</param>
+    /// <param name="revokeApiKey">The revoke api key.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
-    public virtual async Task<IdentityApiKey<TIdentity>> RevokeApiKeyAsync(TIdentity id, DateTimeOffset? revokeAt = null, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityApiKey<TIdentity>> RevokeApiKeyAsync(RevokeApiKey<TIdentity> revokeApiKey, CancellationToken cancellationToken = default)
     {
         var identityApiKey = await this.DbContext
             .Set<IdentityApiKey<TIdentity>>()
-            .FirstOrDefaultAsync(x => x.Id.Equals(id) && x.RevokedAt == null, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id.Equals(revokeApiKey.Id) && x.RevokedAt == null, cancellationToken);
 
-        identityApiKey.RevokedAt = revokeAt ?? DateTimeOffset.UtcNow;
+        identityApiKey.RevokedAt = revokeApiKey.RevokeAt ?? DateTimeOffset.UtcNow;
 
         this.DbContext
             .Update(identityApiKey);
@@ -1117,15 +1116,14 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
     /// <summary>
     /// Edit Api Key.
     /// </summary>
-    /// <param name="id">The api key id.</param>
     /// <param name="editApiKey">The update api key.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
-    public virtual async Task<IdentityApiKey<TIdentity>> EditApiKeyAsync(TIdentity id, EditApiKey editApiKey, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityApiKey<TIdentity>> EditApiKeyAsync(EditApiKey<TIdentity> editApiKey, CancellationToken cancellationToken = default)
     {
         var identityApiKey = await this.DbContext
             .Set<IdentityApiKey<TIdentity>>()
-            .FirstOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id.Equals(editApiKey.Id), cancellationToken);
 
         identityApiKey.Name = editApiKey.Name;
 

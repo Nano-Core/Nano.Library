@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models;
 
+/// <inheritdoc />
+public class ChangePassword : ChangePassword<Guid>;
+
 /// <summary>
 /// Change Password.
 /// </summary>

@@ -4,25 +4,24 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models;
 
 /// <inheritdoc />
-public class AssignRole : AssignRole<Guid>;
+public class RevokeApiKey : RevokeApiKey<Guid>;
 
 /// <summary>
-/// Assign Role.
+/// Remove Claim.
 /// </summary>
 /// <typeparam name="TIdentity">The identity key type</typeparam>
-public class AssignRole<TIdentity>
+public class RevokeApiKey<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// Id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity Id { get; set; }
 
     /// <summary>
-    /// Role Name.
+    /// Revoke At.
     /// </summary>
     [Required]
-    [MaxLength(256)]
-    public virtual string RoleName { get; set; }
+    public virtual DateTimeOffset? RevokeAt { get; set; }
 }

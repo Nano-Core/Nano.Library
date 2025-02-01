@@ -3,6 +3,10 @@ using Nano.Models.Interfaces;
 
 namespace Nano.Security.Models;
 
+/// <inheritdoc />
+public class SignUpExternalGoogle<TUser> : SignUpExternalImplicit<LogInExternalProviderGoogle, TUser>
+    where TUser : IEntityUser<Guid>, new();
+
 /// <summary>
 /// Sign Up External Google.
 /// </summary>
