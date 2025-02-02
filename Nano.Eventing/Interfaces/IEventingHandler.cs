@@ -9,6 +9,11 @@ public interface IEventingHandler<in TEvent>
     where TEvent : class
 {
     /// <summary>
+    /// Override Prefetch Count.
+    /// </summary>
+    ushort? OverridePrefetchCount { get; }
+
+    /// <summary>
     /// CallbackAsync.
     /// Invoked when recieving a publshed message.
     /// </summary>

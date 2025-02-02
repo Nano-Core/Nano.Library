@@ -28,6 +28,9 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
     /// </summary>
     protected virtual DefaultDbContext Context { get; }
 
+    /// <inheritdoc />
+    public ushort? OverridePrefetchCount { get; set; }
+
     /// <summary>
     /// Constructor.
     /// </summary>

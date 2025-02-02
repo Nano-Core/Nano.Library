@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>9.0.13</version>
+		<version>9.0.14</version>
 		<title>Nano Core</title>
 		<summary>Rapidly built and deploy rich .NET 9.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
@@ -16,7 +16,10 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- removed Home Controller.
+			- Added IEventingHandler.OverridePrefetchCount, to override the configured default prefetch count on specific event-handlers.
+			- Added default (guid) classes for generic parameter Identity for all IdentityManager methods.
+			- Changed rabbitmq eventing to always use quorum queues.
+			- Updated NuGets.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net9.0">
@@ -33,8 +36,8 @@
 				<dependency id="AspNetCore.HealthChecks.Rabbitmq" version="8.0.2" />
 				<dependency id="EasyNetQ" version="7.8.0" />
 				<dependency id="EasyNetQ.DI.Microsoft" version="7.8.0" />
-				<dependency id="Google.Apis.Auth" version="1.68.0" />
-				<dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="9.0.0" />
+				<dependency id="Google.Apis.Auth" version="1.69.0" />
+				<dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="9.0.1" />
 				<dependency id="AspNetCore.HealthChecks.MySql" version="8.0.1" />
 				<dependency id="AspNetCore.HealthChecks.Sqlite" version="8.1.0" />
 				<dependency id="AspNetCore.HealthChecks.SqlServer" version="8.0.2" />
@@ -61,15 +64,15 @@
 				<dependency id="AspNetCore.HealthChecks.UI.Client" version="8.0.1" />
 				<dependency id="AspNetCore.HealthChecks.UI.InMemory.Storage" version="8.0.1" />
 				<dependency id="Asp.Versioning.Mvc.ApiExplorer" version="8.1.0" />
-				<dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="9.0.0" />
-				<dependency id="Microsoft.AspNetCore.Authentication.Google" version="9.0.0" />
-				<dependency id="Microsoft.AspNetCore.Authentication.MicrosoftAccount" version="9.0.0" />
-				<dependency id="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="9.0.0" />
+				<dependency id="Microsoft.AspNetCore.Authentication.Facebook" version="9.0.1" />
+				<dependency id="Microsoft.AspNetCore.Authentication.Google" version="9.0.1" />
+				<dependency id="Microsoft.AspNetCore.Authentication.MicrosoftAccount" version="9.0.1" />
+				<dependency id="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="9.0.1" />
 				<dependency id="NWebsec.AspNetCore.Middleware" version="3.0.0" />
 				<dependency id="NWebsec.AspNetCore.Mvc" version="3.0.0" />
-				<dependency id="Swashbuckle.AspNetCore" version="7.1.0" />
-				<dependency id="Swashbuckle.AspNetCore.Annotations" version="7.1.0" />
-				<dependency id="Swashbuckle.AspNetCore.Newtonsoft" version="7.1.0" />
+				<dependency id="Swashbuckle.AspNetCore" version="7.2.0" />
+				<dependency id="Swashbuckle.AspNetCore.Annotations" version="7.2.0" />
+				<dependency id="Swashbuckle.AspNetCore.Newtonsoft" version="7.2.0" />
 			</group>
 		</dependencies>
 	</metadata>

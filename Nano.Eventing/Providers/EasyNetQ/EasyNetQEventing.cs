@@ -15,6 +15,8 @@ namespace Nano.Eventing.Providers.EasyNetQ;
 /// <inheritdoc />
 public class EasyNetQEventing : IEventing
 {
+    private const string QUEUE_TYPE = "quorum";
+
     /// <summary>
     /// Bus.
     /// </summary>
@@ -58,10 +60,16 @@ public class EasyNetQEventing : IEventing
         where TMessage : class
     {
         var name = typeof(TMessage).GetFriendlyName();
-
         var queueName = this.GetQueueName(name, routing);
+
         var queue = await this.Bus.Advanced
-            .QueueDeclareAsync($"{queueName}", true, false, false, cancellationToken);
+            .QueueDeclareAsync(queueName, x =>
+            {
+                x.AsDurable(true);
+                x.AsAutoDelete(false);
+                x.AsExclusive(false);
+                x.WithQueueType(EasyNetQEventing.QUEUE_TYPE);
+            }, cancellationToken);
 
         var exchange = await this.Bus.Advanced
             .ExchangeDeclareAsync(name, ExchangeType.Fanout, cancellationToken: cancellationToken);
@@ -72,6 +80,19 @@ public class EasyNetQEventing : IEventing
         var eventType = typeof(TMessage);
         var genericType = typeof(IEventingHandler<>)
             .MakeGenericType(eventType);
+
+        var eventHandlerForPrefetchCount = serviceProvider
+            .GetRequiredService(genericType);
+
+        var prefetchCount = (ushort?)genericType
+            .GetProperty(nameof(IEventingHandler<TMessage>.OverridePrefetchCount))?
+            .GetValue(eventHandlerForPrefetchCount);
+
+        if (!prefetchCount.HasValue)
+        {
+            var connection = this.Bus.Advanced.Container.Resolve<ConnectionConfiguration>();
+            prefetchCount = connection.PrefetchCount;
+        }
 
         this.Bus.Advanced
             .Consume<TMessage>(queue, async (message, info) =>
@@ -117,7 +138,7 @@ public class EasyNetQEventing : IEventing
 
                     throw;
                 }
-            });
+            }, x => x.WithPrefetchCount(prefetchCount.Value));
     }
 
     /// <inheritdoc />
