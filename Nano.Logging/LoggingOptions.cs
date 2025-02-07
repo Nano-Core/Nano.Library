@@ -35,4 +35,10 @@ public class LoggingOptions
         /// </summary>
         public virtual LogLevel LogLevel { get; set; } = LogLevel.Warning;
     }
+
+    /// <summary>
+    /// Connection String.
+    /// Optional, used by some logging providers.
+    /// </summary>
+    public virtual string ConnectionString { get; set; }
 }

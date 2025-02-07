@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nano.Config.Extensions;
 using Nano.Logging.Interfaces;
+using Nano.Logging.Providers.Serilog;
 
 namespace Nano.Logging.Extensions;
 
@@ -23,6 +24,22 @@ public static class ServiceCollectionExtensions
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
+
+        if (typeof(TProvider) == typeof(SerilogProviderWithApplicationInsights))
+        {
+            var options = services
+                .BuildServiceProvider()
+                .GetService<LoggingOptions>();
+
+            if (!string.IsNullOrEmpty(options.ConnectionString))
+            {
+                services
+                    .AddApplicationInsightsTelemetry(x =>
+                    {
+                        x.ConnectionString = options.ConnectionString;
+                    });
+            }
+        }
 
         services
             .AddSingleton<ILoggingProvider, TProvider>()
