@@ -44,6 +44,7 @@ public class SqlServerProvider : IDataProvider
                 x.MaxBatchSize(batchSize);
                 x.EnableRetryOnFailure(retryCount);
                 x.UseNetTopologySuite();
+                x.UseQuerySplittingBehavior(this.Options.UseQuerySplittingBehavior);
             });
     }
 }

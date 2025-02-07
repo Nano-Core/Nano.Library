@@ -1,4 +1,5 @@
 using EFCoreSecondLevelCacheInterceptor;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Nano.Data;
@@ -82,6 +83,11 @@ public class DataOptions
     /// Use Connection Pooling.
     /// </summary>
     public virtual bool UseConnectionPooling { get; set; } = false;
+
+    /// <summary>
+    /// Use Query Splitting Behavior.
+    /// </summary>
+    public virtual QuerySplittingBehavior UseQuerySplittingBehavior { get; set; } = QuerySplittingBehavior.SingleQuery;
 
     /// <summary>
     /// Use Health Check.

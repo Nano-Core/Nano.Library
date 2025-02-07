@@ -51,22 +51,35 @@ public static class QueryableExtensions
             return queryable;
         }
 
-        var propertyInfos = type
+        var includedPropertyInfos = type
             .GetProperties()
-            .Where(x => x.GetCustomAttribute<IncludeAttribute>() != null);
+            .Select(x => new
+            {
+                PropertyInfo = x,
+                IncludeAttribute = x.GetCustomAttribute<IncludeAttribute>(),
+            })
+            .Where(x => x.IncludeAttribute != null);
 
-        foreach (var propertyInfo in propertyInfos)
+        foreach (var includePropertyInfo in includedPropertyInfos)
         {
             var navigationName = string.IsNullOrEmpty(name)
-                ? propertyInfo.Name
-                : $"{name}.{propertyInfo.Name}";
+                ? includePropertyInfo.PropertyInfo.Name
+                : $"{name}.{includePropertyInfo.PropertyInfo.Name}";
 
-            var nextType = propertyInfo.PropertyType.IsGenericType
-                ? propertyInfo.PropertyType.GenericTypeArguments[0]
-                : propertyInfo.PropertyType;
+            var nextType = includePropertyInfo.PropertyInfo.PropertyType.IsGenericType
+                ? includePropertyInfo.PropertyInfo.PropertyType.GenericTypeArguments[0]
+                : includePropertyInfo.PropertyInfo.PropertyType;
 
             queryable = queryable
-                .Include(navigationName)
+                .Include(navigationName);
+
+            if (includePropertyInfo.IncludeAttribute.QuerySplittingBehavior == QuerySplittingBehavior.SplitQuery)
+            {
+                queryable = queryable
+                    .AsSplitQuery();
+            }
+
+            queryable = queryable
                 .IncludeAnnotations(nextType, navigationName, depth - 1);
         }
             

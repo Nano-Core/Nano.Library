@@ -42,6 +42,7 @@ public class SqliteProvider : IDataProvider
             {
                 x.MaxBatchSize(batchSize);
                 x.UseNetTopologySuite();
+                x.UseQuerySplittingBehavior(this.Options.UseQuerySplittingBehavior);
             });
     }
 }
