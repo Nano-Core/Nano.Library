@@ -381,6 +381,16 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
             .IsRequired();
 
         modelBuilder
+            .Entity<IdentityUserExpanded<TIdentity>>()
+            .Property(x => x.NewEmail)
+            .HasMaxLength(256);
+
+        modelBuilder
+            .Entity<IdentityUserExpanded<TIdentity>>()
+            .Property(x => x.NewPhoneNumber)
+            .HasMaxLength(20);
+
+        modelBuilder
             .Entity<IdentityRoleClaim<TIdentity>>()
             .ToTable(TableNames.IDENTITY_ROLE_CLAIM);
 

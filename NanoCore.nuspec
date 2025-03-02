@@ -23,6 +23,7 @@
 			- Added method for adding external login.
 			- Added role claims endpoints to IdentityController.
 			- Refactored and improved IdentityManager and IdentityController methods and implementations.
+			- Added improved flow for change email and change phone number, where the new value is stored, avoiding asking the user for the new value a second time.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net9.0">

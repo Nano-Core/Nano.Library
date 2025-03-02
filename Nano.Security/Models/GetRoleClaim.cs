@@ -4,24 +4,24 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models;
 
 /// <inheritdoc />
-public class ChangeEmail : ChangeEmail<Guid>;
+public class GetRoleClaim : GetRoleClaim<Guid>;
 
 /// <summary>
-/// Change Email.
+/// Get Role Claim.
 /// </summary>
 /// <typeparam name="TIdentity">The identity key type</typeparam>
-public class ChangeEmail<TIdentity>
+public class GetRoleClaim<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Token.
+    /// Role Id.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; }
+    public virtual TIdentity RoleId { get; set; }
 
     /// <summary>
-    /// User Id.
+    /// Claim Type.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual string ClaimType { get; set; }
 }

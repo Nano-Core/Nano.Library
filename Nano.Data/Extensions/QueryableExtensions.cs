@@ -56,7 +56,7 @@ public static class QueryableExtensions
             .Select(x => new
             {
                 PropertyInfo = x,
-                IncludeAttribute = x.GetCustomAttribute<IncludeAttribute>(),
+                IncludeAttribute = x.GetCustomAttribute<IncludeAttribute>()
             })
             .Where(x => x.IncludeAttribute != null);
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.AspNetCore.Identity;
-using Nano.Security;
 using Nano.Security.Const;
 
 namespace Nano.Data.Identity.Extensions;

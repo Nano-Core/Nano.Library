@@ -63,7 +63,7 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationS
             { ApiKeyClaimTypes.UserId, identityUser.Id.ToString() },
             { ApiKeyClaimTypes.UserEmail, identityUser.Email },
             { ApiKeyClaimTypes.ApiKeyId, identityApiKey.Id.ToString() },
-            { ApiKeyClaimTypes.ApiKeyName, identityApiKey.Name },
+            { ApiKeyClaimTypes.ApiKeyName, identityApiKey.Name }
         };
 
         var claims = await this.identityManager

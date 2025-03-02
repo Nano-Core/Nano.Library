@@ -18,7 +18,6 @@ using Nano.Repository.Interfaces;
 using Nano.Security;
 using Nano.Security.Const;
 using Nano.Security.Models;
-using Claim = Nano.Security.Models.Claim;
 
 namespace Nano.Web.Controllers;
 
@@ -975,6 +974,126 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
+    /// Gets claims of a role.
+    /// </summary>
+    /// <param name="roleId">The role id.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The role claims.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpGet]
+    [Route("roles/claims/{roleId}")]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IEnumerable<ClaimSimple>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> GetRoleClaimsAsync([FromRoute][Required] TIdentity roleId, CancellationToken cancellationToken = default)
+    {
+        var userRoleClaims = await this.IdentityManager
+            .GetRoleClaimsAsync(roleId, cancellationToken);
+
+        var claims = userRoleClaims
+            .Select(x => new ClaimSimple
+            {
+                Type = x.Type,
+                Value = x.Value
+            });
+
+        return this.Ok(claims);
+    }
+
+    /// <summary>
+    /// Assign a claim to a role.
+    /// </summary>
+    /// <param name="assignRoleClaim">The assign role claim.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("roles/claims/assign")]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
+    [Consumes(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> AssignRoleClaimAsync([FromBody][Required] AssignRoleClaim<TIdentity> assignRoleClaim, CancellationToken cancellationToken = default)
+    {
+        await this.IdentityManager
+            .AssignRoleClaimAsync(assignRoleClaim, cancellationToken);
+
+        return this.Ok();
+    }
+
+    /// <summary>
+    /// Remove a claim from a role.
+    /// </summary>
+    /// <param name="removeClaim">The remove role claim.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [HttpDelete]
+    [Route("roles/claims/remove")]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
+    [Consumes(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> RemoveRoleClaimAsync([FromBody][Required] RemoveRoleClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default)
+    {
+        await this.IdentityManager
+            .RemoveRoleClaimAsync(removeClaim, cancellationToken);
+
+        return this.Ok();
+    }
+
+    /// <summary>
+    /// Replace a claim of a role.
+    /// </summary>
+    /// <param name="replaceClaim">The replace role claim.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPut]
+    [Route("roles/claims/replace")]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
+    [Consumes(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> ReplaceRoleClaimAsync([FromBody][Required] ReplaceRoleClaim<TIdentity> replaceClaim, CancellationToken cancellationToken = default)
+    {
+        await this.IdentityManager
+            .ReplaceRoleClaimAsync(replaceClaim, cancellationToken);
+
+        return this.Ok();
+    }
+
+    /// <summary>
     /// Gets claims of a user.
     /// </summary>
     /// <param name="userId">The user id.</param>
@@ -989,7 +1108,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [Route("claims/{userId}")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<Claim>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<ClaimSimple>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -1000,7 +1119,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
             .GetUserClaimsAsync(userId, cancellationToken);
 
         var claims = userClaims
-            .Select(x => new Claim
+            .Select(x => new ClaimSimple
             {
                 Type = x.Type,
                 Value = x.Value
@@ -1093,11 +1212,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
 
         return this.Ok();
     }
-
-    // BUG: 111: Look into renaming LogIn vs Login (NOW JUST RENAME FILES)
-    // BUG: 111: Check [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)] for new methods
-
-    // BUG: GetRoleClaimsAsync, AssignRoleClaimAsync, RemoveRoleClaimAsync
 
     /// <summary>
     /// Activate the model with the passed identifier.

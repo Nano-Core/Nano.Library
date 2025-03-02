@@ -44,41 +44,20 @@ public static class StringExtensions
             .GetExtension(filename)
             .ToLower();
 
-        switch (extension)
+        return extension switch
         {
-            case ".jpg":
-            case ".jpeg":
-                return HttpContentType.JPEG;
-
-            case ".bmp":
-                return HttpContentType.BMP;
-
-            case ".html":
-                return HttpContentType.HTML;
-
-            case ".json":
-                return HttpContentType.JSON;
-
-            case ".pdf":
-                return HttpContentType.PDF;
-
-            case ".png":
-                return HttpContentType.PNG;
-
-            case ".txt":
-                return HttpContentType.TEXT;
-
-            case ".xhtml":
-                return HttpContentType.XHTML;
-
-            case ".xml":
-                return HttpContentType.XML;
-
-            case ".zip":
-                return HttpContentType.ZIP;
-
-            default:
-                throw new ArgumentOutOfRangeException(nameof(filename), extension, $"The extension: {extension} of filename {filename} is invalid.");
-        }
+            ".jpg" or ".jpeg" => HttpContentType.JPEG,
+            ".bmp" => HttpContentType.BMP,
+            ".html" => HttpContentType.HTML,
+            ".json" => HttpContentType.JSON,
+            ".pdf" => HttpContentType.PDF,
+            ".png" => HttpContentType.PNG,
+            ".txt" => HttpContentType.TEXT,
+            ".xhtml" => HttpContentType.XHTML,
+            ".xml" => HttpContentType.XML,
+            ".zip" => HttpContentType.ZIP,
+            _ => throw new ArgumentOutOfRangeException(nameof(filename), extension,
+                $"The extension: {extension} of filename {filename} is invalid.")
+        };
     }
 }

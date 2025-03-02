@@ -7,7 +7,6 @@ using Nano.Models;
 using Nano.Models.Interfaces;
 using Nano.Security;
 using Nano.Security.Models;
-using Claim = Nano.Security.Models.Claim;
 
 namespace Nano.App.Api;
 
@@ -477,23 +476,87 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
     }
 
     /// <summary>
-    /// Get Claims Async.
+    /// Get Role Claims Async.
     /// </summary>
-    /// <param name="request">The <see cref="GetClaimsRequest{TIdentity}"/>.</param>
+    /// <param name="request">The <see cref="GetRoleClaimsRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The collection of <see cref="Claim"/>.</returns>
-    public virtual Task<IEnumerable<Claim>> GetClaimsAsync(GetClaimsRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    /// <returns>The collection of <see cref="ClaimSimple"/>.</returns>
+    public virtual Task<IEnumerable<ClaimSimple>> GetRoleClaimsAsync(GetRoleClaimsRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<GetClaimsRequest<TIdentity>, IEnumerable<Claim>>(request, cancellationToken);
+        return this.InvokeAsync<GetRoleClaimsRequest<TIdentity>, IEnumerable<ClaimSimple>>(request, cancellationToken);
     }
 
     /// <summary>
-    /// Assign Claim Async.
+    /// Assign Role Claim Async.
+    /// </summary>
+    /// <param name="request">The <see cref="AssignRoleClaimRequest{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Void.</returns>
+    public virtual Task AssignRoleClaimAsync(AssignRoleClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return this.InvokeAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Remove Role Claim Async.
+    /// </summary>
+    /// <param name="request">The <see cref="RemoveRoleClaimRequest{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Void.</returns>
+    public virtual Task RemoveRoleClaimAsync(RemoveRoleClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return this.InvokeAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Replace Role Claim Async.
+    /// </summary>
+    /// <param name="request">The <see cref="ReplaceRoleClaimRequest{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Void.</returns>
+    public virtual Task ReplaceRoleClaimAsync(ReplaceRoleClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return this.InvokeAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Get User Claims Async.
+    /// </summary>
+    /// <param name="request">The <see cref="GetClaimsRequest{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The collection of <see cref="ClaimSimple"/>.</returns>
+    public virtual Task<IEnumerable<ClaimSimple>> GetUserClaimsAsync(GetClaimsRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return this.InvokeAsync<GetClaimsRequest<TIdentity>, IEnumerable<ClaimSimple>>(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Assign User Claim Async.
     /// </summary>
     /// <param name="request">The <see cref="AssignClaimRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
@@ -509,7 +572,7 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
     }
 
     /// <summary>
-    /// Remove Claim Async.
+    /// Remove User Claim Async.
     /// </summary>
     /// <param name="request">The <see cref="RemoveClaimRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
@@ -525,7 +588,7 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
     }
 
     /// <summary>
-    /// Replace Claim Async.
+    /// Replace User Claim Async.
     /// </summary>
     /// <param name="request">The <see cref="ReplaceClaimRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
