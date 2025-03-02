@@ -1,5 +1,5 @@
 ﻿using System;
-using Nano.App.Api.Requests.Attributes;
+using Nano.Security.Models;
 
 namespace Nano.App.Api.Requests.Identity;
 
@@ -7,13 +7,13 @@ namespace Nano.App.Api.Requests.Identity;
 public class RemoveExternalLoginRequest : RemoveExternalLoginRequest<Guid>;
 
 /// <inheritdoc />
-public class RemoveExternalLoginRequest<TIdentity> : BaseRequestDelete
+public class RemoveExternalLoginRequest<TIdentity> : BaseRequestDelete 
+    where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// External Login
     /// </summary>
-    [Route(Order = 0)]
-    public virtual TIdentity UserId { get; set; }
+    public virtual RemoveExternalLogin<TIdentity> RemoveExternalLogin { get; set; }
 
     /// <inheritdoc />
     public RemoveExternalLoginRequest()
