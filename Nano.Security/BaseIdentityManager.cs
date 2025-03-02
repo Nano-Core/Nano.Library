@@ -1046,7 +1046,7 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
         var identityUser = await this.GetIdentityUser(removeExternalLogin.UserId);
 
         var result = await this.UserManager
-            .RemoveLoginAsync(identityUser, removeExternalLogin.ExternalLogin.Provider.Name, removeExternalLogin.ExternalLogin.Key);
+            .RemoveLoginAsync(identityUser, removeExternalLogin.ProviderName, removeExternalLogin.ProviderKey);
 
         if (result.Succeeded)
         {

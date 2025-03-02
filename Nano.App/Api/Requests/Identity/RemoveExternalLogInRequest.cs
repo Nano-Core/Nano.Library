@@ -13,7 +13,7 @@ public class RemoveExternalLoginRequest<TIdentity> : BaseRequestDelete
     /// <summary>
     /// External Login
     /// </summary>
-    public virtual RemoveExternalLogin<TIdentity> RemoveExternalLogin { get; set; }
+    public virtual RemoveExternalLogin<TIdentity> RemoveExternalLogin { get; set; } = new();
 
     /// <inheritdoc />
     public RemoveExternalLoginRequest()
@@ -24,6 +24,6 @@ public class RemoveExternalLoginRequest<TIdentity> : BaseRequestDelete
     /// <inheritdoc />
     public override object GetBody()
     {
-        return null;
+        return this.RemoveExternalLogin;
     }
 }

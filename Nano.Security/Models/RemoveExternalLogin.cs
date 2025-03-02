@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Security.Models;
 
+/// <inheritdoc />
+public class RemoveExternalLogin : RemoveExternalLogin<Guid>;
+
 /// <summary>
 /// Remove External Login.
 /// </summary>
@@ -17,7 +20,14 @@ public class RemoveExternalLogin<TIdentity>
     public virtual TIdentity UserId { get; set; }
 
     /// <summary>
-    /// External Login.
+    /// Provider Key.
     /// </summary>
-    public virtual ExternalLogin ExternalLogin { get; set; } = new();
+    [Required]
+    public virtual string ProviderKey { get; set; }
+
+    /// <summary>
+    /// Provider Name.
+    /// </summary>
+    [Required]
+    public virtual string ProviderName { get; set; }
 }
