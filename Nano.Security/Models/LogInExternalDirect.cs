@@ -1,7 +1,7 @@
 namespace Nano.Security.Models;
 
 /// <summary>
-/// LogIn External Direct.
+/// Log In External Direct.
 /// </summary>
 public class LogInExternalDirect : LogInExternal
 {

@@ -24,10 +24,4 @@ public class ChangePhoneNumber<TIdentity>
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; }
-
-    /// <summary>
-    /// New Phone Number.
-    /// </summary>
-    [Required]
-    public virtual string NewPhoneNumber { get; set; }
 }

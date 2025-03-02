@@ -12,11 +12,11 @@ public class RevokeApiKeyRequest<TIdentity> : BaseRequestDelete
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Id.
+    /// Api Key Id.
     /// </summary>
     [Required]
     [Route]
-    public virtual TIdentity Id { get; set; }
+    public virtual TIdentity ApiKeyId { get; set; }
 
     /// <summary>
     /// Revoke At.

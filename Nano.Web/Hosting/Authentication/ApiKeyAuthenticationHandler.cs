@@ -56,14 +56,14 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationS
         }
 
         var identityUser = await this.identityManager
-            .GetUserAsync(identityApiKey.IdentityUserId);
+            .GetIdentityUserAsync(identityApiKey.IdentityUserId);
 
         var transientClaims = new Dictionary<string, string>
         {
             { ApiKeyClaimTypes.UserId, identityUser.Id.ToString() },
             { ApiKeyClaimTypes.UserEmail, identityUser.Email },
             { ApiKeyClaimTypes.ApiKeyId, identityApiKey.Id.ToString() },
-            { ApiKeyClaimTypes.ApiKeyName, identityApiKey.Name },
+            { ApiKeyClaimTypes.ApiKeyName, identityApiKey.Name }
         };
 
         var claims = await this.identityManager

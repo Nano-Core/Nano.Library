@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models;
 
 /// <summary>
-/// LogIn.
+/// Log In.
 /// </summary>
 public class LogIn : BaseLogIn
 {

@@ -3,7 +3,7 @@
 namespace Nano.App.Api.Requests.Auth;
 
 /// <inheritdoc />
-public class GetExternalLoginDataMicrosoftRequest : BaseGetExternalLoginDataRequest<LogInExternalProviderMicrosoft>
+public class GetExternalLoginDataMicrosoftRequest : BaseGetExternalLoginDataRequest<ExternalLoginProviderMicrosoft>
 {
     /// <inheritdoc />
     public GetExternalLoginDataMicrosoftRequest()

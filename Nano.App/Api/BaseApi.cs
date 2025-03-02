@@ -168,13 +168,13 @@ public abstract class BaseApi : IDisposable
     /// </summary>
     /// <param name="request">The <see cref="GetExternalSchemesRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>A collection of <see cref="LogInProvider"/>'s.</returns>
-    public virtual Task<IEnumerable<LogInProvider>> GetExternalSchemesAsync(GetExternalSchemesRequest request, CancellationToken cancellationToken = default)
+    /// <returns>A collection of <see cref="ExternalLoginProvider"/>'s.</returns>
+    public virtual Task<IEnumerable<ExternalLoginProvider>> GetExternalSchemesAsync(GetExternalSchemesRequest request, CancellationToken cancellationToken = default)
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
-        return this.InvokeAsync<GetExternalSchemesRequest, IEnumerable<LogInProvider>>(request, cancellationToken);
+        return this.InvokeAsync<GetExternalSchemesRequest, IEnumerable<ExternalLoginProvider>>(request, cancellationToken);
     }
 
     /// <summary>

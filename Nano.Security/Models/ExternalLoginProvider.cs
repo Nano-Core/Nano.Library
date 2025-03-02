@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models;
 
 /// <summary>
-/// LogIn Provider.
+/// External Login Provider.
 /// </summary>
-public class LogInProvider
+public class ExternalLoginProvider
 {
     /// <summary>
     /// Name.

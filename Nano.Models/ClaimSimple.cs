@@ -1,9 +1,9 @@
-﻿namespace Nano.Security.Models;
+﻿namespace Nano.Models;
 
 /// <summary>
-/// Claim.
+/// Claim Simple.
 /// </summary>
-public class Claim
+public class ClaimSimple
 {
     /// <summary>
     /// Type.

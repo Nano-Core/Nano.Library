@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models;
 
 /// <summary>
-/// Login Refresh.
+/// Log In Refresh.
 /// </summary>
 public class LogInRefresh
 {

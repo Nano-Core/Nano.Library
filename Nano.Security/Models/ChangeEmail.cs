@@ -24,11 +24,4 @@ public class ChangeEmail<TIdentity>
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; }
-
-    /// <summary>
-    /// New Email Address.
-    /// </summary>
-    [Required]
-    [EmailAddress]
-    public virtual string NewEmailAddress { get; set; }
 }

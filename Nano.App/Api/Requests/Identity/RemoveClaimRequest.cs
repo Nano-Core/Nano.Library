@@ -11,7 +11,7 @@ public class RemoveClaimRequest<TIdentity> : BaseRequestPost
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Assign Claim.
+    /// Remove Claim.
     /// </summary>
     public virtual RemoveClaim<TIdentity> RemoveClaim { get; set; } = new();
 
