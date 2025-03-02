@@ -1,6 +1,6 @@
 ﻿namespace Nano.Security.Models;
 
 /// <summary>
-/// LogIn External.
+/// Log In External.
 /// </summary>
 public class LogInExternal : BaseLogIn;

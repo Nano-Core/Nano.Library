@@ -1,6 +1,6 @@
 ﻿namespace Nano.Security.Models;
 
 /// <summary>
-/// LogIn External Microsoft.
+/// Log In External Microsoft.
 /// </summary>
-public class LogInExternalMicrosoft : LogInExternalAuthCode<LogInExternalProviderMicrosoft>;
+public class LogInExternalMicrosoft : LogInExternalAuthCode<ExternalLoginProviderMicrosoft>;

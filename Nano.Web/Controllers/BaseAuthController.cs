@@ -415,7 +415,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <summary>
     /// Get external login data from an external Google authentication provider.
     /// </summary>
-    /// <param name="logInExternalProvider">The external login provider.</param>
+    /// <param name="externalLoginProvider">The external login provider.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The external login data.</returns>
     /// <response code="200">Success.</response>
@@ -432,10 +432,10 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
-    public virtual async Task<IActionResult> GetExternalLoginData([FromBody][Required]LogInExternalProviderGoogle logInExternalProvider, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> GetExternalLoginData([FromBody][Required]ExternalLoginProviderGoogle externalLoginProvider, CancellationToken cancellationToken = default)
     {
         var externalLoginData = await this.BaseIdentityManager
-            .GetExternalProviderLogInData(logInExternalProvider, cancellationToken);
+            .GetExternalProviderLogInData(externalLoginProvider, cancellationToken);
 
         if (externalLoginData == null)
         {
@@ -448,7 +448,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <summary>
     /// Get external login data from an external Facebook authentication provider.
     /// </summary>
-    /// <param name="logInExternalProvider">The external login provider.</param>
+    /// <param name="externalLoginProvider">The external login provider.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The external login data.</returns>
     /// <response code="200">Success.</response>
@@ -465,10 +465,10 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
-    public virtual async Task<IActionResult> GetExternalLoginData([FromBody][Required]LogInExternalProviderFacebook logInExternalProvider, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> GetExternalLoginData([FromBody][Required]ExternalLoginProviderFacebook externalLoginProvider, CancellationToken cancellationToken = default)
     {
         var externalLoginData = await this.BaseIdentityManager
-            .GetExternalProviderLogInData(logInExternalProvider, cancellationToken);
+            .GetExternalProviderLogInData(externalLoginProvider, cancellationToken);
 
         if (externalLoginData == null)
         {
@@ -481,7 +481,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <summary>
     /// Get external login data from an external Microsoft authentication provider.
     /// </summary>
-    /// <param name="logInExternalProvider">The external login provider.</param>
+    /// <param name="externalLoginProviderMicrosoft">The external login provider.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The external login data.</returns>
     /// <response code="200">Success.</response>
@@ -498,10 +498,10 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     [SwaggerOperation(Tags = [Constants.AUTH_CONTROLLER_ROUTE])]
-    public virtual async Task<IActionResult> GetExternalLoginData([FromBody][Required]LogInExternalProviderMicrosoft logInExternalProvider, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> GetExternalLoginData([FromBody][Required]ExternalLoginProviderMicrosoft externalLoginProviderMicrosoft, CancellationToken cancellationToken = default)
     {
         var externalLoginData = await this.BaseIdentityManager
-            .GetExternalProviderLogInData(logInExternalProvider, cancellationToken);
+            .GetExternalProviderLogInData(externalLoginProviderMicrosoft, cancellationToken);
 
         if (externalLoginData == null)
         {
@@ -525,7 +525,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [Route("external/schemes")]
     [AllowAnonymous]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<LogInProvider>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<ExternalLoginProvider>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]

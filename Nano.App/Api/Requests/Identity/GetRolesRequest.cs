@@ -12,10 +12,10 @@ public class GetRolesRequest : GetRolesRequest<Guid>;
 public class GetRolesRequest<TIdentity> : BaseRequestGet
 {
     /// <summary>
-    /// Id.
+    /// User Id.
     /// </summary>
     [Route(Order = 0)]
-    public virtual TIdentity Id { get; set; }
+    public virtual TIdentity UserId { get; set; }
 
     /// <summary>
     /// Constructor.

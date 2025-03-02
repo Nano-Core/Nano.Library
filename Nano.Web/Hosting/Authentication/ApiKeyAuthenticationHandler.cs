@@ -56,7 +56,7 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationS
         }
 
         var identityUser = await this.identityManager
-            .GetUserAsync(identityApiKey.IdentityUserId);
+            .GetIdentityUserAsync(identityApiKey.IdentityUserId);
 
         var transientClaims = new Dictionary<string, string>
         {

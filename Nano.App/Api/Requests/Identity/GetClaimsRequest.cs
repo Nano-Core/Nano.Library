@@ -12,10 +12,10 @@ public class GetClaimsRequest : GetClaimsRequest<Guid>;
 public class GetClaimsRequest<TIdentity> : BaseRequestGet
 {
     /// <summary>
-    /// Id.
+    /// User Id.
     /// </summary>
     [Route(Order = 0)]
-    public virtual TIdentity Id { get; set; }
+    public virtual TIdentity UserId { get; set; }
 
     /// <summary>
     /// Constructor.

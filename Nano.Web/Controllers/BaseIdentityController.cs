@@ -17,7 +17,6 @@ using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
 using Nano.Security;
 using Nano.Security.Const;
-using Nano.Security.Data.Models;
 using Nano.Security.Models;
 using Claim = Nano.Security.Models.Claim;
 
@@ -630,8 +629,36 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Removes an external logIn for a user.
+    /// Get External Logins for a user.
     /// </summary>
+    /// <param name="userId">The user id.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>The external logins.</returns>
+    /// <response code="200">Ok.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpGet]
+    [Route("external-logins/{userId}")]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IEnumerable<ExternalLogin>), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> GetExternalLoginsAsync([FromRoute][Required]TIdentity userId, CancellationToken cancellationToken = default)
+    {
+        var externalLogins = await this.IdentityManager
+            .GetUserExternalLoginsAsync(userId, cancellationToken);
+
+        return this.Ok(externalLogins);
+    }
+
+    /// <summary>
+    /// Add Google external login for a user.
+    /// </summary>
+    /// <param name="addExternalLogin">The external login</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>Void.</returns>
     /// <response code="200">Success.</response>
@@ -640,18 +667,101 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occured.</response>
     [HttpPost]
-    [Route("external/logIn/remove")]
+    [Route("external-logins/add/google")]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IEnumerable<ExternalLogin>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> AddExternalLoginGoogleAsync([FromBody][Required]AddExternalLoginGoogle<TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
+    {
+        var externalLogin = await this.IdentityManager
+            .AddExternalLoginAsync(addExternalLogin, cancellationToken);
+
+        return this.Ok(externalLogin);
+    }
+
+    /// <summary>
+    /// Add Facebook external login for a user.
+    /// </summary>
+    /// <param name="addExternalLogin">The external login</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("external-logins/add/facebook")]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IEnumerable<ExternalLogin>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> AddExternalLoginFacebookAsync([FromBody][Required]AddExternalLoginFacebook<TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
+    {
+        var externalLogin = await this.IdentityManager
+            .AddExternalLoginAsync(addExternalLogin, cancellationToken);
+
+        return this.Ok(externalLogin);
+    }
+
+    /// <summary>
+    /// Add Microsoft external login for a user.
+    /// </summary>
+    /// <param name="addExternalLogin">The external login</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("external-logins/add/microsoft")]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IEnumerable<ExternalLogin>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> AddExternalLoginMicrosoftAsync([FromBody][Required]AddExternalLoginMicrosoft<TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
+    {
+        var externalLogin = await this.IdentityManager
+            .AddExternalLoginAsync(addExternalLogin, cancellationToken);
+
+        return this.Ok(externalLogin);
+    }
+
+    /// <summary>
+    /// Removes an external login for a user.
+    /// </summary>
+    /// <param name="removeExternalLogin">The remove external login request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [HttpDelete]
+    [Route("external-logins/remove")]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> RemoveExternalLoginAsync(CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> RemoveExternalLoginAsync([FromBody][Required]RemoveExternalLogin<TIdentity> removeExternalLogin, CancellationToken cancellationToken = default)
     {
-        this.HttpContext.Request.Scheme = "https";
-
         await this.IdentityManager
-            .RemoveExternalLoginAsync(cancellationToken);
+            .RemoveExternalLoginAsync(removeExternalLogin, cancellationToken);
 
         return this.Ok();
     }
@@ -751,7 +861,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <summary>
     /// Revoke Api Key.
     /// </summary>
-    /// <param name="id">The api key id.</param>
+    /// <param name="apiKeyId">The api key id.</param>
     /// <param name="revokeAt">The date time when the api key will be revoked.</param>
     /// <param name="cancellationToken">The token used when request is cancelled.</param>
     /// <returns>The identity api key.</returns>
@@ -761,19 +871,19 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occured.</response>
     [HttpDelete]
-    [Route("api-keys/revoke/{id}")]
+    [Route("api-keys/revoke/{apiKeyId}")]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IdentityApiKey<Guid>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> RevokeApiKeyAsync([FromRoute][Required]TIdentity id, [FromQuery]DateTimeOffset? revokeAt, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> RevokeApiKeyAsync([FromRoute][Required]TIdentity apiKeyId, [FromQuery]DateTimeOffset? revokeAt, CancellationToken cancellationToken = default)
     {
         var identityApiKey = await this.IdentityManager
             .RevokeApiKeyAsync(new RevokeApiKey<TIdentity>
             {
-                Id = id,
+                Id = apiKeyId,
                 RevokeAt = revokeAt
             }, cancellationToken);
 
@@ -783,7 +893,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <summary>
     /// Gets roles of a user.
     /// </summary>
-    /// <param name="id">The user id.</param>
+    /// <param name="userId">The user id.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The roles.</returns>
     /// <response code="200">Success.</response>
@@ -792,18 +902,17 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occured.</response>
     [HttpGet]
-    [Route("roles/{id}")]
+    [Route("roles/{userId}")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
-    [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> GetRolesAsync([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> GetRolesAsync([FromRoute][Required]TIdentity userId, CancellationToken cancellationToken = default)
     {
         var roles = await this.IdentityManager
-            .GetUserRolesAsync(id, cancellationToken);
+            .GetUserRolesAsync(userId, cancellationToken);
 
         return this.Ok(roles);
     }
@@ -822,7 +931,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpPost]
     [Route("roles/assign")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
-    [Produces(HttpContentType.JSON)]
+    [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -851,7 +960,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpDelete]
     [Route("roles/remove")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
-    [Produces(HttpContentType.JSON)]
+    [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -868,7 +977,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <summary>
     /// Gets claims of a user.
     /// </summary>
-    /// <param name="id">The user id.</param>
+    /// <param name="userId">The user id.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The claims.</returns>
     /// <response code="200">Success.</response>
@@ -877,7 +986,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occured.</response>
     [HttpGet]
-    [Route("claims/{id}")]
+    [Route("claims/{userId}")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<Claim>), (int)HttpStatusCode.OK)]
@@ -885,10 +994,10 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> GetClaimsAsync([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> GetClaimsAsync([FromRoute][Required]TIdentity userId, CancellationToken cancellationToken = default)
     {
         var userClaims = await this.IdentityManager
-            .GetUserClaimsAsync(id, cancellationToken);
+            .GetUserClaimsAsync(userId, cancellationToken);
 
         var claims = userClaims
             .Select(x => new Claim
@@ -914,7 +1023,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpPost]
     [Route("claims/assign")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
-    [Produces(HttpContentType.JSON)]
+    [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -943,7 +1052,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpDelete]
     [Route("claims/remove")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
-    [Produces(HttpContentType.JSON)]
+    [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -971,7 +1080,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpPut]
     [Route("claims/replace")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
-    [Produces(HttpContentType.JSON)]
+    [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -981,6 +1090,76 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         await this.IdentityManager
             .ReplaceUserClaimAsync(replaceClaim, cancellationToken);
+
+        return this.Ok();
+    }
+
+    // BUG: 111: Look into renaming LogIn vs Login (NOW JUST RENAME FILES)
+    // BUG: 111: Check [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)] for new methods
+
+    // BUG: GetRoleClaimsAsync, AssignRoleClaimAsync, RemoveRoleClaimAsync
+
+    /// <summary>
+    /// Activate the model with the passed identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the model to delete.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Ok.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [Route("activate/{id}")]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> ActivateAsync([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
+    {
+        var user = await this.Repository
+            .GetAsync<TEntity, TIdentity>(id, cancellationToken);
+
+        await this.IdentityManager
+            .ActivateIdentityUser(user.IdentityUser, cancellationToken);
+
+        await this.Repository
+            .SaveChangesAsync(cancellationToken);
+
+        return this.Ok();
+    }
+
+    /// <summary>
+    /// Deactivate the model with the passed identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the model to delete.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Ok.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpPost]
+    [HttpDelete]
+    [Route("deactivate/{id}")]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> DeactivateAsync([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
+    {
+        var user = await this.Repository
+            .GetAsync<TEntity, TIdentity>(id, cancellationToken);
+
+        await this.IdentityManager
+            .DeactivateIdentityUser(user.IdentityUser, cancellationToken);
+
+        await this.Repository
+            .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
     }
@@ -999,7 +1178,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpPost]
     [HttpDelete]
     [Route("delete/{id}")]
-    [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -1037,7 +1215,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpDelete]
     [Route("delete/many")]
     [Consumes(HttpContentType.JSON)]
-    [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]

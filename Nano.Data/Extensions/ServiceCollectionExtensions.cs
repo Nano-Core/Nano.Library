@@ -21,6 +21,7 @@ using Nano.Data.Models;
 using Nano.Data.Providers.Sqlite;
 using Z.EntityFramework.Plus;
 using Z.EntityFramework.Extensions;
+using Nano.Models;
 
 namespace Nano.Data.Extensions;
 
@@ -96,9 +97,9 @@ public static class ServiceCollectionExtensions
         }
 
         services
-            .AddIdentity<IdentityUser<TIdentity>, IdentityRole<TIdentity>>()
+            .AddIdentity<IdentityUserExpanded<TIdentity>, IdentityRole<TIdentity>>()
             .AddEntityFrameworkStores<BaseDbContext<TIdentity>>()
-            .AddTokenProvider<DataProtectorTokenProvider<IdentityUser<TIdentity>>>(JwtBearerDefaults.AuthenticationScheme)
+            .AddTokenProvider<DataProtectorTokenProvider<IdentityUserExpanded<TIdentity>>>(JwtBearerDefaults.AuthenticationScheme)
             .AddDefaultTokenProviders()
             .AddCustomTokenProvider();
 

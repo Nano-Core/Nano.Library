@@ -26,7 +26,6 @@ using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Security;
 using Nano.Security.Const;
-using Nano.Security.Data.Models;
 using Z.EntityFramework.Plus;
 
 namespace Nano.Data;
@@ -35,7 +34,7 @@ namespace Nano.Data;
 /// Base Db Context (abstract).
 /// </summary>
 /// <typeparam name="TIdentity"></typeparam>
-public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserTokenExpiry<TIdentity>>, IDataProtectionKeyContext
+public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserExpanded<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserTokenExpiry<TIdentity>>, IDataProtectionKeyContext
     where TIdentity : IEquatable<TIdentity>
 {
     private IList<EntityEvent> pendingEvents = new List<EntityEvent>();
@@ -362,18 +361,24 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             .ToTable(TableNames.IDENTITY_USER_CLAIM);
 
         modelBuilder
-            .Entity<IdentityUser<TIdentity>>()
+            .Entity<IdentityUserExpanded<TIdentity>>()
             .ToTable(TableNames.IDENTITY_USER);
 
         modelBuilder
-            .Entity<IdentityUser<TIdentity>>()
+            .Entity<IdentityUserExpanded<TIdentity>>()
             .HasIndex(x => x.Email)
             .IsUnique();
 
         modelBuilder
-            .Entity<IdentityUser<TIdentity>>()
+            .Entity<IdentityUserExpanded<TIdentity>>()
             .HasIndex(x => x.PhoneNumber)
             .IsUnique();
+
+        modelBuilder
+            .Entity<IdentityUserExpanded<TIdentity>>()
+            .Property(x => x.IsActive)
+            .HasDefaultValue(true)
+            .IsRequired();
 
         modelBuilder
             .Entity<IdentityRoleClaim<TIdentity>>()
@@ -678,7 +683,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                 .CreateAsync(identityRole);
         }
     }
-    private async Task AddUserToRole(IdentityUser<TIdentity> user, string role)
+    private async Task AddUserToRole(IdentityUserExpanded<TIdentity> user, string role)
     {
         if (user == null)
             throw new ArgumentNullException(nameof(user));
@@ -686,7 +691,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (role == null)
             throw new ArgumentNullException(nameof(role));
 
-        var userManager = this.GetService<UserManager<IdentityUser<TIdentity>>>();
+        var userManager = this.GetService<UserManager<IdentityUserExpanded<TIdentity>>>();
 
         var isInRole = await userManager
             .IsInRoleAsync(user, role);
@@ -697,7 +702,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                 .AddToRoleAsync(user, role);
         }
     }
-    private async Task<IdentityUser<TIdentity>> AddUser(string emailAddress, string password)
+    private async Task<IdentityUserExpanded<TIdentity>> AddUser(string emailAddress, string password)
     {
         if (emailAddress == null)
             throw new ArgumentNullException(nameof(emailAddress));
@@ -705,14 +710,14 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (password == null)
             throw new ArgumentNullException(nameof(password));
 
-        var userManager = this.GetService<UserManager<IdentityUser<TIdentity>>>();
+        var userManager = this.GetService<UserManager<IdentityUserExpanded<TIdentity>>>();
 
         var user = await userManager
             .FindByEmailAsync(emailAddress);
 
         if (user == null)
         {
-            user = new IdentityUser<TIdentity>
+            user = new IdentityUserExpanded<TIdentity>
             {
                 UserName = emailAddress,
                 Email = emailAddress,

@@ -3,9 +3,9 @@
 namespace Nano.Security.Models;
 
 /// <summary>
-/// LogIn External Provider Auth Code (abstract).
+/// External Login Provider Auth Code.
 /// </summary>
-public abstract class LogInExternalProviderAuthCode : BaseLogInExternalProvider
+public class ExternalLoginProviderAuthCode : BaseLogInExternalProvider
 {
     /// <summary>
     /// Code.

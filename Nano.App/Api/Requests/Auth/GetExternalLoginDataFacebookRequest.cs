@@ -3,7 +3,7 @@
 namespace Nano.App.Api.Requests.Auth;
 
 /// <inheritdoc />
-public class GetExternalLoginDataFacebookRequest : BaseGetExternalLoginDataRequest<LogInExternalProviderFacebook>
+public class GetExternalLoginDataFacebookRequest : BaseGetExternalLoginDataRequest<ExternalLoginProviderFacebook>
 {
     /// <inheritdoc />
     public GetExternalLoginDataFacebookRequest()

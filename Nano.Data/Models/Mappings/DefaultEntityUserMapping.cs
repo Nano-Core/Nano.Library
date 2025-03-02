@@ -34,7 +34,7 @@ public class DefaultEntityUserMapping<TEntity> : BaseEntityIdentityMapping<TEnti
 
         builder
             .HasIndex(x => x.CreatedAt);
-
+        
         builder
             .Property(y => y.IsDeleted)
             .HasDefaultValue(0L)

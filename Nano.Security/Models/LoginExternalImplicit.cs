@@ -1,7 +1,7 @@
 ﻿namespace Nano.Security.Models;
 
 /// <summary>
-/// LogIn External Implicit (abstract).
+/// Log In External Implicit.
 /// </summary>
-public abstract class LogInExternalImplicit<TProvider> : BaseLogInExternal<TProvider>
-    where TProvider : LogInExternalProviderImplicit, new();
+public class LogInExternalImplicit<TProvider> : BaseLogInExternal<TProvider>
+    where TProvider : ExternalLoginProviderImplicit, new();

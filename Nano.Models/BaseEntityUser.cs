@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Identity;
 using Nano.Models.Attributes;
 using Nano.Models.Interfaces;
 
@@ -20,5 +19,5 @@ public abstract class BaseEntityUser<TIdentity> : BaseEntityIdentity<TIdentity>,
     /// <inheritdoc />
     [Include]
     [SwaggerResponseOnly]
-    public virtual IdentityUser<TIdentity> IdentityUser { get; set; }
+    public virtual IdentityUserExpanded<TIdentity> IdentityUser { get; set; }
 }
