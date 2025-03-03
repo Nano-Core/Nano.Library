@@ -149,12 +149,12 @@ public abstract class BaseApi : IDisposable
     }
 
     /// <summary>
-    /// Get External Log-In Data Async.
+    /// Get External Login Data Async.
     /// </summary>
     /// <param name="request">The <see cref="BaseGetExternalLoginDataRequest{TProvider}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="AccessToken"/>.</returns>
-    public virtual Task<ExternalLogInData> GetExternalLogInDataAsync<TProvider>(BaseGetExternalLoginDataRequest<TProvider> request, CancellationToken cancellationToken = default)
+    public virtual Task<ExternalLogInData> GetExternalLoginDataAsync<TProvider>(BaseGetExternalLoginDataRequest<TProvider> request, CancellationToken cancellationToken = default)
         where TProvider : BaseLogInExternalProvider, new()
     {
         if (request == null)

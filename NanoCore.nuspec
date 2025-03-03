@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>9.1.2</version>
+		<version>9.1.3</version>
 		<title>Nano Core</title>
 		<summary>Rapidly built and deploy rich .NET 9.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
@@ -16,14 +16,7 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Changed Logout to only remove refresh token matching the appId of the logged in user.
-			- Fixed swagger docs for Roles and Claims Identity endpoints.
-			- Added IdentityUser.IsActive, and methods for activate and deactivate. Default: true
-			- Added methods for removing an external login from identity using userId and loginProvider.
-			- Added method for adding external login.
-			- Added role claims endpoints to IdentityController.
-			- Refactored and improved IdentityManager and IdentityController methods and implementations.
-			- Added improved flow for change email and change phone number, where the new value is stored, avoiding asking the user for the new value a second time.
+			- Added File Extension Validation Attribute.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net9.0">
