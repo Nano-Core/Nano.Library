@@ -72,7 +72,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         if (accessToken == null)
         {
-            this.Unauthorized();
+            return this.Unauthorized();
         }
 
         return this.Ok(accessToken);
@@ -107,7 +107,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         if (accessToken == null)
         {
-            this.Unauthorized();
+            return this.Unauthorized();
         }
 
         return this.Ok(accessToken);
@@ -141,7 +141,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         if (accessToken == null)
         {
-            this.Unauthorized();
+            return this.Unauthorized();
         }
 
         return this.Ok(accessToken);
@@ -175,7 +175,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         if (accessToken == null)
         {
-            this.Unauthorized();
+            return this.Unauthorized();
         }
 
         return this.Ok(accessToken);
@@ -209,7 +209,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         if (accessToken == null)
         {
-            this.Unauthorized();
+            return this.Unauthorized();
         }
 
         return this.Ok(accessToken);
@@ -243,7 +243,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         if (accessToken == null)
         {
-            this.Unauthorized();
+            return this.Unauthorized();
         }
 
         return this.Ok(accessToken);
@@ -277,7 +277,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         if (accessToken == null)
         {
-            this.Unauthorized();
+            return this.Unauthorized();
         }
 
         return this.Ok(accessToken);
@@ -311,7 +311,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         if (accessToken == null)
         {
-            this.Unauthorized();
+            return this.Unauthorized();
         }
 
         return this.Ok(accessToken);
@@ -345,7 +345,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         if (accessToken == null)
         {
-            this.Unauthorized();
+            return this.Unauthorized();
         }
 
         return this.Ok(accessToken);
@@ -379,7 +379,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         if (accessToken == null)
         {
-            this.Unauthorized();
+            return this.Unauthorized();
         }
 
         return this.Ok(accessToken);
@@ -439,7 +439,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         if (externalLoginData == null)
         {
-            this.Unauthorized();
+            return this.Unauthorized();
         }
 
         return this.Ok(externalLoginData);
@@ -472,7 +472,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         if (externalLoginData == null)
         {
-            this.Unauthorized();
+            return this.Unauthorized();
         }
 
         return this.Ok(externalLoginData);
@@ -505,7 +505,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         if (externalLoginData == null)
         {
-            this.Unauthorized();
+            return this.Unauthorized();
         }
 
         return this.Ok(externalLoginData);
@@ -537,7 +537,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         if (logInProviders == null)
         {
-            this.NotFound();
+            return this.NotFound();
         }
 
         return this.Ok(logInProviders);

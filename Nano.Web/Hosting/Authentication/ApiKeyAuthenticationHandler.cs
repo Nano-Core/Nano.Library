@@ -56,7 +56,17 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationS
         }
 
         var identityUser = await this.identityManager
-            .GetIdentityUserAsync(identityApiKey.IdentityUserId);
+            .GetIdentityUserOrDefaultAsync(identityApiKey.IdentityUserId);
+
+        if (identityUser == null)
+        {
+            return AuthenticateResult.Fail("User not found");
+        }
+
+        if (!identityUser.IsActive)
+        {
+            return AuthenticateResult.Fail("User is deactivated");
+        }
 
         var transientClaims = new Dictionary<string, string>
         {

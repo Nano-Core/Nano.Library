@@ -67,20 +67,24 @@ public class ExceptionHandlingMiddleware : IMiddleware
         {
             await next(httpContext);
         }
-        catch (UnauthorizedException)
+        catch (UnauthorizedException ex)
         {
+            exception = ex.GetBaseException();
             response.StatusCode = (int)HttpStatusCode.Unauthorized;
         }
-        catch (PermissionDeniedException)
+        catch (PermissionDeniedException ex)
         {
+            exception = ex.GetBaseException();
             response.StatusCode = (int)HttpStatusCode.Forbidden;
         }
-        catch (TaskCanceledException)
+        catch (TaskCanceledException ex)
         {
+            exception = ex.GetBaseException();
             response.StatusCode = (int)HttpStatusCode.NoContent;
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException ex)
         {
+            exception = ex.GetBaseException();
             response.StatusCode = (int)HttpStatusCode.NoContent;
         }
         catch (Exception ex)

@@ -305,6 +305,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpPost]
     [Route("password/reset/token")]
     [AllowAnonymous]
+    [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(ResetPasswordToken<Guid>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -389,6 +390,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("email/change/token")]
+    [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(ChangeEmailToken<Guid>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -396,7 +398,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public virtual async Task<IActionResult> GetChangeEmailTokenAsync([FromBody][Required] GenerateChangeEmailToken<TIdentity> generateChangeEmailToken, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> GetChangeEmailTokenAsync([FromBody][Required]GenerateChangeEmailToken<TIdentity> generateChangeEmailToken, CancellationToken cancellationToken = default)
     {
         var changeEmailToken = await this.IdentityManager
             .GenerateChangeEmailTokenAsync(generateChangeEmailToken, cancellationToken);
@@ -416,7 +418,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("email/confirm")]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -445,6 +446,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("email/confirm/token")]
+    [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(ConfirmEmailToken<Guid>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -502,6 +504,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("phone/change/token")]
+    [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(ChangePhoneNumberToken<Guid>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -557,6 +560,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("phone/confirm/token")]
+    [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(ConfirmPhoneNumberToken<Guid>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -584,8 +588,8 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("token/custom")]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(CustomPurposeToken<Guid>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -612,8 +616,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("token/custom/verify")]
-    [AllowAnonymous]
-    [Produces(HttpContentType.JSON)]
+    [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -815,9 +818,9 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     public virtual async Task<IActionResult> CreateApiKeyAsync([FromBody][Required]CreateApiKey<TIdentity> createApiKey, CancellationToken cancellationToken = default)
     {
         await Task.CompletedTask;
-
+        
         var identityApiKey = this.IdentityManager
-            .CreateApiKeyAsync(createApiKey, out var apiKey, cancellationToken);
+            .CreateApiKeyAsync(createApiKey, out var apiKey);
 
         var identityApiKeyCreated = new IdentityApiKeyCreated<TIdentity>
         {
