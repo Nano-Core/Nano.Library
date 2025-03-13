@@ -981,6 +981,46 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
     }
 
     /// <summary>
+    /// Gets external login of a user.
+    /// </summary>
+    /// <param name="userId">The user id.</param>
+    /// <param name="providerName">The provider name.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="ExternalLogin"/>.</returns>
+    public virtual async Task<ExternalLogin> GetUserExternalLoginAsync(TIdentity userId, string providerName, CancellationToken cancellationToken = default)
+    {
+        var identityUser = await this.UserManager
+            .GetIdentityUserAsync(userId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NullReferenceException(nameof(identityUser));
+        }
+
+        return await this.GetUserExternalLoginAsync(identityUser, providerName, cancellationToken);
+    }
+
+    /// <summary>
+    /// Gets external logins of a user.
+    /// </summary>
+    /// <param name="identityUser">The <see cref="IdentityUserExpanded{TIdentity}"/>.</param>
+    /// <param name="providerName">The provider name.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="ExternalLogin"/>.</returns>
+    public virtual async Task<ExternalLogin> GetUserExternalLoginAsync(IdentityUserExpanded<TIdentity> identityUser, string providerName, CancellationToken cancellationToken = default)
+    {
+        if (identityUser == null)
+        {
+            throw new ArgumentNullException(nameof(identityUser));
+        }
+
+        var externalLogins = await this.GetUserExternalLoginsAsync(identityUser, cancellationToken);
+
+        return externalLogins
+            .FirstOrDefault(x => x.Provider.Name == providerName);
+    }
+
+    /// <summary>
     /// Gets external logins of a user.
     /// </summary>
     /// <param name="userId">The user id.</param>
@@ -997,26 +1037,6 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
         }
 
         return await this.GetUserExternalLoginsAsync(identityUser, cancellationToken);
-    }
-
-    /// <summary>
-    /// Gets external logins of a user.
-    /// </summary>
-    /// <param name="identityUser">The <see cref="IdentityUserExpanded{TIdentity}"/>.</param>
-    /// <param name="providerName">The provider name.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The collection of <see cref="ExternalLogin"/>.</returns>
-    public virtual async Task<ExternalLogin> GetUserExternalLoginAsync(IdentityUserExpanded<TIdentity> identityUser, string providerName, CancellationToken cancellationToken = default)
-    {
-        if (identityUser == null)
-        {
-            throw new ArgumentNullException(nameof(identityUser));
-        }
-
-        var externalLogins = await this.GetUserExternalLoginsAsync(identityUser, cancellationToken);
-
-        return externalLogins
-            .FirstOrDefault(x => x.Provider.Name == providerName);
     }
 
     /// <summary>
