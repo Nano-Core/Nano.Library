@@ -1003,6 +1003,26 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
     /// Gets external logins of a user.
     /// </summary>
     /// <param name="identityUser">The <see cref="IdentityUserExpanded{TIdentity}"/>.</param>
+    /// <param name="providerName">The provider name.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The collection of <see cref="ExternalLogin"/>.</returns>
+    public virtual async Task<ExternalLogin> GetUserExternalLoginAsync(IdentityUserExpanded<TIdentity> identityUser, string providerName, CancellationToken cancellationToken = default)
+    {
+        if (identityUser == null)
+        {
+            throw new ArgumentNullException(nameof(identityUser));
+        }
+
+        var externalLogins = await this.GetUserExternalLoginsAsync(identityUser, cancellationToken);
+
+        return externalLogins
+            .FirstOrDefault(x => x.Provider.Name == providerName);
+    }
+
+    /// <summary>
+    /// Gets external logins of a user.
+    /// </summary>
+    /// <param name="identityUser">The <see cref="IdentityUserExpanded{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The collection of <see cref="ExternalLogin"/>.</returns>
     public virtual async Task<IEnumerable<ExternalLogin>> GetUserExternalLoginsAsync(IdentityUserExpanded<TIdentity> identityUser, CancellationToken cancellationToken = default)
