@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using NetTopologySuite.IO.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -14,19 +15,19 @@ public static class Globals
     /// </summary>
     public static JsonSerializerSettings GetDefaultJsonSerializerSettings()
     {
-        var serializerSettings = new JsonSerializerSettings
+        return new JsonSerializerSettings
         {
             MaxDepth = 128,
             Culture = CultureInfo.CurrentCulture,
             NullValueHandling = NullValueHandling.Ignore,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             PreserveReferencesHandling = PreserveReferencesHandling.None,
-            ContractResolver = new DefaultEntityContractResolver()
+            ContractResolver = new DefaultEntityContractResolver(),
+            Converters = 
+            [
+                new StringEnumConverter(),
+                new GeometryConverter()
+            ]
         };
-
-        serializerSettings.Converters
-            .Add(new StringEnumConverter());
-
-        return serializerSettings;
     }
 }
