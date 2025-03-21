@@ -194,6 +194,16 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
+    public virtual Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, int includeDepth, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+    {
+        if (where == null)
+            throw new ArgumentNullException(nameof(where));
+
+        return this.GetFirstAsync(where, new Ordering(), includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
     public virtual Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
