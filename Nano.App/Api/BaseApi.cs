@@ -17,7 +17,6 @@ using Nano.App.Api.Requests.Spatial;
 using Nano.App.Extensions;
 using Nano.Models;
 using Nano.Models.Const;
-using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Exceptions;
 using Nano.Models.Interfaces;
 using Nano.Models.Serialization.Json.Const;
@@ -1247,7 +1246,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <returns>The matching entities.</returns>
     public virtual Task<IEnumerable<TEntity>> CoveredByAsync<TEntity, TCriteria>(CoveredByRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntitySpatial
-        where TCriteria : IQueryCriteriaSpatial, new()
+        where TCriteria : IQueryCriteria, new()
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
@@ -1266,7 +1265,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <returns>The matching entities.</returns>
     public virtual Task<IEnumerable<TEntity>> CoversAsync<TEntity, TCriteria>(CoversRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntitySpatial
-        where TCriteria : IQueryCriteriaSpatial, new()
+        where TCriteria : IQueryCriteria, new()
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
@@ -1285,7 +1284,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <returns>The matching entities.</returns>
     public virtual Task<IEnumerable<TEntity>> CrossesAsync<TEntity, TCriteria>(CrossesRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntitySpatial
-        where TCriteria : IQueryCriteriaSpatial, new()
+        where TCriteria : IQueryCriteria, new()
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
@@ -1304,7 +1303,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <returns>The matching entities.</returns>
     public virtual Task<IEnumerable<TEntity>> DisjointsAsync<TEntity, TCriteria>(DisjointsRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntitySpatial
-        where TCriteria : IQueryCriteriaSpatial, new()
+        where TCriteria : IQueryCriteria, new()
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
@@ -1323,7 +1322,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <returns>The matching entities.</returns>
     public virtual Task<IEnumerable<TEntity>> IntersectsAsync<TEntity, TCriteria>(IntersectsRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntitySpatial
-        where TCriteria : IQueryCriteriaSpatial, new()
+        where TCriteria : IQueryCriteria, new()
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
@@ -1342,7 +1341,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <returns>The matching entities.</returns>
     public virtual Task<IEnumerable<TEntity>> OverlapsAsync<TEntity, TCriteria>(OverlapsRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntitySpatial
-        where TCriteria : IQueryCriteriaSpatial, new()
+        where TCriteria : IQueryCriteria, new()
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
@@ -1361,7 +1360,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <returns>The matching entities.</returns>
     public virtual Task<IEnumerable<TEntity>> TouchesAsync<TEntity, TCriteria>(TouchesRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntitySpatial
-        where TCriteria : IQueryCriteriaSpatial, new()
+        where TCriteria : IQueryCriteria, new()
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
@@ -1380,7 +1379,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <returns>The matching entities.</returns>
     public virtual Task<IEnumerable<TEntity>> WithinAsync<TEntity, TCriteria>(WithinRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntitySpatial
-        where TCriteria : IQueryCriteriaSpatial, new()
+        where TCriteria : IQueryCriteria, new()
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));

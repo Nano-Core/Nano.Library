@@ -1,21 +1,20 @@
-﻿using DynamicExpression.Entities;
-using DynamicExpression.Interfaces;
+﻿using DynamicExpression.Interfaces;
 using Nano.App.Api.Requests.Attributes;
-using Nano.Models.Criterias.Interfaces;
+using Nano.Models.Criterias;
 
 namespace Nano.App.Api.Requests.Spatial;
 
 /// <summary>
 /// Base Spatial Request (abstract).
 /// </summary>
-/// <typeparam name="TCriteria">The type of <see cref="IQueryCriteriaSpatial"/>.</typeparam>
+/// <typeparam name="TCriteria">The type of <see cref="IQueryCriteria"/>.</typeparam>
 public abstract class BaseSpatialRequest<TCriteria> : BaseRequestPost
-    where TCriteria : IQueryCriteriaSpatial, new()
+    where TCriteria : IQueryCriteria, new()
 {
     /// <summary>
     /// Query.
     /// </summary>
-    public virtual IQuery<TCriteria> Query { get; set; } = new Query<TCriteria>();
+    public virtual SpatialQuery<TCriteria> Query { get; set; } = new();
 
     /// <summary>
     /// Include Depth.

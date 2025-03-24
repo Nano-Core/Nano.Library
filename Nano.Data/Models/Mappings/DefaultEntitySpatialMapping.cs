@@ -1,12 +1,15 @@
 using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Models;
+using NetTopologySuite.Geometries;
 
 namespace Nano.Data.Models.Mappings;
 
 /// <inheritdoc />
-public class DefaultEntitySpatialMapping<TEntity> : DefaultEntityMapping<TEntity>
-    where TEntity : DefaultEntitySpatial
+public class DefaultEntitySpatialMapping<TEntity, TGeometry> : DefaultEntityMapping<TEntity>
+    where TEntity : DefaultEntitySpatial<TGeometry>
+    where TGeometry : Geometry
 {
     /// <inheritdoc />
     public override void Map(EntityTypeBuilder<TEntity> builder)
@@ -17,6 +20,12 @@ public class DefaultEntitySpatialMapping<TEntity> : DefaultEntityMapping<TEntity
         base.Map(builder);
 
         builder
-            .Property(x => x.Geometry);
+            .Property(x => x.Geometry)
+            .HasColumnType("GEOMETRY")
+            .HasSrid(4326);
+
+        builder
+            .HasIndex(x => x.Geometry)
+            .IsSpatial();
     }
 }

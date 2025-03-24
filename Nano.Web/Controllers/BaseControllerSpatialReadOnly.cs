@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Nano.Eventing;
 using Nano.Models;
 using Nano.Models.Const;
-using Nano.Models.Criterias.Interfaces;
+using Nano.Models.Criterias;
 using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
@@ -20,11 +20,11 @@ using Nano.Security.Const;
 namespace Nano.Web.Controllers;
 
 /// <inheritdoc />
-[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE + "," + BuiltInUserRoles.READER)]
+[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.READER)]
 public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : IRepositorySpatial
     where TEntity : class, IEntityIdentity<TIdentity>, IEntitySpatial
-    where TCriteria : class, IQueryCriteriaSpatial, new()
+    where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
@@ -42,7 +42,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     /// <summary>
     /// Gets the models, that intersects.
     /// </summary>
-    /// <param name="criteria">The criteria.</param>
+    /// <param name="query">The query.</param>
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The token used when request is cancelled.</param>
     /// <returns>The models.</returns>
@@ -55,23 +55,23 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [Route("intersects")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntitySpatial>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> IntersectsAsync([FromBody][Required]IQuery<TCriteria> criteria, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> IntersectsAsync([FromBody][Required]SpatialQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         IEnumerable<TEntity> result;
         if (includeDepth.HasValue)
         {
             result = await this.Repository
-                .Intersects<TEntity, TCriteria>(criteria, includeDepth.Value, cancellationToken);
+                .Intersects<TEntity, TCriteria>(query, includeDepth.Value, cancellationToken);
         }
         else
         {
             result = await this.Repository
-                .Intersects<TEntity, TCriteria>(criteria, cancellationToken);
+                .Intersects<TEntity, TCriteria>(query, cancellationToken);
         }
 
         if (result == null)
@@ -85,7 +85,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     /// <summary>
     /// Gets the models, that covers.
     /// </summary>
-    /// <param name="criteria">The criteria.</param>
+    /// <param name="query">The query.</param>
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The token used when request is cancelled.</param>
     /// <returns>The models.</returns>
@@ -98,23 +98,23 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [Route("covers")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntitySpatial>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> CoversAsync([FromBody][Required]IQuery<TCriteria> criteria, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> CoversAsync([FromBody][Required]SpatialQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         IEnumerable<TEntity> result;
         if (includeDepth.HasValue)
         {
             result = await this.Repository
-                .Covers<TEntity, TCriteria>(criteria, includeDepth.Value, cancellationToken);
+                .Covers<TEntity, TCriteria>(query, includeDepth.Value, cancellationToken);
         }
         else
         {
             result = await this.Repository
-                .Covers<TEntity, TCriteria>(criteria, cancellationToken);
+                .Covers<TEntity, TCriteria>(query, cancellationToken);
         }
 
         if (result == null)
@@ -128,7 +128,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     /// <summary>
     /// Gets the models, that are covered-by.
     /// </summary>
-    /// <param name="criteria">The criteria.</param>
+    /// <param name="query">The query.</param>
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The token used when request is cancelled.</param>
     /// <returns>The models.</returns>
@@ -141,23 +141,23 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [Route("covered-by")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntitySpatial>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> CoveredByAsync([FromBody][Required]IQuery<TCriteria> criteria, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> CoveredByAsync([FromBody][Required]SpatialQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         IEnumerable<TEntity> result;
         if (includeDepth.HasValue)
         {
             result = await this.Repository
-                .CoveredBy<TEntity, TCriteria>(criteria, includeDepth.Value, cancellationToken);
+                .CoveredBy<TEntity, TCriteria>(query, includeDepth.Value, cancellationToken);
         }
         else
         {
             result = await this.Repository
-                .CoveredBy<TEntity, TCriteria>(criteria, cancellationToken);
+                .CoveredBy<TEntity, TCriteria>(query, cancellationToken);
         }
 
         if (result == null)
@@ -171,7 +171,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     /// <summary>
     /// Gets the models, that are covered-by.
     /// </summary>
-    /// <param name="criteria">The criteria.</param>
+    /// <param name="query">The query.</param>
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The token used when request is cancelled.</param>
     /// <returns>The models.</returns>
@@ -184,23 +184,23 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [Route("overlaps")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntitySpatial>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> OverlapsAsync([FromBody][Required]IQuery<TCriteria> criteria, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> OverlapsAsync([FromBody][Required]SpatialQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         IEnumerable<TEntity> result;
         if (includeDepth.HasValue)
         {
             result = await this.Repository
-                .Overlaps<TEntity, TCriteria>(criteria, includeDepth.Value, cancellationToken);
+                .Overlaps<TEntity, TCriteria>(query, includeDepth.Value, cancellationToken);
         }
         else
         {
             result = await this.Repository
-                .Overlaps<TEntity, TCriteria>(criteria, cancellationToken);
+                .Overlaps<TEntity, TCriteria>(query, cancellationToken);
         }
 
         if (result == null)
@@ -214,7 +214,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     /// <summary>
     /// Gets the models, that tocuhes.
     /// </summary>
-    /// <param name="criteria">The criteria.</param>
+    /// <param name="query">The query.</param>
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The token used when request is cancelled.</param>
     /// <returns>The models.</returns>
@@ -232,18 +232,18 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> TouchesAsync([FromBody][Required]IQuery<TCriteria> criteria, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> TouchesAsync([FromBody][Required]SpatialQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         IEnumerable<TEntity> result;
         if (includeDepth.HasValue)
         {
             result = await this.Repository
-                .Touches<TEntity, TCriteria>(criteria, includeDepth.Value, cancellationToken);
+                .Touches<TEntity, TCriteria>(query, includeDepth.Value, cancellationToken);
         }
         else
         {
             result = await this.Repository
-                .Touches<TEntity, TCriteria>(criteria, cancellationToken);
+                .Touches<TEntity, TCriteria>(query, cancellationToken);
         }
 
         if (result == null)
@@ -257,7 +257,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     /// <summary>
     /// Gets the models, that crosses.
     /// </summary>
-    /// <param name="criteria">The criteria.</param>
+    /// <param name="query">The query.</param>
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The token used when request is cancelled.</param>
     /// <returns>The models.</returns>
@@ -270,23 +270,23 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [Route("crosses")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntitySpatial>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> CrossesAsync([FromBody][Required]IQuery<TCriteria> criteria, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> CrossesAsync([FromBody][Required]SpatialQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         IEnumerable<TEntity> result;
         if (includeDepth.HasValue)
         {
             result = await this.Repository
-                .Crosses<TEntity, TCriteria>(criteria, includeDepth.Value, cancellationToken);
+                .Crosses<TEntity, TCriteria>(query, includeDepth.Value, cancellationToken);
         }
         else
         {
             result = await this.Repository
-                .Crosses<TEntity, TCriteria>(criteria, cancellationToken);
+                .Crosses<TEntity, TCriteria>(query, cancellationToken);
         }
 
         if (result == null)
@@ -300,7 +300,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     /// <summary>
     /// Gets the models, that are disjointed.
     /// </summary>
-    /// <param name="criteria">The criteria.</param>
+    /// <param name="query">The query.</param>
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The token used when request is cancelled.</param>
     /// <returns>The models.</returns>
@@ -313,23 +313,23 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [Route("disjoints")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntitySpatial>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> DisjointsAsync([FromBody][Required]IQuery<TCriteria> criteria, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> DisjointsAsync([FromBody][Required]SpatialQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         IEnumerable<TEntity> result;
         if (includeDepth.HasValue)
         {
             result = await this.Repository
-                .Disjoints<TEntity, TCriteria>(criteria, includeDepth.Value, cancellationToken);
+                .Disjoints<TEntity, TCriteria>(query, includeDepth.Value, cancellationToken);
         }
         else
         {
             result = await this.Repository
-                .Disjoints<TEntity, TCriteria>(criteria, cancellationToken);
+                .Disjoints<TEntity, TCriteria>(query, cancellationToken);
         }
 
         if (result == null)
@@ -343,7 +343,7 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     /// <summary>
     /// Gets the models, that are within.
     /// </summary>
-    /// <param name="criteria">The criteria.</param>
+    /// <param name="query">The query.</param>
     /// <param name="distance">The distance in meters. Default: 50.000 meters.</param>
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The token used when request is cancelled.</param>
@@ -357,23 +357,23 @@ public abstract class BaseControllerSpatialReadOnly<TRepository, TEntity, TIdent
     [Route("within")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<DefaultEntitySpatial>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(void), (int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> WithinAsync([FromBody][Required]IQuery<TCriteria> criteria, [FromQuery]int? includeDepth, [FromQuery]double distance = 50000, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> WithinAsync([FromBody][Required]SpatialQuery<TCriteria> query, [FromQuery]int? includeDepth, [FromQuery]double distance = 50000, CancellationToken cancellationToken = default)
     {
         IEnumerable<TEntity> result;
         if (includeDepth.HasValue)
         {
             result = await this.Repository
-                .Within<TEntity, TCriteria>(criteria, includeDepth.Value, distance, cancellationToken);
+                .Within<TEntity, TCriteria>(query, includeDepth.Value, distance, cancellationToken);
         }
         else
         {
             result = await this.Repository
-                .Within<TEntity, TCriteria>(criteria, distance, cancellationToken);
+                .Within<TEntity, TCriteria>(query, distance, cancellationToken);
         }
 
         if (result == null)

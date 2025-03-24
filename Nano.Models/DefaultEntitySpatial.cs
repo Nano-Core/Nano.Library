@@ -5,11 +5,16 @@ using NetTopologySuite.Geometries;
 namespace Nano.Models;
 
 /// <inheritdoc />
-public abstract class DefaultEntitySpatial : DefaultEntitySpatial<Guid>;
+public abstract class DefaultEntitySpatial : DefaultEntitySpatial<Geometry>;
 
-/// <inheritdoc cref="IEntitySpatial"/>
-public class DefaultEntitySpatial<TIdentity> : DefaultEntity<TIdentity>, IEntitySpatial
+/// <inheritdoc />
+public abstract class DefaultEntitySpatial<TGeometry> : DefaultEntitySpatial<TGeometry, Guid>
+    where TGeometry : Geometry;
+
+/// <inheritdoc cref="IEntitySpatial{TGeometry}"/>
+public class DefaultEntitySpatial<TGeometry, TIdentity> : DefaultEntity<TIdentity>, IEntitySpatial<TGeometry>
+    where TGeometry : Geometry
 {
     /// <inheritdoc />
-    public virtual Geometry Geometry { get; set; }
+    public virtual TGeometry Geometry { get; set; }
 }

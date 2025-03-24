@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing;
 using Nano.Models;
 using Nano.Models.Const;
-using Nano.Models.Criterias.Interfaces;
 using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
@@ -22,7 +22,7 @@ namespace Nano.Web.Controllers;
 public abstract class BaseControllerSpatialDeletable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerSpatialReadOnly<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : IRepositorySpatial
     where TEntity : class, IEntityIdentity<TIdentity>, IEntitySpatial, IEntityDeletable
-    where TCriteria : class, IQueryCriteriaSpatial, new()
+    where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
