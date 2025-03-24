@@ -10,7 +10,7 @@ namespace Nano.Repository.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds <see cref="IRepository"/> and <see cref="IRepositorySpatial"/> to the <see cref="IServiceCollection"/>.
+    /// Adds <see cref="IRepository"/> to the <see cref="IServiceCollection"/>.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
@@ -20,8 +20,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
 
         services
-            .AddScoped<IRepository, DefaultRepository>()
-            .AddScoped<IRepositorySpatial, DefaultRepositorySpatial>();
+            .AddScoped<IRepository, DefaultRepository>();
 
         return services;
     }

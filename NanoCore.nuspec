@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>9.1.10</version>
+		<version>9.1.11</version>
 		<title>Nano Core</title>
 		<summary>Rapidly built and deploy rich .NET 9.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
@@ -16,15 +16,15 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Improved Spatial implementation.
+			- Improved Spatial implementation, adding spatial methods to query critieras.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net9.0">
 				<dependency id="Azure.Storage.Files.Shares" version="12.21.0" />
 				<dependency id="Microsoft.Data.SqlClient" version="5.2.2" />
 				<dependency id="Microsoft.Extensions.Identity.Stores" version="9.0.0" />
-				<dependency id="DynamicExpression" version="9.0.0" />
-				<dependency id="NetTopologySuite" version="2.5.0" />
+				<dependency id="DynamicExpression" version="9.0.1" />
+				<dependency id="NetTopologySuite" version="2.6.0" />
 				<dependency id="Newtonsoft.Json" version="13.0.3" />
 				<dependency id="Microsoft.Extensions.Logging.Log4Net.AspNetCore" version="8.0.0" />
 				<dependency id="Serilog" version="4.2.0" />
