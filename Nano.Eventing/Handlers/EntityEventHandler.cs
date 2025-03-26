@@ -150,11 +150,6 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
     {
         foreach (var pair in @event.Data)
         {
-            if (pair.Value == null)
-            {
-                continue;
-            }
-
             var dataProperty = type
                 .GetProperty(pair.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty);
 
@@ -163,7 +158,7 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                 continue;
             }
 
-            var value = pair.Value.ToString();
+            var value = pair.Value?.ToString();
 
             if (value == null)
             {
@@ -267,6 +262,11 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
 
                 dataProperty
                     .SetValue(entity, enumValue);
+            }
+            else if (dataProperty.PropertyType == typeof(string))
+            {
+                dataProperty
+                    .SetValue(entity, value);
             }
             else
             {
