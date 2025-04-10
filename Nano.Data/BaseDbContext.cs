@@ -376,6 +376,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
 
         modelBuilder
             .Entity<IdentityUserExpanded<TIdentity>>()
+            .HasQueryFilter(x => x.IsActive);
+
+        modelBuilder
+            .Entity<IdentityUserExpanded<TIdentity>>()
             .Property(x => x.IsActive)
             .HasDefaultValue(true)
             .IsRequired();
