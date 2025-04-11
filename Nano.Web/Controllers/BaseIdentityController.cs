@@ -68,6 +68,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         var passwordOptions = await this.IdentityManager.GetPaswordOptionsAsync(cancellationToken);
 
+        if (passwordOptions == null)
+        {
+            return this.NotFound();
+        }
+
         return this.Ok(passwordOptions);
     }
 
@@ -92,6 +97,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         var user = await this.IdentityManager
             .SignUpAsync(signUp, cancellationToken);
+
+        if (user == null)
+        {
+            return this.NotFound();
+        }
 
         return this.Created("signup", user);
     }
@@ -119,8 +129,18 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var identityUser = await this.IdentityManager
             .SignUpExternalAsync(signUpExternal.ExternalLogInData, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
 
+        if (identityUser == null)
+        {
+            return this.NotFound();
+        }
+
         var user = await this.IdentityManager
             .CreateUser(signUpExternal.User, identityUser, cancellationToken);
+
+        if (user == null)
+        {
+            return this.NotFound();
+        }
 
         return this.Created("signup/external/direct", user);
     }
@@ -147,9 +167,19 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var identityUser = await this.IdentityManager
             .SignUpExternalAsync(signUpExternal, cancellationToken);
 
+        if (identityUser == null)
+        {
+            return this.NotFound();
+        }
+
         var user = await this.IdentityManager
             .CreateUser(signUpExternal.User, identityUser, cancellationToken);
 
+        if (user == null)
+        {
+            return this.NotFound();
+        }
+        
         return this.Created("signup/external/google", user);
     }
 
@@ -175,9 +205,19 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var identityUser = await this.IdentityManager
             .SignUpExternalAsync(signUpExternal, cancellationToken);
 
+        if (identityUser == null)
+        {
+            return this.NotFound();
+        }
+
         var user = await this.IdentityManager
             .CreateUser(signUpExternal.User, identityUser, cancellationToken);
 
+        if (user == null)
+        {
+            return this.NotFound();
+        }
+        
         return this.Created("signup/external/facebook", user);
     }
 
@@ -203,8 +243,18 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var identityUser = await this.IdentityManager
             .SignUpExternalAsync(signUpExternal, cancellationToken);
 
+        if (identityUser == null)
+        {
+            return this.NotFound();
+        }
+
         var user = await this.IdentityManager
             .CreateUser(signUpExternal.User, identityUser, cancellationToken);
+
+        if (user == null)
+        {
+            return this.NotFound();
+        }
 
         return this.Created("signup/external/microsoft", user);
     }
@@ -318,6 +368,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var resetPasswordToken = await this.IdentityManager
             .GenerateResetPasswordTokenAsync(generateResetPasswordToken, cancellationToken);
 
+        if (resetPasswordToken == null)
+        {
+            return this.NotFound();
+        }
+
         return this.Ok(resetPasswordToken);
     }
 
@@ -403,6 +458,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var changeEmailToken = await this.IdentityManager
             .GenerateChangeEmailTokenAsync(generateChangeEmailToken, cancellationToken);
 
+        if (changeEmailToken == null)
+        {
+            return this.NotFound();
+        }
+
         return this.Ok(changeEmailToken);
     }
 
@@ -458,6 +518,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         var confirmEmailToken = await this.IdentityManager
             .GenerateConfirmEmailTokenAsync(generateConfirmEmailToken, cancellationToken);
+
+        if (confirmEmailToken == null)
+        {
+            return this.NotFound();
+        }
 
         return this.Ok(confirmEmailToken);
     }
@@ -517,6 +582,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var changeEmailToken = await this.IdentityManager
             .GenerateChangePhoneNumberTokenAsync(generateChangePhoneToken, cancellationToken);
 
+        if (changeEmailToken == null)
+        {
+            return this.NotFound();
+        }
+
         return this.Ok(changeEmailToken);
     }
 
@@ -573,6 +643,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var confirmEmailToken = await this.IdentityManager
             .GenerateConfirmPhoneNumberTokenAsync(generateConfirmPhoneToken, cancellationToken);
 
+        if (confirmEmailToken == null)
+        {
+            return this.NotFound();
+        }
+
         return this.Ok(confirmEmailToken);
     }
 
@@ -599,6 +674,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         var customPurposeToken = await this.IdentityManager
             .GenerateCustomTokenAsync(confirmEmail, cancellationToken);
+
+        if (customPurposeToken == null)
+        {
+            return this.NotFound();
+        }
 
         return this.Ok(customPurposeToken);
     }
@@ -789,10 +869,15 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> GetApiKeysAsync([FromRoute][Required]TIdentity userId, CancellationToken cancellationToken = default)
     {
-        var apiKey = await this.IdentityManager
+        var identityApiKeys = await this.IdentityManager
             .GetApiKeysAsync(userId, cancellationToken);
 
-        return this.Ok(apiKey);
+        if (identityApiKeys == null)
+        {
+            return this.NotFound();
+        }
+
+        return this.Ok(identityApiKeys);
     }
 
     /// <summary>
@@ -821,6 +906,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         
         var identityApiKey = this.IdentityManager
             .CreateApiKeyAsync(createApiKey, out var apiKey);
+
+        if (identityApiKey == null)
+        {
+            return this.NotFound();
+        }
 
         var identityApiKeyCreated = new IdentityApiKeyCreated<TIdentity>
         {
@@ -857,6 +947,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var identityApiKey = await this.IdentityManager
             .EditApiKeyAsync(editApiKey, cancellationToken);
 
+        if (identityApiKey == null)
+        {
+            return this.NotFound();
+        }
+
         return this.Ok(identityApiKey);
     }
 
@@ -888,6 +983,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
                 Id = apiKeyId,
                 RevokeAt = revokeAt
             }, cancellationToken);
+
+        if (identityApiKey == null)
+        {
+            return this.NotFound();
+        }
 
         return this.Ok(identityApiKey);
     }
@@ -1000,6 +1100,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         var userRoleClaims = await this.IdentityManager
             .GetRoleClaimsAsync(roleId, cancellationToken);
+
+        if (userRoleClaims == null)
+        {
+            return this.NotFound();
+        }
 
         var claims = userRoleClaims
             .Select(x => new ClaimSimple
@@ -1121,6 +1226,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var userClaims = await this.IdentityManager
             .GetUserClaimsAsync(userId, cancellationToken);
 
+        if (userClaims == null)
+        {
+            return this.NotFound();
+        }
+
         var claims = userClaims
             .Select(x => new ClaimSimple
             {
@@ -1239,6 +1349,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var user = await this.Repository
             .GetAsync<TEntity, TIdentity>(id, cancellationToken);
 
+        if (user == null)
+        {
+            return this.NotFound();
+        }
+
         await this.IdentityManager
             .ActivateIdentityUser(user.IdentityUser, cancellationToken);
 
@@ -1272,8 +1387,15 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var user = await this.Repository
             .GetAsync<TEntity, TIdentity>(id, cancellationToken);
 
+        if (user == null)
+        {
+            return this.NotFound();
+        }
+
         await this.IdentityManager
             .DeactivateIdentityUser(user.IdentityUser, cancellationToken);
+
+        await this.UpdateEntityUserWhenIdentityUserChanges(user.Id, cancellationToken);
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
@@ -1304,6 +1426,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         var user = await this.Repository
             .GetAsync<TEntity, TIdentity>(id, cancellationToken);
+
+        if (user == null)
+        {
+            return this.NotFound();
+        }
 
         await this.Repository
             .DeleteAsync(user, cancellationToken);
@@ -1343,6 +1470,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         {
             var user = await this.Repository
                 .GetAsync<TEntity, TIdentity>(id, cancellationToken);
+
+            if (user == null)
+            {
+                continue;
+            }
 
             await this.Repository
                 .DeleteAsync(user, cancellationToken);
