@@ -29,6 +29,12 @@ using Nano.Models;
 
 namespace Nano.Security;
 
+// BUG: 111: Check how UserManager works in relation to dbContext and entity events.
+// BUG: 111: Verify that chat-gpt was right about UserManager is not applying global query filters for IsActive
+
+// BUG: Again look at the IdentityUserExpanded.It could be cool if we didn't need the User.IdentityUser, but could merge the two. 
+// Try with an extra(optional) parameter to AddDatabase<> for the User model, then use that generic parameter in the dbcontext and so forth
+
 /// <summary>
 /// Base Identity Manager.
 /// </summary>

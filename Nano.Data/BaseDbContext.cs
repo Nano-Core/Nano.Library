@@ -67,7 +67,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         this.Options = dataOptions ?? throw new ArgumentNullException(nameof(dataOptions));
 
         this.SavingChanges += (_, _) => this.SetPendingEntityEvents();
-        this.SavingChanges += (_, _) => this.SaveSoftDeletion();
+        this.SavingChanges += (_, _) => this.UpdateSoftDeletedEntities();
         this.SavedChanges += async (_, _) => await this.PublishEntityEvents();
 
         // ReSharper disable VirtualMemberCallInConstructor
@@ -81,7 +81,11 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        if (this.Options.UseAudit)
+        var existingEntry = this.ChangeTracker
+            .Entries()
+            .FirstOrDefault(x => x.Entity == entity);
+
+        if (existingEntry == null)
         {
             var dbSet = this.SetDynamic(entity.GetType().Name);
 
@@ -89,7 +93,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
                 .AsNoTracking()
                 .SingleOrDefault(x => x == entity);
 
-            this.SaveAudit(entity, tracked);
+            this.UpdateOriginalValues(entity, tracked);
         }
 
         return base.Update(entity);
@@ -101,7 +105,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        if (this.Options.UseAudit)
+        var existingEntry = ChangeTracker.Entries()
+            .FirstOrDefault(x => x.Entity == entity);
+
+        if (existingEntry == null)
         {
             var dbSet = this.Set<TEntity>();
 
@@ -109,7 +116,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
                 .AsNoTracking()
                 .SingleOrDefault(x => x == entity);
 
-            this.SaveAudit(entity, tracked);
+            this.UpdateOriginalValues(entity, tracked);
         }
 
         return base.Update(entity);
@@ -151,10 +158,17 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        var dbSet = this.Set<TEntity>();
+        var tracked = this.ChangeTracker
+            .Entries<TEntity>()
+            .FirstOrDefault(x => x.Entity == entity)?.Entity;
 
-        var tracked = dbSet
-            .SingleOrDefault(x => x == entity);
+        if (tracked == null)
+        {
+            var dbSet = this.Set<TEntity>();
+
+            tracked = dbSet
+                .FirstOrDefault(x => x == entity);
+        }
 
         if (tracked != null)
         {
@@ -162,7 +176,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
                 .Update(entity);
         }
 
-        return dbSet
+        return this
             .Add(entity);
     }
 
@@ -407,7 +421,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
             .ToTable(TableNames.IDENTITY_DATA_PROTECTION_KEYS);
     }
 
-    private void SaveAudit(object entity, object tracked = null, EntityEntry owner = null, string propertName = null)
+    private void UpdateOriginalValues(object entity, object tracked = null, EntityEntry owner = null, string propertName = null)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -469,7 +483,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
                         continue;
                     }
 
-                    this.SaveAudit(value, valueTracked, entry, propertyInfo.Name);
+                    this.UpdateOriginalValues(value, valueTracked, entry, propertyInfo.Name);
                 }
             }
         }
@@ -481,7 +495,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
             }
         }
     }
-    private void SaveSoftDeletion()
+    private void UpdateSoftDeletedEntities()
     {
         if (!this.Options.UseSoftDeletetion)
         {
@@ -510,68 +524,94 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
             .Where(x =>
                 x.Entity.GetType().IsTypeOf(typeof(IEntityIdentity<>)) &&
                 x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
-                x.State is EntityState.Added or EntityState.Deleted or EntityState.Modified)
+                x.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
             .Select(x =>
             {
-                var type = x.Entity.GetType();
+                var type = this.GetPublishType(x);
+                var entityEvent = this.GetPublishEntityEvent(x, type);
+                var propertyNames = this.GetPublishProperties(x);
 
-                var isAttributeDirectlyApplied = false;
-                while (!isAttributeDirectlyApplied)
+                switch (x.State)
                 {
-                    if (type == null)
+                    case EntityState.Deleted:
+                        return entityEvent;
+
+                    case EntityState.Modified:
                     {
+                        var hasChanged = this.HasPublishModifiedPropertiesChanged(x, propertyNames);
+
+                        if (!hasChanged)
+                        {
+                            return null;
+                        }
+
                         break;
                     }
-
-                    isAttributeDirectlyApplied = Attribute.IsDefined(type, typeof(PublishAttribute), false);
-
-                    if (!isAttributeDirectlyApplied)
-                    {
-                        type = type.BaseType;
-                    }
                 }
 
-                if (type == null)
-                {
-                    throw new NullReferenceException(nameof(type));
-                }
+                var entityEventData = this.GetEntityEventData(x, propertyNames);
 
-                var state = x.State.ToString();
-                var typeName = type.Name.Replace("Proxy", string.Empty);
-
-                var entityEvent = x.Entity switch
-                {
-                    IEntityIdentity<int> @int => new EntityEvent(@int.Id, typeName, state),
-                    IEntityIdentity<long> @long => new EntityEvent(@long.Id, typeName, state),
-                    IEntityIdentity<string> @string => new EntityEvent(@string.Id, typeName, state),
-                    IEntityIdentity<Guid> guid => new EntityEvent(guid.Id, typeName, state),
-                    IEntityIdentity<dynamic> dynamic => new EntityEvent(dynamic.Id, typeName, state),
-                    _ => null
-                };
-
-                if (entityEvent == null)
-                {
-                    return null;
-                }
-
-                if (x.State == EntityState.Deleted)
-                {
-                    return entityEvent;
-                }
-
-                entityEvent.Data = this.GetEntityEventData(x.Entity);
+                entityEvent.Data = entityEventData;
 
                 return entityEvent;
             })
             .Where(x => x != null)
             .ToList();
     }
-    private IDictionary<string, object> GetEntityEventData(object model)
+    private Type GetPublishType(EntityEntry entityEntry)
     {
-        if (model == null)
-            throw new ArgumentNullException(nameof(model));
+        if (entityEntry == null)
+            throw new ArgumentNullException(nameof(entityEntry));
 
-        var type = model.GetType();
+        var type = entityEntry.Entity
+            .GetType();
+
+        var isAttributeDirectlyApplied = false;
+        while (!isAttributeDirectlyApplied)
+        {
+            if (type == null)
+            {
+                break;
+            }
+
+            isAttributeDirectlyApplied = Attribute.IsDefined(type, typeof(PublishAttribute), false);
+
+            if (!isAttributeDirectlyApplied)
+            {
+                type = type.BaseType;
+            }
+        }
+
+        return type;
+    }
+    private EntityEvent GetPublishEntityEvent(EntityEntry entityEntry, Type type)
+    {
+        if (entityEntry == null)
+            throw new ArgumentNullException(nameof(entityEntry));
+
+        if (type == null)
+            throw new ArgumentNullException(nameof(type));
+
+        var state = entityEntry.State.ToString();
+        var typeName = type.Name.Replace("Proxy", string.Empty);
+
+        return entityEntry.Entity switch
+        {
+            IEntityIdentity<int> @int => new EntityEvent(@int.Id, typeName, state),
+            IEntityIdentity<long> @long => new EntityEvent(@long.Id, typeName, state),
+            IEntityIdentity<string> @string => new EntityEvent(@string.Id, typeName, state),
+            IEntityIdentity<Guid> guid => new EntityEvent(guid.Id, typeName, state),
+            IEntityIdentity<dynamic> dynamic => new EntityEvent(dynamic.Id, typeName, state),
+            _ => null
+        };
+    }
+    private string[] GetPublishProperties(EntityEntry entityEntry)
+    {
+        if (entityEntry == null)
+            throw new ArgumentNullException(nameof(entityEntry));
+
+        var type = entityEntry.Entity
+            .GetType();
 
         var propertyNames = new List<string>();
         while (type is { IsAbstract: false } && type.IsTypeOf(typeof(IEntity)))
@@ -592,19 +632,44 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
             type = type.BaseType;
         }
 
-        var result = new Dictionary<string, object>();
-        foreach (var propertyExpression in propertyNames.Distinct())
+        return propertyNames
+            .Distinct()
+            .ToArray();
+    }
+    private bool HasPublishModifiedPropertiesChanged(EntityEntry entityEntry, string[] publishProperties)
+    {
+        if (entityEntry == null)
+            throw new ArgumentNullException(nameof(entityEntry));
+
+        foreach (var propertyName in publishProperties)
         {
-            var indexOfDot = propertyExpression
+            var propertyNameTemp = propertyName;
+            var nestedEntityEntry = entityEntry;
+
+            var indexOfDot = propertyNameTemp
                 .IndexOf('.');
 
-            var name = indexOfDot > -1
-                ? propertyExpression[..indexOfDot]
-                : propertyExpression;
+            while (indexOfDot > -1)
+            {
+                var name = propertyNameTemp[..indexOfDot];
+                propertyNameTemp = propertyNameTemp[(indexOfDot + 1)..];
 
-            var property = model
+                nestedEntityEntry = nestedEntityEntry.References
+                    .FirstOrDefault(x => x.Metadata.Name == name)?
+                    .TargetEntry;
+
+                if (nestedEntityEntry == null)
+                {
+                    throw new NullReferenceException(nameof(nestedEntityEntry));
+                }
+
+                indexOfDot = propertyNameTemp
+                    .IndexOf('.');
+            }
+
+            var property = nestedEntityEntry.Entity
                 .GetType()
-                .GetProperty(name);
+                .GetProperty(propertyNameTemp);
 
             if (property == null)
             {
@@ -612,54 +677,82 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
             }
 
             var value = property
-                .GetValue(model);
+                .GetValue(nestedEntityEntry.Entity);
 
-            var expression = propertyExpression;
-            while (true)
+            if (property.PropertyType.IsSimple())
             {
-                indexOfDot = expression
-                    .IndexOf('.');
+                var orginalValue = nestedEntityEntry.OriginalValues
+                    .GetValue<object>(propertyNameTemp);
 
-                if (indexOfDot > -1)
+                var hasChanged = !(value?.Equals(orginalValue) ?? orginalValue is null);
+
+                if (hasChanged)
                 {
-                    expression = expression[(indexOfDot + 1)..];
-                    value = this.GetNestedPropertyValue(property, expression, value);
-
-                    continue;
+                    return true;
                 }
+            }
+            else
+            {
+                var properties = property.PropertyType
+                    .GetProperties(BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.Public)
+                    .Select(x => x.Name)
+                    .ToArray();
 
-                result
-                    .Add(expression, value);
+                nestedEntityEntry = nestedEntityEntry.References
+                    .FirstOrDefault(x => x.Metadata.Name == propertyNameTemp)?
+                    .TargetEntry;
 
-                break;
+                var hasChanged = this.HasPublishModifiedPropertiesChanged(nestedEntityEntry, properties);
+
+                if (hasChanged)
+                {
+                    return true;
+                }
             }
         }
 
-        return result;
+        return false;
     }
-    private object GetNestedPropertyValue(PropertyInfo property, string propertyName, object parent = null)
+    private IDictionary<string, object> GetEntityEventData(EntityEntry entityEntry, string[] publishProperties)
     {
-        if (property == null)
-            throw new ArgumentNullException(nameof(property));
+        if (entityEntry == null)
+            throw new ArgumentNullException(nameof(entityEntry));
 
-        if (propertyName == null)
-            throw new ArgumentNullException(nameof(propertyName));
-
-        if (parent == null)
+        var entityEventData = new Dictionary<string, object>();
+        foreach (var propertyName in publishProperties)
         {
-            return null;
+            string name;
+            int indexOfDot;
+
+            var value = entityEntry.Entity;
+            var propertyNameTemp = propertyName;
+
+            do
+            {
+                indexOfDot = propertyNameTemp
+                    .IndexOf('.');
+
+                name = indexOfDot > -1
+                    ? propertyNameTemp[..indexOfDot]
+                    : propertyNameTemp;
+
+                propertyNameTemp = indexOfDot > -1
+                    ? propertyNameTemp[(indexOfDot + 1)..]
+                    : propertyNameTemp;
+
+                var property = value?
+                    .GetType()
+                    .GetProperty(name);
+
+                value = property?
+                    .GetValue(value);
+            } while (indexOfDot > -1);
+
+            entityEventData
+                .Add(name, value);
         }
 
-        var propertyNested = property.PropertyType
-            .GetProperty(propertyName);
-
-        if (propertyNested == null)
-        {
-            throw new NullReferenceException(nameof(propertyNested));
-        }
-
-        return propertyNested
-            .GetValue(parent);
+        return entityEventData;
     }
     private async Task PublishEntityEvents()
     {
@@ -678,7 +771,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
             this.pendingEvents = new List<EntityEvent>();
         }
     }
-
+ 
     private async Task AddRole(string role)
     {
         if (role == null)
