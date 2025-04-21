@@ -18,6 +18,7 @@
 		<releaseNotes>
 			- Fixed and improved how update, to always fetch original values.
 			- Entity Event Update will no longer publish an event if no property values defined for publishing has changed. 
+			- Fixed NRE issue with user activate / deactiveate.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net9.0">

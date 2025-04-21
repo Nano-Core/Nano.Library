@@ -29,9 +29,6 @@ using Nano.Models;
 
 namespace Nano.Security;
 
-// BUG: 111: Check how UserManager works in relation to dbContext and entity events.
-// BUG: 111: Verify that chat-gpt was right about UserManager is not applying global query filters for IsActive
-
 // BUG: Again look at the IdentityUserExpanded.It could be cool if we didn't need the User.IdentityUser, but could merge the two. 
 // Try with an extra(optional) parameter to AddDatabase<> for the User model, then use that generic parameter in the dbcontext and so forth
 
@@ -586,12 +583,7 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
             if (identityUser == null)
             {
-                throw new UnauthorizedException($"The user: {logIn.Username} was not found.");
-            }
-
-            if (!identityUser.IsActive)
-            {
-                throw new UnauthorizedException($"The user: {logIn.Username} is deactivated.");
+                throw new UnauthorizedException($"The user: {logIn.Username} was not found or is deactivated.");
             }
 
             return await this.GenerateJwtToken(identityUser, appId, logIn.IsRefreshable, null, null, null, logIn.TransientClaims, logIn.TransientRoles, cancellationToken);
@@ -663,12 +655,7 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         if (identityUser == null)
         {
-            throw new UnauthorizedException($"The user: {logInExternalDirect.ExternalLogInData.Email} was not found.");
-        }
-
-        if (!identityUser.IsActive)
-        {
-            throw new UnauthorizedException($"The user: {identityUser.UserName} is deactivated.");
+            throw new UnauthorizedException($"The user: {logInExternalDirect.ExternalLogInData.Email} was not found or is deactivated.");
         }
 
         var appId = logInExternalDirect.AppId ?? BaseIdentityManager.DEFAULT_APP_ID;
@@ -752,12 +739,10 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         if (identityUser == null)
         {
-            throw new UnauthorizedException("The user was not found.");
-        }
+            var username = principal.Claims
+                .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Name);
 
-        if (!identityUser.IsActive)
-        {
-            throw new UnauthorizedException($"The user: {identityUser.UserName} is deactivated.");
+            throw new UnauthorizedException($"The user: {username} was not found or is deactivated.");
         }
 
         var appClaim = principal.Claims
@@ -1402,12 +1387,7 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         if (identityUser == null)
         {
-            throw new UnauthorizedException($"The user: {resetPassword.UserId} was not found.");
-        }
-
-        if (!identityUser.IsActive)
-        {
-            throw new UnauthorizedException($"The user: {identityUser.UserName} is deactivated.");
+            throw new UnauthorizedException($"The user: {resetPassword.UserId} was not found or is deactivated.");
         }
 
         var result = await this.UserManager
@@ -1648,12 +1628,7 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         if (identityUser == null)
         {
-            throw new UnauthorizedException($"The user: {generateResetPasswordToken.EmailAddress} was not found.");
-        }
-
-        if (!identityUser.IsActive)
-        {
-            throw new UnauthorizedException($"The user: {identityUser.UserName} is deactivated.");
+            throw new UnauthorizedException($"The user: {generateResetPasswordToken.EmailAddress} was not found or is deactivated.");
         }
 
         var token = await this.UserManager
@@ -2521,15 +2496,22 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
     }
 
     /// <summary>
-    /// Activates the <see cref="IdentityUserExpanded{TIdentity}"/>.
+    /// Activates the user with the passed user id.
     /// </summary>
-    /// <param name="identityUser">The <see cref="IdentityUserExpanded{TIdentity}"/>.</param>
+    /// <param name="id">The user id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUserExpanded{TIdentity}"/>.</returns>
-    public virtual async Task<IdentityUserExpanded<TIdentity>> ActivateIdentityUser(IdentityUserExpanded<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityUserExpanded<TIdentity>> ActivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default)
     {
+        var identityUser = this.DbContext
+            .Set<IdentityUserExpanded<TIdentity>>()
+            .IgnoreQueryFilters()
+            .SingleOrDefault(x => x.Id.Equals(id));
+
         if (identityUser == null)
-            throw new ArgumentNullException(nameof(identityUser));
+        {
+            throw new NullReferenceException(nameof(identityUser));
+        }
 
         identityUser.IsActive = true;
 
@@ -2543,15 +2525,21 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
     }
 
     /// <summary>
-    /// Deactivates the <see cref="IdentityUserExpanded{TIdentity}"/>.
+    /// Deactivates the user with the passed user id.
     /// </summary>
-    /// <param name="identityUser">The <see cref="IdentityUserExpanded{TIdentity}"/>.</param>
+    /// <param name="id">The user id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUserExpanded{TIdentity}"/>.</returns>
-    public virtual async Task<IdentityUserExpanded<TIdentity>> DeactivateIdentityUser(IdentityUserExpanded<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityUserExpanded<TIdentity>> DeactivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default)
     {
+        var identityUser = this.DbContext
+            .Set<IdentityUserExpanded<TIdentity>>()
+            .SingleOrDefault(x => x.Id.Equals(id));
+
         if (identityUser == null)
-            throw new ArgumentNullException(nameof(identityUser));
+        {
+            throw new NullReferenceException(nameof(identityUser));
+        }
 
         identityUser.IsActive = false;
 

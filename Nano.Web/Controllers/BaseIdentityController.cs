@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing;
 using Nano.Models;
@@ -1346,16 +1347,10 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> ActivateAsync([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
     {
-        var user = await this.Repository
-            .GetAsync<TEntity, TIdentity>(id, cancellationToken);
-
-        if (user == null)
-        {
-            return this.NotFound();
-        }
-
         await this.IdentityManager
-            .ActivateIdentityUser(user.IdentityUser, cancellationToken);
+            .ActivateIdentityUser(id, cancellationToken);
+
+        await this.UpdateEntityUserWhenIdentityUserChanges(id, cancellationToken);
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
@@ -1384,18 +1379,10 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DeactivateAsync([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
     {
-        var user = await this.Repository
-            .GetAsync<TEntity, TIdentity>(id, cancellationToken);
-
-        if (user == null)
-        {
-            return this.NotFound();
-        }
-
         await this.IdentityManager
-            .DeactivateIdentityUser(user.IdentityUser, cancellationToken);
+            .DeactivateIdentityUser(id, cancellationToken);
 
-        await this.UpdateEntityUserWhenIdentityUserChanges(user.Id, cancellationToken);
+        await this.UpdateEntityUserWhenIdentityUserChanges(id, cancellationToken);
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
@@ -1491,8 +1478,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
 
     private async Task UpdateEntityUserWhenIdentityUserChanges(TIdentity userId, CancellationToken cancellationToken)
     {
-        var user = await this.Repository
-            .GetAsync<TEntity, TIdentity>(userId, cancellationToken);
+        var user = this.Repository
+            .GetContext()
+            .Set<TEntity>()
+            .IgnoreQueryFilters()
+            .SingleOrDefault(x => x.Id.Equals(userId));
+
+        if (user == null)
+        {
+            throw new NullReferenceException(nameof(user));
+        }
 
         await this.Repository
             .UpdateAsync(user, cancellationToken);
