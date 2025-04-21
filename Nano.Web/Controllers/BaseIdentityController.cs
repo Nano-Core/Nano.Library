@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Nano.Eventing;
 using Nano.Models;
 using Nano.Models.Const;
+using Nano.Models.Data;
 using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
@@ -25,7 +26,7 @@ namespace Nano.Web.Controllers;
 /// <inheritdoc />
 public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : IRepository
-    where TEntity : BaseEntityUser<TIdentity>, IEntityUpdatable, IEntityIdentity<TIdentity>, new()
+    where TEntity : class, IEntityUser<TIdentity>, IEntityUpdatable, IEntityDeletable, IEntityIdentity<TIdentity>, new()
     where TIdentity : IEquatable<TIdentity>
     where TCriteria : class, IQueryCriteria, new()
 {
@@ -1348,7 +1349,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     public virtual async Task<IActionResult> ActivateAsync([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
     {
         await this.IdentityManager
-            .ActivateIdentityUser(id, cancellationToken);
+            .ActivateIdentityUser<TEntity>(id, cancellationToken);
 
         await this.UpdateEntityUserWhenIdentityUserChanges(id, cancellationToken);
 
@@ -1380,7 +1381,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     public virtual async Task<IActionResult> DeactivateAsync([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
     {
         await this.IdentityManager
-            .DeactivateIdentityUser(id, cancellationToken);
+            .DeactivateIdentityUser<TEntity>(id, cancellationToken);
 
         await this.UpdateEntityUserWhenIdentityUserChanges(id, cancellationToken);
 

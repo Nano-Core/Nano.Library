@@ -2,7 +2,6 @@ using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Nano.Models;
 
 namespace Nano.Security;
 
@@ -11,7 +10,7 @@ public class DefaultIdentityManager<TIdentity> : BaseIdentityManager<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    public DefaultIdentityManager(ILogger logger, DbContext dbContext, SignInManager<IdentityUserExpanded<TIdentity>> signInManager, RoleManager<IdentityRole<TIdentity>> roleManager, UserManager<IdentityUserExpanded<TIdentity>> userManager, SecurityOptions options)
+    public DefaultIdentityManager(ILogger logger, DbContext dbContext, SignInManager<IdentityUser<TIdentity>> signInManager, RoleManager<IdentityRole<TIdentity>> roleManager, UserManager<IdentityUser<TIdentity>> userManager, SecurityOptions options)
         : base(logger, dbContext, signInManager, roleManager, userManager, options)
     {
     }
@@ -21,7 +20,7 @@ public class DefaultIdentityManager<TIdentity> : BaseIdentityManager<TIdentity>
 public class DefaultIdentityManager : BaseIdentityManager<Guid>
 {
     /// <inheritdoc />
-    public DefaultIdentityManager(ILogger logger, DbContext dbContext, SignInManager<IdentityUserExpanded<Guid>> signInManager, RoleManager<IdentityRole<Guid>> roleManager, UserManager<IdentityUserExpanded<Guid>> userManager, SecurityOptions options)
+    public DefaultIdentityManager(ILogger logger, DbContext dbContext, SignInManager<IdentityUser<Guid>> signInManager, RoleManager<IdentityRole<Guid>> roleManager, UserManager<IdentityUser<Guid>> userManager, SecurityOptions options)
         : base(logger, dbContext, signInManager, roleManager, userManager, options)
     {
     }

@@ -63,11 +63,6 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationS
             return AuthenticateResult.Fail("User not found");
         }
 
-        if (!identityUser.IsActive)
-        {
-            return AuthenticateResult.Fail("User is deactivated");
-        }
-
         var transientClaims = new Dictionary<string, string>
         {
             { ApiKeyClaimTypes.UserId, identityUser.Id.ToString() },

@@ -11,4 +11,5 @@ internal static class TableNames
     internal const string IDENTITY_ROLE = "__EFAuthRole";
     internal const string IDENTITY_API_KEY = "__EFAuthApiKey";
     internal const string IDENTITY_DATA_PROTECTION_KEYS = "__EFDataProtectionKeys";
+    internal const string IDENTITY_USER_CHANGE_DATA = "__EFAuthUserChangeData";
 }

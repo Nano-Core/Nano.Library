@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>9.1.16</version>
+		<version>9.2.0</version>
 		<title>Nano Core</title>
 		<summary>Rapidly built and deploy rich .NET 9.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
@@ -19,6 +19,9 @@
 			- Fixed and improved how update, to always fetch original values.
 			- Entity Event Update will no longer publish an event if no property values defined for publishing has changed. 
 			- Fixed NRE issue with user activate / deactiveate.
+			- Remove identityUserExpanded, reverting back to the default IdentityUser.
+			- Moved NewEmail and NewPhoneNumber back seperate table.
+			- Added IsActive to User instead of IdentityUser.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net9.0">

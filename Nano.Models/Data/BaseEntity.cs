@@ -1,6 +1,6 @@
 using Nano.Models.Interfaces;
 
-namespace Nano.Models;
+namespace Nano.Models.Data;
 
 /// <inheritdoc />
 public abstract class BaseEntity : IEntity;

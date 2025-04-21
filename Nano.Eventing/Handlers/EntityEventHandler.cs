@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nano.Data;
 using Nano.Eventing.Interfaces;
-using Nano.Models;
+using Nano.Models.Eventing;
 using Nano.Models.Extensions;
 using Nano.Models.Helpers;
 using Nano.Models.Interfaces;

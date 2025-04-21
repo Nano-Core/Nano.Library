@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.Api.Requests.Identity;
 using Nano.Models;
+using Nano.Models.Data;
 using Nano.Models.Interfaces;
 using Nano.Security;
 using Nano.Security.Models;

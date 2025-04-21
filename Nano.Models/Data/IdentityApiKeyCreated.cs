@@ -1,7 +1,7 @@
 ﻿using System;
 using Nano.Models.Attributes;
 
-namespace Nano.Models;
+namespace Nano.Models.Data;
 
 /// <summary>
 /// Identity Api Key Created.

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Nano.Models;
+namespace Nano.Models.Eventing;
 
 /// <summary>
 /// Entity Event.

@@ -1,7 +1,7 @@
 using System;
 using Nano.Models.Interfaces;
 
-namespace Nano.Models;
+namespace Nano.Models.Data;
 
 /// <inheritdoc />
 public class DefaultEntity : DefaultEntity<Guid>

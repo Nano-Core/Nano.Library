@@ -1,8 +1,11 @@
 using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 using Nano.Models.Attributes;
 using Nano.Models.Interfaces;
 
-namespace Nano.Models;
+namespace Nano.Models.Data;
 
 /// <summary>
 /// Base Entity User (abstract).
@@ -19,5 +22,10 @@ public abstract class BaseEntityUser<TIdentity> : BaseEntityIdentity<TIdentity>,
     /// <inheritdoc />
     [Include]
     [SwaggerResponseOnly]
-    public virtual IdentityUserExpanded<TIdentity> IdentityUser { get; set; }
+    public virtual IdentityUser<TIdentity> IdentityUser { get; set; }
+
+    /// <inheritdoc />
+    [Required]
+    [DefaultValue(true)]
+    public virtual bool IsActive { get; set; } = true;
 }

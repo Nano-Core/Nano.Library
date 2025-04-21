@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Identity;
 
 namespace Nano.Models.Interfaces;
 
@@ -17,5 +18,10 @@ public interface IEntityUser<TIdentity> : IEntityIdentity<TIdentity>
     /// <summary>
     /// Identity User.
     /// </summary>
-    IdentityUserExpanded<TIdentity> IdentityUser { get; set; }
+    IdentityUser<TIdentity> IdentityUser { get; set; }
+
+    /// <summary>
+    /// Is Active.
+    /// </summary>
+    bool IsActive { get; set; }
 }

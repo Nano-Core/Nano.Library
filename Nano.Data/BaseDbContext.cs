@@ -15,12 +15,13 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Nano.Config;
-using Nano.Data.Const;
+using Nano.Data.Extensions;
 using Nano.Data.Models;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
-using Nano.Models;
 using Nano.Models.Attributes;
+using Nano.Models.Data;
+using Nano.Models.Eventing;
 using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
@@ -34,7 +35,7 @@ namespace Nano.Data;
 /// Base Db Context (abstract).
 /// </summary>
 /// <typeparam name="TIdentity"></typeparam>
-public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserExpanded<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserTokenExpiry<TIdentity>>, IDataProtectionKeyContext
+public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserTokenExpiry<TIdentity>>, IDataProtectionKeyContext
     where TIdentity : IEquatable<TIdentity>
 {
     private IList<EntityEvent> pendingEvents = new List<EntityEvent>();
@@ -353,72 +354,11 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         }
 
         modelBuilder
+            .MapDefaultIdentity<TIdentity>()
             .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()
             .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>()
-            .AddMapping<IdentityApiKey<TIdentity>, IdentityApiKeyMapping<TIdentity>>();
-
-        modelBuilder
-            .Entity<IdentityUserLogin<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER_LOGIN_TABLE_NAME);
-
-        modelBuilder
-            .Entity<IdentityUserRole<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER_ROLE);
-
-        modelBuilder
-            .Entity<IdentityUserTokenExpiry<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER_TOKEN_EXPIRY)
-            .Property(x => x.ExpireAt);
-
-        modelBuilder
-            .Entity<IdentityUserClaim<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER_CLAIM);
-
-        modelBuilder
-            .Entity<IdentityUserExpanded<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER);
-
-        modelBuilder
-            .Entity<IdentityUserExpanded<TIdentity>>()
-            .HasIndex(x => x.Email)
-            .IsUnique();
-
-        modelBuilder
-            .Entity<IdentityUserExpanded<TIdentity>>()
-            .HasIndex(x => x.PhoneNumber)
-            .IsUnique();
-
-        modelBuilder
-            .Entity<IdentityUserExpanded<TIdentity>>()
-            .HasQueryFilter(x => x.IsActive);
-
-        modelBuilder
-            .Entity<IdentityUserExpanded<TIdentity>>()
-            .Property(x => x.IsActive)
-            .HasDefaultValue(true)
-            .IsRequired();
-
-        modelBuilder
-            .Entity<IdentityUserExpanded<TIdentity>>()
-            .Property(x => x.NewEmail)
-            .HasMaxLength(256);
-
-        modelBuilder
-            .Entity<IdentityUserExpanded<TIdentity>>()
-            .Property(x => x.NewPhoneNumber)
-            .HasMaxLength(20);
-
-        modelBuilder
-            .Entity<IdentityRoleClaim<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_ROLE_CLAIM);
-
-        modelBuilder
-            .Entity<IdentityRole<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_ROLE);
-
-        modelBuilder
-            .Entity<DataProtectionKey>()
-            .ToTable(TableNames.IDENTITY_DATA_PROTECTION_KEYS);
+            .AddMapping<IdentityApiKey<TIdentity>, IdentityApiKeyMapping<TIdentity>>()
+            .AddMapping<IdentityUserChangeData<TIdentity>, IdentityUserChangeDataMapping<TIdentity>>();
     }
 
     private void UpdateOriginalValues(object entity, object tracked = null, EntityEntry owner = null, string propertName = null)
@@ -790,7 +730,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
                 .CreateAsync(identityRole);
         }
     }
-    private async Task AddUserToRole(IdentityUserExpanded<TIdentity> user, string role)
+    private async Task AddUserToRole(IdentityUser<TIdentity> user, string role)
     {
         if (user == null)
             throw new ArgumentNullException(nameof(user));
@@ -798,7 +738,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         if (role == null)
             throw new ArgumentNullException(nameof(role));
 
-        var userManager = this.GetService<UserManager<IdentityUserExpanded<TIdentity>>>();
+        var userManager = this.GetService<UserManager<IdentityUser<TIdentity>>>();
 
         var isInRole = await userManager
             .IsInRoleAsync(user, role);
@@ -809,7 +749,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
                 .AddToRoleAsync(user, role);
         }
     }
-    private async Task<IdentityUserExpanded<TIdentity>> AddUser(string emailAddress, string password)
+    private async Task<IdentityUser<TIdentity>> AddUser(string emailAddress, string password)
     {
         if (emailAddress == null)
             throw new ArgumentNullException(nameof(emailAddress));
@@ -817,14 +757,14 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         if (password == null)
             throw new ArgumentNullException(nameof(password));
 
-        var userManager = this.GetService<UserManager<IdentityUserExpanded<TIdentity>>>();
+        var userManager = this.GetService<UserManager<IdentityUser<TIdentity>>>();
 
         var user = await userManager
             .FindByEmailAsync(emailAddress);
 
         if (user == null)
         {
-            user = new IdentityUserExpanded<TIdentity>
+            user = new IdentityUser<TIdentity>
             {
                 UserName = emailAddress,
                 Email = emailAddress,

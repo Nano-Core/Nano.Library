@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Nano.Eventing;
 using Nano.Models;
 using Nano.Models.Const;
+using Nano.Models.Data;
 using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Interfaces;
 using Nano.Repository.Interfaces;
