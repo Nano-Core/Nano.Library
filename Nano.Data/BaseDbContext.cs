@@ -82,20 +82,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        var existingEntry = this.ChangeTracker
-            .Entries()
-            .FirstOrDefault(x => x.Entity == entity);
-
-        if (existingEntry == null)
-        {
-            var dbSet = this.SetDynamic(entity.GetType().Name);
-
-            var tracked = dbSet
-                .AsNoTracking()
-                .SingleOrDefault(x => x == entity);
-
-            this.UpdateOriginalValues(entity, tracked);
-        }
+        entity = this.PreUpdate(entity);
 
         return base.Update(entity);
     }
@@ -106,19 +93,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        var existingEntry = ChangeTracker.Entries()
-            .FirstOrDefault(x => x.Entity == entity);
-
-        if (existingEntry == null)
-        {
-            var dbSet = this.Set<TEntity>();
-
-            var tracked = dbSet
-                .AsNoTracking()
-                .SingleOrDefault(x => x == entity);
-
-            this.UpdateOriginalValues(entity, tracked);
-        }
+        entity = (TEntity)this.PreUpdate(entity);
 
         return base.Update(entity);
     }
@@ -361,7 +336,40 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             .AddMapping<IdentityUserChangeData<TIdentity>, IdentityUserChangeDataMapping<TIdentity>>();
     }
 
-    private void UpdateOriginalValues(object entity, object tracked = null, EntityEntry owner = null, string propertName = null)
+    private object PreUpdate(object entity)
+    {
+        if (entity == null)
+            throw new ArgumentNullException(nameof(entity));
+
+        var isAuditEnabled = this.Options.UseAudit;
+
+        var publishAnnotation = entity
+            .GetType()
+            .GetCustomAttribute<PublishAttribute>(true);
+        
+        var hasPublishProperties = publishAnnotation != null && publishAnnotation.PropertyNames.Any();
+
+        if (isAuditEnabled || hasPublishProperties)
+        {
+            var existingEntry = this.ChangeTracker
+                .Entries()
+                .FirstOrDefault(x => x.Entity == entity);
+
+            if (existingEntry == null)
+            {
+                var dbSet = this.SetDynamic(entity.GetType().Name);
+
+                var tracked = dbSet
+                    .AsNoTracking()
+                    .SingleOrDefault(x => x == entity);
+
+                this.SetOriginalValues(entity, tracked);
+            }
+        }
+
+        return entity;
+    }
+    private void SetOriginalValues(object entity, object tracked = null, EntityEntry owner = null, string propertName = null)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -423,7 +431,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                         continue;
                     }
 
-                    this.UpdateOriginalValues(value, valueTracked, entry, propertyInfo.Name);
+                    this.SetOriginalValues(value, valueTracked, entry, propertyInfo.Name);
                 }
             }
         }
