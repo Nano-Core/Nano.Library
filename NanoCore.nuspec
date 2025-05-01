@@ -17,6 +17,7 @@
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
 			- Added CreatedAt to Entity Events by default. 
+			- Improved dbContext.UpdateRange, to more efficiently update original values if needed.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net9.0">

@@ -82,18 +82,31 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        entity = this.PreUpdate(entity);
+        var isAuditEnabled = this.Options.UseAudit;
 
-        return base.Update(entity);
-    }
+        var publishAnnotation = entity
+            .GetType()
+            .GetCustomAttribute<PublishAttribute>(true);
 
-    /// <inheritdoc />
-    public override EntityEntry<TEntity> Update<TEntity>(TEntity entity)
-    {
-        if (entity == null)
-            throw new ArgumentNullException(nameof(entity));
+        var hasPublishProperties = publishAnnotation != null && publishAnnotation.PropertyNames.Any();
 
-        entity = (TEntity)this.PreUpdate(entity);
+        if (isAuditEnabled || hasPublishProperties)
+        {
+            var existingEntry = this.ChangeTracker
+                .Entries()
+                .FirstOrDefault(x => x.Entity == entity);
+
+            if (existingEntry == null)
+            {
+                var dbSet = this.SetDynamic(entity.GetType().Name);
+
+                var tracked = dbSet
+                    .AsNoTracking()
+                    .SingleOrDefault(x => x == entity);
+
+                this.SetOriginalValues(entity, tracked);
+            }
+        }
 
         return base.Update(entity);
     }
@@ -104,18 +117,42 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        foreach (var entity in entities)
+        var isAuditEnabled = this.Options.UseAudit;
+
+        var firstEntity = entities
+            .First();
+
+        var publishAnnotation = firstEntity
+            .GetType()
+            .GetCustomAttribute<PublishAttribute>(true);
+
+        var hasPublishProperties = publishAnnotation != null && publishAnnotation.PropertyNames.Any();
+
+        if (isAuditEnabled || hasPublishProperties)
         {
-            this.Update(entity);
+            var nonExistingEntries = this.ChangeTracker
+                .Entries()
+                .Where(x => entities.Any(y => y != x.Entity))
+                .ToArray();
+
+            if (nonExistingEntries.Any())
+            {
+                var dbSet = this.SetDynamic(firstEntity.GetType().Name);
+
+                var trackeds = dbSet
+                    .AsNoTracking()
+                    .Where(x => nonExistingEntries
+                        .Any(y => x == y.Entity));
+
+                foreach (var entity in trackeds)
+                {
+                    var tracked = trackeds
+                        .SingleOrDefault(x => x == entity);
+
+                    this.SetOriginalValues(entity, tracked);
+                }
+            }
         }
-    }
-
-    /// <inheritdoc />
-    public override void UpdateRange(IEnumerable<object> entities)
-    {
-        if (entities == null)
-            throw new ArgumentNullException(nameof(entities));
-
         foreach (var entity in entities)
         {
             this.Update(entity);
@@ -336,39 +373,6 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             .AddMapping<IdentityUserChangeData<TIdentity>, IdentityUserChangeDataMapping<TIdentity>>();
     }
 
-    private object PreUpdate(object entity)
-    {
-        if (entity == null)
-            throw new ArgumentNullException(nameof(entity));
-
-        var isAuditEnabled = this.Options.UseAudit;
-
-        var publishAnnotation = entity
-            .GetType()
-            .GetCustomAttribute<PublishAttribute>(true);
-        
-        var hasPublishProperties = publishAnnotation != null && publishAnnotation.PropertyNames.Any();
-
-        if (isAuditEnabled || hasPublishProperties)
-        {
-            var existingEntry = this.ChangeTracker
-                .Entries()
-                .FirstOrDefault(x => x.Entity == entity);
-
-            if (existingEntry == null)
-            {
-                var dbSet = this.SetDynamic(entity.GetType().Name);
-
-                var tracked = dbSet
-                    .AsNoTracking()
-                    .SingleOrDefault(x => x == entity);
-
-                this.SetOriginalValues(entity, tracked);
-            }
-        }
-
-        return entity;
-    }
     private void SetOriginalValues(object entity, object tracked = null, EntityEntry owner = null, string propertName = null)
     {
         if (entity == null)
