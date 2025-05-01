@@ -57,12 +57,12 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
         var isGuid = Guid.TryParse(@event.Id.ToString(), out var guid);
         var id = isGuid ? guid : @event.Id;
 
-        var property = type
+        var propertyId = type
             .GetProperty(nameof(IEntityIdentity<dynamic>.Id));
 
-        if (property == null)
+        if (propertyId == null)
         {
-            throw new NullReferenceException(nameof(property));
+            throw new NullReferenceException(nameof(propertyId));
         }
 
         switch (@event.State)
@@ -89,7 +89,7 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                     throw new NullReferenceException(nameof(entityAdded));
                 }
 
-                property
+                propertyId
                     .SetValue(entityAdded, id);
 
                 this.SetEntityEventProperties(@event, type, entityAdded);

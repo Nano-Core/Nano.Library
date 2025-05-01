@@ -17,10 +17,4 @@ public class DefaultEntityUser : DefaultEntityUser<Guid>
 
 /// <inheritdoc cref="IEntityWritable"/>
 public class DefaultEntityUser<TIdentity> : BaseEntityUser<TIdentity>
-    where TIdentity : IEquatable<TIdentity>
-{
-    /// <summary>
-    /// Created At.
-    /// </summary>
-    public virtual DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-}
+    where TIdentity : IEquatable<TIdentity>;

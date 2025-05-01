@@ -580,6 +580,9 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             type = type.BaseType;
         }
 
+        propertyNames
+            .Add(nameof(IEntity.CreatedAt));
+
         return propertyNames
             .Distinct()
             .ToArray();

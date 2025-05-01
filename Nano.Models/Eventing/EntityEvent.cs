@@ -14,6 +14,11 @@ public class EntityEvent
     public object Id { get; set; }
 
     /// <summary>
+    /// Created At.
+    /// </summary>
+    public object CreatedAt { get; set; }
+
+    /// <summary>
     /// Type.
     /// </summary>
     public string Type { get; set; }

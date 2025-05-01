@@ -8,7 +8,7 @@ namespace Nano.Models.Data;
 /// Identity User Token Expiry.
 /// </summary>
 /// <typeparam name="TIdentity">The identity key type</typeparam>
-public class IdentityUserTokenExpiry<TIdentity> : IdentityUserToken<TIdentity>, IEntityAuditableNegated
+public class IdentityUserTokenExpiry<TIdentity> : IdentityUserToken<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

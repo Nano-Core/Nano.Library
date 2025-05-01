@@ -16,13 +16,4 @@ public class DefaultEntity : DefaultEntity<Guid>
 }
 
 /// <inheritdoc cref="IEntityWritable"/>
-public class DefaultEntity<TIdentity> : BaseEntityIdentity<TIdentity>, IEntityWritable
-{
-    /// <inheritdoc />
-    public virtual long IsDeleted { get; set; } = 0L;
-
-    /// <summary>
-    /// Created At.
-    /// </summary>
-    public virtual DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-}
+public class DefaultEntity<TIdentity> : BaseEntityIdentity<TIdentity>, IEntityWritable;
