@@ -636,8 +636,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
             if (property.PropertyType.IsSimple())
             {
-                var orginalValue = nestedEntityEntry.OriginalValues
-                    .GetValue<object>(propertyNameTemp);
+                var orginalValue = this.TryGetOriginalValue(nestedEntityEntry, propertyNameTemp);
 
                 var hasChanged = !(value?.Equals(orginalValue) ?? orginalValue is null);
 
@@ -807,5 +806,22 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         }
 
         return user;
+    }
+
+
+    private object TryGetOriginalValue(EntityEntry entry, string propertyName)
+    {
+        if (entry == null) 
+            throw new ArgumentNullException(nameof(entry));
+        
+        if (propertyName == null) 
+            throw new ArgumentNullException(nameof(propertyName));
+        
+        var prop = entry.OriginalValues.Properties
+            .FirstOrDefault(x => x.Name == propertyName);
+        
+        return prop != null 
+            ? entry.OriginalValues[propertyName] 
+            : null;
     }
 }
