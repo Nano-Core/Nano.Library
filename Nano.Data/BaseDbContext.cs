@@ -613,9 +613,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                     .FirstOrDefault(x => x.Metadata.Name == name)?
                     .TargetEntry;
 
+
                 if (nestedEntityEntry == null)
                 {
-                    throw new NullReferenceException(nameof(nestedEntityEntry));
+                    return true;
                 }
 
                 indexOfDot = propertyNameTemp
