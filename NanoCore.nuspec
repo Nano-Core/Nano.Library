@@ -16,7 +16,7 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Fixed issue with EF OriginalValues.GetValue<object> for enums.
+			- Fixed issue with EF OriginalValues.GetValue{object} for enums.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net9.0">
