@@ -1,16 +1,16 @@
-using Nano.Models.Interfaces;
 using System;
+using Nano.Models.Interfaces;
 
 namespace Nano.Models.Data;
 
-/// <inheritdoc />
-public abstract class BaseEntity : IEntity
+/// <inheritdoc cref="IEntityIdentity{TIdentity}"/>
+public abstract class BaseEntity<TIdentity> : BaseEntityIdentity<TIdentity>, IEntityWritable
 {
-    /// <summary>
-    /// Is Deleted.
-    /// </summary>
+    /// <inheritdoc />
     public virtual long IsDeleted { get; set; } = 0L;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Created At.
+    /// </summary>
     public virtual DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

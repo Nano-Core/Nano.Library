@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Identity;
+using Nano.Models.Interfaces;
 
 namespace Nano.Models.Data;
 
@@ -7,7 +8,7 @@ namespace Nano.Models.Data;
 /// Identity User Token Expiry.
 /// </summary>
 /// <typeparam name="TIdentity">The identity key type</typeparam>
-public class IdentityUserTokenExpiry<TIdentity> : IdentityUserToken<TIdentity>
+public class IdentityUserTokenExpiry<TIdentity> : IdentityUserToken<TIdentity>, IEntityAuditableNegated
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

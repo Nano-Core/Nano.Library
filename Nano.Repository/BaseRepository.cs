@@ -882,8 +882,8 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        this.Context
-            .Remove(entity);
+        this.Context.SingleDelete(entity);
+            //.Remove(entity);
 
         if (this.Context.AutoSave)
         {

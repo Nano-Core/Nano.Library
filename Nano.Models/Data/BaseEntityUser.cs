@@ -10,12 +10,9 @@ namespace Nano.Models.Data;
 /// <summary>
 /// Base Entity User (abstract).
 /// </summary>
-public abstract class BaseEntityUser<TIdentity> : BaseEntityIdentity<TIdentity>, IEntityUser<TIdentity>, IEntityWritable
+public abstract class BaseEntityUser<TIdentity> : BaseEntity<TIdentity>, IEntityUser<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
-    ///// <inheritdoc />
-    //public virtual long IsDeleted { get; set; } = 0L;
-
     /// <inheritdoc />
     public virtual TIdentity IdentityUserId { get; set; }
 

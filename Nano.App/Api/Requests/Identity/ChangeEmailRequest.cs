@@ -1,4 +1,5 @@
 ﻿using System;
+using Nano.App.Api.Requests.Attributes;
 using Nano.Security.Models;
 
 namespace Nano.App.Api.Requests.Identity;
@@ -14,6 +15,12 @@ public class ChangeEmailRequest<TIdentity> : BaseRequestPost
     /// Change Email.
     /// </summary>
     public virtual ChangeEmail<TIdentity> ChangeEmail { get; set; } = new();
+
+    /// <summary>
+    /// Set Username.
+    /// </summary>
+    [Query]
+    public virtual bool SetUsername { get; set; } = false;
 
     /// <inheritdoc />
     public ChangeEmailRequest()

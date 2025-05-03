@@ -474,7 +474,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         this.pendingEvents = this.ChangeTracker
             .Entries<IEntity>()
             .Where(x =>
-                x.Entity.GetType().IsTypeOf(typeof(IEntityIdentity<>)) &&
+                x.Entity.GetType().IsTypeOf(typeof(BaseEntity<>)) &&
                 x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
                 x.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
             .Select(x =>
@@ -585,7 +585,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         }
 
         propertyNames
-            .Add(nameof(IEntity.CreatedAt));
+            .Add(nameof(BaseEntity<object>.CreatedAt));
 
         return propertyNames
             .Distinct()

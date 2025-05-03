@@ -34,6 +34,12 @@ public class IdentityApiKey<TIdentity> : BaseEntityIdentity<TIdentity>
     public virtual string Hash { get; set; }
 
     /// <summary>
+    /// Created At.
+    /// </summary>
+    [Required]
+    public virtual DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+
+    /// <summary>
     /// Is Revoked.
     /// </summary>
     public virtual DateTimeOffset? RevokedAt { get; set; }

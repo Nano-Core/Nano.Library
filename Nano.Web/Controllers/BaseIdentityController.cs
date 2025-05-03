@@ -409,6 +409,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// Changes the email of a user.
     /// </summary>
     /// <param name="changeEmail">The change email.</param>
+    /// <param name="setUsername">Set username.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>Void.</returns>
     /// <response code="200">Success.</response>
@@ -424,10 +425,10 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> ChangeEmailAsync([FromBody][Required]ChangeEmail<TIdentity> changeEmail, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> ChangeEmailAsync([FromBody][Required]ChangeEmail<TIdentity> changeEmail, [FromQuery]bool setUsername = false, CancellationToken cancellationToken = default)
     {
         await this.IdentityManager
-            .ChangeEmailAsync(changeEmail, cancellationToken);
+            .ChangeEmailAsync(changeEmail, setUsername, cancellationToken);
 
         await this.UpdateEntityUserWhenIdentityUserChanges(changeEmail.UserId, cancellationToken);
 

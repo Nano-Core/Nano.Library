@@ -16,4 +16,4 @@ public class DefaultEntity : DefaultEntity<Guid>
 }
 
 /// <inheritdoc cref="IEntityWritable"/>
-public class DefaultEntity<TIdentity> : BaseEntityIdentity<TIdentity>, IEntityWritable;
+public class DefaultEntity<TIdentity> : BaseEntity<TIdentity>;

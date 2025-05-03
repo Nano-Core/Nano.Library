@@ -4,7 +4,7 @@ using Nano.Models.Interfaces;
 namespace Nano.Models.Data;
 
 /// <inheritdoc cref="IEntityIdentity{TIdentity}"/>
-public abstract class BaseEntityIdentity<TIdentity> : BaseEntity, IEntityIdentity<TIdentity>
+public abstract class BaseEntityIdentity<TIdentity> : IEntityIdentity<TIdentity>
 {
     /// <inheritdoc />
     [Required]

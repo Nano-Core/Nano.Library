@@ -1433,9 +1433,10 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
     /// Changes the email address of a user.
     /// </summary>
     /// <param name="changeEmail">The <see cref="ChangeEmail{TIdentity}"/>.</param>
+    /// <param name="setUsername">Set username.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    public virtual async Task ChangeEmailAsync(ChangeEmail<TIdentity> changeEmail, CancellationToken cancellationToken = default)
+    public virtual async Task ChangeEmailAsync(ChangeEmail<TIdentity> changeEmail, bool setUsername, CancellationToken cancellationToken = default)
     {
         if (changeEmail == null)
         {
@@ -1481,6 +1482,12 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         this.DbContext
             .Update(identityUser);
+
+        await this.SetUsernameAsync(new SetUsername<TIdentity>
+        {
+            UserId = identityUser.Id,
+            NewUsername = identityUserChangeData.NewEmail
+        }, cancellationToken);
 
         await this.DbContext
             .SaveChangesAsync(cancellationToken);
