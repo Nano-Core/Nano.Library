@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using NetTopologySuite.IO.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -21,11 +22,13 @@ public static class Globals
             NullValueHandling = NullValueHandling.Ignore,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             PreserveReferencesHandling = PreserveReferencesHandling.None,
-            ContractResolver = new MvcEntityContractResolver()
+            ContractResolver = new MvcEntityContractResolver(),
+            Converters =
+            [
+                new StringEnumConverter(),
+                new GeometryConverter()
+            ]
         };
-
-        serializerSettings.Converters
-            .Add(new StringEnumConverter());
 
         return serializerSettings;
     }

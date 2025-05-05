@@ -10,7 +10,7 @@ using Newtonsoft.Json.Serialization;
 namespace Nano.Web.Hosting.Serialization.Json;
 
 /// <inheritdoc />
-public class MvcEntityContractResolver : BaseEntityContractResolver
+public class MvcEntityContractResolver : DefaultEntityContractResolver
 {
     /// <summary>
     /// Create a property.
@@ -26,12 +26,6 @@ public class MvcEntityContractResolver : BaseEntityContractResolver
         var property = base.CreateProperty(member, memberSerialization);
         var propertyType = property.PropertyType;
 
-        if (propertyType == null)
-        {
-            throw new NullReferenceException(nameof(propertyType));
-        }
-
-        this.SerializeOnlyNonEmptyEnumerables(member, propertyType, ref property);
         this.SerializeOnlyIncludedProperties(member, propertyType, ref property);
 
         return property;
