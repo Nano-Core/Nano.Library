@@ -20,9 +20,6 @@ public class GeometryConverterIgnoreCase : GeometryConverter
         if (objectType == null) 
             throw new ArgumentNullException(nameof(objectType));
         
-        if (existingValue == null) 
-            throw new ArgumentNullException(nameof(existingValue));
-        
         if (serializer == null) 
             throw new ArgumentNullException(nameof(serializer));
         
