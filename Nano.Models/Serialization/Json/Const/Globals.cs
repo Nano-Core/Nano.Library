@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-using NetTopologySuite.IO.Converters;
+using Nano.Models.Serialization.Json.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -26,7 +26,7 @@ public static class Globals
             Converters = 
             [
                 new StringEnumConverter(),
-                new GeometryConverter()
+                new GeometryConverterIgnoreCase()
             ]
         };
     }
