@@ -8,6 +8,7 @@ using System.Reflection;
 using Nano.Models;
 using Nano.Models.Extensions;
 using System.ComponentModel.DataAnnotations;
+using NetTopologySuite.Geometries;
 
 namespace Nano.Web.Hosting.ActionFilters;
 
@@ -21,29 +22,30 @@ public class ValidateGuidNotEmptyFilter : ActionFilterAttribute
     {
         var results = new List<string>();
 
-        foreach (var param in context.ActionArguments)
+        foreach (var arguments in context.ActionArguments)
         {
-            if (param.Value == null)
+            if (arguments.Value == null)
             {
                 continue;
             }
 
-            if (param.Value is Guid guidValue && guidValue == Guid.Empty)
+            if (arguments.Value is Guid guidValue && guidValue == Guid.Empty)
             {
                 var paramInfo = context.ActionDescriptor.Parameters
-                    .FirstOrDefault(p => p.Name == param.Key);
+                    .FirstOrDefault(x => x.Name == arguments.Key);
 
-                var requiredAttribute = paramInfo?.ParameterType.GetCustomAttribute<RequiredAttribute>();
+                var requiredAttribute = paramInfo?.ParameterType
+                    .GetCustomAttribute<RequiredAttribute>();
 
                 if (requiredAttribute != null)
                 {
                     results
-                        .Add(param.Key);
+                        .Add(arguments.Key);
                 }
             }
-            else if (param.Value != null) 
+            else if (arguments.Value != null) 
             {
-                if (param.Value is IEnumerable enumerableValue)
+                if (arguments.Value is IEnumerable enumerableValue)
                 {
                     foreach (var item in enumerableValue)
                     {
@@ -55,7 +57,7 @@ public class ValidateGuidNotEmptyFilter : ActionFilterAttribute
                 }
                 else
                 {
-                    var nestedResults = this.ValidateGuidEmpty(param.Value);
+                    var nestedResults = this.ValidateGuidEmpty(arguments.Value);
 
                     results
                         .AddRange(nestedResults);
@@ -80,21 +82,31 @@ public class ValidateGuidNotEmptyFilter : ActionFilterAttribute
         base.OnActionExecuting(context);
     }
 
-    private List<string> ValidateGuidEmpty(object obj, string path = "")
+    private List<string> ValidateGuidEmpty(object @object, string path = "")
     {
-        if (obj == null) 
-            throw new ArgumentNullException(nameof(obj));
+        if (@object == null) 
+            throw new ArgumentNullException(nameof(@object));
 
         var results = new List<string>();
 
-        var properties = obj
+        if (@object is Geometry)
+        {
+            return results;
+        }
+
+        var properties = @object
             .GetType()
             .GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
         foreach (var propertyInfo in properties)
         {
+            if (propertyInfo.GetIndexParameters().Length > 0)
+            {
+                continue;
+            }
+
             var value = propertyInfo
-                .GetValue(obj);
+                .GetValue(@object);
 
             if (value == null)
             {
@@ -131,6 +143,11 @@ public class ValidateGuidNotEmptyFilter : ActionFilterAttribute
                         }
                         else if (!item.GetType().IsSimple())
                         {
+                            if (item == @object)
+                            {
+                                continue;
+                            }
+
                             var nestedResults = this.ValidateGuidEmpty(item, itemPath);
 
                             results
@@ -142,6 +159,11 @@ public class ValidateGuidNotEmptyFilter : ActionFilterAttribute
                 }
                 else
                 {
+                    if (value == @object)
+                    {
+                        continue;
+                    }
+
                     var nestedResults = this.ValidateGuidEmpty(value, currentPath);
 
                     results
