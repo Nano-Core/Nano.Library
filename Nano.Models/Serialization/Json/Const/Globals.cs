@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;

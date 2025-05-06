@@ -1,7 +1,4 @@
-﻿using System.Globalization;
-using NetTopologySuite.IO.Converters;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using Newtonsoft.Json;
 
 namespace Nano.Web.Hosting.Serialization.Json.Const;
 
@@ -15,20 +12,9 @@ public static class Globals
     /// </summary>
     internal static JsonSerializerSettings GetMVcJsonSerializerSettings()
     {
-        var serializerSettings = new JsonSerializerSettings
-        {
-            MaxDepth = 128,
-            Culture = CultureInfo.CurrentCulture,
-            NullValueHandling = NullValueHandling.Ignore,
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            PreserveReferencesHandling = PreserveReferencesHandling.None,
-            ContractResolver = new MvcEntityContractResolver(),
-            Converters =
-            [
-                new StringEnumConverter(),
-                new GeometryConverter()
-            ]
-        };
+        var serializerSettings = Models.Serialization.Json.Const.Globals.GetDefaultJsonSerializerSettings();
+
+        serializerSettings.ContractResolver = new MvcEntityContractResolver();
 
         return serializerSettings;
     }

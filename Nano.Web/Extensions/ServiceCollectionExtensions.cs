@@ -217,12 +217,7 @@ public static class ServiceCollectionExtensions
                 x.SerializerSettings.ReferenceLoopHandling = serializerSettings.ReferenceLoopHandling;
                 x.SerializerSettings.PreserveReferencesHandling = serializerSettings.PreserveReferencesHandling;
                 x.SerializerSettings.ContractResolver = serializerSettings.ContractResolver;
-
-                foreach (var converter in serializerSettings.Converters)
-                {
-                    x.SerializerSettings.Converters
-                        .Add(converter);
-                }
+                x.SerializerSettings.Converters = serializerSettings.Converters;
             })
             .AddControllersAsServices()
             .AddViewComponentsAsServices()
