@@ -42,7 +42,7 @@ public class DataOptions
     /// <summary>
     /// Use Audit.
     /// </summary>
-    public virtual bool UseAudit { get; set; } = true;
+    public virtual bool UseAudit { get; set; } = false;
 
     /// <summary>
     /// Use Auto Save.
@@ -57,7 +57,7 @@ public class DataOptions
     /// <summary>
     /// Use Memory Cache.
     /// </summary>
-    public virtual bool UseMemoryCache { get; set; } = true;
+    public virtual bool UseMemoryCache { get; set; } = false;
 
     /// <summary>
     /// Use Soft Deletetion.
