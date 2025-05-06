@@ -18,7 +18,7 @@
 		<releaseNotes>
 			- Fixed missing geometry json converter for mvc serialization settings.
 			- Changed default values for DataOptions.UseMemoryCache and DataOptions.UseAudit to false.
-			- Fixed validaating Guid Not Empty caused Geometry objects to throw exception.
+			- Fixed validating Guid Not Empty caused Geometry objects to throw exception.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net9.0">
