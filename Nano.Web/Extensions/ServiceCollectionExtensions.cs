@@ -39,7 +39,6 @@ using Microsoft.AspNetCore.Http.Features;
 using Nano.Config;
 using Nano.Models;
 using Nano.Models.Const;
-using Nano.Web.Hosting.ActionFilters;
 using Nano.Web.Hosting.Authentication;
 using Nano.Web.Hosting.Authentication.Const;
 using Nano.Web.Hosting.Serialization.Json.Const;
@@ -196,9 +195,6 @@ public static class ServiceCollectionExtensions
                     x.Conventions
                         .Add(new AuditActionHidingConvention());
                 }
-
-                x.Filters
-                    .Add<ValidateGuidNotEmptyFilter>();
 
                 if (webOptions.Hosting.UseHttpsRequired)
                 {
