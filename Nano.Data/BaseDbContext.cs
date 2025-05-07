@@ -668,6 +668,21 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         return false;
     }
+    private object TryGetOriginalValue(EntityEntry entry, string propertyName)
+    {
+        if (entry == null)
+            throw new ArgumentNullException(nameof(entry));
+
+        if (propertyName == null)
+            throw new ArgumentNullException(nameof(propertyName));
+
+        var prop = entry.OriginalValues.Properties
+            .FirstOrDefault(x => x.Name == propertyName);
+
+        return prop != null
+            ? entry.OriginalValues[propertyName]
+            : null;
+    }
     private IDictionary<string, object> GetEntityEventData(EntityEntry entityEntry, string[] publishProperties)
     {
         if (entityEntry == null)
@@ -807,22 +822,5 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         }
 
         return user;
-    }
-
-
-    private object TryGetOriginalValue(EntityEntry entry, string propertyName)
-    {
-        if (entry == null) 
-            throw new ArgumentNullException(nameof(entry));
-        
-        if (propertyName == null) 
-            throw new ArgumentNullException(nameof(propertyName));
-        
-        var prop = entry.OriginalValues.Properties
-            .FirstOrDefault(x => x.Name == propertyName);
-        
-        return prop != null 
-            ? entry.OriginalValues[propertyName] 
-            : null;
     }
 }
