@@ -41,6 +41,7 @@ public class DefaultEntityUserMapping<TEntity> : BaseEntityIdentityMapping<TEnti
         builder
             .HasOne(x => x.IdentityUser)
             .WithOne()
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
         builder
