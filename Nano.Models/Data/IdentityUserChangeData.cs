@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
+using Nano.Models.Attributes;
 using Nano.Models.Interfaces;
 
 namespace Nano.Models.Data;
@@ -32,7 +33,7 @@ public class IdentityUserChangeData<TIdentity> : BaseEntityIdentity<TIdentity>, 
     /// <summary>
     /// New Phone Number.
     /// </summary>
-    [Phone]
+    [InternationalPhone]
     [MaxLength(20)]
     public virtual string NewPhoneNumber { get; set; }
 }

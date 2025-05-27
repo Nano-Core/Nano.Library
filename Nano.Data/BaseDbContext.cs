@@ -800,7 +800,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                 UserName = username,
                 Email = emailAddress,
                 EmailConfirmed = true,
-                PhoneNumber = "+1-000-000-0000",
+                PhoneNumber = "+1-000-000-0000", // BUG: This is not valid.
                 PhoneNumberConfirmed = true
             };
 

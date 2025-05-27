@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>NanoCore</id>
-		<version>9.2.11</version>
+		<version>9.2.12</version>
 		<title>Nano Core</title>
 		<summary>Rapidly built and deploy rich .NET 9.0 applications. Configuration, Security, Logging, Data, Hosting, Docs, Localization, Versioning, Api, Error-Handling, and much more.</summary>
 		<description>The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.</description>
@@ -16,9 +16,7 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Fixed error logging when having multiple aggregate exceptions.
-			- Added Is-email-talen and is-phone-number-taken identity methods.
-			- Added option for whether email and phone number is required.
+			- Added InternationalPhoneAttribute for validation of phone numbers.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net9.0">
@@ -37,6 +35,7 @@
 				<dependency id="AspNetCore.HealthChecks.Rabbitmq" version="8.0.2" />
 				<dependency id="EasyNetQ" version="7.8.0" />
 				<dependency id="EasyNetQ.DI.Microsoft" version="7.8.0" />
+				<dependency id="libphonenumber-csharp" version="9.0.5" />
 				<dependency id="Google.Apis.Auth" version="1.69.0" />
 				<dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="9.0.1" />
 				<dependency id="AspNetCore.HealthChecks.MySql" version="8.0.1" />

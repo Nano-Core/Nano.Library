@@ -53,6 +53,8 @@ public static class UserManagerExtensions
         where TUser : IdentityUser<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
+        // BUG: This method isn't good, check usages, and use UserId instead. If PhoneNumber is unique it's fine but otherwise not
+
         if (userManager == null)
         {
             throw new ArgumentNullException(nameof(userManager));

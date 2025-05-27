@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Nano.Models.Attributes;
 using Nano.Models.Interfaces;
 
 namespace Nano.Security.Models;
@@ -19,7 +20,7 @@ public class SignUp : BaseSignUp
     /// <summary>
     /// Phone Number.
     /// </summary>
-    [Phone]
+    [InternationalPhone]
     public virtual string PhoneNumber { get; set; }
 
     /// <summary>

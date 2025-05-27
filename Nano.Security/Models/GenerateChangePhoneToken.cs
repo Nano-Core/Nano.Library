@@ -1,3 +1,4 @@
+using Nano.Models.Attributes;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -23,6 +24,6 @@ public class GenerateChangePhoneToken<TIdentity>
     /// New Phone Number.
     /// </summary>
     [Required]
-    [Phone]
+    [InternationalPhone]
     public virtual string NewPhoneNumber { get; set; }
 }

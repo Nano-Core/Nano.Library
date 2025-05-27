@@ -26,6 +26,7 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Nano.Models.Data;
+using PhoneNumbers;
 
 namespace Nano.Security;
 
@@ -854,8 +855,10 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (phoneNumber == null)
             throw new ArgumentNullException(nameof(phoneNumber));
 
+        var phoneE164 = this.NormalizeToE164(phoneNumber);
+
         var existingIdentityUser = await this.UserManager
-            .FindByPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(phoneNumber);
+            .FindByPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(phoneE164);
 
         return new IsPhoneNumberTaken
         {
@@ -876,11 +879,13 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
             throw new ArgumentNullException(nameof(signUp));
         }
 
+        var phoneNumberE164 = this.NormalizeToE164(signUp.PhoneNumber);
+
         var identityUser = new IdentityUser<TIdentity>
         {
             Email = signUp.EmailAddress,
             UserName = signUp.Username,
-            PhoneNumber = signUp.PhoneNumber
+            PhoneNumber = phoneNumberE164
         };
 
         IdentityResult createResult;
@@ -2989,5 +2994,36 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
             .Select(x => new TranslationException(x.Description));
 
         throw new AggregateException(exceptions);
+    }
+
+
+    // BUG: Check all usages, and where it's needed. We should not do this on all levels, but the inner most???
+    // Signup
+    // Change phone number
+    // Confirm phone number
+    private string NormalizeToE164(string phone)
+    {
+        if (phone == null)
+            throw new ArgumentNullException(nameof(phone));
+
+        var phoneNumberUtil = PhoneNumberUtil.GetInstance();
+
+        try
+        {
+            var parsedPhone = phoneNumberUtil
+                .Parse(phone, null);
+
+            if (!phoneNumberUtil.IsValidNumber(parsedPhone))
+            {
+                return null;
+            }
+
+            return phoneNumberUtil
+                .Format(parsedPhone, PhoneNumberFormat.E164);
+        }
+        catch (NumberParseException)
+        {
+            return null;
+        }
     }
 }
