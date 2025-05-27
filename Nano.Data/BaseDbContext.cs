@@ -800,7 +800,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                 UserName = username,
                 Email = emailAddress,
                 EmailConfirmed = true,
-                PhoneNumber = "+1-000-000-0000", // BUG: This is not valid.
+                PhoneNumber = "+1 555 0100 000", // Fictional numbers per NANP
                 PhoneNumberConfirmed = true
             };
 

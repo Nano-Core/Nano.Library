@@ -53,19 +53,18 @@ public static class UserManagerExtensions
         where TUser : IdentityUser<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
-        // BUG: This method isn't good, check usages, and use UserId instead. If PhoneNumber is unique it's fine but otherwise not
-
         if (userManager == null)
         {
             throw new ArgumentNullException(nameof(userManager));
         }
 
         return userManager.Users
-            .SingleOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
+            .FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
     }
 
     /// <summary>
     /// Generate Phone Number Confirmation Token Async.
+    /// The method  
     /// </summary>
     /// <typeparam name="TUser">The user type.</typeparam>
     /// <typeparam name="TIdentity">The identity type.</typeparam>

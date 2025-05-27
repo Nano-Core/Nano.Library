@@ -26,7 +26,6 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Nano.Models.Data;
-using PhoneNumbers;
 
 namespace Nano.Security;
 
@@ -855,10 +854,8 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
         if (phoneNumber == null)
             throw new ArgumentNullException(nameof(phoneNumber));
 
-        var phoneE164 = this.NormalizeToE164(phoneNumber);
-
         var existingIdentityUser = await this.UserManager
-            .FindByPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(phoneE164);
+            .FindByPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(phoneNumber);
 
         return new IsPhoneNumberTaken
         {
@@ -879,13 +876,11 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
             throw new ArgumentNullException(nameof(signUp));
         }
 
-        var phoneNumberE164 = this.NormalizeToE164(signUp.PhoneNumber);
-
         var identityUser = new IdentityUser<TIdentity>
         {
             Email = signUp.EmailAddress,
             UserName = signUp.Username,
-            PhoneNumber = phoneNumberE164
+            PhoneNumber = signUp.PhoneNumber
         };
 
         IdentityResult createResult;
@@ -1569,7 +1564,7 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
     }
 
     /// <summary>
-    /// Changes the phone numberof a user.
+    /// Changes the phone number of a user.
     /// </summary>
     /// <param name="changePhoneNumber">The <see cref="ChangePhoneNumber{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
@@ -1869,7 +1864,7 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
         }
 
         var existingUser = await this.UserManager
-            .FindByPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(generateChangePhoneToken.NewPhoneNumber);
+            .GetIdentityUserAsync(generateChangePhoneToken.UserId, cancellationToken);
 
         if (existingUser != null)
         {
@@ -2994,36 +2989,5 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
             .Select(x => new TranslationException(x.Description));
 
         throw new AggregateException(exceptions);
-    }
-
-
-    // BUG: Check all usages, and where it's needed. We should not do this on all levels, but the inner most???
-    // Signup
-    // Change phone number
-    // Confirm phone number
-    private string NormalizeToE164(string phone)
-    {
-        if (phone == null)
-            throw new ArgumentNullException(nameof(phone));
-
-        var phoneNumberUtil = PhoneNumberUtil.GetInstance();
-
-        try
-        {
-            var parsedPhone = phoneNumberUtil
-                .Parse(phone, null);
-
-            if (!phoneNumberUtil.IsValidNumber(parsedPhone))
-            {
-                return null;
-            }
-
-            return phoneNumberUtil
-                .Format(parsedPhone, PhoneNumberFormat.E164);
-        }
-        catch (NumberParseException)
-        {
-            return null;
-        }
     }
 }
