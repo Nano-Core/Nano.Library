@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models;
 
 /// <summary>
-/// Generate Reset Password Token.
+/// Is Phone Number Taken.
 /// </summary>
-public class GenerateResetPasswordToken
+public class IsPhoneNumberTaken
 {
     /// <summary>
-    /// Username.
+    /// Is Taken.
     /// </summary>
     [Required]
-    public virtual string Username { get; set; }
+    public virtual bool IsTaken { get; set; }
 }

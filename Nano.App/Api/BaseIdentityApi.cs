@@ -124,6 +124,38 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
     }
 
     /// <summary>
+    /// Is Email Address Taken Async.
+    /// </summary>
+    /// <param name="request">The <see cref="IsEmailAddressTakenRequest"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IsEmailAddressTaken"/>.</returns>
+    public virtual Task<IsEmailAddressTaken> IsEmailAddressTakenAsync(IsEmailAddressTakenRequest request, CancellationToken cancellationToken = default)
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return this.InvokeAsync<IsEmailAddressTakenRequest, IsEmailAddressTaken>(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Is Phone Number Taken Async.
+    /// </summary>
+    /// <param name="request">The <see cref="IsPhoneNumberTakenRequest"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IsPhoneNumberTaken"/>.</returns>
+    public virtual Task<IsPhoneNumberTaken> IsPhoneNumberTakenAsync(IsPhoneNumberTakenRequest request, CancellationToken cancellationToken = default)
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return this.InvokeAsync<IsPhoneNumberTakenRequest, IsPhoneNumberTaken>(request, cancellationToken);
+    }
+
+    /// <summary>
     /// Change Email Async.
     /// </summary>
     /// <param name="request">The <see cref="ChangeEmailRequest{TIdentity}"/>.</param>

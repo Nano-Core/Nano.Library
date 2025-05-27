@@ -62,7 +62,7 @@ public class ExceptionHandlingMiddleware : IMiddleware
             ? LogLevel.Error
             : LogLevel.Information;
 
-        Exception exception = default;
+        Exception exception = null;
         try
         {
             await next(httpContext);
@@ -89,59 +89,56 @@ public class ExceptionHandlingMiddleware : IMiddleware
         }
         catch (Exception ex)
         {
-            exception = ex.GetBaseException();
+            exception = ex;
 
             if (response.HasStarted)
             {
                 response.Clear();
             }
 
-            response.StatusCode = exception is BadRequestException
-                ? (int)HttpStatusCode.BadRequest
-                : (int)HttpStatusCode.InternalServerError;
+            response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+            Exception topException;
+            Exception[] exceptions;
+            if (ex is AggregateException aggregateException)
+            {
+                topException = aggregateException.InnerException ?? aggregateException;
+                exceptions = aggregateException.InnerExceptions.ToArray();
+            }
+            else
+            {
+                topException = ex;
+                exceptions = [topException];
+            }
 
             var error = new Error();
-            var uxExceptionAttribute = this.GetUxExceptionAttribute(httpContext, exception);
+            var uxExceptionAttribute = this.GetUxExceptionAttribute(httpContext, topException);
 
             if (uxExceptionAttribute == null)
             {
-                switch (exception)
+                switch (topException)
                 {
                     case BadRequestException:
+                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+
                         error.Summary = "Bad Request";
-                        error.Exceptions =
-                        [
-                            exception.Message
-                        ];
                         error.IsTranslated = true;
 
                         break;
 
                     case VirusScanException:
                         error.Summary = "Virus Scan Error";
-                        error.Exceptions =
-                        [
-                            exception.Message
-                        ];
 
                         break;
 
                     case CodedException:
                         error.Summary = "Coded Error";
-                        error.Exceptions =
-                        [
-                            exception.Message
-                        ];
                         error.IsCoded = true;
 
                         break;
 
                     case TranslationException:
                         error.Summary = "Translated Error";
-                        error.Exceptions =
-                        [
-                            exception.Message
-                        ];
                         error.IsTranslated = true;
 
                         break;
@@ -151,7 +148,7 @@ public class ExceptionHandlingMiddleware : IMiddleware
 
                         if (this.WebOptions.Hosting.ExposeErrors)
                         {
-                            message = $"{exception.GetType().Name} - {exception.Message}";
+                            message = $"{topException.GetType().Name} - {topException.Message}";
                         }
                         
                         error.Summary = "Internal Server Error";
@@ -162,13 +159,17 @@ public class ExceptionHandlingMiddleware : IMiddleware
 
                         break;
                 }
+
+                error.Exceptions = exceptions
+                    .Select(x => x.Message)
+                    .ToArray();
             }
             else
             {
                 error.Summary = "Internal Server Error";
                 error.Exceptions =
                 [
-                    uxExceptionAttribute.Message
+                    uxExceptionAttribute.Message 
                 ];
                 error.IsCoded = true;
             }

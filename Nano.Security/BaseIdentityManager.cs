@@ -824,6 +824,46 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
     }
 
     /// <summary>
+    /// Is Email Address Taken.
+    /// </summary>
+    /// <param name="emailAddress">The email address.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IsEmailAddressTaken"/>.</returns>
+    public virtual async Task<IsEmailAddressTaken> IsEmailAddressTakenAsync(string emailAddress, CancellationToken cancellationToken = default)
+    {
+        if (emailAddress == null)
+            throw new ArgumentNullException(nameof(emailAddress));
+
+        var existingIdentityUser = await this.UserManager
+            .FindByEmailAsync(emailAddress);
+
+        return new IsEmailAddressTaken
+        {
+            IsTaken = existingIdentityUser != null
+        };
+    }
+
+    /// <summary>
+    /// Is Phone Number Taken.
+    /// </summary>
+    /// <param name="phoneNumber">The phone number.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IsPhoneNumberTaken"/>.</returns>
+    public virtual async Task<IsPhoneNumberTaken> IsPhoneNumberTakenAsync(string phoneNumber, CancellationToken cancellationToken = default)
+    {
+        if (phoneNumber == null)
+            throw new ArgumentNullException(nameof(phoneNumber));
+
+        var existingIdentityUser = await this.UserManager
+            .FindByPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(phoneNumber);
+
+        return new IsPhoneNumberTaken
+        {
+            IsTaken = existingIdentityUser != null
+        };
+    }
+
+    /// <summary>
     /// Sign-Up a new user.
     /// </summary>
     /// <param name="signUp">The <see cref="SignUp"/>.</param>
@@ -931,7 +971,7 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
         }
 
         var identityUser = await this.UserManager
-            .FindByEmailAsync(externalLogInData.Email);
+            .FindByNameAsync(externalLogInData.Email);
 
         if (identityUser == null)
         {
@@ -1654,11 +1694,11 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
         }
 
         var identityUser = await this.UserManager
-            .FindByEmailAsync(generateResetPasswordToken.EmailAddress);
+            .FindByNameAsync(generateResetPasswordToken.Username);
 
         if (identityUser == null)
         {
-            throw new UnauthorizedException($"The user: {generateResetPasswordToken.EmailAddress} was not found or is deactivated.");
+            throw new UnauthorizedException($"The user: {generateResetPasswordToken.Username} was not found or is deactivated.");
         }
 
         var token = await this.UserManager
@@ -1723,14 +1763,17 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
             throw new NullReferenceException(nameof(identityUser));
         }
 
-        var existingUser = await this.UserManager
-            .FindByEmailAsync(generateChangeEmailToken.NewEmailAddress);
-
-        if (existingUser != null)
+        if (this.Options.User.IsUniqueEmailAddressRequired)
         {
-            var duplicateEmail = new IdentityErrorDescriber().DuplicateEmail(generateChangeEmailToken.NewEmailAddress);
+            var existingUser = await this.UserManager
+                .FindByEmailAsync(generateChangeEmailToken.NewEmailAddress);
 
-            throw new TranslationException(duplicateEmail.Description);
+            if (existingUser != null)
+            {
+                var duplicateEmail = new IdentityErrorDescriber().DuplicateEmail(generateChangeEmailToken.NewEmailAddress);
+
+                throw new TranslationException(duplicateEmail.Description);
+            }
         }
 
         var identityUserChangeData = this.DbContext

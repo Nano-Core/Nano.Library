@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Security.Models;
 
 /// <summary>
-/// Generate Reset Password Token.
+/// Is Email Address Taken.
 /// </summary>
-public class GenerateResetPasswordToken
+public class IsEmailAddressTaken
 {
     /// <summary>
-    /// Username.
+    /// Is Taken.
     /// </summary>
     [Required]
-    public virtual string Username { get; set; }
+    public virtual bool IsTaken { get; set; }
 }

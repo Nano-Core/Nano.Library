@@ -341,7 +341,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         if (!string.IsNullOrEmpty(adminEmailAddress) && !string.IsNullOrEmpty(adminPassword))
         {
-            var adminUser = await this.AddUser(adminEmailAddress, adminPassword);
+            var adminUser = await this.AddUser(adminEmailAddress, adminPassword, adminEmailAddress);
 
             await this.AddUserToRole(adminUser, BuiltInUserRoles.SERVICE);
             await this.AddUserToRole(adminUser, BuiltInUserRoles.ADMINISTRATOR);
@@ -364,8 +364,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                 .UseCollation(this.Options.DefaultCollation);
         }
 
+        var securityOptions = this.GetService<SecurityOptions>();
+
         modelBuilder
-            .MapDefaultIdentity<TIdentity>()
+            .MapDefaultIdentity<TIdentity>(securityOptions.User.IsUniquePhoneNumberRequired)
             .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()
             .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>()
             .AddMapping<IdentityApiKey<TIdentity>, IdentityApiKeyMapping<TIdentity>>()
@@ -778,7 +780,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                 .AddToRoleAsync(user, role);
         }
     }
-    private async Task<IdentityUser<TIdentity>> AddUser(string emailAddress, string password)
+    private async Task<IdentityUser<TIdentity>> AddUser(string username, string password, string emailAddress)
     {
         if (emailAddress == null)
             throw new ArgumentNullException(nameof(emailAddress));
@@ -789,13 +791,13 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         var userManager = this.GetService<UserManager<IdentityUser<TIdentity>>>();
 
         var user = await userManager
-            .FindByEmailAsync(emailAddress);
-
+            .FindByNameAsync(emailAddress);
+        
         if (user == null)
         {
             user = new IdentityUser<TIdentity>
             {
-                UserName = emailAddress,
+                UserName = username,
                 Email = emailAddress,
                 EmailConfirmed = true,
                 PhoneNumber = "+1-000-000-0000",

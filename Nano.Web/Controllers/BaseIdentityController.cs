@@ -68,7 +68,8 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> GetPasswordOptionsAsync(CancellationToken cancellationToken = default)
     {
-        var passwordOptions = await this.IdentityManager.GetPaswordOptionsAsync(cancellationToken);
+        var passwordOptions = await this.IdentityManager
+            .GetPaswordOptionsAsync(cancellationToken);
 
         if (passwordOptions == null)
         {
@@ -406,6 +407,32 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
+    /// Is Email Address Taken.
+    /// </summary>
+    /// <returns>Whether the email address is already taken.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpGet]
+    [Route("email/is-taken")]
+    [AllowAnonymous]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IsEmailAddressTaken), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> IsEmailAddressTakenAsync([FromQuery][Required]string emailAddress, CancellationToken cancellationToken = default)
+    {
+        var isEmailAddressTaken = await this.IdentityManager
+            .IsEmailAddressTakenAsync(emailAddress, cancellationToken);
+
+        return this.Ok(isEmailAddressTaken);
+    }
+
+    /// <summary>
     /// Changes the email of a user.
     /// </summary>
     /// <param name="changeEmail">The change email.</param>
@@ -528,6 +555,32 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         }
 
         return this.Ok(confirmEmailToken);
+    }
+
+    /// <summary>
+    /// Is Phone Number Taken.
+    /// </summary>
+    /// <returns>Whether the phone number is already taken.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpGet]
+    [Route("phone/is-taken")]
+    [AllowAnonymous]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IsPhoneNumberTaken), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> IsPhoneNumberTakenAsync([FromQuery][Required]string phoneNumber, CancellationToken cancellationToken = default)
+    {
+        var isPhoneNumberTaken = await this.IdentityManager
+            .IsPhoneNumberTakenAsync(phoneNumber, cancellationToken);
+
+        return this.Ok(isPhoneNumberTaken);
     }
 
     /// <summary>
