@@ -1374,6 +1374,9 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
         {
             this.ThrowIdentityExceptions(result.Errors);
         }
+
+        await this.DbContext
+            .SaveChangesAsync(cancellationToken);
     }
 
     /// <summary>
@@ -1518,16 +1521,14 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
         this.DbContext
             .Update(identityUserChangeData);
 
-        identityUser.EmailConfirmed = false;
-
-        this.DbContext
-            .Update(identityUser);
-
-        await this.SetUsernameAsync(new SetUsername<TIdentity>
+        if (setUsername)
         {
-            UserId = identityUser.Id,
-            NewUsername = identityUserChangeData.NewEmail
-        }, cancellationToken);
+            await this.SetUsernameAsync(new SetUsername<TIdentity>
+            {
+                UserId = identityUser.Id,
+                NewUsername = identityUserChangeData.NewEmail
+            }, cancellationToken);
+        }
 
         await this.DbContext
             .SaveChangesAsync(cancellationToken);
@@ -1610,11 +1611,6 @@ public abstract class BaseIdentityManager<TIdentity> : BaseIdentityManager
 
         this.DbContext
             .Update(identityUserChangeData);
-
-        identityUser.PhoneNumberConfirmed = false;
-
-        this.DbContext
-            .Update(identityUser);
 
         await this.DbContext
             .SaveChangesAsync(cancellationToken);
