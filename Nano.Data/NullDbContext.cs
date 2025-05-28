@@ -1,5 +1,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
+using Nano.Security;
 
 namespace Nano.Data;
 
@@ -7,8 +8,8 @@ namespace Nano.Data;
 public class NullDbContext : DefaultDbContext
 {
     /// <inheritdoc />
-    public NullDbContext(DbContextOptions<NullDbContext> dbContextOptions, DataOptions dataOptions)
-        : base(dbContextOptions, dataOptions)
+    public NullDbContext(DbContextOptions<NullDbContext> dbContextOptions, DataOptions dataOptions, SecurityOptions securityOptions)
+        : base(dbContextOptions, dataOptions, securityOptions)
     {
     }
 

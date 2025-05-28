@@ -180,8 +180,8 @@ public class WebApplication : DefaultApplication
                 x.AddApp(config);
                 x.AddConfig(config);
                 x.AddLogging(config);
-                x.AddData(config);
                 x.AddSecurity(config);
+                x.AddData(config);
                 x.AddEventing(config);
                 x.AddStorage(config);
                 x.AddWeb(config);

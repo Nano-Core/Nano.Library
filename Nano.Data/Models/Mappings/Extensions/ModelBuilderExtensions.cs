@@ -44,9 +44,10 @@ public static class ModelBuilderExtensions
     /// </summary>
     /// <typeparam name="TIdentity"></typeparam>
     /// <param name="modelBuilder">The <see cref="ModelBuilder"/>.</param>
+    /// <param name="isUniqueEmailAddressRequired">Is unique email address required.</param>
     /// <param name="isUniquePhoneNumberRequired">Is unique phone number required</param>
     /// <returns>The <see cref="ModelBuilder"/>.</returns>
-    internal static ModelBuilder MapDefaultIdentity<TIdentity>(this ModelBuilder modelBuilder, bool isUniquePhoneNumberRequired)
+    internal static ModelBuilder MapDefaultIdentity<TIdentity>(this ModelBuilder modelBuilder, bool isUniqueEmailAddressRequired, bool isUniquePhoneNumberRequired)
         where TIdentity : IEquatable<TIdentity>
     {
         if (modelBuilder == null)
@@ -59,7 +60,7 @@ public static class ModelBuilderExtensions
         modelBuilder
             .Entity<IdentityUser<TIdentity>>()
             .HasIndex(x => x.Email)
-            .IsUnique();
+            .IsUnique(isUniqueEmailAddressRequired);
 
         modelBuilder
             .Entity<IdentityUser<TIdentity>>()

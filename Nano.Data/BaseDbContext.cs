@@ -45,6 +45,11 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     public DataOptions Options { get; }
 
     /// <summary>
+    /// Security Options.
+    /// </summary>
+    public SecurityOptions SecurityOptions { get; }
+
+    /// <summary>
     /// Auto Save.
     /// </summary>
     public virtual bool AutoSave => this.Options.UseAutoSave;
@@ -61,10 +66,11 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
     /// <inheritdoc />
-    protected BaseDbContext(DbContextOptions contextOptions, DataOptions dataOptions)
+    protected BaseDbContext(DbContextOptions contextOptions, DataOptions dataOptions, SecurityOptions securityOptions)
         : base(contextOptions)
     {
         this.Options = dataOptions ?? throw new ArgumentNullException(nameof(dataOptions));
+        this.SecurityOptions = securityOptions ?? throw new ArgumentNullException(nameof(securityOptions));
 
         this.SavingChanges += (_, _) => this.SetPendingEntityEvents();
         this.SavingChanges += (_, _) => this.UpdateSoftDeletedEntities();
@@ -364,10 +370,8 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                 .UseCollation(this.Options.DefaultCollation);
         }
 
-        var securityOptions = this.GetService<SecurityOptions>();
-
         modelBuilder
-            .MapDefaultIdentity<TIdentity>(securityOptions.User.IsUniquePhoneNumberRequired)
+            .MapDefaultIdentity<TIdentity>(this.SecurityOptions.User.IsUniqueEmailAddressRequired, this.SecurityOptions.User.IsUniquePhoneNumberRequired)
             .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()
             .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>()
             .AddMapping<IdentityApiKey<TIdentity>, IdentityApiKeyMapping<TIdentity>>()

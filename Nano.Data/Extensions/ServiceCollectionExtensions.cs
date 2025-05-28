@@ -19,6 +19,7 @@ using Nano.Config;
 using Nano.Data.Identity.Extensions;
 using Nano.Data.Models;
 using Nano.Data.Providers.Sqlite;
+using Nano.Security;
 using Z.EntityFramework.Plus;
 using Z.EntityFramework.Extensions;
 
@@ -71,10 +72,13 @@ public static class ServiceCollectionExtensions
         var options = services.BuildServiceProvider()
             .GetRequiredService<DataOptions>();
 
+        var securityOptions = services.BuildServiceProvider()
+            .GetRequiredService<SecurityOptions>();
+
         services
+            .AddScoped<DbContextOptions, DbContextOptions<TContext>>()
             .AddScoped<DbContext, TContext>()
             .AddScoped<BaseDbContext<TIdentity>, TContext>()
-            .AddScoped<DbContextOptions, DbContextOptions<TContext>>()
             .AddSingleton<IDataProvider, TProvider>();
 
         if (options.UseConnectionPooling)
