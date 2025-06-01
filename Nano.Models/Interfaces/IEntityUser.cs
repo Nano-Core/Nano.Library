@@ -11,11 +11,6 @@ public interface IEntityUser<TIdentity> : IEntityIdentity<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Identity User Id.
-    /// </summary>
-    TIdentity IdentityUserId { get; set; }
-
-    /// <summary>
     /// Identity User.
     /// </summary>
     IdentityUser<TIdentity> IdentityUser { get; set; }

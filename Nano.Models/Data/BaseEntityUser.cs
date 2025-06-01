@@ -14,9 +14,6 @@ public abstract class BaseEntityUser<TIdentity> : BaseEntity<TIdentity>, IEntity
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    public virtual TIdentity IdentityUserId { get; set; }
-
-    /// <inheritdoc />
     [Include]
     [SwaggerResponseOnly]
     public virtual IdentityUser<TIdentity> IdentityUser { get; set; }
