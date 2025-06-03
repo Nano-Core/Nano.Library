@@ -25,6 +25,7 @@
 		<PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="8.0.2" />
 		<PackageReference Include="EasyNetQ" Version="7.8.0" />
 		<PackageReference Include="EasyNetQ.DI.Microsoft" Version="7.8.0" />
+		<PackageReference Include="EasyNetQ.Serialization.NewtonsoftJson" Version="7.8.0" />
 	</ItemGroup>
 
 	<ItemGroup>

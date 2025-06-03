@@ -1,9 +1,12 @@
 using System;
 using EasyNetQ;
+using EasyNetQ.DI;
+using EasyNetQ.Serialization.NewtonsoftJson;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Interfaces;
 using Nano.Models.Eventing.Interfaces;
+using Nano.Models.Serialization.Json.Const;
 
 namespace Nano.Eventing.Providers.EasyNetQ;
 
@@ -29,24 +32,32 @@ public class EasyNetQProvider : IEventingProvider
     /// <inheritdoc />
     public virtual IEventing Configure(IServiceCollection services)
     {
+        if (services == null) 
+            throw new ArgumentNullException(nameof(services));
+
+        var serializerSettings = Globals.GetDefaultJsonSerializerSettings();
+        
         services
-            .RegisterEasyNetQ(_ => new ConnectionConfiguration
-            {
-                Hosts =
+            .RegisterEasyNetQ(
+                _ => new ConnectionConfiguration
                 {
-                    new HostConfiguration
+                    Hosts =
                     {
-                        Host = this.Options.Host,
-                        Port = this.Options.Port
-                    }
-                },
-                VirtualHost = this.Options.VHost,
-                UserName = this.Options.Username,
-                Password = this.Options.Password,
-                RequestedHeartbeat = TimeSpan.FromSeconds(this.Options.Heartbeat),
-                Timeout = TimeSpan.FromSeconds(this.Options.Timeout),
-                PrefetchCount = this.Options.PrefetchCount
-            });
+                        new HostConfiguration
+                        {
+                            Host = this.Options.Host,
+                            Port = this.Options.Port
+                        }
+                    },
+                    VirtualHost = this.Options.VHost,
+                    UserName = this.Options.Username,
+                    Password = this.Options.Password,
+                    RequestedHeartbeat = TimeSpan.FromSeconds(this.Options.Heartbeat),
+                    Timeout = TimeSpan.FromSeconds(this.Options.Timeout),
+                    PrefetchCount = this.Options.PrefetchCount
+                }, 
+                x => x
+                    .Register<ISerializer>(_ => new NewtonsoftJsonSerializer(serializerSettings)));
 
         var serviceProvider = services
             .BuildServiceProvider();
