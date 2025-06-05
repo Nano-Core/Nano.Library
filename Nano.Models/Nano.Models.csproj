@@ -22,7 +22,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DynamicExpression" Version="9.0.0" />
+		<PackageReference Include="DynamicExpression" Version="9.0.1" />
 		<PackageReference Include="libphonenumber-csharp" Version="9.0.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.10" />

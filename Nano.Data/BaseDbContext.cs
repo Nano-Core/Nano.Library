@@ -26,6 +26,7 @@ using Nano.Models.Extensions;
 using Nano.Models.Interfaces;
 using Nano.Security;
 using Nano.Security.Const;
+using NetTopologySuite.Geometries;
 using Z.EntityFramework.Plus;
 
 namespace Nano.Data;
@@ -618,7 +619,6 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                     .FirstOrDefault(x => x.Metadata.Name == name)?
                     .TargetEntry;
 
-
                 if (nestedEntityEntry == null)
                 {
                     return true;
@@ -640,7 +640,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             var value = property
                 .GetValue(nestedEntityEntry.Entity);
 
-            if (property.PropertyType.IsSimple())
+            if (property.PropertyType.IsSimple() || property.PropertyType.IsSubclassOf(typeof(Geometry)))
             {
                 var orginalValue = this.TryGetOriginalValue(nestedEntityEntry, propertyNameTemp);
 
