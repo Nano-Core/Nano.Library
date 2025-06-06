@@ -123,46 +123,49 @@ public class ExceptionHandlingMiddleware : IMiddleware
 
                         error.Summary = "Bad Request";
                         error.IsTranslated = true;
+                        error.Exceptions = exceptions
+                            .Select(x => x.Message)
+                            .ToArray();
 
                         break;
 
                     case VirusScanException:
                         error.Summary = "Virus Scan Error";
+                        error.Exceptions = exceptions
+                            .Select(x => x.Message)
+                            .ToArray();
 
                         break;
 
                     case CodedException:
                         error.Summary = "Coded Error";
                         error.IsCoded = true;
+                        error.Exceptions = exceptions
+                            .Select(x => x.Message)
+                            .ToArray();
 
                         break;
 
                     case TranslationException:
                         error.Summary = "Translated Error";
                         error.IsTranslated = true;
+                        error.Exceptions = exceptions
+                            .Select(x => x.Message)
+                            .ToArray();
 
                         break;
 
                     default:
-                        var message = "An error occurred.";
-
-                        if (this.WebOptions.Hosting.ExposeErrors)
-                        {
-                            message = $"{topException.GetType().Name} - {topException.Message}";
-                        }
-                        
                         error.Summary = "Internal Server Error";
                         error.Exceptions =
                         [
-                            message
+                            this.WebOptions.Hosting.ExposeErrors
+                                ? $"{topException.GetType().Name} - {topException.Message}"
+                                : "An error occurred."
                         ];
 
                         break;
                 }
-
-                error.Exceptions = exceptions
-                    .Select(x => x.Message)
-                    .ToArray();
             }
             else
             {

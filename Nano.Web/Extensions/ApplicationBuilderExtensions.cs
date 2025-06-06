@@ -175,6 +175,19 @@ public static class ApplicationBuilderExtensions
         {
             var appOptions = services.GetService<AppOptions>() ?? new AppOptions();
 
+            // BUG: Check why 500 errors are exposed with exception message. 
+            // You should be able to enable/disable that. Not only in Api Client, maybe we can even remove it there?
+
+
+            // BUG: TEST WITH PlacePictures Get File
+            // BUG: We need to always add JSON as Produces, otherwise when returning a File and a bad request happens it wont work
+            //        Probably also for 500 errors.
+            //        if we can't add it to Nano, then all endpoints must have JSON. add to the ones that doesn't 
+            //        Swagger must also show it. check that
+            //        - The Produces is not a list of content-types, but one primary and a list of other.
+            //        - In swagger it also looks strange that for each ProducesResponseType there is a choice between all produces. 
+            //          Json should only be for Bad request and 500 error
+
             applicationBuilder
                 .UseSwagger(x =>
                 {
