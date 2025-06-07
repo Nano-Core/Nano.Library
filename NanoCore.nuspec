@@ -17,6 +17,7 @@
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
 			- Fixed WebOptions.Hosting.ExposeErrors not being obeyed.
+			- Fixed response types in swagger. Produces now related to 2xx responses, and all other is json response or nothing.
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net9.0">

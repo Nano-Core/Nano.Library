@@ -2,12 +2,12 @@ using System;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Nano.Web.Hosting.Documentation.Filters;
+namespace Nano.Web.Hosting.Documentation.Filters.Document;
 
 /// <summary>
-/// Lowercase Routes Document Filter.
+/// Lowercase Routes Filter.
 /// </summary>
-public class LowercaseRoutesDocumentFilter : IDocumentFilter
+public class LowercaseRoutesFilter : IDocumentFilter
 {
     /// <summary>
     /// Apply.

@@ -4,7 +4,7 @@ using Microsoft.OpenApi.Models;
 using Nano.Config;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Nano.Web.Hosting.Documentation.Filters;
+namespace Nano.Web.Hosting.Documentation.Filters.Document;
 
 /// <summary>
 /// Remove Default Version Routes Filter.

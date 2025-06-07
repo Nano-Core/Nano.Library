@@ -4,12 +4,12 @@ using Microsoft.OpenApi.Models;
 using Nano.Models.Attributes;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Nano.Web.Hosting.Documentation.Filters;
+namespace Nano.Web.Hosting.Documentation.Filters.Schema;
 
 /// <summary>
-/// Swagger Response Only Schema Filter.
+/// Response Only Filter.
 /// </summary>
-public class SwaggerResponseOnlySchemaFilter : ISchemaFilter
+public class ResponseOnlyFilter : ISchemaFilter
 {
     /// <inheritdoc />
     public void Apply(OpenApiSchema schema, SchemaFilterContext context)

@@ -1,5 +1,3 @@
-using System;
-
 namespace Nano.Models.Interfaces;
 
 /// <summary>

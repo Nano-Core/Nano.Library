@@ -27,7 +27,6 @@ using Nano.Repository.Extensions;
 using Nano.Security;
 using Nano.Web.Controllers;
 using Nano.Web.Hosting.Conventions;
-using Nano.Web.Hosting.Documentation.Filters;
 using Nano.Web.Hosting.HealthChecks;
 using Nano.Web.Hosting.Middleware;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
@@ -41,6 +40,9 @@ using Nano.Models;
 using Nano.Models.Const;
 using Nano.Web.Hosting.Authentication;
 using Nano.Web.Hosting.Authentication.Const;
+using Nano.Web.Hosting.Documentation.Filters.Document;
+using Nano.Web.Hosting.Documentation.Filters.Operation;
+using Nano.Web.Hosting.Documentation.Filters.Schema;
 using Nano.Web.Hosting.Serialization.Json.Const;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
 
@@ -162,8 +164,8 @@ public static class ServiceCollectionExtensions
                     {
                         Summary = "ModelState Validation Error",
                         Exceptions = context.ModelState.Values
-                            .SelectMany(y => y.Errors)
-                            .Select(y => y.ErrorMessage)
+                            .SelectMany(z => z.Errors)
+                            .Select(z => z.ErrorMessage)
                             .ToArray(),
                         IsTranslated = true
                     });
@@ -183,6 +185,9 @@ public static class ServiceCollectionExtensions
 
                 x.Conventions
                     .Insert(0, routePrefixConvention);
+
+                x.Conventions
+                    .Add(new ProducesJsonConvention());
 
                 if (dataOptions.ConnectionString == null || !webOptions.Hosting.ExposeAuthController)
                 {
@@ -506,11 +511,12 @@ public static class ServiceCollectionExtensions
                     x.CustomSchemaIds(y => y.FullName);
                     x.OrderActionsBy(y => y.RelativePath);
 
-                    x.SchemaFilter<EnumSchemaFilter>();
-                    x.SchemaFilter<SwaggerResponseOnlySchemaFilter>();
-                    x.OperationFilter<SwaggerResponseOnlyOperationFilter>();
+                    x.SchemaFilter<EnumsFilter>();
+                    x.SchemaFilter<ResponseOnlyFilter>();
+                    x.OperationFilter<SwaggerResponseOnlyFilter>();
+                    x.OperationFilter<NonResponseType200Filter>();
                     x.DocumentFilter<RemoveVersionsRoutesFilter>();
-                    x.DocumentFilter<LowercaseRoutesDocumentFilter>();
+                    x.DocumentFilter<LowercaseRoutesFilter>();
 
                     var openApiSecurityRequirement = new OpenApiSecurityRequirement();
 

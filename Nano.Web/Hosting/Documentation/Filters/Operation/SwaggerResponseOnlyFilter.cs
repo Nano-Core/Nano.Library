@@ -4,12 +4,12 @@ using Microsoft.OpenApi.Models;
 using Nano.Models.Attributes;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Nano.Web.Hosting.Documentation.Filters;
+namespace Nano.Web.Hosting.Documentation.Filters.Operation;
 
 /// <summary>
-/// Swagger Response Only Operation Filter.
+/// Swagger Response Only Filter.
 /// </summary>
-public class SwaggerResponseOnlyOperationFilter : IOperationFilter
+public class SwaggerResponseOnlyFilter : IOperationFilter
 {
     /// <inheritdoc />
     public void Apply(OpenApiOperation operation, OperationFilterContext context)

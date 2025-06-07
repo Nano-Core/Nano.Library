@@ -5,12 +5,12 @@ using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Nano.Web.Hosting.Documentation.Filters;
+namespace Nano.Web.Hosting.Documentation.Filters.Schema;
 
 /// <summary>
-/// Enum Schema Filter.
+/// Enums Filter.
 /// </summary>
-public class EnumSchemaFilter : ISchemaFilter
+public class EnumsFilter : ISchemaFilter
 {
     /// <inheritdoc />
     public void Apply(OpenApiSchema model, SchemaFilterContext context)
