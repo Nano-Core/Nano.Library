@@ -29,30 +29,30 @@ public static class ServiceCollectionExtensions
         
         var serializerSettings = Globals.GetDefaultJsonSerializerSettings();
 
-        services.RegisterEasyNetQ(
-            _ => new ConnectionConfiguration
-            {
-                Hosts =
+        services
+            .RegisterEasyNetQ(
+                _ => new ConnectionConfiguration
                 {
-                    new HostConfiguration
+                    Hosts =
                     {
-                        Host = options.Host, 
-                        Port = options.Port
-                    }
+                        new HostConfiguration
+                        {
+                            Host = options.Host, 
+                            Port = options.Port
+                        }
+                    },
+                    VirtualHost = options.VHost,
+                    UserName = options.Username,
+                    Password = options.Password,
+                    RequestedHeartbeat = TimeSpan.FromSeconds(options.Heartbeat),
+                    Timeout = TimeSpan.FromSeconds(options.Timeout),
+                    PrefetchCount = options.PrefetchCount
                 },
-                VirtualHost = options.VHost,
-                UserName = options.Username,
-                Password = options.Password,
-                RequestedHeartbeat = TimeSpan.FromSeconds(options.Heartbeat),
-                Timeout = TimeSpan.FromSeconds(options.Timeout),
-                PrefetchCount = options.PrefetchCount
-            },
-            x => x
-                .Register<ISerializer>(_ => new NewtonsoftJsonSerializer(serializerSettings))
-        );
+                x => x
+                    .Register<ISerializer>(_ => new NewtonsoftJsonSerializer(serializerSettings)));
 
         services
-            .AddSingleton<IEventing, EasyNetQEventing>();
+            .AddScoped<IEventing, EasyNetQEventing>();
 
         return services;
     }
