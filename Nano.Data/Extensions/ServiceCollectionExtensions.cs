@@ -69,11 +69,9 @@ public static class ServiceCollectionExtensions
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        var options = services.BuildServiceProvider()
+        var options = services
+            .BuildServiceProvider()
             .GetRequiredService<DataOptions>();
-
-        var securityOptions = services.BuildServiceProvider()
-            .GetRequiredService<SecurityOptions>();
 
         services
             .AddScoped<DbContextOptions, DbContextOptions<TContext>>()
