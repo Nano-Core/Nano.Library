@@ -63,9 +63,12 @@ public static class ServiceCollectionExtensions
         if (name == null)
             throw new ArgumentNullException(nameof(name));
 
-        var provider = services.BuildServiceProvider();
-        var configuration = provider.GetRequiredService<IConfiguration>();
-        var section = configuration.GetSection(name);
+        var configuration = services
+            .BuildServiceProvider()
+            .GetRequiredService<IConfiguration>();
+
+        var section = configuration
+            .GetSection(name);
 
         options = section.Get<TOption>() ?? new TOption();
 
@@ -97,7 +100,9 @@ public static class ServiceCollectionExtensions
         if (name == null)
             throw new ArgumentNullException(nameof(name));
 
-        var section = configuration.GetSection(name);
+        var section = configuration
+            .GetSection(name);
+        
         options = section.Get<TOption>() ?? new TOption();
 
         services

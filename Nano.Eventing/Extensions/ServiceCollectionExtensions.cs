@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection AddEventing<TProvider>(this IServiceCollection services)
-        where TProvider : class, IEventingProvider
+        where TProvider : class, IEventingProvider, new()
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
@@ -34,11 +34,12 @@ public static class ServiceCollectionExtensions
             .BuildServiceProvider()
             .GetService<EventingOptions>();
 
+        var eventingProvider = new TProvider();
+
+        eventingProvider
+            .Configure(services, options);
+
         services
-            .AddSingleton<IEventingProvider, TProvider>()
-            .AddScoped(x => x
-                .GetRequiredService<IEventingProvider>()
-                .Configure(services))
             .AddEventingHandlers()
             .AddEventingHandlerAttributes()
             .AddEventingHealthChecks<TProvider>(options);

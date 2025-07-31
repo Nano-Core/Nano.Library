@@ -305,13 +305,13 @@ public static class ServiceCollectionExtensions
 
         if (securityOptions.Jwt.IsEnabled)
         {
+            var rsaSecurityKey = services
+                .BuildServiceProvider()
+                .GetRequiredService<RsaSecurityKey>();
+
             authenticationBuilder
                 .AddJwtBearer(x =>
                 {
-                    var rsaSecurityKey = services
-                        .BuildServiceProvider()
-                        .GetRequiredService<RsaSecurityKey>();
-
                     x.SaveToken = true;
                     x.IncludeErrorDetails = true;
                     x.RequireHttpsMetadata = false;
@@ -474,13 +474,13 @@ public static class ServiceCollectionExtensions
 
         if (webOptions.Documentation.IsEnabled)
         {
+            var apiVersionDescriptionProvider = services
+                .BuildServiceProvider()
+                .GetService<IApiVersionDescriptionProvider>();
+
             return services
                 .AddSwaggerGen(x =>
                 {
-                    var apiVersionDescriptionProvider = services
-                        .BuildServiceProvider()
-                        .GetService<IApiVersionDescriptionProvider>();
-
                     foreach (var provider in apiVersionDescriptionProvider.ApiVersionDescriptions)
                     {
                         var info = new OpenApiInfo

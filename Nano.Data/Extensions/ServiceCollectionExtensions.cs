@@ -15,6 +15,7 @@ using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Nano.Config;
 using Nano.Data.Identity.Extensions;
 using Nano.Data.Models;
@@ -170,8 +171,7 @@ public static class ServiceCollectionExtensions
             AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
             AuditManager.DefaultConfiguration.AutoSavePreAction = (dbContext, audit) =>
             {
-                var httpContextAccessor = services
-                    .BuildServiceProvider()
+                var httpContextAccessor = dbContext
                     .GetService<IHttpContextAccessor>();
 
                 var requestId = httpContextAccessor?.HttpContext?.TraceIdentifier;
