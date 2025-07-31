@@ -16,8 +16,8 @@
 		<projectUrl>https://github.com/Nano-Core</projectUrl>
 		<repository type="git" url="https://github.com/Nano-Core/Nano.Library.git" />
 		<releaseNotes>
-			- Fixed incorrect dependency injection for eventing provider (cosmetic).
 			- Improved dependency injection.
+			- Fixed incorrect dependency injection for eventing provider (cosmetic).
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework="net9.0">
