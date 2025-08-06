@@ -32,34 +32,22 @@ namespace Nano.App.Api;
 /// <summary>
 /// Base Api (abstract).
 /// </summary>
-public abstract class BaseApi : IDisposable
+public abstract class BaseApi
 {
     private volatile AccessToken accessToken;
 
     private readonly ApiOptions apiOptions;
     private readonly HttpClient httpClient;
-    private readonly HttpClientHandler httpClientHandler = new()
-    {
-        AllowAutoRedirect = true,
-        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-    };
 
     /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="apiOptions">The <see cref="ApiOptions"/>.</param>
-    protected BaseApi(ApiOptions apiOptions)
+    /// <param name="httpClient">The <see cref="httpClient"/>.</param>
+    protected BaseApi(ApiOptions apiOptions, HttpClient httpClient)
     {
         this.apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
-
-        this.httpClient = new HttpClient(this.httpClientHandler)
-        {
-            Timeout = new TimeSpan(0, 0, this.apiOptions.TimeoutInSeconds),
-            DefaultRequestVersion = new Version(2, 0)
-        };
-
-        this.httpClient.DefaultRequestHeaders.Accept
-            .Add(new MediaTypeWithQualityHeaderValue(HttpContentType.JSON));
+        this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
     /// <summary>
@@ -803,16 +791,6 @@ public abstract class BaseApi : IDisposable
 
         return null;
     }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        this.httpClient?
-            .Dispose();
-
-        this.httpClientHandler?
-            .Dispose();
-    }
 }
 
 /// <inheritdoc />
@@ -820,8 +798,8 @@ public abstract class BaseApi<TIdentity> : BaseApi
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseApi(ApiOptions apiOptions)
-        : base(apiOptions)
+    protected BaseApi(ApiOptions apiOptions, HttpClient httpClient)
+        : base(apiOptions, httpClient)
     {
     }
 

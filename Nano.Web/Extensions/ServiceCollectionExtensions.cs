@@ -152,7 +152,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ExceptionHandlingMiddleware>()
             .AddSingleton<DisableAuthControllerMiddleware>()
             .AddSingleton<DisableAuditControllerMiddleware>()
-            .AddSingleton<HttpRequestOptionsMiddleware>()
+            .AddScoped<HttpRequestOptionsMiddleware>()
             .AddSingleton<HttpRequestIdentifierMiddleware>()
             .AddRouting()
             .AddQueryModelBinders()

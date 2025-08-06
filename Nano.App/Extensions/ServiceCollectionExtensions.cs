@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Net.Http;
+using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +12,7 @@ using Nano.App.Api;
 using Nano.App.Startup;
 using Nano.App.Startup.Tasks;
 using Nano.Config.Extensions;
+using Nano.Models.Const;
 using Nano.Models.Extensions;
 using Nano.Models.Helpers;
 
@@ -63,52 +67,71 @@ public static class ServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection AddApis(this IServiceCollection services, IConfiguration configuration)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
         var hosts = new List<string>();
 
-        TypesHelper.GetAllTypes()
-            .Where(x =>
-                !x.IsAbstract &&
-                x.IsTypeOf(typeof(BaseApi)))
-            .Distinct()
-            .ToList()
-            .ForEach(x =>
+        var types = TypesHelper.GetAllTypes()
+            .Where(x => !x.IsAbstract && x.IsTypeOf(typeof(BaseApi)))
+            .Distinct();
+
+        foreach (var type in types)
+        {
+            var section = configuration.GetSection(type.Name);
+            var options = section.Get<ApiOptions>();
+
+            if (options == null)
             {
-                var section = configuration.GetSection(x.Name);
-                var options = section.Get<ApiOptions>();
+                continue;
+            }
 
-                if (options == null)
+            var optionsServiceId = $"{type.Name}_Options";
+
+            services
+                .AddKeyedSingleton(optionsServiceId, options);
+
+            services
+                .AddHttpClient(type.Name, (serviceProvider, client) =>
                 {
-                    return;
-                }
+                    var apiOptions = serviceProvider
+                        .GetRequiredKeyedService<ApiOptions>(optionsServiceId);
 
-                var instance = Activator.CreateInstance(x, options);
+                    client.Timeout = TimeSpan.FromSeconds(apiOptions.TimeoutInSeconds);
+                    client.BaseAddress = new Uri(apiOptions.Host);
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(HttpContentType.JSON));
+                    client.DefaultRequestVersion = new Version(2, 0);
+                })
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+                .ConfigurePrimaryHttpMessageHandler(() =>
+                    new HttpClientHandler
+                    {
+                        AllowAutoRedirect = true,
+                        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+                    });
 
-                if (instance == null)
+            services
+                .AddScoped(type, serviceProvider =>
                 {
-                    return;
-                }
+                    var httpClientFactory = serviceProvider
+                        .GetRequiredService<IHttpClientFactory>();
+                    
+                    var httpClient = httpClientFactory
+                        .CreateClient(type.Name);
 
-                services
-                    .AddSingleton(x, instance);
+                    var apiOptions = serviceProvider
+                        .GetRequiredKeyedService<ApiOptions>(optionsServiceId);
 
-                if (hosts.Contains(options.Host))
-                {
-                    return;
-                }
+                    return Activator.CreateInstance(type, apiOptions, httpClient);
+                });
 
-                if (options.UseHealthCheck)
-                {
-                    services
-                        .AddHealthChecks()
-                        .AddTcpHealthCheck(y => y.AddHost(options.Host, options.Port), options.Host, options.UnhealthyStatus);
-                }
+            if (!hosts.Contains(options.Host) && options.UseHealthCheck)
+            {
+                services.AddHealthChecks()
+                    .AddTcpHealthCheck(y => y
+                        .AddHost(options.Host, options.Port), options.Host, options.UnhealthyStatus);
 
                 hosts
                     .Add(options.Host);
-            });
+            }
+        }
 
         return services;
     }
