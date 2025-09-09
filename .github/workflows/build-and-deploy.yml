@@ -43,17 +43,8 @@ jobs:
               throw "Tests failed";
           };
 
-          # dotnet pack -c Release -p:NuspecBasePath=$PWD -p:NuspecFile=$env:NUGET_NAME.nuspec -p:PackageVersion=$env:VERSION -o nupkgs
-          # if ($LastExitCode -ne 0)
-          # { 
-          #     throw "Pack failed";
-          # };
-
-          # Download NuGet CLI
           curl -L https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -o nuget.exe
-
-          # Pack the nuspec from repo root
-          mono nuget.exe pack $env:NUGET_NAME.nuspec -Symbols -SymbolPackageFormat snupkg -Version $env:VERSION -OutputDirectory nupkgs
+          ./nuget.exe pack $env:NUGET_NAME.nuspec -Symbols -SymbolPackageFormat snupkg -Version $env:VERSION -OutputDirectory nupkgs
           if ($LastExitCode -ne 0) { throw "Pack failed" }
 
 
