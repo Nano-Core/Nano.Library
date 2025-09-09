@@ -43,7 +43,7 @@ jobs:
               throw "Tests failed";
           };
 
-          dotnet pack .\$env:APP_NAME\$env:APP_NAME.csproj -c Release -p:NuspecBasePath=$PWD -p:NuspecFile=$env:NUGET_NAME.nuspec -p:PackageVersion=$env:VERSION -o nupkgs
+          dotnet pack -c Release -p:NuspecBasePath=$PWD -p:NuspecFile=$env:NUGET_NAME.nuspec -p:PackageVersion=$env:VERSION -o nupkgs
           if ($LastExitCode -ne 0)
           { 
               throw "Pack failed";
