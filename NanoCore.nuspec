@@ -9,7 +9,7 @@
 		<authors>Nano Contributors</authors>
 		<owners>Michael Vivet</owners>
 		<icon>lib\icon.png</icon>
-		<packageReadmeFile>README.md</packageReadmeFile>
+		<readme>README.md</readme>
 		<license type="file">lib/LICENSE</license>
 		<language>en-US</language>
 		<requireLicenseAcceptance>true</requireLicenseAcceptance>
