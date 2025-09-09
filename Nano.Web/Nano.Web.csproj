@@ -38,7 +38,7 @@
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.4" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="9.0.4" />
-		<PackageReference Include="Vivet.AspNetCore.RequestVirusScan" Version="9.0.0" />
+		<PackageReference Include="Vivet.AspNetCore.RequestVirusScan" Version="9.0.10" />
 	</ItemGroup>
 
 	<ItemGroup>

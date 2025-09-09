@@ -23,7 +23,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="AspNetCore.HealthChecks.Network" Version="9.0.0" />
-		<PackageReference Include="Vivet.AspNetCore.RequestTimeZone" Version="9.0.0" />
+		<PackageReference Include="Vivet.AspNetCore.RequestTimeZone" Version="9.0.10" />
 	</ItemGroup>
 
 	<ItemGroup>
