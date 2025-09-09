@@ -9,7 +9,7 @@ on:
 env:
   APP_NAME: Nano.Library
   NUGET_NAME: NanoCore
-  VERSION: 0.0.1
+  VERSION: 9.3.1
   NUGET_HOST: https://api.nuget.org/v3/index.json
   NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
 jobs:
