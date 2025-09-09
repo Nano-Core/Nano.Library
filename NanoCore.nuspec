@@ -9,7 +9,7 @@
 		<authors>Nano Contributors</authors>
 		<owners>Michael Vivet</owners>
 		<icon>lib\icon.png</icon>
-		<readme>lib\README.md</readme>
+		<packageReadmeFile>README.md</packageReadmeFile>
 		<license type="file">lib/LICENSE</license>
 		<language>en-US</language>
 		<requireLicenseAcceptance>true</requireLicenseAcceptance>
@@ -114,6 +114,6 @@
 		<file src="Nano.Web\bin\Release\net9.0\Nano.Web.xml" target="lib\net9.0\Nano.Web.xml" />
 		<file src="LICENSE" target="lib\LICENSE" />
 		<file src="icon.png" target="lib\icon.png" />
-		<file src="README.md" target="lib\README.md" />
+		<file src="README.md" target="README.md" />
 	</files>
 </package>
