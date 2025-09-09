@@ -44,9 +44,11 @@ jobs:
           };
 
           curl -L https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -o nuget.exe
-          ./nuget.exe pack $env:NUGET_NAME.nuspec -Symbols -SymbolPackageFormat snupkg -Version $env:VERSION -OutputDirectory nupkgs
-          if ($LastExitCode -ne 0) { throw "Pack failed" }
-
+          nuget.exe pack $env:NUGET_NAME.nuspec -Symbols -SymbolPackageFormat snupkg -Version $env:VERSION -OutputDirectory nupkgs
+          if ($LastExitCode -ne 0)
+          { 
+              throw "Pack failed";
+          };
 
       - name: Push NuGet
         if: github.ref == 'refs/heads/master'
