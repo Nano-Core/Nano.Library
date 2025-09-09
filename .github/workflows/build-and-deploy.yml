@@ -28,9 +28,6 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      - name: Install NuGet CLI
-        run: dotnet tool install --global NuGet.CommandLine
-
       - name: Build and Test
         shell: pwsh
         run: |
@@ -46,12 +43,12 @@ jobs:
               throw "Tests failed";
           };
 
-          nuget pack .\$env:NUGET_NAME.nuspec -Symbols -SymbolPackageFormat snupkg -Version $env:VERSION -OutputDirectory nupkgs
-          dotnet pack --output nupkgs /p:PackageVersion=$env:VERSION;
+          dotnet pack .\$env:APP_NAME\$env:APP_NAME.csproj -c Release -p:NuspecBasePath=$PWD -p:NuspecFile=$env:NUGET_NAME.nuspec -p:PackageVersion=$env:VERSION -o nupkgs
           if ($LastExitCode -ne 0)
           { 
               throw "Pack failed";
           };
+
 
       - name: Push NuGet
         if: github.ref == 'refs/heads/master'
