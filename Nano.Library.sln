@@ -7,7 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		appsettings.default.json = appsettings.default.json
-		appveyor.yml = appveyor.yml
 		icon.ico = icon.ico
 		icon.png = icon.png
 		LICENSE = LICENSE
@@ -32,8 +31,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nano.Logging", "Nano.Loggin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nano.Web", "Nano.Web\Nano.Web.csproj", "{91EC0382-C412-47C2-B0C7-5D4CD4CB46B1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Nano", ".tests\Tests.Nano\Tests.Nano.csproj", "{82F71560-90D7-4016-9CDB-3D8E89F15590}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nano.Config", "Nano.Config\Nano.Config.csproj", "{B7AA7F96-5F1B-423E-9B44-E8AFA6978DDC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nano.Security", "Nano.Security\Nano.Security.csproj", "{4A158BDD-CBCD-4007-8AB5-A21E188B11DC}"
@@ -43,6 +40,18 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nano.Repository", "Nano.Repository\Nano.Repository.csproj", "{EEF0B8EB-D97F-4FF5-8293-BC8EFEEC70C6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nano.Storage", "Nano.Storage\Nano.Storage.csproj", "{D0AD6A02-289F-4686-84F4-DB6121A5DE8A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		.github\FUNDING.yml = .github\FUNDING.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{D2A93021-08C0-4FEF-A5C7-A3A30253637A}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build-and-deploy.yml = .github\workflows\build-and-deploy.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Nano.Library", ".tests\Tests.Nano.Library\Tests.Nano.Library.csproj", "{F8CDE9D5-7786-9CD4-173A-20498276AE8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -74,10 +83,6 @@ Global
 		{91EC0382-C412-47C2-B0C7-5D4CD4CB46B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91EC0382-C412-47C2-B0C7-5D4CD4CB46B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91EC0382-C412-47C2-B0C7-5D4CD4CB46B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{82F71560-90D7-4016-9CDB-3D8E89F15590}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{82F71560-90D7-4016-9CDB-3D8E89F15590}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{82F71560-90D7-4016-9CDB-3D8E89F15590}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{82F71560-90D7-4016-9CDB-3D8E89F15590}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B7AA7F96-5F1B-423E-9B44-E8AFA6978DDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B7AA7F96-5F1B-423E-9B44-E8AFA6978DDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7AA7F96-5F1B-423E-9B44-E8AFA6978DDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -98,12 +103,17 @@ Global
 		{D0AD6A02-289F-4686-84F4-DB6121A5DE8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0AD6A02-289F-4686-84F4-DB6121A5DE8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0AD6A02-289F-4686-84F4-DB6121A5DE8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8CDE9D5-7786-9CD4-173A-20498276AE8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8CDE9D5-7786-9CD4-173A-20498276AE8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8CDE9D5-7786-9CD4-173A-20498276AE8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8CDE9D5-7786-9CD4-173A-20498276AE8A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{82F71560-90D7-4016-9CDB-3D8E89F15590} = {5882DF01-3C68-4B17-9D36-5AA83E5119EE}
+		{D2A93021-08C0-4FEF-A5C7-A3A30253637A} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{F8CDE9D5-7786-9CD4-173A-20498276AE8A} = {5882DF01-3C68-4B17-9D36-5AA83E5119EE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {88C60CFA-317B-4439-ACA0-4CBE16274F91}

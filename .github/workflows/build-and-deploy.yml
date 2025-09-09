@@ -1,0 +1,79 @@
+name: Build and Deploy
+on:
+  pull_request:
+    branches:
+      - master 
+  push:
+    branches:
+      - master 
+env:
+  APP_NAME: Nano.Library
+  NUGET_NAME: NanoCore
+  VERSION: 0.0.1
+  NUGET_HOST: https://api.nuget.org/v3/index.json
+  NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+    concurrency:
+      group: ${{ github.repository }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Install NuGet CLI
+        run: dotnet tool install --global NuGet.CommandLine
+
+      - name: Build and Test
+        shell: pwsh
+        run: |
+          dotnet build -c Release .\$env:APP_NAME.sln;
+          if ($LastExitCode -ne 0)
+          { 
+              throw "Build failed";
+          };
+
+          dotnet test .\.tests\Tests.$env:APP_NAME\Tests.$env:APP_NAME.csproj
+          if ($LastExitCode -ne 0)
+          { 
+              throw "Tests failed";
+          };
+
+          nuget pack .\$env:NUGET_NAME.nuspec -Symbols -SymbolPackageFormat snupkg -Version $env:VERSION -OutputDirectory nupkgs
+          dotnet pack --output nupkgs /p:PackageVersion=$env:VERSION;
+          if ($LastExitCode -ne 0)
+          { 
+              throw "Pack failed";
+          };
+
+      - name: Push NuGet
+        if: github.ref == 'refs/heads/master'
+        shell: pwsh
+        run: |
+          dotnet nuget push "nupkgs/*.nupkg" -s $env:NUGET_HOST -k $env:NUGET_APIKEY --skip-duplicate
+
+          if ($LastExitCode -ne 0)
+          { 
+              throw "Publish failed";
+          };
+
+      - name: GitHub Release
+        if: github.ref == 'refs/heads/master'
+        uses: ncipollo/release-action@v1
+        with:
+          tag: v${{ env.VERSION }}
+          name: "Release ${{ env.VERSION }}"
+          body: |
+            Version: ${{ env.VERSION }}
+            Commit: ${{ github.sha }}
+          artifacts: "nupkgs/*"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: false
+          prerelease: false
