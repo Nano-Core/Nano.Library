@@ -10,6 +10,7 @@ using Nano.Models.Eventing;
 using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Extensions;
 using Nano.Models.Helpers;
+using RabbitMQ.Client;
 
 namespace Nano.Eventing.Extensions;
 
@@ -120,17 +121,32 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
 
         if (!options.UseHealthCheck)
+        {
             return services;
+        }
 
         if (typeof(TProvider) == typeof(EasyNetQProvider))
         {
-            var connectionString = string.IsNullOrEmpty(options.Username) || string.IsNullOrEmpty(options.Password)
-                ? $"amqp://{options.Host}:{options.Port}{options.VHost}"
-                : $"amqp://{options.Username}:{options.Password}@{options.Host}:{options.Port}{options.VHost}";
-
             services
                 .AddHealthChecks()
-                .AddRabbitMQ(rabbitConnectionString: connectionString, failureStatus: options.UnhealthyStatus);
+                .AddRabbitMQ(x =>
+                {
+                    var eventingOptions = x
+                        .GetRequiredService<EventingOptions>();
+
+                    var connectionString = string.IsNullOrEmpty(eventingOptions.Username) || string.IsNullOrEmpty(eventingOptions.Password)
+                        ? $"amqp://{eventingOptions.Host}:{eventingOptions.Port}{eventingOptions.VHost}"
+                        : $"amqp://{eventingOptions.Username}:{eventingOptions.Password}@{eventingOptions.Host}:{eventingOptions.Port}{eventingOptions.VHost}";
+
+                    var factory = new ConnectionFactory
+                    {
+                        Uri = new Uri(connectionString),
+                        AutomaticRecoveryEnabled = true
+                    };
+
+                    return factory
+                        .CreateConnectionAsync();
+                }, "rabbitmq", options.UnhealthyStatus);
         }
 
         return services;
