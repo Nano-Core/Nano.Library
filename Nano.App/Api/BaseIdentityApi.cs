@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.Api.Requests.Identity;
+using Nano.Data;
 using Nano.Models;
 using Nano.Models.Data;
 using Nano.Models.Interfaces;
@@ -306,14 +307,14 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
     /// <param name="request">The <see cref="GetPasswordOptionsRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    public virtual Task<SecurityOptions.PasswordOptions> GetPasswordOptionsAsync(GetPasswordOptionsRequest request, CancellationToken cancellationToken = default)
+    public virtual Task<PasswordOptions> GetPasswordOptionsAsync(GetPasswordOptionsRequest request, CancellationToken cancellationToken = default)
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<GetPasswordOptionsRequest, SecurityOptions.PasswordOptions>(request, cancellationToken);
+        return this.InvokeAsync<GetPasswordOptionsRequest, PasswordOptions>(request, cancellationToken);
     }
 
     /// <summary>

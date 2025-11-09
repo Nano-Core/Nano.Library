@@ -15,7 +15,7 @@ public abstract class BaseGetExternalLoginDataRequest<TProvider> : BaseRequestPo
     /// <inheritdoc />
     protected BaseGetExternalLoginDataRequest()
     {
-        this.Controller = Constants.AUTH_CONTROLLER_ROUTE;
+        this.Controller = ControllerRoutes.AUTH_CONTROLLER_ROUTE;
     }
 
     /// <inheritdoc />

@@ -1,20 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Net.Http;
-using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nano.App.Api;
+using Nano.App.Interfaces;
 using Nano.App.Startup;
 using Nano.App.Startup.Tasks;
 using Nano.Config.Extensions;
+using Nano.Data;
 using Nano.Models.Const;
 using Nano.Models.Extensions;
 using Nano.Models.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace Nano.App.Extensions;
 
@@ -29,7 +31,8 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    internal static IServiceCollection AddApp(this IServiceCollection services, IConfiguration configuration)
+    internal static IServiceCollection AddApp<TApplication>(this IServiceCollection services, IConfiguration configuration) 
+        where TApplication : class, IApplication
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
@@ -38,7 +41,10 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(configuration));
 
         services
-            .AddConfigOptions<AppOptions>(configuration, AppOptions.SectionName, out _);
+            .AddSingleton<IApplication, TApplication>();
+
+        services
+            .AddConfigSection<AppOptions>(AppOptions.SectionName, out _);
 
         TypesHelper.GetAllTypes()
             .Where(x =>
@@ -55,6 +61,10 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IHttpContextAccessor, Microsoft.AspNetCore.Http.HttpContextAccessor>()
             .AddSingleton<StartupTaskContext>()
             .AddHostedService<InitializeApplicationStartupTask>();
+
+        services
+            .AddConfig(configuration)
+            .AddApis(configuration);
 
         return services;
     }

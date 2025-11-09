@@ -10,6 +10,6 @@ public class LogInExternalDirectRequest : BaseLogInExternalRequest<LogInExternal
     public LogInExternalDirectRequest()
     {
         this.Action = "login/external/direct";
-        this.Controller = Constants.AUTH_CONTROLLER_ROUTE;
+        this.Controller = ControllerRoutes.AUTH_CONTROLLER_ROUTE;
     }
 }

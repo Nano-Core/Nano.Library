@@ -10,6 +10,6 @@ public class LogInExternalFacebookRequest : BaseLogInExternalRequest<LogInExtern
     public LogInExternalFacebookRequest()
     {
         this.Action = "login/external/facebook";
-        this.Controller = Constants.AUTH_CONTROLLER_ROUTE;
+        this.Controller = ControllerRoutes.AUTH_CONTROLLER_ROUTE;
     }
 }

@@ -25,7 +25,6 @@ using Nano.Security.Models;
 using Newtonsoft.Json;
 using Vivet.AspNetCore.RequestTimeZone;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
-using StringWithQualityHeaderValue = System.Net.Http.Headers.StringWithQualityHeaderValue;
 
 namespace Nano.App.Api;
 
@@ -329,7 +328,7 @@ public abstract class BaseApi
             var body = request.GetBody();
             var content = body == null
                 ? string.Empty
-                : JsonConvert.SerializeObject(body, Globals.GetDefaultJsonSerializerSettings());
+                : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -349,7 +348,7 @@ public abstract class BaseApi
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
             var body = request.GetBody();
-            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, Globals.GetDefaultJsonSerializerSettings());
+            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -370,7 +369,7 @@ public abstract class BaseApi
             var body = request.GetBody();
             var content = body == null
                 ? string.Empty
-                : JsonConvert.SerializeObject(body, Globals.GetDefaultJsonSerializerSettings());
+                : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -392,7 +391,7 @@ public abstract class BaseApi
             var body = request.GetBody();
             var content = body == null
                 ? string.Empty
-                : JsonConvert.SerializeObject(body, Globals.GetDefaultJsonSerializerSettings());
+                : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -462,7 +461,7 @@ public abstract class BaseApi
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
             var body = request.GetBody();
-            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, Globals.GetDefaultJsonSerializerSettings());
+            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -482,7 +481,7 @@ public abstract class BaseApi
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
             var body = request.GetBody();
-            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, Globals.GetDefaultJsonSerializerSettings());
+            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
             httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
@@ -570,7 +569,7 @@ public abstract class BaseApi
         if (!string.IsNullOrEmpty(CultureInfo.CurrentCulture.Name))
         {
             httpRequest.Headers.AcceptLanguage
-                .Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
+                .Add(new System.Net.Http.Headers.StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
         }
 
         if (DateTimeInfo.TimeZone.Value != null)
@@ -698,7 +697,7 @@ public abstract class BaseApi
             return null;
         }
 
-        return JsonConvert.DeserializeObject<TResponse>(content, Globals.GetDefaultJsonSerializerSettings());
+        return JsonConvert.DeserializeObject<TResponse>(content, SerializerSettings.GetDefault());
     }
     private void SetAuthorizationHeader(string token)
     {
@@ -721,7 +720,7 @@ public abstract class BaseApi
 
         try
         {
-            var error = JsonConvert.DeserializeObject<Error>(content, Globals.GetDefaultJsonSerializerSettings());
+            var error = JsonConvert.DeserializeObject<Error>(content, SerializerSettings.GetDefault());
 
             if (error == null)
             {
@@ -758,7 +757,7 @@ public abstract class BaseApi
 
         try
         {
-            var error = JsonConvert.DeserializeObject<Error>(content, Globals.GetDefaultJsonSerializerSettings());
+            var error = JsonConvert.DeserializeObject<Error>(content, SerializerSettings.GetDefault());
 
             if (error == null)
             {

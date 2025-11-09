@@ -10,6 +10,6 @@ public class LogInExternalGoogleRequest : BaseLogInExternalRequest<LogInExternal
     public LogInExternalGoogleRequest()
     {
         this.Action = "login/external/google";
-        this.Controller = Constants.AUTH_CONTROLLER_ROUTE;
+        this.Controller = ControllerRoutes.AUTH_CONTROLLER_ROUTE;
     }
 }

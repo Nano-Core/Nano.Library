@@ -9,7 +9,7 @@ public class LogOutRequest : BaseRequestPost
     public LogOutRequest()
     {
         this.Action = "logout";
-        this.Controller = Constants.AUTH_CONTROLLER_ROUTE;
+        this.Controller = ControllerRoutes.AUTH_CONTROLLER_ROUTE;
     }
 
     /// <inheritdoc />

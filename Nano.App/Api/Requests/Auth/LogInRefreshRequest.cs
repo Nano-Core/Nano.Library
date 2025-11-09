@@ -15,7 +15,7 @@ public class LogInRefreshRequest : BaseRequestPost
     public LogInRefreshRequest()
     {
         this.Action = "login/refresh";
-        this.Controller = Constants.AUTH_CONTROLLER_ROUTE;
+        this.Controller = ControllerRoutes.AUTH_CONTROLLER_ROUTE;
     }
 
     /// <inheritdoc />

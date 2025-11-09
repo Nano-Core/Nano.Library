@@ -9,6 +9,6 @@ public class GetExternalSchemesRequest : BaseRequestGet
     public GetExternalSchemesRequest()
     {
         this.Action = "external/schemes";
-        this.Controller = Constants.AUTH_CONTROLLER_ROUTE;
+        this.Controller = ControllerRoutes.AUTH_CONTROLLER_ROUTE;
     }
 }

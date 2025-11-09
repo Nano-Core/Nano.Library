@@ -1,5 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Nano.Web")]
-[assembly: InternalsVisibleTo("Nano.Console")]
+[assembly: InternalsVisibleTo("Nano.App.Web")]
+[assembly: InternalsVisibleTo("Nano.App.Console")]
 [assembly: InternalsVisibleTo("Tests.Nano")]

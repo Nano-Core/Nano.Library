@@ -4,16 +4,18 @@ using Nano.Data;
 
 namespace Nano.App.Startup.Tasks;
 
+// BUG: DATA: InitializeApplicationStartupTask (Move to Data)
+
 /// <inheritdoc />
 public class InitializeApplicationStartupTask : BaseStartupTask
 {
-    private readonly DefaultDbContext dbContext;
+    //private readonly DefaultDbContext dbContext;
 
     /// <inheritdoc />
-    public InitializeApplicationStartupTask(StartupTaskContext startupTaskContext, DefaultDbContext dbContext = null)
+    public InitializeApplicationStartupTask(StartupTaskContext startupTaskContext/*, DefaultDbContext dbContext = null*/)
         : base(startupTaskContext)
     {
-        this.dbContext = dbContext;
+        //this.dbContext = dbContext;
     }
 
     /// <inheritdoc />
@@ -22,17 +24,18 @@ public class InitializeApplicationStartupTask : BaseStartupTask
         this.Context
             .Increment();
 
-        if (this.dbContext != null)
-        {
-            await this.dbContext
-                .EnsureCreatedAsync(cancellationToken);
+        await Task.CompletedTask;
+        //if (this.dbContext != null)
+        //{
+        //    await this.dbContext
+        //        .EnsureCreatedAsync(cancellationToken);
 
-            await this.dbContext
-                .EnsureMigratedAsync(cancellationToken);
+        //    await this.dbContext
+        //        .EnsureMigratedAsync(cancellationToken);
 
-            await this.dbContext
-                .EnsureIdentityAsync(cancellationToken);
-        }
+        //    await this.dbContext
+        //        .EnsureIdentityAsync(cancellationToken);
+        //}
 
         this.Context
             .Decrement();

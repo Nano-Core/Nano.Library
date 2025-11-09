@@ -15,7 +15,7 @@ public class LogInRequest : BaseRequestPost
     public LogInRequest()
     {
         this.Action = "login";
-        this.Controller = Constants.AUTH_CONTROLLER_ROUTE;
+        this.Controller = ControllerRoutes.AUTH_CONTROLLER_ROUTE;
     }
 
     /// <inheritdoc />

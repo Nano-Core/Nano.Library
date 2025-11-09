@@ -10,6 +10,6 @@ public class LogInExternalMicrosoftRequest : BaseLogInExternalRequest<LogInExter
     public LogInExternalMicrosoftRequest()
     {
         this.Action = "login/external/microsoft";
-        this.Controller = Constants.AUTH_CONTROLLER_ROUTE;
+        this.Controller = ControllerRoutes.AUTH_CONTROLLER_ROUTE;
     }
 }
