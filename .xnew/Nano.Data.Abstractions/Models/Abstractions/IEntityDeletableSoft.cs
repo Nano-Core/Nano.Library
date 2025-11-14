@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Nano.Models.Interfaces;
+namespace Nano.Data.Abstractions.Models.Abstractions;
 
 /// <summary>
 /// Entity Deletable.

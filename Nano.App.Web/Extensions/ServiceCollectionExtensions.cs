@@ -1,3 +1,39 @@
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
+using DynamicExpression.Extensions;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Nano.App;
+using Nano.Config;
+using Nano.Config.Extensions;
+using Nano.Data;
+using Nano.Data.Extensions;
+using Nano.Models;
+using Nano.Models.Const;
+using Nano.Models.Extensions;
+using Nano.Models.Helpers;
+using Nano.Security;
+using Nano.Web.Controllers;
+using Nano.Web.Hosting.Authentication;
+using Nano.Web.Hosting.Authentication.Const;
+using Nano.Web.Hosting.Conventions;
+using Nano.Web.Hosting.Documentation.Filters.Document;
+using Nano.Web.Hosting.Documentation.Filters.Operation;
+using Nano.Web.Hosting.Documentation.Filters.Schema;
+using Nano.Web.Hosting.HealthChecks;
+using Nano.Web.Hosting.Middleware;
+using Nano.Web.Hosting.Serialization.Json.Const;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,44 +43,11 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.XPath;
-using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Nano.App;
-using Nano.Config.Extensions;
-using Nano.Data;
-using Nano.Models.Extensions;
-using Nano.Models.Helpers;
-using Nano.Security;
-using Nano.Web.Controllers;
-using Nano.Web.Hosting.Conventions;
-using Nano.Web.Hosting.HealthChecks;
-using Nano.Web.Hosting.Middleware;
+using Nano.Data.Abstractions.Config;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
-using DynamicExpression.Extensions;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Nano.Config;
-using Nano.Models;
-using Nano.Models.Const;
-using Nano.Web.Hosting.Authentication;
-using Nano.Web.Hosting.Authentication.Const;
-using Nano.Web.Hosting.Documentation.Filters.Document;
-using Nano.Web.Hosting.Documentation.Filters.Operation;
-using Nano.Web.Hosting.Documentation.Filters.Schema;
-using Nano.Web.Hosting.Serialization.Json.Const;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
+using AuthenticationOptions = Nano.Security.AuthenticationOptions;
 
 namespace Nano.Web.Extensions;
 
@@ -280,7 +283,7 @@ public static class ServiceCollectionExtensions
     //            x.FallbackPolicy = null;
     //            x.InvokeHandlersAfterFailure = false;
 
-    //            x.AddPolicy(AuthenticationPolicyDefaults.POLICY, y => y
+    //            x.AddPolicy(AuthenticationPolicies.POLICY, y => y
     //                .AddAuthenticationSchemes(authenticationSchemes.ToArray())
     //                .RequireAuthenticatedUser());
     //        });
@@ -521,7 +524,7 @@ public static class ServiceCollectionExtensions
 
                     var openApiSecurityRequirement = new OpenApiSecurityRequirement();
 
-                    if (securityOptions.Authentication.Jwt.IsEnabled)
+                    if (securityOptions.Authentication.Jwt != null)
                     {
                         var jwtSecurityScheme = new OpenApiSecurityScheme
                         {
@@ -653,4 +656,68 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    private static IServiceCollection AddIdentityAuthenticationAndAuthorization<TIdentity>(this IServiceCollection services, AuthenticationOptions options)
+    where TIdentity : IEquatable<TIdentity>
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        if (options == null)
+            throw new ArgumentNullException(nameof(options));
+
+        if (options.Jwt == null && options.ApiKey == null)
+        {
+            return services;
+        }
+
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap
+            .Clear();
+
+        var authenticationSchemes = new List<string>();
+
+        if (options.Jwt != null)
+        {
+            authenticationSchemes
+                .Add(JwtBearerDefaults.AuthenticationScheme);
+        }
+
+        if (options.ApiKey != null)
+        {
+            authenticationSchemes
+                .Add(ApiKeyDefaults.AuthenticationScheme);
+        }
+
+        services
+            .AddAuthorization(x =>
+            {
+                x.FallbackPolicy = null;
+                x.InvokeHandlersAfterFailure = false;
+
+                x.AddPolicy(AuthenticationPolicies.POLICY, y => y
+                    .AddAuthenticationSchemes(authenticationSchemes.ToArray())
+                    .RequireAuthenticatedUser());
+            });
+
+        var defaultAuthenticationScheme = authenticationSchemes
+            .FirstOrDefault();
+
+        var authenticationBuilder = services
+            .AddAuthentication(x =>
+            {
+                x.DefaultScheme = defaultAuthenticationScheme;
+                x.DefaultChallengeScheme = defaultAuthenticationScheme;
+                x.DefaultAuthenticateScheme = defaultAuthenticationScheme;
+                x.DefaultForbidScheme = defaultAuthenticationScheme;
+                x.DefaultSignInScheme = defaultAuthenticationScheme;
+                x.DefaultSignOutScheme = defaultAuthenticationScheme;
+            });
+
+        authenticationBuilder
+            .AddJwtAuthentication(options.Jwt)
+            .AddApiKeyAuthentication<TIdentity>(options.ApiKey);
+
+        return services;
+    }
+
 }

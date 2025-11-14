@@ -1,6 +1,6 @@
 ﻿using System;
-using Nano.Models.Interfaces;
-using Nano.Security.Models;
+using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.Api.Requests.Identity;
 

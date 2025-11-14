@@ -2,7 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Nano.Models.Data;
+using Nano.Data.Abstractions.Models;
 
 namespace Nano.Data.Models.Mappings;
 

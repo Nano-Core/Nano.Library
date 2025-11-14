@@ -1,3 +1,5 @@
+using Nano.Data.Abstractions.Config;
+
 namespace Nano.Security;
 
 /// <summary>
@@ -5,11 +7,6 @@ namespace Nano.Security;
 /// </summary>
 public class JwtAuthenticationOptions
 {
-    /// <summary>
-    /// Is Enabled.
-    /// </summary>
-    public virtual bool IsEnabled { get; set; } = true;
-
     /// <summary>
     /// Issuer.
     /// </summary>
@@ -20,18 +17,17 @@ public class JwtAuthenticationOptions
     /// </summary>
     public virtual string Audience { get; set; } = "audience";
 
-    // BUG: DATA: Default values is not valid, so make null and check it
     /// <summary>
     /// Public Key.
     /// Base64 encoded.
     /// </summary>
-    public virtual string PublicKey { get; set; } = "publicsecretkey";
+    public virtual string PublicKey { get; set; }
 
     /// <summary>
     /// Private Key.
     /// Base64 encoded.
     /// </summary>
-    public virtual string PrivateKey { get; set; } = "veryprivatesecretkey";
+    public virtual string PrivateKey { get; set; }
 
     /// <summary>
     /// Expiration In Minutes.

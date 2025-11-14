@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nano.Data;
-using Nano.Eventing.Interfaces;
-using Nano.Models.Eventing;
+using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Eventing.Abstractions;
+using Nano.Eventing.Abstractions.Models;
 using Nano.Models.Extensions;
 using Nano.Models.Helpers;
-using Nano.Models.Interfaces;
 
 namespace Nano.Eventing.Handlers;
 

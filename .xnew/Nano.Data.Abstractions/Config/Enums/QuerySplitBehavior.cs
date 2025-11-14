@@ -1,4 +1,4 @@
-namespace Nano.Data;
+namespace Nano.Data.Abstractions.Config.Enums;
 
 /// <summary>
 /// Indicates how the related collections in a query should be loaded from database.

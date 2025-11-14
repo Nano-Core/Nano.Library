@@ -23,6 +23,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="AspNetCore.HealthChecks.Network" Version="9.0.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
 		<PackageReference Include="Vivet.AspNetCore.RequestTimeZone" Version="9.0.11" />
 	</ItemGroup>
 

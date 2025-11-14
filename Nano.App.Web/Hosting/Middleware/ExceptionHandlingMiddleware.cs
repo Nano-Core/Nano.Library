@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Logging;
+using Nano.Data.Abstractions.Annotations;
 using Nano.Models;
 using Nano.Models.Attributes;
 using Nano.Models.Exceptions;

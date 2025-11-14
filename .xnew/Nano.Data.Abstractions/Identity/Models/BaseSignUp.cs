@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Nano.Security.Models;
+namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
 /// Base Sign-Up (abstract).

@@ -4,16 +4,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure.Storage.Files.Shares;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Nano.Storage.Abstractions.Config;
 
-namespace Nano.Storage.Providers.Azure.HealthChecks;
+namespace Nano.Storage.Azure.HealthChecks;
 
 /// <summary>
 /// Azure File-Share Storage Health-Check.
 /// </summary>
 public class AzureFileshareStorageHealthCheck : IHealthCheck
 {
-    private readonly string shareName;
-    private readonly string connectionString;
+    private readonly StorageOptions options;
     private readonly ShareClientOptions clientOptions;
     
     private static readonly ConcurrentDictionary<string, ShareClient> clientsHolder = new();
@@ -21,13 +21,11 @@ public class AzureFileshareStorageHealthCheck : IHealthCheck
     /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="connectionString">The storage connection-string.</param>
-    /// <param name="shareName">The share name.</param>
+    /// <param name="options">The <see cref="StorageOptions"/>.</param>
     /// <param name="clientOptions">the <see cref="ShareClientOptions"/>.</param>
-    public AzureFileshareStorageHealthCheck(string connectionString, string shareName = default, ShareClientOptions clientOptions = null)
+    public AzureFileshareStorageHealthCheck(StorageOptions options, ShareClientOptions clientOptions = null)
     {
-        this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
-        this.shareName = shareName;
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
         this.clientOptions = clientOptions;
     }
 
@@ -45,11 +43,13 @@ public class AzureFileshareStorageHealthCheck : IHealthCheck
         try
         {
             var client = this.GetClient();
-            var shareExists = await client.ExistsAsync(cancellationToken);
+
+            var shareExists = await client
+                .ExistsAsync(cancellationToken);
 
             return shareExists
                 ? HealthCheckResult.Healthy()
-                : new HealthCheckResult(context.Registration.FailureStatus, $"Storage '{shareName}' not found");
+                : new HealthCheckResult(context.Registration.FailureStatus, $"Storage '{client.Name}' not found");
         }
         catch (Exception ex)
         {
@@ -57,19 +57,21 @@ public class AzureFileshareStorageHealthCheck : IHealthCheck
         }
     }
 
+
     private ShareClient GetClient()
     {
-        var exists = clientsHolder.TryGetValue(this.connectionString, out var client);
+        var exists = clientsHolder
+            .TryGetValue(this.options.Connectionstring, out var client);
 
         if (exists)
         {
             return client;
         }
 
-        client = new ShareClient(this.connectionString, this.shareName, this.clientOptions);
+        client = new ShareClient(this.options.Connectionstring, this.options.ShareName, this.clientOptions);
 
         clientsHolder
-            .TryAdd(this.connectionString, client);
+            .TryAdd(this.options.Connectionstring, client);
 
         return client;
     }

@@ -1,6 +1,6 @@
 ﻿using Nano.Eventing;
 
-namespace Nano.Storage;
+namespace Nano.Storage.Abstractions.Config;
 
 /// <summary>
 /// Storage Options
@@ -38,9 +38,9 @@ public class StorageOptions
     public virtual HealthStatusLevel UnhealthyStatus { get; set; } = HealthStatusLevel.Unhealthy;
 
     /// <summary>
-    /// Connection String.
+    /// Connectionstring.
     /// </summary>
-    public virtual string ConnectionString => this.AccountName == null || this.AccountKey == null 
+    public virtual string Connectionstring => this.AccountName == null || this.AccountKey == null 
         ? null 
         : $"DefaultEndpointsProtocol=https;AccountName={this.AccountName};AccountKey={this.AccountKey};EndpointSuffix=core.windows.net";
 }

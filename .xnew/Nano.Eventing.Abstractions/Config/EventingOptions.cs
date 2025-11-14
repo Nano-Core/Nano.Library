@@ -1,4 +1,4 @@
-namespace Nano.Eventing;
+namespace Nano.Eventing.Abstractions.Config;
 
 /// <summary>
 /// Eventing Options.

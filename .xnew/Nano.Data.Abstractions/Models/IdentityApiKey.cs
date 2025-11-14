@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
-namespace Nano.Models.Data;
+namespace Nano.Data.Abstractions.Models;
 
 /// <summary>
 /// Identity Api Key.

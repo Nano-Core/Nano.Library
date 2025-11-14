@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.Data;
+namespace Nano.Data.Abstractions.Config;
 
 /// <summary>
 /// Lockout Options (nested class).

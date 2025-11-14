@@ -1,7 +1,7 @@
 using System;
-using Nano.Data;
+using Nano.Data.Abstractions.Config.Enums;
 
-namespace Nano.Models.Attributes;
+namespace Nano.Data.Abstractions.Annotations;
 
 /// <summary>
 /// Include Attribute.
@@ -10,16 +10,16 @@ namespace Nano.Models.Attributes;
 public class IncludeAttribute : Attribute
 {
     /// <summary>
-    /// Query Splitting Behavior.
+    /// Query Split Behavior.
     /// </summary>
-    public QuerySplitBehavior QuerySplittingBehavior { get; set; }
+    public QuerySplitBehavior QuerySplitBehavior { get; set; }
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="querySplittingBehavior">The <see cref="QuerySplittingBehavior"/>.</param>
-    public IncludeAttribute(QuerySplitBehavior querySplittingBehavior = QuerySplitBehavior.SingleQuery)
+    /// <param name="querySplitBehavior">The <see cref="Config.Enums.QuerySplitBehavior"/>.</param>
+    public IncludeAttribute(QuerySplitBehavior querySplitBehavior = QuerySplitBehavior.SingleQuery)
     {
-        this.QuerySplittingBehavior = querySplittingBehavior;
+        this.QuerySplitBehavior = querySplitBehavior;
     }
 }

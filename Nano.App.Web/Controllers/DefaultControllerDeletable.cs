@@ -1,10 +1,10 @@
 using System;
 using DynamicExpression.Interfaces;
 using Microsoft.Extensions.Logging;
+using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing;
-using Nano.Models.Eventing.Interfaces;
-using Nano.Models.Interfaces;
-using Nano.Repository.Interfaces;
+using Nano.Eventing.Abstractions;
 
 namespace Nano.Web.Controllers;
 

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Nano.Security.Models;
+namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
 /// Log In Refresh.

@@ -1,9 +1,9 @@
 namespace Nano.Security;
 
 /// <summary>
-/// Api Key Options.
+/// Api Authentication Key Options.
 /// </summary>
-public class ApiKeyOptions
+public class ApiKeyAuthenticationOptions
 {
     /// <summary>
     /// Secret.

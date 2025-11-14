@@ -1,6 +1,7 @@
+using Nano.Logging.Abstractions.Enums;
 using Serilog.Events;
 
-namespace Nano.Logging.Providers.Serilog.Extensions;
+namespace Nano.Logging.Serilog.Extensions;
 
 /// <summary>
 /// Serilog Log-Level Extensions.

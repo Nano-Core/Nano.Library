@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Nano.Data.Abstractions.Identity;
 using Nano.Security;
 using Nano.Web.Hosting.Authentication.Const;
 
@@ -15,17 +16,22 @@ namespace Nano.Web.Hosting.Authentication;
 /// <summary>
 /// Api Key Authentication Handler.
 /// </summary>
-public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+public class ApiKeyAuthenticationHandler<TIdentity> : AuthenticationHandler<AuthenticationSchemeOptions>
+    where TIdentity : IEquatable<TIdentity>
 {
     private const string API_KEY_HEADER_NAME = "x-api-key";
 
-    private readonly IIdentityManager<Guid> identityManager; // BUG: NOW: IIdentityManager<Guid>, fix
+    private readonly IdentityOptions identityOptions;
+    private readonly IIdentityRepository<TIdentity> identityManager;
+    private readonly IIdentityAuthRepository<TIdentity> identityManagerAuth;
 
     /// <inheritdoc />
-    public ApiKeyAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, IIdentityManager<Guid> identityManager)
+    public ApiKeyAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, IIdentityRepository<TIdentity> identityManager, IdentityOptions identityOptions, IIdentityAuthRepository<TIdentity> identityManagerAuth)
         : base(options, logger, encoder)
     {
         this.identityManager = identityManager ?? throw new ArgumentNullException(nameof(identityManager));
+        this.identityOptions = identityOptions;
+        this.identityManagerAuth = identityManagerAuth;
     }
 
     /// <inheritdoc />
@@ -48,7 +54,7 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationS
         }
 
         var identityApiKey = await this.identityManager
-            .ValidateApiKeyAsync(apiKey);
+            .ValidateApiKeyAsync(apiKey, this.identityOptions.Authentication.ApiKey.Secret);
 
         if (identityApiKey == null)
         {
@@ -71,10 +77,10 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationS
             { ApiKeyClaimTypes.ApiKeyName, identityApiKey.Name }
         };
 
-        var claims = await this.identityManager
+        var claims = await this.identityManagerAuth
             .GetAllClaims(identityUser, transientClaims: transientClaims);
 
-        var identity = new ClaimsIdentity(claims, nameof(ApiKeyAuthenticationHandler));
+        var identity = new ClaimsIdentity(claims, nameof(ApiKeyAuthenticationHandler<TIdentity>));
         var ticket = new AuthenticationTicket(new ClaimsPrincipal(identity), this.Scheme.Name);
 
         return AuthenticateResult.Success(ticket);

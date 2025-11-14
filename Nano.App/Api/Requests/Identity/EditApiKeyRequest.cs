@@ -1,7 +1,7 @@
-﻿using Nano.Security.Models;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Nano.App.Api.Requests.Attributes;
+using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.App.Api.Requests.Identity;
 

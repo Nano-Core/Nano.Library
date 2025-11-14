@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.Models.Attributes;
+namespace Nano.Data.Abstractions.Annotations;
 
 /// <summary>
 /// Ux Exception Attribute.

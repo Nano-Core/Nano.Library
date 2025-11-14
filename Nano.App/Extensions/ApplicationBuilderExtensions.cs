@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.Models.Eventing;
-using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Helpers;
 using System;
 using System.Linq;
 using System.Threading;
-using Nano.Eventing.Interfaces;
+using Nano.Eventing.Abstractions;
+using Nano.Eventing.Abstractions.Models;
 using Nano.Models.Extensions;
 
 namespace Nano.App.Extensions;

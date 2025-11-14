@@ -1,4 +1,4 @@
-namespace Nano.Data;
+namespace Nano.Data.Abstractions.Config;
 
 /// <summary>
 /// Sign-In Options (nested class).

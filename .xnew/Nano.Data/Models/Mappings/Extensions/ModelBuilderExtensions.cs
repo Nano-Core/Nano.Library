@@ -3,10 +3,10 @@ using System.Linq;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Const;
-using Nano.Models.Data;
 using Nano.Models.Extensions;
-using Nano.Models.Interfaces;
 
 namespace Nano.Data.Models.Mappings.Extensions;
 

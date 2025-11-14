@@ -1,4 +1,4 @@
-﻿namespace Nano.Storage.Interfaces;
+﻿namespace Nano.Storage.Abstractions;
 
 /// <summary>
 /// Path Provider interface.

@@ -1,4 +1,4 @@
-namespace Nano.Security.Models;
+namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
 /// External Login Token Data.

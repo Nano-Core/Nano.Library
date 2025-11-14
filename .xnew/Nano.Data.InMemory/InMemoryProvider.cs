@@ -1,18 +1,16 @@
 using System;
 using Microsoft.EntityFrameworkCore;
+using Nano.Data.Abstractions.Config;
 using Nano.Data.Interfaces;
 
-namespace Nano.Data.Providers.Memory;
+namespace Nano.Data.InMemory;
 
 /// <summary>
 /// In Memory Data Provider.
 /// </summary>
 public class InMemoryProvider : IDataProvider
 {
-    /// <summary>
-    /// Options.
-    /// </summary>
-    protected virtual DataOptions Options { get; }
+    private readonly DataOptions options;
 
     /// <summary>
     /// Constructor.
@@ -20,7 +18,7 @@ public class InMemoryProvider : IDataProvider
     /// <param name="options">The <see cref="DataOptions"/>.</param>
     public InMemoryProvider(DataOptions options)
     {
-        this.Options = options ?? throw new ArgumentNullException(nameof(options));
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
     /// <inheritdoc />
@@ -29,14 +27,12 @@ public class InMemoryProvider : IDataProvider
         if (builder == null)
             throw new ArgumentNullException(nameof(builder));
 
-        var connectionString = this.Options.ConnectionString;
-
-        if (connectionString == null)
+        if (this.options.ConnectionString == null)
         {
             return;
         }
 
         builder
-            .UseInMemoryDatabase(connectionString);
+            .UseInMemoryDatabase(this.options.ConnectionString);
     }
 }

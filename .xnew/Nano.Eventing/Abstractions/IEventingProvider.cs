@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using Nano.Models.Eventing.Interfaces;
 
-namespace Nano.Eventing.Interfaces;
+namespace Nano.Eventing.Abstractions;
 
 /// <summary>
 /// Eventing Provider interface.

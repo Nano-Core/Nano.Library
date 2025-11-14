@@ -1,8 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nano.Config.Extensions;
-using Nano.Logging.Interfaces;
 using System;
+using Nano.Logging.Abstractions;
+using Nano.Logging.Abstractions.Config;
 
 namespace Nano.Logging.Extensions;
 
@@ -28,7 +29,7 @@ public static class ServiceCollectionExtensions
 
         if (options == null)
         {
-            return services;
+            throw new NullReferenceException(nameof(options));
         }
 
         services

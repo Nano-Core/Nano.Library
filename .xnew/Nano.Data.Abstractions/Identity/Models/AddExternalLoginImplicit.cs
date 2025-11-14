@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nano.Security.Models;
+namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <inheritdoc />
 public class AddExternalLoginImplicit<TProvider, TIdentity> : BaseAddExternalLogin<TProvider, TIdentity>

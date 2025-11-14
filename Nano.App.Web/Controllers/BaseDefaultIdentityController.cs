@@ -1,11 +1,12 @@
 using System;
 using DynamicExpression.Interfaces;
 using Microsoft.Extensions.Logging;
+using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Identity;
+using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing;
-using Nano.Models.Data;
-using Nano.Models.Eventing.Interfaces;
-using Nano.Models.Interfaces;
-using Nano.Repository.Interfaces;
+using Nano.Eventing.Abstractions;
 using Nano.Security;
 
 namespace Nano.Web.Controllers;
@@ -16,13 +17,13 @@ public abstract class BaseDefaultIdentityController<TEntity, TCriteria> : BaseId
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected BaseDefaultIdentityController(ILogger logger, IRepository repository, IIdentityManager<Guid> baseIdentityManager)
+    protected BaseDefaultIdentityController(ILogger logger, IRepository repository, IIdentityRepository<Guid> baseIdentityManager)
         : this(logger, repository, null, baseIdentityManager)
     {
     }
 
     /// <inheritdoc />
-    protected BaseDefaultIdentityController(ILogger logger, IRepository repository, IEventing eventing, IIdentityManager<Guid> baseIdentityManager)
+    protected BaseDefaultIdentityController(ILogger logger, IRepository repository, IEventing eventing, IIdentityRepository<Guid> baseIdentityManager)
         : base(logger, repository, eventing, baseIdentityManager)
     {
     }

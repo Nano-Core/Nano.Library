@@ -27,11 +27,6 @@ public static class ConfigManager
     public static Version Version { get; set; }
 
     /// <summary>
-    /// Has Db-Context.
-    /// </summary>
-    public static bool HasDbContext { get; set; } // BUG: Get rid of this. We can just check UserManager / dbContext != null
-
-    /// <summary>
     /// The configuration, set when <see cref="BuildConfiguration"/> is invoked.
     /// </summary>
     internal static IConfiguration Configuration { get; set; }

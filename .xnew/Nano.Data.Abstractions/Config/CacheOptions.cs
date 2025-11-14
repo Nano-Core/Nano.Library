@@ -1,9 +1,11 @@
-namespace Nano.Data;
+using Nano.Data.Abstractions.Config.Enums;
+
+namespace Nano.Data.Abstractions.Config;
 
 /// <summary>
 /// Memory Cache.
 /// </summary>
-public class MemoryCacheOptions
+public class CacheOptions
 {
     /// <summary>
     /// Max Entries.

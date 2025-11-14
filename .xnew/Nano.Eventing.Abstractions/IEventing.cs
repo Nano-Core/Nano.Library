@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Nano.Models.Eventing.Interfaces;
+namespace Nano.Eventing.Abstractions;
 
 /// <summary>
 /// Eventing interface.

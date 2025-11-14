@@ -1,7 +1,7 @@
 ﻿using System;
-using Nano.Models.Interfaces;
+using Nano.Data.Abstractions.Models.Abstractions;
 
-namespace Nano.Security.Models;
+namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <inheritdoc />
 public class SignUpExternalMicrosoft<TUser> : SignUpExternalAuthCode<ExternalLoginProviderMicrosoft, TUser>

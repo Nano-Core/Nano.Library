@@ -10,20 +10,23 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Data;
+using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Config;
+using Nano.Data.Abstractions.Identity;
+using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing;
+using Nano.Eventing.Abstractions;
 using Nano.Models;
 using Nano.Models.Const;
-using Nano.Models.Data;
-using Nano.Models.Eventing.Interfaces;
-using Nano.Models.Interfaces;
-using Nano.Repository.Interfaces;
 using Nano.Security;
-using Nano.Security.Const;
-using Nano.Security.Models;
 
 namespace Nano.Web.Controllers;
 
 // BUG: We should hide/remove controller actions that are not configured (jwt, api-key)
+// possibly return 404 in middleware
 
 /// <inheritdoc />
 public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria>
@@ -33,18 +36,28 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <summary>
+    /// 
+    /// </summary>
+    protected virtual IdentityOptions Options { get; set; }
+
+    /// <summary>
     /// Identity Manager.
     /// </summary>
-    protected virtual IIdentityManager<TIdentity> IdentityManager { get; }
+    protected virtual IIdentityRepository<TIdentity> IdentityManager { get; }
+
+    /// <summary>
+    /// Identity Manager.
+    /// </summary>
+    protected virtual IIdentityAuthRepository<TIdentity> IdentityManagerAuth { get; }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger logger, TRepository repository, IIdentityManager<TIdentity> baseIdentityManager)
+    protected BaseIdentityController(ILogger logger, TRepository repository, IIdentityRepository<TIdentity> baseIdentityManager)
         : this(logger, repository, null, baseIdentityManager)
     {
     }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, IIdentityManager<TIdentity> baseIdentityManager)
+    protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, IIdentityRepository<TIdentity> baseIdentityManager)
         : base(logger, repository, eventing)
     {
         this.IdentityManager = baseIdentityManager ?? throw new ArgumentNullException(nameof(baseIdentityManager));
@@ -169,8 +182,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpExternalGoogleAsync([FromBody][Required] SignUpExternalGoogle<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
     {
+        var externalProviderLogInData = await this.IdentityManagerAuth
+            .GetExternalProviderLogInData(signUpExternal.Provider, cancellationToken);
+
         var identityUser = await this.IdentityManager
-            .SignUpExternalAsync(signUpExternal, cancellationToken);
+            .SignUpExternalAsync(externalProviderLogInData, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
 
         if (identityUser == null)
         {
@@ -207,8 +223,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpExternalFacebookAsync([FromBody][Required] SignUpExternalFacebook<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
     {
+        var externalProviderLogInData = await this.IdentityManagerAuth
+            .GetExternalProviderLogInData(signUpExternal.Provider, cancellationToken);
+
         var identityUser = await this.IdentityManager
-            .SignUpExternalAsync(signUpExternal, cancellationToken);
+            .SignUpExternalAsync(externalProviderLogInData, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
 
         if (identityUser == null)
         {
@@ -245,8 +264,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpExternalMicrosoftAsync([FromBody][Required] SignUpExternalMicrosoft<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
     {
+        var externalProviderLogInData = await this.IdentityManagerAuth
+            .GetExternalProviderLogInData(signUpExternal.Provider, cancellationToken);
+
         var identityUser = await this.IdentityManager
-            .SignUpExternalAsync(signUpExternal, cancellationToken);
+            .SignUpExternalAsync(externalProviderLogInData, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
 
         if (identityUser == null)
         {
@@ -817,8 +839,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> AddExternalLoginGoogleAsync([FromBody][Required] AddExternalLoginGoogle<TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
     {
+        var externalProviderLogInData = await this.IdentityManagerAuth
+            .GetExternalProviderLogInData(addExternalLogin.Provider, cancellationToken);
+
         var externalLogin = await this.IdentityManager
-            .AddExternalLoginAsync(addExternalLogin, cancellationToken);
+            .AddExternalLoginAsync<ExternalLoginProviderGoogle>(addExternalLogin.UserId, externalProviderLogInData, cancellationToken);
 
         return this.Ok(externalLogin);
     }
@@ -845,8 +870,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> AddExternalLoginFacebookAsync([FromBody][Required] AddExternalLoginFacebook<TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
     {
+        var externalProviderLogInData = await this.IdentityManagerAuth
+            .GetExternalProviderLogInData(addExternalLogin.Provider, cancellationToken);
+
         var externalLogin = await this.IdentityManager
-            .AddExternalLoginAsync(addExternalLogin, cancellationToken);
+            .AddExternalLoginAsync<ExternalLoginProviderFacebook>(addExternalLogin.UserId, externalProviderLogInData, cancellationToken);
 
         return this.Ok(externalLogin);
     }
@@ -873,8 +901,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> AddExternalLoginMicrosoftAsync([FromBody][Required] AddExternalLoginMicrosoft<TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
     {
+        var externalProviderLogInData = await this.IdentityManagerAuth
+            .GetExternalProviderLogInData(addExternalLogin.Provider, cancellationToken);
+
         var externalLogin = await this.IdentityManager
-            .AddExternalLoginAsync(addExternalLogin, cancellationToken);
+            .AddExternalLoginAsync<ExternalLoginProviderMicrosoft>(addExternalLogin.UserId, externalProviderLogInData, cancellationToken);
 
         return this.Ok(externalLogin);
     }
@@ -963,7 +994,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         await Task.CompletedTask;
 
         var identityApiKey = this.IdentityManager
-            .CreateApiKeyAsync(createApiKey, out var apiKey);
+            .CreateApiKeyAsync(createApiKey, this.Options.Authentication.ApiKey.Secret, out var apiKey);
 
         if (identityApiKey == null)
         {
@@ -1479,10 +1510,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         await this.Repository
             .DeleteAsync(user, cancellationToken);
 
-        // BUG: Shouldn't be needed
-        //await this.IdentityManager
-        //    .DeleteIdentityUser(user.IdentityUser, cancellationToken);
-
         await this.Repository
             .SaveChangesAsync(cancellationToken);
 
@@ -1523,10 +1550,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
 
             await this.Repository
                 .DeleteAsync(user, cancellationToken);
-
-            // BUG: Shouldn't be needed
-            //await this.IdentityManager
-            //    .DeleteIdentityUser(user.IdentityUser, cancellationToken);
         }
 
         await this.Repository
@@ -1537,7 +1560,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
 
     private async Task UpdateEntityUserWhenIdentityUserChanges(TIdentity userId, CancellationToken cancellationToken)
     {
-        // BUG: 555: Doesn't ignore query filters, but we removed the GetContext method
+        // BUG: NOW: Doesn't ignore query filters, but we removed the GetContext method
         var user = await this.Repository
             .GetAsync<TEntity, TIdentity>(userId, cancellationToken);
 

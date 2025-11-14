@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Nano.Models.Interfaces;
+namespace Nano.Data.Abstractions.Models.Abstractions;
 
 /// <summary>
 /// Entity identity inteface.

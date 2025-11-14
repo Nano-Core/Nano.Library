@@ -1,4 +1,4 @@
-namespace Nano.Security;
+namespace Nano.Data.Abstractions.Config;
 
 /// <summary>
 /// External Login Options.

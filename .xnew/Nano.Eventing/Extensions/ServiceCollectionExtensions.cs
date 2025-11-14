@@ -2,7 +2,8 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Config.Extensions;
-using Nano.Eventing.Interfaces;
+using Nano.Eventing.Abstractions;
+using Nano.Eventing.Abstractions.Config;
 using Nano.Models.Extensions;
 using Nano.Models.Helpers;
 
@@ -30,9 +31,9 @@ public static class ServiceCollectionExtensions
 
         if (options == null)
         {
-            return services;
+            throw new NullReferenceException(nameof(options));
         }
-        
+
         var eventingProvider = new TProvider();
 
         eventingProvider
@@ -50,7 +51,8 @@ public static class ServiceCollectionExtensions
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        TypesHelper.GetAllTypes()
+        TypesHelper
+            .GetAllTypes()
             .SelectMany(x => x.GetInterfaces(), (x, y) => new
             {
                 Type = x,

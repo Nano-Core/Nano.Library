@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.Api.Requests;
-using Nano.Models.Interfaces;
+using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.Api;
 

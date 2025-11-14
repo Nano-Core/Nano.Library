@@ -1,17 +1,10 @@
-using Nano.Security;
-
-namespace Nano.Data;
+namespace Nano.Data.Abstractions.Config;
 
 /// <summary>
 /// Identity Options.
 /// </summary>
 public class IdentityOptions
 {
-    /// <summary>
-    /// Section Name.
-    /// </summary>
-    public static string SectionName => "Security";
-
     /// <summary>
     /// Tokens Expiration.
     /// </summary>
@@ -36,9 +29,4 @@ public class IdentityOptions
     /// Password Options.
     /// </summary>
     public virtual PasswordOptions Password { get; set; } = new();
-
-    /// <summary>
-    /// Authentication Options.
-    /// </summary>
-    public virtual AuthenticationOptions Authentication { get; set; } = new();
 }

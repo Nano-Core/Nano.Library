@@ -1,6 +1,7 @@
 using log4net.Core;
+using Nano.Logging.Abstractions.Enums;
 
-namespace Nano.Logging.Providers.Log4Net.Extensions;
+namespace Nano.Logging.Log4Net.Extensions;
 
 /// <summary>
 /// Log4Net Log-Level Extensions.

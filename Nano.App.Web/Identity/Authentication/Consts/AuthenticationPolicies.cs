@@ -3,10 +3,10 @@
 /// <summary>
 /// Authentication Policy Defaults.
 /// </summary>
-public static class AuthenticationPolicyDefaults
+public static class AuthenticationPolicies
 {
     /// <summary>
     /// Policy.
     /// </summary>
-    public const string POLICY = "JwtOrApiKeyPolicy"; // BUG: Should also be based on what is enabled
+    public const string POLICY = "DefaultAuthenticationPolicy";
 }

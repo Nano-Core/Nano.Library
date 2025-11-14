@@ -1,7 +1,7 @@
 using System;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
-using Nano.Models.Interfaces;
+using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Models.Mappings;
 

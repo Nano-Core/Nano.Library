@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Nano.Eventing.Interfaces;
+namespace Nano.Eventing.Abstractions;
 
 /// <summary>
 /// Event Handler interface.

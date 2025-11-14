@@ -1,4 +1,4 @@
-﻿using Nano.Models.Interfaces;
+﻿using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.Api.Requests;
 

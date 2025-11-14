@@ -1,5 +1,4 @@
 using EFCoreSecondLevelCacheInterceptor;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -7,32 +6,30 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Nano.Config;
 using Nano.Config.Extensions;
+using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Config;
+using Nano.Data.Abstractions.Extensions;
+using Nano.Data.Abstractions.Identity;
+using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Identity.Extensions;
 using Nano.Data.Interfaces;
 using Nano.Data.Models;
-using Nano.Models.Interfaces;
 using Nano.Repository;
-using Nano.Repository.Interfaces;
 using Nano.Security;
 using Nano.Security.Extensions;
+using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using Nano.Web.Hosting.Authentication;
-using Nano.Web.Hosting.Authentication.Const;
+using System.Net.Http;
 using Z.EntityFramework.Extensions;
 using Z.EntityFramework.Plus;
+using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;
 
 namespace Nano.Data.Extensions;
-
-// BUG: ALL: Look through all option classes and remove " = new() "
 
 /// <summary>
 /// Service Collection Extensions.
@@ -83,16 +80,16 @@ public static class ServiceCollectionExtensions
         services
             .AddConfigSection<DataOptions>(DataOptions.SectionName, out var options);
 
+        if (options == null)
+        {
+            throw new NullReferenceException(nameof(options));
+        }
+
         services
-            .AddDbContext<TProvider, TContext, TIdentity>()
+            .AddDbContext<TProvider, TContext, TIdentity>(options)
             .AddIdentity<TContext, TIdentity>(options.Identity)
             .AddAudit(options)
             .AddCache(options);
-
-        services
-            .AddScoped<IRepository, DefaultRepository>();
-
-        ConfigManager.HasDbContext = true;
 
         return services;
     }
@@ -142,6 +139,9 @@ public static class ServiceCollectionExtensions
             .AddDataProtection()
             .PersistKeysToDbContext<TContext>();
 
+        services
+            .AddScoped<IRepository, DefaultRepository>();
+
         return services;
     }
     private static IServiceCollection AddIdentity<TContext, TIdentity>(this IServiceCollection services, IdentityOptions options = null)
@@ -158,11 +158,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddIdentityStore<TContext, TIdentity>()
-            .AddIdentityJwtPublicKey()
-            .AddIdentityOptions();
-
-        services
-            .AddSecurity(options);
+            .AddIdentityOptions(options);
 
         services
             .Configure<DataProtectionTokenProviderOptions>(x =>
@@ -171,7 +167,7 @@ public static class ServiceCollectionExtensions
             });
 
         services
-            .AddScoped<IIdentityManager<TIdentity>, DefaultIdentityRepository<TIdentity>>();
+            .AddScoped<IIdentityRepository<TIdentity>, DefaultIdentityRepository<TIdentity>>();
 
         return services;
     }
@@ -188,30 +184,6 @@ public static class ServiceCollectionExtensions
             .AddTokenProvider<DataProtectorTokenProvider<IdentityUser<TIdentity>>>(JwtBearerDefaults.AuthenticationScheme)
             .AddDefaultTokenProviders()
             .AddCustomTokenProvider();
-
-        return services;
-    }
-    private static IServiceCollection AddIdentityJwtPublicKey(this IServiceCollection services, JwtAuthenticationOptions options = null)
-    {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (options == null)
-        {
-            return services;
-        }
-
-        services
-            .AddSingleton(_ =>
-            {
-                var rsaSecurityKey = RSA.Create();
-                var publicKey = Convert.FromBase64String(options.PublicKey);
-
-                rsaSecurityKey
-                    .ImportRSAPublicKey(publicKey, out var _);
-
-                return new RsaSecurityKey(rsaSecurityKey);
-            });
 
         return services;
     }
@@ -248,12 +220,15 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    private static IServiceCollection AddAudit(this IServiceCollection services, DataOptions options = null)
+    private static IServiceCollection AddAudit(this IServiceCollection services, DataOptions options)
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        if (options == null)
+        if (options == null) 
+            throw new ArgumentNullException(nameof(options));
+
+        if (!options.UseAudit)
         {
             return services;
         }
@@ -269,10 +244,18 @@ public static class ServiceCollectionExtensions
             AuditManager.DefaultConfiguration.AutoSavePreAction = (dbContext, audit) =>
             {
                 var httpContextAccessor = dbContext
-                    .GetService<IHttpContextAccessor>();
+                    .GetService<IHttpContextAccessor>(); // BUG: Check implementation of this, maybe we can do it more easily. Also the name is almost the same as one in NuGet
 
-                var requestId = httpContextAccessor?.HttpContext?.TraceIdentifier;
-                var createdBy = httpContextAccessor?.HttpContext?.GetJwtUserId()?.ToString();
+
+                var a = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sub);
+                var userId = Guid.TryParse(a.Value, out var result);
+
+                //var authorizationHeader = httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString();
+                //const string PREFIX = "Baerer ";
+                //var value = authorizationHeader[PREFIX.Length..];
+
+                var requestId = httpContextAccessor.HttpContext?.TraceIdentifier;
+                var createdBy = httpContextAccessor.HttpContext?.GetJwtUserId()?.ToString(); // BUG: Only place HttpContextExtensions are needed
 
                 var customAuditEntries = audit.Entries
                     .Where(x => x.AuditEntryID == 0)
@@ -312,17 +295,15 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    private static IServiceCollection AddCache(this IServiceCollection services, DataOptions options = null)
+    private static IServiceCollection AddCache(this IServiceCollection services, DataOptions options)
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        if (options?.Cache == null)
-        {
-            return services;
-        }
+        if (options == null)
+            throw new ArgumentNullException(nameof(options));
 
-        if (!options.UseMemoryCache) // BUG: DATA: Needed? just null check
+        if (options.Cache == null)
         {
             return services;
         }
@@ -351,118 +332,6 @@ public static class ServiceCollectionExtensions
     }
 
 
-
-    private static IServiceCollection AddSecurity(this IServiceCollection services, IdentityOptions securityOptions)
-    {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (securityOptions == null)
-            throw new ArgumentNullException(nameof(securityOptions));
-
-        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap
-            .Clear();
-
-        var authenticationSchemes = new List<string>();
-
-        if (securityOptions.Authentication.Jwt.IsEnabled)
-        {
-            authenticationSchemes
-                .Add(JwtBearerDefaults.AuthenticationScheme);
-        }
-
-        if (securityOptions.Authentication.ApiKey != null)
-        {
-            authenticationSchemes
-                .Add(ApiKeyDefaults.AuthenticationScheme);
-        }
-
-        services
-            .AddAuthorization(x =>
-            {
-                x.FallbackPolicy = null;
-                x.InvokeHandlersAfterFailure = false;
-
-                x.AddPolicy(AuthenticationPolicyDefaults.POLICY, y => y
-                    .AddAuthenticationSchemes(authenticationSchemes.ToArray())
-                    .RequireAuthenticatedUser());
-            });
-
-        var defaultAuthenticationScheme = securityOptions.Authentication.Jwt.IsEnabled
-            ? JwtBearerDefaults.AuthenticationScheme
-            : securityOptions.Authentication.ApiKey != null
-                ? ApiKeyDefaults.AuthenticationScheme
-                : null;
-
-        var authenticationBuilder = services
-            .AddAuthentication(x =>
-            {
-                x.DefaultScheme = defaultAuthenticationScheme;
-                x.DefaultChallengeScheme = defaultAuthenticationScheme;
-                x.DefaultAuthenticateScheme = defaultAuthenticationScheme;
-                x.DefaultForbidScheme = defaultAuthenticationScheme;
-                x.DefaultSignInScheme = defaultAuthenticationScheme;
-                x.DefaultSignOutScheme = defaultAuthenticationScheme;
-            });
-
-        if (securityOptions.Authentication.Jwt.IsEnabled)
-        {
-            var rsaSecurityKey = services
-                .BuildServiceProvider()
-                .GetRequiredService<RsaSecurityKey>();
-
-            authenticationBuilder
-                .AddJwtBearer(x =>
-                {
-                    x.SaveToken = true;
-                    x.IncludeErrorDetails = true;
-                    x.RequireHttpsMetadata = false;
-
-                    x.Audience = securityOptions.Authentication.Jwt.Audience;
-                    x.ClaimsIssuer = securityOptions.Authentication.Jwt.Issuer;
-
-                    x.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateActor = true,
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = securityOptions.Authentication.Jwt.Issuer,
-                        ValidAudience = securityOptions.Authentication.Jwt.Audience,
-                        IssuerSigningKey = rsaSecurityKey,
-                        ClockSkew = TimeSpan.FromMinutes(5)
-                    };
-
-                    x.Events = new JwtBearerEvents
-                    {
-                        OnAuthenticationFailed = context =>
-                        {
-                            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                            {
-                                const string KEY = "Token-Expired";
-
-                                context.Response.Headers
-                                    .TryAdd(KEY, true.ToString());
-                            }
-
-                            return Task.CompletedTask;
-                        }
-                    };
-                })
-                .AddExternalLogins(securityOptions);
-        }
-
-        if (securityOptions.Authentication.ApiKey != null)
-        {
-            services
-                .AddAuthentication()
-                .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(ApiKeyDefaults.AuthenticationScheme, _ => { });
-        }
-
-        return services;
-    }
-
     private static IServiceCollection AddHealthChecks<TProvider>(this IServiceCollection services, DataOptions options)
         where TProvider : class, IDataProvider
     {
@@ -475,7 +344,7 @@ public static class ServiceCollectionExtensions
         if (!options.UseHealthCheck)
             return services;
 
-        // BUG: DATA: Move to data provider projects
+        // BUG: 000: Move to data provider projects
         //if (typeof(TProvider) == typeof(MySqlProvider))
         //{
         //    services

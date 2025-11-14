@@ -1,8 +1,8 @@
-using Nano.Models.Attributes;
 using System;
 using System.ComponentModel.DataAnnotations;
+using Nano.Data.Abstractions.Annotations;
 
-namespace Nano.Security.Models;
+namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <inheritdoc />
 public class GenerateChangePhoneToken : GenerateChangePhoneToken<Guid>;

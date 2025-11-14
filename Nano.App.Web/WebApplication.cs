@@ -14,6 +14,7 @@ using Nano.App.Extensions;
 using Nano.App.Interfaces;
 using Nano.Config;
 using Nano.Data;
+using Nano.Data.Abstractions.Config;
 using Nano.Web.Extensions;
 
 namespace Nano.Web;

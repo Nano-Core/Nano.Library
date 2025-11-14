@@ -1,4 +1,4 @@
-namespace Nano.Data;
+namespace Nano.Data.Abstractions.Config.Enums;
 
 /// <summary>
 /// Cache Expire Mode.

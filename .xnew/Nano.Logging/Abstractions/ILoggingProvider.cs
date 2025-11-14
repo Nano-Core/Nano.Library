@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace Nano.Logging.Interfaces;
+namespace Nano.Logging.Abstractions;
 
 /// <summary>
 /// Logging Provider interface.

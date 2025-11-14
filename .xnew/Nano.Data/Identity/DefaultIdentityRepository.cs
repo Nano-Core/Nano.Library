@@ -2,7 +2,7 @@ using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using IdentityOptions = Nano.Data.IdentityOptions;
+using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;
 
 namespace Nano.Security;
 
@@ -11,7 +11,7 @@ public class DefaultIdentityRepository<TIdentity> : BaseIdentityRepository<TIden
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    public DefaultIdentityRepository(ILogger logger, DbContext dbContext, SignInManager<IdentityUser<TIdentity>> signInManager, RoleManager<IdentityRole<TIdentity>> roleManager, UserManager<IdentityUser<TIdentity>> userManager, IdentityOptions options)
+    public DefaultIdentityRepository(ILogger logger, IdentityOptions options, DbContext dbContext, SignInManager<IdentityUser<TIdentity>> signInManager, RoleManager<IdentityRole<TIdentity>> roleManager, UserManager<IdentityUser<TIdentity>> userManager)
         : base(logger, dbContext, signInManager, roleManager, userManager, options)
     {
     }
@@ -21,7 +21,7 @@ public class DefaultIdentityRepository<TIdentity> : BaseIdentityRepository<TIden
 public class DefaultIdentityRepository : BaseIdentityRepository<Guid>
 {
     /// <inheritdoc />
-    public DefaultIdentityRepository(ILogger logger, DbContext dbContext, SignInManager<IdentityUser<Guid>> signInManager, RoleManager<IdentityRole<Guid>> roleManager, UserManager<IdentityUser<Guid>> userManager, IdentityOptions options)
+    public DefaultIdentityRepository(ILogger logger, IdentityOptions options, DbContext dbContext, SignInManager<IdentityUser<Guid>> signInManager, RoleManager<IdentityRole<Guid>> roleManager, UserManager<IdentityUser<Guid>> userManager)
         : base(logger, dbContext, signInManager, roleManager, userManager, options)
     {
     }

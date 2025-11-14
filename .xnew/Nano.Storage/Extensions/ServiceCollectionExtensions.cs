@@ -1,7 +1,8 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Config.Extensions;
-using Nano.Storage.Interfaces;
+using Nano.Storage.Abstractions;
+using Nano.Storage.Abstractions.Config;
 
 namespace Nano.Storage.Extensions;
 
@@ -27,20 +28,14 @@ public static class ServiceCollectionExtensions
 
         if (options == null)
         {
-            return services;
+            throw new NullReferenceException(nameof(options));
         }
 
         services
             .AddSingleton<IStorageProvider, TProvider>()
-            .AddSingleton(x =>
-            {
-                var options = x
-                    .GetRequiredService<StorageOptions>();
-
-                return x
-                    .GetRequiredService<IStorageProvider>()
-                    .Configure(services, options);
-            });
+            .AddSingleton(x => x
+                .GetRequiredService<IStorageProvider>()
+                .Configure(services));
 
         services
             .AddSingleton<IPathProvider, PathProvider>();

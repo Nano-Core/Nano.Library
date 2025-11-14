@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using Nano.Models.Attributes;
-using Nano.Models.Interfaces;
+using Nano.Data.Abstractions.Annotations;
+using Nano.Data.Abstractions.Models.Abstractions;
 
-namespace Nano.Security.Models;
+namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
 /// Sign Up.

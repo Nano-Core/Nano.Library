@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
-using Nano.Storage.Interfaces;
+using Nano.Storage.Abstractions;
+using Nano.Storage.Abstractions.Config;
 
 namespace Nano.Storage;
 
@@ -9,13 +10,10 @@ namespace Nano.Storage;
 /// </summary>
 public class PathProvider : IPathProvider
 {
-    /// <summary>
-    /// Storage Options.
-    /// </summary>
-    protected internal StorageOptions StorageOptions { get; }
+    private readonly StorageOptions options;
 
     /// <inheritdoc />
-    public virtual string RootDir => Path.Combine("/mnt/", this.StorageOptions.ShareName);
+    public virtual string RootDir => Path.Combine("/mnt/", this.options.ShareName);
 
     /// <inheritdoc />
     public virtual string TempDir => Path.GetTempPath();
@@ -23,9 +21,9 @@ public class PathProvider : IPathProvider
     /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="storageOptions">The <see cref="Storage.StorageOptions"/>.</param>
-    public PathProvider(StorageOptions storageOptions)
+    /// <param name="options">The <see cref="StorageOptions"/>.</param>
+    public PathProvider(StorageOptions options)
     {
-        this.StorageOptions = storageOptions ?? throw new ArgumentNullException(nameof(storageOptions));
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
     }
 }

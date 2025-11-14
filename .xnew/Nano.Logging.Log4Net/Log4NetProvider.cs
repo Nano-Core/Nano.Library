@@ -4,18 +4,16 @@ using log4net.Appender;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using Microsoft.Extensions.Logging;
-using Nano.Logging.Interfaces;
-using Nano.Logging.Providers.Log4Net.Extensions;
+using Nano.Logging.Abstractions;
+using Nano.Logging.Abstractions.Config;
+using Nano.Logging.Log4Net.Extensions;
 
-namespace Nano.Logging.Providers.Log4Net;
+namespace Nano.Logging.Log4Net;
 
 /// <inheritdoc />
 public class Log4NetProvider : ILoggingProvider
 {
-    /// <summary>
-    /// Options.
-    /// </summary>
-    protected virtual LoggingOptions Options { get; }
+    private readonly LoggingOptions options;
 
     /// <summary>
     /// Constructor.
@@ -23,7 +21,7 @@ public class Log4NetProvider : ILoggingProvider
     /// <param name="options">The <see cref="LoggingOptions"/>.</param>
     public Log4NetProvider(LoggingOptions options)
     {
-        this.Options = options ?? throw new ArgumentNullException(nameof(options));
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
     /// <inheritdoc />
@@ -46,7 +44,7 @@ public class Log4NetProvider : ILoggingProvider
         hierarchy.Root
             .AddAppender(consoleAppender);
 
-        hierarchy.Root.Level = this.Options.LogLevel
+        hierarchy.Root.Level = this.options.LogLevel
             .GetLogLevel();
 
         hierarchy.Configured = true;

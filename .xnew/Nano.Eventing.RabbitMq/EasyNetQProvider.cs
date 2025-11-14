@@ -1,9 +1,9 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.Eventing.Interfaces;
-using Nano.Eventing.Providers.EasyNetQ.Extensions;
+using Nano.Eventing.Abstractions;
+using Nano.Eventing.RabbitMq.Extensions;
 
-namespace Nano.Eventing.Providers.EasyNetQ;
+namespace Nano.Eventing.RabbitMq;
 
 /// <summary>
 /// EasyNetQ Provider.

@@ -3,6 +3,7 @@ using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Nano.Data.Abstractions.Config;
 using Nano.Data.Interfaces;
 
 namespace Nano.Data.Extensions;
@@ -33,7 +34,7 @@ public static class DbContextOptionsBuilderExtensions
             })
             .UseLazyLoadingProxies(options.UseLazyLoading);
 
-        if (options.UseMemoryCache)
+        if (options.Cache != null)
         {
             var secondLevelCacheInterceptor = serviceProvider
                 .GetRequiredService<SecondLevelCacheInterceptor>();

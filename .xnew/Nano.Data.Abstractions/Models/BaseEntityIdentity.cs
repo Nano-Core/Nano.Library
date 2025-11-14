@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Nano.Models.Interfaces;
+using Nano.Data.Abstractions.Models.Abstractions;
 
-namespace Nano.Models.Data;
+namespace Nano.Data.Abstractions.Models;
 
 /// <inheritdoc cref="IEntityIdentity{TIdentity}"/>
 public abstract class BaseEntityIdentity<TIdentity> : IEntityIdentity<TIdentity>

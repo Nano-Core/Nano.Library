@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Reflection;
 using Microsoft.OpenApi.Models;
+using Nano.Data.Abstractions.Annotations;
 using Nano.Models.Attributes;
 using Swashbuckle.AspNetCore.SwaggerGen;
 

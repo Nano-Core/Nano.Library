@@ -14,14 +14,14 @@ using Nano.App.Api.Extensions;
 using Nano.App.Api.Requests;
 using Nano.App.Api.Requests.Auth;
 using Nano.App.Extensions;
+using Nano.Data.Abstractions.Extensions;
+using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Models;
 using Nano.Models.Const;
 using Nano.Models.Exceptions;
-using Nano.Models.Interfaces;
 using Nano.Models.Serialization.Json.Const;
 using Nano.Security.Exceptions;
-using Nano.Security.Extensions;
-using Nano.Security.Models;
 using Newtonsoft.Json;
 using Vivet.AspNetCore.RequestTimeZone;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
@@ -273,6 +273,7 @@ public abstract class BaseApi
             return this.accessToken?.Token;
         }
 
+        // BUG: THis should be using IHttpContextAccessor directly. Remove HttpContextAccessor
         var jwtToken = HttpContextAccessor.Current?
             .GetJwtToken();
 

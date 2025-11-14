@@ -1,5 +1,6 @@
 using System;
 using EFCoreSecondLevelCacheInterceptor;
+using Nano.Data.Abstractions.Config.Enums;
 
 namespace Nano.Data.Extensions;
 

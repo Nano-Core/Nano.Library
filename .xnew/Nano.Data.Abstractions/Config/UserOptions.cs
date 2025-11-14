@@ -1,6 +1,6 @@
-using Nano.Security.Const;
+using Nano.Data.Abstractions.Identity.Consts;
 
-namespace Nano.Data;
+namespace Nano.Data.Abstractions.Config;
 
 /// <summary>
 /// User Options (nested class).
@@ -22,16 +22,6 @@ public class UserOptions
     /// Defaults to abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+
     /// </summary>
     public virtual string AllowedUserNameCharacters { get; set; } = null;
-
-    /// <summary>
-    /// Admin Password.
-    /// </summary>
-    public virtual string AdminPassword { get; set; }
-
-    /// <summary>
-    /// Admin Email Address.
-    /// </summary>
-    public virtual string AdminEmailAddress { get; set; }
 
     /// <summary>
     /// Default Roles.

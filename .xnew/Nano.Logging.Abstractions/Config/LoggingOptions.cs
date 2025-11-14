@@ -1,4 +1,6 @@
-namespace Nano.Logging;
+using Nano.Logging.Abstractions.Enums;
+
+namespace Nano.Logging.Abstractions.Config;
 
 /// <summary>
 /// Logging Options.

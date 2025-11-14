@@ -15,15 +15,17 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Nano.Config;
+using Nano.Data.Abstractions.Config;
+using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Models;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
+using Nano.Eventing.Abstractions;
+using Nano.Eventing.Abstractions.Models;
 using Nano.Models.Attributes;
-using Nano.Models.Data;
-using Nano.Models.Eventing;
-using Nano.Models.Eventing.Interfaces;
 using Nano.Models.Extensions;
-using Nano.Models.Interfaces;
 using Nano.Security;
 using Nano.Security.Const;
 using NetTopologySuite.Geometries;
@@ -45,10 +47,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     /// </summary>
     public DataOptions Options { get; }
 
-    /// <summary>
-    /// Security Options.
-    /// </summary>
-    public IdentityOptions SecurityOptions { get; }
+    ///// <summary>
+    ///// Security Options.
+    ///// </summary>
+    //public IdentityOptions SecurityOptions { get; }
 
     /// <summary>
     /// Auto Save.
@@ -67,11 +69,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
     /// <inheritdoc />
-    protected BaseDbContext(DbContextOptions contextOptions, DataOptions dataOptions, IdentityOptions securityOptions)
+    protected BaseDbContext(DbContextOptions contextOptions, DataOptions dataOptions)
         : base(contextOptions)
     {
         this.Options = dataOptions ?? throw new ArgumentNullException(nameof(dataOptions));
-        this.SecurityOptions = securityOptions ?? throw new ArgumentNullException(nameof(securityOptions));
 
         this.SavingChanges += (_, _) => this.SetPendingEntityEvents();
         this.SavingChanges += (_, _) => this.UpdateSoftDeletedEntities();
@@ -284,7 +285,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     /// <returns>The <see cref="Task"/> (void).</returns>
     internal virtual async Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
     {
-        if (!ConfigManager.HasDbContext)
+        if (this.Options.ConnectionString == null)
             return;
 
         if (!this.Options.UseCreateDatabase)
@@ -304,7 +305,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     /// <returns>The <see cref="Task"/> (void).</returns>
     internal virtual Task EnsureMigratedAsync(CancellationToken cancellationToken = default)
     {
-        if (!ConfigManager.HasDbContext)
+        if (this.Options.ConnectionString == null)
             return Task.CompletedTask;
 
         if (!this.Options.UseMigrateDatabase)
@@ -329,30 +330,14 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     /// <returns>The <see cref="Task"/> (void).</returns>
     internal virtual async Task EnsureIdentityAsync(CancellationToken cancellationToken = default)
     {
-        if (!ConfigManager.HasDbContext)
-            return;
-
         if (this.Options.ConnectionString == null)
             return;
-
-        var securityOptions = this.GetService<IdentityOptions>();
 
         await this.AddRole(BuiltInUserRoles.GUEST);
         await this.AddRole(BuiltInUserRoles.READER);
         await this.AddRole(BuiltInUserRoles.WRITER);
         await this.AddRole(BuiltInUserRoles.SERVICE);
         await this.AddRole(BuiltInUserRoles.ADMINISTRATOR);
-
-        var adminPassword = securityOptions.User.AdminPassword;
-        var adminEmailAddress = securityOptions.User.AdminEmailAddress;
-
-        if (!string.IsNullOrEmpty(adminEmailAddress) && !string.IsNullOrEmpty(adminPassword))
-        {
-            var adminUser = await this.AddUser(adminEmailAddress, adminPassword, adminEmailAddress);
-
-            await this.AddUserToRole(adminUser, BuiltInUserRoles.SERVICE);
-            await this.AddUserToRole(adminUser, BuiltInUserRoles.ADMINISTRATOR);
-        }
 
         await this.SaveChangesAsync(cancellationToken);
     }
@@ -372,7 +357,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         }
 
         modelBuilder
-            .MapDefaultIdentity<TIdentity>(this.SecurityOptions.User.IsUniqueEmailAddressRequired, this.SecurityOptions.User.IsUniquePhoneNumberRequired)
+            .MapDefaultIdentity<TIdentity>(this.Options.Identity.User.IsUniqueEmailAddressRequired, this.Options.Identity.User.IsUniquePhoneNumberRequired)
             .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()
             .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>()
             .AddMapping<IdentityApiKey<TIdentity>, IdentityApiKeyMapping<TIdentity>>()

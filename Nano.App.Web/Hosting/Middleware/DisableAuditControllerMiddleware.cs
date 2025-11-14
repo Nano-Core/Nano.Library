@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Nano.Data;
+using Nano.Data.Abstractions.Config;
 using Nano.Web.Controllers;
 
 namespace Nano.Web.Hosting.Middleware;

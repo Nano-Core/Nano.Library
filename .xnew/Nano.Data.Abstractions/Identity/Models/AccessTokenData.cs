@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Nano.Security.Models;
+namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
 /// Access Token Data.
@@ -26,7 +26,7 @@ public class AccessTokenData
     /// <summary>
     /// User Name.
     /// </summary>
-    public virtual string UserName { get; set; }
+    public virtual string Username { get; set; }
 
     /// <summary>
     /// User Email.

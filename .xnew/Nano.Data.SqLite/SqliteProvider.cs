@@ -1,19 +1,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
+using Nano.Data.Abstractions.Config;
 using Nano.Data.Extensions;
 using Nano.Data.Interfaces;
 
-namespace Nano.Data.Providers.Sqlite;
+namespace Nano.Data.SqLite;
 
 /// <summary>
 /// Sql Lite Data Provider.
 /// </summary>
 public class SqliteProvider : IDataProvider
 {
-    /// <summary>
-    /// Options.
-    /// </summary>
-    protected virtual DataOptions Options { get; }
+    private readonly DataOptions options;
 
     /// <summary>
     /// Constructor.
@@ -21,7 +19,7 @@ public class SqliteProvider : IDataProvider
     /// <param name="options">The <see cref="DataOptions"/>.</param>
     public SqliteProvider(DataOptions options)
     {
-        this.Options = options ?? throw new ArgumentNullException(nameof(options));
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
     /// <inheritdoc />
@@ -30,8 +28,8 @@ public class SqliteProvider : IDataProvider
         if (builder == null)
             throw new ArgumentNullException(nameof(builder));
 
-        var batchSize = this.Options.BatchSize;
-        var connectionString = this.Options.ConnectionString;
+        var batchSize = this.options.BatchSize;
+        var connectionString = this.options.ConnectionString;
 
         if (connectionString == null)
         {
@@ -41,7 +39,7 @@ public class SqliteProvider : IDataProvider
         builder
             .UseSqlite(connectionString, x =>
             {
-                var querySplittingBehavior = this.Options.UseQuerySplittingBehavior
+                var querySplittingBehavior = this.options.UseQuerySplittingBehavior
                     .GetQuerySplittingBehavior();
 
                 x.MaxBatchSize(batchSize);

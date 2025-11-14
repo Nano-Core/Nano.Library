@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Identity;
 
-namespace Nano.Models.Interfaces;
+namespace Nano.Data.Abstractions.Models.Abstractions;
 
 /// <summary>
 /// Entity User inteface.

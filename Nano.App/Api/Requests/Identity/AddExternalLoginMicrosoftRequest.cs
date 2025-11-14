@@ -1,5 +1,5 @@
 ﻿using Nano.App.Api.Requests.Auth;
-using Nano.Security.Models;
+using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.App.Api.Requests.Identity;
 

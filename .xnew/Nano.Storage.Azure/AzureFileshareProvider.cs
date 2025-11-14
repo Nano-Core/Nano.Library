@@ -1,20 +1,18 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Models.Extensions;
-using Nano.Storage.Providers.Azure.HealthChecks.Extensions;
-using System;
-using Nano.Storage.Interfaces;
+using Nano.Storage.Abstractions;
+using Nano.Storage.Abstractions.Config;
+using Nano.Storage.Azure.HealthChecks.Extensions;
 
-namespace Nano.Storage.Providers.Azure;
+namespace Nano.Storage.Azure;
 
 /// <summary>
 /// Azure Fileshare Provider.
 /// </summary>
 public class AzureFileshareProvider : IStorageProvider
 {
-    /// <summary>
-    /// Options.
-    /// </summary>
-    protected virtual StorageOptions Options { get; }
+    private readonly StorageOptions options;
 
     /// <summary>
     /// Constructor.
@@ -22,30 +20,31 @@ public class AzureFileshareProvider : IStorageProvider
     /// <param name="options">The <see cref="StorageOptions"/>.</param>
     public AzureFileshareProvider(StorageOptions options)
     {
-        this.Options = options ?? throw new ArgumentNullException(nameof(options));
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
     /// <inheritdoc />
-    public virtual IStorageProvider Configure(IServiceCollection services, StorageOptions options)
+    public virtual IStorageProvider Configure(IServiceCollection services)
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        if (options == null) 
-            throw new ArgumentNullException(nameof(options));
-
-        if (options.UseHealthCheck)
+        if (!this.options.UseHealthCheck)
         {
-            if (options.ConnectionString != null)
-            {
-                var healtStatus = options.UnhealthyStatus
-                    .GetHealthStatus();
-
-                services
-                    .AddHealthChecks()
-                    .AddAzureFileshareStorage(options.ConnectionString, options.ShareName, failureStatus: healtStatus);
-            }
+            return this;
         }
+
+        if (this.options.Connectionstring == null)
+        {
+            throw new NullReferenceException(nameof(options.Connectionstring));
+        }
+
+        var healtStatus = this.options.UnhealthyStatus
+            .GetHealthStatus();
+
+        services
+            .AddHealthChecks()
+            .AddAzureFileshareStorage(failureStatus: healtStatus);
 
         return this;
     }

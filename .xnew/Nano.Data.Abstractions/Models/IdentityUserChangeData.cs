@@ -1,10 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
-using Nano.Models.Attributes;
-using Nano.Models.Interfaces;
+using Nano.Data.Abstractions.Annotations;
+using Nano.Data.Abstractions.Models.Abstractions;
 
-namespace Nano.Models.Data;
+namespace Nano.Data.Abstractions.Models;
 
 /// <summary>
 /// Identity User Change Data.

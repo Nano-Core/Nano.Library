@@ -3,10 +3,11 @@ using EasyNetQ;
 using EasyNetQ.DI;
 using EasyNetQ.Serialization.NewtonsoftJson;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.Models.Eventing.Interfaces;
+using Nano.Eventing.Abstractions;
+using Nano.Eventing.Abstractions.Config;
 using Nano.Models.Serialization.Json.Const;
 
-namespace Nano.Eventing.Providers.EasyNetQ.Extensions;
+namespace Nano.Eventing.RabbitMq.Extensions;
 
 /// <summary>
 /// Service Collection Extensions.
@@ -17,7 +18,6 @@ public static class ServiceCollectionExtensions
     /// Add EasyNetQ Eventiong
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <param name="options">The <see cref="EventingOptions"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection AddEasyNetQEventing(this IServiceCollection services)
     {

@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Nano.Data.Abstractions.Annotations;
+using Nano.Data.Abstractions.Config.Enums;
 using Nano.Models.Attributes;
 
 namespace Nano.Data.Extensions;
@@ -73,7 +75,7 @@ public static class QueryableExtensions
             queryable = queryable
                 .Include(navigationName);
 
-            if (includePropertyInfo.IncludeAttribute.QuerySplittingBehavior == QuerySplitBehavior.SplitQuery)
+            if (includePropertyInfo.IncludeAttribute.QuerySplitBehavior == QuerySplitBehavior.SplitQuery)
             {
                 queryable = queryable
                     .AsSplitQuery();

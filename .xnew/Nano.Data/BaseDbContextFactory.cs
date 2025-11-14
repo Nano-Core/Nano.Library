@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Nano.Config;
+using Nano.Data.Abstractions.Config;
 using Nano.Data.Interfaces;
 using Nano.Security;
 
@@ -24,16 +25,12 @@ public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbC
             .GetSection(DataOptions.SectionName)
             .Get<DataOptions>() ?? new DataOptions();
 
-        var securityOptions = configuration
-            .GetSection(IdentityOptions.SectionName)
-            .Get<IdentityOptions>();
-
         var provider = Activator.CreateInstance(typeof(TProvider), dataOptions) as TProvider;
         
         provider?
             .Configure(builder);
 
-        if (Activator.CreateInstance(typeof(TContext), builder.Options, dataOptions, securityOptions) is not TContext dbContext)
+        if (Activator.CreateInstance(typeof(TContext), builder.Options, dataOptions) is not TContext dbContext)
         {
             throw new NullReferenceException(nameof(dbContext));
         }

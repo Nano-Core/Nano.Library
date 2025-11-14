@@ -2,10 +2,10 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
-using Nano.Models.Attributes;
-using Nano.Models.Interfaces;
+using Nano.Data.Abstractions.Annotations;
+using Nano.Data.Abstractions.Models.Abstractions;
 
-namespace Nano.Models.Data;
+namespace Nano.Data.Abstractions.Models;
 
 /// <summary>
 /// Base Entity User (abstract).
@@ -15,7 +15,7 @@ public abstract class BaseEntityUser<TIdentity> : BaseEntity<TIdentity>, IEntity
 {
     /// <inheritdoc />
     [Include]
-    [SwaggerResponseOnly]
+    [SwaggerResponseOnly] // BUG: Remove this? I would like to improve the implementation of User.IdentityUser
     public virtual IdentityUser<TIdentity> IdentityUser { get; set; }
 
     /// <inheritdoc />

@@ -3,8 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Nano.Models.Eventing.Interfaces;
-using Nano.Repository.Interfaces;
+using Nano.Data.Abstractions;
+using Nano.Eventing.Abstractions;
 
 namespace Nano.Console.Workers;
 

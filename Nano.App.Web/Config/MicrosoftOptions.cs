@@ -1,10 +1,15 @@
-namespace Nano.Security;
+namespace Nano.Data.Abstractions.Config;
 
 /// <summary>
-/// Google Options.
+/// Microsoft Options.
 /// </summary>
-public class GoogleOptions
+public class MicrosoftOptions
 {
+    /// <summary>
+    /// Tenant Id.
+    /// </summary>
+    public virtual string TenantId { get; set; }
+
     /// <summary>
     /// Client Id.
     /// </summary>

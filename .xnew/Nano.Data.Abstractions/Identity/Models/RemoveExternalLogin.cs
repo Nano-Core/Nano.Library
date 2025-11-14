@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Nano.Security.Models;
+namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <inheritdoc />
 public class RemoveExternalLogin : RemoveExternalLogin<Guid>;

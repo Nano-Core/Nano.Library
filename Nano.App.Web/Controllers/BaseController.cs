@@ -2,10 +2,11 @@ using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Nano.Models.Eventing.Interfaces;
-using Nano.Repository.Interfaces;
-using Nano.Security.Const;
-using Nano.Security.Extensions;
+using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Extensions;
+using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Eventing.Abstractions;
+using Nano.Web.Extensions;
 using Nano.Web.Hosting.Authentication.Const;
 
 namespace Nano.Web.Controllers;
@@ -16,7 +17,7 @@ namespace Nano.Web.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Route("v{v:apiVersion}/[controller]")]
-[Authorize(Policy = AuthenticationPolicyDefaults.POLICY, Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE)]
+[Authorize(Policy = AuthenticationPolicies.POLICY, Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE)]
 public abstract class BaseController : Controller
 {
     /// <summary>

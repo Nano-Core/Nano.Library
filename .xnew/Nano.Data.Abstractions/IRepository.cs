@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using DynamicExpression.Entities;
 using DynamicExpression.Enums;
 using DynamicExpression.Interfaces;
-using Nano.Models.Attributes;
-using Nano.Models.Interfaces;
+using Nano.Data.Abstractions.Annotations;
+using Nano.Data.Abstractions.Models.Abstractions;
 
-namespace Nano.Repository.Interfaces;
+namespace Nano.Data.Abstractions;
 
 /// <summary>
 /// (Base) Interface for a repository.

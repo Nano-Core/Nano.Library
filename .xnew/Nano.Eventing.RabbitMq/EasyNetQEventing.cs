@@ -6,11 +6,10 @@ using EasyNetQ;
 using EasyNetQ.Topology;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Nano.Eventing.Interfaces;
-using Nano.Models.Eventing.Interfaces;
+using Nano.Eventing.Abstractions;
 using Nano.Models.Extensions;
 
-namespace Nano.Eventing.Providers.EasyNetQ;
+namespace Nano.Eventing.RabbitMq;
 
 /// <inheritdoc />
 public class EasyNetQEventing : IEventing

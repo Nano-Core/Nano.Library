@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Nano.Data.Abstractions.Config.Enums;
 
-namespace Nano.Data;
+namespace Nano.Data.Abstractions.Config;
 
 /// <summary>
 /// Data Options.
@@ -51,11 +52,6 @@ public class DataOptions
     /// Use Lazy Loading.
     /// </summary>
     public virtual bool UseLazyLoading { get; set; } = true;
-
-    /// <summary>
-    /// Use Memory Cache.
-    /// </summary>
-    public virtual bool UseMemoryCache { get; set; } = false;
 
     /// <summary>
     /// Use Soft Deletetion.
@@ -110,10 +106,10 @@ public class DataOptions
     /// <summary>
     /// Identity.
     /// </summary>
-    public virtual IdentityOptions Identity { get; set; } = new();
+    public virtual IdentityOptions Identity { get; set; }
 
     /// <summary>
     /// Cache.
     /// </summary>
-    public virtual MemoryCacheOptions Cache { get; set; } = new();
+    public virtual CacheOptions Cache { get; set; }
 }

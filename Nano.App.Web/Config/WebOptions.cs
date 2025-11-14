@@ -27,6 +27,11 @@ public class WebOptions
     public virtual DocumentationOptions Documentation { get; set; } = new();
 
     /// <summary>
+    /// Authentication Options.
+    /// </summary>
+    public virtual IdentityOptions Identity { get; set; } = new();
+
+    /// <summary>
     /// Hosting Options.
     /// </summary>
     public class HostingOptions

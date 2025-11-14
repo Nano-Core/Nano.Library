@@ -2,11 +2,12 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using PhoneNumbers;
 
-namespace Nano.Models.Attributes;
+namespace Nano.Data.Abstractions.Annotations;
 
 /// <summary>
 /// International Phone Attribute.
 /// </summary>
+[AttributeUsage(AttributeTargets.Property)]
 public class InternationalPhoneAttribute : ValidationAttribute
 {
     /// <inheritdoc />
@@ -33,11 +34,12 @@ public class InternationalPhoneAttribute : ValidationAttribute
             {
                 return ValidationResult.Success;
             }
+
+            return new ValidationResult("Invalid international phone number.");
         }
         catch (NumberParseException)
         {
+            return new ValidationResult("Invalid international phone number.");
         }
-
-        return new ValidationResult("Invalid international phone number.");
     }
 }

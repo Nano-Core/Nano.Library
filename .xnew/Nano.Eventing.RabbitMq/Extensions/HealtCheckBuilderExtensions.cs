@@ -1,13 +1,18 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Nano.Eventing.Abstractions.Config;
 using Nano.Models.Extensions;
 using RabbitMQ.Client;
+using System;
+using System.Collections.Generic;
 
-namespace Nano.Eventing.Providers.EasyNetQ.Extensions;
+namespace Nano.Eventing.RabbitMq.Extensions;
 
-public static class HealtCheckBuilderExtensions
+internal static class HealtCheckBuilderExtensions
 {
-    internal static IHealthChecksBuilder AddRabbitMqHealthChecks(this IHealthChecksBuilder builder)
+    private const string NAME = "rabbitmq";
+
+    internal static IHealthChecksBuilder AddRabbitMqHealthChecks(this IHealthChecksBuilder builder, HealthStatus? failureStatus = default, IEnumerable<string> tags = default, TimeSpan? timeout = default)
     {
         if (builder == null)
             throw new ArgumentNullException(nameof(builder));
@@ -42,7 +47,7 @@ public static class HealtCheckBuilderExtensions
 
                 return factory
                     .CreateConnectionAsync();
-            }, "rabbitmq", healthStatus);
+            }, NAME, healthStatus, tags, timeout);
 
         return builder;
     }

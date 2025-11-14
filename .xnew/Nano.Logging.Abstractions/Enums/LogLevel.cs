@@ -1,4 +1,4 @@
-namespace Nano.Logging;
+namespace Nano.Logging.Abstractions.Enums;
 
 /// <summary>
 /// Log Level
