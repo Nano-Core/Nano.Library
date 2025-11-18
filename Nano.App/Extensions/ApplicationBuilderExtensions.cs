@@ -17,24 +17,6 @@ namespace Nano.App.Extensions;
 internal static class ApplicationBuilderExtensions
 {
     /// <summary>
-    /// Adds the <see cref="IHttpContextAccessor"/> middleware, and initializes the current <see cref="HttpContext"/>.
-    /// </summary>
-    /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
-    /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
-    internal static IApplicationBuilder UseHttpContextAccessor(this IApplicationBuilder applicationBuilder)
-    {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        var httpContextAccessor = applicationBuilder.ApplicationServices
-            .GetRequiredService<IHttpContextAccessor>();
-
-        HttpContextAccessor.Configure(httpContextAccessor);
-
-        return applicationBuilder;
-    }
-
-    /// <summary>
     /// Adds Eventing hadlers to the <see cref="IApplicationBuilder"/>.
     /// </summary>
     /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>

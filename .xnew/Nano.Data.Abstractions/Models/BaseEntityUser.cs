@@ -15,7 +15,7 @@ public abstract class BaseEntityUser<TIdentity> : BaseEntity<TIdentity>, IEntity
 {
     /// <inheritdoc />
     [Include]
-    [SwaggerResponseOnly] // BUG: Remove this? I would like to improve the implementation of User.IdentityUser
+    [SwaggerResponseOnly] // BUG: 000: Remove User.IdentityUser? Improve the implementation?
     public virtual IdentityUser<TIdentity> IdentityUser { get; set; }
 
     /// <inheritdoc />

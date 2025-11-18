@@ -36,7 +36,7 @@ public class AccessTokenData
     /// <summary>
     /// External Token.
     /// </summary>
-    public virtual ExternalLoginTokenData ExternalToken { get; set; } = new();
+    public virtual ExternalLoginTokenData ExternalToken { get; set; }
 
     /// <summary>
     /// Claims.

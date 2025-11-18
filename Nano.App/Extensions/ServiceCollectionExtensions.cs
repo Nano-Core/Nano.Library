@@ -58,7 +58,7 @@ public static class ServiceCollectionExtensions
             });
 
         services
-            .AddSingleton<IHttpContextAccessor, Microsoft.AspNetCore.Http.HttpContextAccessor>()
+            .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
             .AddSingleton<StartupTaskContext>()
             .AddHostedService<InitializeApplicationStartupTask>();
 

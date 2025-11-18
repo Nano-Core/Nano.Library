@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.Data.Abstractions;
-using Nano.Data.Abstractions.Extensions;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Eventing.Abstractions;
 using Nano.Web.Extensions;

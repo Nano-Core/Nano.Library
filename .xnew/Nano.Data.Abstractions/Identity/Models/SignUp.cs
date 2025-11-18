@@ -8,7 +8,18 @@ namespace Nano.Data.Abstractions.Identity.Models;
 /// <summary>
 /// Sign Up.
 /// </summary>
-public class SignUp : BaseSignUp
+/// <typeparam name="TUser">The user type.</typeparam>
+public class SignUp<TUser> : SignUp<TUser, Guid>
+    where TUser : IEntityUser<Guid>;
+
+/// <summary>
+/// Sign Up.
+/// </summary>
+/// <typeparam name="TUser">The user type.</typeparam>
+/// <typeparam name="TIdentity">The identity type.</typeparam>
+public class SignUp<TUser, TIdentity> : BaseSignUp
+    where TUser : IEntityUser<TIdentity>
+    where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// Email.
@@ -44,24 +55,7 @@ public class SignUp : BaseSignUp
     [MaxLength(256)]
     [Compare(nameof(Password))]
     public virtual string ConfirmPassword { get; set; }
-}
 
-/// <summary>
-/// Sign Up.
-/// </summary>
-/// <typeparam name="TUser">The user type.</typeparam>
-public class SignUp<TUser> : SignUp<TUser, Guid>
-    where TUser : IEntityUser<Guid>;
-
-/// <summary>
-/// Sign Up.
-/// </summary>
-/// <typeparam name="TUser">The user type.</typeparam>
-/// <typeparam name="TIdentity">The identity type.</typeparam>
-public class SignUp<TUser, TIdentity> : SignUp
-    where TUser : IEntityUser<TIdentity>
-    where TIdentity : IEquatable<TIdentity>
-{
     /// <summary>
     /// User.
     /// </summary>

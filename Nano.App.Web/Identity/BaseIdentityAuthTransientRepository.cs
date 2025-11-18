@@ -7,7 +7,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Extensions;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Web.Extensions;
@@ -68,6 +67,7 @@ public abstract class BaseIdentityAuthTransientRepository<TIdentity> : BaseIdent
 
         // BUG: admin (root) user is no longer added to database, it should be pure transient. Just login and make a token
         // Maybe we already do that, but why did we add it to database in dbContext
+        // ALSO Check login through api client for root admin login
 
         var tokenData = new AccessTokenData
         {

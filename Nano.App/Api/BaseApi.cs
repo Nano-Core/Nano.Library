@@ -9,12 +9,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using Nano.App.Api.Extensions;
 using Nano.App.Api.Requests;
 using Nano.App.Api.Requests.Auth;
 using Nano.App.Extensions;
-using Nano.Data.Abstractions.Extensions;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Models;
@@ -22,6 +22,7 @@ using Nano.Models.Const;
 using Nano.Models.Exceptions;
 using Nano.Models.Serialization.Json.Const;
 using Nano.Security.Exceptions;
+using Nano.Web.Extensions;
 using Newtonsoft.Json;
 using Vivet.AspNetCore.RequestTimeZone;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
@@ -36,17 +37,20 @@ public abstract class BaseApi
     private volatile AccessToken accessToken;
 
     private readonly ApiOptions apiOptions;
+    private readonly IHttpContextAccessor httpContextAccessor;
     private readonly HttpClient httpClient;
 
     /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="apiOptions">The <see cref="ApiOptions"/>.</param>
-    /// <param name="httpClient">The <see cref="httpClient"/>.</param>
-    protected BaseApi(ApiOptions apiOptions, HttpClient httpClient)
+    /// <param name="httpContextAccessor">The <see cref="IHttpContextAccessor"/>.</param>
+    /// <param name="httpClient">The <see cref="HttpClient"/>.</param>
+    protected BaseApi(ApiOptions apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor = null)
     {
         this.apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
         this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        this.httpContextAccessor = httpContextAccessor;
     }
 
     /// <summary>
@@ -273,8 +277,7 @@ public abstract class BaseApi
             return this.accessToken?.Token;
         }
 
-        // BUG: THis should be using IHttpContextAccessor directly. Remove HttpContextAccessor
-        var jwtToken = HttpContextAccessor.Current?
+        var jwtToken = this.httpContextAccessor?.HttpContext?
             .GetJwtToken();
 
         if (jwtToken != null)
@@ -705,7 +708,7 @@ public abstract class BaseApi
         if (token == null)
             throw new ArgumentNullException(nameof(token));
 
-        var httpContext = HttpContextAccessor.Current;
+        var httpContext = this.httpContextAccessor?.HttpContext;
 
         if (httpContext == null)
         {

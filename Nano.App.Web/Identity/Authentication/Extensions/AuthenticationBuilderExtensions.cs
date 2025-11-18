@@ -87,7 +87,6 @@ public static class AuthenticationBuilderExtensions
                     }
                 };
             })
-            // BUG: 000: We might need this even when data is disabled? 
             .AddExternalLoginGoogle(options.ExternalLogins.Google)
             .AddExternalLoginFacebook(options.ExternalLogins.Facebook)
             .AddExternalLoginMicrosoft(options.ExternalLogins.Microsoft);

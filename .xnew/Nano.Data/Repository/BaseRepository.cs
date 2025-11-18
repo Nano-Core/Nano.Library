@@ -92,64 +92,56 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     public virtual Task<TEntity> GetAsync<TEntity>(int key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<int>
     {
-        return this
-            .GetAsync<TEntity, int>(key, cancellationToken);
+        return this.GetAsync<TEntity, int>(key, cancellationToken);
     }
 
     /// <inheritdoc />
     public virtual Task<TEntity> GetAsync<TEntity>(int key, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<int>
     {
-        return this
-            .GetAsync<TEntity, int>(key, includeDepth, cancellationToken);
+        return this.GetAsync<TEntity, int>(key, includeDepth, cancellationToken);
     }
 
     /// <inheritdoc />
     public virtual Task<TEntity> GetAsync<TEntity>(long key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<long>
     {
-        return this
-            .GetAsync<TEntity, long>(key, cancellationToken);
+        return this.GetAsync<TEntity, long>(key, cancellationToken);
     }
 
     /// <inheritdoc />
     public virtual Task<TEntity> GetAsync<TEntity>(long key, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<long>
     {
-        return this
-            .GetAsync<TEntity, long>(key, includeDepth, cancellationToken);
+        return this.GetAsync<TEntity, long>(key, includeDepth, cancellationToken);
     }
 
     /// <inheritdoc />
     public virtual Task<TEntity> GetAsync<TEntity>(string key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<string>
     {
-        return this
-            .GetAsync<TEntity, string>(key, cancellationToken);
+        return this.GetAsync<TEntity, string>(key, cancellationToken);
     }
 
     /// <inheritdoc />
     public virtual Task<TEntity> GetAsync<TEntity>(string key, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<string>
     {
-        return this
-            .GetAsync<TEntity, string>(key, includeDepth, cancellationToken);
+        return this.GetAsync<TEntity, string>(key, includeDepth, cancellationToken);
     }
 
     /// <inheritdoc />
     public virtual Task<TEntity> GetAsync<TEntity>(Guid key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<Guid>
     {
-        return this
-            .GetAsync<TEntity, Guid>(key, cancellationToken);
+        return this.GetAsync<TEntity, Guid>(key, cancellationToken);
     }
 
     /// <inheritdoc />
     public virtual Task<TEntity> GetAsync<TEntity>(Guid key, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<Guid>
     {
-        return this
-            .GetAsync<TEntity, Guid>(key, includeDepth, cancellationToken);
+        return this.GetAsync<TEntity, Guid>(key, includeDepth, cancellationToken);
     }
 
     /// <inheritdoc />

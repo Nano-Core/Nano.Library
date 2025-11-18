@@ -26,6 +26,9 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="9.0.10" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.10" />
 		<PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="9.104.0.1" />
+		<PackageReference Include="DynamicExpression" Version="9.0.3" />
+		<PackageReference Include="libphonenumber-csharp" Version="9.0.17" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="9.0.10" />
 
 	</ItemGroup>
 

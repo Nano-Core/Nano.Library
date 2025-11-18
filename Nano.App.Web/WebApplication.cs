@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,9 +9,12 @@ using Nano.App;
 using Nano.App.Extensions;
 using Nano.App.Interfaces;
 using Nano.Config;
-using Nano.Data;
 using Nano.Data.Abstractions.Config;
 using Nano.Web.Extensions;
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace Nano.Web;
 

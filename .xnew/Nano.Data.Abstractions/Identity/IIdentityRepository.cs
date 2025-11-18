@@ -1,15 +1,18 @@
+using Microsoft.AspNetCore.Identity;
+using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Nano.Data.Abstractions.Identity.Models;
-using Nano.Data.Abstractions.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
+using System.Timers;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Abstractions.Identity;
+
+// BUG: Go Through all methods (add, change, remove), e.g. Get Refresh Tokens, and other
 
 /// <summary>
 /// Identity Repository interface.
@@ -48,43 +51,21 @@ public interface IIdentityRepository<TIdentity> : IIdentityRepository
     /// <summary>
     /// Sign-Up a new user.
     /// </summary>
-    /// <param name="signUp">The <see cref="SignUp"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The user.</returns>
-    Task<IdentityUser<TIdentity>> SignUpAsync(SignUp signUp, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Sign-Up a new user.
-    /// </summary>
     /// <typeparam name="TUser">The user type.</typeparam>
-    /// <param name="signUp">The <see cref="SignUp"/>.</param>
+    /// <param name="signUp">The <see cref="SignUp{TUser,TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The user.</returns>
     Task<TUser> SignUpAsync<TUser>(SignUp<TUser, TIdentity> signUp, CancellationToken cancellationToken = default)
         where TUser : class, IEntityUser<TIdentity>;
 
-    // BUG: Remove
-    ///// <summary>
-    ///// Sign-Up a new user using an external login provider.
-    ///// </summary>
-    ///// <typeparam name="TProvider">The provider type.</typeparam>
-    ///// <typeparam name="TUser">The user type.</typeparam>
-    ///// <param name="signUpExternal">The <see cref="BaseSignUpExternal{TProvider, TUser, TIdentity}"/>.</param>
-    ///// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    ///// <returns>The user.</returns>
-    //Task<IdentityUser<TIdentity>> SignUpExternalAsync<TProvider, TUser>(BaseSignUpExternal<TProvider, TUser, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
-    //    where TProvider : BaseLogInExternalProvider, new()
-    //    where TUser : IEntityUser<TIdentity>, new();
-
     /// <summary>
     /// Sign-Up a new user using an external login provider data.
     /// </summary>
-    /// <param name="externalLogInData">The <see cref="ExternalLogInData"/>.</param>
-    /// <param name="roles">The roles.</param>
-    /// <param name="claims">The claims.</param>
+    /// <param name="signUpExternal">The <see cref="SignUpExternal{TUser,TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The user.</returns>
-    Task<IdentityUser<TIdentity>> SignUpExternalAsync(ExternalLogInData externalLogInData, IEnumerable<string> roles = null, IDictionary<string, string> claims = null, CancellationToken cancellationToken = default);
+    Task<TUser> SignUpExternalAsync<TUser>(SignUpExternal<TUser, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
+        where TUser : class, IEntityUser<TIdentity>;
 
     /// <summary>
     /// Gets external login of a user.
@@ -120,27 +101,14 @@ public interface IIdentityRepository<TIdentity> : IIdentityRepository
     /// <returns>The collection of <see cref="ExternalLogin"/>.</returns>
     Task<IEnumerable<ExternalLogin>> GetUserExternalLoginsAsync(IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default);
 
-    // BUG: Remove
-    ///// <summary>
-    ///// Add the extenral login of a user.
-    ///// </summary>
-    ///// <typeparam name="TProvider">The provider type.</typeparam>
-    ///// <param name="addExternalLogin">The <see cref="BaseAddExternalLogin{TProvider, TIdentity}"/>.</param>
-    ///// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    ///// <returns>The <see cref="ExternalLogin"/>.</returns>
-    //Task<ExternalLogin> AddExternalLoginAsync<TProvider>(BaseAddExternalLogin<TProvider, TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
-    //    where TProvider : BaseLogInExternalProvider, new();
-
     /// <summary>
     /// 
     /// </summary>
-    /// <typeparam name="TProvider"></typeparam>
     /// <param name="userId"></param>
     /// <param name="externalLogInData"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ExternalLogin> AddExternalLoginAsync<TProvider>(TIdentity userId, ExternalLogInData externalLogInData, CancellationToken cancellationToken = default)
-        where TProvider : BaseLogInExternalProvider, new();
+    Task<ExternalLogin> AddExternalLoginAsync(TIdentity userId, ExternalLogInData externalLogInData, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Removes the extenral login of a user.
@@ -480,18 +448,6 @@ public interface IIdentityRepository<TIdentity> : IIdentityRepository
     /// <returns>Void.</returns>
     Task RemoveRoleClaimAsync(RemoveRoleClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default);
 
-    // BUG: NOW: should not be public, or? Review it
-    /// <summary>
-    /// Creates a user, and the associated <see cref="IdentityUser{TIdentity}"/>.
-    /// </summary>
-    /// <typeparam name="TUser">The user type.</typeparam>
-    /// <param name="user">The user.</param>
-    /// <param name="identityUser">The <see cref="IdentityUser{TIdentity}"/></param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The created user.</returns>
-    Task<TUser> CreateUser<TUser>(TUser user, IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default)
-        where TUser : class, IEntityUser<TIdentity>;
-
     /// <summary>
     /// Activates the user with the passed user id.
     /// </summary>
@@ -528,5 +484,4 @@ public interface IIdentityRepository<TIdentity> : IIdentityRepository
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
     Task<IdentityUser<TIdentity>> GetIdentityUserOrDefaultAsync(TIdentity userId, CancellationToken cancellationToken = default);
-
 }

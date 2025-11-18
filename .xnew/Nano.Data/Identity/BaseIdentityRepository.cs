@@ -1,9 +1,6 @@
-using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using Nano.Config;
 using Nano.Models.Exceptions;
 using Nano.Models.Extensions;
 using Nano.Security.Const;
@@ -11,27 +8,24 @@ using Nano.Security.Exceptions;
 using Nano.Security.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
+using Z.EntityFramework.Plus;
 using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Security;
 
-// BUG: We need to move models, etc from Data.Abstractions to Web.Identity when they belong to Signin or transient
+// BUG: Check Save changes vs AutoSave like in IRepository
+// BUG: Check when we ask for Id vs identityUser
 
 /// <summary>
 /// Base Identity Repository.
@@ -81,8 +75,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         this.RoleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
     }
 
-    // BUG: add more methods for all stuff in Identity, e.g. Get Refresh Tokens
-
     /// <summary>
     /// Get Pasword Options.
     /// </summary>
@@ -91,64 +83,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     public virtual Task<PasswordOptions> GetPaswordOptionsAsync(CancellationToken cancellationToken = default)
     {
         return Task.FromResult(this.Options.Password);
-    }
-
-    /// <summary>
-    /// Gets the identity user.
-    /// </summary>
-    /// <param name="userId">The user id.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
-    public virtual Task<IdentityUser<TIdentity>> GetIdentityUserAsync(TIdentity userId, CancellationToken cancellationToken = default)
-    {
-        var identityUser = this.UserManager
-            .GetIdentityUserAsync(userId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        return identityUser;
-    }
-
-    /// <summary>
-    /// Gets the identity user or default (null).
-    /// </summary>
-    /// <param name="userId">The user id.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
-    public virtual async Task<IdentityUser<TIdentity>> GetIdentityUserOrDefaultAsync(TIdentity userId, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            return await this.UserManager
-                .GetIdentityUserAsync(userId, cancellationToken);
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    /// <summary>
-    /// Is Email Address Taken.
-    /// </summary>
-    /// <param name="emailAddress">The email address.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="IsEmailAddressTaken"/>.</returns>
-    public virtual async Task<IsEmailAddressTaken> IsEmailAddressTakenAsync(string emailAddress, CancellationToken cancellationToken = default)
-    {
-        if (emailAddress == null)
-            throw new ArgumentNullException(nameof(emailAddress));
-
-        var existingIdentityUser = await this.UserManager
-            .FindByEmailAsync(emailAddress);
-
-        return new IsEmailAddressTaken
-        {
-            IsTaken = existingIdentityUser != null
-        };
     }
 
     /// <summary>
@@ -172,12 +106,34 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <summary>
+    /// Is Email Address Taken.
+    /// </summary>
+    /// <param name="emailAddress">The email address.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IsEmailAddressTaken"/>.</returns>
+    public virtual async Task<IsEmailAddressTaken> IsEmailAddressTakenAsync(string emailAddress, CancellationToken cancellationToken = default)
+    {
+        if (emailAddress == null)
+            throw new ArgumentNullException(nameof(emailAddress));
+
+        var existingIdentityUser = await this.UserManager
+            .FindByEmailAsync(emailAddress);
+
+        return new IsEmailAddressTaken
+        {
+            IsTaken = existingIdentityUser != null
+        };
+    }
+
+    /// <summary>
     /// Sign-Up a new user.
     /// </summary>
-    /// <param name="signUp">The <see cref="SignUp"/>.</param>
+    /// <typeparam name="TUser">The user type.</typeparam>
+    /// <param name="signUp">The <see cref="SignUp{TUser, TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The user.</returns>
-    public virtual async Task<IdentityUser<TIdentity>> SignUpAsync(SignUp signUp, CancellationToken cancellationToken = default)
+    public virtual async Task<TUser> SignUpAsync<TUser>(SignUp<TUser, TIdentity> signUp, CancellationToken cancellationToken = default) 
+        where TUser : class, IEntityUser<TIdentity>
     {
         if (signUp == null)
         {
@@ -216,78 +172,32 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         await this.AssignSignUpRolesAndClaims(identityUser, signUp.Roles, signUp.Claims);
 
-        return identityUser;
+        return await this.CreateUser(signUp.User, identityUser, cancellationToken);
     }
-
-    /// <summary>
-    /// Sign-Up a new user.
-    /// </summary>
-    /// <typeparam name="TUser">The user type.</typeparam>
-    /// <param name="signUp">The <see cref="SignUp"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The user.</returns>
-    public virtual async Task<TUser> SignUpAsync<TUser>(SignUp<TUser, TIdentity> signUp, CancellationToken cancellationToken = default) 
-        where TUser : class, IEntityUser<TIdentity>
-    {
-        if (signUp == null)
-        {
-            throw new ArgumentNullException(nameof(signUp));
-        }
-
-        var identityUser = await this.SignUpAsync(signUp as SignUp, cancellationToken);
-        
-        var user = await this.CreateUser(signUp.User, identityUser, cancellationToken);
-
-        return user;
-    }
-    
-    // BUG: Remove
-    ///// <summary>
-    ///// Sign-Up a new user using an external login provider.
-    ///// </summary>
-    ///// <typeparam name="TProvider">The provider type.</typeparam>
-    ///// <typeparam name="TUser">The user type.</typeparam>
-    ///// <param name="signUpExternal">The <see cref="BaseSignUpExternal{TProvider, TUser, TIdentity}"/>.</param>
-    ///// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    ///// <returns>The user.</returns>
-    //public virtual async Task<IdentityUser<TIdentity>> SignUpExternalAsync<TProvider, TUser>(BaseSignUpExternal<TProvider, TUser, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
-    //    where TProvider : BaseLogInExternalProvider, new()
-    //    where TUser : IEntityUser<TIdentity>, new()
-    //{
-    //    if (signUpExternal == null)
-    //    {
-    //        throw new ArgumentNullException(nameof(signUpExternal));
-    //    }
-
-    //    var externalLoginData = await this.GetExternalProviderLogInData(signUpExternal.Provider, cancellationToken);
-
-    //    return await this.SignUpExternalAsync(externalLoginData, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
-    //}
 
     /// <summary>
     /// Sign-Up a new user using an external login provider data.
     /// </summary>
-    /// <param name="externalLogInData">The <see cref="ExternalLogInData"/>.</param>
-    /// <param name="roles">The roles.</param>
-    /// <param name="claims">The claims.</param>
+    /// <param name="signUpExternal">The <see cref="SignUpExternal{TUser,TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The user.</returns>
-    public virtual async Task<IdentityUser<TIdentity>> SignUpExternalAsync(ExternalLogInData externalLogInData, IEnumerable<string> roles = null, IDictionary<string, string> claims = null, CancellationToken cancellationToken = default)
+    public virtual async Task<TUser> SignUpExternalAsync<TUser>(SignUpExternal<TUser, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
+        where TUser : class, IEntityUser<TIdentity>
     {
-        if (externalLogInData == null)
+        if (signUpExternal == null)
         {
-            throw new ArgumentNullException(nameof(externalLogInData));
+            throw new ArgumentNullException(nameof(signUpExternal));
         }
 
         var identityUser = await this.UserManager
-            .FindByNameAsync(externalLogInData.Email);
+            .FindByNameAsync(signUpExternal.ExternalLogInData.Email);
 
         if (identityUser == null)
         {
             identityUser = new IdentityUser<TIdentity>
             {
-                Email = externalLogInData.Email,
-                UserName = externalLogInData.Email
+                Email = signUpExternal.ExternalLogInData.Email,
+                UserName = signUpExternal.ExternalLogInData.Email
             };
 
             var createResult = await this.UserManager
@@ -298,10 +208,10 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
                 this.ThrowIdentityExceptions(createResult.Errors);
             }
 
-            await this.AssignSignUpRolesAndClaims(identityUser, roles, claims);
+            await this.AssignSignUpRolesAndClaims(identityUser, signUpExternal.Roles, signUpExternal.Claims);
         }
 
-        var userLoginInfo = new UserLoginInfo(externalLogInData.ExternalToken.Name, externalLogInData.Id, externalLogInData.ExternalToken.Name);
+        var userLoginInfo = new UserLoginInfo(signUpExternal.ExternalLogInData.ExternalToken.Name, signUpExternal.ExternalLogInData.Id, signUpExternal.ExternalLogInData.ExternalToken.Name);
 
         var addLoginResult = await this.UserManager
             .AddLoginAsync(identityUser, userLoginInfo);
@@ -314,7 +224,52 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         await this.SignInManager
             .SignInAsync(identityUser, false);
 
+        return await this.CreateUser(signUpExternal.User, identityUser, cancellationToken);
+    }
+
+
+
+
+
+
+
+
+    /// <summary>
+    /// Gets the identity user.
+    /// </summary>
+    /// <param name="userId">The user id.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
+    public virtual Task<IdentityUser<TIdentity>> GetIdentityUserAsync(TIdentity userId, CancellationToken cancellationToken = default)
+    {
+        var identityUser = this.UserManager
+            .GetIdentityUserAsync(userId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NullReferenceException(nameof(identityUser));
+        }
+
         return identityUser;
+    }
+
+    /// <summary>
+    /// Gets the identity user or default (null).
+    /// </summary>
+    /// <param name="userId">The user id.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
+    public virtual async Task<IdentityUser<TIdentity>> GetIdentityUserOrDefaultAsync(TIdentity userId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await this.UserManager
+                .GetIdentityUserAsync(userId, cancellationToken);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     /// <summary>
@@ -404,62 +359,14 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             });
     }
 
-    // BUG: REmove
-    ///// <summary>
-    ///// Add the extenral login of a user.
-    ///// </summary>
-    ///// <typeparam name="TProvider">The provider type.</typeparam>
-    ///// <param name="addExternalLogin">The <see cref="BaseAddExternalLogin{TProvider, TIdentity}"/>.</param>
-    ///// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    ///// <returns>The <see cref="ExternalLogin"/>.</returns>
-    //public virtual async Task<ExternalLogin> AddExternalLoginAsync<TProvider>(BaseAddExternalLogin<TProvider, TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
-    //    where TProvider : BaseLogInExternalProvider, new()
-    //{
-    //    if (addExternalLogin == null)
-    //    {
-    //        throw new ArgumentNullException(nameof(addExternalLogin));
-    //    }
-
-    //    var identityUser = await this.UserManager
-    //        .GetIdentityUserAsync(addExternalLogin.UserId, cancellationToken);
-
-    //    if (identityUser == null)
-    //    {
-    //        throw new NullReferenceException(nameof(identityUser));
-    //    }
-        
-    //    var externalProviderLogInData = await this.GetExternalProviderLogInData(addExternalLogin.Provider, cancellationToken);
-    //    var userLoginInfo = new UserLoginInfo(externalProviderLogInData.ExternalToken.Name, externalProviderLogInData.Id, externalProviderLogInData.ExternalToken.Name);
-
-    //    var addLoginResult = await this.UserManager
-    //        .AddLoginAsync(identityUser, userLoginInfo);
-
-    //    if (!addLoginResult.Succeeded)
-    //    {
-    //        this.ThrowIdentityExceptions(addLoginResult.Errors);
-    //    }
-
-    //    return new ExternalLogin
-    //    {
-    //        Key = userLoginInfo.ProviderKey,
-    //        Provider =
-    //        {
-    //            Name = userLoginInfo.LoginProvider,
-    //            DisplayName = userLoginInfo.ProviderDisplayName
-    //        }
-    //    };
-    //}
-
     /// <summary>
     /// Add the extenral login of a user.
     /// </summary>
-    /// <typeparam name="TProvider">The provider type.</typeparam>
     /// <param name="userId"></param>
     /// <param name="externalLogInData">The <see cref="ExternalLogInData"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="ExternalLogin"/>.</returns>
-    public virtual async Task<ExternalLogin> AddExternalLoginAsync<TProvider>(TIdentity userId, ExternalLogInData externalLogInData, CancellationToken cancellationToken = default)
-        where TProvider : BaseLogInExternalProvider, new()
+    public virtual async Task<ExternalLogin> AddExternalLoginAsync(TIdentity userId, ExternalLogInData externalLogInData, CancellationToken cancellationToken = default)
     {
         if (externalLogInData == null)
         {
@@ -834,7 +741,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     /// <param name="setUsername">Set username.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    public virtual async Task ChangeEmailAsync(ChangeEmail<TIdentity> changeEmail, bool setUsername, CancellationToken cancellationToken = default)
+    public virtual async Task ChangeEmailAsync(ChangeEmail<TIdentity> changeEmail, bool setUsername, CancellationToken cancellationToken = default) 
     {
         if (changeEmail == null)
         {
@@ -885,6 +792,8 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             }, cancellationToken);
         }
 
+        // BUG: this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id);
+
         await this.DbContext
             .SaveChangesAsync(cancellationToken);
     }
@@ -917,6 +826,8 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         {
             this.ThrowIdentityExceptions(result.Errors);
         }
+
+        // BUG: this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id);
     }
 
     /// <summary>
@@ -967,6 +878,8 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         this.DbContext
             .Update(identityUserChangeData);
 
+        // BUG: this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id);
+
         await this.DbContext
             .SaveChangesAsync(cancellationToken);
     }
@@ -999,6 +912,8 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         {
             this.ThrowIdentityExceptions(result.Errors);
         }
+
+        // BUG: this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id);
     }
 
     /// <summary>
@@ -1913,45 +1828,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <summary>
-    /// Creates a user, and the associated <see cref="IdentityUser{TIdentity}"/>.
-    /// </summary>
-    /// <typeparam name="TUser">The user type.</typeparam>
-    /// <param name="user">The user.</param>
-    /// <param name="identityUser">The <see cref="IdentityUser{TIdentity}"/></param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The created user.</returns>
-    public virtual async Task<TUser> CreateUser<TUser>(TUser user, IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default)
-        where TUser : class, IEntityUser<TIdentity>
-    {
-        if (identityUser == null)
-        {
-            throw new ArgumentNullException(nameof(identityUser));
-        }
-
-        user.Id = identityUser.Id.Parse<TIdentity>();
-
-        user.IdentityUser = this.DbContext
-            .Find<IdentityUser<TIdentity>>(identityUser.Id);
-
-        try
-        {
-            await this.DbContext
-                .AddAsync(user, cancellationToken);
-
-            await this.DbContext
-                .SaveChangesAsync(cancellationToken);
-        }
-        catch
-        {
-            await this.DeleteIdentityUser(identityUser, cancellationToken);
-
-            throw;
-        }
-
-        return user;
-    }
-
-    /// <summary>
     /// Activates the user with the passed user id.
     /// </summary>
     /// <typeparam name="TUser">The user type.</typeparam>
@@ -1975,6 +1851,8 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         var entityEntry = this.DbContext
             .Update(user);
+
+        // BUG: this.UpdateEntityUserWhenIdentityUserChanges(id);
 
         await this.DbContext
             .SaveChangesAsync(cancellationToken);
@@ -2015,6 +1893,8 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         var entityEntry = this.DbContext
             .Update(user);
+
+        // BUG: this.UpdateEntityUserWhenIdentityUserChanges(id);
 
         await this.DbContext
             .SaveChangesAsync(cancellationToken);
@@ -2074,6 +1954,54 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         await this.DbContext
             .SaveChangesAsync(cancellationToken);
     }
+    private void UpdateEntityUserWhenIdentityUserChanges<TEntity>(TIdentity userId)
+        where TEntity : class, IEntityIdentity<TIdentity>
+    {
+        // BUG: 000: We want to avoid have TEntity as generic parameters. Activate and Deactiveate already have it, can it be removed?
+
+        var user = this.DbContext
+            .Set<TEntity>()
+            .IgnoreQueryFilters()
+            .SingleOrDefault(x => x.Id.Equals(userId));
+
+        if (user == null)
+        {
+            throw new NullReferenceException(nameof(user));
+        }
+
+        this.DbContext
+            .Update(user);
+    }
+    private async Task<TUser> CreateUser<TUser>(TUser user, IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default)
+        where TUser : class, IEntityUser<TIdentity>
+    {
+        if (identityUser == null)
+        {
+            throw new ArgumentNullException(nameof(identityUser));
+        }
+
+        user.Id = identityUser.Id.Parse<TIdentity>();
+
+        user.IdentityUser = this.DbContext
+            .Find<IdentityUser<TIdentity>>(identityUser.Id);
+
+        try
+        {
+            await this.DbContext
+                .AddAsync(user, cancellationToken);
+
+            await this.DbContext
+                .SaveChangesAsync(cancellationToken);
+        }
+        catch
+        {
+            await this.DeleteIdentityUser(identityUser, cancellationToken);
+
+            throw;
+        }
+
+        return user;
+    }
 
     /// <summary>
     /// 
@@ -2091,5 +2019,4 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         throw new AggregateException(exceptions);
     }
-
 }

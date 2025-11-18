@@ -19,7 +19,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Nano.Data.Abstractions.Config;
-using Nano.Data.Abstractions.Extensions;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models;
@@ -52,7 +51,7 @@ public abstract class BaseIdentityAuthRepository
     /// <param name="options">The <see cref="IdentityOptions"/>.</param>
     protected BaseIdentityAuthRepository(ILogger logger, IdentityOptions options)
     {
-        this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.Logger = logger;
         this.Options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
@@ -75,9 +74,9 @@ public abstract class BaseIdentityAuthRepository
         {
             return logInExternalProvider.Name switch
             {
-                "Google" => await this.GetExternalProviderLoginDataGoogle(logInExternalProvider, this.Options.Authentication.Jwt.ExternalLogins.Google),
-                "Facebook" => await this.GetExternalProviderLoginDataFacebook(logInExternalProvider, this.Options.Authentication.Jwt.ExternalLogins.Facebook, cancellationToken),
-                "Microsoft" => await this.GetExternalProviderLoginDataMicrosoft(logInExternalProvider, this.Options.Authentication.Jwt.ExternalLogins.Microsoft, cancellationToken),
+                "Google" => await this.GetExternalProviderLoginDataGoogle(logInExternalProvider, this.Options.Authentication.Jwt?.ExternalLogins?.Google),
+                "Facebook" => await this.GetExternalProviderLoginDataFacebook(logInExternalProvider, this.Options.Authentication.Jwt?.ExternalLogins?.Facebook, cancellationToken),
+                "Microsoft" => await this.GetExternalProviderLoginDataMicrosoft(logInExternalProvider, this.Options.Authentication.Jwt?.ExternalLogins?.Microsoft, cancellationToken),
                 _ => throw new NotSupportedException(logInExternalProvider.Name)
             };
         }
@@ -116,9 +115,9 @@ public abstract class BaseIdentityAuthRepository
                 new(JwtRegisteredClaimNames.Sub, tokenData.UserId),
                 new(JwtRegisteredClaimNames.Name, tokenData.Username),
                 new(JwtRegisteredClaimNames.Email, tokenData.UserEmail),
-                new(ClaimTypesExtended.ExternalProviderName, tokenData.ExternalToken.Name ?? string.Empty),
-                new(ClaimTypesExtended.ExternalProviderToken, tokenData.ExternalToken.Token ?? string.Empty),
-                new(ClaimTypesExtended.ExternalProviderRefreshToken, tokenData.ExternalToken.RefreshToken ?? string.Empty)
+                new(ClaimTypesExtended.ExternalProviderName, tokenData.ExternalToken?.Name ?? string.Empty),
+                new(ClaimTypesExtended.ExternalProviderToken, tokenData.ExternalToken?.Token ?? string.Empty),
+                new(ClaimTypesExtended.ExternalProviderRefreshToken, tokenData.ExternalToken?.RefreshToken ?? string.Empty)
             }
             .Union(tokenData.Claims)
             .Distinct();
@@ -581,7 +580,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : BaseIdentityAuthRe
         return await this.GenerateJwtToken(identityUser, appId, logInExternalDirect.IsRefreshable, logInExternalDirect.ExternalLogInData.ExternalToken.Name, logInExternalDirect.ExternalLogInData.ExternalToken.Token, logInExternalDirect.ExternalLogInData.ExternalToken.RefreshToken, logInExternalDirect.TransientClaims, logInExternalDirect.TransientRoles, cancellationToken);
     }
 
-    // BUG: SignInExternalRefresh (refresh externally and then make new token if suceededs.
+    // BUG: SignInExternalRefresh (refresh externally and then make new token if suceededs. Looks like it's already implemented. Check it.
 
     /// <summary>
     /// Refresh the login of a user.
@@ -701,7 +700,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : BaseIdentityAuthRe
             UserId = identityUser.Id.ToString(),
             Username = identityUser.UserName,
             UserEmail = identityUser.Email,
-            ExternalToken =
+            ExternalToken = new ExternalLoginTokenData
             {
                 Name = externalProviderName,
                 Token = externalProviderToken,

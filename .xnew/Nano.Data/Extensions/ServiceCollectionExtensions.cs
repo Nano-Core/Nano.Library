@@ -1,35 +1,40 @@
 using EFCoreSecondLevelCacheInterceptor;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.Config;
 using Nano.Config.Extensions;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
-using Nano.Data.Abstractions.Extensions;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Identity.Extensions;
 using Nano.Data.Interfaces;
-using Nano.Data.Models;
 using Nano.Repository;
 using Nano.Security;
-using Nano.Security.Extensions;
-using Newtonsoft.Json.Linq;
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net.Http;
+using Nano.Web.Extensions;
 using Z.EntityFramework.Extensions;
 using Z.EntityFramework.Plus;
 using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;
 
 namespace Nano.Data.Extensions;
+
+/// <summary>
+/// Default values used by <see cref="T:Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler" /> for JWT bearer authentication.
+/// </summary>
+public static class JwtBearerDefaults
+{
+    /// <summary>
+    /// Default value for AuthenticationScheme property in the <see cref="T:Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerOptions" />.
+    /// </summary>
+    public const string AuthenticationScheme = "Bearer";
+}
+
 
 /// <summary>
 /// Service Collection Extensions.
@@ -156,6 +161,8 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
+        // TEST: Do we still create the Identity tables, when Identity is null?
+
         services
             .AddIdentityStore<TContext, TIdentity>()
             .AddIdentityOptions(options);
@@ -166,9 +173,6 @@ public static class ServiceCollectionExtensions
                 x.TokenLifespan = TimeSpan.FromHours(options.TokensExpirationInHours);
             });
 
-        services
-            .AddScoped<IIdentityRepository<TIdentity>, DefaultIdentityRepository<TIdentity>>();
-
         return services;
     }
     private static IServiceCollection AddIdentityStore<TContext, TIdentity>(this IServiceCollection services)
@@ -178,12 +182,17 @@ public static class ServiceCollectionExtensions
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        services
-            .AddIdentity<IdentityUser<TIdentity>, IdentityRole<TIdentity>>()
+        var identityBuilder = services
+            .AddIdentity<IdentityUser<TIdentity>, IdentityRole<TIdentity>>();
+
+        identityBuilder
             .AddEntityFrameworkStores<TContext>()
             .AddTokenProvider<DataProtectorTokenProvider<IdentityUser<TIdentity>>>(JwtBearerDefaults.AuthenticationScheme)
             .AddDefaultTokenProviders()
             .AddCustomTokenProvider();
+
+        services
+            .AddScoped<IIdentityRepository<TIdentity>, DefaultIdentityRepository<TIdentity>>();
 
         return services;
     }
@@ -244,18 +253,13 @@ public static class ServiceCollectionExtensions
             AuditManager.DefaultConfiguration.AutoSavePreAction = (dbContext, audit) =>
             {
                 var httpContextAccessor = dbContext
-                    .GetService<IHttpContextAccessor>(); // BUG: Check implementation of this, maybe we can do it more easily. Also the name is almost the same as one in NuGet
+                    .GetService<IHttpContextAccessor>();
 
+                var requestId = httpContextAccessor?.HttpContext?.TraceIdentifier;
 
-                var a = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sub);
-                var userId = Guid.TryParse(a.Value, out var result);
-
-                //var authorizationHeader = httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString();
-                //const string PREFIX = "Baerer ";
-                //var value = authorizationHeader[PREFIX.Length..];
-
-                var requestId = httpContextAccessor.HttpContext?.TraceIdentifier;
-                var createdBy = httpContextAccessor.HttpContext?.GetJwtUserId()?.ToString(); // BUG: Only place HttpContextExtensions are needed
+                var createdBy = httpContextAccessor?.HttpContext?
+                    .GetJwtUserId()?
+                    .ToString();
 
                 var customAuditEntries = audit.Entries
                     .Where(x => x.AuditEntryID == 0)
@@ -344,7 +348,7 @@ public static class ServiceCollectionExtensions
         if (!options.UseHealthCheck)
             return services;
 
-        // BUG: 000: Move to data provider projects
+        // BUG: Move to data provider projects
         //if (typeof(TProvider) == typeof(MySqlProvider))
         //{
         //    services

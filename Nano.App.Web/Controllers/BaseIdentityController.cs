@@ -109,6 +109,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(DefaultEntityUser), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpAsync([FromBody][Required] SignUp<TEntity, TIdentity> signUp, CancellationToken cancellationToken = default)
@@ -140,20 +141,19 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(DefaultEntityUser), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpExternalDirectAsync([FromBody][Required] SignUpExternalDirect<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
     {
-        var identityUser = await this.IdentityManager
-            .SignUpExternalAsync(signUpExternal.ExternalLogInData, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
-
-        if (identityUser == null)
-        {
-            return this.NotFound();
-        }
-
         var user = await this.IdentityManager
-            .CreateUser(signUpExternal.User, identityUser, cancellationToken);
+            .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
+            {
+                User = signUpExternal.User,
+                ExternalLogInData = signUpExternal.ExternalLogInData,
+                Roles = signUpExternal.Roles,
+                Claims = signUpExternal.Claims
+            }, cancellationToken);
 
         if (user == null)
         {
@@ -185,16 +185,14 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var externalProviderLogInData = await this.IdentityManagerAuth
             .GetExternalProviderLogInData(signUpExternal.Provider, cancellationToken);
 
-        var identityUser = await this.IdentityManager
-            .SignUpExternalAsync(externalProviderLogInData, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
-
-        if (identityUser == null)
-        {
-            return this.NotFound();
-        }
-
         var user = await this.IdentityManager
-            .CreateUser(signUpExternal.User, identityUser, cancellationToken);
+            .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
+            {
+                User = signUpExternal.User,
+                ExternalLogInData = externalProviderLogInData,
+                Roles = signUpExternal.Roles,
+                Claims = signUpExternal.Claims
+            }, cancellationToken);
 
         if (user == null)
         {
@@ -226,16 +224,14 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var externalProviderLogInData = await this.IdentityManagerAuth
             .GetExternalProviderLogInData(signUpExternal.Provider, cancellationToken);
 
-        var identityUser = await this.IdentityManager
-            .SignUpExternalAsync(externalProviderLogInData, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
-
-        if (identityUser == null)
-        {
-            return this.NotFound();
-        }
-
         var user = await this.IdentityManager
-            .CreateUser(signUpExternal.User, identityUser, cancellationToken);
+            .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
+            {
+                User = signUpExternal.User,
+                ExternalLogInData = externalProviderLogInData,
+                Roles = signUpExternal.Roles,
+                Claims = signUpExternal.Claims
+            }, cancellationToken);
 
         if (user == null)
         {
@@ -267,16 +263,14 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var externalProviderLogInData = await this.IdentityManagerAuth
             .GetExternalProviderLogInData(signUpExternal.Provider, cancellationToken);
 
-        var identityUser = await this.IdentityManager
-            .SignUpExternalAsync(externalProviderLogInData, signUpExternal.Roles, signUpExternal.Claims, cancellationToken);
-
-        if (identityUser == null)
-        {
-            return this.NotFound();
-        }
-
         var user = await this.IdentityManager
-            .CreateUser(signUpExternal.User, identityUser, cancellationToken);
+            .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
+            {
+                User = signUpExternal.User,
+                ExternalLogInData = externalProviderLogInData,
+                Roles = signUpExternal.Roles,
+                Claims = signUpExternal.Claims
+            }, cancellationToken);
 
         if (user == null)
         {
@@ -481,8 +475,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         await this.IdentityManager
             .ChangeEmailAsync(changeEmail, setUsername, cancellationToken);
 
-        await this.UpdateEntityUserWhenIdentityUserChanges(changeEmail.UserId, cancellationToken);
-
         return this.Ok();
     }
 
@@ -541,8 +533,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         await this.IdentityManager
             .ConfirmEmailAsync(confirmEmail, cancellationToken);
-
-        await this.UpdateEntityUserWhenIdentityUserChanges(confirmEmail.UserId, cancellationToken);
 
         return this.Ok();
     }
@@ -631,8 +621,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         await this.IdentityManager
             .ChangePhoneNumberAsync(changePhoneNumber, cancellationToken);
 
-        await this.UpdateEntityUserWhenIdentityUserChanges(changePhoneNumber.UserId, cancellationToken);
-
         return this.Ok();
     }
 
@@ -691,8 +679,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         await this.IdentityManager
             .ConfirmPhoneNumberAsync(confirmPhoneNumber, cancellationToken);
-
-        await this.UpdateEntityUserWhenIdentityUserChanges(confirmPhoneNumber.UserId, cancellationToken);
 
         return this.Ok();
     }
@@ -843,7 +829,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
             .GetExternalProviderLogInData(addExternalLogin.Provider, cancellationToken);
 
         var externalLogin = await this.IdentityManager
-            .AddExternalLoginAsync<ExternalLoginProviderGoogle>(addExternalLogin.UserId, externalProviderLogInData, cancellationToken);
+            .AddExternalLoginAsync(addExternalLogin.UserId, externalProviderLogInData, cancellationToken);
 
         return this.Ok(externalLogin);
     }
@@ -874,7 +860,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
             .GetExternalProviderLogInData(addExternalLogin.Provider, cancellationToken);
 
         var externalLogin = await this.IdentityManager
-            .AddExternalLoginAsync<ExternalLoginProviderFacebook>(addExternalLogin.UserId, externalProviderLogInData, cancellationToken);
+            .AddExternalLoginAsync(addExternalLogin.UserId, externalProviderLogInData, cancellationToken);
 
         return this.Ok(externalLogin);
     }
@@ -905,7 +891,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
             .GetExternalProviderLogInData(addExternalLogin.Provider, cancellationToken);
 
         var externalLogin = await this.IdentityManager
-            .AddExternalLoginAsync<ExternalLoginProviderMicrosoft>(addExternalLogin.UserId, externalProviderLogInData, cancellationToken);
+            .AddExternalLoginAsync(addExternalLogin.UserId, externalProviderLogInData, cancellationToken);
 
         return this.Ok(externalLogin);
     }
@@ -1438,8 +1424,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         await this.IdentityManager
             .ActivateIdentityUser<TEntity>(id, cancellationToken);
 
-        await this.UpdateEntityUserWhenIdentityUserChanges(id, cancellationToken);
-
         await this.Repository
             .SaveChangesAsync(cancellationToken);
 
@@ -1469,8 +1453,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         await this.IdentityManager
             .DeactivateIdentityUser<TEntity>(id, cancellationToken);
-
-        await this.UpdateEntityUserWhenIdentityUserChanges(id, cancellationToken);
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
@@ -1556,26 +1538,5 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
             .SaveChangesAsync(cancellationToken);
 
         return this.Ok();
-    }
-
-    private async Task UpdateEntityUserWhenIdentityUserChanges(TIdentity userId, CancellationToken cancellationToken)
-    {
-        // BUG: NOW: Doesn't ignore query filters, but we removed the GetContext method
-        var user = await this.Repository
-            .GetAsync<TEntity, TIdentity>(userId, cancellationToken);
-
-        //var user = this.Repository
-        //    .GetContext()
-        //    .Set<TEntity>()
-        //    .IgnoreQueryFilters()
-        //    .SingleOrDefault(x => x.Id.Equals(userId));
-
-        if (user == null)
-        {
-            throw new NullReferenceException(nameof(user));
-        }
-
-        await this.Repository
-            .UpdateAsync(user, cancellationToken);
     }
 }

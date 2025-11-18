@@ -20,7 +20,6 @@
 	<ItemGroup>
 		<PackageReference Include="DynamicExpression" Version="9.0.3" />
 		<PackageReference Include="libphonenumber-csharp" Version="9.0.17" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
 	</ItemGroup>
 
