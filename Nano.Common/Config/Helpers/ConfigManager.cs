@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 
-namespace Nano.Config;
+namespace Nano.Common.Config.Helpers;
 
 /// <summary>
 /// Config Manager.

@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Nano.Models.Extensions;
+namespace Nano.Common.Extensions;
 
 /// <summary>
 /// Stream Extensions.

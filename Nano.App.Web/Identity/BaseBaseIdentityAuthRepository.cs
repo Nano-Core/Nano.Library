@@ -7,9 +7,9 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
+using Nano.Common.Exceptions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Identity.Models;
-using Nano.Security.Exceptions;
 using IdentityOptions = Nano.Web.IdentityOptions;
 
 namespace Nano.App.Web.Identity;

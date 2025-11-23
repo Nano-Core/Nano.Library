@@ -1,4 +1,4 @@
-using Nano.Data.Interfaces;
+using Nano.Data.Abstractions;
 
 namespace Nano.Data;
 

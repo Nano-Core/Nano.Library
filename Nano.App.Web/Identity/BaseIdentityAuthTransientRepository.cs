@@ -1,13 +1,13 @@
 using Nano.App.Web.Identity.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Models;
-using Nano.Security.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.Common.Exceptions;
 using IdentityOptions = Nano.Web.IdentityOptions;
 
 namespace Nano.App.Web.Identity;
@@ -35,11 +35,11 @@ public abstract class BaseIdentityAuthTransientRepository<TIdentity> : BaseBaseI
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> SignInAdminTransientAsync(LogIn logIn, CancellationToken cancellationToken = default)
+    public virtual AccessToken LogInRootTransientAsync(LogInRoot logInRoot)
     {
-        if (logIn == null)
+        if (logInRoot == null)
         {
-            throw new ArgumentNullException(nameof(logIn));
+            throw new ArgumentNullException(nameof(logInRoot));
         }
 
         if (this.Options.Authentication.RootLogin?.Username == null)
@@ -52,25 +52,25 @@ public abstract class BaseIdentityAuthTransientRepository<TIdentity> : BaseBaseI
             throw new NullReferenceException(nameof(this.Options.Authentication.RootLogin.Password));
         }
 
-        if (logIn.Username != this.Options.Authentication.RootLogin.Username || logIn.Password != this.Options.Authentication.RootLogin.Password)
+        if (logInRoot.Username != this.Options.Authentication.RootLogin.Username || logInRoot.Password != this.Options.Authentication.RootLogin.Password)
         {
-            throw new UnauthorizedException($"The user: {logIn.Username} failed with incorrect username or password.");
+            throw new UnauthorizedException($"The user: {logInRoot.Username} failed with incorrect username or password.");
         }
 
-        var tokenData = new AccessTokenData
+        var tokenData = new GenerateJwtToken
         {
             UserId = default,
-            Username = this.Options.Authentication.RootLogin.Username,
+            UserName = this.Options.Authentication.RootLogin.Username,
             Claims =
             [
                 new Claim(ClaimTypes.Role, BuiltInUserRoles.ADMINISTRATOR)
             ]
         };
 
-        var jwtToken = await this.IdentityJwtRepository
+        var accessToken = this.IdentityJwtRepository
             .GenerateJwtToken(tokenData);
 
-        return new AccessToken(jwtToken);
+        return accessToken;
     }
 
     /// <inheritdoc />
@@ -83,7 +83,7 @@ public abstract class BaseIdentityAuthTransientRepository<TIdentity> : BaseBaseI
         if (this.Options.Authentication.Jwt.ExternalLogins.Facebook != null)
         {
             const string NAME = nameof(this.Options.Authentication.Jwt.ExternalLogins.Facebook);
-         
+
             schemes
                 .Add(new ExternalLoginProvider
                 {
@@ -120,26 +120,26 @@ public abstract class BaseIdentityAuthTransientRepository<TIdentity> : BaseBaseI
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> SignInExternalTransientAsync<TProvider>(BaseLogInExternal<TProvider> logInExternalTransient, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInExternalTransientAsync<TProvider>(BaseLogInExternal<TProvider> logInExternalTransient, CancellationToken cancellationToken = default)
         where TProvider : BaseLogInExternalProvider, new()
     {
         if (logInExternalTransient == null)
             throw new ArgumentNullException(nameof(logInExternalTransient));
 
-        // BUG: We are not using all properties from the logInExternalTransient
-
         var externalLoginData = await this.GetExternalProviderLogInData(logInExternalTransient.Provider, cancellationToken);
 
-        return await this.SignInExternalTransientAsync(externalLoginData, logInExternalTransient.TransientRoles, logInExternalTransient.TransientClaims, cancellationToken);
+        return await this.LogInExternalTransientAsync(externalLoginData, logInExternalTransient.TransientRoles, logInExternalTransient.TransientClaims, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> SignInExternalTransientAsync(ExternalLogInData externalLogInData, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInExternalTransientAsync(ExternalLogInData externalLogInData, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default)
     {
         if (externalLogInData == null)
         {
             throw new ArgumentNullException(nameof(externalLogInData));
         }
+
+        await Task.CompletedTask;
 
         var claims = transientClaims?
             .Select(x => new Claim(x.Key, x.Value)) ?? new List<Claim>();
@@ -147,24 +147,24 @@ public abstract class BaseIdentityAuthTransientRepository<TIdentity> : BaseBaseI
         var roleClaims = transientRoles?
             .Select(x => new Claim(ClaimTypes.Role, x)) ?? new List<Claim>();
 
-        var tokenData = new AccessTokenData
+        var tokenData = new GenerateJwtToken
         {
             UserId = externalLogInData.Id,
-            Username = externalLogInData.Name,
+            UserName = externalLogInData.Name,
             UserEmail = externalLogInData.Email,
             ExternalToken = externalLogInData.ExternalToken,
             Claims = claims
                 .Union(roleClaims)
         };
 
-        var jwtToken = await this.IdentityJwtRepository
+        var accessToken = this.IdentityJwtRepository
             .GenerateJwtToken(tokenData);
 
-        return new AccessToken(jwtToken);
+        return accessToken;
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> SignInExternalTransientRefreshAsync(LogInTExternalransientRefresh logInRefresh, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInExternalTransientRefreshAsync(LogInExternalTransientRefresh logInRefresh, CancellationToken cancellationToken = default)
     {
         await Task.CompletedTask;
 

@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.Models.Extensions;
+namespace Nano.Data.Extensions;
 
 /// <summary>
 /// DateTimeOffset Extensions.

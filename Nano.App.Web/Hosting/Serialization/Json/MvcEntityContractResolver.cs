@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Reflection;
+using Nano.Common.Extensions;
+using Nano.Common.Serialization.Json;
 using Nano.Data.Abstractions.Annotations;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Models.Attributes;
-using Nano.Models.Extensions;
-using Nano.Models.Serialization.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 

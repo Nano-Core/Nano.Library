@@ -1,9 +1,9 @@
 using Nano.Data.Abstractions.Identity.Models;
-using Nano.Security.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.Common.Exceptions;
 
 namespace Nano.App.Web.Identity.Abstractions;
 
@@ -38,15 +38,7 @@ public interface IIdentityAuthRepository<TIdentity>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="UnauthorizedException"></exception>
-    Task<AccessToken> SignInAsync(LogIn logIn, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="logInExternalDirect"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task<AccessToken> SignInExternalDirectAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default);
+    Task<AccessToken> LogInAsync(LogIn logIn, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
@@ -55,8 +47,16 @@ public interface IIdentityAuthRepository<TIdentity>
     /// <param name="logInExternal"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<AccessToken> SignInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternal, CancellationToken cancellationToken = default)
+    Task<AccessToken> LogInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternal, CancellationToken cancellationToken = default)
         where TProvider : BaseLogInExternalProvider, new();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="logInExternalDirect"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<AccessToken> LogInExternalDirectAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
@@ -64,7 +64,7 @@ public interface IIdentityAuthRepository<TIdentity>
     /// <param name="logInRefresh"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<AccessToken> SignInRefreshAsync(LogInRefresh logInRefresh, CancellationToken cancellationToken = default);
+    Task<AccessToken> LogInRefreshAsync(LogInRefresh logInRefresh, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Logs out a user.

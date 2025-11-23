@@ -1,13 +1,15 @@
 using Nano.App.Web.Identity.Abstractions;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Models;
-using Nano.Security.Exceptions;
 using Nano.Web.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.Common.Exceptions;
+using Nano.Common.Identity.Extensions;
+using Nano.Data.Abstractions.Identity.Abstractions;
 using IdentityOptions = Nano.Web.IdentityOptions;
 
 namespace Nano.App.Web.Identity;
@@ -50,7 +52,7 @@ public class BaseIdentityAuthRepository<TIdentity> : BaseBaseIdentityAuthReposit
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> SignInAsync(LogIn logIn, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInAsync(LogIn logIn, CancellationToken cancellationToken = default)
     {
         var identityUser = await this.IdentityRepository
             .SignInAsync(new SignIn
@@ -68,68 +70,26 @@ public class BaseIdentityAuthRepository<TIdentity> : BaseBaseIdentityAuthReposit
         var claims = await this.IdentityRepository
             .GetAllClaims(identityUser, logIn.TransientRoles, logIn.TransientClaims, cancellationToken);
 
-        var jwtToken = await this.IdentityJwtRepository
-            .GenerateJwtToken(new GenerateJwtToken<TIdentity>
+        var accessToken = this.IdentityJwtRepository
+            .GenerateJwtToken(new GenerateJwtToken
             {
                 AppId = logIn.AppId,
-                UserId = identityUser.Id,
+                UserId = identityUser.Id.ToString(),
                 UserName = identityUser.UserName,
-                Email = identityUser.Email,
+                UserEmail = identityUser.Email,
                 Claims = claims
-            }, cancellationToken);
+            });
 
-        var refreshToken = logIn.IsRefreshable
+        accessToken.RefreshToken = logIn.IsRefreshable
             ? await this.IdentityRepository
                 .CreateRefreshToken(identityUser, logIn.AppId, this.Options.Authentication.Jwt.RefreshExpirationInHours)
             : null;
 
-        return new AccessToken(jwtToken, refreshToken);
+        return accessToken;
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> SignInExternalDirectAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
-    {
-        var identityUser = await this.IdentityRepository
-            .SignInExternalAsync(new SignInExternal
-            {
-                ExternalLogInData = new ExternalLogInData
-                {
-                    Id = logInExternalDirect.ExternalLogInData.Id,
-                    Name = logInExternalDirect.ExternalLogInData.Name,
-                    Email = logInExternalDirect.ExternalLogInData.Email,
-                    ExternalToken = logInExternalDirect.ExternalLogInData.ExternalToken
-                },
-                IsRememberMe = logInExternalDirect.IsRememberMe
-            }, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new UnauthorizedException();
-        }
-
-        var claims = await this.IdentityRepository
-            .GetAllClaims(identityUser, logInExternalDirect.TransientRoles, logInExternalDirect.TransientClaims, cancellationToken);
-
-        var jwtToken = await this.IdentityJwtRepository
-            .GenerateJwtToken(new GenerateJwtToken<TIdentity>
-            {
-                AppId = logInExternalDirect.AppId,
-                UserId = identityUser.Id,
-                UserName = identityUser.UserName,
-                Email = identityUser.Email,
-                Claims = claims
-            }, cancellationToken);
-
-        var refreshToken = logInExternalDirect.IsRefreshable
-            ? await this.IdentityRepository
-                .CreateRefreshToken(identityUser, logInExternalDirect.AppId, this.Options.Authentication.Jwt.RefreshExpirationInHours)
-            : null;
-
-        return new AccessToken(jwtToken, refreshToken);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<AccessToken> SignInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternal, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternal, CancellationToken cancellationToken = default)
         where TProvider : BaseLogInExternalProvider, new()
     {
         if (logInExternal == null)
@@ -158,26 +118,68 @@ public class BaseIdentityAuthRepository<TIdentity> : BaseBaseIdentityAuthReposit
         var claims = await this.IdentityRepository
             .GetAllClaims(identityUser, logInExternal.TransientRoles, logInExternal.TransientClaims, cancellationToken);
 
-        var jwtToken = await this.IdentityJwtRepository
-            .GenerateJwtToken(new GenerateJwtToken<TIdentity>
+        var accessToken = this.IdentityJwtRepository
+            .GenerateJwtToken(new GenerateJwtToken
             {
                 AppId = logInExternal.AppId,
-                UserId = identityUser.Id,
+                UserId = identityUser.Id.ToString(),
                 UserName = identityUser.UserName,
-                Email = identityUser.Email,
+                UserEmail = identityUser.Email,
                 Claims = claims
-            }, cancellationToken);
+            });
 
-        var refreshToken = logInExternal.IsRefreshable
+        accessToken.RefreshToken = logInExternal.IsRefreshable
             ? await this.IdentityRepository
                 .CreateRefreshToken(identityUser, logInExternal.AppId, this.Options.Authentication.Jwt.RefreshExpirationInHours)
             : null;
 
-        return new AccessToken(jwtToken, refreshToken);
+        return accessToken;
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> SignInRefreshAsync(LogInRefresh logInRefresh, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInExternalDirectAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
+    {
+        var identityUser = await this.IdentityRepository
+            .SignInExternalAsync(new SignInExternal
+            {
+                ExternalLogInData = new ExternalLogInData
+                {
+                    Id = logInExternalDirect.ExternalLogInData.Id,
+                    Name = logInExternalDirect.ExternalLogInData.Name,
+                    Email = logInExternalDirect.ExternalLogInData.Email,
+                    ExternalToken = logInExternalDirect.ExternalLogInData.ExternalToken
+                },
+                IsRememberMe = logInExternalDirect.IsRememberMe
+            }, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new UnauthorizedException();
+        }
+
+        var claims = await this.IdentityRepository
+            .GetAllClaims(identityUser, logInExternalDirect.TransientRoles, logInExternalDirect.TransientClaims, cancellationToken);
+
+        var accessToken = this.IdentityJwtRepository
+            .GenerateJwtToken(new GenerateJwtToken
+            {
+                AppId = logInExternalDirect.AppId,
+                UserId = identityUser.Id.ToString(),
+                UserName = identityUser.UserName,
+                UserEmail = identityUser.Email,
+                Claims = claims
+            });
+
+        accessToken.RefreshToken = logInExternalDirect.IsRefreshable
+            ? await this.IdentityRepository
+                .CreateRefreshToken(identityUser, logInExternalDirect.AppId, this.Options.Authentication.Jwt.RefreshExpirationInHours)
+            : null;
+
+        return accessToken; 
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<AccessToken> LogInRefreshAsync(LogInRefresh logInRefresh, CancellationToken cancellationToken = default)
     {
         var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
@@ -213,18 +215,18 @@ public class BaseIdentityAuthRepository<TIdentity> : BaseBaseIdentityAuthReposit
         var claims = await this.IdentityRepository
             .GetAllClaims(identityUser, logInRefresh.TransientRoles, logInRefresh.TransientClaims, cancellationToken);
 
-        var refreshToken = await this.IdentityRepository
-            .CreateRefreshToken(identityUser, appId, this.Options.Authentication.Jwt.RefreshExpirationInHours);
-
         var accessToken = await this.IdentityJwtRepository
-            .GenerateJwtTokenByRefreshAsync(identityUser, logInRefresh, claims, refreshToken, cancellationToken);
+            .GenerateJwtTokenByRefreshAsync(identityUser, logInRefresh, claims, cancellationToken);
 
         if (accessToken == null)
         {
             throw new UnauthorizedException();
         }
 
-        return new AccessToken(accessToken, refreshToken);
+        accessToken.RefreshToken = await this.IdentityRepository
+            .CreateRefreshToken(identityUser, appId, this.Options.Authentication.Jwt.RefreshExpirationInHours);
+        
+        return accessToken;
     }
 
     /// <inheritdoc />

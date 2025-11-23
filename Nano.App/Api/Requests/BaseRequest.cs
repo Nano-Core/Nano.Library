@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Nano.App.Api.Requests.Attributes;
-using Nano.Models.Extensions;
+using Nano.Common.Extensions;
 
 namespace Nano.App.Api.Requests;
 

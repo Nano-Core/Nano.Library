@@ -1,4 +1,4 @@
-﻿namespace Nano.Data.Const;
+﻿namespace Nano.Data.Consts;
 
 internal static class TableNames
 {

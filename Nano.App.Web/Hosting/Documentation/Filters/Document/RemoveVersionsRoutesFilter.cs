@@ -1,7 +1,7 @@
 using System;
 using Asp.Versioning;
 using Microsoft.OpenApi.Models;
-using Nano.Config;
+using Nano.Common.Config.Helpers;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Nano.Web.Hosting.Documentation.Filters.Document;

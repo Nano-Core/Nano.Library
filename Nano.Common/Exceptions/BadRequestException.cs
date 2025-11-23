@@ -1,4 +1,4 @@
-namespace Nano.Models.Exceptions;
+namespace Nano.Common.Exceptions;
 
 /// <summary>
 /// Bad Request Exception.

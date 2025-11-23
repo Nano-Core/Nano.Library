@@ -4,14 +4,13 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Nano.Data;
+using Nano.Common.Extensions;
+using Nano.Common.Helpers;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 using Nano.Eventing.Abstractions.Models;
-using Nano.Models.Extensions;
-using Nano.Models.Helpers;
 
-namespace Nano.Eventing.Handlers;
+namespace Nano.Data.Eventing.Handlers;
 
 /// <summary>
 /// Entity Event Handler.

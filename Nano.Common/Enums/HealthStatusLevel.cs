@@ -1,4 +1,4 @@
-namespace Nano.Eventing;
+namespace Nano.Common.Enums;
 
 /// <summary>
 /// Health Status Level.

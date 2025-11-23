@@ -3,10 +3,10 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Nano.Config.Extensions;
+using Nano.Common.Config.Extensions;
+using Nano.Common.Extensions;
+using Nano.Common.Helpers;
 using Nano.Console.Workers;
-using Nano.Models.Extensions;
-using Nano.Models.Helpers;
 
 namespace Nano.Console.Extensions;
 

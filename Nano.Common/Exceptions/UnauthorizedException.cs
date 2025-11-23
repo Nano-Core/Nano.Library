@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nano.Security.Exceptions;
+namespace Nano.Common.Exceptions;
 
 /// <summary>
 /// Unauthorized Exception.

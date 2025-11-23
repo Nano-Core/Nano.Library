@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Nano.Security.Extensions;
+namespace Nano.Data.Identity.Extensions;
 
 internal static class UserManagerExtensions
 {

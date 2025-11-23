@@ -1,8 +1,9 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Nano.Common.Config.Helpers;
 
-namespace Nano.Config.Extensions;
+namespace Nano.Common.Config.Extensions;
 
 /// <summary>
 /// Service Collection Extensions.

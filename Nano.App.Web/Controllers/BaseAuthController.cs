@@ -76,12 +76,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInAsync([FromBody][Required]LogIn logIn, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.IdentityAuthRepository
-            .SignInAsync(new LogIn
-            {
-                Username = logIn.Username,
-                Password = logIn.Password,
-                IsRememberMe = logIn.IsRememberMe
-            }, cancellationToken);
+            .LogInAsync(logIn, cancellationToken);
 
         if (accessToken == null)
         {
@@ -148,7 +143,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInExternalDirectAsync([FromBody][Required] LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.IdentityAuthRepository
-            .SignInExternalDirectAsync(logInExternalDirect, cancellationToken);
+            .LogInExternalDirectAsync(logInExternalDirect, cancellationToken);
 
         if (accessToken == null)
         {
@@ -182,7 +177,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInExternalDirectTransientAsync([FromBody][Required] LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.IdentityAuthTransientRepository
-            .SignInExternalTransientAsync(logInExternalDirect.ExternalLogInData, logInExternalDirect.TransientRoles, logInExternalDirect.TransientClaims, cancellationToken);
+            .LogInExternalTransientAsync(logInExternalDirect.ExternalLogInData, logInExternalDirect.TransientRoles, logInExternalDirect.TransientClaims, cancellationToken);
 
         if (accessToken == null)
         {
@@ -216,7 +211,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInExternalGoogleAsync([FromBody][Required] LogInExternalGoogle logInExternal, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.IdentityAuthRepository
-            .SignInExternalAsync(logInExternal, cancellationToken);
+            .LogInExternalAsync(logInExternal, cancellationToken);
 
         if (accessToken == null)
         {
@@ -250,7 +245,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInExternalGoogleTransientAsync([FromBody][Required] LogInExternalGoogle logInExternal, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.IdentityAuthTransientRepository
-            .SignInExternalTransientAsync(logInExternal, cancellationToken);
+            .LogInExternalTransientAsync(logInExternal, cancellationToken);
 
         if (accessToken == null)
         {
@@ -284,7 +279,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInExternalFacebookAsync([FromBody][Required] LogInExternalFacebook logInExternal, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.IdentityAuthRepository
-            .SignInExternalAsync(logInExternal, cancellationToken);
+            .LogInExternalAsync(logInExternal, cancellationToken);
 
         if (accessToken == null)
         {
@@ -318,7 +313,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInExternalFacebookTransientAsync([FromBody][Required] LogInExternalFacebook logInExternal, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.IdentityAuthTransientRepository
-            .SignInExternalTransientAsync(logInExternal, cancellationToken);
+            .LogInExternalTransientAsync(logInExternal, cancellationToken);
 
         if (accessToken == null)
         {
@@ -352,7 +347,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInExternalMicrosoftAsync([FromBody][Required] LogInExternalMicrosoft logInExternal, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.IdentityAuthRepository
-            .SignInExternalAsync(logInExternal, cancellationToken);
+            .LogInExternalAsync(logInExternal, cancellationToken);
 
         if (accessToken == null)
         {
@@ -386,7 +381,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInExternalMicrosoftTransientAsync([FromBody][Required] LogInExternalMicrosoft logInExternal, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.IdentityAuthTransientRepository
-            .SignInExternalTransientAsync(logInExternal, cancellationToken);
+            .LogInExternalTransientAsync(logInExternal, cancellationToken);
 
         if (accessToken == null)
         {
@@ -421,7 +416,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInRefreshAsync([FromBody][Required] LogInRefresh logInRefresh, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.IdentityAuthRepository
-            .SignInRefreshAsync(logInRefresh, cancellationToken);
+            .LogInRefreshAsync(logInRefresh, cancellationToken);
 
         if (accessToken == null)
         {

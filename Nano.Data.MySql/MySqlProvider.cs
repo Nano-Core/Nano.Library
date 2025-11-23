@@ -1,9 +1,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
+using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Extensions;
-using Nano.Data.Interfaces;
 
 namespace Nano.Data.MySql;
 

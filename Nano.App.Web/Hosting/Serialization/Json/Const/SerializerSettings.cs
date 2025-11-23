@@ -12,7 +12,7 @@ public static class SerializerSettings
     /// </summary>
     internal static JsonSerializerSettings GetMVcJsonSerializerSettings()
     {
-        var serializerSettings = Models.Serialization.Json.Const.SerializerSettings.GetDefault();
+        var serializerSettings = Common.Serialization.SerializerSettings.GetDefault();
 
         serializerSettings.ContractResolver = new MvcEntityContractResolver();
 

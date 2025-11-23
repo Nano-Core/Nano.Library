@@ -1,4 +1,4 @@
-﻿using Nano.Eventing;
+﻿using Nano.Common.Enums;
 
 namespace Nano.Storage.Abstractions.Config;
 

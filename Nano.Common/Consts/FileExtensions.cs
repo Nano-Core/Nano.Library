@@ -1,4 +1,4 @@
-namespace Nano.Models.Const;
+namespace Nano.Common.Consts;
 
 /// <summary>
 /// File Extensions.

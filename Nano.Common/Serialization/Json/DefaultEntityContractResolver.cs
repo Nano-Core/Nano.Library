@@ -4,7 +4,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Nano.Models.Serialization.Json;
+namespace Nano.Common.Serialization.Json;
 
 /// <inheritdoc />
 public class DefaultEntityContractResolver : DefaultContractResolver

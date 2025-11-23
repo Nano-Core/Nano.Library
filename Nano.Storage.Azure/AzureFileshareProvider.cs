@@ -1,6 +1,6 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.Models.Extensions;
+using Nano.Common.Extensions;
 using Nano.Storage.Abstractions;
 using Nano.Storage.Abstractions.Config;
 using Nano.Storage.Azure.HealthChecks.Extensions;

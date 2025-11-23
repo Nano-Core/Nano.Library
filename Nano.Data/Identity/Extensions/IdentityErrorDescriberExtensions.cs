@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Identity;
 
-namespace Nano.Security.Extensions;
+namespace Nano.Data.Identity.Extensions;
 
 /// <summary>
 /// Identity Error Describer Extensions.

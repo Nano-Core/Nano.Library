@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Nano.Config.Extensions;
 using System;
+using Nano.Common.Config.Extensions;
 using Nano.Logging.Abstractions;
 using Nano.Logging.Abstractions.Config;
 

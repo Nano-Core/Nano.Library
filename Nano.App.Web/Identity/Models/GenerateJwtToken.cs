@@ -1,39 +1,38 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
-/// Generate Jwt Token.
+/// Access Token Data.
 /// </summary>
-public class GenerateJwtToken<TIdentity> 
-    where TIdentity : IEquatable<TIdentity>
+public class GenerateJwtToken
 {
+    /// <summary>
+    /// Id.
+    /// </summary>
+    public virtual string Id { get; set; } = Guid.NewGuid().ToString();
+
     /// <summary>
     /// App Id.
     /// </summary>
-    [MaxLength(256)]
     public virtual string AppId { get; set; }
 
     /// <summary>
     /// User Id.
     /// </summary>
-    [MaxLength(256)]
-    public virtual TIdentity UserId { get; set; }
+    public virtual string UserId { get; set; }
 
     /// <summary>
     /// User Name.
     /// </summary>
-    [MaxLength(256)]
     public virtual string UserName { get; set; }
 
     /// <summary>
-    /// Email.
+    /// User Email.
     /// </summary>
-    [MaxLength(256)]
-    public virtual string Email { get; set; }
+    public virtual string UserEmail { get; set; }
 
     /// <summary>
     /// External Token.
@@ -43,5 +42,5 @@ public class GenerateJwtToken<TIdentity>
     /// <summary>
     /// Claims.
     /// </summary>
-    public virtual IEnumerable<Claim> Claims { get; set; } = [];
+    public virtual IEnumerable<Claim> Claims { get; set; } = new List<Claim>();
 }

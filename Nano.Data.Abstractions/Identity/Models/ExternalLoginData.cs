@@ -3,7 +3,7 @@ using System;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
-/// External Login Data.
+/// External Log In Data.
 /// </summary>
 public class ExternalLogInData
 {

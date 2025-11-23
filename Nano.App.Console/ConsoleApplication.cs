@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Nano.App;
 using Nano.App.Extensions;
 using Nano.App.Interfaces;
-using Nano.Config;
+using Nano.Common.Config.Helpers;
 using Nano.Console.Extensions;
 
 namespace Nano.Console;

@@ -6,7 +6,7 @@ namespace Nano.Data.Abstractions.Identity.Models;
 /// <summary>
 /// Log In External Transient Refresh.
 /// </summary>
-public class LogInTExternalransientRefresh
+public class LogInExternalTransientRefresh
 {
     /// <summary>
     /// Token.

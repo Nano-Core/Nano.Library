@@ -3,8 +3,8 @@ using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
-using Nano.Data.Interfaces;
 
 namespace Nano.Data.Extensions;
 

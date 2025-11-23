@@ -1,15 +1,3 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Nano.Data.Abstractions.Identity;
-using Nano.Data.Abstractions.Identity.Models;
-using Nano.Data.Abstractions.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Models.Exceptions;
-using Nano.Models.Extensions;
-using Nano.Security.Const;
-using Nano.Security.Exceptions;
-using Nano.Security.Extensions;
-using Nano.Web.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +6,22 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Nano.Common.Exceptions;
+using Nano.Common.Identity.Extensions;
+using Nano.Data.Abstractions.Identity.Abstractions;
+using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Extensions;
+using Nano.Data.Identity.DataProtection.Consts;
+using Nano.Data.Identity.Extensions;
+using Nano.Data.Identity.Helpers;
 using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
-namespace Nano.Security;
+namespace Nano.Data.Identity;
 
 // BUG: REVIEW: Go Through all methods (add, change, remove), e.g. Get Refresh Tokens, and other
 // BUG: REVIEW: Check Save changes vs AutoSave like in IRepository
@@ -135,7 +135,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             throw new ArgumentNullException(nameof(signIn));
 
         var result = await this.SignInManager
-            .PasswordSignInAsync(signIn.Username, signIn.Password, signIn.IsRememberMe, true /* BUG: this is not correct to use here, check other usages: this.Options.Lockout.AllowedForNewUsers*/);
+            .PasswordSignInAsync(signIn.Username, signIn.Password, signIn.IsRememberMe, this.Options.Lockout.AllowedForNewUsers);
 
         if (result.Succeeded)
         {

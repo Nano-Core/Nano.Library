@@ -27,10 +27,9 @@ public interface IIdentityAuthTransientRepository<TIdentity>
     /// Signs in the admin user statically.
     /// The login is transient, no Identity store is used.
     /// </summary>
-    /// <param name="logIn">The <see cref="LogIn"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <param name="logInRoot">The <see cref="LogInRoot"/>.</param>
     /// <returns>The <see cref="AccessToken"/>.</returns>
-    Task<AccessToken> SignInAdminTransientAsync(LogIn logIn, CancellationToken cancellationToken = default);
+    AccessToken LogInRootTransientAsync(LogInRoot logInRoot);
 
     /// <summary>
     /// Gets all the configured external logins schemes.
@@ -48,7 +47,7 @@ public interface IIdentityAuthTransientRepository<TIdentity>
     /// <param name="logInExternalTransient">The <see cref="BaseLogInExternal{T}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="AccessToken"/>.</returns>
-    Task<AccessToken> SignInExternalTransientAsync<TProvider>(BaseLogInExternal<TProvider> logInExternalTransient, CancellationToken cancellationToken = default)
+    Task<AccessToken> LogInExternalTransientAsync<TProvider>(BaseLogInExternal<TProvider> logInExternalTransient, CancellationToken cancellationToken = default)
         where TProvider : BaseLogInExternalProvider, new();
 
     /// <summary>
@@ -61,7 +60,7 @@ public interface IIdentityAuthTransientRepository<TIdentity>
     /// <param name="transientClaims">The claims added to the token.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="AccessToken"/>.</returns>
-    Task<AccessToken> SignInExternalTransientAsync(ExternalLogInData externalLogInData, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default);
+    Task<AccessToken> LogInExternalTransientAsync(ExternalLogInData externalLogInData, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
@@ -69,5 +68,5 @@ public interface IIdentityAuthTransientRepository<TIdentity>
     /// <param name="logInRefresh"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<AccessToken> SignInExternalTransientRefreshAsync(LogInTExternalransientRefresh logInRefresh, CancellationToken cancellationToken = default);
+    Task<AccessToken> LogInExternalTransientRefreshAsync(LogInExternalTransientRefresh logInRefresh, CancellationToken cancellationToken = default);
 }

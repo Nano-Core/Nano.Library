@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Nano.Models.Helpers;
+namespace Nano.Common.Helpers;
 
 /// <summary>
 /// Types Helper

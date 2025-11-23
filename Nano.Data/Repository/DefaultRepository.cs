@@ -1,8 +1,7 @@
 using System;
-using Nano.Data;
 using Nano.Eventing.Abstractions;
 
-namespace Nano.Repository;
+namespace Nano.Data.Repository;
 
 /// <inheritdoc />
 public class DefaultRepository : BaseRepository<BaseDbContext<Guid>, Guid>

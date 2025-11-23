@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Nano.Data.Interfaces;
+namespace Nano.Data.Abstractions;
 
 /// <summary>
 /// Data Provider interface.

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Identity.Consts;
+using Nano.Data.Identity.DataProtection.Extensions;
 using Nano.Security;
 using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;
 

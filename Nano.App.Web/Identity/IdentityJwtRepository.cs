@@ -12,10 +12,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Nano.App.Web.Identity.Abstractions;
+using Nano.Common.Exceptions;
+using Nano.Common.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Extensions;
-using Nano.Security.Exceptions;
 using IdentityOptions = Nano.Web.IdentityOptions;
 
 namespace Nano.App.Web.Identity;
@@ -44,54 +45,23 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
     }
 
     /// <inheritdoc />
-    public virtual Task<JwtToken> GenerateJwtToken(GenerateJwtToken<TIdentity> generateJwtToken, CancellationToken cancellationToken = default)
+    public virtual AccessToken GenerateJwtToken(GenerateJwtToken generateJwtToken)
     {
         if (generateJwtToken == null)
             throw new ArgumentNullException(nameof(generateJwtToken));
 
-        if (generateJwtToken == null) 
-            throw new ArgumentNullException(nameof(generateJwtToken));
-
-        generateJwtToken.AppId ??= DEFAULT_APP_ID;
-
-        var accessTokenData = new AccessTokenData<TIdentity>
-        {
-            AppId = generateJwtToken.AppId,
-            UserId = generateJwtToken.UserId,
-            Username = generateJwtToken.UserName,
-            UserEmail = generateJwtToken.Email,
-            ExternalToken = new ExternalLoginTokenData
-            {
-                Name = generateJwtToken.ExternalToken.Name,
-                Token = generateJwtToken.ExternalToken.Token,
-                RefreshToken = generateJwtToken.ExternalToken.RefreshToken
-            },
-            Claims = generateJwtToken.Claims
-        };
-
-        return this.GenerateJwtToken(accessTokenData);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<JwtToken> GenerateJwtToken(AccessTokenData<TIdentity> accessTokenData)
-    {
-        if (accessTokenData == null)
-            throw new ArgumentNullException(nameof(accessTokenData));
-
-        await Task.CompletedTask;
-
         var claims = new Collection<Claim>
             {
-                new(ClaimTypesExtended.AppId, accessTokenData.AppId),
-                new(JwtRegisteredClaimNames.Jti, accessTokenData.Id),
-                new(JwtRegisteredClaimNames.Sub, accessTokenData.UserId.ToString() ?? string.Empty),
-                new(JwtRegisteredClaimNames.Name, accessTokenData.Username),
-                new(JwtRegisteredClaimNames.Email, accessTokenData.UserEmail),
-                new(ClaimTypesExtended.ExternalProviderName, accessTokenData.ExternalToken?.Name ?? string.Empty),
-                new(ClaimTypesExtended.ExternalProviderToken, accessTokenData.ExternalToken?.Token ?? string.Empty),
-                new(ClaimTypesExtended.ExternalProviderRefreshToken, accessTokenData.ExternalToken?.RefreshToken ?? string.Empty)
+                new(ClaimTypesExtended.AppId, generateJwtToken.AppId ?? DEFAULT_APP_ID),
+                new(JwtRegisteredClaimNames.Jti, generateJwtToken.Id),
+                new(JwtRegisteredClaimNames.Sub, generateJwtToken.UserId),
+                new(JwtRegisteredClaimNames.Name, generateJwtToken.UserName),
+                new(JwtRegisteredClaimNames.Email, generateJwtToken.UserEmail),
+                new(ClaimTypesExtended.ExternalProviderName, generateJwtToken.ExternalToken?.Name ?? string.Empty),
+                new(ClaimTypesExtended.ExternalProviderToken, generateJwtToken.ExternalToken?.Token ?? string.Empty),
+                new(ClaimTypesExtended.ExternalProviderRefreshToken, generateJwtToken.ExternalToken?.RefreshToken ?? string.Empty)
             }
-            .Union(accessTokenData.Claims)
+            .Union(generateJwtToken.Claims)
             .Distinct();
 
         var notBeforeAt = DateTimeOffset.UtcNow;
@@ -106,17 +76,17 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
         var token = new JwtSecurityTokenHandler()
             .WriteToken(securityToken);
 
-        return new JwtToken
+        return new AccessToken
         {
-            AppId = accessTokenData.AppId ?? DEFAULT_APP_ID,
-            UserId = accessTokenData.UserId.ToString(),
+            AppId = generateJwtToken.AppId ?? DEFAULT_APP_ID,
+            UserId = generateJwtToken.UserId,
             Token = token,
             ExpireAt = expireAt
         };
     }
 
     /// <inheritdoc />
-    public virtual async Task<JwtToken> GenerateJwtTokenByRefreshAsync(IdentityUser<TIdentity> identityUser, LogInRefresh logInRefresh, IEnumerable<Claim> claims, RefreshToken refreshToken = null, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> GenerateJwtTokenByRefreshAsync(IdentityUser<TIdentity> identityUser, LogInRefresh logInRefresh, IEnumerable<Claim> claims, CancellationToken cancellationToken = default)
     {
         if (identityUser == null) 
             throw new ArgumentNullException(nameof(identityUser));
@@ -170,11 +140,11 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
 
         var appId = appClaim?.Value ?? DEFAULT_APP_ID;
 
-        var jwtToken = await this.GenerateJwtToken(new AccessTokenData<TIdentity>
+        var accessToken = this.GenerateJwtToken(new GenerateJwtToken
         {
             AppId = appId,
-            UserId = identityUser.Id,
-            Username = identityUser.UserName,
+            UserId = identityUser.Id.ToString(),
+            UserName = identityUser.UserName,
             UserEmail = identityUser.Email,
             ExternalToken = new ExternalLoginTokenData
             {
@@ -185,7 +155,7 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
             Claims = claims
         });
 
-        return jwtToken;
+        return accessToken;
     }
 
 

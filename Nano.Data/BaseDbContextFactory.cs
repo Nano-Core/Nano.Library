@@ -2,9 +2,9 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using Nano.Config;
+using Nano.Common.Config.Helpers;
+using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
-using Nano.Data.Interfaces;
 
 namespace Nano.Data;
 

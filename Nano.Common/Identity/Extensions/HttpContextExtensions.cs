@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Http;
-using Nano.Data.Abstractions.Identity.Consts;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Http;
+using Nano.Common.Identity.Consts;
 
-namespace Nano.Web.Extensions;
+namespace Nano.Common.Identity.Extensions;
 
 /// <summary>
 /// Http Context Extensions.

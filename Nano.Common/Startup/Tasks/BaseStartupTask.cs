@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace Nano.App.Startup.Tasks;
+namespace Nano.Common.Startup.Tasks;
 
 /// <inheritdoc />
 public abstract class BaseStartupTask : IHostedService

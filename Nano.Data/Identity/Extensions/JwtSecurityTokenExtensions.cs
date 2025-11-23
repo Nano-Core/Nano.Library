@@ -3,7 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 
-namespace Nano.Security.Extensions;
+namespace Nano.Data.Identity.Extensions;
 
 /// <summary>
 /// JwtSecurity Token Extensions.

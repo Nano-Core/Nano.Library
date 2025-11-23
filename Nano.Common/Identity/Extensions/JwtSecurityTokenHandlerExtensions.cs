@@ -1,9 +1,9 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Common.Identity.Consts;
 
-namespace Nano.Web.Extensions;
+namespace Nano.Common.Identity.Extensions;
 
 /// <summary>
 /// Jwt Security Token Handler Extensions.

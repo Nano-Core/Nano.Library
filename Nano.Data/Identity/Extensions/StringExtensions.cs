@@ -3,7 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Nano.Security.Extensions;
+namespace Nano.Data.Identity.Extensions;
 
 /// <summary>
 /// String Extensions.

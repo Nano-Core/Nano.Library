@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Identity;
-using Nano.Security.Const;
+using Nano.Data.Identity.DataProtection.Consts;
 
-namespace Nano.Data.Identity.Extensions;
+namespace Nano.Data.Identity.DataProtection.Extensions;
 
 /// <summary>
 /// Custom Identity Builder Extensions.

@@ -4,6 +4,7 @@ using Nano.Eventing.Abstractions.Config;
 using Nano.Models.Extensions;
 using System;
 using System.Collections.Generic;
+using Nano.Common.Extensions;
 
 namespace Nano.Eventing.RabbitMq.Extensions;
 

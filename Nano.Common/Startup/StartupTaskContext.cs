@@ -1,6 +1,6 @@
 using System.Threading;
 
-namespace Nano.App.Startup;
+namespace Nano.Common.Startup;
 
 /// <summary>
 /// Startup Task Context.

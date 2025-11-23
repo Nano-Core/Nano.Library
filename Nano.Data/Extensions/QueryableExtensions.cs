@@ -4,7 +4,6 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Nano.Data.Abstractions.Annotations;
 using Nano.Data.Abstractions.Config.Enums;
-using Nano.Models.Attributes;
 
 namespace Nano.Data.Extensions;
 

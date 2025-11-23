@@ -20,7 +20,7 @@ public class SignUpExternalDirect<TUser, TIdentity> : BaseSignUpExternal<TUser, 
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// External LogIn Data.
+    /// External Log In Data.
     /// </summary>
     public virtual ExternalLogInData ExternalLogInData { get; set; }
 }

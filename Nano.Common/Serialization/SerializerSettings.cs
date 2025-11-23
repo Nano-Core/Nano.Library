@@ -1,9 +1,10 @@
 ﻿using System.Globalization;
-using Nano.Models.Serialization.Json.Converters;
+using Nano.Common.Serialization.Json;
+using Nano.Common.Serialization.Json.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Nano.Models.Serialization.Json.Const;
+namespace Nano.Common.Serialization;
 
 /// <summary>
 /// Json Serializer Settings.

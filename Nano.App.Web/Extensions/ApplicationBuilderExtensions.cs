@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Nano.App;
-using Nano.Config;
+using Nano.Common.Config.Helpers;
 using Nano.Web.Enums;
 using Nano.Web.Extensions.Const;
 using Nano.Web.Hosting.Middleware;

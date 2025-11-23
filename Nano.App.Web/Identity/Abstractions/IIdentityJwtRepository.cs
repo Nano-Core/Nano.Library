@@ -18,16 +18,8 @@ public interface IIdentityJwtRepository<TIdentity>
     /// 
     /// </summary>
     /// <param name="generateJwtToken"></param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<JwtToken> GenerateJwtToken(GenerateJwtToken<TIdentity> generateJwtToken, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="accessTokenData"></param>
-    /// <returns></returns>
-    Task<JwtToken> GenerateJwtToken(AccessTokenData<TIdentity> accessTokenData);
+    AccessToken GenerateJwtToken(GenerateJwtToken generateJwtToken);
 
     /// <summary>
     /// 
@@ -35,8 +27,7 @@ public interface IIdentityJwtRepository<TIdentity>
     /// <param name="identityUser"></param>
     /// <param name="logInRefresh"></param>
     /// <param name="claims"></param>
-    /// <param name="refreshToken"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<JwtToken> GenerateJwtTokenByRefreshAsync(IdentityUser<TIdentity> identityUser, LogInRefresh logInRefresh, IEnumerable<Claim> claims, RefreshToken refreshToken = null, CancellationToken cancellationToken = default);
+    Task<AccessToken> GenerateJwtTokenByRefreshAsync(IdentityUser<TIdentity> identityUser, LogInRefresh logInRefresh, IEnumerable<Claim> claims, CancellationToken cancellationToken = default);
 }

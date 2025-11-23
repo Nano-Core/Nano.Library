@@ -1,3 +1,5 @@
+using Nano.Common.Enums;
+
 namespace Nano.Eventing.Abstractions.Config;
 
 /// <summary>

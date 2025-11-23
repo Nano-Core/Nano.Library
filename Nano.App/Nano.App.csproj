@@ -37,8 +37,4 @@
 	  <ProjectReference Include="..\Nano.Logging.Abstractions\Nano.Logging.Abstractions.csproj" />
 	  <ProjectReference Include="..\Nano.Storage.Abstractions\Nano.Storage.Abstractions.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Identity\Models\NEW\" />
-	</ItemGroup>
 </Project>

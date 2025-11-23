@@ -1,6 +1,6 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.Config.Extensions;
+using Nano.Common.Config.Extensions;
 using Nano.Storage.Abstractions;
 using Nano.Storage.Abstractions.Config;
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
 
-namespace Nano.Security;
+namespace Nano.Data.Identity.Helpers;
 
 /// <summary>
 /// Password Generator.

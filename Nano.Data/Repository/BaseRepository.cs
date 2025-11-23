@@ -10,13 +10,12 @@ using DynamicExpression.Extensions;
 using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using Nano.Data;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Extensions;
 using Nano.Eventing.Abstractions;
 
-namespace Nano.Repository;
+namespace Nano.Data.Repository;
 
 /// <inheritdoc />
 public abstract class BaseRepository<TContext> : BaseRepository<TContext, Guid>

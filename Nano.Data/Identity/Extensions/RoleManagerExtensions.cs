@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
-namespace Nano.Security.Extensions;
+namespace Nano.Data.Identity.Extensions;
 
 /// <summary>
 /// Role Manager Extensions.

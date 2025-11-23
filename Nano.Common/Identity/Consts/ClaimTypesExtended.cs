@@ -1,4 +1,4 @@
-namespace Nano.Data.Abstractions.Identity.Consts;
+namespace Nano.Common.Identity.Consts;
 
 /// <summary>
 /// Claim Types Extended.

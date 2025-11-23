@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nano.Data.Abstractions.Identity;
+using Nano.Data.Abstractions.Identity.Abstractions;
 using Nano.Web.Hosting.Authentication.Const;
 
 namespace Nano.Web.Hosting.Authentication;

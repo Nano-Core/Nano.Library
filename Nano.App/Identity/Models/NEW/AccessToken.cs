@@ -4,37 +4,40 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
-/// Jwt Token.
+/// Access Token.
 /// </summary>
-public class JwtToken
+public class AccessToken
 {
     /// <summary>
     /// App Id.
     /// </summary>
-    [Required]
     [MaxLength(256)]
-    public virtual string AppId { get; set; }
+    public string AppId { get; set; }
 
     /// <summary>
     /// User Id.
     /// </summary>
-    [Required]
-    public virtual string UserId { get; set; }
+    public string UserId { get; set; }
 
     /// <summary>
     /// Token.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; }
+    public string Token { get; set; }
 
     /// <summary>
     /// Expire At.
     /// </summary>
     [Required]
-    public virtual DateTimeOffset ExpireAt { get; set; }
+    public DateTimeOffset ExpireAt { get; set; }
 
     /// <summary>
     /// Is Expired.
     /// </summary>
-    public virtual bool IsExpired => this.ExpireAt <= DateTimeOffset.UtcNow;
+    public bool IsExpired => this.ExpireAt <= DateTimeOffset.UtcNow;
+
+    /// <summary>
+    /// Refresh Token.
+    /// </summary>
+    public RefreshToken RefreshToken { get; set; }
 }

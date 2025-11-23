@@ -3,9 +3,9 @@ using EasyNetQ;
 using EasyNetQ.DI;
 using EasyNetQ.Serialization.NewtonsoftJson;
 using Microsoft.Extensions.DependencyInjection;
+using Nano.Common.Serialization;
 using Nano.Eventing.Abstractions;
 using Nano.Eventing.Abstractions.Config;
-using Nano.Models.Serialization.Json.Const;
 
 namespace Nano.Eventing.RabbitMq.Extensions;
 

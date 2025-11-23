@@ -9,7 +9,7 @@ using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
-namespace Nano.Data.Abstractions.Identity;
+namespace Nano.Data.Abstractions.Identity.Abstractions;
 
 /// <summary>
 /// Identity Repository interface.

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Nano.Models.Serialization.Json.Const;
+using Nano.Common.Serialization;
 
 namespace Nano.Web.Hosting.ModelBinders;
 

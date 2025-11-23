@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
 
-namespace Nano.Models.Extensions;
+namespace Nano.Data.Extensions;
 
 /// <summary>
 /// Object Extensions.

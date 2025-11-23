@@ -1,8 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Data;
+using Nano.Common.Startup;
+using Nano.Common.Startup.Tasks;
 
-namespace Nano.App.Startup.Tasks;
+namespace Nano.Data;
 
 /// <inheritdoc />
 public class MigrateDatabaseStartupTask : BaseStartupTask

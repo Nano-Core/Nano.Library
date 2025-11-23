@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 
-namespace Nano.Models.Attributes;
+namespace Nano.Common.Annotations;
 
 /// <summary>
 /// Required One Of Attribute.

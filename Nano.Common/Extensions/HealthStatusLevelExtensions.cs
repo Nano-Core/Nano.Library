@@ -1,8 +1,8 @@
 using System;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Nano.Eventing;
+using Nano.Common.Enums;
 
-namespace Nano.Models.Extensions;
+namespace Nano.Common.Extensions;
 
 /// <summary>
 /// Health Status Level Extensions.

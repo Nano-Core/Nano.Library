@@ -4,7 +4,7 @@ using NetTopologySuite.IO.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Nano.Models.Serialization.Json.Converters;
+namespace Nano.Common.Serialization.Json.Converters;
 
 /// <summary>
 /// Geometry Converter Ignore Case.

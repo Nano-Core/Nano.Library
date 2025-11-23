@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.Models.Exceptions;
+namespace Nano.Common.Exceptions;
 
 /// <summary>
 /// Permission Denied Exception.
