@@ -2,9 +2,9 @@ using System;
 using Asp.Versioning;
 using Microsoft.Extensions.Logging;
 using Nano.App.Consts;
-using Nano.Security;
+using Nano.App.Web.Identity.Abstractions;
 
-namespace Nano.Web.Controllers;
+namespace Nano.App.Web.Controllers;
 
 /// <inheritdoc />
 [ControllerName(ControllerRoutes.AUTH_CONTROLLER_ROUTE)]

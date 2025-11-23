@@ -1,17 +1,21 @@
 using System;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Nano.App.Web.Identity.Abstractions;
+using Nano.Data.Abstractions.Identity;
+using Nano.Web;
 
-namespace Nano.Security;
+namespace Nano.App.Web.Identity;
 
 /// <inheritdoc />
-public class DefaultIdentityAuthRepository<TIdentity> : BaseIdentityAuthRepository<TIdentity>
-    where TIdentity : IEquatable<TIdentity>
+public class DefaultIdentityAuthRepository : BaseIdentityAuthRepository<Guid>
 {
-    /// <inheritdoc />
-    protected DefaultIdentityAuthRepository(ILogger logger, DbContext dbContext, SignInManager<IdentityUser<TIdentity>> signInManager, RoleManager<IdentityRole<TIdentity>> roleManager, UserManager<IdentityUser<TIdentity>> userManager, Web.IdentityOptions options)
-        : base(logger, dbContext, signInManager, roleManager, userManager, options)
+    /// <summary>
+    /// The user authenticates and on success recieves a jwt token for use with auhtorization.
+    /// </summary>
+    /// <param name="options">The <see cref="IdentityOptions"/>.</param>
+    /// <param name="identityRepository"></param>
+    /// <param name="identityJwtRepository"></param>
+    public DefaultIdentityAuthRepository(IdentityOptions options, IIdentityRepository<Guid> identityRepository, IIdentityJwtRepository<Guid> identityJwtRepository)
+        : base(options, identityRepository, identityJwtRepository)
     {
     }
 }

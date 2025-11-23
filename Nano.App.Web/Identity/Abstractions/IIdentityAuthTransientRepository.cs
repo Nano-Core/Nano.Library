@@ -2,17 +2,27 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Models;
 
-namespace Nano.Security;
+namespace Nano.App.Web.Identity.Abstractions;
 
 /// <summary>
-/// IdentityManager interface.
+/// 
 /// </summary>
-public interface IIdentityAuthTransientRepository<TIdentity> : IIdentityRepository
+public interface IIdentityAuthTransientRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
+    // BUG: Is this needed to be exposed in controller?
+    ///// <summary>
+    ///// 
+    ///// </summary>
+    ///// <typeparam name="TProvider"></typeparam>
+    ///// <param name="logInExternalProvider"></param>
+    ///// <param name="cancellationToken"></param>
+    ///// <returns></returns>
+    //Task<ExternalLogInData> GetExternalProviderLogInData<TProvider>(TProvider logInExternalProvider, CancellationToken cancellationToken = default)
+    //    where TProvider : BaseLogInExternalProvider;
+
     /// <summary>
     /// Signs in the admin user statically.
     /// The login is transient, no Identity store is used.
@@ -54,9 +64,10 @@ public interface IIdentityAuthTransientRepository<TIdentity> : IIdentityReposito
     Task<AccessToken> SignInExternalTransientAsync(ExternalLogInData externalLogInData, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Logs out a user.
+    /// 
     /// </summary>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
-    Task SignOutAsync(CancellationToken cancellationToken = default);
+    /// <param name="logInRefresh"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<AccessToken> SignInExternalTransientRefreshAsync(LogInTExternalransientRefresh logInRefresh, CancellationToken cancellationToken = default);
 }

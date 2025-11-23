@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nano.Data.Abstractions.Identity;
-using Nano.Security;
 using Nano.Web.Hosting.Authentication.Const;
 
 namespace Nano.Web.Hosting.Authentication;
@@ -23,15 +22,13 @@ public class ApiKeyAuthenticationHandler<TIdentity> : AuthenticationHandler<Auth
 
     private readonly IdentityOptions identityOptions;
     private readonly IIdentityRepository<TIdentity> identityManager;
-    private readonly IIdentityAuthRepository<TIdentity> identityManagerAuth;
 
     /// <inheritdoc />
-    public ApiKeyAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, IIdentityRepository<TIdentity> identityManager, IdentityOptions identityOptions, IIdentityAuthRepository<TIdentity> identityManagerAuth)
+    public ApiKeyAuthenticationHandler(ILoggerFactory logger, IOptionsMonitor<AuthenticationSchemeOptions> options, UrlEncoder encoder, IdentityOptions identityOptions, IIdentityRepository<TIdentity> identityManager)
         : base(options, logger, encoder)
     {
+        this.identityOptions = identityOptions ?? throw new ArgumentNullException(nameof(identityOptions));
         this.identityManager = identityManager ?? throw new ArgumentNullException(nameof(identityManager));
-        this.identityOptions = identityOptions;
-        this.identityManagerAuth = identityManagerAuth;
     }
 
     /// <inheritdoc />
@@ -77,7 +74,7 @@ public class ApiKeyAuthenticationHandler<TIdentity> : AuthenticationHandler<Auth
             { ApiKeyClaimTypes.ApiKeyName, identityApiKey.Name }
         };
 
-        var claims = await this.identityManagerAuth
+        var claims = await this.identityManager
             .GetAllClaims(identityUser, transientClaims: transientClaims);
 
         var identity = new ClaimsIdentity(claims, nameof(ApiKeyAuthenticationHandler<TIdentity>));

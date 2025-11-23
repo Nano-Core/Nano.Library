@@ -602,27 +602,27 @@ public abstract class BaseApi
                 throw new PermissionDeniedException();
 
             case HttpStatusCode.BadRequest:
-            {
-                var errorContent = await httpResponse.Content
-                    .ReadAsStringAsync(cancellationToken);
-
-                throw this.GetBadRequestException(errorContent);
-            }
-
-            case HttpStatusCode.InternalServerError:
-            {
-                var errorContent = await httpResponse.Content
-                    .ReadAsStringAsync(cancellationToken);
-
-                var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
-
-                if (internalServerErrorException != null)
                 {
-                    throw internalServerErrorException;
+                    var errorContent = await httpResponse.Content
+                        .ReadAsStringAsync(cancellationToken);
+
+                    throw this.GetBadRequestException(errorContent);
                 }
 
-                break;
-            }
+            case HttpStatusCode.InternalServerError:
+                {
+                    var errorContent = await httpResponse.Content
+                        .ReadAsStringAsync(cancellationToken);
+
+                    var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
+
+                    if (internalServerErrorException != null)
+                    {
+                        throw internalServerErrorException;
+                    }
+
+                    break;
+                }
         }
 
         httpResponse
@@ -647,27 +647,27 @@ public abstract class BaseApi
                 throw new PermissionDeniedException();
 
             case HttpStatusCode.BadRequest:
-            {
-                var errorContent = await httpResponse.Content
-                    .ReadAsStringAsync(cancellationToken);
-
-                throw this.GetBadRequestException(errorContent);
-            }
-
-            case HttpStatusCode.InternalServerError:
-            {
-                var errorContent = await httpResponse.Content
-                    .ReadAsStringAsync(cancellationToken);
-
-                var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
-
-                if (internalServerErrorException != null)
                 {
-                    throw internalServerErrorException;
+                    var errorContent = await httpResponse.Content
+                        .ReadAsStringAsync(cancellationToken);
+
+                    throw this.GetBadRequestException(errorContent);
                 }
 
-                break;
-            }
+            case HttpStatusCode.InternalServerError:
+                {
+                    var errorContent = await httpResponse.Content
+                        .ReadAsStringAsync(cancellationToken);
+
+                    var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
+
+                    if (internalServerErrorException != null)
+                    {
+                        throw internalServerErrorException;
+                    }
+
+                    break;
+                }
         }
 
         httpResponse

@@ -31,10 +31,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\.xnew\Nano.Common\Nano.Common.csproj" />
-	  <ProjectReference Include="..\.xnew\Nano.Data.Abstractions\Nano.Data.Abstractions.csproj" />
-	  <ProjectReference Include="..\.xnew\Nano.Eventing.Abstractions\Nano.Eventing.Abstractions.csproj" />
-	  <ProjectReference Include="..\.xnew\Nano.Logging.Abstractions\Nano.Logging.Abstractions.csproj" />
-	  <ProjectReference Include="..\.xnew\Nano.Storage.Abstractions\Nano.Storage.Abstractions.csproj" />
+	  <ProjectReference Include="..\Nano.Common\Nano.Common.csproj" />
+	  <ProjectReference Include="..\Nano.Data.Abstractions\Nano.Data.Abstractions.csproj" />
+	  <ProjectReference Include="..\Nano.Eventing.Abstractions\Nano.Eventing.Abstractions.csproj" />
+	  <ProjectReference Include="..\Nano.Logging.Abstractions\Nano.Logging.Abstractions.csproj" />
+	  <ProjectReference Include="..\Nano.Storage.Abstractions\Nano.Storage.Abstractions.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Identity\Models\NEW\" />
 	</ItemGroup>
 </Project>

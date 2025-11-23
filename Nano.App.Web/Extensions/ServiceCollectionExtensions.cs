@@ -75,6 +75,11 @@ public static class ServiceCollectionExtensions
         services
             .AddConfigSection<WebOptions>(WebOptions.SectionName, out var webOptions);
 
+        if (webOptions == null)
+        {
+            throw new NullReferenceException(nameof(webOptions));
+        }
+
         var serviceProvider = services
             .BuildServiceProvider();
 
@@ -84,8 +89,8 @@ public static class ServiceCollectionExtensions
         var dataOptions = serviceProvider
             .GetService<DataOptions>() ?? new DataOptions();
 
-        var securityOptions = serviceProvider
-            .GetService<IdentityOptions>() ?? new IdentityOptions();
+        services
+            .AddSingleton(webOptions.Identity);
 
         services
             .AddCors(x =>
@@ -134,9 +139,9 @@ public static class ServiceCollectionExtensions
             })
             .AddSession()
             .AddCaching(webOptions)
-            //.AddSecurity(securityOptions)
             .AddVersioning(webOptions)
-            .AddDocumentation(appOptions, webOptions, securityOptions)
+            .AddIdentityAuthenticationAndAuthorization<Guid>(webOptions.Identity.Authentication) // BUG: Should not be guid
+            .AddDocumentation(appOptions, webOptions, webOptions.Identity)
             .AddLocalizations()
             .AddTimeZone(appOptions)
             .AddVirusScan(webOptions)
@@ -165,8 +170,8 @@ public static class ServiceCollectionExtensions
                     return new BadRequestObjectResult(new Error
                     {
                         Summary = "ModelState Validation Error",
-                        Exceptions = Enumerable
-                            .SelectMany(context.ModelState.Values, z => z.Errors)
+                        Exceptions = context.ModelState.Values
+                            .SelectMany(z => z.Errors)
                             .Select(z => z.ErrorMessage)
                             .ToArray(),
                         IsTranslated = true
@@ -226,6 +231,9 @@ public static class ServiceCollectionExtensions
             .AddViewComponentsAsServices()
             .AddApplicationPart(assembly);
 
+        //services
+        //    .AddScoped<IIdentityAuthRepository<Guid>, DefaultIdentityAuthRepository>(); // BUG: We need TIdentity
+
         services
             .AddScoped<AuditController>();
 
@@ -252,122 +260,6 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    //private static IServiceCollection AddSecurity(this IServiceCollection services, IdentityOptions securityOptions)
-    //{
-    //    if (services == null)
-    //        throw new ArgumentNullException(nameof(services));
-
-    //    if (securityOptions == null)
-    //        throw new ArgumentNullException(nameof(securityOptions));
-
-    //    JwtSecurityTokenHandler.DefaultInboundClaimTypeMap
-    //        .Clear();
-
-    //    var authenticationSchemes = new List<string>();
-
-    //    if (securityOptions.Authentication.Jwt.IsEnabled)
-    //    {
-    //        authenticationSchemes
-    //            .Add(JwtBearerDefaults.AuthenticationScheme);
-    //    }
-
-    //    if (securityOptions.Authentication.ApiKey != null)
-    //    {
-    //        authenticationSchemes
-    //            .Add(ApiKeyDefaults.AuthenticationScheme);
-    //    }
-
-    //    services
-    //        .AddAuthorization(x =>
-    //        {
-    //            x.FallbackPolicy = null;
-    //            x.InvokeHandlersAfterFailure = false;
-
-    //            x.AddPolicy(AuthenticationPolicies.POLICY, y => y
-    //                .AddAuthenticationSchemes(authenticationSchemes.ToArray())
-    //                .RequireAuthenticatedUser());
-    //        });
-
-    //    var defaultAuthenticationScheme = securityOptions.Authentication.Jwt.IsEnabled
-    //        ? JwtBearerDefaults.AuthenticationScheme
-    //        : securityOptions.Authentication.ApiKey != null 
-    //            ? ApiKeyDefaults.AuthenticationScheme 
-    //            : null;
-
-    //    var authenticationBuilder = services
-    //        .AddAuthentication(x =>
-    //        {
-    //            x.DefaultScheme = defaultAuthenticationScheme;
-    //            x.DefaultChallengeScheme = defaultAuthenticationScheme;
-    //            x.DefaultAuthenticateScheme = defaultAuthenticationScheme;
-    //            x.DefaultForbidScheme = defaultAuthenticationScheme;
-    //            x.DefaultSignInScheme = defaultAuthenticationScheme;
-    //            x.DefaultSignOutScheme = defaultAuthenticationScheme;
-    //        });
-
-    //    if (securityOptions.Authentication.Jwt.IsEnabled)
-    //    {
-    //        var rsaSecurityKey = services
-    //            .BuildServiceProvider()
-    //            .GetRequiredService<RsaSecurityKey>();
-
-    //        authenticationBuilder
-    //            .AddJwtBearer(x =>
-    //            {
-    //                x.SaveToken = true;
-    //                x.IncludeErrorDetails = true;
-    //                x.RequireHttpsMetadata = false;
-
-    //                x.Audience = securityOptions.Authentication.Jwt.Audience;
-    //                x.ClaimsIssuer = securityOptions.Authentication.Jwt.Issuer;
-
-    //                x.TokenValidationParameters = new TokenValidationParameters
-    //                {
-    //                    ValidateActor = true,
-    //                    ValidateIssuer = true,
-    //                    ValidateAudience = true,
-    //                    ValidateLifetime = true,
-    //                    ValidateIssuerSigningKey = true,
-    //                    ValidIssuer = securityOptions.Authentication.Jwt.Issuer,
-    //                    ValidAudience = securityOptions.Authentication.Jwt.Audience,
-    //                    IssuerSigningKey = rsaSecurityKey,
-    //                    ClockSkew = TimeSpan.FromMinutes(5)
-    //                };
-
-    //                x.Events = new JwtBearerEvents
-    //                {
-    //                    OnAuthenticationFailed = context =>
-    //                    {
-    //                        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-    //                        {
-    //                            const string KEY = "Token-Expired";
-
-    //                            context.Response.Headers
-    //                                .Add(KEY, true.ToString());
-    //                        }
-
-    //                        return Task.CompletedTask;
-    //                    }
-    //                };
-    //            })
-    //            //.AddExternalLogins(securityOptions)
-    //            // BUG: Remove cookies?
-    //            .AddCookie(x =>
-    //            {
-    //                x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    //                x.Cookie.Expiration = TimeSpan.FromMinutes(securityOptions.Authentication.Jwt.ExpirationInMinutes);
-    //            });
-    //    }
-
-    //    if (securityOptions.Authentication.ApiKey != null)
-    //    {
-    //        services
-    //            .AddAuthentication()
-    //            .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(ApiKeyDefaults.AuthenticationScheme, _ => { });
-    //    }
-
-    //    return services;
-    //}
     private static IServiceCollection AddVersioning(this IServiceCollection services, WebOptions webOptions)
     {
         if (services == null)
@@ -524,7 +416,7 @@ public static class ServiceCollectionExtensions
 
                     var openApiSecurityRequirement = new OpenApiSecurityRequirement();
 
-                    if (securityOptions.Authentication.Jwt != null)
+                    if (securityOptions?.Authentication.Jwt != null)
                     {
                         var jwtSecurityScheme = new OpenApiSecurityScheme
                         {
@@ -540,7 +432,7 @@ public static class ServiceCollectionExtensions
                             .Add(jwtSecurityScheme, new List<string>());
                     }
 
-                    if (securityOptions.Authentication.ApiKey != null)
+                    if (securityOptions?.Authentication.ApiKey != null)
                     {
                         var apiKeySecurityScheme = new OpenApiSecurityScheme
                         {
@@ -658,7 +550,7 @@ public static class ServiceCollectionExtensions
     }
 
     private static IServiceCollection AddIdentityAuthenticationAndAuthorization<TIdentity>(this IServiceCollection services, AuthenticationOptions options)
-    where TIdentity : IEquatable<TIdentity>
+        where TIdentity : IEquatable<TIdentity>
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));

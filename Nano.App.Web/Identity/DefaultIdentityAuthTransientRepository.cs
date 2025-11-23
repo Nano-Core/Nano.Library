@@ -1,16 +1,16 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 using System;
+using Nano.App.Web.Identity.Abstractions;
+using Nano.Web;
 
-namespace Nano.Security;
+namespace Nano.App.Web.Identity;
 
 /// <inheritdoc />
 public class DefaultIdentityAuthTransientRepository<TIdentity> : BaseIdentityAuthTransientRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    public DefaultIdentityAuthTransientRepository(ILogger logger, Web.IdentityOptions options, SignInManager<IdentityUser<TIdentity>> signInManager)
-        : base(logger, options, signInManager)
+    public DefaultIdentityAuthTransientRepository(IdentityOptions options, IIdentityJwtRepository<TIdentity> identityJwtRepository)
+        : base(options, identityJwtRepository)
     {
     }
 }

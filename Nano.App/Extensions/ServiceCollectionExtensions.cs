@@ -59,90 +59,89 @@ public static class ServiceCollectionExtensions
 
         services
             .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-            .AddSingleton<StartupTaskContext>()
-            .AddHostedService<InitializeApplicationStartupTask>();
+            .AddSingleton<StartupTaskContext>();
 
         services
-            .AddConfig(configuration)
-            .AddApis(configuration);
+            .AddConfig(configuration);
+            //.AddApis(configuration); // BUG: AddApis
 
         return services;
     }
 
-    /// <summary>
-    /// Add Apis to the <see cref="IServiceCollection"/>..
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddApis(this IServiceCollection services, IConfiguration configuration)
-    {
-        var hosts = new List<string>();
+    ///// <summary>
+    ///// Add Apis to the <see cref="IServiceCollection"/>..
+    ///// </summary>
+    ///// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    ///// <param name="configuration">The <see cref="IConfiguration"/>.</param>
+    ///// <returns>The <see cref="IServiceCollection"/>.</returns>
+    //public static IServiceCollection AddApis(this IServiceCollection services, IConfiguration configuration)
+    //{
+    //    var hosts = new List<string>();
 
-        var types = TypesHelper.GetAllTypes()
-            .Where(x => !x.IsAbstract && x.IsTypeOf(typeof(BaseApi)))
-            .Distinct();
+    //    var types = TypesHelper.GetAllTypes()
+    //        .Where(x => !x.IsAbstract && x.IsTypeOf(typeof(BaseApi)))
+    //        .Distinct();
 
-        foreach (var type in types)
-        {
-            var section = configuration.GetSection(type.Name);
-            var options = section.Get<ApiOptions>();
+    //    foreach (var type in types)
+    //    {
+    //        var section = configuration.GetSection(type.Name);
+    //        var options = section.Get<ApiOptions>();
 
-            if (options == null)
-            {
-                continue;
-            }
+    //        if (options == null)
+    //        {
+    //            continue;
+    //        }
 
-            var optionsServiceId = $"{type.Name}_Options";
+    //        var optionsServiceId = $"{type.Name}_Options";
 
-            services
-                .AddKeyedSingleton(optionsServiceId, options);
+    //        services
+    //            .AddKeyedSingleton(optionsServiceId, options);
 
-            services
-                .AddHttpClient(type.Name, (serviceProvider, client) =>
-                {
-                    var apiOptions = serviceProvider
-                        .GetRequiredKeyedService<ApiOptions>(optionsServiceId);
+    //        services
+    //            .AddHttpClient(type.Name, (serviceProvider, client) =>
+    //            {
+    //                var apiOptions = serviceProvider
+    //                    .GetRequiredKeyedService<ApiOptions>(optionsServiceId);
 
-                    client.Timeout = TimeSpan.FromSeconds(apiOptions.TimeoutInSeconds);
-                    client.BaseAddress = new Uri(apiOptions.Host);
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(HttpContentType.JSON));
-                    client.DefaultRequestVersion = new Version(2, 0);
-                })
-                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
-                .ConfigurePrimaryHttpMessageHandler(() =>
-                    new HttpClientHandler
-                    {
-                        AllowAutoRedirect = true,
-                        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-                    });
+    //                client.Timeout = TimeSpan.FromSeconds(apiOptions.TimeoutInSeconds);
+    //                client.BaseAddress = new Uri(apiOptions.Host);
+    //                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(HttpContentType.JSON));
+    //                client.DefaultRequestVersion = new Version(2, 0);
+    //            })
+    //            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+    //            .ConfigurePrimaryHttpMessageHandler(() =>
+    //                new HttpClientHandler
+    //                {
+    //                    AllowAutoRedirect = true,
+    //                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+    //                });
 
-            services
-                .AddScoped(type, serviceProvider =>
-                {
-                    var httpClientFactory = serviceProvider
-                        .GetRequiredService<IHttpClientFactory>();
+    //        services
+    //            .AddScoped(type, serviceProvider =>
+    //            {
+    //                var httpClientFactory = serviceProvider
+    //                    .GetRequiredService<IHttpClientFactory>();
                     
-                    var httpClient = httpClientFactory
-                        .CreateClient(type.Name);
+    //                var httpClient = httpClientFactory
+    //                    .CreateClient(type.Name);
 
-                    var apiOptions = serviceProvider
-                        .GetRequiredKeyedService<ApiOptions>(optionsServiceId);
+    //                var apiOptions = serviceProvider
+    //                    .GetRequiredKeyedService<ApiOptions>(optionsServiceId);
 
-                    return Activator.CreateInstance(type, apiOptions, httpClient);
-                });
+    //                return Activator.CreateInstance(type, apiOptions, httpClient);
+    //            });
 
-            if (!hosts.Contains(options.Host) && options.UseHealthCheck)
-            {
-                services.AddHealthChecks()
-                    .AddTcpHealthCheck(y => y
-                        .AddHost(options.Host, options.Port), options.Host, options.UnhealthyStatus);
+    //        if (!hosts.Contains(options.Host) && options.UseHealthCheck)
+    //        {
+    //            services.AddHealthChecks()
+    //                .AddTcpHealthCheck(y => y
+    //                    .AddHost(options.Host, options.Port), options.Host, options.UnhealthyStatus);
 
-                hosts
-                    .Add(options.Host);
-            }
-        }
+    //            hosts
+    //                .Add(options.Host);
+    //        }
+    //    }
 
-        return services;
-    }
+    //    return services;
+    //}
 }
