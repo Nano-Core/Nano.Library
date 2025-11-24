@@ -1,10 +1,9 @@
 using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.Data.Abstractions.Identity;
+using Nano.Data.Abstractions.Identity.Abstractions;
 using Nano.Data.Identity.Consts;
 using Nano.Data.Identity.DataProtection.Extensions;
-using Nano.Security;
 using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;
 
 namespace Nano.Data.Identity.Extensions;
@@ -53,10 +52,9 @@ internal static class ServiceCollectionExtensions
             .AddDefaultTokenProviders()
             .AddCustomTokenProvider();
 
-        // BUG: ServiceCollection IIdentityRepository
-        //services
-        //    .AddScoped<IIdentityRepository, DefaultIdentityRepository>()
-        //    .AddScoped<IIdentityRepository<TIdentity>, DefaultIdentityRepository<TIdentity>>();
+        services
+            .AddScoped<IIdentityRepository, DefaultIdentityRepository>()
+            .AddScoped<IIdentityRepository<TIdentity>, DefaultIdentityRepository<TIdentity>>();
 
         return services;
     }

@@ -1,12 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Nano.Eventing.Abstractions.Config;
-using Nano.Models.Extensions;
 using System;
 using System.Collections.Generic;
-using Nano.Common.Extensions;
+using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
 
 namespace Nano.Eventing.RabbitMq.Extensions;
+
+// TODO: Upgrade to latest AspNetCore.HealthChecks.Rabbitmq, but we can't because eventing fails as the EasyNetQ expects a lower version of RabbitMQ.Client.
 
 internal static class HealtCheckBuilderExtensions
 {
@@ -17,45 +19,23 @@ internal static class HealtCheckBuilderExtensions
         if (builder == null)
             throw new ArgumentNullException(nameof(builder));
 
-        var eventingOptions = builder.Services
-            .BuildServiceProvider()
-            .GetRequiredService<EventingOptions>();
-
-        if (!eventingOptions.UseHealthCheck)
-        {
-            return builder;
-        }
-
-        var healthStatus = eventingOptions.UnhealthyStatus
-            .GetHealthStatus();
-
-        var connectionString = string.IsNullOrEmpty(eventingOptions.Username) || string.IsNullOrEmpty(eventingOptions.Password)
-            ? $"amqp://{eventingOptions.Host}:{eventingOptions.Port}{eventingOptions.VHost}"
-            : $"amqp://{eventingOptions.Username}:{eventingOptions.Password}@{eventingOptions.Host}:{eventingOptions.Port}{eventingOptions.VHost}";
-
         builder
-            .AddRabbitMQ(connectionString, null, NAME, healthStatus, tags, timeout);
+            .AddRabbitMQ((x, y) =>
+            {
+                var options = x
+                    .GetRequiredService<IOptionsMonitor<EventingOptions>>();
 
-        // BUG: Upgrade to latest AspNetCore.HealthChecks.Rabbitmq, but we can't because eventing fails as the EasyNetQ expects a lower version of RabbitMQ.Client.
-        //builder
-        //    .AddRabbitMQ(x =>
-        //    {
-        //        var options = x
-        //            .GetRequiredService<EventingOptions>();
+                var connectionString = string.IsNullOrEmpty(options.CurrentValue.Username) || string.IsNullOrEmpty(options.CurrentValue.Password)
+                    ? $"amqp://{options.CurrentValue.Host}:{options.CurrentValue.Port}{options.CurrentValue.VHost}"
+                    : $"amqp://{options.CurrentValue.Username}:{options.CurrentValue.Password}@{options.CurrentValue.Host}:{options.CurrentValue.Port}{options.CurrentValue.VHost}";
 
-        //        var connectionString = string.IsNullOrEmpty(options.Username) || string.IsNullOrEmpty(options.Password)
-        //            ? $"amqp://{options.Host}:{options.Port}{options.VHost}"
-        //            : $"amqp://{options.Username}:{options.Password}@{options.Host}:{options.Port}{options.VHost}";
-
-        //        var factory = new ConnectionFactory
-        //        {
-        //            Uri = new Uri(connectionString),
-        //            AutomaticRecoveryEnabled = true
-        //        };
-
-        //        return factory
-        //            .CreateConnectionAsync();
-        //    }, NAME, healthStatus, tags, timeout);
+                y.RequestedConnectionTimeout = timeout;
+                y.ConnectionFactory = new ConnectionFactory
+                {
+                    Uri = new Uri(connectionString),
+                    AutomaticRecoveryEnabled = true
+                };
+            }, NAME, failureStatus, tags, timeout);
 
         return builder;
     }

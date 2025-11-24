@@ -20,9 +20,11 @@ public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbC
 
         var builder = new DbContextOptionsBuilder<TContext>();
 
-        var dataOptions = configuration
+        var dataOptions = new DataOptions();
+
+        configuration
             .GetSection(DataOptions.SectionName)
-            .Get<DataOptions>();
+            .Bind(dataOptions);
 
         if (dataOptions == null)
         {

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Nano.Storage.Abstractions.Config;
 
 namespace Nano.Storage.Abstractions;
 

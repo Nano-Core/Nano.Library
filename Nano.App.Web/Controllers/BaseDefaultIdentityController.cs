@@ -18,14 +18,14 @@ public abstract class BaseDefaultIdentityController<TEntity, TCriteria> : BaseId
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected BaseDefaultIdentityController(ILogger logger, IRepository repository, IIdentityRepository<Guid> identityRepository, IIdentityAuthRepository<Guid> identityAuthRepository)
-        : this(logger, repository, null, identityRepository, identityAuthRepository)
+    protected BaseDefaultIdentityController(ILogger logger, IRepository repository, IIdentityRepository<Guid> identityRepository, IAuthRepository<Guid> authRepository)
+        : this(logger, repository, null, identityRepository, authRepository)
     {
     }
 
     /// <inheritdoc />
-    protected BaseDefaultIdentityController(ILogger logger, IRepository repository, IEventing eventing, IIdentityRepository<Guid> identityRepository, IIdentityAuthRepository<Guid> identityAuthRepository)
-        : base(logger, repository, eventing, identityRepository, identityAuthRepository)
+    protected BaseDefaultIdentityController(ILogger logger, IRepository repository, IEventing eventing, IIdentityRepository<Guid> identityRepository, IAuthRepository<Guid> authRepository)
+        : base(logger, repository, eventing, identityRepository, authRepository)
     {
     }
 }

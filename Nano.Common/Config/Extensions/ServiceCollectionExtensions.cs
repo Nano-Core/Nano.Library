@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
     /// <param name="options">The options configured and loaded.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection AddConfigSection<TSection>(this IServiceCollection services, string name, out TSection options)
-        where TSection : class
+        where TSection : class, new()
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
@@ -45,12 +45,18 @@ public static class ServiceCollectionExtensions
         var section = ConfigManager.Configuration
             .GetSection(name);
         
-        options = section.Get<TSection>();
+        options = section
+            .Get<TSection>();
 
         if (options != null)
         {
-            services
-                .AddSingleton(options);
+            var optionsBuilder = services
+                .AddOptions<TSection>(name);
+
+            optionsBuilder
+                .Bind(section)
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
         }
 
         return services;

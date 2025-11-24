@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure.Storage.Files.Shares;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Nano.Storage.Abstractions.Config;
 
 namespace Nano.Storage.Azure.HealthChecks;
@@ -13,7 +14,7 @@ namespace Nano.Storage.Azure.HealthChecks;
 /// </summary>
 public class AzureFileshareStorageHealthCheck : IHealthCheck
 {
-    private readonly StorageOptions options;
+    private readonly IOptionsMonitor<StorageOptions> options;
     private readonly ShareClientOptions clientOptions;
     
     private static readonly ConcurrentDictionary<string, ShareClient> clientsHolder = new();
@@ -23,7 +24,7 @@ public class AzureFileshareStorageHealthCheck : IHealthCheck
     /// </summary>
     /// <param name="options">The <see cref="StorageOptions"/>.</param>
     /// <param name="clientOptions">the <see cref="ShareClientOptions"/>.</param>
-    public AzureFileshareStorageHealthCheck(StorageOptions options, ShareClientOptions clientOptions = null)
+    public AzureFileshareStorageHealthCheck(IOptionsMonitor<StorageOptions> options, ShareClientOptions clientOptions = null)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));
         this.clientOptions = clientOptions;
@@ -61,17 +62,17 @@ public class AzureFileshareStorageHealthCheck : IHealthCheck
     private ShareClient GetClient()
     {
         var exists = clientsHolder
-            .TryGetValue(this.options.Connectionstring, out var client);
+            .TryGetValue(this.options.CurrentValue.Connectionstring, out var client);
 
         if (exists)
         {
             return client;
         }
 
-        client = new ShareClient(this.options.Connectionstring, this.options.ShareName, this.clientOptions);
+        client = new ShareClient(this.options.CurrentValue.Connectionstring, this.options.CurrentValue.ShareName, this.clientOptions);
 
         clientsHolder
-            .TryAdd(this.options.Connectionstring, client);
+            .TryAdd(this.options.CurrentValue.Connectionstring, client);
 
         return client;
     }

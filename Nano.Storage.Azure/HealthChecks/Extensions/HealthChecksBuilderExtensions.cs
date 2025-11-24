@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Azure.Storage.Files.Shares;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Nano.Storage.Abstractions.Config;
 
 namespace Nano.Storage.Azure.HealthChecks.Extensions;
@@ -31,7 +32,7 @@ internal static class HealthChecksBuilderExtensions
             .Add(new HealthCheckRegistration(NAME, x =>
             {
                 var options = x
-                    .GetRequiredService<StorageOptions>();
+                    .GetRequiredService<IOptionsMonitor<StorageOptions>>();
 
                 return new AzureFileshareStorageHealthCheck(options, new ShareClientOptions());
             }, failureStatus, tags, timeout));

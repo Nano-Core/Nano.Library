@@ -3,6 +3,7 @@ using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 
@@ -22,19 +23,19 @@ public static class DbContextOptionsBuilderExtensions
             throw new ArgumentNullException(nameof(serviceProvider));
 
         var options = serviceProvider
-            .GetRequiredService<DataOptions>();
+            .GetRequiredService<IOptionsMonitor<DataOptions>>();
 
         builder
-            .EnableSensitiveDataLogging(options.UseSensitiveDataLogging)
+            .EnableSensitiveDataLogging(options.CurrentValue.UseSensitiveDataLogging)
             .ConfigureWarnings(x =>
             {
                 x.Ignore(RelationalEventId.BoolWithDefaultWarning);
                 x.Log(RelationalEventId.MultipleCollectionIncludeWarning);
                 x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
             })
-            .UseLazyLoadingProxies(options.UseLazyLoading);
+            .UseLazyLoadingProxies(options.CurrentValue.UseLazyLoading);
 
-        if (options.Cache != null)
+        if (options.CurrentValue.Cache != null)
         {
             var secondLevelCacheInterceptor = serviceProvider
                 .GetRequiredService<SecondLevelCacheInterceptor>();

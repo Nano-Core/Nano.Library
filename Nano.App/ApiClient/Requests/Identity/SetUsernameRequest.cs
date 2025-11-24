@@ -1,0 +1,29 @@
+﻿using System;
+using Nano.Data.Abstractions.Identity.Models;
+
+namespace Nano.App.ApiClient.Requests.Identity;
+
+/// <inheritdoc />
+public class SetUsernameRequest : SetUsernameRequest<Guid>;
+
+/// <inheritdoc />
+public class SetUsernameRequest<TIdentity> : BaseRequestPost
+    where TIdentity : IEquatable<TIdentity>
+{
+    /// <summary>
+    /// Set Username.
+    /// </summary>
+    public virtual SetUsername<TIdentity> SetUsername { get; set; } = new();
+
+    /// <inheritdoc />
+    public SetUsernameRequest()
+    {
+        this.Action = "username/set";
+    }
+
+    /// <inheritdoc />
+    public override object GetBody()
+    {
+        return this.SetUsername;
+    }
+}

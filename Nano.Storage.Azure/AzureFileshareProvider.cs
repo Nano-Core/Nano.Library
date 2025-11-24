@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Nano.Common.Extensions;
 using Nano.Storage.Abstractions;
 using Nano.Storage.Abstractions.Config;
@@ -12,13 +13,13 @@ namespace Nano.Storage.Azure;
 /// </summary>
 public class AzureFileshareProvider : IStorageProvider
 {
-    private readonly StorageOptions options;
+    private readonly IOptionsMonitor<StorageOptions> options;
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="options">The <see cref="StorageOptions"/>.</param>
-    public AzureFileshareProvider(StorageOptions options)
+    /// <param name="options">The <see cref="IOptionsMonitor{StorageOptions}"/>.</param>
+    public AzureFileshareProvider(IOptionsMonitor<StorageOptions> options)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));
     }
@@ -29,22 +30,15 @@ public class AzureFileshareProvider : IStorageProvider
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        if (!this.options.UseHealthCheck)
+        if (this.options.CurrentValue.UseHealthCheck)
         {
-            return this;
+            var failureStatus = this.options.CurrentValue.UnhealthyStatus
+                .GetHealthStatus();
+
+            services
+                .AddHealthChecks()
+                .AddAzureFileshareStorage(failureStatus);
         }
-
-        if (this.options.Connectionstring == null)
-        {
-            throw new NullReferenceException(nameof(options.Connectionstring));
-        }
-
-        var healtStatus = this.options.UnhealthyStatus
-            .GetHealthStatus();
-
-        services
-            .AddHealthChecks()
-            .AddAzureFileshareStorage(failureStatus: healtStatus);
 
         return this;
     }

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Nano.App.Consts;
+using Nano.App.ApiClient.Consts;
 
 namespace Nano.Web.Hosting.Middleware;
 

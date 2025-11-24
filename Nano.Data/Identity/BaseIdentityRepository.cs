@@ -15,6 +15,7 @@ using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Extensions;
+using Nano.Data.Identity.Consts;
 using Nano.Data.Identity.DataProtection.Consts;
 using Nano.Data.Identity.Extensions;
 using Nano.Data.Identity.Helpers;
@@ -32,12 +33,6 @@ namespace Nano.Data.Identity;
 // BUG: Handle User.IdentityUser 
 // This is also a general problem, when having custom entities that navigates in publish annotation. Can we solve this or make it clear?
 // - Usually ypu wouldn't navigate over for other entities that User.IdentityUser. BUT still it's supported in the annotations. BUT they control the update
-
-
-internal static class JwtBearerDefaults
-{
-    internal const string AUTHENTICATION_SCHEME = "Bearer";
-}
 
 /// <summary>
 /// Base Identity Repository.
@@ -1156,7 +1151,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         }
 
         var result = await this.UserManager
-            .ConfirmPhoneNumberAsync<IdentityUser<TIdentity>, TIdentity>(identityUser, confirmPhoneNumber.Token);
+            .ConfirmPhoneNumberAsync(identityUser, confirmPhoneNumber.Token);
 
         if (!result.Succeeded)
         {
@@ -1349,7 +1344,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         }
 
         var token = await this.UserManager
-            .GeneratePhoneNumberConfirmationTokenAsync<IdentityUser<TIdentity>, TIdentity>(identityUser);
+            .GeneratePhoneNumberConfirmationTokenAsync(identityUser);
 
         return new ConfirmPhoneNumberToken<TIdentity>
         {
@@ -2205,17 +2200,26 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
     private async Task UpdateEntityUserWhenIdentityUserChanges(TIdentity id)
     {
-        var userTypes = this.DbContext.Model.GetEntityTypes().Where(x => x.ClrType.IsSubclassOf(typeof(IEntityUser<TIdentity>)));
+        // BUG: 000: TEST
+        var userTypes = this.DbContext.Model
+            .GetEntityTypes()
+            .Where(x => x.ClrType.IsSubclassOf(typeof(IEntityUser<TIdentity>)));
 
         foreach (var userType in userTypes)
         {
-            var user2 = await this.DbContext
+            var user = await this.DbContext
                 .FindAsync(userType.ClrType, id);
 
+            if (user == null)
+            {
+                continue;
+            }
+
             this.DbContext
-                .Update(user2);
+                .Update(user);
         }
 
+        // BUG: 000: Original
         //var user = this.DbContext
         //    .Set<TUser>()
         //    .IgnoreQueryFilters()
@@ -2226,7 +2230,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         //    throw new NullReferenceException(nameof(user));
         //}
 
-        //// BUG: Don't update, but just mark the entity as changed, we don't want to trigger audit when no changes
+        //// BUG: 000: Don't update, but just mark the entity as changed, we don't want to trigger audit when no changes
         //this.DbContext
         //    .Update(user);
     }

@@ -3,8 +3,8 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Nano.App;
+using Nano.App.Abstractions;
 using Nano.App.Extensions;
-using Nano.App.Interfaces;
 using Nano.Common.Config.Helpers;
 using Nano.Console.Extensions;
 

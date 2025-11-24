@@ -1,4 +1,6 @@
+using System;
 using Nano.Common.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Eventing.Abstractions.Config;
 
@@ -15,36 +17,41 @@ public class EventingOptions
     /// <summary>
     /// Host.
     /// </summary>
+    [Required]
     public virtual string Host { get; set; }
 
     /// <summary>
     /// VHost.
     /// </summary>
+    [Required]
     public virtual string VHost { get; set; } = "/";
 
     /// <summary>
     /// Username.
     /// </summary>
-    public virtual string Username { get; set; } = string.Empty;
+    public virtual string Username { get; set; }
 
     /// <summary>
     /// Password.
     /// </summary>
-    public virtual string Password { get; set; } = string.Empty;
+    public virtual string Password { get; set; }
 
     /// <summary>
     /// Port.
     /// </summary>
+    [Required]
     public virtual ushort Port { get; set; } = 5672;
 
     /// <summary>
     /// Timeout, in seconds.
     /// </summary>
-    public virtual ushort Timeout { get; set; } = 30;
+    [Required]
+    public virtual TimeSpan Timeout { get; set; } = TimeSpan.FromMicroseconds(30);
 
     /// <summary>
     /// Use Ssl.
     /// </summary>
+    [Required]
     public virtual bool UseSsl { get; set; } = false;
 
     /// <summary>
@@ -52,21 +59,25 @@ public class EventingOptions
     /// Default: 60
     /// Zero means no hearbeat requests.
     /// </summary>
+    [Required]
     public virtual ushort Heartbeat { get; set; } = 60;
 
     /// <summary>
     /// Prefetch Count.
     /// Default: 50
     /// </summary>
+    [Required]
     public virtual ushort PrefetchCount { get; set; } = 50;
 
     /// <summary>
     /// Use Health Check.
     /// </summary>
+    [Required]
     public virtual bool UseHealthCheck { get; set; } = true;
 
     /// <summary>
     /// Unhealthy Status.
     /// </summary>
+    [Required]
     public virtual HealthStatusLevel UnhealthyStatus { get; set; } = HealthStatusLevel.Unhealthy;
 }

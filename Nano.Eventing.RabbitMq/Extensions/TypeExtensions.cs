@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Nano.Models.Extensions;
+namespace Nano.Eventing.RabbitMq.Extensions;
 
 /// <summary>
 /// Type Extensions.

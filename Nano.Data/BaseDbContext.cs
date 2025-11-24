@@ -10,12 +10,10 @@ using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Data.Models;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
 using Nano.Eventing.Abstractions;
 using Nano.Eventing.Abstractions.Models;
-using Nano.Security;
 using NetTopologySuite.Geometries;
 using System;
 using System.Collections;
@@ -25,6 +23,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Nano.Common.Extensions;
 using Nano.Data.Eventing.Annotations;
 using Nano.Data.Extensions;
@@ -45,17 +44,12 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     /// <summary>
     /// Options.
     /// </summary>
-    public DataOptions Options { get; }
-
-    ///// <summary>
-    ///// Security Options.
-    ///// </summary>
-    //public IdentityOptions SecurityOptions { get; }
+    internal IOptionsMonitor<DataOptions> Options { get; }
 
     /// <summary>
     /// Auto Save.
     /// </summary>
-    public virtual bool AutoSave => this.Options.UseAutoSave;
+    public virtual bool AutoSave => this.Options.CurrentValue.UseAutoSave;
 
     /// <summary>
     /// Auto Save.
@@ -69,7 +63,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
     /// <inheritdoc />
-    protected BaseDbContext(DbContextOptions contextOptions, DataOptions dataOptions)
+    protected BaseDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> dataOptions)
         : base(contextOptions)
     {
         this.Options = dataOptions ?? throw new ArgumentNullException(nameof(dataOptions));
@@ -79,7 +73,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         this.SavedChanges += async (_, _) => await this.PublishEntityEvents();
 
         // ReSharper disable VirtualMemberCallInConstructor
-        this.ChangeTracker.LazyLoadingEnabled = this.Options.UseLazyLoading;
+        this.ChangeTracker.LazyLoadingEnabled = this.Options.CurrentValue.UseLazyLoading;
         // ReSharper restore VirtualMemberCallInConstructor
     }
 
@@ -89,7 +83,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        var isAuditEnabled = this.Options.UseAudit;
+        var isAuditEnabled = this.Options.CurrentValue.UseAudit;
 
         var publishAnnotation = entity
             .GetType()
@@ -124,7 +118,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        var isAuditEnabled = this.Options.UseAudit;
+        var isAuditEnabled = this.Options.CurrentValue.UseAudit;
 
         var firstEntity = entities
             .First();
@@ -285,13 +279,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     /// <returns>The <see cref="Task"/> (void).</returns>
     internal virtual async Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
     {
-        if (this.Options.ConnectionString == null)
+        if (this.Options.CurrentValue.ConnectionString == null)
             return;
 
-        if (!this.Options.UseCreateDatabase)
-            return;
-
-        if (this.Options.ConnectionString == null)
+        if (!this.Options.CurrentValue.UseCreateDatabase)
             return;
 
         await this.Database
@@ -305,13 +296,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     /// <returns>The <see cref="Task"/> (void).</returns>
     internal virtual Task EnsureMigratedAsync(CancellationToken cancellationToken = default)
     {
-        if (this.Options.ConnectionString == null)
+        if (this.Options.CurrentValue.ConnectionString == null)
             return Task.CompletedTask;
 
-        if (!this.Options.UseMigrateDatabase)
-            return Task.CompletedTask;
-
-        if (this.Options.ConnectionString == null)
+        if (!this.Options.CurrentValue.UseMigrateDatabase)
             return Task.CompletedTask;
 
         var logger = this.GetService<ILogger>();
@@ -330,7 +318,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     /// <returns>The <see cref="Task"/> (void).</returns>
     internal virtual async Task EnsureIdentityAsync(CancellationToken cancellationToken = default)
     {
-        if (this.Options.ConnectionString == null)
+        if (this.Options.CurrentValue.ConnectionString == null)
             return;
 
         await this.AddRole(BuiltInUserRoles.GUEST);
@@ -350,14 +338,14 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         base.OnModelCreating(modelBuilder);
 
-        if (!string.IsNullOrEmpty(this.Options.DefaultCollation))
+        if (!string.IsNullOrEmpty(this.Options.CurrentValue.DefaultCollation))
         {
             modelBuilder
-                .UseCollation(this.Options.DefaultCollation);
+                .UseCollation(this.Options.CurrentValue.DefaultCollation);
         }
 
         modelBuilder
-            .MapIdentity<TIdentity>(this.Options.Identity?.User.IsUniqueEmailAddressRequired ?? true, this.Options.Identity?.User.IsUniquePhoneNumberRequired ?? true)
+            .MapIdentity<TIdentity>(this.Options.CurrentValue.Identity?.User.IsUniqueEmailAddressRequired ?? true, this.Options.CurrentValue.Identity?.User.IsUniquePhoneNumberRequired ?? true)
             .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()
             .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>()
             .AddMapping<IdentityApiKey<TIdentity>, IdentityApiKeyMapping<TIdentity>>()
@@ -432,7 +420,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         }
         finally
         {
-            if (this.Options.UseLazyLoading)
+            if (this.Options.CurrentValue.UseLazyLoading)
             {
                 this.ChangeTracker.LazyLoadingEnabled = true;
             }
@@ -440,7 +428,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     }
     private void UpdateSoftDeletedEntities()
     {
-        if (!this.Options.UseSoftDeletetion)
+        if (!this.Options.CurrentValue.UseSoftDeletetion)
         {
             return;
         }

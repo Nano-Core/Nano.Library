@@ -7,13 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nano.App;
 using Nano.App.Extensions;
-using Nano.App.Interfaces;
 using Nano.Data.Abstractions.Config;
 using Nano.Web.Extensions;
 using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.Options;
+using Nano.App.Abstractions;
 using Nano.Common.Config.Helpers;
 
 namespace Nano.Web;
@@ -42,7 +43,7 @@ public class WebApplication : DefaultApplication
         base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
 
         var dataOptions = applicationBuilder.ApplicationServices
-            .GetService<DataOptions>();
+            .GetService<IOptionsMonitor<DataOptions>>();
 
         applicationBuilder
             .UseExceptionHandling()
@@ -90,7 +91,7 @@ public class WebApplication : DefaultApplication
             })
             .UseHttpDocumentataion()
             .UseHealthChecks()
-            .UseEventHandlers(dataOptions.ConnectionString != null); // BUG: Get rid of parameter, and should be for both Web and Console
+            .UseEventHandlers(dataOptions.CurrentValue.ConnectionString != null); // BUG: Get rid of parameter, and should be for both Web and Console
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using Nano.Common.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using Nano.Common.Enums;
 
 namespace Nano.Storage.Abstractions.Config;
 
@@ -15,26 +16,31 @@ public class StorageOptions
     /// <summary>
     /// Account Name.
     /// </summary>
+    [Required]
     public virtual string AccountName { get; set; }
 
     /// <summary>
     /// Account Key.
     /// </summary>
+    [Required]
     public virtual string AccountKey { get; set; }
 
     /// <summary>
     /// Share Name.
     /// </summary>
+    [Required]
     public virtual string ShareName { get; set; }
 
     /// <summary>
     /// Use Health Check.
     /// </summary>
+    [Required]
     public virtual bool UseHealthCheck { get; set; } = true;
 
     /// <summary>
     /// Unhealthy Status.
     /// </summary>
+    [Required]
     public virtual HealthStatusLevel UnhealthyStatus { get; set; } = HealthStatusLevel.Unhealthy;
 
     /// <summary>

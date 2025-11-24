@@ -3,6 +3,8 @@ using EasyNetQ;
 using EasyNetQ.DI;
 using EasyNetQ.Serialization.NewtonsoftJson;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Nano.Common.Extensions;
 using Nano.Common.Serialization;
 using Nano.Eventing.Abstractions;
 using Nano.Eventing.Abstractions.Config;
@@ -18,17 +20,21 @@ public static class ServiceCollectionExtensions
     /// Add EasyNetQ Eventiong
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="options"></param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddEasyNetQEventing(this IServiceCollection services)
+    public static IServiceCollection AddEasyNetQEventing(this IServiceCollection services, EventingOptions options)
     {
         if (services == null) 
             throw new ArgumentNullException(nameof(services));
 
+        if (options == null) 
+            throw new ArgumentNullException(nameof(options));
+
         services
             .RegisterEasyNetQ(x =>
             {
-                var options = x
-                    .Resolve<EventingOptions>();
+                var eventingOptions = x
+                    .Resolve<IOptionsMonitor<EventingOptions>>();
                     
                 return new ConnectionConfiguration
                 {
@@ -36,16 +42,16 @@ public static class ServiceCollectionExtensions
                     {
                         new HostConfiguration
                         {
-                            Host = options.Host,
-                            Port = options.Port
+                            Host = eventingOptions.CurrentValue.Host,
+                            Port = eventingOptions.CurrentValue.Port
                         }
                     },
-                    VirtualHost = options.VHost,
-                    UserName = options.Username,
-                    Password = options.Password,
-                    RequestedHeartbeat = TimeSpan.FromSeconds(options.Heartbeat),
-                    Timeout = TimeSpan.FromSeconds(options.Timeout),
-                    PrefetchCount = options.PrefetchCount
+                    VirtualHost = eventingOptions.CurrentValue.VHost,
+                    UserName = eventingOptions.CurrentValue.Username,
+                    Password = eventingOptions.CurrentValue.Password,
+                    RequestedHeartbeat = TimeSpan.FromSeconds(eventingOptions.CurrentValue.Heartbeat),
+                    Timeout = eventingOptions.CurrentValue.Timeout,
+                    PrefetchCount = eventingOptions.CurrentValue.PrefetchCount
                 };
             }, x => x
                 .Register<ISerializer>(_ =>
@@ -58,9 +64,15 @@ public static class ServiceCollectionExtensions
         services
             .AddScoped<IEventing, EasyNetQEventing>();
 
-        services
-            .AddHealthChecks()
-            .AddRabbitMqHealthChecks();
+        if (options.UseHealthCheck)
+        {
+            var failureStatus = options.UnhealthyStatus
+                .GetHealthStatus();
+
+            services
+                .AddHealthChecks()
+                .AddRabbitMqHealthChecks(failureStatus, null, options.Timeout);
+        }
 
         return services;
     }

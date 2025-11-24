@@ -9,12 +9,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Nano.App.Consts;
+using Nano.App.ApiClient.Consts;
+using Nano.App.ApiClient.Models;
+using Nano.App.ApiClient.Models.Identity;
+using Nano.App.ApiClient.Models.Identity.External;
 using Nano.App.Web.Identity.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Models;
-using Nano.Models.Const;
 using Nano.Web.Controllers;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -30,24 +32,24 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <summary>
     /// Identity Auth Repository.
     /// </summary>
-    protected virtual IIdentityAuthRepository<TIdentity> IdentityAuthRepository { get; }
+    protected virtual IAuthRepository<TIdentity> AuthRepository { get; }
 
     /// <summary>
     /// Identity Transient Repository.
     /// </summary>
-    protected virtual IIdentityAuthTransientRepository<TIdentity> IdentityAuthTransientRepository { get; }
+    protected virtual IAuthTransientRepository<TIdentity> AuthTransientRepository { get; }
 
     /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="logger">The <see cref="ILogger"/>.</param>
-    /// <param name="identityAuthRepository"></param>
-    /// <param name="identityTransientRepository">The <see cref="IIdentityAuthTransientRepository{TIdentity}"/>.</param>
-    protected BaseAuthController(ILogger logger, IIdentityAuthRepository<TIdentity> identityAuthRepository = null, IIdentityAuthTransientRepository<TIdentity> identityTransientRepository = null)
+    /// <param name="authRepository"></param>
+    /// <param name="authTransientRepository">The <see cref="IAuthTransientRepository{TIdentity}"/>.</param>
+    protected BaseAuthController(ILogger logger, IAuthRepository<TIdentity> authRepository = null, IAuthTransientRepository<TIdentity> authTransientRepository = null)
         : base(logger)
     {
-        this.IdentityAuthRepository = identityAuthRepository;
-        this.IdentityAuthTransientRepository = identityTransientRepository;
+        this.AuthRepository = authRepository;
+        this.AuthTransientRepository = authTransientRepository;
     }
 
     /// <summary>
@@ -75,7 +77,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [SwaggerOperation(Tags = [ControllerRoutes.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInAsync([FromBody][Required]LogIn logIn, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.IdentityAuthRepository
+        var accessToken = await this.AuthRepository
             .LogInAsync(logIn, cancellationToken);
 
         if (accessToken == null)
@@ -109,7 +111,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [SwaggerOperation(Tags = [ControllerRoutes.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> GetExternalSchemesAsync(CancellationToken cancellationToken = default)
     {
-        var logInProviders = await this.IdentityAuthTransientRepository
+        var logInProviders = await this.AuthTransientRepository
             .GetExternalProviderSchemesAsync(cancellationToken);
 
         if (logInProviders == null)
@@ -142,7 +144,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [SwaggerOperation(Tags = [ControllerRoutes.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalDirectAsync([FromBody][Required] LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.IdentityAuthRepository
+        var accessToken = await this.AuthRepository
             .LogInExternalDirectAsync(logInExternalDirect, cancellationToken);
 
         if (accessToken == null)
@@ -176,7 +178,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [SwaggerOperation(Tags = [ControllerRoutes.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalDirectTransientAsync([FromBody][Required] LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.IdentityAuthTransientRepository
+        var accessToken = await this.AuthTransientRepository
             .LogInExternalTransientAsync(logInExternalDirect.ExternalLogInData, logInExternalDirect.TransientRoles, logInExternalDirect.TransientClaims, cancellationToken);
 
         if (accessToken == null)
@@ -210,7 +212,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [SwaggerOperation(Tags = [ControllerRoutes.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalGoogleAsync([FromBody][Required] LogInExternalGoogle logInExternal, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.IdentityAuthRepository
+        var accessToken = await this.AuthRepository
             .LogInExternalAsync(logInExternal, cancellationToken);
 
         if (accessToken == null)
@@ -244,7 +246,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [SwaggerOperation(Tags = [ControllerRoutes.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalGoogleTransientAsync([FromBody][Required] LogInExternalGoogle logInExternal, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.IdentityAuthTransientRepository
+        var accessToken = await this.AuthTransientRepository
             .LogInExternalTransientAsync(logInExternal, cancellationToken);
 
         if (accessToken == null)
@@ -278,7 +280,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [SwaggerOperation(Tags = [ControllerRoutes.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalFacebookAsync([FromBody][Required] LogInExternalFacebook logInExternal, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.IdentityAuthRepository
+        var accessToken = await this.AuthRepository
             .LogInExternalAsync(logInExternal, cancellationToken);
 
         if (accessToken == null)
@@ -312,7 +314,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [SwaggerOperation(Tags = [ControllerRoutes.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalFacebookTransientAsync([FromBody][Required] LogInExternalFacebook logInExternal, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.IdentityAuthTransientRepository
+        var accessToken = await this.AuthTransientRepository
             .LogInExternalTransientAsync(logInExternal, cancellationToken);
 
         if (accessToken == null)
@@ -346,7 +348,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [SwaggerOperation(Tags = [ControllerRoutes.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalMicrosoftAsync([FromBody][Required] LogInExternalMicrosoft logInExternal, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.IdentityAuthRepository
+        var accessToken = await this.AuthRepository
             .LogInExternalAsync(logInExternal, cancellationToken);
 
         if (accessToken == null)
@@ -380,7 +382,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [SwaggerOperation(Tags = [ControllerRoutes.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInExternalMicrosoftTransientAsync([FromBody][Required] LogInExternalMicrosoft logInExternal, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.IdentityAuthTransientRepository
+        var accessToken = await this.AuthTransientRepository
             .LogInExternalTransientAsync(logInExternal, cancellationToken);
 
         if (accessToken == null)
@@ -415,7 +417,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [SwaggerOperation(Tags = [ControllerRoutes.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogInRefreshAsync([FromBody][Required] LogInRefresh logInRefresh, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.IdentityAuthRepository
+        var accessToken = await this.AuthRepository
             .LogInRefreshAsync(logInRefresh, cancellationToken);
 
         if (accessToken == null)
@@ -446,7 +448,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [SwaggerOperation(Tags = [ControllerRoutes.AUTH_CONTROLLER_ROUTE])]
     public virtual async Task<IActionResult> LogOutAsync(CancellationToken cancellationToken = default)
     {
-        await this.IdentityAuthRepository
+        await this.AuthRepository
             .SignOutAsync(cancellationToken);
 
         await this.HttpContext

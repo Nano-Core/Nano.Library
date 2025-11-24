@@ -1,5 +1,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using MySqlConnector;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
@@ -12,13 +13,13 @@ namespace Nano.Data.MySql;
 /// </summary>
 public class MySqlProvider : IDataProvider
 {
-    private readonly DataOptions options;
+    private readonly IOptionsMonitor<DataOptions> options;
 
     /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="options">The <see cref="DataOptions"/>.</param>
-    public MySqlProvider(DataOptions options)
+    public MySqlProvider(IOptionsMonitor<DataOptions> options)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));
     }
@@ -29,9 +30,9 @@ public class MySqlProvider : IDataProvider
         if (builder == null)
             throw new ArgumentNullException(nameof(builder));
 
-        var batchSize = this.options.BatchSize;
-        var retryCount = this.options.QueryRetryCount;
-        var connectionString = this.options.ConnectionString;
+        var batchSize = this.options.CurrentValue.BatchSize;
+        var retryCount = this.options.CurrentValue.QueryRetryCount;
+        var connectionString = this.options.CurrentValue.ConnectionString;
 
         var connection = new MySqlConnection(connectionString);
         var serverVersion = ServerVersion.AutoDetect(connection);
@@ -44,7 +45,7 @@ public class MySqlProvider : IDataProvider
         builder
             .UseMySql(connection, serverVersion, x =>
             {
-                var querySplittingBehavior = this.options.UseQuerySplittingBehavior
+                var querySplittingBehavior = this.options.CurrentValue.UseQuerySplittingBehavior
                     .GetQuerySplittingBehavior();
 
                 x.MaxBatchSize(batchSize);

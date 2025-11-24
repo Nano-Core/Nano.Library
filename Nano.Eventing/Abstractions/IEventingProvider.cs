@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Nano.Eventing.Abstractions.Config;
 
 namespace Nano.Eventing.Abstractions;
 

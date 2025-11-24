@@ -1,4 +1,5 @@
 using Nano.Logging.Abstractions.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Logging.Abstractions.Config;
 
@@ -15,10 +16,12 @@ public class LoggingOptions
     /// <summary>
     /// Log Level.
     /// </summary>
+    [Required]
     public virtual LogLevel LogLevel { get; set; } = LogLevel.Information;
 
     /// <summary>
     /// Log Level Overrides.
     /// </summary>
+    [Required]
     public virtual LogLevelOverrideOptions[] LogLevelOverrides { get; set; } = [];
 }

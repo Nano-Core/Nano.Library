@@ -18,7 +18,6 @@ using Nano.App;
 using Nano.Data;
 using Nano.Data.Extensions;
 using Nano.Models;
-using Nano.Models.Const;
 using Nano.Security;
 using Nano.Web.Controllers;
 using Nano.Web.Hosting.Authentication;
@@ -39,6 +38,10 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.XPath;
+using Microsoft.Extensions.Options;
+using Nano.App.ApiClient.Consts;
+using Nano.App.ApiClient.Models;
+using Nano.App.Config;
 using Nano.Common.Config.Extensions;
 using Nano.Common.Config.Helpers;
 using Nano.Common.Extensions;
@@ -84,10 +87,10 @@ public static class ServiceCollectionExtensions
             .BuildServiceProvider();
 
         var appOptions = serviceProvider
-            .GetService<AppOptions>() ?? new AppOptions();
+            .GetService<IOptionsMonitor<AppOptions>>();
 
         var dataOptions = serviceProvider
-            .GetService<DataOptions>() ?? new DataOptions();
+            .GetService<IOptionsMonitor<DataOptions>>();
 
         services
             .AddSingleton(webOptions.Identity);
@@ -141,9 +144,9 @@ public static class ServiceCollectionExtensions
             .AddCaching(webOptions)
             .AddVersioning(webOptions)
             .AddIdentityAuthenticationAndAuthorization<Guid>(webOptions.Identity.Authentication) // BUG: Should not be guid
-            .AddDocumentation(appOptions, webOptions, webOptions.Identity)
+            .AddDocumentation(appOptions.CurrentValue, webOptions, webOptions.Identity)
             .AddLocalizations()
-            .AddTimeZone(appOptions)
+            .AddTimeZone(appOptions.CurrentValue)
             .AddVirusScan(webOptions)
             .AddCompression()
             .Configure<ForwardedHeadersOptions>(x =>
@@ -196,13 +199,13 @@ public static class ServiceCollectionExtensions
                 x.Conventions
                     .Add(new ProducesJsonConvention());
 
-                if (dataOptions.ConnectionString == null || !webOptions.Hosting.ExposeAuthController)
+                if (dataOptions.CurrentValue.ConnectionString == null || !webOptions.Hosting.ExposeAuthController)
                 {
                     x.Conventions
                         .Add(new AuthActionHidingConvention());
                 }
 
-                if (dataOptions.ConnectionString == null || !webOptions.Hosting.ExposeAuditController)
+                if (dataOptions.CurrentValue.ConnectionString == null || !webOptions.Hosting.ExposeAuditController)
                 {
                     x.Conventions
                         .Add(new AuditActionHidingConvention());
@@ -232,13 +235,13 @@ public static class ServiceCollectionExtensions
             .AddApplicationPart(assembly);
 
         //services
-        //    .AddScoped<IIdentityAuthRepository<Guid>, DefaultIdentityAuthRepository>(); // BUG: We need TIdentity
+        //    .AddScoped<IAuthRepository<Guid>, DefaultAuthRepository>(); // BUG: We need TIdentity
 
         services
             .AddScoped<AuditController>();
 
         return services
-            .AddHealthChecking(appOptions, webOptions);
+            .AddHealthChecking(appOptions.CurrentValue, webOptions);
     }
 
     private static IServiceCollection AddCaching(this IServiceCollection services, WebOptions webOptions)

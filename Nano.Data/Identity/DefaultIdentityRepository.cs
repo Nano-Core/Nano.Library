@@ -1,9 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Abstractions;
-using Nano.Security;
 using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;
 
 namespace Nano.Data.Identity;

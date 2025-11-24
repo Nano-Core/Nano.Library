@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
-using Nano.Models.Const;
+using Nano.App.ApiClient.Consts;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Nano.Web.Hosting.Documentation.Filters.Operation;

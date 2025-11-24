@@ -7,7 +7,7 @@ using EasyNetQ.Topology;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Abstractions;
-using Nano.Models.Extensions;
+using Nano.Eventing.RabbitMq.Extensions;
 
 namespace Nano.Eventing.RabbitMq;
 

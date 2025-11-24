@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +13,18 @@ using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 using Nano.Models;
-using Nano.Models.Const;
 using Nano.Web.Controllers;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Net;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using Nano.App.ApiClient.Consts;
+using Nano.App.ApiClient.Models;
+using Nano.App.ApiClient.Models.Identity;
 using IdentityOptions = Nano.Web.IdentityOptions;
 
 namespace Nano.App.Web.Controllers;
@@ -48,20 +51,20 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <summary>
     /// 
     /// </summary>
-    protected virtual IIdentityAuthRepository<TIdentity> IdentityAuthRepository { get; }
+    protected virtual IAuthRepository<TIdentity> IAuthRepository { get; }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger logger, TRepository repository, IIdentityRepository<TIdentity> identityRepository, IIdentityAuthRepository<TIdentity> identityAuthRepository)
-        : this(logger, repository, null, identityRepository, identityAuthRepository)
+    protected BaseIdentityController(ILogger logger, TRepository repository, IIdentityRepository<TIdentity> identityRepository, IAuthRepository<TIdentity> authRepository)
+        : this(logger, repository, null, identityRepository, authRepository)
     {
     }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IIdentityAuthRepository<TIdentity> identityAuthRepository)
+    protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IAuthRepository<TIdentity> authRepository)
         : base(logger, repository, eventing)
     {
         this.IdentityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
-        this.IdentityAuthRepository = identityAuthRepository ?? throw new ArgumentNullException(nameof(identityAuthRepository));
+        this.IAuthRepository = authRepository ?? throw new ArgumentNullException(nameof(authRepository));
     }
 
     /// <summary>
@@ -183,7 +186,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpExternalGoogleAsync([FromBody][Required] SignUpExternalGoogle<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
     {
-        var externalProviderLogInData = await this.IdentityAuthRepository
+        var externalProviderLogInData = await this.IAuthRepository
             .GetExternalProviderLogInData(signUpExternal.Provider, cancellationToken);
 
         var user = await this.IdentityRepository
@@ -222,7 +225,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpExternalFacebookAsync([FromBody][Required] SignUpExternalFacebook<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
     {
-        var externalProviderLogInData = await this.IdentityAuthRepository
+        var externalProviderLogInData = await this.IAuthRepository
             .GetExternalProviderLogInData(signUpExternal.Provider, cancellationToken);
 
         var user = await this.IdentityRepository
@@ -261,7 +264,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpExternalMicrosoftAsync([FromBody][Required] SignUpExternalMicrosoft<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
     {
-        var externalProviderLogInData = await this.IdentityAuthRepository
+        var externalProviderLogInData = await this.IAuthRepository
             .GetExternalProviderLogInData(signUpExternal.Provider, cancellationToken);
 
         var user = await this.IdentityRepository
@@ -826,7 +829,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> AddExternalLoginGoogleAsync([FromBody][Required] AddExternalLoginGoogle<TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
     {
-        var externalProviderLogInData = await this.IdentityAuthRepository
+        var externalProviderLogInData = await this.IAuthRepository
             .GetExternalProviderLogInData(addExternalLogin.Provider, cancellationToken);
 
         var externalLogin = await this.IdentityRepository
@@ -857,7 +860,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> AddExternalLoginFacebookAsync([FromBody][Required] AddExternalLoginFacebook<TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
     {
-        var externalProviderLogInData = await this.IdentityAuthRepository
+        var externalProviderLogInData = await this.IAuthRepository
             .GetExternalProviderLogInData(addExternalLogin.Provider, cancellationToken);
 
         var externalLogin = await this.IdentityRepository
@@ -888,7 +891,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> AddExternalLoginMicrosoftAsync([FromBody][Required] AddExternalLoginMicrosoft<TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
     {
-        var externalProviderLogInData = await this.IdentityAuthRepository
+        var externalProviderLogInData = await this.IAuthRepository
             .GetExternalProviderLogInData(addExternalLogin.Provider, cancellationToken);
 
         var externalLogin = await this.IdentityRepository
@@ -1167,7 +1170,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [Route("roles/claims/{roleId}")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<ClaimSimple>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<Claim>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -1182,14 +1185,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
             return this.NotFound();
         }
 
-        var claims = userRoleClaims
-            .Select(x => new ClaimSimple
-            {
-                Type = x.Type,
-                Value = x.Value
-            });
-
-        return this.Ok(claims);
+        return this.Ok(userRoleClaims);
     }
 
     /// <summary>
@@ -1292,7 +1288,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [Route("claims/{userId}")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<ClaimSimple>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<Claim>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -1307,14 +1303,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
             return this.NotFound();
         }
 
-        var claims = userClaims
-            .Select(x => new ClaimSimple
-            {
-                Type = x.Type,
-                Value = x.Value
-            });
-
-        return this.Ok(claims);
+        return this.Ok(userClaims);
     }
 
     /// <summary>

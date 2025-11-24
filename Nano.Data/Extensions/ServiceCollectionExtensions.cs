@@ -19,8 +19,6 @@ using Z.EntityFramework.Plus;
 
 namespace Nano.Data.Extensions;
 
-// BUG: OPTIONS: We should maybe use IOptions<>, maybe that allows for reload on changes.
-
 /// <summary>
 /// Service Collection Extensions.
 /// </summary>
