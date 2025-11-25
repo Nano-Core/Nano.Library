@@ -213,8 +213,8 @@ public static class ServiceCollectionExtensions
         services
             .AddEFSecondLevelCache(x => x
                 .SkipCachingCommands(y => y.ToLower().Contains("__ef"))
-                .CacheAllQueriesExceptContainingTypes(cacheExpirationMode, TimeSpan.FromMinutes(options.Cache.ExpirationTimeoutInSeconds))
-                .CacheAllQueriesExceptContainingTableNames(cacheExpirationMode, TimeSpan.FromMinutes(options.Cache.ExpirationTimeoutInSeconds), options.Cache.IgnoredTableNames)
+                .CacheAllQueriesExceptContainingTypes(cacheExpirationMode, options.Cache.ExpirationTimeout)
+                .CacheAllQueriesExceptContainingTableNames(cacheExpirationMode, options.Cache.ExpirationTimeout, options.Cache.IgnoredTableNames)
                 .UseMemoryCacheProvider()
                 .UseCacheKeyPrefix(CACHE_KEY_PREFIX));
 
@@ -222,7 +222,7 @@ public static class ServiceCollectionExtensions
             .AddMemoryCache(x =>
             {
                 x.SizeLimit = options.Cache.MaxEntries;
-                x.ExpirationScanFrequency = TimeSpan.FromMinutes(options.Cache.ExpirationScanFrequencyInSeconds);
+                x.ExpirationScanFrequency = options.Cache.ExpirationScanFrequency;
             });
 
         return services;

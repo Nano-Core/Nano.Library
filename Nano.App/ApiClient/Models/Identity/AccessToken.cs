@@ -4,6 +4,8 @@ using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.App.ApiClient.Models.Identity;
 
+// BUG: Evaulate where to place the Identity models. They are used by Repository, Controller and ApiClient, so maybe it's not good to have them inside ApiClient
+
 /// <summary>
 /// Access Token.
 /// </summary>

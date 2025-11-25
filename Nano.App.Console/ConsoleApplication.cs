@@ -2,13 +2,12 @@
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Nano.App;
 using Nano.App.Abstractions;
+using Nano.App.Console.Extensions;
 using Nano.App.Extensions;
 using Nano.Common.Config.Helpers;
-using Nano.Console.Extensions;
 
-namespace Nano.Console;
+namespace Nano.App.Console;
 
 /// <inheritdoc />
 public class ConsoleApplication : DefaultApplication

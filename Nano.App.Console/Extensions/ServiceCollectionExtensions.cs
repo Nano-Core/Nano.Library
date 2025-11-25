@@ -3,12 +3,13 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Nano.App.Console.Config;
+using Nano.App.Console.Workers;
 using Nano.Common.Config.Extensions;
 using Nano.Common.Extensions;
 using Nano.Common.Helpers;
-using Nano.Console.Workers;
 
-namespace Nano.Console.Extensions;
+namespace Nano.App.Console.Extensions;
 
 /// <summary>
 /// Service Collection Extensions.

@@ -24,8 +24,11 @@ internal static class ServiceCollectionExtensions
 
         foreach (var type in types)
         {
-            var section = configuration.GetSection(type.Name);
-            var options = section.Get<ApiOptions>();
+            var section = configuration
+                .GetSection(type.Name);
+            
+            var options = section
+                .Get<ApiOptions>();
 
             if (options == null)
             {
@@ -43,7 +46,7 @@ internal static class ServiceCollectionExtensions
                     var apiOptions = serviceProvider
                         .GetRequiredKeyedService<ApiOptions>(optionsServiceId);
 
-                    client.Timeout = TimeSpan.FromSeconds(apiOptions.TimeoutInSeconds);
+                    client.Timeout = apiOptions.Timeout;
                     client.BaseAddress = new Uri(apiOptions.Host);
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(HttpContentType.JSON));
                     client.DefaultRequestVersion = new Version(2, 0);
@@ -73,9 +76,12 @@ internal static class ServiceCollectionExtensions
 
             if (!hosts.Contains(options.Host) && options.UseHealthCheck)
             {
+                var failureStatus = options.UnhealthyStatus
+                    .GetHealthStatus();
+                
                 services.AddHealthChecks()
                     .AddTcpHealthCheck(y => y
-                        .AddHost(options.Host, options.Port), options.Host, options.UnhealthyStatus);
+                        .AddHost(options.Host, options.Port), options.Host, failureStatus);
 
                 hosts
                     .Add(options.Host);

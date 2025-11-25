@@ -1,17 +1,23 @@
-namespace Nano.Security;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Nano.App.Config;
 
 /// <summary>
-/// Root Login Options.
+/// Log In Root Options.
 /// </summary>
-public class RootLoginOptions
+public class LogInRootOptions
 {
     /// <summary>
     /// Username.
     /// </summary>
+    [Required]
+    [MaxLength(256)]
     public virtual string Username { get; set; }
 
     /// <summary>
     /// Password.
     /// </summary>
+    [Required]
+    [MaxLength(256)]
     public virtual string Password { get; set; }
 }

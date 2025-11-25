@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Nano.Common.Enums;
 using Nano.Data.Abstractions.Config.Enums;
 using System.ComponentModel.DataAnnotations;
 
@@ -108,7 +108,7 @@ public class DataOptions
     /// Unhealthy Status.
     /// </summary>
     [Required]
-    public virtual HealthStatus UnhealthyStatus { get; set; } = HealthStatus.Unhealthy;
+    public virtual HealthStatusLevel UnhealthyStatus { get; set; } = HealthStatusLevel.Unhealthy;
 
     /// <summary>
     /// Default Collation.

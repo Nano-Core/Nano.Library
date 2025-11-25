@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+﻿using Nano.Common.Enums;
+using System;
+using Nano.App.Config;
 
 namespace Nano.App.ApiClient;
 
@@ -31,7 +32,7 @@ public class ApiOptions
     /// <summary>
     /// Timeout In Seconds.
     /// </summary>
-    public virtual int TimeoutInSeconds { get; set; } = 30;
+    public virtual TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
 
     /// <summary>
     /// Use Health Check.
@@ -41,30 +42,10 @@ public class ApiOptions
     /// <summary>
     /// Unhealthy Status.
     /// </summary>
-    public virtual HealthStatus UnhealthyStatus { get; set; } = HealthStatus.Unhealthy;
+    public virtual HealthStatusLevel UnhealthyStatus { get; set; } = HealthStatusLevel.Unhealthy;
 
     /// <summary>
     /// LogIn.
     /// </summary>
-    public virtual LogInCredentials LogIn { get; set; }
-
-    /// <summary>
-    /// LogIn Credentials.
-    /// </summary>
-    public class LogInCredentials
-    {
-        /// <summary>
-        /// Username.
-        /// </summary>
-        [Required]
-        [MaxLength(256)]
-        public virtual string Username { get; set; }
-
-        /// <summary>
-        /// Password.
-        /// </summary>
-        [Required]
-        [MaxLength(256)]
-        public virtual string Password { get; set; }
-    }
+    public virtual LogInRootOptions LogIn { get; set; }
 }

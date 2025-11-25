@@ -1,4 +1,4 @@
-namespace Nano.Console;
+namespace Nano.App.Console.Config;
 
 /// <summary>
 /// Console Options.

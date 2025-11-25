@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Nano.Data.Abstractions;
 using Nano.Eventing.Abstractions;
 
-namespace Nano.Console.Workers;
+namespace Nano.App.Console.Workers;
 
 /// <summary>
 /// Base Default Worker (abstract).

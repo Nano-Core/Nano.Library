@@ -1,3 +1,5 @@
+using Nano.App.Config;
+
 namespace Nano.Security;
 
 /// <summary>
@@ -16,7 +18,7 @@ public class AuthenticationOptions
     public virtual ApiKeyAuthenticationOptions ApiKey { get; set; }
 
     /// <summary>
-    /// Jwt Options.
+    /// Log In Root Options.
     /// </summary>
-    public virtual RootLoginOptions RootLogin { get; set; }
+    public virtual LogInRootOptions RootLogin { get; set; }
 }

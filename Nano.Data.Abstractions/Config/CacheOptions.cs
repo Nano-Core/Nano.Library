@@ -1,3 +1,4 @@
+using System;
 using Nano.Data.Abstractions.Config.Enums;
 using System.ComponentModel.DataAnnotations;
 
@@ -20,14 +21,14 @@ public class CacheOptions
     /// The number of seconds before a cache entry expires.
     /// </summary>
     [Required]
-    public virtual int ExpirationTimeoutInSeconds { get; set; } = 300;
+    public virtual TimeSpan ExpirationTimeout { get; set; } = TimeSpan.FromMinutes(5);
 
     /// <summary>
     /// Expiration Scan Frequency.
     /// The expiration scan interval in seconds.
     /// </summary>
     [Required]
-    public virtual int ExpirationScanFrequencyInSeconds { get; set; } = 60;
+    public virtual TimeSpan ExpirationScanFrequency { get; set; } = TimeSpan.FromMinutes(1);
 
     /// <summary>
     /// Expiration Mode.

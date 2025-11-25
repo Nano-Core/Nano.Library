@@ -20,7 +20,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Nano.App.Console\Nano.App.Console.csproj" />
 		<ProjectReference Include="..\..\Nano.App.Web\Nano.App.Web.csproj" />
 		<ProjectReference Include="..\..\Nano.App\Nano.App.csproj" />
 	</ItemGroup>
