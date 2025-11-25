@@ -19,7 +19,7 @@ namespace Nano.App.Web.Identity;
 /// 
 /// </summary>
 /// <typeparam name="TIdentity"></typeparam>
-public class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TIdentity>, IAuthRepository<TIdentity>
+public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TIdentity>, IAuthRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

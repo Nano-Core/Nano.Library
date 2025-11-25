@@ -11,7 +11,7 @@ public class DefaultIdentityRepository<TIdentity> : BaseIdentityRepository<TIden
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    public DefaultIdentityRepository(IdentityOptions options, DbContext dbContext, SignInManager<IdentityUser<TIdentity>> signInManager, RoleManager<IdentityRole<TIdentity>> roleManager, UserManager<IdentityUser<TIdentity>> userManager)
+    public DefaultIdentityRepository(IdentityOptions options, BaseDbContext<TIdentity> dbContext, SignInManager<IdentityUser<TIdentity>> signInManager, RoleManager<IdentityRole<TIdentity>> roleManager, UserManager<IdentityUser<TIdentity>> userManager)
         : base(options, dbContext, signInManager, userManager, roleManager)
     {
     }
@@ -21,7 +21,7 @@ public class DefaultIdentityRepository<TIdentity> : BaseIdentityRepository<TIden
 public class DefaultIdentityRepository : BaseIdentityRepository<Guid>, IIdentityRepository
 {
     /// <inheritdoc />
-    public DefaultIdentityRepository(IdentityOptions options, DbContext dbContext, SignInManager<IdentityUser<Guid>> signInManager, UserManager<IdentityUser<Guid>> userManager, RoleManager<IdentityRole<Guid>> roleManager)
+    public DefaultIdentityRepository(IdentityOptions options, BaseDbContext<Guid> dbContext, SignInManager<IdentityUser<Guid>> signInManager, UserManager<IdentityUser<Guid>> userManager, RoleManager<IdentityRole<Guid>> roleManager)
         : base(options, dbContext, signInManager, userManager, roleManager)
     {
     }

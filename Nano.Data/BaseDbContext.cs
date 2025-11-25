@@ -68,7 +68,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
     {
         this.Options = dataOptions ?? throw new ArgumentNullException(nameof(dataOptions));
 
-        this.SavingChanges += (_, _) => this.SetPendingEntityEvents();
+        this.SavingChanges += (_, _) => this.SetEntityEvents();
         this.SavingChanges += (_, _) => this.UpdateSoftDeletedEntities();
         this.SavedChanges += async (_, _) => await this.PublishEntityEvents();
 
@@ -100,6 +100,45 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             if (existingEntry == null)
             {
                 var dbSet = this.SetDynamic(entity.GetType().Name);
+
+                var tracked = dbSet
+                    .AsNoTracking()
+                    .SingleOrDefault(x => x == entity);
+
+                this.SetOriginalValues(entity, tracked);
+            }
+        }
+
+        return base.Update(entity);
+    }
+
+    /// <inheritdoc />
+    public override EntityEntry<TEntity> Update<TEntity>(TEntity entity)
+        where TEntity : class
+    {
+        if (entity == null)
+            throw new ArgumentNullException(nameof(entity));
+
+        var isAuditEnabled = this.Options.CurrentValue.UseAudit;
+
+        var publishAnnotation = entity
+            .GetType()
+            .GetCustomAttribute<PublishAttribute>(true);
+
+        // BUG: It's not that obvious why we are checking Publish. But it's because we need to trigger a difference in order to publish. If no diff no publish
+        // But does this make sense??? 
+
+        var hasPublishProperties = publishAnnotation != null && publishAnnotation.PropertyNames.Any();
+
+        if (isAuditEnabled || hasPublishProperties)
+        {
+            var existingEntry = this.ChangeTracker
+                .Entries()
+                .FirstOrDefault(x => x.Entity == entity);
+
+            if (existingEntry == null)
+            {
+                var dbSet = this.Set<TEntity>();
 
                 var tracked = dbSet
                     .AsNoTracking()
@@ -321,11 +360,30 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (this.Options.CurrentValue.ConnectionString == null)
             return;
 
-        await this.AddRole(BuiltInUserRoles.GUEST);
-        await this.AddRole(BuiltInUserRoles.READER);
-        await this.AddRole(BuiltInUserRoles.WRITER);
-        await this.AddRole(BuiltInUserRoles.SERVICE);
-        await this.AddRole(BuiltInUserRoles.ADMINISTRATOR);
+        var roles = new[]
+        {
+            BuiltInUserRoles.GUEST,
+            BuiltInUserRoles.READER,
+            BuiltInUserRoles.WRITER,
+            BuiltInUserRoles.SERVICE,
+            BuiltInUserRoles.ADMINISTRATOR
+        };
+
+        foreach (var role in roles)
+        {
+            var roleManager = this.GetService<RoleManager<IdentityRole<TIdentity>>>();
+
+            var exists = await roleManager
+                .RoleExistsAsync(role);
+
+            if (!exists)
+            {
+                var identityRole = new IdentityRole<TIdentity>(role);
+
+                await roleManager
+                    .CreateAsync(identityRole);
+            }
+        }
 
         await this.SaveChangesAsync(cancellationToken);
     }
@@ -433,22 +491,24 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             return;
         }
 
-        this.ChangeTracker
+        var entityEntries = this.ChangeTracker
             .Entries<IEntityDeletableSoft>()
-            .Where(x => x.State == EntityState.Deleted)
-            .ToList()
-            .ForEach(x =>
-            {
-                x.State = EntityState.Modified;
-                x.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
-            });
+            .Where(x => x.State == EntityState.Deleted);
+
+        foreach (var entityEntry in entityEntries)
+        {
+            entityEntry.State = EntityState.Modified;
+            entityEntry.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
+        }
     }
-    private void SetPendingEntityEvents()
+    private void SetEntityEvents()
     {
         if (!this.IsEntityEventEnabled)
         {
             return;
         }
+
+        var abc = new Abc();
 
         this.pendingEvents = this.ChangeTracker
             .Entries<IEntity>()
@@ -456,39 +516,74 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                 x.Entity.GetType().IsTypeOf(typeof(BaseEntity<>)) &&
                 x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
                 x.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
-            .Select(x =>
-            {
-                var type = this.GetPublishType(x);
-                var entityEvent = this.GetPublishEntityEvent(x, type);
-                var propertyNames = this.GetPublishProperties(x);
-
-                switch (x.State)
-                {
-                    case EntityState.Deleted:
-                        return entityEvent;
-
-                    case EntityState.Modified:
-                    {
-                        var hasChanged = this.HasPublishModifiedPropertiesChanged(x, propertyNames);
-
-                        if (!hasChanged)
-                        {
-                            return null;
-                        }
-
-                        break;
-                    }
-                }
-
-                var entityEventData = this.GetEntityEventData(x, propertyNames);
-
-                entityEvent.Data = entityEventData;
-
-                return entityEvent;
-            })
+            .Select(abc.GetEntityEvent)
             .Where(x => x != null)
             .ToList();
     }
+    private async Task PublishEntityEvents()
+    {
+        try
+        {
+            var eventing = this.GetService<IEventing>();
+
+            foreach (var @event in this.pendingEvents)
+            {
+                await eventing
+                    .PublishAsync(@event, @event.Type);
+            }
+        }
+        finally
+        {
+            this.pendingEvents = new List<EntityEvent>();
+        }
+    }
+}
+
+// BUG: Finish abc
+
+/// <summary>
+/// 
+/// </summary>
+internal class Abc
+{
+    internal EntityEvent GetEntityEvent(EntityEntry entityEntry)
+    {
+        if (entityEntry == null)
+            throw new ArgumentNullException(nameof(entityEntry));
+
+        var type = this.GetPublishType(entityEntry);
+        var entityEvent = this.GetPublishEntityEvent(entityEntry, type);
+        var propertyNames = this.GetPublishProperties(entityEntry);
+
+        switch (entityEntry.State)
+        {
+            case EntityState.Deleted:
+                return entityEvent;
+
+            case EntityState.Modified:
+            {
+                var hasChanged = this.HasPublishPropertiesChanged(entityEntry, propertyNames);
+
+                if (!hasChanged)
+                {
+                    return null;
+                }
+
+                break;
+            }
+
+            default:
+                return null;
+        }
+
+        var entityEventData = this.GetEntityEventData(entityEntry, propertyNames);
+
+        entityEvent.Data = entityEventData;
+
+        return entityEvent;
+    }
+
+
     private Type GetPublishType(EntityEntry entityEntry)
     {
         if (entityEntry == null)
@@ -570,7 +665,48 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             .Distinct()
             .ToArray();
     }
-    private bool HasPublishModifiedPropertiesChanged(EntityEntry entityEntry, string[] publishProperties)
+    private IDictionary<string, object> GetEntityEventData(EntityEntry entityEntry, string[] publishProperties)
+    {
+        if (entityEntry == null)
+            throw new ArgumentNullException(nameof(entityEntry));
+
+        var entityEventData = new Dictionary<string, object>();
+        foreach (var propertyName in publishProperties)
+        {
+            string name;
+            int indexOfDot;
+
+            var value = entityEntry.Entity;
+            var propertyNameTemp = propertyName;
+
+            do
+            {
+                indexOfDot = propertyNameTemp
+                    .IndexOf('.');
+
+                name = indexOfDot > -1
+                    ? propertyNameTemp[..indexOfDot]
+                    : propertyNameTemp;
+
+                propertyNameTemp = indexOfDot > -1
+                    ? propertyNameTemp[(indexOfDot + 1)..]
+                    : propertyNameTemp;
+
+                var property = value?
+                    .GetType()
+                    .GetProperty(name);
+
+                value = property?
+                    .GetValue(value);
+            } while (indexOfDot > -1);
+
+            entityEventData
+                .Add(name, value);
+        }
+
+        return entityEventData;
+    }
+    private bool HasPublishPropertiesChanged(EntityEntry entityEntry, string[] publishProperties)
     {
         if (entityEntry == null)
             throw new ArgumentNullException(nameof(entityEntry));
@@ -635,7 +771,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
                     .FirstOrDefault(x => x.Metadata.Name == propertyNameTemp)?
                     .TargetEntry;
 
-                var hasChanged = this.HasPublishModifiedPropertiesChanged(nestedEntityEntry, properties);
+                var hasChanged = this.HasPublishPropertiesChanged(nestedEntityEntry, properties);
 
                 if (hasChanged)
                 {
@@ -661,83 +797,5 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
             ? entry.OriginalValues[propertyName]
             : null;
     }
-    private IDictionary<string, object> GetEntityEventData(EntityEntry entityEntry, string[] publishProperties)
-    {
-        if (entityEntry == null)
-            throw new ArgumentNullException(nameof(entityEntry));
 
-        var entityEventData = new Dictionary<string, object>();
-        foreach (var propertyName in publishProperties)
-        {
-            string name;
-            int indexOfDot;
-
-            var value = entityEntry.Entity;
-            var propertyNameTemp = propertyName;
-
-            do
-            {
-                indexOfDot = propertyNameTemp
-                    .IndexOf('.');
-
-                name = indexOfDot > -1
-                    ? propertyNameTemp[..indexOfDot]
-                    : propertyNameTemp;
-
-                propertyNameTemp = indexOfDot > -1
-                    ? propertyNameTemp[(indexOfDot + 1)..]
-                    : propertyNameTemp;
-
-                var property = value?
-                    .GetType()
-                    .GetProperty(name);
-
-                value = property?
-                    .GetValue(value);
-            } while (indexOfDot > -1);
-
-            entityEventData
-                .Add(name, value);
-        }
-
-        return entityEventData;
-    }
-    private async Task PublishEntityEvents()
-    {
-        try
-        {
-            EntityFrameworkManager.IsCommunity = true;
-
-            var eventing = this.GetService<IEventing>();
-
-            foreach (var @event in this.pendingEvents)
-            {
-                await eventing
-                    .PublishAsync(@event, @event.Type);
-            }
-        }
-        finally
-        {
-            this.pendingEvents = new List<EntityEvent>();
-        }
-    }
- 
-    private async Task AddRole(string role)
-    {
-        if (role == null)
-            throw new ArgumentNullException(nameof(role));
-
-        var roleManager = this.GetService<RoleManager<IdentityRole<TIdentity>>>();
-
-        var exists = await roleManager
-            .RoleExistsAsync(role);
-
-        if (!exists)
-        {
-            var identityRole = new IdentityRole<TIdentity>(role);
-
-            await roleManager
-                .CreateAsync(identityRole);
-        }
-    }
 }

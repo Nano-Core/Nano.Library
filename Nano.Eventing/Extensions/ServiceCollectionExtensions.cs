@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Nano.Common.Config.Extensions;
 using Nano.Common.Extensions;
 using Nano.Common.Helpers;
@@ -37,7 +39,7 @@ public static class ServiceCollectionExtensions
         var eventingProvider = new TProvider();
 
         eventingProvider
-            .Configure(services);
+            .Configure(services, options);
 
         services
             .AddEventingHandlers();

@@ -2,13 +2,14 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Nano.Data.Abstractions.Config;
 using Nano.Security;
 using Nano.Web.Hosting.Authentication;
 using Nano.Web.Hosting.Authentication.Const;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Config;
 using FacebookOptions = Nano.Data.Abstractions.Config.FacebookOptions;
 
 namespace Nano.Data.Extensions;
@@ -45,8 +46,13 @@ public static class AuthenticationBuilderExtensions
             return builder;
         }
 
-        var securityKey = options.PublicKey
-            .CreateRsaSecurityKey();
+        var base64 = Convert.FromBase64String(options.PublicKey);
+
+        var rsaAlgorithm = RSA.Create();
+        rsaAlgorithm
+            .ImportRSAPublicKey(base64, out _);
+
+        var rsaSecurityKey = new RsaSecurityKey(rsaAlgorithm);
 
         builder
             .AddJwtBearer(x =>
@@ -67,7 +73,7 @@ public static class AuthenticationBuilderExtensions
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = options.Issuer,
                     ValidAudience = options.Audience,
-                    IssuerSigningKey = securityKey,
+                    IssuerSigningKey = rsaSecurityKey,
                     ClockSkew = TimeSpan.FromMinutes(5)
                 };
 

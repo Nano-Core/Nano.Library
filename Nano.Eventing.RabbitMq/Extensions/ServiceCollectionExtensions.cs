@@ -3,7 +3,6 @@ using EasyNetQ;
 using EasyNetQ.DI;
 using EasyNetQ.Serialization.NewtonsoftJson;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Nano.Common.Extensions;
 using Nano.Common.Serialization;
 using Nano.Eventing.Abstractions;
@@ -30,11 +29,15 @@ public static class ServiceCollectionExtensions
         if (options == null) 
             throw new ArgumentNullException(nameof(options));
 
+        // BUG: Look into DI for easynetq, to solve the IOptionsMonitor<EventingOptions>.
+        // maybe there is some nuget packages, also we already installed one for Microsoft DI, check it out
+
         services
             .RegisterEasyNetQ(x =>
             {
+                // BUG: This should be IOptionsMonitor<EventingOptions>
                 var eventingOptions = x
-                    .Resolve<IOptionsMonitor<EventingOptions>>();
+                    .Resolve<EventingOptions>();
                     
                 return new ConnectionConfiguration
                 {
@@ -42,18 +45,19 @@ public static class ServiceCollectionExtensions
                     {
                         new HostConfiguration
                         {
-                            Host = eventingOptions.CurrentValue.Host,
-                            Port = eventingOptions.CurrentValue.Port
+                            Host = eventingOptions.Host,
+                            Port = eventingOptions.Port
                         }
                     },
-                    VirtualHost = eventingOptions.CurrentValue.VHost,
-                    UserName = eventingOptions.CurrentValue.Username,
-                    Password = eventingOptions.CurrentValue.Password,
-                    RequestedHeartbeat = TimeSpan.FromSeconds(eventingOptions.CurrentValue.Heartbeat),
-                    Timeout = eventingOptions.CurrentValue.Timeout,
-                    PrefetchCount = eventingOptions.CurrentValue.PrefetchCount
+                    VirtualHost = eventingOptions.VHost,
+                    UserName = eventingOptions.Username,
+                    Password = eventingOptions.Password,
+                    RequestedHeartbeat = TimeSpan.FromSeconds(eventingOptions.Heartbeat),
+                    Timeout = eventingOptions.Timeout,
+                    PrefetchCount = eventingOptions.PrefetchCount
                 };
             }, x => x
+                .Register(options)
                 .Register<ISerializer>(_ =>
                 {
                     var serializerSettings = SerializerSettings.GetDefault();

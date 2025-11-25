@@ -8,7 +8,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Nano.Common.Exceptions;
+using Nano.Common.Extensions;
 using Nano.Common.Identity.Extensions;
 using Nano.Data.Abstractions.Identity.Abstractions;
 using Nano.Data.Abstractions.Identity.Models;
@@ -19,6 +21,8 @@ using Nano.Data.Identity.Consts;
 using Nano.Data.Identity.DataProtection.Consts;
 using Nano.Data.Identity.Extensions;
 using Nano.Data.Identity.Helpers;
+using Nano.Eventing.Abstractions;
+using Nano.Eventing.Abstractions.Models;
 using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
@@ -48,7 +52,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     /// <summary>
     /// Db Context.
     /// </summary>
-    protected virtual DbContext DbContext { get; }
+    protected virtual BaseDbContext<TIdentity> DbContext { get; }
 
     /// <summary>
     /// Sign In Manager.
@@ -73,7 +77,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     /// <param name="signInManager">The <see cref="SignInManager{T}"/>.</param>
     /// <param name="userManager">The <see cref="UserManager{T}"/>.</param>
     /// <param name="roleManager">The <see cref="RoleManager{T}"/></param>
-    protected BaseIdentityRepository(IdentityOptions options, DbContext dbContext, SignInManager<IdentityUser<TIdentity>> signInManager, UserManager<IdentityUser<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
+    protected BaseIdentityRepository(IdentityOptions options, BaseDbContext<TIdentity> dbContext, SignInManager<IdentityUser<TIdentity>> signInManager, UserManager<IdentityUser<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
     {
         this.Options = options ?? throw new ArgumentNullException(nameof(options));
         this.DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
@@ -1037,7 +1041,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             }, cancellationToken);
         }
 
-        await this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id);
+        await this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id, cancellationToken);
 
         await this.DbContext
             .SaveChangesAsync(cancellationToken);
@@ -1072,7 +1076,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             this.ThrowIdentityExceptions(result.Errors);
         }
 
-        await this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id);
+        await this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id, cancellationToken);
     }
 
     /// <summary>
@@ -1123,7 +1127,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         this.DbContext
             .Update(identityUserChangeData);
 
-        await this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id);
+        await this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id, cancellationToken);
 
         await this.DbContext
             .SaveChangesAsync(cancellationToken);
@@ -1158,7 +1162,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             this.ThrowIdentityExceptions(result.Errors);
         }
 
-        await this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id);
+        await this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id, cancellationToken);
     }
 
     /// <summary>
@@ -2198,41 +2202,41 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         await this.DbContext
             .SaveChangesAsync(cancellationToken);
     }
-    private async Task UpdateEntityUserWhenIdentityUserChanges(TIdentity id)
+    private async Task UpdateEntityUserWhenIdentityUserChanges(TIdentity id, CancellationToken cancellationToken = default)
     {
-        // BUG: 000: TEST
         var userTypes = this.DbContext.Model
             .GetEntityTypes()
-            .Where(x => x.ClrType.IsSubclassOf(typeof(IEntityUser<TIdentity>)));
+            .Where(x => x.ClrType
+                .IsTypeOf(typeof(IEntityUser<TIdentity>)));
 
         foreach (var userType in userTypes)
         {
             var user = await this.DbContext
-                .FindAsync(userType.ClrType, id);
+                .FindAsync(userType.ClrType, [id], cancellationToken: cancellationToken);
 
             if (user == null)
             {
                 continue;
             }
 
-            this.DbContext
-                .Update(user);
+            var entityEntry = this.DbContext
+                .Entry(user);
+
+            var entityEvent = new Abc()
+                .GetEntityEvent(entityEntry);
+
+            if (entityEvent != null)
+            {
+                var eventing = (IEventing)new object(); // BUG: DI
+
+                await eventing
+                    .PublishAsync(entityEvent, entityEvent.Type, cancellationToken);
+            }
+
+            // BUG: Doesnt work. 
+            //this.DbContext
+            //    .Update(user);
         }
-
-        // BUG: 000: Original
-        //var user = this.DbContext
-        //    .Set<TUser>()
-        //    .IgnoreQueryFilters()
-        //    .SingleOrDefault(x => x.Id.Equals(id));
-
-        //if (user == null)
-        //{
-        //    throw new NullReferenceException(nameof(user));
-        //}
-
-        //// BUG: 000: Don't update, but just mark the entity as changed, we don't want to trigger audit when no changes
-        //this.DbContext
-        //    .Update(user);
     }
     private async Task<TUser> CreateUser<TUser>(TUser user, IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default)
         where TUser : class, IEntityUser<TIdentity>
@@ -2264,14 +2268,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         return user;
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="errors"></param>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="AggregateException"></exception>
-    protected void ThrowIdentityExceptions(IEnumerable<IdentityError> errors)
+    private void ThrowIdentityExceptions(IEnumerable<IdentityError> errors)
     {
         if (errors == null)
             throw new ArgumentNullException(nameof(errors));

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Nano.Eventing.Abstractions.Config;
 
 namespace Nano.Eventing.Abstractions;
@@ -13,5 +14,6 @@ public interface IEventingProvider
     /// Configures the <see cref="IEventing"/>.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    void Configure(IServiceCollection services);
+    /// <param name="options"></param>
+    void Configure(IServiceCollection services, EventingOptions options);
 }

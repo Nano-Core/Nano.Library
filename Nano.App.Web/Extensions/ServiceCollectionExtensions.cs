@@ -42,6 +42,9 @@ using Microsoft.Extensions.Options;
 using Nano.App.ApiClient.Consts;
 using Nano.App.ApiClient.Models;
 using Nano.App.Config;
+using Nano.App.Web.Controllers;
+using Nano.App.Web.Identity;
+using Nano.App.Web.Identity.Abstractions;
 using Nano.Common.Config.Extensions;
 using Nano.Common.Config.Helpers;
 using Nano.Common.Extensions;
@@ -91,6 +94,10 @@ public static class ServiceCollectionExtensions
 
         var dataOptions = serviceProvider
             .GetService<IOptionsMonitor<DataOptions>>();
+
+        // BUG: Remove this, and refactor to use IOptionsMonitor<>
+        services
+            .AddSingleton(webOptions);
 
         services
             .AddSingleton(webOptions.Identity);
@@ -234,11 +241,15 @@ public static class ServiceCollectionExtensions
             .AddViewComponentsAsServices()
             .AddApplicationPart(assembly);
 
-        //services
-        //    .AddScoped<IAuthRepository<Guid>, DefaultAuthRepository>(); // BUG: We need TIdentity
+        // BUG: We need TIdentity
+        services
+            .AddScoped<IIdentityJwtRepository, IdentityJwtRepository>()
+            .AddScoped<IAuthRepository, DefaultAuthRepository>()
+            .AddScoped<IAuthTransientRepository, DefaultAuthTransientRepository>();
 
         services
-            .AddScoped<AuditController>();
+            .AddScoped<AuditController>()
+            .AddScoped<DefaultAuthController>();
 
         return services
             .AddHealthChecking(appOptions.CurrentValue, webOptions);

@@ -1,14 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Claims;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Nano.App.ApiClient.Models.Identity;
@@ -17,9 +6,39 @@ using Nano.Common.Exceptions;
 using Nano.Common.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Threading;
+using System.Threading.Tasks;
 using IdentityOptions = Nano.Web.IdentityOptions;
 
 namespace Nano.App.Web.Identity;
+
+// BUG: We should remove the TIdentiy, it shouldn't be needed
+
+/// <summary>
+/// 
+/// </summary>
+public class IdentityJwtRepository : IdentityJwtRepository<Guid>, IIdentityJwtRepository
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="options"></param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public IdentityJwtRepository(IdentityOptions options)
+        : base(options)
+    {
+    }
+}
 
 /// <summary>
 /// 
@@ -67,9 +86,14 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
         var notBeforeAt = DateTimeOffset.UtcNow;
         var expireAt = DateTimeOffset.UtcNow.AddMinutes(this.Options.Authentication.Jwt.ExpirationInMinutes);
 
-        var rsaSecurityKey = this.Options.Authentication.Jwt.PrivateKey
-            .CreateRsaSecurityKey();
+        var base64 = Convert.FromBase64String(this.Options.Authentication.Jwt.PrivateKey);
 
+        var rsaAlgorithm = RSA.Create();
+        rsaAlgorithm
+            .ImportRSAPrivateKey(base64, out _);
+
+        var rsaSecurityKey = new RsaSecurityKey(rsaAlgorithm);
+        
         var signingCredentials = new SigningCredentials(rsaSecurityKey, SecurityAlgorithms.RsaSha512);
         var securityToken = new JwtSecurityToken(this.Options.Authentication.Jwt.Issuer, this.Options.Authentication.Jwt.Audience, claims, notBeforeAt.DateTime, expireAt.DateTime, signingCredentials);
 
@@ -94,8 +118,13 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
         if (logInRefresh == null)
             throw new ArgumentNullException(nameof(logInRefresh));
 
-        var rsaSecurityKey = this.Options.Authentication.Jwt.PublicKey
-            .CreateRsaSecurityKey();
+        var base64 = Convert.FromBase64String(this.Options.Authentication.Jwt.PrivateKey);
+
+        var rsaAlgorithm = RSA.Create();
+        rsaAlgorithm
+            .ImportRSAPublicKey(base64, out _);
+
+        var rsaSecurityKey = new RsaSecurityKey(rsaAlgorithm);
 
         var validationParameters = new TokenValidationParameters
         {

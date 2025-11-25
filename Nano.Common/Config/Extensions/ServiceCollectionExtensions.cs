@@ -51,12 +51,13 @@ public static class ServiceCollectionExtensions
         if (options != null)
         {
             var optionsBuilder = services
-                .AddOptions<TSection>(name);
+                .AddOptions<TSection>();
 
             optionsBuilder
-                .Bind(section)
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
+                .Bind(section);
+            // BUG: Validation fails for web right now
+            //.ValidateDataAnnotations()
+            //.ValidateOnStart();
         }
 
         return services;

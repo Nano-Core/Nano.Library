@@ -13,6 +13,11 @@ namespace Nano.App.Web.Identity.Abstractions;
 /// <summary>
 /// 
 /// </summary>
+public interface IAuthRepository : IAuthRepository<Guid>;
+
+/// <summary>
+/// 
+/// </summary>
 /// <typeparam name="TIdentity"></typeparam>
 public interface IAuthRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>

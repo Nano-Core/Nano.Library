@@ -12,6 +12,11 @@ namespace Nano.App.Web.Identity.Abstractions;
 /// <summary>
 /// 
 /// </summary>
+public interface IAuthTransientRepository : IAuthTransientRepository<Guid>;
+
+/// <summary>
+/// 
+/// </summary>
 public interface IAuthTransientRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
