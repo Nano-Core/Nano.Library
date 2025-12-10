@@ -3,8 +3,6 @@ using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 
 namespace Nano.Data.Extensions;
@@ -14,39 +12,36 @@ namespace Nano.Data.Extensions;
 /// </summary>
 public static class DbContextOptionsBuilderExtensions
 {
-    internal static void AddDataContext(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider)
+    internal static DbContextOptionsBuilder AddDataContext(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider, DataOptions options)
     {
         if (builder == null) 
             throw new ArgumentNullException(nameof(builder));
-        
-        if (serviceProvider == null) 
+
+        if (serviceProvider == null)
             throw new ArgumentNullException(nameof(serviceProvider));
 
-        var options = serviceProvider
-            .GetRequiredService<IOptionsMonitor<DataOptions>>();
+        if (options == null) 
+            throw new ArgumentNullException(nameof(options));
 
         builder
-            .EnableSensitiveDataLogging(options.CurrentValue.UseSensitiveDataLogging)
+            .EnableSensitiveDataLogging(options.UseSensitiveDataLogging)
             .ConfigureWarnings(x =>
             {
                 x.Ignore(RelationalEventId.BoolWithDefaultWarning);
                 x.Log(RelationalEventId.MultipleCollectionIncludeWarning);
                 x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
             })
-            .UseLazyLoadingProxies(options.CurrentValue.UseLazyLoading);
+            .UseLazyLoadingProxies(options.UseLazyLoading);
 
-        if (options.CurrentValue.Cache != null)
+        if (options.Cache != null)
         {
-            var secondLevelCacheInterceptor = serviceProvider
+            var interceptor = serviceProvider
                 .GetRequiredService<SecondLevelCacheInterceptor>();
 
             builder
-                .AddInterceptors(secondLevelCacheInterceptor);
+                .AddInterceptors(interceptor);
         }
 
-        serviceProvider
-            .GetRequiredService<IDataProvider>()
-            .Configure(builder);
+        return builder;
     }
-
 }

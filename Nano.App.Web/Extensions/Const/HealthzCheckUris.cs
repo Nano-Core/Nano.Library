@@ -1,4 +1,4 @@
-namespace Nano.Web.Extensions.Const;
+namespace Nano.App.Web.Extensions.Const;
 
 /// <summary>
 /// Healthz Check Uris.

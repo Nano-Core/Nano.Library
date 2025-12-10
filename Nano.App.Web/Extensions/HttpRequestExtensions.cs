@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using Microsoft.AspNetCore.Http;
 
-namespace Nano.Web.Extensions;
+namespace Nano.App.Web.Extensions;
 
 /// <summary>
 /// Http Request Extensions.

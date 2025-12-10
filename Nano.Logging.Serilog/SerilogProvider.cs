@@ -1,6 +1,5 @@
 using System;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Nano.Logging.Abstractions;
 using Nano.Logging.Abstractions.Config;
 using Nano.Logging.Serilog.Extensions;
@@ -12,36 +11,34 @@ namespace Nano.Logging.Serilog;
 /// <inheritdoc />
 public class SerilogProvider : ILoggingProvider
 {
-    private readonly IOptionsMonitor<LoggingOptions> options;
-
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    /// <param name="options">The <see cref="LoggingOptions"/>.</param>
-    public SerilogProvider(IOptionsMonitor<LoggingOptions> options)
-    {
-        this.options = options ?? throw new ArgumentNullException(nameof(options));
-    }
-
     /// <inheritdoc />
-    public virtual ILoggerProvider Configure()
+    public virtual void Configure(IServiceCollection services, LoggingOptions options)
     {
-        var loggerConfiguration = new LoggerConfiguration()
-            .Enrich.FromLogContext()
-            .MinimumLevel.Is(this.options.CurrentValue.LogLevel.GetLogLevel());
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
 
-        loggerConfiguration
-            .WriteTo.Console(outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss.ffffff} [{Level:u3}] {Message}{NewLine}{Exception}");
+        if (options == null) 
+            throw new ArgumentNullException(nameof(options));
 
-        foreach (var @override in this.options.CurrentValue.LogLevelOverrides)
-        {
-            loggerConfiguration
-                .MinimumLevel.Override(@override.Namespace, @override.LogLevel.GetLogLevel());
-        }
+        var a = new SerilogLoggerProvider();
 
-        Log.Logger = loggerConfiguration
-            .CreateLogger();
+        services
+            .AddSerilog(x =>
+            {
+                x.Enrich
+                    .FromLogContext();
 
-        return new SerilogLoggerProvider(Log.Logger, true);
+                x.MinimumLevel
+                    .Is(options.LogLevel.GetLogLevel());
+
+                x.WriteTo
+                    .Console(outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss.ffffff} [{Level:u3}] {Message}{NewLine}{Exception}");
+
+                foreach (var @override in options.LogLevelOverrides)
+                {
+                    x.MinimumLevel
+                        .Override(@override.Namespace, @override.LogLevel.GetLogLevel());
+                }
+            });
     }
 }

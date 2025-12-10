@@ -1,6 +1,6 @@
 using System.Threading;
 
-namespace Nano.Common.Startup;
+namespace Nano.App.StartUp;
 
 /// <summary>
 /// Startup Task Context.
@@ -15,7 +15,7 @@ public class StartupTaskContext
     public virtual bool IsDone => this.count == 0;
 
     /// <summary>
-    /// Increment
+    /// Increment.
     /// </summary>
     public virtual void Increment()
     {

@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using EasyNetQ;
-using EasyNetQ.Topology;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nano.Eventing.Abstractions;
@@ -16,15 +15,8 @@ public class EasyNetQEventing : IEventing
 {
     private const string QUEUE_TYPE = "quorum";
 
-    /// <summary>
-    /// Bus.
-    /// </summary>
-    protected virtual IBus Bus { get; }
-
-    /// <summary>
-    /// Logger.
-    /// </summary>
-    protected virtual ILogger Logger { get; }
+    private readonly IBus bus;
+    private readonly ILogger logger;
 
     /// <summary>
     /// Constructor.
@@ -33,8 +25,8 @@ public class EasyNetQEventing : IEventing
     /// <param name="logger">The <see cref="ILogger"/>.</param>
     public EasyNetQEventing(IBus bus, ILogger logger)
     {
-        this.Bus = bus ?? throw new ArgumentNullException(nameof(bus));
-        this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.bus = bus ?? throw new ArgumentNullException(nameof(bus));
+        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     /// <inheritdoc />
@@ -46,12 +38,12 @@ public class EasyNetQEventing : IEventing
 
         var name = typeof(TMessage).GetFriendlyName();
 
-        var exchange = await this.Bus.Advanced
+        var exchange = await this.bus.Advanced
             .ExchangeDeclareAsync(name, ExchangeType.Fanout, cancellationToken: cancellationToken);
 
         var message = new Message<TMessage>(body);
-        await this.Bus.Advanced
-            .PublishAsync(exchange, routing, true, message, cancellationToken);
+        await this.bus.Advanced
+            .PublishAsync(exchange, routing, null, null, message, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -59,9 +51,9 @@ public class EasyNetQEventing : IEventing
         where TMessage : class
     {
         var name = typeof(TMessage).GetFriendlyName();
-        var queueName = this.GetQueueName(name, routing);
+        var queueName = EasyNetQEventing.GetQueueName(name, routing);
 
-        var queue = await this.Bus.Advanced
+        var queue = await this.bus.Advanced
             .QueueDeclareAsync(queueName, x =>
             {
                 x.AsDurable(true);
@@ -70,30 +62,19 @@ public class EasyNetQEventing : IEventing
                 x.WithQueueType(EasyNetQEventing.QUEUE_TYPE);
             }, cancellationToken);
 
-        var exchange = await this.Bus.Advanced
+        var exchange = await this.bus.Advanced
             .ExchangeDeclareAsync(name, ExchangeType.Fanout, cancellationToken: cancellationToken);
 
-        await this.Bus.Advanced
+        await this.bus.Advanced
             .BindAsync(exchange, queue, routing, cancellationToken);
 
         var eventType = typeof(TMessage);
         var genericType = typeof(IEventingHandler<>)
             .MakeGenericType(eventType);
 
-        var eventHandlerForPrefetchCount = serviceProvider
-            .GetRequiredService(genericType);
+        var prefetchCount = EasyNetQEventing.GetPrefetchCount<TMessage>(serviceProvider, genericType);
 
-        var prefetchCount = (ushort?)genericType
-            .GetProperty(nameof(IEventingHandler<TMessage>.OverridePrefetchCount))?
-            .GetValue(eventHandlerForPrefetchCount);
-
-        if (!prefetchCount.HasValue)
-        {
-            var connection = this.Bus.Advanced.Container.Resolve<ConnectionConfiguration>();
-            prefetchCount = connection.PrefetchCount;
-        }
-
-        this.Bus.Advanced
+        this.bus.Advanced
             .Consume<TMessage>(queue, async (message, info) =>
             {
                 try
@@ -132,35 +113,17 @@ public class EasyNetQEventing : IEventing
                 }
                 catch (Exception ex)
                 {
-                    this.Logger
+                    this.logger
                         .LogError(ex, ex.Message);
 
                     throw;
                 }
-            }, x => x.WithPrefetchCount(prefetchCount.Value));
+            }, x => x
+                .WithPrefetchCount(prefetchCount));
     }
 
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        this.Dispose(true);
-        GC.SuppressFinalize(this);
-    }
 
-    /// <summary>
-    /// Dispose.
-    /// Only disposes if passed <paramref name="disposing"/> is true.
-    /// </summary>
-    /// <param name="disposing">The <see cref="bool"/> indicating if disposing.</param>
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            this.Bus?.Dispose();
-        }
-    }
-
-    private string GetQueueName(string name, string routing)
+    private static string GetQueueName(string name, string routing)
     {
         if (name == null)
             throw new ArgumentNullException(nameof(name));
@@ -175,5 +138,28 @@ public class EasyNetQEventing : IEventing
             : $".{routing}";
 
         return $"{appName}:{name}{route}";
+    }
+    private static ushort GetPrefetchCount<TMessage>(IServiceProvider serviceProvider, Type genericType)
+        where TMessage : class
+    {
+        if (serviceProvider == null)
+            throw new ArgumentNullException(nameof(serviceProvider));
+
+        var eventHandlerForPrefetchCount = serviceProvider
+            .GetRequiredService(genericType);
+
+        var prefetchCount = (ushort?)genericType
+            .GetProperty(nameof(IEventingHandler<TMessage>.OverridePrefetchCount))?
+            .GetValue(eventHandlerForPrefetchCount);
+
+        if (!prefetchCount.HasValue)
+        {
+            var connection = serviceProvider
+                .GetRequiredService<ConnectionConfiguration>();
+
+            prefetchCount = connection.PrefetchCount;
+        }
+
+        return prefetchCount.Value;
     }
 }

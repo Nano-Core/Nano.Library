@@ -1,18 +1,16 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using Nano.Data.Abstractions.Config;
-using Nano.Security;
-using Nano.Web.Hosting.Authentication;
-using Nano.Web.Hosting.Authentication.Const;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using FacebookOptions = Nano.Data.Abstractions.Config.FacebookOptions;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using Nano.App.Web.Config;
+using Nano.App.Web.Identity.Authentication.Consts;
+using FacebookOptions = Nano.App.Web.Config.FacebookOptions;
 
-namespace Nano.Data.Extensions;
+namespace Nano.App.Web.Identity.Authentication.Extensions;
 
 /// <summary>
 /// Service Collection Extensions.

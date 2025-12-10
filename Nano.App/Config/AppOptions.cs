@@ -2,11 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nano.App.Config;
 
-// BUG: OPTIONS: Use IOptionsMonitor<>, maybe that allows for reload on changes.
+// BUG: OPTIONS: Use IOptionsMonitor<>, maybe that allows for reload on changes. (Search using AppOptions and Use IOptionsMonitor<>, or cached things like app name, etc)
 // BUG: OPTIONS: Add required etc validation annotations on options.
 // BUG: OPTIONS: Check usages of nested and whether they can be null.
-
-// BUG: Search using AppOptions and Use IOptionsMonitor<>, or cached things like app name, etc
 
 /// <summary>
 /// App Options.
@@ -33,13 +31,11 @@ public class AppOptions
     /// <summary>
     /// Description.
     /// </summary>
-    [Required]
     public virtual string Description { get; set; }
 
     /// <summary>
     /// Terms Of Service.
     /// </summary>
-    [Required]
     public virtual string TermsOfService { get; set; }
 
     /// <summary>
@@ -59,22 +55,4 @@ public class AppOptions
     /// </summary>
     [Required]
     public virtual CultureOptions Cultures { get; set; } = new();
-
-    /// <summary>
-    /// Culture Options (nested class).
-    /// </summary>
-    public class CultureOptions
-    {
-        /// <summary>
-        /// Default.
-        /// </summary>
-        [Required]
-        public virtual string Default { get; set; } = "en-US";
-
-        /// <summary>
-        /// Supported.
-        /// </summary>
-        [Required]
-        public virtual string[] Supported { get; set; } = [];
-    }
 }

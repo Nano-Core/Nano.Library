@@ -5,6 +5,7 @@ namespace Nano.Eventing.Abstractions;
 /// <summary>
 /// Event Handler interface.
 /// </summary>
+/// <typeparam name="TEvent">The event type.</typeparam>
 public interface IEventingHandler<in TEvent>
     where TEvent : class
 {

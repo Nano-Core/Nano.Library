@@ -1,6 +1,4 @@
-using Nano.Security;
-
-namespace Nano.Web;
+namespace Nano.App.Web.Config;
 
 /// <summary>
 /// Identity Options.

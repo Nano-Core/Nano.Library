@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.App.ApiClient.Config;
 using Nano.App.ApiClient.Requests.Identity;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Identity.Models;

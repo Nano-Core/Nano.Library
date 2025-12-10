@@ -1,4 +1,4 @@
-namespace Nano.Security;
+namespace Nano.App.Web.Config;
 
 /// <summary>
 /// Api Authentication Key Options.

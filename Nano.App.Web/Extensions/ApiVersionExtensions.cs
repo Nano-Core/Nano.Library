@@ -1,8 +1,8 @@
-using Asp.Versioning;
 using System;
+using Asp.Versioning;
 using Nano.Common.Config.Helpers;
 
-namespace Nano.Web.Extensions;
+namespace Nano.App.Web.Extensions;
 
 /// <summary>
 /// Api Version Extensions.

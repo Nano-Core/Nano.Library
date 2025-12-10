@@ -3,7 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace Nano.Common.Startup.Tasks;
+namespace Nano.App.StartUp.Tasks;
+
+// BUG: This is meant for consumers to add startup tasks. We need to find a way to automatically increment  / decrement Context, so the consumer doesn't have to remember it
 
 /// <inheritdoc />
 public abstract class BaseStartupTask : IHostedService
@@ -16,7 +18,7 @@ public abstract class BaseStartupTask : IHostedService
     /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="startupTaskContext">The <see cref="Startup.StartupTaskContext"/>.</param>
+    /// <param name="startupTaskContext">The <see cref="StartupTaskContext"/>.</param>
     protected BaseStartupTask(StartupTaskContext startupTaskContext)
     {
         this.Context = startupTaskContext ?? throw new ArgumentNullException(nameof(startupTaskContext));

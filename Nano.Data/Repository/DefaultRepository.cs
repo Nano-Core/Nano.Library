@@ -1,14 +1,17 @@
 using System;
-using Nano.Eventing.Abstractions;
+using Microsoft.Extensions.Options;
+using Nano.Data.Abstractions.Config;
 
 namespace Nano.Data.Repository;
 
 /// <inheritdoc />
-public class DefaultRepository : BaseRepository<BaseDbContext<Guid>, Guid>
+public class DefaultRepository<TContext, TIdentity> : BaseRepository<TContext, TIdentity>
+    where TContext : BaseDbContext<TIdentity>
+    where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    public DefaultRepository(BaseDbContext<Guid> context, IEventing eventing)
-        : base(context, eventing)
+    public DefaultRepository(IOptionsMonitor<DataOptions> options, TContext context)
+        : base(options, context)
     {
     }
 }

@@ -16,8 +16,6 @@ using Nano.App.ApiClient.Models.Identity.External;
 using Nano.App.Web.Identity.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Models;
-using Nano.Models;
-using Nano.Web.Controllers;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Nano.App.Web.Controllers;
@@ -25,7 +23,7 @@ namespace Nano.App.Web.Controllers;
 /// <summary>
 /// Auth Controller.
 /// </summary>
-[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.READER)]
+[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR + "," + BuiltInUserRoles.EDITOR + "," + BuiltInUserRoles.DELETER + "," + BuiltInUserRoles.READER)]
 public abstract class BaseAuthController<TIdentity> : BaseController
     where TIdentity : IEquatable<TIdentity>
 {

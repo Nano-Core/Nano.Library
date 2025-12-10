@@ -1,57 +1,40 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 using DynamicExpression.Entities;
 using DynamicExpression.Enums;
 using DynamicExpression.Extensions;
 using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Extensions.Options;
 using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Extensions;
-using Nano.Eventing.Abstractions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nano.Data.Repository;
-
-/// <inheritdoc />
-public abstract class BaseRepository<TContext> : BaseRepository<TContext, Guid>
-    where TContext : BaseDbContext<Guid>
-{
-    /// <inheritdoc />
-    protected BaseRepository(TContext context, IEventing eventing)
-        : base(context, eventing)
-    {
-    }
-}
 
 /// <inheritdoc />
 public abstract class BaseRepository<TContext, TIdentity> : IRepository
     where TContext : BaseDbContext<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
-    /// <summary>
-    /// Context.
-    /// </summary>
-    internal virtual TContext Context { get; }
-
-    /// <summary>
-    /// Eventing.
-    /// </summary>
-    internal virtual IEventing Eventing { get; }
+    private readonly IOptionsMonitor<DataOptions> options;
+    private readonly TContext dbContext;
 
     /// <summary>
     /// Constructor.
     /// </summary>
+    /// <param name="options">The <see cref="IOptionsMonitor{DataOptions}"/></param>
     /// <param name="context">The <see cref="DbContext"/>.</param>
-    /// <param name="eventing">The <see cref="IEventing"/>.</param>
-    protected BaseRepository(TContext context, IEventing eventing)
+    protected BaseRepository(IOptionsMonitor<DataOptions> options, TContext context)
     {
-        this.Context = context ?? throw new ArgumentNullException(nameof(context));
-        this.Eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
+        this.dbContext = context ?? throw new ArgumentNullException(nameof(context));
     }
 
     /// <inheritdoc />
@@ -59,7 +42,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         where TEntity : class, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>
     {
-        return this.Context
+        return this.dbContext
             .Set<TEntity>()
             .IncludeAnnotations(includeDepth)
             .FirstOrDefaultAsync(x => x.Id.Equals(key), cancellationToken);
@@ -70,7 +53,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         where TEntity : class, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>
     {
-        var includeDepth = this.Context.Options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
 
         return this.GetAsync<TEntity, TKey>(key, includeDepth, cancellationToken);
     }
@@ -139,7 +122,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (query == null)
             throw new ArgumentNullException(nameof(query));
 
-        var includeDepth = this.Context.Options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
 
         return this.GetFirstAsync<TEntity, TCriteria>(query, includeDepth, cancellationToken);
     }
@@ -152,7 +135,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (query == null)
             throw new ArgumentNullException(nameof(query));
 
-        return this.Context
+        return this.dbContext
             .Set<TEntity>()
             .IncludeAnnotations(includeDepth)
             .Where(query.Criteria)
@@ -168,7 +151,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (where == null)
             throw new ArgumentNullException(nameof(where));
 
-        var includeDepth = this.Context.Options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
 
         return this.GetFirstAsync(where, new Ordering(), includeDepth, cancellationToken);
     }
@@ -193,7 +176,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (ordering == null)
             throw new ArgumentNullException(nameof(ordering));
 
-        var includeDepth = this.Context.Options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
 
         return this.GetFirstAsync(where, ordering, includeDepth, cancellationToken);
     }
@@ -208,7 +191,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (ordering == null)
             throw new ArgumentNullException(nameof(ordering));
 
-        return this.Context
+        return this.dbContext
             .Set<TEntity>()
             .IncludeAnnotations(includeDepth)
             .Where(where)
@@ -223,7 +206,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (keys == null)
             throw new ArgumentNullException(nameof(keys));
 
-        var includeDepth = this.Context.Options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
 
         return this.GetManyAsync<TEntity, TKey>(keys, includeDepth, cancellationToken);
     }
@@ -235,7 +218,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (keys == null)
             throw new ArgumentNullException(nameof(keys));
 
-        return await this.Context
+        return await this.dbContext
             .Set<TEntity>()
             .IncludeAnnotations(includeDepth)
             .Where(x => keys.Contains(x.Id))
@@ -329,7 +312,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (query == null)
             throw new ArgumentNullException(nameof(query));
 
-        var includeDepth = this.Context.Options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
 
         return this.GetManyAsync<TEntity>(query, includeDepth, cancellationToken);
     }
@@ -341,7 +324,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (query == null)
             throw new ArgumentNullException(nameof(query));
 
-        return await this.Context
+        return await this.dbContext
             .Set<TEntity>()
             .IncludeAnnotations(includeDepth)
             .Order(query.Order)
@@ -357,7 +340,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (query == null)
             throw new ArgumentNullException(nameof(query));
 
-        var includeDepth = this.Context.Options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
 
         return this.GetManyAsync<TEntity, TCriteria>(query, includeDepth, cancellationToken);
     }
@@ -370,7 +353,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (query == null)
             throw new ArgumentNullException(nameof(query));
 
-        return await this.Context
+        return await this.dbContext
             .Set<TEntity>()
             .IncludeAnnotations(includeDepth)
             .Where(query.Criteria)
@@ -386,7 +369,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (where == null)
             throw new ArgumentNullException(nameof(where));
 
-        var includeDepth = this.Context.Options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
 
         return this.GetManyAsync(where, includeDepth, cancellationToken);
     }
@@ -398,7 +381,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (where == null)
             throw new ArgumentNullException(nameof(where));
 
-        return await this.Context
+        return await this.dbContext
             .Set<TEntity>()
             .IncludeAnnotations(includeDepth)
             .Where(where)
@@ -415,7 +398,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (ordering == null)
             throw new ArgumentNullException(nameof(ordering));
 
-        var includeDepth = this.Context.Options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
 
         return this.GetManyAsync(where, ordering, includeDepth, cancellationToken);
     }
@@ -430,7 +413,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (ordering == null)
             throw new ArgumentNullException(nameof(ordering));
 
-        return await this.Context
+        return await this.dbContext
             .Set<TEntity>()
             .IncludeAnnotations(includeDepth)
             .Where(where)
@@ -448,7 +431,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (pagination == null)
             throw new ArgumentNullException(nameof(pagination));
 
-        var includeDepth = this.Context.Options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
 
         return this.GetManyAsync(where, pagination, includeDepth, cancellationToken);
     }
@@ -463,7 +446,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (pagination == null)
             throw new ArgumentNullException(nameof(pagination));
 
-        return await this.Context
+        return await this.dbContext
             .Set<TEntity>()
             .IncludeAnnotations(includeDepth)
             .Where(where)
@@ -484,7 +467,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (ordering == null)
             throw new ArgumentNullException(nameof(ordering));
 
-        var includeDepth = this.Context.Options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
 
         return this.GetManyAsync(where, pagination, ordering, includeDepth, cancellationToken);
     }
@@ -502,7 +485,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (ordering == null)
             throw new ArgumentNullException(nameof(ordering));
 
-        return await this.Context
+        return await this.dbContext
             .Set<TEntity>()
             .IncludeAnnotations(includeDepth)
             .Where(where)
@@ -553,7 +536,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (orderBy == null) 
             throw new ArgumentNullException(nameof(orderBy));
         
-        var includeDepth = this.Context.Options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
 
         return this.GetManyAsync(where, orderBy, includeDepth, orderingDirection, cancellationToken);
     }
@@ -584,7 +567,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (pagination == null)
             throw new ArgumentNullException(nameof(pagination));
 
-        var includeDepth = this.Context.Options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
 
         return this.GetManyAsync(where, orderBy, pagination, includeDepth, orderingDirection, cancellationToken);
     }
@@ -601,7 +584,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
         await Task.CompletedTask;
 
-        var entities = this.Context
+        var entities = this.dbContext
             .Set<TEntity>()
             .IncludeAnnotations(includeDepth)
             .Where(where)
@@ -627,10 +610,10 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        var entry = await this.Context
+        var entry = await this.dbContext
             .AddAsync(entity, cancellationToken);
 
-        if (this.Context.AutoSave)
+        if (this.options.CurrentValue.UseAutoSave)
         {
             await this.SaveChangesAsync(cancellationToken);
         }
@@ -646,7 +629,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        var includeDepth = this.Context.Options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
 
         entity = await this.AddAsync(entity, cancellationToken);
 
@@ -660,10 +643,10 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        await this.Context
+        await this.dbContext
             .AddRangeAsync(entities, cancellationToken);
 
-        if (this.Context.AutoSave)
+        if (this.options.CurrentValue.UseAutoSave)
         {
             await this.SaveChangesAsync(cancellationToken);
         }
@@ -676,11 +659,11 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        return this.Context
+        return this.dbContext
             .BulkInsertAsync(entities, x =>
             {
-                x.BatchSize = this.Context.Options.CurrentValue.BulkBatchSize;
-                x.BatchDelayInterval = this.Context.Options.CurrentValue.BulkBatchDelay;
+                x.BatchSize = this.options.CurrentValue.BulkBatchSize;
+                x.BatchDelayInterval = this.options.CurrentValue.BulkBatchDelay;
             }, cancellationToken);
     }
 
@@ -691,10 +674,10 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        var entry = this.Context
+        var entry = this.dbContext
             .Update(entity);
 
-        if (this.Context.AutoSave)
+        if (this.options.CurrentValue.UseAutoSave)
         {
             await this.SaveChangesAsync(cancellationToken);
         }
@@ -707,7 +690,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         where TEntity : class, IEntityUpdatable, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>
     {
-        var includeDepth = this.Context.Options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
 
         entity = await this.UpdateAsync(entity, cancellationToken);
 
@@ -721,10 +704,10 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        this.Context
+        this.dbContext
             .UpdateRange(entities);
 
-        if (this.Context.AutoSave)
+        if (this.options.CurrentValue.UseAutoSave)
         {
             return this.SaveChangesAsync(cancellationToken);
         }
@@ -739,11 +722,11 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        return this.Context
+        return this.dbContext
             .BulkUpdateAsync(entities, x =>
             {
-                x.BatchSize = this.Context.Options.CurrentValue.BulkBatchSize;
-                x.BatchDelayInterval = this.Context.Options.CurrentValue.BulkBatchDelay;
+                x.BatchSize = this.options.CurrentValue.BulkBatchSize;
+                x.BatchDelayInterval = this.options.CurrentValue.BulkBatchDelay;
             }, cancellationToken);
     }
 
@@ -758,9 +741,9 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (propertyUpdates == null) 
             throw new ArgumentNullException(nameof(propertyUpdates));
 
-        var updateExpression = this.BuildUpdateExpression<TEntity>(propertyUpdates);
+        var updateExpression = BuildUpdateExpression<TEntity>(propertyUpdates);
 
-        return this.Context
+        return this.dbContext
             .Set<TEntity>()
             .Where(criteria)
             .ExecuteUpdateAsync(updateExpression, cancellationToken);
@@ -776,9 +759,9 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (propertyUpdates == null)
             throw new ArgumentNullException(nameof(propertyUpdates));
 
-        var updateExpression = this.BuildUpdateExpression<TEntity>(propertyUpdates);
+        var updateExpression = BuildUpdateExpression<TEntity>(propertyUpdates);
 
-        return this.Context
+        return this.dbContext
             .Set<TEntity>()
             .Where(where)
             .ExecuteUpdateAsync(updateExpression, cancellationToken);
@@ -791,10 +774,10 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        var entry = this.Context
+        var entry = this.dbContext
             .AddOrUpdate(entity);
 
-        if (this.Context.AutoSave)
+        if (this.options.CurrentValue.UseAutoSave)
         {
             await this.SaveChangesAsync(cancellationToken);
         }
@@ -811,11 +794,11 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
         foreach (var entity in entities)
         {
-            this.Context
+            this.dbContext
                 .AddOrUpdate(entity);
         }
 
-        if (this.Context.AutoSave)
+        if (this.options.CurrentValue.UseAutoSave)
         {
             await this.SaveChangesAsync(cancellationToken);
         }
@@ -828,8 +811,8 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         where TEntity : class, IEntityDeletable, IEntityIdentity<TKey>, new()
         where TKey : IEquatable<TKey>
     {
-        var entity = this.Context.Options.CurrentValue.UseSoftDeletetion
-            ? this.Context.Find<TEntity>(id)
+        var entity = this.options.CurrentValue.UseSoftDeletetion
+            ? this.dbContext.Find<TEntity>(id)
             : new TEntity
             {
                 Id = id
@@ -873,10 +856,10 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        this.Context.SingleDelete(entity);
-            //.Remove(entity);
+        this.dbContext
+            .SingleDelete(entity);
 
-        if (this.Context.AutoSave)
+        if (this.options.CurrentValue.UseAutoSave)
         {
             return this.SaveChangesAsync(cancellationToken);
         }
@@ -892,7 +875,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (ids == null)
             throw new ArgumentNullException(nameof(ids));
 
-        var entities = this.Context
+        var entities = this.dbContext
             .Set<TEntity>()
             .Where(x => ids.Contains(x.Id));
 
@@ -906,10 +889,10 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        this.Context
+        this.dbContext
             .RemoveRange(entities);
 
-        if (this.Context.AutoSave)
+        if (this.options.CurrentValue.UseAutoSave)
         {
             return this.SaveChangesAsync(cancellationToken);
         }
@@ -1009,12 +992,12 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        return this.Context
+        return this.dbContext
             .Set<TEntity>()
             .BulkDeleteAsync(entities, x =>
             {
-                x.BatchSize = this.Context.Options.CurrentValue.BulkBatchSize;
-                x.BatchDelayInterval = this.Context.Options.CurrentValue.BulkBatchDelay;
+                x.BatchSize = this.options.CurrentValue.BulkBatchSize;
+                x.BatchDelayInterval = this.options.CurrentValue.BulkBatchDelay;
             }, cancellationToken);
     }
 
@@ -1026,7 +1009,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (criteria == null)
             throw new ArgumentNullException(nameof(criteria));
 
-        return this.Context
+        return this.dbContext
             .Set<TEntity>()
             .Where(criteria)
             .DeleteFromQueryAsync(cancellationToken);
@@ -1039,7 +1022,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (expression == null)
             throw new ArgumentNullException(nameof(expression));
 
-        return this.Context
+        return this.dbContext
             .Set<TEntity>()
             .Where(expression)
             .DeleteFromQueryAsync(cancellationToken);
@@ -1053,7 +1036,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (criteria == null)
             throw new ArgumentNullException(nameof(criteria));
 
-        return this.Context
+        return this.dbContext
             .Set<TEntity>()
             .Where(criteria)
             .LongCountAsync(cancellationToken);
@@ -1066,7 +1049,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (expression == null)
             throw new ArgumentNullException(nameof(expression));
 
-        return this.Context
+        return this.dbContext
             .Set<TEntity>()
             .LongCountAsync(expression, cancellationToken);
     }
@@ -1081,7 +1064,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (sumExpr == null)
             throw new ArgumentNullException(nameof(sumExpr));
 
-        return this.Context
+        return this.dbContext
             .Set<TEntity>()
             .Where(whereExpr)
             .SumAsync(sumExpr, cancellationToken);
@@ -1097,7 +1080,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (avgExpr == null)
             throw new ArgumentNullException(nameof(avgExpr));
 
-        return this.Context
+        return this.dbContext
             .Set<TEntity>()
             .Where(whereExpr)
             .AverageAsync(avgExpr, cancellationToken);
@@ -1106,7 +1089,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     /// <inheritdoc />
     public virtual async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        await this.Context
+        await this.dbContext
             .SaveChangesAsync(cancellationToken);
     }
 
@@ -1127,10 +1110,12 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         if (!disposing)
             return;
 
-        this.Context?.Dispose();
+        this.dbContext?
+            .Dispose();
     }
 
-    private Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> BuildUpdateExpression<TEntity>(Dictionary<string, object> updates)
+
+    private static Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> BuildUpdateExpression<TEntity>(Dictionary<string, object> updates)
         where TEntity : class
     {
         if (updates == null) 

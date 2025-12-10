@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 
-namespace Nano.Web.Hosting.Middleware;
+namespace Nano.App.Web.Hosting.Middleware;
 
 /// <inheritdoc />
 public class HttpRequestOptionsMiddleware : IMiddleware

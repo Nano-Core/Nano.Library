@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Nano.Web.Hosting.Serialization.Json.Const;
+namespace Nano.App.Web.Hosting.Serialization.Json.Const;
 
 /// <summary>
 /// Serializer Settings.

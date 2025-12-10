@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.App.ApiClient.Config;
 using Nano.App.ApiClient.Requests;
 using Nano.Data.Abstractions.Models.Abstractions;
 

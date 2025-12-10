@@ -14,11 +14,9 @@ using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Eventing;
 using Nano.Eventing.Abstractions;
-using Nano.Models;
 
-namespace Nano.Web.Controllers;
+namespace Nano.App.Web.Controllers;
 
 /// <summary>
 /// Base abstract <see cref="Controller"/>, implementing  methods for instances of <typeparamref name="TEntity"/>.
@@ -27,7 +25,7 @@ namespace Nano.Web.Controllers;
 /// <typeparam name="TEntity">The <see cref="IEntity"/> model the <see cref="IRepository"/> operates with.</typeparam>
 /// <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
 /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> implementation.</typeparam>
-[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.SERVICE + "," + BuiltInUserRoles.WRITER)]
+[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR)]
 public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : IRepository
     where TEntity : class, IEntityIdentity<TIdentity>, IEntityCreatable

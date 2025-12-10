@@ -24,7 +24,6 @@ public class UserOptions
     /// Allowed User Name Characters.
     /// Defaults to abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+
     /// </summary>
-    [Required]
     public virtual string AllowedUserNameCharacters { get; set; } = null;
 
     /// <summary>
@@ -34,7 +33,6 @@ public class UserOptions
     public virtual string[] DefaultRoles { get; set; } =
     [
         BuiltInUserRoles.READER,
-        BuiltInUserRoles.WRITER,
-        BuiltInUserRoles.SERVICE
+        BuiltInUserRoles.WRITER
     ];
 }

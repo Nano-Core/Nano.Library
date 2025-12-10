@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
-using Nano.Web.Hosting.ModelBinders;
+using Nano.App.Web.Hosting.ModelBinders;
 
-namespace Nano.Web.Attributes;
+namespace Nano.App.Web.Annotations;
 
 /// <summary>
 /// From Form Body.

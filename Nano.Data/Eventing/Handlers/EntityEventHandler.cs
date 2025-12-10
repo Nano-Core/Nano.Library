@@ -1,31 +1,21 @@
+using Nano.Common.Extensions;
+using Nano.Data.Abstractions.Eventing.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Eventing.Abstractions;
 using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Nano.Common.Extensions;
-using Nano.Common.Helpers;
-using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Eventing.Abstractions;
-using Nano.Eventing.Abstractions.Models;
 
 namespace Nano.Data.Eventing.Handlers;
 
 /// <summary>
 /// Entity Event Handler.
 /// </summary>
-public class EntityEventHandler : IEventingHandler<EntityEvent>
+public class EntityEventHandler<TIdentity> : IEventingHandler<EntityEvent> 
+    where TIdentity : IEquatable<TIdentity>
 {
-    /// <summary>
-    /// Logger.
-    /// </summary>
-    protected virtual ILogger Logger { get; }
-
-    /// <summary>
-    /// Context.
-    /// </summary>
-    protected virtual DefaultDbContext Context { get; }
+    private readonly BaseDbContext<TIdentity> dbContext;
 
     /// <inheritdoc />
     public ushort? OverridePrefetchCount { get; set; }
@@ -33,12 +23,10 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
     /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="logger">The <see cref="ILogger"/>.</param>
-    /// <param name="context">The <see cref="DbContext"/>.</param>
-    public EntityEventHandler(ILogger logger, DefaultDbContext context)
+    /// <param name="dbContext">The <see cref="BaseDbContext{TIdentity}"/>.</param>
+    public EntityEventHandler(BaseDbContext<TIdentity> dbContext)
     {
-        this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        this.Context = context ?? throw new ArgumentNullException(nameof(context));
+        this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
     /// <inheritdoc />
@@ -47,10 +35,11 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
         if (@event == null)
             throw new ArgumentNullException(nameof(@event));
 
-        this.Context.IsEntityEventEnabled = false;
-
-        var type = TypesHelper.GetAllTypes()
-            .Where(x => x.IsTypeOf(typeof(IEntityIdentity<>)))
+        var type = this.dbContext.Model
+            .GetEntityTypes()
+            .Select(x => x.ClrType)
+            .Where(x => x
+                .IsTypeOf(typeof(IEntityIdentity<>)))
             .First(x => x.Name == @event.Type);
 
         var isGuid = Guid.TryParse(@event.Id.ToString(), out var guid);
@@ -68,14 +57,14 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
         {
             case "Added":
             {
-                var existingEntity = await this.Context
+                var existingEntity = await this.dbContext
                     .FindAsync(type, id);
 
                 if (existingEntity != null)
                 {
-                    this.SetEntityEventProperties(@event, type, existingEntity);
+                    SetEntityEventProperties(@event, type, existingEntity);
 
-                    this.Context
+                    this.dbContext
                         .Update(existingEntity);
 
                     break;
@@ -91,19 +80,16 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                 propertyId
                     .SetValue(entityAdded, id);
 
-                this.SetEntityEventProperties(@event, type, entityAdded);
+                SetEntityEventProperties(@event, type, entityAdded);
 
-                await this.Context
+                await this.dbContext
                     .AddAsync(entityAdded);
-
-                await this.Context
-                    .SaveChangesAsync();
 
                 break;
             }
             case "Modified":
             {
-                var entityModified = await this.Context
+                var entityModified = await this.dbContext
                     .FindAsync(type, id);
 
                 if (entityModified == null)
@@ -111,20 +97,17 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                     throw new NullReferenceException(nameof(entityModified));
                 }
 
-                this.SetEntityEventProperties(@event, type, entityModified);
+                SetEntityEventProperties(@event, type, entityModified);
 
-                this.Context
+                this.dbContext
                     .Update(entityModified);
-
-                await this.Context
-                    .SaveChangesAsync();
 
                 break;
             }
 
             case "Deleted":
             {
-                var entityDeleted = await this.Context
+                var entityDeleted = await this.dbContext
                     .FindAsync(type, id);
 
                 if (entityDeleted == null)
@@ -132,20 +115,19 @@ public class EntityEventHandler : IEventingHandler<EntityEvent>
                     break;
                 }
 
-                this.Context
+                this.dbContext
                     .Remove(entityDeleted);
-
-                await this.Context
-                    .SaveChangesAsync();
 
                 break;
             }
         }
 
-        this.Context.IsEntityEventEnabled = true;
+        await this.dbContext
+            .SaveChangesWithoutEntityEventsAsync();
     }
 
-    private void SetEntityEventProperties(EntityEvent @event, IReflect type, object entity)
+
+    private static void SetEntityEventProperties(EntityEvent @event, IReflect type, object entity)
     {
         foreach (var pair in @event.Data)
         {

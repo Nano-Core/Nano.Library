@@ -2,10 +2,9 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.OpenApi.Models;
 using Nano.Data.Abstractions.Annotations;
-using Nano.Models.Attributes;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Nano.Web.Hosting.Documentation.Filters.Operation;
+namespace Nano.App.Web.Hosting.Documentation.Filters.Operation;
 
 /// <summary>
 /// Swagger Response Only Filter.

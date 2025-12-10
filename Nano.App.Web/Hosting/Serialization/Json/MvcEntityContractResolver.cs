@@ -4,11 +4,10 @@ using Nano.Common.Extensions;
 using Nano.Common.Serialization.Json;
 using Nano.Data.Abstractions.Annotations;
 using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Models.Attributes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Nano.Web.Hosting.Serialization.Json;
+namespace Nano.App.Web.Hosting.Serialization.Json;
 
 /// <inheritdoc />
 public class MvcEntityContractResolver : DefaultEntityContractResolver

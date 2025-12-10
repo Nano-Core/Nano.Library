@@ -8,10 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Nano.App.ApiClient.Models.Identity.External.Providers;
+using Nano.App.Web.Config;
 using Nano.Common.Exceptions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Identity.Models;
-using IdentityOptions = Nano.Web.IdentityOptions;
+using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
 
 namespace Nano.App.Web.Identity;
 

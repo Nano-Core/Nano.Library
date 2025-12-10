@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Nano.Common.Serialization;
+using Newtonsoft.Json;
 
-namespace Nano.Web.Hosting.ModelBinders;
+namespace Nano.App.Web.Hosting.ModelBinders;
 
 /// <summary>
 /// Json Form binder.

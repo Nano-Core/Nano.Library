@@ -1,6 +1,6 @@
 using System;
+using Nano.App.Web.Config;
 using Nano.App.Web.Identity.Abstractions;
-using Nano.Web;
 
 namespace Nano.App.Web.Identity;
 

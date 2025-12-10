@@ -1,18 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Options;
 using Nano.Common.Exceptions;
 using Nano.Common.Extensions;
 using Nano.Common.Identity.Extensions;
-using Nano.Data.Abstractions.Identity.Abstractions;
+using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
@@ -21,9 +13,15 @@ using Nano.Data.Identity.Consts;
 using Nano.Data.Identity.DataProtection.Consts;
 using Nano.Data.Identity.Extensions;
 using Nano.Data.Identity.Helpers;
-using Nano.Eventing.Abstractions;
-using Nano.Eventing.Abstractions.Models;
-using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Nano.Data.Abstractions.Identity;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Identity;
@@ -32,9 +30,8 @@ namespace Nano.Data.Identity;
 // BUG: REVIEW: Check Save changes vs AutoSave like in IRepository
 // BUG: REVIEW: Check when we ask for Id vs identityUser
 
-// BUG: Move User.IsActive to IdentityUser.IsActive. Override Identity<TIdentity> with own class.
-
-// BUG: Handle User.IdentityUser 
+// BUG: 000: Move User.IsActive to IdentityUser.IsActive. Override Identity<TIdentity> with own class.
+// BUG: 000: Handle User.IdentityUser 
 // This is also a general problem, when having custom entities that navigates in publish annotation. Can we solve this or make it clear?
 // - Usually ypu wouldn't navigate over for other entities that User.IdentityUser. BUT still it's supported in the annotations. BUT they control the update
 
@@ -47,7 +44,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     /// <summary>
     /// Options.
     /// </summary>
-    protected virtual IdentityOptions Options { get; }
+    protected virtual IOptionsMonitor<DataOptions> Options { get; }
 
     /// <summary>
     /// Db Context.
@@ -72,12 +69,12 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     /// <summary>
     /// The user authenticates and on success recieves a jwt token for use with auhtorization.
     /// </summary>
-    /// <param name="options">The <see cref="IdentityOptions"/>.</param>
+    /// <param name="options">The <see cref="IOptionsMonitor{DataOptions}"/>.</param>
     /// <param name="dbContext">The <see cref="SignInManager{T}"/>.</param>
     /// <param name="signInManager">The <see cref="SignInManager{T}"/>.</param>
     /// <param name="userManager">The <see cref="UserManager{T}"/>.</param>
     /// <param name="roleManager">The <see cref="RoleManager{T}"/></param>
-    protected BaseIdentityRepository(IdentityOptions options, BaseDbContext<TIdentity> dbContext, SignInManager<IdentityUser<TIdentity>> signInManager, UserManager<IdentityUser<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
+    protected BaseIdentityRepository(IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, SignInManager<IdentityUser<TIdentity>> signInManager, UserManager<IdentityUser<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
     {
         this.Options = options ?? throw new ArgumentNullException(nameof(options));
         this.DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
@@ -134,7 +131,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             throw new ArgumentNullException(nameof(signIn));
 
         var result = await this.SignInManager
-            .PasswordSignInAsync(signIn.Username, signIn.Password, signIn.IsRememberMe, this.Options.Lockout.AllowedForNewUsers);
+            .PasswordSignInAsync(signIn.Username, signIn.Password, signIn.IsRememberMe, this.Options.CurrentValue.Identity.Lockout.AllowedForNewUsers);
 
         if (result.Succeeded)
         {
@@ -232,15 +229,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
 
-
-
-
-
-
-
-
-
-
     /// <inheritdoc />
     public virtual async Task<IdentityUserTokenExpiry<TIdentity>> GetRefreshToken(TIdentity userId, string appId, CancellationToken cancellationToken = default)
     {
@@ -249,7 +237,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         var identityUserToken = this.DbContext
             .Set<IdentityUserTokenExpiry<TIdentity>>()
             .Where(x => x.UserId.Equals(userId) && x.Name == appId)
-            .AsNoTracking() // BUG: Why no tracking?
+            .AsNoTracking()
             .FirstOrDefault();
 
         return identityUserToken;
@@ -263,7 +251,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         var identityUserToken = this.DbContext
             .Set<IdentityUserTokenExpiry<TIdentity>>()
             .Where(x => x.UserId.Equals(userId))
-            .AsNoTracking() // BUG: Why no tracking?
+            .AsNoTracking()
             .FirstOrDefault();
 
         return identityUserToken;
@@ -274,19 +262,24 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     {
         if (appId == null)
             return null;
-
-        var token = this.GetRandomToken();
+        var token = GetRandomToken();
 
         var removeResult = await this.UserManager
-            .RemoveAuthenticationTokenAsync(identityUser, JwtBearerDefaults.AUTHENTICATION_SCHEME, appId); // BUG: WHat are we actually removing here
+            .RemoveAuthenticationTokenAsync(identityUser, JwtBearerDefaults.AUTHENTICATION_SCHEME, appId); 
 
         if (!removeResult.Succeeded)
         {
-            this.ThrowIdentityExceptions(removeResult.Errors);
+            ThrowIdentityExceptions(removeResult.Errors);
         }
 
         var expireAt = DateTimeOffset.UtcNow
             .AddHours(refreshExpirationInHours);
+
+        // BUG: TEST: Look into if this can be used and my IdentityUserTokenExpiry is overkill, i need and expiration on the refresh,
+        // but it works for other tokens managed by microsoft like reset password token, so how? I THINK that is just config and matched with createdAt?? CHECK
+
+        //var setResult = await this.UserManager
+        //    .SetAuthenticationTokenAsync(identityUser, JwtBearerDefaults.AUTHENTICATION_SCHEME, appId, token);
 
         var identityUserToken = new IdentityUserTokenExpiry<TIdentity>
         {
@@ -311,7 +304,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
 
-    private string GetRandomToken()
+    private static string GetRandomToken()
     {
         var bytes = new byte[32];
 
@@ -333,7 +326,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     /// <returns>The <see cref="PasswordOptions"/>.</returns>
     public virtual Task<PasswordOptions> GetPaswordOptionsAsync(CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(this.Options.Password);
+        return Task.FromResult(this.Options.CurrentValue.Identity.Password);
     }
 
     /// <summary>
@@ -410,7 +403,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
             if (ex.Message.Contains(MESSAGE) || ex.InnerException != null && ex.InnerException.Message.Contains(MESSAGE))
             {
-                this.ThrowIdentityExceptions([new IdentityErrorDescriber().DuplicatePhoneNumber(signUp.PhoneNumber)]);
+                ThrowIdentityExceptions([new IdentityErrorDescriber().DuplicatePhoneNumber(signUp.PhoneNumber)]);
             }
 
             throw;
@@ -418,7 +411,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!createResult.Succeeded)
         {
-            this.ThrowIdentityExceptions(createResult.Errors);
+            ThrowIdentityExceptions(createResult.Errors);
         }
 
         await this.AssignSignUpRolesAndClaims(identityUser, signUp.Roles, signUp.Claims);
@@ -456,7 +449,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
             if (!createResult.Succeeded)
             {
-                this.ThrowIdentityExceptions(createResult.Errors);
+                ThrowIdentityExceptions(createResult.Errors);
             }
 
             await this.AssignSignUpRolesAndClaims(identityUser, signUpExternal.Roles, signUpExternal.Claims);
@@ -469,7 +462,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!addLoginResult.Succeeded)
         {
-            this.ThrowIdentityExceptions(addLoginResult.Errors);
+            ThrowIdentityExceptions(addLoginResult.Errors);
         }
 
         await this.SignInManager
@@ -513,12 +506,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         await this.SignInManager
             .SignOutAsync();
     }
-
-
-
-
-
-
 
 
     /// <summary>
@@ -637,7 +624,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!addLoginResult.Succeeded)
         {
-            this.ThrowIdentityExceptions(addLoginResult.Errors);
+            ThrowIdentityExceptions(addLoginResult.Errors);
         }
 
         return new ExternalLogin
@@ -682,7 +669,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         }
         else
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
     }
 
@@ -883,7 +870,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
 
         await this.DbContext
@@ -916,7 +903,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
     }
 
@@ -946,7 +933,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
     }
 
@@ -976,7 +963,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
 
         await this.SignInManager
@@ -1024,7 +1011,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
 
         identityUserChangeData.NewEmail = null;
@@ -1073,7 +1060,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
 
         await this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id, cancellationToken);
@@ -1119,7 +1106,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
 
         identityUserChangeData.NewPhoneNumber = null;
@@ -1159,7 +1146,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
 
         await this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id, cancellationToken);
@@ -1191,7 +1178,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!success)
         {
-            this.ThrowIdentityExceptions([new IdentityError { Description = "Invalid Token." }]);
+            ThrowIdentityExceptions([new IdentityError { Description = "Invalid Token." }]);
         }
     }
 
@@ -1278,7 +1265,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             throw new NullReferenceException(nameof(identityUser));
         }
 
-        if (this.Options.User.IsUniqueEmailAddressRequired)
+        if (this.Options.CurrentValue.Identity.User.IsUniqueEmailAddressRequired)
         {
             var existingUser = await this.UserManager
                 .FindByEmailAsync(generateChangeEmailToken.NewEmailAddress);
@@ -1488,7 +1475,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
 
         return identityRole;
@@ -1520,7 +1507,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
     }
 
@@ -1586,7 +1573,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
     }
 
@@ -1614,7 +1601,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
     }
 
@@ -1708,7 +1695,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
 
         return userClaim;
@@ -1755,7 +1742,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
 
         return newClaim;
@@ -1802,7 +1789,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
 
         return newClaim;
@@ -1845,7 +1832,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
     }
 
@@ -1925,7 +1912,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
 
         return roleClaim;
@@ -1965,7 +1952,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
 
         var newClaim = new IdentityRoleClaim<TIdentity>
@@ -1982,7 +1969,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
 
         return newClaim;
@@ -2072,7 +2059,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
     }
 
@@ -2086,8 +2073,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     public virtual async Task<TUser> ActivateIdentityUser<TUser>(TIdentity id, CancellationToken cancellationToken = default)
         where TUser : class, IEntityUser<TIdentity>
     {
-        // BUG: Should IsActive be moved to IdentityUser?
-
         var user = this.DbContext
             .Set<TUser>()
             .IgnoreQueryFilters()
@@ -2156,7 +2141,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             throw new ArgumentNullException(nameof(identityUser));
 
         var roles = roles2?
-            .Union(this.Options.User.DefaultRoles)
+            .Union(this.Options.CurrentValue.Identity.User.DefaultRoles)
             .Distinct()
             .ToList() ?? [];
 
@@ -2167,7 +2152,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
             if (!roleAssignResult.Succeeded)
             {
-                this.ThrowIdentityExceptions(roleAssignResult.Errors);
+                ThrowIdentityExceptions(roleAssignResult.Errors);
             }
         }
 
@@ -2182,7 +2167,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
             if (!claimAssignResult.Succeeded)
             {
-                this.ThrowIdentityExceptions(claimAssignResult.Errors);
+                ThrowIdentityExceptions(claimAssignResult.Errors);
             }
         }
     }
@@ -2196,7 +2181,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (!result.Succeeded)
         {
-            this.ThrowIdentityExceptions(result.Errors);
+            ThrowIdentityExceptions(result.Errors);
         }
 
         await this.DbContext
@@ -2219,23 +2204,9 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
                 continue;
             }
 
-            var entityEntry = this.DbContext
-                .Entry(user);
-
-            var entityEvent = new Abc()
-                .GetEntityEvent(entityEntry);
-
-            if (entityEvent != null)
-            {
-                var eventing = (IEventing)new object(); // BUG: DI
-
-                await eventing
-                    .PublishAsync(entityEvent, entityEvent.Type, cancellationToken);
-            }
-
-            // BUG: Doesnt work. 
-            //this.DbContext
-            //    .Update(user);
+            // BUG: TEST: UpdateEntityUserWhenIdentityUserChanges
+            this.DbContext
+                .Update(user);
         }
     }
     private async Task<TUser> CreateUser<TUser>(TUser user, IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default)
@@ -2268,7 +2239,8 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         return user;
     }
-    private void ThrowIdentityExceptions(IEnumerable<IdentityError> errors)
+    
+    private static void ThrowIdentityExceptions(IEnumerable<IdentityError> errors)
     {
         if (errors == null)
             throw new ArgumentNullException(nameof(errors));

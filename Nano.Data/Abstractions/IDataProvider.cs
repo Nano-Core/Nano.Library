@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Nano.Data.Abstractions.Config;
 
 namespace Nano.Data.Abstractions;
 
@@ -11,6 +13,14 @@ public interface IDataProvider
     /// <summary>
     /// Configures the <see cref="IDataProvider"/>.
     /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="options">The <see cref="DataOptions"/>.</param>
+    void Configure(IServiceCollection services, DataOptions options);
+
+    /// <summary>
+    /// Configures the <see cref="IDataProvider"/>.
+    /// </summary>
     /// <param name="builder">The <see cref="DbContextOptionsBuilder"/>.</param>
-    void Configure(DbContextOptionsBuilder builder);
+    /// <param name="options">The <see cref="DataOptions"/>.</param>
+    void Configure(DbContextOptionsBuilder builder, DataOptions options);
 }

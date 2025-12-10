@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Routing;
 
-namespace Nano.Web.Hosting.Conventions;
+namespace Nano.App.Web.Hosting.Conventions;
 
 /// <inheritdoc />
 public class RoutePrefixConvention : IApplicationModelConvention

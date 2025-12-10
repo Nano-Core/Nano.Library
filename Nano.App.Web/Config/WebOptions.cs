@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 using Microsoft.OpenApi.Models;
-using Nano.Web.Enums;
+using Nano.App.Web.Enums;
 using NWebsec.AspNetCore.Mvc;
 
-namespace Nano.Web;
+namespace Nano.App.Web.Config;
 
 /// <summary>
 /// Web Options.

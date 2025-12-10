@@ -1,10 +1,11 @@
 using System;
 using Asp.Versioning;
 using Microsoft.OpenApi.Models;
+using Nano.App.Web.Config;
 using Nano.Common.Config.Helpers;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Nano.Web.Hosting.Documentation.Filters.Document;
+namespace Nano.App.Web.Hosting.Documentation.Filters.Document;
 
 /// <summary>
 /// Remove Default Version Routes Filter.

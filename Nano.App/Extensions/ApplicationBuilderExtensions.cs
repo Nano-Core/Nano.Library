@@ -1,27 +1,18 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Nano.Common.Extensions;
+using Nano.Common.Helpers;
+using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Eventing.Models;
+using Nano.Eventing.Abstractions;
 using System;
 using System.Linq;
 using System.Threading;
-using Nano.Common.Extensions;
-using Nano.Common.Helpers;
-using Nano.Eventing.Abstractions;
-using Nano.Eventing.Abstractions.Models;
 
 namespace Nano.App.Extensions;
 
-/// <summary>
-/// Application Builder Extensions.
-/// </summary>
 internal static class ApplicationBuilderExtensions
 {
-    /// <summary>
-    /// Adds Eventing hadlers to the <see cref="IApplicationBuilder"/>.
-    /// </summary>
-    /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
-    /// <param name="useEntityEventHandler">Whether to use entity event handler.</param>
-    /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
     internal static IApplicationBuilder UseEventHandlers(this IApplicationBuilder applicationBuilder, bool useEntityEventHandler)
     {
         if (applicationBuilder == null)
@@ -80,6 +71,25 @@ internal static class ApplicationBuilderExtensions
                     CancellationToken.None
                 ]);
         }
+
+        return applicationBuilder;
+    }
+
+    internal static IApplicationBuilder UseDbMigrations(this IApplicationBuilder applicationBuilder)
+    {
+        if (applicationBuilder == null)
+            throw new ArgumentNullException(nameof(applicationBuilder));
+
+        using var scope = applicationBuilder.ApplicationServices
+            .CreateScope();
+
+        var dbMigrationTask = scope.ServiceProvider
+            .GetService<IDbMigrationTask>();
+
+        dbMigrationTask?
+            .MigrateAndSeedAsync()
+            .GetAwaiter()
+            .GetResult();
 
         return applicationBuilder;
     }

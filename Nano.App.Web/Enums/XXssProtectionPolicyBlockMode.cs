@@ -1,4 +1,4 @@
-namespace Nano.Web.Enums;
+namespace Nano.App.Web.Enums;
 
 /// <summary>
 /// X-Xss Protection Policy BlockMode.

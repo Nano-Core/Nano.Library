@@ -1,21 +1,29 @@
 using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Nano.Common.Config.Extensions;
+using Nano.Common.Identity.Extensions;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Data.Identity.Extensions;
+using Nano.Data.Identity;
+using Nano.Data.Identity.Consts;
+using Nano.Data.Identity.DataProtection.Extensions;
+using Nano.Data.Repository;
 using System;
 using System.Linq;
-using Nano.Common.Config.Extensions;
-using Nano.Common.Identity.Extensions;
-using Nano.Data.Repository;
+using Nano.Data.Abstractions.Eventing.Models;
+using Nano.Data.Abstractions.Identity;
+using Nano.Data.Eventing.Handlers;
+using Nano.Eventing.Abstractions;
 using Z.EntityFramework.Extensions;
 using Z.EntityFramework.Plus;
+using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;
 
 namespace Nano.Data.Extensions;
 
@@ -32,17 +40,17 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection AddDataContext<TProvider, TContext>(this IServiceCollection services)
-        where TProvider : class, IDataProvider
+        where TProvider : class, IDataProvider, new()
         where TContext : DefaultDbContext
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
         services
-            .AddScoped<DefaultDbContext, TContext>();
+            .AddDataContext<TProvider, TContext, Guid>();
 
         services
-            .AddDataContext<TProvider, TContext, Guid>();
+            .AddScoped<DefaultDbContext, TContext>();
 
         return services;
     }
@@ -56,7 +64,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection AddDataContext<TProvider, TContext, TIdentity>(this IServiceCollection services)
-        where TProvider : class, IDataProvider
+        where TProvider : class, IDataProvider, new()
         where TContext : BaseDbContext<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
@@ -73,55 +81,118 @@ public static class ServiceCollectionExtensions
 
         EntityFrameworkManager.IsCommunity = true;
 
-        services
-            .AddSingleton(options.Identity);
+        var provider = new TProvider();
+        provider
+            .Configure(services, options);
 
         services
-            .AddScoped<DbContextOptions, DbContextOptions<TContext>>()
+            .AddSingleton<IDataProvider>(provider)
+            .AddContext<TContext>(options)
+            .AddIdentity<TContext, TIdentity>(options.Identity)
+            .AddAudit(options)
+            .AddCache(options.Cache);
+
+        services
+            .AddScoped<TContext>()
             .AddScoped<DbContext, TContext>()
             .AddScoped<BaseDbContext<TIdentity>, TContext>()
-            .AddSingleton<IDataProvider, TProvider>();
+            .AddScoped<IRepository, DefaultRepository<TContext, TIdentity>>();
 
+        services
+            .AddScoped<IEventingHandler<EntityEvent>, EntityEventHandler<TIdentity>>();
+
+        services
+            .AddSingleton<IDbMigrationTask, DbMigrationTask<TIdentity>>();
+
+        return services;
+    }
+
+
+    private static IServiceCollection AddContext<TContext>(this IServiceCollection services, DataOptions options)
+        where TContext : DbContext
+    {
         if (options.UseConnectionPooling)
         {
             services
-                .AddDbContextPool<TContext>((x, builder) =>
+                .AddDbContextPool<TContext>((provider, builder) =>
                 {
                     builder
-                        .AddDataContext(x);
-                })
-                .AddHealthChecks<TProvider>(options);
+                        .AddDataContext(provider, options);
+
+                    provider
+                        .GetRequiredService<IDataProvider>()
+                        .Configure(builder, options);
+                });
         }
         else
         {
             services
-                .AddDbContext<TContext>((x, builder) =>
+                .AddDbContext<TContext>((provider, builder) =>
                 {
                     builder
-                        .AddDataContext(x);
-                })
-                .AddHealthChecks<TProvider>(options);
+                        .AddDataContext(provider, options);
+
+                    provider
+                        .GetRequiredService<IDataProvider>()
+                        .Configure(builder, options);
+                });
         }
+
+        return services;
+    }
+    private static IServiceCollection AddIdentity<TContext, TIdentity>(this IServiceCollection services, IdentityOptions options)
+        where TContext : BaseDbContext<TIdentity>
+        where TIdentity : IEquatable<TIdentity>
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        if (options == null)
+        {
+            return services;
+        }
+
+        services
+            .AddIdentity<IdentityUser<TIdentity>, IdentityRole<TIdentity>>(x =>
+            {
+                x.User.RequireUniqueEmail = true;
+                x.User.AllowedUserNameCharacters = options.User.AllowedUserNameCharacters;
+
+                x.Password.RequireDigit = options.Password.RequireDigit;
+                x.Password.RequiredLength = options.Password.RequiredLength;
+                x.Password.RequireNonAlphanumeric = options.Password.RequireNonAlphanumeric;
+                x.Password.RequireLowercase = options.Password.RequireLowercase;
+                x.Password.RequireUppercase = options.Password.RequireUppercase;
+                x.Password.RequiredUniqueChars = options.Password.RequiredUniqueCharacters;
+
+                x.SignIn.RequireConfirmedEmail = options.SignIn.RequireConfirmedEmail;
+                x.SignIn.RequireConfirmedPhoneNumber = options.SignIn.RequireConfirmedPhoneNumber;
+
+                x.Lockout.AllowedForNewUsers = options.Lockout.AllowedForNewUsers;
+                x.Lockout.DefaultLockoutTimeSpan = options.Lockout.DefaultLockoutTimeSpan;
+                x.Lockout.MaxFailedAccessAttempts = options.Lockout.MaxFailedAccessAttempts;
+            })
+            .AddEntityFrameworkStores<TContext>()
+            .AddTokenProvider<DataProtectorTokenProvider<IdentityUser<TIdentity>>>(TokenProviderNames.JWT_AUTHENTICATION_SCHEME)
+            .AddDefaultTokenProviders()
+            .AddCustomTokenProvider();
 
         services
             .AddDataProtection()
             .PersistKeysToDbContext<TContext>();
 
         services
-            .AddIdentity<TContext, TIdentity>(options.Identity)
-            .AddAudit(options)
-            .AddCache(options);
+            .Configure<DataProtectionTokenProviderOptions>(x =>
+            {
+                x.TokenLifespan = TimeSpan.FromHours(options.TokensExpirationInHours);
+            });
 
         services
-            .AddScoped<IRepository, DefaultRepository>();
-
-        services
-            .AddHostedService<MigrateDatabaseStartupTask>();
+            .AddScoped<IIdentityRepository, DefaultIdentityRepository>()
+            .AddScoped<IIdentityRepository<TIdentity>, DefaultIdentityRepository<TIdentity>>(); 
 
         return services;
     }
-
-
     private static IServiceCollection AddAudit(this IServiceCollection services, DataOptions options)
     {
         if (services == null)
@@ -129,11 +200,6 @@ public static class ServiceCollectionExtensions
 
         if (options == null) 
             throw new ArgumentNullException(nameof(options));
-
-        if (!options.UseAudit)
-        {
-            return services;
-        }
 
         if (options.UseAudit)
         {
@@ -148,13 +214,13 @@ public static class ServiceCollectionExtensions
                 var httpContextAccessor = dbContext
                     .GetService<IHttpContextAccessor>();
 
-                var requestId = httpContextAccessor?.HttpContext?.TraceIdentifier;
+                var requestId = httpContextAccessor.HttpContext?.TraceIdentifier;
 
-                var createdBy = httpContextAccessor?.HttpContext?
+                var createdBy = httpContextAccessor.HttpContext?
                     .GetJwtUserId()?
                     .ToString();
 
-                var customAuditEntries = audit.Entries
+                var auditEntries = audit.Entries
                     .Where(x => x.AuditEntryID == 0)
                     .Select(x =>
                     {
@@ -180,7 +246,7 @@ public static class ServiceCollectionExtensions
 
                 dbContext
                     .Set<DefaultAuditEntry>()
-                    .AddRange(customAuditEntries);
+                    .AddRange(auditEntries);
             };
             AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsDeleted > 0L);
         }
@@ -192,74 +258,35 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    private static IServiceCollection AddCache(this IServiceCollection services, DataOptions options)
+    private static IServiceCollection AddCache(this IServiceCollection services, CacheOptions options)
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
         if (options == null)
-            throw new ArgumentNullException(nameof(options));
-
-        if (options.Cache == null)
         {
             return services;
         }
 
         const string CACHE_KEY_PREFIX = "EF_";
 
-        var cacheExpirationMode = options.Cache.ExpirationMode
+        var cacheExpirationMode = options.ExpirationMode
             .GetCacheExpirationMode();
 
         services
             .AddEFSecondLevelCache(x => x
                 .SkipCachingCommands(y => y.ToLower().Contains("__ef"))
-                .CacheAllQueriesExceptContainingTypes(cacheExpirationMode, options.Cache.ExpirationTimeout)
-                .CacheAllQueriesExceptContainingTableNames(cacheExpirationMode, options.Cache.ExpirationTimeout, options.Cache.IgnoredTableNames)
+                .CacheAllQueriesExceptContainingTypes(cacheExpirationMode, options.ExpirationTimeout)
+                .CacheAllQueriesExceptContainingTableNames(cacheExpirationMode, options.ExpirationTimeout, options.IgnoredTableNames)
                 .UseMemoryCacheProvider()
                 .UseCacheKeyPrefix(CACHE_KEY_PREFIX));
 
         services
             .AddMemoryCache(x =>
             {
-                x.SizeLimit = options.Cache.MaxEntries;
-                x.ExpirationScanFrequency = options.Cache.ExpirationScanFrequency;
+                x.SizeLimit = options.MaxEntries;
+                x.ExpirationScanFrequency = options.ExpirationScanFrequency;
             });
-
-        return services;
-    }
-
-
-    private static IServiceCollection AddHealthChecks<TProvider>(this IServiceCollection services, DataOptions options)
-        where TProvider : class, IDataProvider
-    {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
-
-        if (!options.UseHealthCheck)
-            return services;
-
-        // BUG: HEALTH-CHECK: Move to data provider projects
-        //if (typeof(TProvider) == typeof(MySqlProvider))
-        //{
-        //    services
-        //        .AddHealthChecks()
-        //        .AddMySql(options.ConnectionString, failureStatus: options.UnhealthyStatus);
-        //}
-        //else if (typeof(TProvider) == typeof(SqlServerProvider))
-        //{
-        //    services
-        //        .AddHealthChecks()
-        //        .AddSqlServer(options.ConnectionString, failureStatus: options.UnhealthyStatus);
-        //}
-        //else if (typeof(TProvider) == typeof(SqliteProvider))
-        //{
-        //    services
-        //        .AddHealthChecks()
-        //        .AddSqlite(options.ConnectionString, failureStatus: options.UnhealthyStatus);
-        //}
 
         return services;
     }

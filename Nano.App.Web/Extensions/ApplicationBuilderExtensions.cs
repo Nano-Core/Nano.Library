@@ -13,12 +13,12 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
-using Nano.App;
 using Nano.App.Config;
+using Nano.App.Web.Config;
+using Nano.App.Web.Enums;
+using Nano.App.Web.Extensions.Const;
+using Nano.App.Web.Hosting.Middleware;
 using Nano.Common.Config.Helpers;
-using Nano.Web.Enums;
-using Nano.Web.Extensions.Const;
-using Nano.Web.Hosting.Middleware;
 using NWebsec.AspNetCore.Mvc;
 using NWebsec.Core.Common.Middleware.Options;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -27,7 +27,7 @@ using Vivet.AspNetCore.RequestTimeZone.Providers;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
 using ReferrerPolicy = NWebsec.AspNetCore.Mvc.ReferrerPolicy;
 
-namespace Nano.Web.Extensions;
+namespace Nano.App.Web.Extensions;
 
 // BUG: REmove controllers and actions not configured, e.g. Identity repository methods for data if data isn't configured. Also, Transient from Auth controller if not configured, and data from auth controller if not configured.
 

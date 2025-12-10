@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Nano.Web.Hosting.Middleware;
+namespace Nano.App.Web.Hosting.Middleware;
 
 /// <inheritdoc />
 public class HttpRequestIdentifierMiddleware : IMiddleware

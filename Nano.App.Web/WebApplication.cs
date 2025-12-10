@@ -1,3 +1,7 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -5,19 +9,15 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Nano.App;
-using Nano.App.Extensions;
-using Nano.Data.Abstractions.Config;
-using Nano.Web.Extensions;
-using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using Microsoft.Extensions.Options;
 using Nano.App.Abstractions;
+using Nano.App.Extensions;
+using Nano.App.Web.Config;
+using Nano.App.Web.Extensions;
 using Nano.Common.Config.Helpers;
+using Nano.Data.Abstractions.Config;
 
-namespace Nano.Web;
+namespace Nano.App.Web;
 
 /// <inheritdoc />
 public class WebApplication : DefaultApplication
@@ -92,6 +92,9 @@ public class WebApplication : DefaultApplication
             .UseHttpDocumentataion()
             .UseHealthChecks()
             .UseEventHandlers(dataOptions.CurrentValue.ConnectionString != null); // BUG: Get rid of parameter, and should be for both Web and Console
+
+        applicationBuilder
+            .UseDbMigrations(); // BUG: Also add to console. or find common place if possible
     }
 
     /// <summary>

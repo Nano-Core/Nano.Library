@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 
-namespace Nano.Models.Attributes;
+namespace Nano.App.Web.Annotations;
 
 /// <summary>
 /// File Extension Validation Attribute.

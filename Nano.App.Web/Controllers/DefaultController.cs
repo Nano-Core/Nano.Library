@@ -4,10 +4,9 @@ using Microsoft.Extensions.Logging;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Eventing;
 using Nano.Eventing.Abstractions;
 
-namespace Nano.Web.Controllers;
+namespace Nano.App.Web.Controllers;
 
 /// <inheritdoc />
 public class DefaultController<TEntity, TCriteria> : DefaultController<TEntity, Guid, TCriteria>

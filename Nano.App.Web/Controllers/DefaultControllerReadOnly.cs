@@ -3,10 +3,9 @@ using DynamicExpression.Interfaces;
 using Microsoft.Extensions.Logging;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Eventing;
 using Nano.Eventing.Abstractions;
 
-namespace Nano.Web.Controllers;
+namespace Nano.App.Web.Controllers;
 
 /// <inheritdoc />
 public class DefaultControllerReadOnly<TEntity, TCriteria> : DefaultControllerReadOnly<TEntity, Guid, TCriteria>

@@ -5,7 +5,7 @@ using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Nano.Web.Hosting.Documentation.Filters.Schema;
+namespace Nano.App.Web.Hosting.Documentation.Filters.Schema;
 
 /// <summary>
 /// Enums Filter.

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Data.Consts;
+using Nano.Data.Identity.Consts;
 
 namespace Nano.Data.Models.Mappings.Extensions;
 

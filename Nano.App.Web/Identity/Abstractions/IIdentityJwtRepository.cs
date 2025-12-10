@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Nano.App.ApiClient.Models.Identity;
+using Nano.App.Web.Identity.Models;
 using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.App.Web.Identity.Abstractions;

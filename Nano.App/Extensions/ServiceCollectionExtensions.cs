@@ -4,28 +4,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Nano.App.Abstractions;
 using Nano.App.ApiClient.Extensions;
 using Nano.App.Config;
+using Nano.App.StartUp;
+using Nano.App.StartUp.Tasks;
 using Nano.Common.Config.Extensions;
 using Nano.Common.Extensions;
 using Nano.Common.Helpers;
-using Nano.Common.Startup;
-using Nano.Common.Startup.Tasks;
 
 namespace Nano.App.Extensions;
 
-/// <summary>
-/// Service Collection Extensions.
-/// </summary>
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
-    /// <summary>
-    /// Adds <see cref="AppOptions"/> to the <see cref="IServiceCollection"/>.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
     internal static IServiceCollection AddApp<TApplication>(this IServiceCollection services, IConfiguration configuration) 
         where TApplication : class, IApplication
     {
@@ -36,10 +29,37 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(configuration));
 
         services
-            .AddSingleton<IApplication, TApplication>();
+            .AddConfig(configuration)
+            .AddConfigSection<AppOptions>(AppOptions.SectionName, out _);
 
         services
-            .AddConfigSection<AppOptions>(AppOptions.SectionName, out _);
+            .AddNulLogger()
+            .AddSingleton<IApplication, TApplication>()
+            .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+            .AddApis(configuration)
+            .AddStartUpTasks();
+
+        return services;
+    }
+
+
+    private static IServiceCollection AddNulLogger(this IServiceCollection services)
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        services
+            .AddSingleton<ILogger, NullLogger>();
+
+        return services;
+    }
+    private static IServiceCollection AddStartUpTasks(this IServiceCollection services)
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        services
+            .AddSingleton<StartupTaskContext>();
 
         TypesHelper.GetAllTypes()
             .Where(x =>
@@ -51,14 +71,6 @@ public static class ServiceCollectionExtensions
                 services
                     .AddSingleton(typeof(IHostedService), x);
             });
-
-        services
-            .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-            .AddSingleton<StartupTaskContext>();
-
-        services
-            .AddConfig(configuration) // BUG: Haven't we alrady added this?
-            .AddApis(configuration);
 
         return services;
     }

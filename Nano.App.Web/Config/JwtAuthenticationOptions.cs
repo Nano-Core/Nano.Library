@@ -1,6 +1,4 @@
-using Nano.Data.Abstractions.Config;
-
-namespace Nano.Security;
+namespace Nano.App.Web.Config;
 
 /// <summary>
 /// Jwt Options (nested class)

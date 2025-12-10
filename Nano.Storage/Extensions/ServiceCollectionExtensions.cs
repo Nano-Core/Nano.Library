@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection AddStorage<TProvider>(this IServiceCollection services)
-        where TProvider : class, IStorageProvider
+        where TProvider : class, IStorageProvider, new()
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
@@ -31,13 +31,12 @@ public static class ServiceCollectionExtensions
             throw new NullReferenceException(nameof(options));
         }
 
-        services
-            .AddSingleton<IStorageProvider, TProvider>()
-            .AddSingleton(x => x
-                .GetRequiredService<IStorageProvider>()
-                .Configure(services));
+        var provider = Activator.CreateInstance<TProvider>();
+        provider
+            .Configure(services, options);
 
         services
+            .AddSingleton<IStorageProvider>(provider)
             .AddSingleton<IPathProvider, PathProvider>();
 
         return services;

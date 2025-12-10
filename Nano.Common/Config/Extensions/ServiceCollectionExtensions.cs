@@ -54,10 +54,9 @@ public static class ServiceCollectionExtensions
                 .AddOptions<TSection>();
 
             optionsBuilder
-                .Bind(section);
-            // BUG: Validation fails for web right now
-            //.ValidateDataAnnotations()
-            //.ValidateOnStart();
+                .Bind(section)
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
         }
 
         return services;

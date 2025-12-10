@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Nano.Web.Controllers;
+using Nano.App.Web.Controllers;
 
-namespace Nano.Web.Hosting.Conventions;
+namespace Nano.App.Web.Hosting.Conventions;
 
 /// <inheritdoc />
 public class AuditActionHidingConvention : IActionModelConvention

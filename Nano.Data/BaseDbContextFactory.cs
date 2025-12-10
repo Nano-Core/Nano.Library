@@ -20,26 +20,26 @@ public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbC
 
         var builder = new DbContextOptionsBuilder<TContext>();
 
-        var dataOptions = new DataOptions();
+        var options = new DataOptions();
 
         configuration
             .GetSection(DataOptions.SectionName)
-            .Bind(dataOptions);
+            .Bind(options);
 
-        if (dataOptions == null)
+        if (options == null)
         {
-            throw new NullReferenceException(nameof(dataOptions));
+            throw new NullReferenceException(nameof(options));
         }
 
-        if (Activator.CreateInstance(typeof(TProvider), dataOptions) is not TProvider dataProvider)
+        if (Activator.CreateInstance(typeof(TProvider), options) is not TProvider dataProvider)
         {
             throw new NullReferenceException(nameof(dataProvider));
         }
 
         dataProvider
-            .Configure(builder);
+            .Configure(builder, options);
 
-        if (Activator.CreateInstance(typeof(TContext), builder.Options, dataOptions) is not TContext dbContext)
+        if (Activator.CreateInstance(typeof(TContext), builder.Options, options) is not TContext dbContext)
         {
             throw new NullReferenceException(nameof(dbContext));
         }

@@ -1,34 +1,3 @@
-using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
-using DynamicExpression.Extensions;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Nano.App;
-using Nano.Data;
-using Nano.Data.Extensions;
-using Nano.Models;
-using Nano.Security;
-using Nano.Web.Controllers;
-using Nano.Web.Hosting.Authentication;
-using Nano.Web.Hosting.Authentication.Const;
-using Nano.Web.Hosting.Conventions;
-using Nano.Web.Hosting.Documentation.Filters.Document;
-using Nano.Web.Hosting.Documentation.Filters.Operation;
-using Nano.Web.Hosting.Documentation.Filters.Schema;
-using Nano.Web.Hosting.HealthChecks;
-using Nano.Web.Hosting.Middleware;
-using Nano.Web.Hosting.Serialization.Json.Const;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -36,15 +5,36 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Xml.XPath;
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
+using DynamicExpression.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using Nano.App.ApiClient.Consts;
 using Nano.App.ApiClient.Models;
 using Nano.App.Config;
+using Nano.App.Web.Config;
 using Nano.App.Web.Controllers;
+using Nano.App.Web.Hosting.Conventions;
+using Nano.App.Web.Hosting.Documentation.Filters.Document;
+using Nano.App.Web.Hosting.Documentation.Filters.Operation;
+using Nano.App.Web.Hosting.Documentation.Filters.Schema;
+using Nano.App.Web.Hosting.HealthChecks;
+using Nano.App.Web.Hosting.Middleware;
+using Nano.App.Web.Hosting.Serialization.Json.Const;
 using Nano.App.Web.Identity;
 using Nano.App.Web.Identity.Abstractions;
+using Nano.App.Web.Identity.Authentication.Consts;
+using Nano.App.Web.Identity.Authentication.Extensions;
 using Nano.Common.Config.Extensions;
 using Nano.Common.Config.Helpers;
 using Nano.Common.Extensions;
@@ -53,9 +43,10 @@ using Nano.Data.Abstractions.Config;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
-using AuthenticationOptions = Nano.Security.AuthenticationOptions;
+using AuthenticationOptions = Nano.App.Web.Config.AuthenticationOptions;
+using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
 
-namespace Nano.Web.Extensions;
+namespace Nano.App.Web.Extensions;
 
 /// <summary>
 /// Service Collection Extensions.
@@ -101,6 +92,8 @@ public static class ServiceCollectionExtensions
 
         services
             .AddSingleton(webOptions.Identity);
+
+         // BUG: .AddProblemDetails(x => x.CustomizeProblemDetails)
 
         services
             .AddCors(x =>
@@ -171,23 +164,9 @@ public static class ServiceCollectionExtensions
             .AddSingleton<DisableAuditControllerMiddleware>()
             .AddScoped<HttpRequestOptionsMiddleware>()
             .AddSingleton<HttpRequestIdentifierMiddleware>()
-            .AddRouting()
+            .AddRouting(x => x.LowercaseUrls = true) // BUG: Check more settings (maybe we can remove other swagger filters
             .AddQueryModelBinders()
-            .Configure<ApiBehaviorOptions>(x =>
-            {
-                x.InvalidModelStateResponseFactory = context =>
-                {
-                    return new BadRequestObjectResult(new Error
-                    {
-                        Summary = "ModelState Validation Error",
-                        Exceptions = context.ModelState.Values
-                            .SelectMany(z => z.Errors)
-                            .Select(z => z.ErrorMessage)
-                            .ToArray(),
-                        IsTranslated = true
-                    });
-                };
-            })
+            // BUG: .AddControllers()  use instead of AddMvc???
             .AddMvc(x =>
             {
                 x.ReturnHttpNotAcceptable = true;
@@ -206,23 +185,37 @@ public static class ServiceCollectionExtensions
                 x.Conventions
                     .Add(new ProducesJsonConvention());
 
-                if (dataOptions.CurrentValue.ConnectionString == null || !webOptions.Hosting.ExposeAuthController)
-                {
-                    x.Conventions
-                        .Add(new AuthActionHidingConvention());
-                }
+                //if (dataOptions.CurrentValue.ConnectionString == null || !webOptions.Hosting.ExposeAuthController)
+                //{
+                //    x.Conventions
+                //        .Add(new AuthActionHidingConvention());
+                //}
 
-                if (dataOptions.CurrentValue.ConnectionString == null || !webOptions.Hosting.ExposeAuditController)
-                {
-                    x.Conventions
-                        .Add(new AuditActionHidingConvention());
-                }
+                //if (dataOptions.CurrentValue.ConnectionString == null || !webOptions.Hosting.ExposeAuditController)
+                //{
+                //    x.Conventions
+                //        .Add(new AuditActionHidingConvention());
+                //}
 
                 if (webOptions.Hosting.UseHttpsRequired)
                 {
                     x.Filters
                         .Add<RequireHttpsAttribute>();
                 }
+            })
+            .ConfigureApiBehaviorOptions(x =>
+            {
+                x.InvalidModelStateResponseFactory = context =>
+                {
+                    return new BadRequestObjectResult(new Error
+                    {
+                        Summary = "ModelState Validation Error",
+                        Exceptions = context.ModelState.Values
+                            .SelectMany(z => z.Errors)
+                            .Select(z => z.ErrorMessage)
+                            .ToArray()
+                    });
+                };
             })
             .AddNewtonsoftJson(x =>
             {
@@ -238,7 +231,7 @@ public static class ServiceCollectionExtensions
                 x.SerializerSettings.Converters = serializerSettings.Converters;
             })
             .AddControllersAsServices()
-            .AddViewComponentsAsServices()
+            //.AddViewComponentsAsServices()
             .AddApplicationPart(assembly);
 
         // BUG: We need TIdentity
@@ -251,8 +244,10 @@ public static class ServiceCollectionExtensions
             .AddScoped<AuditController>()
             .AddScoped<DefaultAuthController>();
 
-        return services
+        services
             .AddHealthChecking(appOptions.CurrentValue, webOptions);
+
+        return services;
     }
 
     private static IServiceCollection AddCaching(this IServiceCollection services, WebOptions webOptions)
@@ -344,7 +339,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddHealthChecks()
-            .AddCheck<StartupHealthCheck>("self");
+            .AddCheck<StartupHealthCheck>("self"); // BUG: this should be above !options.Hosting.HealthCheck.UseHealthCheck or ???
 
         if (options.Hosting.HealthCheck.UseHealthCheckUI)
         {
@@ -354,7 +349,7 @@ public static class ServiceCollectionExtensions
             services
                 .AddHealthChecksUI(x =>
                 {
-                    x.AddHealthCheckEndpoint(appOptions.Name.ToLower(), $"http://localhost:{port}/healthz");
+                    // BUG: ask chat-gpt  x.AddHealthCheckEndpoint(appOptions.Name.ToLower(), $"http://localhost:{port}/healthz");
 
                     x.SetApiMaxActiveRequests(1);
                     x.SetEvaluationTimeInSeconds(options.Hosting.HealthCheck.EvaluationInterval);
@@ -426,7 +421,6 @@ public static class ServiceCollectionExtensions
                     x.OperationFilter<SwaggerResponseOnlyFilter>();
                     x.OperationFilter<NonResponseType200Filter>();
                     x.DocumentFilter<RemoveVersionsRoutesFilter>();
-                    x.DocumentFilter<LowercaseRoutesFilter>();
 
                     var openApiSecurityRequirement = new OpenApiSecurityRequirement();
 
@@ -476,7 +470,7 @@ public static class ServiceCollectionExtensions
 
                             if (File.Exists(path))
                             {
-                                x.IncludeXmlComments(path);
+                                x.IncludeXmlComments(path, true);
                             }
 
                             var modelsName = y.Name.Replace(".dll", "").Replace(".exe", "") + ".Models.xml";

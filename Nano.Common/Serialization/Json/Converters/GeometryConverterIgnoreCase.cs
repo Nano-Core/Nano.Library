@@ -31,9 +31,9 @@ public class GeometryConverterIgnoreCase : GeometryConverter
 
             if (objectType.IsSubclassOf(typeof(Geometry)))
             {
-                this.RenameProperty(obj, "Type", "type");
-                this.RenameProperty(obj, "Coordinates", "coordinates");
-                this.RenameProperty(obj, "Geometries", "geometries");
+                RenameProperty(obj, "Type", "type");
+                RenameProperty(obj, "Coordinates", "coordinates");
+                RenameProperty(obj, "Geometries", "geometries");
             }
 
             var jsonReader = new JTokenReader(obj);
@@ -47,7 +47,7 @@ public class GeometryConverterIgnoreCase : GeometryConverter
         throw new JsonSerializationException("Expected object");
     }
 
-    private void RenameProperty(JObject @object, string from, string to)
+    private static void RenameProperty(JObject @object, string from, string to)
     {
         if (@object == null) 
             throw new ArgumentNullException(nameof(@object));

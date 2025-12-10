@@ -8,16 +8,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Logging;
 using Nano.App.ApiClient.Models;
+using Nano.App.Web.Config;
+using Nano.App.Web.Extensions.Const;
 using Nano.Common.Exceptions;
 using Nano.Common.Serialization;
 using Nano.Data.Abstractions.Annotations;
-using Nano.Models;
-using Nano.Models.Attributes;
-using Nano.Web.Extensions.Const;
 using Newtonsoft.Json;
 using Vivet.AspNetCore.RequestVirusScan.Exceptions;
 
-namespace Nano.Web.Hosting.Middleware;
+namespace Nano.App.Web.Hosting.Middleware;
 
 /// <inheritdoc />
 public class ExceptionHandlingMiddleware : IMiddleware
@@ -38,7 +37,7 @@ public class ExceptionHandlingMiddleware : IMiddleware
     /// Constructor.
     /// </summary>
     /// <param name="logger">the <see cref="ILogger"/></param>
-    /// <param name="webOptions">The <see cref="Nano.Web.WebOptions"/>.</param>
+    /// <param name="webOptions">The <see cref="Config.WebOptions"/>.</param>
     public ExceptionHandlingMiddleware(ILogger logger, WebOptions webOptions)
     {
         this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));

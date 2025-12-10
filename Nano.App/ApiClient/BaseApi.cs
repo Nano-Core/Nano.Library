@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
+using Nano.App.ApiClient.Config;
 using Nano.App.ApiClient.Consts;
 using Nano.App.ApiClient.Extensions;
 using Nano.App.ApiClient.Models;

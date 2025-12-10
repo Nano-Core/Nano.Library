@@ -6,18 +6,14 @@ using Nano.App.Web.Identity.Abstractions;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Identity;
-using Nano.Data.Abstractions.Identity.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
-using Nano.Models;
-using Nano.Web.Controllers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading;
@@ -25,13 +21,14 @@ using System.Threading.Tasks;
 using Nano.App.ApiClient.Consts;
 using Nano.App.ApiClient.Models;
 using Nano.App.ApiClient.Models.Identity;
-using IdentityOptions = Nano.Web.IdentityOptions;
+using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
 
 namespace Nano.App.Web.Controllers;
 
 // BUG: We should hide/remove controller actions that are not configured (jwt, api-key). possibly return 404 in middleware
 
 /// <inheritdoc />
+[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER)]
 public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : IRepository
     where TEntity : class, IEntityUser<TIdentity>, IEntityCreatable, IEntityUpdatable, IEntityDeletable, IEntityIdentity<TIdentity>, new()

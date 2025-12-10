@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using Nano.App.ApiClient.Models.Identity;
 using Nano.App.ApiClient.Models.Identity.External;
 using Nano.App.ApiClient.Models.Identity.External.Providers;
+using Nano.App.Web.Config;
+using Nano.App.Web.Identity.Models;
 using Nano.Common.Exceptions;
-using IdentityOptions = Nano.Web.IdentityOptions;
+using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
 
 namespace Nano.App.Web.Identity;
 
@@ -29,7 +31,7 @@ public abstract class BaseAuthTransientRepository<TIdentity> : BaseBaseAuthRepos
     /// <summary>
     /// The user authenticates and on success recieves a jwt token for use with auhtorization.
     /// </summary>
-    /// <param name="options">The <see cref="Nano.Web.IdentityOptions"/>.</param>
+    /// <param name="options">The <see cref="IdentityOptions"/>.</param>
     /// <param name="identityJwtRepository"></param>
     protected BaseAuthTransientRepository(IdentityOptions options, IIdentityJwtRepository<TIdentity> identityJwtRepository)
         : base(options)

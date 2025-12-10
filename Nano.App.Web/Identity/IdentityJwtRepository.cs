@@ -5,7 +5,6 @@ using Nano.App.Web.Identity.Abstractions;
 using Nano.Common.Exceptions;
 using Nano.Common.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Models;
-using Nano.Data.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,7 +17,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using IdentityOptions = Nano.Web.IdentityOptions;
+using Nano.App.Web.Identity.Models;
+using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
 
 namespace Nano.App.Web.Identity;
 

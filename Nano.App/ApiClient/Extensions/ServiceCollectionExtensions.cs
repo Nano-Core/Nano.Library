@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Nano.App.ApiClient.Config;
 using Nano.App.ApiClient.Consts;
 using Nano.Common.Extensions;
 using Nano.Common.Helpers;

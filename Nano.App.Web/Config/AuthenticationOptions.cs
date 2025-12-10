@@ -1,6 +1,6 @@
 using Nano.App.Config;
 
-namespace Nano.Security;
+namespace Nano.App.Web.Config;
 
 /// <summary>
 /// Authentication Options.

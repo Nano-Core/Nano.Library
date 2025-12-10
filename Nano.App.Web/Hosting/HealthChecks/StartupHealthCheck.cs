@@ -2,9 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Nano.Common.Startup;
+using Nano.App.StartUp;
 
-namespace Nano.Web.Hosting.HealthChecks;
+namespace Nano.App.Web.Hosting.HealthChecks;
 
 /// <inheritdoc />
 public class StartupHealthCheck : IHealthCheck

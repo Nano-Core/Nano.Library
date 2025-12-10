@@ -1,13 +1,11 @@
-using System;
-using System.Linq;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Nano.Common.Config.Extensions;
 using Nano.Common.Extensions;
 using Nano.Common.Helpers;
 using Nano.Eventing.Abstractions;
 using Nano.Eventing.Abstractions.Config;
+using System;
+using System.Linq;
 
 namespace Nano.Eventing.Extensions;
 
@@ -36,12 +34,12 @@ public static class ServiceCollectionExtensions
             throw new NullReferenceException(nameof(options));
         }
 
-        var eventingProvider = new TProvider();
-
-        eventingProvider
+        var provider = Activator.CreateInstance<TProvider>();
+        provider
             .Configure(services, options);
 
         services
+            .AddSingleton<IEventingProvider>(provider)
             .AddEventingHandlers();
 
         return services;
@@ -53,7 +51,7 @@ public static class ServiceCollectionExtensions
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        TypesHelper
+        var eventHandlerTypes = TypesHelper
             .GetAllTypes()
             .SelectMany(x => x.GetInterfaces(), (x, y) => new
             {
@@ -62,6 +60,7 @@ public static class ServiceCollectionExtensions
             })
             .Where(x =>
                 !x.Type.IsAbstract &&
+                !x.Type.IsGenericType &&
                 x.Type.IsTypeOf(typeof(IEventingHandler<>)))
             .GroupBy(x => new
             {
@@ -69,16 +68,16 @@ public static class ServiceCollectionExtensions
                 GenericTypeName = x.GenericType.FullName
             })
             .Select(x => x.FirstOrDefault())
-            .Where(x => x != null)
-            .ToList()
-            .ForEach(x =>
-            {
-                var handlerType = x.Type;
-                var genericHandlerType = x.GenericType;
+            .Where(x => x != null);
 
-                services
-                    .AddScoped(genericHandlerType, handlerType);
-            });
+        foreach (var eventHandlerType in eventHandlerTypes)
+        {
+            var serviceType = eventHandlerType.GenericType;
+            var implementationType = eventHandlerType.Type;
+
+            services
+                .AddScoped(serviceType, implementationType);
+        }
 
         return services;
     }

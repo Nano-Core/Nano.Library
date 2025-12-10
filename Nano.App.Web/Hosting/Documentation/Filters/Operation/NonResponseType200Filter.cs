@@ -6,7 +6,7 @@ using Microsoft.OpenApi.Models;
 using Nano.App.ApiClient.Consts;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Nano.Web.Hosting.Documentation.Filters.Operation;
+namespace Nano.App.Web.Hosting.Documentation.Filters.Operation;
 
 /// <summary>
 /// Non 200 Responses Filter.

@@ -2,10 +2,11 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using Nano.App.Web.Config;
+using Nano.App.Web.Controllers;
 using Nano.Data.Abstractions.Config;
-using Nano.Web.Controllers;
 
-namespace Nano.Web.Hosting.Middleware;
+namespace Nano.App.Web.Hosting.Middleware;
 
 /// <inheritdoc />
 public class DisableAuditControllerMiddleware : IMiddleware

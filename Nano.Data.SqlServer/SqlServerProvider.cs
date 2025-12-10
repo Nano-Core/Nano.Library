@@ -1,9 +1,10 @@
-using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Extensions;
+using System;
+using Nano.Common.Extensions;
 
 namespace Nano.Data.SqlServer;
 
@@ -12,26 +13,18 @@ namespace Nano.Data.SqlServer;
 /// </summary>
 public class SqlServerProvider : IDataProvider
 {
-    private readonly IOptionsMonitor<DataOptions> options;
-
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    /// <param name="options">The <see cref="DataOptions"/>.</param>
-    public SqlServerProvider(IOptionsMonitor<DataOptions> options)
-    {
-        this.options = options ?? throw new ArgumentNullException(nameof(options));
-    }
-
     /// <inheritdoc />
-    public void Configure(DbContextOptionsBuilder builder)
+    public virtual void Configure(DbContextOptionsBuilder builder, DataOptions options)
     {
         if (builder == null)
             throw new ArgumentNullException(nameof(builder));
 
-        var batchSize = this.options.CurrentValue.BatchSize;
-        var retryCount = this.options.CurrentValue.QueryRetryCount;
-        var connectionString = this.options.CurrentValue.ConnectionString;
+        if (options == null)
+            throw new ArgumentNullException(nameof(options));
+
+        var batchSize = options.BatchSize;
+        var retryCount = options.QueryRetryCount;
+        var connectionString = options.ConnectionString;
 
         if (connectionString == null)
         {
@@ -41,7 +34,7 @@ public class SqlServerProvider : IDataProvider
         builder
             .UseSqlServer(connectionString, x =>
             {
-                var querySplittingBehavior = this.options.CurrentValue.UseQuerySplittingBehavior
+                var querySplittingBehavior = options.UseQuerySplittingBehavior
                     .GetQuerySplittingBehavior();
 
                 x.MaxBatchSize(batchSize);
@@ -49,5 +42,27 @@ public class SqlServerProvider : IDataProvider
                 x.UseNetTopologySuite();
                 x.UseQuerySplittingBehavior(querySplittingBehavior);
             });
+    }
+
+    /// <inheritdoc />
+    public virtual void Configure(IServiceCollection services, DataOptions options)
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        if (options == null)
+            throw new ArgumentNullException(nameof(options));
+
+        if (!options.UseHealthCheck)
+        {
+            return;
+        }
+
+        var failureStatus = options.UnhealthyStatus
+            .GetHealthStatus();
+
+        services
+            .AddHealthChecks()
+            .AddSqlServer(options.ConnectionString, failureStatus: failureStatus);
     }
 }

@@ -4,30 +4,26 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Config;
-using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Data.Abstractions.Eventing.Models;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Eventing.Annotations;
+using Nano.Data.Extensions;
 using Nano.Data.Models.Mappings;
 using Nano.Data.Models.Mappings.Extensions;
 using Nano.Eventing.Abstractions;
-using Nano.Eventing.Abstractions.Models;
-using NetTopologySuite.Geometries;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using Nano.Common.Extensions;
-using Nano.Data.Eventing.Annotations;
-using Nano.Data.Extensions;
-using Z.EntityFramework.Extensions;
 using Z.EntityFramework.Plus;
 
 namespace Nano.Data;
@@ -35,45 +31,32 @@ namespace Nano.Data;
 /// <summary>
 /// Base Db Context (abstract).
 /// </summary>
-/// <typeparam name="TIdentity"></typeparam>
+/// <typeparam name="TIdentity">The identity type.</typeparam>
 public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserTokenExpiry<TIdentity>>, IDataProtectionKeyContext
     where TIdentity : IEquatable<TIdentity>
 {
-    private IList<EntityEvent> pendingEvents = new List<EntityEvent>();
+    private bool isEntityEventEnabled = true;
+    private ConcurrentQueue<EntityEvent> pendingEvents = [];
 
-    /// <summary>
-    /// Options.
-    /// </summary>
-    internal IOptionsMonitor<DataOptions> Options { get; }
-
-    /// <summary>
-    /// Auto Save.
-    /// </summary>
-    public virtual bool AutoSave => this.Options.CurrentValue.UseAutoSave;
-
-    /// <summary>
-    /// Auto Save.
-    /// </summary>
-    public virtual bool IsEntityEventEnabled { get; set; } = true;
-
-    /// <summary>
-    /// Data Protection Keys.
-    /// Required by <see cref="IDataProtectionKeyContext"/>.
-    /// </summary>
-    public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+    private readonly IOptionsMonitor<DataOptions> options;
+    private readonly IEventing eventing;
 
     /// <inheritdoc />
-    protected BaseDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> dataOptions)
+    public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; protected set; }
+
+    /// <inheritdoc />
+    protected BaseDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> options, IEventing eventing = null)
         : base(contextOptions)
     {
-        this.Options = dataOptions ?? throw new ArgumentNullException(nameof(dataOptions));
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
+        this.eventing = eventing;
 
-        this.SavingChanges += (_, _) => this.SetEntityEvents();
+        this.SavingChanges += (_, _) => this.PreSaveEntityEvents();
         this.SavingChanges += (_, _) => this.UpdateSoftDeletedEntities();
         this.SavedChanges += async (_, _) => await this.PublishEntityEvents();
 
         // ReSharper disable VirtualMemberCallInConstructor
-        this.ChangeTracker.LazyLoadingEnabled = this.Options.CurrentValue.UseLazyLoading;
+        this.ChangeTracker.LazyLoadingEnabled = this.options.CurrentValue.UseLazyLoading;
         // ReSharper restore VirtualMemberCallInConstructor
     }
 
@@ -83,7 +66,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        var isAuditEnabled = this.Options.CurrentValue.UseAudit;
+        var isAuditEnabled = this.options.CurrentValue.UseAudit;
 
         var publishAnnotation = entity
             .GetType()
@@ -119,14 +102,11 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        var isAuditEnabled = this.Options.CurrentValue.UseAudit;
+        var isAuditEnabled = this.options.CurrentValue.UseAudit;
 
         var publishAnnotation = entity
             .GetType()
             .GetCustomAttribute<PublishAttribute>(true);
-
-        // BUG: It's not that obvious why we are checking Publish. But it's because we need to trigger a difference in order to publish. If no diff no publish
-        // But does this make sense??? 
 
         var hasPublishProperties = publishAnnotation != null && publishAnnotation.PropertyNames.Any();
 
@@ -157,7 +137,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         if (entities == null)
             throw new ArgumentNullException(nameof(entities));
 
-        var isAuditEnabled = this.Options.CurrentValue.UseAudit;
+        var isAuditEnabled = this.options.CurrentValue.UseAudit;
 
         var firstEntity = entities
             .First();
@@ -311,81 +291,18 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         return rowAffecteds;
     }
 
-    /// <summary>
-    /// Create database.
-    /// </summary>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="Task"/> (void).</returns>
-    internal virtual async Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
+    internal virtual async Task<int> SaveChangesWithoutEntityEventsAsync(CancellationToken cancellationToken = default)
     {
-        if (this.Options.CurrentValue.ConnectionString == null)
-            return;
+        this.isEntityEventEnabled = false;
 
-        if (!this.Options.CurrentValue.UseCreateDatabase)
-            return;
-
-        await this.Database
-            .EnsureCreatedAsync(cancellationToken);
-    }
-
-    /// <summary>
-    /// Migrate database.
-    /// </summary>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="Task"/> (void).</returns>
-    internal virtual Task EnsureMigratedAsync(CancellationToken cancellationToken = default)
-    {
-        if (this.Options.CurrentValue.ConnectionString == null)
-            return Task.CompletedTask;
-
-        if (!this.Options.CurrentValue.UseMigrateDatabase)
-            return Task.CompletedTask;
-
-        var logger = this.GetService<ILogger>();
-
-        logger
-            .LogInformation("Applying Migrations at start-up.");
-
-        return this.Database
-            .MigrateAsync(cancellationToken);
-    }
-
-    /// <summary>
-    /// Creates users and roles.
-    /// </summary>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="Task"/> (void).</returns>
-    internal virtual async Task EnsureIdentityAsync(CancellationToken cancellationToken = default)
-    {
-        if (this.Options.CurrentValue.ConnectionString == null)
-            return;
-
-        var roles = new[]
+        try
         {
-            BuiltInUserRoles.GUEST,
-            BuiltInUserRoles.READER,
-            BuiltInUserRoles.WRITER,
-            BuiltInUserRoles.SERVICE,
-            BuiltInUserRoles.ADMINISTRATOR
-        };
-
-        foreach (var role in roles)
-        {
-            var roleManager = this.GetService<RoleManager<IdentityRole<TIdentity>>>();
-
-            var exists = await roleManager
-                .RoleExistsAsync(role);
-
-            if (!exists)
-            {
-                var identityRole = new IdentityRole<TIdentity>(role);
-
-                await roleManager
-                    .CreateAsync(identityRole);
-            }
+            return await this.SaveChangesAsync(cancellationToken);
         }
-
-        await this.SaveChangesAsync(cancellationToken);
+        finally
+        {
+            this.isEntityEventEnabled = true;
+        }
     }
 
     /// <inheritdoc />
@@ -396,20 +313,82 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
 
         base.OnModelCreating(modelBuilder);
 
-        if (!string.IsNullOrEmpty(this.Options.CurrentValue.DefaultCollation))
+        if (!string.IsNullOrEmpty(this.options.CurrentValue.DefaultCollation))
         {
             modelBuilder
-                .UseCollation(this.Options.CurrentValue.DefaultCollation);
+                .UseCollation(this.options.CurrentValue.DefaultCollation);
         }
 
         modelBuilder
-            .MapIdentity<TIdentity>(this.Options.CurrentValue.Identity?.User.IsUniqueEmailAddressRequired ?? true, this.Options.CurrentValue.Identity?.User.IsUniquePhoneNumberRequired ?? true)
+            .MapIdentity<TIdentity>(this.options.CurrentValue.Identity?.User.IsUniqueEmailAddressRequired ?? true, this.options.CurrentValue.Identity?.User.IsUniquePhoneNumberRequired ?? true)
             .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()
             .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>()
             .AddMapping<IdentityApiKey<TIdentity>, IdentityApiKeyMapping<TIdentity>>()
             .AddMapping<IdentityUserChangeData<TIdentity>, IdentityUserChangeDataMapping<TIdentity>>();
     }
 
+    private void PreSaveEntityEvents()
+    {
+        if (!this.IsEventingEnabled())
+        {
+            return;
+        }
+
+        var entityEvents = this.ChangeTracker
+            .GetPendingEntityEvents();
+
+        foreach (var entityEvent in entityEvents)
+        {
+            this.pendingEvents
+                .Enqueue(entityEvent);
+        }
+    }
+    private async Task PublishEntityEvents()
+    {
+        if (!this.IsEventingEnabled())
+        {
+            return;
+        }
+
+        try
+        {
+            while (!this.pendingEvents.IsEmpty)
+            {
+                var success = this.pendingEvents
+                    .TryDequeue(out var entityEvent);
+
+                if (success)
+                {
+                    await this.eventing
+                        .PublishAsync(entityEvent, entityEvent.Type);
+                }
+            }
+        }
+        finally
+        {
+            this.pendingEvents
+                .Clear();
+
+            this.pendingEvents = [];
+        }
+    }
+    private void UpdateSoftDeletedEntities()
+    {
+        if (!this.options.CurrentValue.UseSoftDeletetion)
+        {
+            return;
+        }
+
+        var entityEntries = this.ChangeTracker
+            .Entries<IEntityDeletableSoft>()
+            .Where(x => x.State == EntityState.Deleted);
+
+        foreach (var entityEntry in entityEntries)
+        {
+            entityEntry.State = EntityState.Modified;
+            entityEntry.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
+        }
+    }
     private void SetOriginalValues(object entity, object tracked = null, EntityEntry owner = null, string propertName = null)
     {
         if (entity == null)
@@ -478,324 +457,24 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<
         }
         finally
         {
-            if (this.Options.CurrentValue.UseLazyLoading)
+            if (this.options.CurrentValue.UseLazyLoading)
             {
                 this.ChangeTracker.LazyLoadingEnabled = true;
             }
         }
     }
-    private void UpdateSoftDeletedEntities()
+    private bool IsEventingEnabled()
     {
-        if (!this.Options.CurrentValue.UseSoftDeletetion)
+        if (this.eventing == null)
         {
-            return;
+            return false;
         }
 
-        var entityEntries = this.ChangeTracker
-            .Entries<IEntityDeletableSoft>()
-            .Where(x => x.State == EntityState.Deleted);
-
-        foreach (var entityEntry in entityEntries)
+        if (!this.isEntityEventEnabled)
         {
-            entityEntry.State = EntityState.Modified;
-            entityEntry.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
-        }
-    }
-    private void SetEntityEvents()
-    {
-        if (!this.IsEntityEventEnabled)
-        {
-            return;
+            return false;
         }
 
-        var abc = new Abc();
-
-        this.pendingEvents = this.ChangeTracker
-            .Entries<IEntity>()
-            .Where(x =>
-                x.Entity.GetType().IsTypeOf(typeof(BaseEntity<>)) &&
-                x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
-                x.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
-            .Select(abc.GetEntityEvent)
-            .Where(x => x != null)
-            .ToList();
+        return true;
     }
-    private async Task PublishEntityEvents()
-    {
-        try
-        {
-            var eventing = this.GetService<IEventing>();
-
-            foreach (var @event in this.pendingEvents)
-            {
-                await eventing
-                    .PublishAsync(@event, @event.Type);
-            }
-        }
-        finally
-        {
-            this.pendingEvents = new List<EntityEvent>();
-        }
-    }
-}
-
-// BUG: Finish abc
-
-/// <summary>
-/// 
-/// </summary>
-internal class Abc
-{
-    internal EntityEvent GetEntityEvent(EntityEntry entityEntry)
-    {
-        if (entityEntry == null)
-            throw new ArgumentNullException(nameof(entityEntry));
-
-        var type = this.GetPublishType(entityEntry);
-        var entityEvent = this.GetPublishEntityEvent(entityEntry, type);
-        var propertyNames = this.GetPublishProperties(entityEntry);
-
-        switch (entityEntry.State)
-        {
-            case EntityState.Deleted:
-                return entityEvent;
-
-            case EntityState.Modified:
-            {
-                var hasChanged = this.HasPublishPropertiesChanged(entityEntry, propertyNames);
-
-                if (!hasChanged)
-                {
-                    return null;
-                }
-
-                break;
-            }
-
-            default:
-                return null;
-        }
-
-        var entityEventData = this.GetEntityEventData(entityEntry, propertyNames);
-
-        entityEvent.Data = entityEventData;
-
-        return entityEvent;
-    }
-
-
-    private Type GetPublishType(EntityEntry entityEntry)
-    {
-        if (entityEntry == null)
-            throw new ArgumentNullException(nameof(entityEntry));
-
-        var type = entityEntry.Entity
-            .GetType();
-
-        var isAttributeDirectlyApplied = false;
-        while (!isAttributeDirectlyApplied)
-        {
-            if (type == null)
-            {
-                break;
-            }
-
-            isAttributeDirectlyApplied = Attribute.IsDefined(type, typeof(PublishAttribute), false);
-
-            if (!isAttributeDirectlyApplied)
-            {
-                type = type.BaseType;
-            }
-        }
-
-        return type;
-    }
-    private EntityEvent GetPublishEntityEvent(EntityEntry entityEntry, Type type)
-    {
-        if (entityEntry == null)
-            throw new ArgumentNullException(nameof(entityEntry));
-
-        if (type == null)
-            throw new ArgumentNullException(nameof(type));
-
-        var state = entityEntry.State.ToString();
-        var typeName = type.Name.Replace("Proxy", string.Empty);
-
-        return entityEntry.Entity switch
-        {
-            IEntityIdentity<int> @int => new EntityEvent(@int.Id, typeName, state),
-            IEntityIdentity<long> @long => new EntityEvent(@long.Id, typeName, state),
-            IEntityIdentity<string> @string => new EntityEvent(@string.Id, typeName, state),
-            IEntityIdentity<Guid> guid => new EntityEvent(guid.Id, typeName, state),
-            IEntityIdentity<dynamic> dynamic => new EntityEvent(dynamic.Id, typeName, state),
-            _ => null
-        };
-    }
-    private string[] GetPublishProperties(EntityEntry entityEntry)
-    {
-        if (entityEntry == null)
-            throw new ArgumentNullException(nameof(entityEntry));
-
-        var type = entityEntry.Entity
-            .GetType();
-
-        var propertyNames = new List<string>();
-        while (type is { IsAbstract: false } && type.IsTypeOf(typeof(IEntity)))
-        {
-            var attribute = (PublishAttribute)type
-                .GetCustomAttributes(typeof(PublishAttribute))
-                .FirstOrDefault();
-
-            if (attribute == null)
-            {
-                type = type.BaseType;
-                continue;
-            }
-
-            propertyNames
-                .AddRange(attribute.PropertyNames);
-
-            type = type.BaseType;
-        }
-
-        propertyNames
-            .Add(nameof(BaseEntity<object>.CreatedAt));
-
-        return propertyNames
-            .Distinct()
-            .ToArray();
-    }
-    private IDictionary<string, object> GetEntityEventData(EntityEntry entityEntry, string[] publishProperties)
-    {
-        if (entityEntry == null)
-            throw new ArgumentNullException(nameof(entityEntry));
-
-        var entityEventData = new Dictionary<string, object>();
-        foreach (var propertyName in publishProperties)
-        {
-            string name;
-            int indexOfDot;
-
-            var value = entityEntry.Entity;
-            var propertyNameTemp = propertyName;
-
-            do
-            {
-                indexOfDot = propertyNameTemp
-                    .IndexOf('.');
-
-                name = indexOfDot > -1
-                    ? propertyNameTemp[..indexOfDot]
-                    : propertyNameTemp;
-
-                propertyNameTemp = indexOfDot > -1
-                    ? propertyNameTemp[(indexOfDot + 1)..]
-                    : propertyNameTemp;
-
-                var property = value?
-                    .GetType()
-                    .GetProperty(name);
-
-                value = property?
-                    .GetValue(value);
-            } while (indexOfDot > -1);
-
-            entityEventData
-                .Add(name, value);
-        }
-
-        return entityEventData;
-    }
-    private bool HasPublishPropertiesChanged(EntityEntry entityEntry, string[] publishProperties)
-    {
-        if (entityEntry == null)
-            throw new ArgumentNullException(nameof(entityEntry));
-
-        foreach (var propertyName in publishProperties)
-        {
-            var propertyNameTemp = propertyName;
-            var nestedEntityEntry = entityEntry;
-
-            var indexOfDot = propertyNameTemp
-                .IndexOf('.');
-
-            while (indexOfDot > -1)
-            {
-                var name = propertyNameTemp[..indexOfDot];
-                propertyNameTemp = propertyNameTemp[(indexOfDot + 1)..];
-
-                nestedEntityEntry = nestedEntityEntry.References
-                    .FirstOrDefault(x => x.Metadata.Name == name)?
-                    .TargetEntry;
-
-                if (nestedEntityEntry == null)
-                {
-                    return true;
-                }
-
-                indexOfDot = propertyNameTemp
-                    .IndexOf('.');
-            }
-
-            var property = nestedEntityEntry.Entity
-                .GetType()
-                .GetProperty(propertyNameTemp);
-
-            if (property == null)
-            {
-                throw new NullReferenceException(nameof(property));
-            }
-
-            var value = property
-                .GetValue(nestedEntityEntry.Entity);
-
-            if (property.PropertyType.IsSimple() || property.PropertyType.IsSubclassOf(typeof(Geometry)))
-            {
-                var orginalValue = this.TryGetOriginalValue(nestedEntityEntry, propertyNameTemp);
-
-                var hasChanged = !(value?.Equals(orginalValue) ?? orginalValue is null);
-
-                if (hasChanged)
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                var properties = property.PropertyType
-                    .GetProperties(BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.Public)
-                    .Select(x => x.Name)
-                    .ToArray();
-
-                nestedEntityEntry = nestedEntityEntry.References
-                    .FirstOrDefault(x => x.Metadata.Name == propertyNameTemp)?
-                    .TargetEntry;
-
-                var hasChanged = this.HasPublishPropertiesChanged(nestedEntityEntry, properties);
-
-                if (hasChanged)
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-    private object TryGetOriginalValue(EntityEntry entry, string propertyName)
-    {
-        if (entry == null)
-            throw new ArgumentNullException(nameof(entry));
-
-        if (propertyName == null)
-            throw new ArgumentNullException(nameof(propertyName));
-
-        var prop = entry.OriginalValues.Properties
-            .FirstOrDefault(x => x.Name == propertyName);
-
-        return prop != null
-            ? entry.OriginalValues[propertyName]
-            : null;
-    }
-
 }

@@ -1,5 +1,3 @@
-using System;
-
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>

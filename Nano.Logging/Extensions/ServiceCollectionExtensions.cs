@@ -7,6 +7,14 @@ using Nano.Logging.Abstractions.Config;
 
 namespace Nano.Logging.Extensions;
 
+// TODO: Make Microsoft Logging Console Provider
+// TODO: Make Nlog Logging Console Provider
+// TODO: Improve logging from Chat-gPT serilog
+// - A “production-grade” Serilog template
+// - Structured logging examples
+// - Logging with OpenTelemetry + Serilog
+// - Advice on filtering noisy logs
+
 /// <summary>
 /// Service Collection Extensions.
 /// </summary>
@@ -19,7 +27,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection AddLogging<TProvider>(this IServiceCollection services)
-        where TProvider : class, ILoggingProvider
+        where TProvider : class, ILoggingProvider, new()
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
@@ -32,24 +40,18 @@ public static class ServiceCollectionExtensions
             throw new NullReferenceException(nameof(options));
         }
 
-        services
-            .AddSingleton<ILoggingProvider, TProvider>()
-            .AddSingleton(x => x
-                .GetRequiredService<ILoggingProvider>()
-                .Configure())
-            .AddSingleton<ILoggerFactory>(x =>
-            {
-                var loggerProvider = x
-                    .GetRequiredService<ILoggerProvider>();
+        var provider = Activator.CreateInstance<TProvider>();
+        provider
+            .Configure(services, options);
 
-                return new LoggerFactory([loggerProvider]);
-            })
+        services
+            .AddSingleton<ILoggingProvider>(provider)
             .AddSingleton(x =>
             {
-                var loggerProvider = x
+                var loggerFactory = x
                     .GetRequiredService<ILoggerFactory>();
 
-                return loggerProvider
+                return loggerFactory
                     .CreateLogger(string.Empty);
             });
 

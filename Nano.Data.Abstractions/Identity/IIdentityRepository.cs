@@ -9,7 +9,7 @@ using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
-namespace Nano.Data.Abstractions.Identity.Abstractions;
+namespace Nano.Data.Abstractions.Identity;
 
 /// <summary>
 /// Identity Repository interface.
@@ -67,10 +67,6 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task SignOutAsync(CancellationToken cancellationToken = default);
-
-
-
-
 
 
     /// <summary>
@@ -131,15 +127,6 @@ public interface IIdentityRepository<TIdentity>
         where TUser : class, IEntityUser<TIdentity>;
 
 
-
-
-
-
-
-
-
-
-
     /// <summary>
     /// Is Email Address Taken.
     /// </summary>
@@ -162,10 +149,6 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
     Task<PasswordOptions> GetPaswordOptionsAsync(CancellationToken cancellationToken = default);
-
-
-
-
 
 
     /// <summary>
@@ -568,6 +551,4 @@ public interface IIdentityRepository<TIdentity>
     /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
     Task<TUser> DeactivateIdentityUser<TUser>(TIdentity id, CancellationToken cancellationToken = default)
         where TUser : class, IEntityUser<TIdentity>;
-
-
 }

@@ -24,5 +24,5 @@ public enum QuerySplitBehavior
     /// Serializable or snapshot transactions can be used to mitigate this
     /// and achieve consistency with split queries, but that may bring other performance costs and behavioral difference.
     /// </remarks>
-    SplitQuery,
+    SplitQuery
 }

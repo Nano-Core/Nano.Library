@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Nano.App.ApiClient.Consts;
 
-namespace Nano.Web.Hosting.Conventions;
+namespace Nano.App.Web.Hosting.Conventions;
 
 /// <summary>
 /// Produces Json Convention.

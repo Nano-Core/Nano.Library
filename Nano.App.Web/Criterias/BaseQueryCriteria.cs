@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using DynamicExpression;
 using DynamicExpression.Interfaces;
 
-namespace Nano.Models.Criterias;
+namespace Nano.App.Web.Criterias;
 
 /// <inheritdoc />
 public abstract class BaseQueryCriteria : IQueryCriteria

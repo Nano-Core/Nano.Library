@@ -1,8 +1,8 @@
-﻿using Nano.Common.Enums;
-using System;
+﻿using System;
 using Nano.App.Config;
+using Nano.Common.Enums;
 
-namespace Nano.App.ApiClient;
+namespace Nano.App.ApiClient.Config;
 
 /// <summary>
 /// Api Options.

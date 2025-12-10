@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Nano.App.Web.Config;
+using Nano.App.Web.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity;
-using Nano.Data.Abstractions.Identity.Abstractions;
-using Nano.Web.Hosting.Authentication.Const;
 
-namespace Nano.Web.Hosting.Authentication;
+namespace Nano.App.Web.Identity.Authentication;
 
 /// <summary>
 /// Api Key Authentication Handler.

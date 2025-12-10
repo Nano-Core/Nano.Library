@@ -13,6 +13,7 @@ public interface IStorageProvider
     /// Configures the storage provider.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="options">The <see cref="StorageOptions"/>.</param>
     /// <returns>The <see cref="IStorageProvider"/>.</returns>
-    IStorageProvider Configure(IServiceCollection services);
+    void Configure(IServiceCollection services, StorageOptions options);
 }

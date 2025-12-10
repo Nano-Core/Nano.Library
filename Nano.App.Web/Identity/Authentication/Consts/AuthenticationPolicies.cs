@@ -1,4 +1,4 @@
-﻿namespace Nano.Web.Hosting.Authentication.Const;
+﻿namespace Nano.App.Web.Identity.Authentication.Consts;
 
 /// <summary>
 /// Authentication Policy Defaults.

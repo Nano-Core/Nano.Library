@@ -1,7 +1,5 @@
 using System;
 using EasyNetQ;
-using EasyNetQ.DI;
-using EasyNetQ.Serialization.NewtonsoftJson;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Extensions;
 using Nano.Common.Serialization;
@@ -29,41 +27,25 @@ public static class ServiceCollectionExtensions
         if (options == null) 
             throw new ArgumentNullException(nameof(options));
 
-        // BUG: Look into DI for easynetq, to solve the IOptionsMonitor<EventingOptions>.
-        // maybe there is some nuget packages, also we already installed one for Microsoft DI, check it out
+        var serializerSettings = SerializerSettings.GetDefault();
 
         services
-            .RegisterEasyNetQ(x =>
+            .AddEasyNetQ(x =>
             {
-                // BUG: This should be IOptionsMonitor<EventingOptions>
-                var eventingOptions = x
-                    .Resolve<EventingOptions>();
-                    
-                return new ConnectionConfiguration
-                {
-                    Hosts =
-                    {
-                        new HostConfiguration
-                        {
-                            Host = eventingOptions.Host,
-                            Port = eventingOptions.Port
-                        }
-                    },
-                    VirtualHost = eventingOptions.VHost,
-                    UserName = eventingOptions.Username,
-                    Password = eventingOptions.Password,
-                    RequestedHeartbeat = TimeSpan.FromSeconds(eventingOptions.Heartbeat),
-                    Timeout = eventingOptions.Timeout,
-                    PrefetchCount = eventingOptions.PrefetchCount
-                };
-            }, x => x
-                .Register(options)
-                .Register<ISerializer>(_ =>
-                {
-                    var serializerSettings = SerializerSettings.GetDefault();
-
-                    return new NewtonsoftJsonSerializer(serializerSettings);
-                }));
+                x.Hosts = 
+                [
+                    new(options.Host, options.Port)
+                ];
+                x.VirtualHost = options.VHost;
+                x.UserName = options.Username;
+                x.Password = options.Password;
+                x.RequestedHeartbeat = TimeSpan.FromSeconds(options.Heartbeat);
+                x.Timeout = options.Timeout;
+                x.PrefetchCount = options.PrefetchCount;
+                x.MandatoryPublish = true;
+                x.PublisherConfirms = false;
+            })
+            .UseNewtonsoftJson(serializerSettings);
 
         services
             .AddScoped<IEventing, EasyNetQEventing>();

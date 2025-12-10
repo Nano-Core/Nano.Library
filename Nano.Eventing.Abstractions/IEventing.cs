@@ -7,7 +7,7 @@ namespace Nano.Eventing.Abstractions;
 /// <summary>
 /// Eventing interface.
 /// </summary>
-public interface IEventing : IDisposable
+public interface IEventing
 {
     /// <summary>
     /// Publishes a message to an exchange using 'fanout' publish/subscribe topology.

@@ -2,8 +2,9 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Nano.App.ApiClient.Consts;
+using Nano.App.Web.Config;
 
-namespace Nano.Web.Hosting.Middleware;
+namespace Nano.App.Web.Hosting.Middleware;
 
 /// <inheritdoc />
 public class DisableAuthControllerMiddleware : IMiddleware

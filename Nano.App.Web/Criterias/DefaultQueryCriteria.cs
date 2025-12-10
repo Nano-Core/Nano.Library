@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using DynamicExpression;
 
-namespace Nano.Models.Criterias;
+namespace Nano.App.Web.Criterias;
 
 /// <inheritdoc />
 public class DefaultQueryCriteria : BaseQueryCriteria
