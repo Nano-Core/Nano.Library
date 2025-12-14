@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
+using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.Data.Abstractions.Models;
 
@@ -19,7 +19,7 @@ public class IdentityApiKey<TIdentity> : BaseEntityIdentity<TIdentity>
     /// <summary>
     /// Identity User.
     /// </summary>
-    public virtual IdentityUser<TIdentity> IdentityUser { get; set; }
+    public virtual IdentityUserExt<TIdentity> IdentityUser { get; set; }
 
     /// <summary>
     /// Name.

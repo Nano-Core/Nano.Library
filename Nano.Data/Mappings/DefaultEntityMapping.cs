@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Data.Abstractions.Models;
 
-namespace Nano.Data.Models.Mappings;
+namespace Nano.Data.Mappings;
 
 /// <inheritdoc />
 public class DefaultEntityMapping<TEntity> : BaseEntityIdentityMapping<TEntity, Guid>

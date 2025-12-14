@@ -30,6 +30,9 @@ namespace Nano.Data.Identity;
 // BUG: REVIEW: Check Save changes vs AutoSave like in IRepository
 // BUG: REVIEW: Check when we ask for Id vs identityUser
 
+// BUG: REVIEW: don't return own types, but only the IdentityXXX<TIdentity> types. It's a repository and should return EF types
+// look in Data.Abstractions.Identity.Models
+
 /// <summary>
 /// Base Identity Repository.
 /// </summary>
@@ -49,12 +52,12 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     /// <summary>
     /// Sign In Manager.
     /// </summary>
-    protected virtual SignInManager<IdentityUser<TIdentity>> SignInManager { get; }
+    protected virtual SignInManager<IdentityUserExt<TIdentity>> SignInManager { get; }
 
     /// <summary>
     /// User Manager.
     /// </summary>
-    protected virtual UserManager<IdentityUser<TIdentity>> UserManager { get; }
+    protected virtual UserManager<IdentityUserExt<TIdentity>> UserManager { get; }
 
     /// <summary>
     /// Role Manager.
@@ -69,7 +72,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     /// <param name="signInManager">The <see cref="SignInManager{T}"/>.</param>
     /// <param name="userManager">The <see cref="UserManager{T}"/>.</param>
     /// <param name="roleManager">The <see cref="RoleManager{T}"/></param>
-    protected BaseIdentityRepository(IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, SignInManager<IdentityUser<TIdentity>> signInManager, UserManager<IdentityUser<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
+    protected BaseIdentityRepository(IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, SignInManager<IdentityUserExt<TIdentity>> signInManager, UserManager<IdentityUserExt<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
     {
         this.Options = options ?? throw new ArgumentNullException(nameof(options));
         this.DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
@@ -79,7 +82,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual Task<IdentityUser<TIdentity>> GetIdentityUserAsync(TIdentity userId, CancellationToken cancellationToken = default)
+    public virtual Task<IdentityUserExt<TIdentity>> GetIdentityUserAsync(TIdentity userId, CancellationToken cancellationToken = default)
     {
         var identityUser = this.UserManager
             .GetIdentityUserAsync(userId, cancellationToken);
@@ -93,7 +96,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IdentityUser<TIdentity>> GetIdentityUserOrDefaultAsync(TIdentity userId, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityUserExt<TIdentity>> GetIdentityUserOrDefaultAsync(TIdentity userId, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -120,7 +123,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IdentityUser<TIdentity>> SignInAsync(SignIn signIn, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityUserExt<TIdentity>> SignInAsync(SignIn signIn, CancellationToken cancellationToken = default)
     {
         if (signIn == null)
             throw new ArgumentNullException(nameof(signIn));
@@ -160,7 +163,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IdentityUser<TIdentity>> SignInExternalAsync(SignInExternal signInExternal, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityUserExt<TIdentity>> SignInExternalAsync(SignInExternal signInExternal, CancellationToken cancellationToken = default)
     {
         if (signInExternal == null)
             throw new NullReferenceException(nameof(signInExternal));
@@ -180,7 +183,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public async Task<IList<Claim>> GetAllClaims(IdentityUser<TIdentity> identityUser, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default)
+    public async Task<IList<Claim>> GetAllClaims(IdentityUserExt<TIdentity> identityUser, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default)
     {
         if (identityUser == null)
             throw new ArgumentNullException(nameof(identityUser));
@@ -253,7 +256,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<RefreshToken> CreateRefreshToken(IdentityUser<TIdentity> identityUser, int refreshExpirationInHours, string appId = IdentityDefaults.DEFAULT_APP_ID)
+    public virtual async Task<RefreshToken> CreateRefreshToken(IdentityUserExt<TIdentity> identityUser, int refreshExpirationInHours, string appId = IdentityDefaults.DEFAULT_APP_ID)
     {
         if (identityUser == null) 
             throw new ArgumentNullException(nameof(identityUser));
@@ -377,7 +380,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             throw new ArgumentNullException(nameof(signUp));
         }
 
-        var identityUser = new IdentityUser<TIdentity>
+        var identityUser = new IdentityUserExt<TIdentity>
         {
             Email = signUp.EmailAddress,
             UserName = signUp.Username,
@@ -431,7 +434,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (identityUser == null)
         {
-            identityUser = new IdentityUser<TIdentity>
+            identityUser = new IdentityUserExt<TIdentity>
             {
                 Email = signUpExternal.ExternalLogInData.Email,
                 UserName = signUpExternal.ExternalLogInData.Email
@@ -528,7 +531,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     /// <param name="providerName">The provider name.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="ExternalLogin"/>.</returns>
-    public virtual async Task<ExternalLogin> GetUserExternalLoginAsync(IdentityUser<TIdentity> identityUser, string providerName, CancellationToken cancellationToken = default)
+    public virtual async Task<ExternalLogin> GetUserExternalLoginAsync(IdentityUserExt<TIdentity> identityUser, string providerName, CancellationToken cancellationToken = default)
     {
         if (identityUser == null)
         {
@@ -566,7 +569,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     /// <param name="identityUser">The <see cref="IdentityUser{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The collection of <see cref="ExternalLogin"/>.</returns>
-    public virtual async Task<IEnumerable<ExternalLogin>> GetUserExternalLoginsAsync(IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<ExternalLogin>> GetUserExternalLoginsAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default)
     {
         if (identityUser == null)
         {
@@ -1521,7 +1524,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     /// <param name="identityUser">The <see cref="IdentityUser{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The role names.</returns>
-    public virtual async Task<IEnumerable<string>> GetUserRolesAsync(IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<string>> GetUserRolesAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default)
     {
         if (identityUser == null)
         {
@@ -1634,7 +1637,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     /// <param name="identityUser">The <see cref="IdentityUser{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="Claim"/>'s.</returns>
-    public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default)
     {
         if (identityUser == null)
         {
@@ -2048,20 +2051,16 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         }
     }
 
-    // BUG: 000: Move User.IsActive to IdentityUser.IsActive. Override Identity<TIdentity> with own class.
-
     /// <summary>
     /// Activates the user with the passed user id.
     /// </summary>
-    /// <typeparam name="TUser">The user type.</typeparam>
     /// <param name="id">The user id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
-    public virtual async Task<TUser> ActivateIdentityUser<TUser>(TIdentity id, CancellationToken cancellationToken = default)
-        where TUser : class, IEntityUser<TIdentity>
+    public virtual async Task<IdentityUserExt<TIdentity>> ActivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default)
     {
         var user = this.DbContext
-            .Set<TUser>()
+            .Set<IdentityUserExt<TIdentity>>()
             .IgnoreQueryFilters()
             .FirstOrDefault(x => x.Id.Equals(id));
 
@@ -2084,12 +2083,10 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     /// <summary>
     /// Deactivates the user with the passed user id.
     /// </summary>
-    /// <typeparam name="TUser">The user type.</typeparam>
     /// <param name="id">The user id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
-    public virtual async Task<TUser> DeactivateIdentityUser<TUser>(TIdentity id, CancellationToken cancellationToken = default) 
-        where TUser : class, IEntityUser<TIdentity>
+    public virtual async Task<IdentityUserExt<TIdentity>> DeactivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default) 
     {
         var refreshTokens = this.DbContext
             .Set<IdentityUserTokenExpiry<TIdentity>>()
@@ -2102,7 +2099,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             .SignOutAsync();
 
         var user = this.DbContext
-            .Set<TUser>()
+            .Set<IdentityUserExt<TIdentity>>()
             .FirstOrDefault(x => x.Id.Equals(id));
 
         if (user == null)
@@ -2122,7 +2119,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
 
-    private async Task<TUser> CreateUser<TUser>(TUser user, IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    private async Task<TUser> CreateUser<TUser>(TUser user, IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default)
         where TUser : class, IEntityUser<TIdentity>
     {
         if (identityUser == null)
@@ -2133,7 +2130,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         user.Id = identityUser.Id.Parse<TIdentity>();
 
         user.IdentityUser = this.DbContext
-            .Find<IdentityUser<TIdentity>>(identityUser.Id);
+            .Find<IdentityUserExt<TIdentity>>(identityUser.Id);
 
         try
         {
@@ -2152,7 +2149,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         return user;
     }
-    private async Task AssignSignUpRolesAndClaims(IdentityUser<TIdentity> identityUser, IEnumerable<string> roles = null, IDictionary<string, string> claims = null)
+    private async Task AssignSignUpRolesAndClaims(IdentityUserExt<TIdentity> identityUser, IEnumerable<string> roles = null, IDictionary<string, string> claims = null)
     {
         if (identityUser == null)
             throw new ArgumentNullException(nameof(identityUser));
@@ -2188,7 +2185,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             }
         }
     }
-    private async Task DeleteIdentityUser(IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    private async Task DeleteIdentityUser(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default)
     {
         if (identityUser == null)
             throw new ArgumentNullException(nameof(identityUser));

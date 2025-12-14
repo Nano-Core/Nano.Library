@@ -11,8 +11,6 @@ using Nano.Data.Abstractions.Eventing.Models;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Extensions;
-using Nano.Data.Models.Mappings;
-using Nano.Data.Models.Mappings.Extensions;
 using Nano.Eventing.Abstractions;
 using System;
 using System.Collections;
@@ -24,6 +22,12 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.Data.Abstractions.Eventing.Annotations;
+using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Eventing.Extensions;
+using Nano.Data.Identity.Extensions;
+using Nano.Data.Identity.Mappings;
+using Nano.Data.Mappings;
+using Nano.Data.Mappings.Extensions;
 using Z.EntityFramework.Plus;
 
 namespace Nano.Data;
@@ -64,7 +68,7 @@ namespace Nano.Data;
 /// Base Db Context (abstract).
 /// </summary>
 /// <typeparam name="TIdentity">The identity type.</typeparam>
-public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUser<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserTokenExpiry<TIdentity>>, IDataProtectionKeyContext
+public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserExt<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserTokenExpiry<TIdentity>>, IDataProtectionKeyContext
     where TIdentity : IEquatable<TIdentity>
 {
     private bool isEntityEventEnabled = true;

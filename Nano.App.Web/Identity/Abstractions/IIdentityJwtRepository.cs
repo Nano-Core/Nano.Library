@@ -36,5 +36,5 @@ public interface IIdentityJwtRepository<TIdentity>
     /// <param name="claims"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<AccessToken> GenerateJwtTokenByRefreshAsync(IdentityUser<TIdentity> identityUser, LogInRefresh logInRefresh, IEnumerable<Claim> claims, CancellationToken cancellationToken = default);
+    Task<AccessToken> GenerateJwtTokenByRefreshAsync(IdentityUserExt<TIdentity> identityUser, LogInRefresh logInRefresh, IEnumerable<Claim> claims, CancellationToken cancellationToken = default);
 }

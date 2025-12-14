@@ -109,7 +109,7 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> GenerateJwtTokenByRefreshAsync(IdentityUser<TIdentity> identityUser, LogInRefresh logInRefresh, IEnumerable<Claim> claims, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> GenerateJwtTokenByRefreshAsync(IdentityUserExt<TIdentity> identityUser, LogInRefresh logInRefresh, IEnumerable<Claim> claims, CancellationToken cancellationToken = default)
     {
         if (identityUser == null) 
             throw new ArgumentNullException(nameof(identityUser));

@@ -3,7 +3,7 @@ using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Data.Abstractions.Models.Abstractions;
 
-namespace Nano.Data.Models.Mappings.Extensions;
+namespace Nano.Data.Mappings.Extensions;
 
 /// <summary>
 /// Entity Type Builder Extensions.

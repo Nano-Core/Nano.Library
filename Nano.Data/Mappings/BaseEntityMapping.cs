@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Data.Abstractions.Models.Abstractions;
 
-namespace Nano.Data.Models.Mappings;
+namespace Nano.Data.Mappings;
 
 /// <summary>
 /// Base Mapping (abstract).

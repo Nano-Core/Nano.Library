@@ -3,8 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Identity.Consts;
+using Nano.Data.Mappings;
 
-namespace Nano.Data.Models.Mappings;
+namespace Nano.Data.Identity.Mappings;
 
 /// <inheritdoc />
 public class IdentityApiKeyMapping<TIdentity> : BaseEntityIdentityMapping<IdentityApiKey<TIdentity>, TIdentity> 

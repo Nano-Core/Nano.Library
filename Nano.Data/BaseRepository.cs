@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using DynamicExpression.Entities;
 using DynamicExpression.Enums;
 using DynamicExpression.Extensions;
@@ -9,14 +15,8 @@ using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Nano.Data.Repository;
+namespace Nano.Data;
 
 /// <inheritdoc />
 public abstract class BaseRepository<TContext, TIdentity> : IRepository

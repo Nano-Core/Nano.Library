@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Data.Abstractions.Models;
 
-namespace Nano.Data.Models.Mappings;
+namespace Nano.Data.Mappings;
 
 /// <inheritdoc />
 public class DefaultAuditEntryMapping : DefaultEntityMapping<DefaultAuditEntry>

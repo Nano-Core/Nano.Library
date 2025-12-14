@@ -14,14 +14,13 @@ using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Identity;
 using Nano.Data.Identity.Consts;
 using Nano.Data.Identity.DataProtection.Extensions;
-using Nano.Data.Repository;
 using System;
 using System.Linq;
 using Nano.Data.Abstractions.Eventing;
 using Nano.Data.Abstractions.Eventing.Models;
 using Nano.Data.Abstractions.Identity;
+using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Eventing;
-using Nano.Eventing;
 using Nano.Eventing.Abstractions;
 using Z.EntityFramework.Extensions;
 using Z.EntityFramework.Plus;
@@ -156,7 +155,7 @@ public static class ServiceCollectionExtensions
         }
 
         services
-            .AddIdentity<IdentityUser<TIdentity>, IdentityRole<TIdentity>>(x =>
+            .AddIdentity<IdentityUserExt<TIdentity>, IdentityRole<TIdentity>>(x =>
             {
                 x.User.RequireUniqueEmail = true;
                 x.User.AllowedUserNameCharacters = options.User.AllowedUserNameCharacters;
@@ -176,7 +175,7 @@ public static class ServiceCollectionExtensions
                 x.Lockout.MaxFailedAccessAttempts = options.Lockout.MaxFailedAccessAttempts;
             })
             .AddEntityFrameworkStores<TContext>()
-            .AddTokenProvider<DataProtectorTokenProvider<IdentityUser<TIdentity>>>(AuthenticationSchemes.JWT_BEARER)
+            .AddTokenProvider<DataProtectorTokenProvider<IdentityUserExt<TIdentity>>>(AuthenticationSchemes.JWT_BEARER)
             .AddDefaultTokenProviders()
             .AddCustomTokenProvider();
 

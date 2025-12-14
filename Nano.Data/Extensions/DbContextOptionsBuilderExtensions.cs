@@ -7,10 +7,7 @@ using Nano.Data.Abstractions.Config;
 
 namespace Nano.Data.Extensions;
 
-/// <summary>
-/// Db Context Options Builder Extensions.
-/// </summary>
-public static class DbContextOptionsBuilderExtensions
+internal static class DbContextOptionsBuilderExtensions
 {
     internal static DbContextOptionsBuilder AddDataContext(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider, DataOptions options)
     {

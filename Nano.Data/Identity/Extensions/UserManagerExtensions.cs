@@ -3,12 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.Data.Identity.Extensions;
 
 internal static class UserManagerExtensions
 {
-    internal static Task<IdentityUser<TIdentity>> GetIdentityUserAsync<TIdentity>(this UserManager<IdentityUser<TIdentity>> userManager, TIdentity userId, CancellationToken cancellationToken = default)
+    internal static Task<IdentityUserExt<TIdentity>> GetIdentityUserAsync<TIdentity>(this UserManager<IdentityUserExt<TIdentity>> userManager, TIdentity userId, CancellationToken cancellationToken = default)
         where TIdentity : IEquatable<TIdentity>
     {
         if (userManager == null)
@@ -28,7 +29,7 @@ internal static class UserManagerExtensions
             .FindByIdAsync(userIdString);
     }
 
-    internal static Task<IdentityUser<TIdentity>> FindByPhoneNumberAsync<TIdentity>(this UserManager<IdentityUser<TIdentity>> userManager, string phoneNumber)
+    internal static Task<IdentityUserExt<TIdentity>> FindByPhoneNumberAsync<TIdentity>(this UserManager<IdentityUserExt<TIdentity>> userManager, string phoneNumber)
         where TIdentity : IEquatable<TIdentity>
     {
         if (userManager == null)
@@ -40,8 +41,8 @@ internal static class UserManagerExtensions
             .FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
     }
 
-    internal static Task<string> GeneratePhoneNumberConfirmationTokenAsync<TUser, TIdentity>(this UserManager<IdentityUser<TIdentity>> userManager, TUser user)
-        where TUser : IdentityUser<TIdentity>
+    internal static Task<string> GeneratePhoneNumberConfirmationTokenAsync<TUser, TIdentity>(this UserManager<IdentityUserExt<TIdentity>> userManager, TUser user)
+        where TUser : IdentityUserExt<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
         if (userManager == null)
@@ -63,8 +64,8 @@ internal static class UserManagerExtensions
             .GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber);
     }
 
-    internal static Task<IdentityResult> ConfirmPhoneNumberAsync<TUser, TIdentity>(this UserManager<IdentityUser<TIdentity>> userManager, TUser user, string token)
-        where TUser : IdentityUser<TIdentity>
+    internal static Task<IdentityResult> ConfirmPhoneNumberAsync<TUser, TIdentity>(this UserManager<IdentityUserExt<TIdentity>> userManager, TUser user, string token)
+        where TUser : IdentityUserExt<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
         if (userManager == null)

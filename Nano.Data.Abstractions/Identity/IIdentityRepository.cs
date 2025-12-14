@@ -29,7 +29,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="userId">The user id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="Microsoft.AspNetCore.Identity.IdentityUser"/>.</returns>
-    Task<IdentityUser<TIdentity>> GetIdentityUserAsync(TIdentity userId, CancellationToken cancellationToken = default);
+    Task<IdentityUserExt<TIdentity>> GetIdentityUserAsync(TIdentity userId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the identity user or default (null).
@@ -37,7 +37,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="userId">The user id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
-    Task<IdentityUser<TIdentity>> GetIdentityUserOrDefaultAsync(TIdentity userId, CancellationToken cancellationToken = default);
+    Task<IdentityUserExt<TIdentity>> GetIdentityUserOrDefaultAsync(TIdentity userId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets all the configured external logins schemes.
@@ -52,7 +52,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="signIn">The <see cref="SignIn"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
-    Task<IdentityUser<TIdentity>> SignInAsync(SignIn signIn, CancellationToken cancellationToken = default);
+    Task<IdentityUserExt<TIdentity>> SignInAsync(SignIn signIn, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
@@ -60,7 +60,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="signInExternal"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IdentityUser<TIdentity>> SignInExternalAsync(SignInExternal signInExternal, CancellationToken cancellationToken = default);
+    Task<IdentityUserExt<TIdentity>> SignInExternalAsync(SignInExternal signInExternal, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
@@ -79,7 +79,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    Task<IList<Claim>> GetAllClaims(IdentityUser<TIdentity> identityUser, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default);
+    Task<IList<Claim>> GetAllClaims(IdentityUserExt<TIdentity> identityUser, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
@@ -105,7 +105,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="refreshExpirationInHours"></param>
     /// <param name="appId"></param>
     /// <returns></returns>
-    Task<RefreshToken> CreateRefreshToken(IdentityUser<TIdentity> identityUser, int refreshExpirationInHours, string appId = IdentityDefaults.DEFAULT_APP_ID);
+    Task<RefreshToken> CreateRefreshToken(IdentityUserExt<TIdentity> identityUser, int refreshExpirationInHours, string appId = IdentityDefaults.DEFAULT_APP_ID);
 
 
     /// <summary>
@@ -168,7 +168,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="providerName">The provider name.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="ExternalLogin"/>.</returns>
-    Task<ExternalLogin> GetUserExternalLoginAsync(IdentityUser<TIdentity> identityUser, string providerName, CancellationToken cancellationToken = default);
+    Task<ExternalLogin> GetUserExternalLoginAsync(IdentityUserExt<TIdentity> identityUser, string providerName, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets external logins of a user.
@@ -184,7 +184,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="identityUser">The <see cref="IdentityUser{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The collection of <see cref="ExternalLogin"/>.</returns>
-    Task<IEnumerable<ExternalLogin>> GetUserExternalLoginsAsync(IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ExternalLogin>> GetUserExternalLoginsAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
@@ -411,7 +411,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="identityUser">The <see cref="IdentityUser{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The role names.</returns>
-    Task<IEnumerable<string>> GetUserRolesAsync(IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default);
+    Task<IEnumerable<string>> GetUserRolesAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Assign a role to a user.
@@ -451,7 +451,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="identityUser">The <see cref="IdentityUser{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="Claim"/>'s.</returns>
-    Task<IEnumerable<Claim>> GetUserClaimsAsync(IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Claim>> GetUserClaimsAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Assigns a <see cref="IdentityUserClaim{TIdentity}"/> to a user.
@@ -536,20 +536,16 @@ public interface IIdentityRepository<TIdentity>
     /// <summary>
     /// Activates the user with the passed user id.
     /// </summary>
-    /// <typeparam name="TUser">The user type.</typeparam>
     /// <param name="id">The user id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
-    Task<TUser> ActivateIdentityUser<TUser>(TIdentity id, CancellationToken cancellationToken = default)
-        where TUser : class, IEntityUser<TIdentity>;
+    Task<IdentityUserExt<TIdentity>> ActivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Deactivates the user with the passed user id.
     /// </summary>
-    /// <typeparam name="TUser">The user type.</typeparam>
     /// <param name="id">The user id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
-    Task<TUser> DeactivateIdentityUser<TUser>(TIdentity id, CancellationToken cancellationToken = default)
-        where TUser : class, IEntityUser<TIdentity>;
+    Task<IdentityUserExt<TIdentity>> DeactivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default);
 }

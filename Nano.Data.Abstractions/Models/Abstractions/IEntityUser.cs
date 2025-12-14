@@ -1,5 +1,5 @@
 using System;
-using Microsoft.AspNetCore.Identity;
+using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.Data.Abstractions.Models.Abstractions;
 
@@ -13,10 +13,5 @@ public interface IEntityUser<TIdentity> : IEntityIdentity<TIdentity>
     /// <summary>
     /// Identity User.
     /// </summary>
-    IdentityUser<TIdentity> IdentityUser { get; set; }
-
-    /// <summary>
-    /// Is Active.
-    /// </summary>
-    bool IsActive { get; set; }
+    IdentityUserExt<TIdentity> IdentityUser { get; set; }
 }

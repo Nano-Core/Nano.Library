@@ -11,7 +11,7 @@ using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using NetTopologySuite.Geometries;
 
-namespace Nano.Data.Extensions;
+namespace Nano.Data.Eventing.Extensions;
 
 internal static class EntityEntryExtensions
 {

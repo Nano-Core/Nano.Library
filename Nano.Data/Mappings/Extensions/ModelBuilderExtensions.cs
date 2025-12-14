@@ -1,14 +1,10 @@
 using System;
 using System.Linq;
-using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Nano.Common.Extensions;
-using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Data.Identity.Consts;
 
-namespace Nano.Data.Models.Mappings.Extensions;
+namespace Nano.Data.Mappings.Extensions;
 
 /// <summary>
 /// Model Builder Extensions.
@@ -39,64 +35,6 @@ public static class ModelBuilderExtensions
             .UpdateUniuqeIndexes<TEntity>();
     }
 
-    /// <summary>
-    /// Map Default Identity.
-    /// </summary>
-    /// <typeparam name="TIdentity"></typeparam>
-    /// <param name="modelBuilder">The <see cref="ModelBuilder"/>.</param>
-    /// <param name="isUniqueEmailAddressRequired">Is unique email address required.</param>
-    /// <param name="isUniquePhoneNumberRequired">Is unique phone number required</param>
-    /// <returns>The <see cref="ModelBuilder"/>.</returns>
-    internal static ModelBuilder MapIdentity<TIdentity>(this ModelBuilder modelBuilder, bool isUniqueEmailAddressRequired, bool isUniquePhoneNumberRequired)
-        where TIdentity : IEquatable<TIdentity>
-    {
-        if (modelBuilder == null)
-            throw new ArgumentNullException(nameof(modelBuilder));
-
-        modelBuilder
-            .Entity<IdentityUser<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER);
-
-        modelBuilder
-            .Entity<IdentityUser<TIdentity>>()
-            .HasIndex(x => x.Email)
-            .IsUnique(isUniqueEmailAddressRequired);
-
-        modelBuilder
-            .Entity<IdentityUser<TIdentity>>()
-            .HasIndex(x => x.PhoneNumber)
-            .IsUnique(isUniquePhoneNumberRequired);
-
-        modelBuilder
-            .Entity<IdentityUserLogin<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER_LOGIN_TABLE_NAME);
-        modelBuilder
-            .Entity<IdentityUserRole<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER_ROLE);
-
-        modelBuilder
-            .Entity<IdentityUserClaim<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER_CLAIM);
-
-        modelBuilder
-            .Entity<IdentityRoleClaim<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_ROLE_CLAIM);
-
-        modelBuilder
-            .Entity<IdentityRole<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_ROLE);
-
-        modelBuilder
-            .Entity<DataProtectionKey>()
-            .ToTable(TableNames.IDENTITY_DATA_PROTECTION_KEYS);
-
-        modelBuilder
-            .Entity<IdentityUserTokenExpiry<TIdentity>>()
-            .ToTable(TableNames.IDENTITY_USER_TOKEN_EXPIRY)
-            .Property(x => x.ExpireAt);
-
-        return modelBuilder;
-    }
 
     private static ModelBuilder UpdateUniuqeIndexes<TEntity>(this ModelBuilder builder)
         where TEntity : class, IEntity

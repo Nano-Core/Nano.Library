@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Nano.Data.Abstractions.Models.Abstractions;
 
-namespace Nano.Data.Models.Mappings;
+namespace Nano.Data.Mappings;
 
 /// <inheritdoc />
 public abstract class BaseEntityIdentityMapping<TEntity, TIdentity> : BaseEntityMapping<TEntity>

@@ -3,8 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Data.Abstractions.Models;
+using Nano.Data.Mappings;
 
-namespace Nano.Data.Models.Mappings;
+namespace Nano.Data.Identity.Mappings;
 
 /// <inheritdoc />
 public class DefaultEntityUserMapping<TEntity> : BaseEntityIdentityMapping<TEntity, Guid>
@@ -19,7 +20,7 @@ public class DefaultEntityUserMapping<TEntity> : BaseEntityIdentityMapping<TEnti
         base.Map(builder);
 
         builder
-            .HasQueryFilter(x => x.IsDeleted == 0L && x.IsActive);
+            .HasQueryFilter(x => x.IsDeleted == 0L && x.IdentityUser.IsActive);
 
         builder
             .Property(x => x.CreatedAt)
@@ -44,13 +45,5 @@ public class DefaultEntityUserMapping<TEntity> : BaseEntityIdentityMapping<TEnti
             .HasForeignKey<TEntity>(x => x.Id)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
-
-        builder
-            .Property(x => x.IsActive)
-            .HasDefaultValue(true)
-            .IsRequired();
-
-        builder
-            .HasIndex(x => x.IsActive);
     }
 }

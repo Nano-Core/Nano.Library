@@ -2,7 +2,7 @@ using System;
 using Microsoft.Extensions.Options;
 using Nano.Data.Abstractions.Config;
 
-namespace Nano.Data.Repository;
+namespace Nano.Data;
 
 /// <inheritdoc />
 public class DefaultRepository<TContext, TIdentity> : BaseRepository<TContext, TIdentity>

@@ -1409,7 +1409,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     public virtual async Task<IActionResult> ActivateAsync([FromRoute][Required] TIdentity id, CancellationToken cancellationToken = default)
     {
         await this.IdentityRepository
-            .ActivateIdentityUser<TEntity>(id, cancellationToken);
+            .ActivateIdentityUser(id, cancellationToken);
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
@@ -1439,7 +1439,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     public virtual async Task<IActionResult> DeactivateAsync([FromRoute][Required] TIdentity id, CancellationToken cancellationToken = default)
     {
         await this.IdentityRepository
-            .DeactivateIdentityUser<TEntity>(id, cancellationToken);
+            .DeactivateIdentityUser(id, cancellationToken);
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
