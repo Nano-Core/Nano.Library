@@ -16,19 +16,19 @@ public class SignUpExternal<TUser> : SignUpExternal<TUser, Guid>
 /// </summary>
 /// <typeparam name="TUser"></typeparam>
 /// <typeparam name="TIdentity"></typeparam>
-public class SignUpExternal<TUser, TIdentity> : BaseSignUp
+public class SignUpExternal<TUser, TIdentity> : BaseSignUp<TUser, TIdentity>
     where TUser : IEntityUser<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User.
+    /// Email.
     /// </summary>
     [Required]
-    public virtual TUser User { get; set; }
+    [EmailAddress]
+    public virtual string Email { get; set; }
 
     /// <summary>
-    /// External Log-In Data.
+    /// 
     /// </summary>
-    [Required]
-    public virtual ExternalLogInData ExternalLogInData { get; set; }
+    public virtual ExternalProvider ExternalProvider { get; set; } = new();
 }

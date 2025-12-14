@@ -17,7 +17,7 @@ public class SignUp<TUser> : SignUp<TUser, Guid>
 /// </summary>
 /// <typeparam name="TUser">The user type.</typeparam>
 /// <typeparam name="TIdentity">The identity type.</typeparam>
-public class SignUp<TUser, TIdentity> : BaseSignUp
+public class SignUp<TUser, TIdentity> : BaseSignUp<TUser, TIdentity>
     where TUser : IEntityUser<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
@@ -55,10 +55,4 @@ public class SignUp<TUser, TIdentity> : BaseSignUp
     [MaxLength(256)]
     [Compare(nameof(Password))]
     public virtual string ConfirmPassword { get; set; }
-
-    /// <summary>
-    /// User.
-    /// </summary>
-    [Required]
-    public virtual TUser User { get; set; }
 }

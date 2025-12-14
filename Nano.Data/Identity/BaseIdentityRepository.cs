@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -28,8 +29,7 @@ namespace Nano.Data.Identity;
 // BUG: REVIEW: IdentityRepository
 // - SaveChanges vs AutoSave like in IRepository
 // - Check when we ask for Id vs identityUser
-// - don't return own types, but only the IdentityXXX<TIdentity> types. It's a repository and should return EF types
-//   - look in Data.Abstractions.Identity.Models
+// - don't return own types, but only the IdentityXXX<TIdentity> types. It's a repository and should return EF types. Look in Data.Abstractions.Identity.Models
 
 /// <summary>
 /// Base Identity Repository.
@@ -83,17 +83,10 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     #region Login
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<ExternalLoginProvider>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<AuthenticationScheme>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default)
     {
-        var schemes = await this.SignInManager
+        return this.SignInManager
             .GetExternalAuthenticationSchemesAsync();
-
-        return schemes
-            .Select(x => new ExternalLoginProvider
-            {
-                Name = x.Name,
-                DisplayName = x.DisplayName
-            });
     }
 
     /// <inheritdoc />
@@ -103,7 +96,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             throw new ArgumentNullException(nameof(signIn));
 
         var result = await this.SignInManager
-            .PasswordSignInAsync(signIn.Username, signIn.Password, signIn.IsRememberMe, this.Options.CurrentValue.Identity.Lockout.AllowedForNewUsers);
+            .PasswordSignInAsync(signIn.Username, signIn.Password, signIn.IsRememberMe, true);
 
         if (result.Succeeded)
         {
@@ -143,11 +136,11 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             throw new NullReferenceException(nameof(signInExternal));
 
         var identityUser = await this.UserManager
-            .FindByLoginAsync(signInExternal.ExternalLogInData.ExternalToken.Name, signInExternal.ExternalLogInData.Id);
+            .FindByLoginAsync(signInExternal.ExternalProvider.LoginProvider, signInExternal.ExternalProvider.ProviderKey);
 
         if (identityUser == null)
         {
-            throw new UnauthorizedException($"The user: {signInExternal.ExternalLogInData.Email} was not found or is deactivated.");
+            throw new UnauthorizedException($"The external login: {signInExternal.ExternalProvider.LoginProvider} for user: {signInExternal.ExternalProvider.ProviderKey} was not found or is deactivated.");
         }
 
         await this.SignInManager
@@ -204,7 +197,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IsPhoneNumberTaken> IsPhoneNumberTakenAsync(string phoneNumber, CancellationToken cancellationToken = default)
+    public virtual async Task<bool> IsPhoneNumberTakenAsync(string phoneNumber, CancellationToken cancellationToken = default)
     {
         if (phoneNumber == null)
             throw new ArgumentNullException(nameof(phoneNumber));
@@ -212,14 +205,11 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         var existingIdentityUser = await this.UserManager
             .FindByPhoneNumberAsync(phoneNumber);
 
-        return new IsPhoneNumberTaken
-        {
-            IsTaken = existingIdentityUser != null
-        };
+        return existingIdentityUser != null;
     }
 
     /// <inheritdoc />
-    public virtual async Task<IsEmailAddressTaken> IsEmailAddressTakenAsync(string emailAddress, CancellationToken cancellationToken = default)
+    public virtual async Task<bool> IsEmailAddressTakenAsync(string emailAddress, CancellationToken cancellationToken = default)
     {
         if (emailAddress == null)
             throw new ArgumentNullException(nameof(emailAddress));
@@ -227,10 +217,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         var existingIdentityUser = await this.UserManager
             .FindByEmailAsync(emailAddress);
 
-        return new IsEmailAddressTaken
-        {
-            IsTaken = existingIdentityUser != null
-        };
+        return existingIdentityUser != null;
     }
 
     /// <inheritdoc />
@@ -282,19 +269,17 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         where TUser : class, IEntityUser<TIdentity>
     {
         if (signUpExternal == null)
-        {
             throw new ArgumentNullException(nameof(signUpExternal));
-        }
 
         var identityUser = await this.UserManager
-            .FindByNameAsync(signUpExternal.ExternalLogInData.Email);
+            .FindByNameAsync(signUpExternal.Email);
 
         if (identityUser == null)
         {
             identityUser = new IdentityUserExt<TIdentity>
             {
-                Email = signUpExternal.ExternalLogInData.Email,
-                UserName = signUpExternal.ExternalLogInData.Email
+                Email = signUpExternal.Email,
+                UserName = signUpExternal.Email
             };
 
             var createResult = await this.UserManager
@@ -308,7 +293,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             await this.AssignSignUpRolesAndClaims(identityUser, signUpExternal.Roles, signUpExternal.Claims);
         }
 
-        var userLoginInfo = new UserLoginInfo(signUpExternal.ExternalLogInData.ExternalToken.Name, signUpExternal.ExternalLogInData.Id, signUpExternal.ExternalLogInData.ExternalToken.Name);
+        var userLoginInfo = new UserLoginInfo(signUpExternal.ExternalProvider.LoginProvider, signUpExternal.ExternalProvider.ProviderKey, signUpExternal.ExternalProvider.LoginProvider);
 
         var addLoginResult = await this.UserManager
             .AddLoginAsync(identityUser, userLoginInfo);
@@ -933,7 +918,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     #region External Logins
 
     /// <inheritdoc />
-    public virtual async Task<ExternalLogin> GetUserExternalLoginAsync(TIdentity userId, string providerName, CancellationToken cancellationToken = default)
+    public virtual async Task<UserLoginInfo> GetUserExternalLoginAsync(TIdentity userId, string loginProvider, CancellationToken cancellationToken = default)
     {
         var identityUser = await this.UserManager
             .GetIdentityUserAsync(userId, cancellationToken);
@@ -943,25 +928,23 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             throw new NullReferenceException(nameof(identityUser));
         }
 
-        return await this.GetUserExternalLoginAsync(identityUser, providerName, cancellationToken);
+        return await this.GetUserExternalLoginAsync(identityUser, loginProvider, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<ExternalLogin> GetUserExternalLoginAsync(IdentityUserExt<TIdentity> identityUser, string providerName, CancellationToken cancellationToken = default)
+    public virtual async Task<UserLoginInfo> GetUserExternalLoginAsync(IdentityUserExt<TIdentity> identityUser, string loginProvider, CancellationToken cancellationToken = default)
     {
         if (identityUser == null)
-        {
             throw new ArgumentNullException(nameof(identityUser));
-        }
 
         var externalLogins = await this.GetUserExternalLoginsAsync(identityUser, cancellationToken);
 
         return externalLogins
-            .FirstOrDefault(x => x.Provider.Name == providerName);
+            .FirstOrDefault(x => x.LoginProvider == loginProvider);
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<ExternalLogin>> GetUserExternalLoginsAsync(TIdentity userId, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<UserLoginInfo>> GetUserExternalLoginsAsync(TIdentity userId, CancellationToken cancellationToken = default)
     {
         var identityUser = await this.UserManager
             .GetIdentityUserAsync(userId, cancellationToken);
@@ -975,35 +958,20 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<ExternalLogin>> GetUserExternalLoginsAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<UserLoginInfo>> GetUserExternalLoginsAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default)
     {
         if (identityUser == null)
-        {
             throw new ArgumentNullException(nameof(identityUser));
-        }
 
-        var externalLogins = await this.UserManager
+        return await this.UserManager
             .GetLoginsAsync(identityUser);
-
-        return externalLogins
-            .Select(x => new ExternalLogin
-            {
-                Key = x.ProviderKey,
-                Provider =
-                {
-                    Name = x.LoginProvider,
-                    DisplayName = x.ProviderDisplayName
-                }
-            });
     }
 
     /// <inheritdoc />
-    public virtual async Task<ExternalLogin> AddExternalLoginAsync(TIdentity userId, ExternalLogInData externalLogInData, CancellationToken cancellationToken = default)
+    public virtual async Task<UserLoginInfo> AddExternalLoginAsync(TIdentity userId, ExternalProvider externalProvider, CancellationToken cancellationToken = default)
     {
-        if (externalLogInData == null)
-        {
-            throw new ArgumentNullException(nameof(externalLogInData));
-        }
+        if (externalProvider == null)
+            throw new ArgumentNullException(nameof(externalProvider));
 
         var identityUser = await this.UserManager
             .GetIdentityUserAsync(userId, cancellationToken);
@@ -1013,7 +981,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             throw new NullReferenceException(nameof(identityUser));
         }
 
-        var userLoginInfo = new UserLoginInfo(externalLogInData.ExternalToken.Name, externalLogInData.Id, externalLogInData.ExternalToken.Name);
+        var userLoginInfo = new UserLoginInfo(externalProvider.LoginProvider, externalProvider.ProviderKey, externalProvider.LoginProvider);
 
         var addLoginResult = await this.UserManager
             .AddLoginAsync(identityUser, userLoginInfo);
@@ -1023,15 +991,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             ThrowIdentityExceptions(addLoginResult.Errors);
         }
 
-        return new ExternalLogin
-        {
-            Key = userLoginInfo.ProviderKey,
-            Provider =
-            {
-                Name = userLoginInfo.LoginProvider,
-                DisplayName = userLoginInfo.ProviderDisplayName
-            }
-        };
+        return userLoginInfo;
     }
 
     /// <inheritdoc />
@@ -1051,7 +1011,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         }
 
         var result = await this.UserManager
-            .RemoveLoginAsync(identityUser, removeExternalLogin.ProviderName, removeExternalLogin.ProviderKey);
+            .RemoveLoginAsync(identityUser, removeExternalLogin.ExternalProvider.LoginProvider, removeExternalLogin.ExternalProvider.ProviderKey);
 
         if (result.Succeeded)
         {
@@ -1098,22 +1058,23 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<RefreshToken> CreateRefreshToken(IdentityUserExt<TIdentity> identityUser, int refreshExpirationInHours, string appId = IdentityDefaults.DEFAULT_APP_ID)
+    public virtual async Task<IdentityUserTokenExpiry<TIdentity>> CreateRefreshToken(IdentityUserExt<TIdentity> identityUser, int refreshExpirationInHours, string appId = IdentityDefaults.DEFAULT_APP_ID)
     {
         if (identityUser == null)
             throw new ArgumentNullException(nameof(identityUser));
 
-        if (appId == null)
-            throw new ArgumentNullException(nameof(appId));
+        appId ??= IdentityDefaults.DEFAULT_APP_ID;
 
         var token = GetRandomToken();
 
-        var removeResult = await this.UserManager
-            .RemoveAuthenticationTokenAsync(identityUser, AuthenticationSchemes.JWT_BEARER, appId);
+        var identityUserTokenExpiry = this.DbContext
+            .Set<IdentityUserTokenExpiry<TIdentity>>()
+            .FirstOrDefault(x => x.UserId.Equals(identityUser.Id) && x.LoginProvider == AuthenticationSchemes.JWT_BEARER && x.Name == appId);
 
-        if (!removeResult.Succeeded)
+        if (identityUserTokenExpiry != null)
         {
-            ThrowIdentityExceptions(removeResult.Errors);
+            this.DbContext
+                .Remove(identityUserTokenExpiry);
         }
 
         var expireAt = DateTimeOffset.UtcNow
@@ -1134,11 +1095,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         await this.DbContext
             .SaveChangesAsync();
 
-        return new RefreshToken
-        {
-            Token = token,
-            ExpireAt = identityUserToken.ExpireAt
-        };
+        return identityUserToken;
     }
 
     #endregion
@@ -1867,19 +1824,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     #endregion
 
 
-    private static string GetRandomToken()
-    {
-        var bytes = new byte[32];
-
-        using var generator = RandomNumberGenerator.Create();
-
-        generator
-            .GetBytes(bytes);
-
-        var token = Convert.ToBase64String(bytes);
-
-        return token;
-    }
     private async Task<TUser> CreateUser<TUser>(TUser user, IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default)
         where TUser : class, IEntityUser<TIdentity>
     {
@@ -1962,7 +1906,20 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         await this.DbContext
             .SaveChangesAsync(cancellationToken);
     }
-    
+
+    private static string GetRandomToken()
+    {
+        var bytes = new byte[32];
+
+        using var generator = RandomNumberGenerator.Create();
+
+        generator
+            .GetBytes(bytes);
+
+        var token = Convert.ToBase64String(bytes);
+
+        return token;
+    }
     private static void ThrowIdentityExceptions(IEnumerable<IdentityError> errors)
     {
         if (errors == null)

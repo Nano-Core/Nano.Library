@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Nano.Data.Abstractions.Models.Abstractions;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Data.Abstractions.Identity.Models;
 
@@ -18,4 +21,18 @@ public abstract class BaseSignUp
     /// Additonal claims to add to the user.
     /// </summary>
     public virtual IDictionary<string, string> Claims { get; set; } = new Dictionary<string, string>();
+}
+
+/// <summary>
+/// 
+/// </summary>
+public abstract class BaseSignUp<TUser, TIdentity> : BaseSignUp
+    where TUser : IEntityUser<TIdentity>
+    where TIdentity : IEquatable<TIdentity>
+{
+    /// <summary>
+    /// User.
+    /// </summary>
+    [Required]
+    public virtual TUser User { get; set; }
 }

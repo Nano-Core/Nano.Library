@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Nano.Data.Abstractions.Consts;
 using Nano.Data.Abstractions.Identity.Models;
@@ -29,8 +30,8 @@ public interface IIdentityRepository<TIdentity>
     /// Gets all the configured external logins schemes.
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The collection of <see cref="ExternalLoginProvider"/>'s.</returns>
-    Task<IEnumerable<ExternalLoginProvider>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default);
+    /// <returns>The collection of <see cref="AuthenticationScheme"/>'s.</returns>
+    Task<IEnumerable<AuthenticationScheme>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Signs in a user.
@@ -65,16 +66,16 @@ public interface IIdentityRepository<TIdentity>
     /// </summary>
     /// <param name="emailAddress">The email address.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="IsEmailAddressTaken"/>.</returns>
-    Task<IsEmailAddressTaken> IsEmailAddressTakenAsync(string emailAddress, CancellationToken cancellationToken = default);
+    /// <returns></returns>
+    Task<bool> IsEmailAddressTakenAsync(string emailAddress, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Is Phone Number Taken.
     /// </summary>
     /// <param name="phoneNumber">The phone number.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="IsPhoneNumberTaken"/>.</returns>
-    Task<IsPhoneNumberTaken> IsPhoneNumberTakenAsync(string phoneNumber, CancellationToken cancellationToken = default);
+    /// <returns></returns>
+    Task<bool> IsPhoneNumberTakenAsync(string phoneNumber, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Get Pasword Options.
@@ -269,44 +270,44 @@ public interface IIdentityRepository<TIdentity>
     /// Gets external login of a user.
     /// </summary>
     /// <param name="userId">The user id.</param>
-    /// <param name="providerName">The provider name.</param>
+    /// <param name="loginProvider">The provider name.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ExternalLogin"/>.</returns>
-    Task<ExternalLogin> GetUserExternalLoginAsync(TIdentity userId, string providerName, CancellationToken cancellationToken = default);
+    /// <returns>The <see cref="UserLoginInfo"/>.</returns>
+    Task<UserLoginInfo> GetUserExternalLoginAsync(TIdentity userId, string loginProvider, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets external logins of a user.
     /// </summary>
     /// <param name="identityUser">The <see cref="IdentityUser{TIdentity}"/>.</param>
-    /// <param name="providerName">The provider name.</param>
+    /// <param name="loginProvider">The provider name.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ExternalLogin"/>.</returns>
-    Task<ExternalLogin> GetUserExternalLoginAsync(IdentityUserExt<TIdentity> identityUser, string providerName, CancellationToken cancellationToken = default);
+    /// <returns>The <see cref="UserLoginInfo"/>.</returns>
+    Task<UserLoginInfo> GetUserExternalLoginAsync(IdentityUserExt<TIdentity> identityUser, string loginProvider, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets external logins of a user.
     /// </summary>
     /// <param name="userId">The user id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The collection of <see cref="ExternalLogin"/>.</returns>
-    Task<IEnumerable<ExternalLogin>> GetUserExternalLoginsAsync(TIdentity userId, CancellationToken cancellationToken = default);
+    /// <returns>The collection of <see cref="UserLoginInfo"/>.</returns>
+    Task<IEnumerable<UserLoginInfo>> GetUserExternalLoginsAsync(TIdentity userId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets external logins of a user.
     /// </summary>
     /// <param name="identityUser">The <see cref="IdentityUser{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The collection of <see cref="ExternalLogin"/>.</returns>
-    Task<IEnumerable<ExternalLogin>> GetUserExternalLoginsAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default);
+    /// <returns>The collection of <see cref="UserLoginInfo"/>.</returns>
+    Task<IEnumerable<UserLoginInfo>> GetUserExternalLoginsAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="userId"></param>
     /// <param name="externalLogInData"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task<ExternalLogin> AddExternalLoginAsync(TIdentity userId, ExternalLogInData externalLogInData, CancellationToken cancellationToken = default);
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The collection of <see cref="UserLoginInfo"/>.</returns>
+    Task<UserLoginInfo> AddExternalLoginAsync(TIdentity userId, ExternalProvider externalLogInData, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Removes the extenral login of a user.
@@ -345,7 +346,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="refreshExpirationInHours"></param>
     /// <param name="appId"></param>
     /// <returns></returns>
-    Task<RefreshToken> CreateRefreshToken(IdentityUserExt<TIdentity> identityUser, int refreshExpirationInHours, string appId = IdentityDefaults.DEFAULT_APP_ID);
+    Task<IdentityUserTokenExpiry<TIdentity>> CreateRefreshToken(IdentityUserExt<TIdentity> identityUser, int refreshExpirationInHours, string appId = IdentityDefaults.DEFAULT_APP_ID);
 
     #endregion
 

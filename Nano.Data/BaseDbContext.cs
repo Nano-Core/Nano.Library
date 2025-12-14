@@ -35,34 +35,6 @@ namespace Nano.Data;
 // TODO: Entity Event Map (Important)
 // 1. Make a map of Publish Attributes and their property names.
 // 2. When SaveChanges then check if any property names are affected (e.g. User.IdentityUser.Email is changed, then User needs to be fetched and published)
-// - We might need to do something special when IdentityUser changes and EntityEvent. Not sure if BaseDbContext SaveChanges is triggered...
-//private async Task UpdateEntityUserWhenIdentityUserChanges(TIdentity id, CancellationToken cancellationToken = default)
-//{
-//    var userTypes = this.DbContext.Model
-//        .GetEntityTypes()
-//        .Where(x => x.ClrType
-//            .IsTypeOf(typeof(IEntityUser<TIdentity>)));
-
-//    foreach (var userType in userTypes)
-//    {
-//        var user = await this.DbContext
-//            //.SetDynamic(userType.ClrType.Name)
-//            //.Include("IdentityUser")
-//            //.FirstOrDefault(x => EF.Property<TIdentity>(x, "Id").Equals(id));
-//            .FindAsync(userType.ClrType, [id], cancellationToken: cancellationToken); // We don't include IdentityUser here, we need to.
-
-//        if (user == null)
-//        {
-//            continue;
-//        }
-
-//        this.DbContext
-//            .Update(user);
-//    }
-
-//    await this.DbContext
-//        .SaveChangesAsync(cancellationToken);
-//}
 
 /// <summary>
 /// Base Db Context (abstract).

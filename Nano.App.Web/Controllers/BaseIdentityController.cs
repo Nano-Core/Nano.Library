@@ -2,9 +2,11 @@ using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Nano.App.ApiClient.Consts;
+using Nano.App.ApiClient.Models;
+using Nano.App.ApiClient.Models.Identity;
 using Nano.App.Web.Identity.Abstractions;
 using Nano.Data.Abstractions;
-using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Models;
@@ -14,18 +16,19 @@ using Nano.Eventing.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.App.ApiClient.Consts;
-using Nano.App.ApiClient.Models;
-using Nano.App.ApiClient.Models.Identity;
 using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
+using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.App.Web.Controllers;
 
 // BUG: We should hide/remove controller actions that are not configured (jwt, api-key). possibly return 404 in middleware
+
+// BUG: Check all return types from AuthRepository / IdentityRepository, they might have changed. 
 
 /// <inheritdoc />
 // BUG: [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER)]
@@ -43,15 +46,15 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <summary>
     /// 
     /// </summary>
-    protected virtual IIdentityRepository<TIdentity> IdentityRepository { get; }
+    protected virtual IAuthRepository<TIdentity> AuthRepository { get; }
 
     /// <summary>
     /// 
     /// </summary>
-    protected virtual IAuthRepository<TIdentity> AuthRepository { get; }
+    protected virtual IIdentityRepository<TIdentity> IdentityRepository { get; }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger logger, TRepository repository, IIdentityRepository<TIdentity> identityRepository, IAuthRepository<TIdentity> authRepository)
+    protected BaseIdentityController(ILogger logger, TRepository repository, IAuthRepository<TIdentity> authRepository, IIdentityRepository<TIdentity> identityRepository)
         : this(logger, repository, null, identityRepository, authRepository)
     {
     }
@@ -60,9 +63,12 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IAuthRepository<TIdentity> authRepository)
         : base(logger, repository, eventing)
     {
-        this.IdentityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
         this.AuthRepository = authRepository ?? throw new ArgumentNullException(nameof(authRepository));
+        this.IdentityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
     }
+
+
+    #region Sign Up
 
     /// <summary>
     /// Gets the password options.
@@ -93,6 +99,68 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         }
 
         return this.Ok(passwordOptions);
+    }
+
+    /// <summary>
+    /// Is Email Address Taken.
+    /// </summary>
+    /// <returns>Whether the email address is already taken.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpGet]
+    [Route("email/is-taken")]
+    [AllowAnonymous]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IsEmailAddressTaken), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> IsEmailAddressTakenAsync([FromQuery][Required] string emailAddress, CancellationToken cancellationToken = default)
+    {
+        var isEmailAddressTaken = await this.IdentityRepository
+            .IsEmailAddressTakenAsync(emailAddress, cancellationToken);
+
+        var response = new IsEmailAddressTaken
+        {
+            IsTaken = isEmailAddressTaken
+        };
+
+        return this.Ok(response);
+    }
+
+    /// <summary>
+    /// Is Phone Number Taken.
+    /// </summary>
+    /// <returns>Whether the phone number is already taken.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpGet]
+    [Route("phone/is-taken")]
+    [AllowAnonymous]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IsPhoneNumberTaken), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> IsPhoneNumberTakenAsync([FromQuery][Required] string phoneNumber, CancellationToken cancellationToken = default)
+    {
+        var isPhoneNumberTaken = await this.IdentityRepository
+            .IsPhoneNumberTakenAsync(phoneNumber, cancellationToken);
+
+        var response = new IsEmailAddressTaken
+        {
+            IsTaken = isPhoneNumberTaken
+        };
+
+        return this.Ok(response);
     }
 
     /// <summary>
@@ -151,7 +219,12 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
             .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
             {
                 User = signUpExternal.User,
-                ExternalLogInData = signUpExternal.ExternalLogInData,
+                Email = signUpExternal.ExternalLogInData.Email,
+                ExternalProvider =
+                {
+                    LoginProvider = signUpExternal.ExternalLogInData.ExternalToken.Name,
+                    ProviderKey = signUpExternal.ExternalLogInData.Id
+                },
                 Roles = signUpExternal.Roles,
                 Claims = signUpExternal.Claims
             }, cancellationToken);
@@ -190,7 +263,12 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
             .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
             {
                 User = signUpExternal.User,
-                ExternalLogInData = externalProviderLogInData,
+                Email = externalProviderLogInData.Email,
+                ExternalProvider =
+                {
+                    LoginProvider = externalProviderLogInData.ExternalToken.Name,
+                    ProviderKey = externalProviderLogInData.Id
+                },
                 Roles = signUpExternal.Roles,
                 Claims = signUpExternal.Claims
             }, cancellationToken);
@@ -229,7 +307,12 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
             .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
             {
                 User = signUpExternal.User,
-                ExternalLogInData = externalProviderLogInData,
+                Email = externalProviderLogInData.Email,
+                ExternalProvider =
+                {
+                    LoginProvider = externalProviderLogInData.ExternalToken.Name,
+                    ProviderKey = externalProviderLogInData.Id
+                },
                 Roles = signUpExternal.Roles,
                 Claims = signUpExternal.Claims
             }, cancellationToken);
@@ -268,7 +351,12 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
             .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
             {
                 User = signUpExternal.User,
-                ExternalLogInData = externalProviderLogInData,
+                Email = externalProviderLogInData.Email,
+                ExternalProvider =
+                {
+                    LoginProvider = externalProviderLogInData.ExternalToken.Name,
+                    ProviderKey = externalProviderLogInData.Id
+                },
                 Roles = signUpExternal.Roles,
                 Claims = signUpExternal.Claims
             }, cancellationToken);
@@ -280,6 +368,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
 
         return this.Created("signup/external/microsoft", user);
     }
+
+    #endregion
+
+
+    #region User
 
     /// <summary>
     /// Sets the emailAddress of a user.
@@ -426,32 +519,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Is Email Address Taken.
-    /// </summary>
-    /// <returns>Whether the email address is already taken.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
-    [HttpGet]
-    [Route("email/is-taken")]
-    [AllowAnonymous]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IsEmailAddressTaken), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> IsEmailAddressTakenAsync([FromQuery][Required] string emailAddress, CancellationToken cancellationToken = default)
-    {
-        var isEmailAddressTaken = await this.IdentityRepository
-            .IsEmailAddressTakenAsync(emailAddress, cancellationToken);
-
-        return this.Ok(isEmailAddressTaken);
-    }
-
-    /// <summary>
     /// Changes the email of a user.
     /// </summary>
     /// <param name="changeEmail">The change email.</param>
@@ -570,32 +637,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         }
 
         return this.Ok(confirmEmailToken);
-    }
-
-    /// <summary>
-    /// Is Phone Number Taken.
-    /// </summary>
-    /// <returns>Whether the phone number is already taken.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
-    [HttpGet]
-    [Route("phone/is-taken")]
-    [AllowAnonymous]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IsPhoneNumberTaken), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> IsPhoneNumberTakenAsync([FromQuery][Required] string phoneNumber, CancellationToken cancellationToken = default)
-    {
-        var isPhoneNumberTaken = await this.IdentityRepository
-            .IsPhoneNumberTakenAsync(phoneNumber, cancellationToken);
-
-        return this.Ok(isPhoneNumberTaken);
     }
 
     /// <summary>
@@ -777,6 +818,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         return this.Ok();
     }
 
+    #endregion
+
+
+    #region External Logins
+
     /// <summary>
     /// Get External Logins for a user.
     /// </summary>
@@ -798,8 +844,19 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> GetExternalLoginsAsync([FromRoute][Required] TIdentity userId, CancellationToken cancellationToken = default)
     {
-        var externalLogins = await this.IdentityRepository
+        var userLoginInfos = await this.IdentityRepository
             .GetUserExternalLoginsAsync(userId, cancellationToken);
+
+        var externalLogins = userLoginInfos
+            .Select(x => new ExternalLogin
+            {
+                Key = x.ProviderKey,
+                Provider = new ExternalLoginProvider
+                {
+                    Name = x.LoginProvider,
+                    DisplayName = x.ProviderDisplayName
+                }
+            });
 
         return this.Ok(externalLogins);
     }
@@ -829,8 +886,27 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var externalProviderLogInData = await this.AuthRepository
             .GetExternalProviderLogInData(addExternalLogin.Provider, cancellationToken);
 
-        var externalLogin = await this.IdentityRepository
-            .AddExternalLoginAsync(addExternalLogin.UserId, externalProviderLogInData, cancellationToken);
+        var userLoginInfo = await this.IdentityRepository
+            .AddExternalLoginAsync(addExternalLogin.UserId, new ExternalProvider
+            {
+                LoginProvider = externalProviderLogInData.ExternalToken.Name,
+                ProviderKey = externalProviderLogInData.Id
+            }, cancellationToken);
+
+        if (userLoginInfo == null)
+        {
+            return this.NotFound();
+        }
+
+        var externalLogin = new ExternalLogin
+        {
+            Key = userLoginInfo.ProviderKey,
+            Provider = new ExternalLoginProvider
+            {
+                Name = userLoginInfo.LoginProvider,
+                DisplayName = userLoginInfo.ProviderDisplayName
+            }
+        };
 
         return this.Ok(externalLogin);
     }
@@ -860,8 +936,27 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var externalProviderLogInData = await this.AuthRepository
             .GetExternalProviderLogInData(addExternalLogin.Provider, cancellationToken);
 
-        var externalLogin = await this.IdentityRepository
-            .AddExternalLoginAsync(addExternalLogin.UserId, externalProviderLogInData, cancellationToken);
+        var userLoginInfo = await this.IdentityRepository
+            .AddExternalLoginAsync(addExternalLogin.UserId, new ExternalProvider
+            {
+                LoginProvider = externalProviderLogInData.ExternalToken.Name,
+                ProviderKey = externalProviderLogInData.Id
+            }, cancellationToken);
+
+        if (userLoginInfo == null)
+        {
+            return this.NotFound();
+        }
+
+        var externalLogin = new ExternalLogin
+        {
+            Key = userLoginInfo.ProviderKey,
+            Provider = new ExternalLoginProvider
+            {
+                Name = userLoginInfo.LoginProvider,
+                DisplayName = userLoginInfo.ProviderDisplayName
+            }
+        };
 
         return this.Ok(externalLogin);
     }
@@ -891,8 +986,27 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var externalProviderLogInData = await this.AuthRepository
             .GetExternalProviderLogInData(addExternalLogin.Provider, cancellationToken);
 
-        var externalLogin = await this.IdentityRepository
-            .AddExternalLoginAsync(addExternalLogin.UserId, externalProviderLogInData, cancellationToken);
+        var userLoginInfo = await this.IdentityRepository
+            .AddExternalLoginAsync(addExternalLogin.UserId, new ExternalProvider
+            {
+                LoginProvider = externalProviderLogInData.ExternalToken.Name,
+                ProviderKey = externalProviderLogInData.Id
+            }, cancellationToken);
+
+        if (userLoginInfo == null)
+        {
+            return this.NotFound();
+        }
+
+        var externalLogin = new ExternalLogin
+        {
+            Key = userLoginInfo.ProviderKey,
+            Provider = new ExternalLoginProvider
+            {
+                Name = userLoginInfo.LoginProvider,
+                DisplayName = userLoginInfo.ProviderDisplayName
+            },
+        };
 
         return this.Ok(externalLogin);
     }
@@ -923,6 +1037,9 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
 
         return this.Ok();
     }
+
+    #endregion
+
 
     /// <summary>
     /// Get Api Keys.

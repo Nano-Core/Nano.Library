@@ -25,6 +25,5 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Nano.Common\Nano.Common.csproj" />
-	  <ProjectReference Include="..\Nano.Eventing.Abstractions\Nano.Eventing.Abstractions.csproj" />
 	</ItemGroup>
 </Project>

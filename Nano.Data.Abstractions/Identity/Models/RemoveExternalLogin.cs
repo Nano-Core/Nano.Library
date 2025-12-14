@@ -20,14 +20,8 @@ public class RemoveExternalLogin<TIdentity>
     public virtual TIdentity UserId { get; set; }
 
     /// <summary>
-    /// Provider Key.
+    /// External Provider.
     /// </summary>
     [Required]
-    public virtual string ProviderKey { get; set; }
-
-    /// <summary>
-    /// Provider Name.
-    /// </summary>
-    [Required]
-    public virtual string ProviderName { get; set; }
+    public virtual ExternalProvider ExternalProvider { get; set; } = new();
 }

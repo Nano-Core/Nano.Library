@@ -20,6 +20,8 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Nano.App.Web.Controllers;
 
+// BUG: Check all return types from AuthRepository / AuthTransientRepository, they might have changed
+
 /// <summary>
 /// Auth Controller.
 /// </summary>
@@ -119,6 +121,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         return this.Ok(logInProviders);
     }
+
     /// <summary>
     /// Sign-in a user, from data received from a separate authentication.
     /// </summary>

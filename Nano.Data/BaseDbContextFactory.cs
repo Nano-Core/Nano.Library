@@ -31,7 +31,7 @@ public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbC
             throw new NullReferenceException(nameof(options));
         }
 
-        if (Activator.CreateInstance(typeof(TProvider), options) is not TProvider dataProvider)
+        if (Activator.CreateInstance(typeof(TProvider)) is not TProvider dataProvider)
         {
             throw new NullReferenceException(nameof(dataProvider));
         }
@@ -39,7 +39,9 @@ public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbC
         dataProvider
             .Configure(builder, options);
 
-        if (Activator.CreateInstance(typeof(TContext), builder.Options, options) is not TContext dbContext)
+        var optionsMonitor = new StaticOptionsMonitor<DataOptions>(options);
+
+        if (Activator.CreateInstance(typeof(TContext), builder.Options, optionsMonitor, null) is not TContext dbContext)
         {
             throw new NullReferenceException(nameof(dbContext));
         }

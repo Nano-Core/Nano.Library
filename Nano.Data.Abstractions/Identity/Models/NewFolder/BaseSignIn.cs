@@ -4,16 +4,10 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
-/// 
+/// Base Sign In (abstract).
 /// </summary>
-public class SignInExternal
+public abstract class BaseSignIn
 {
-    /// <summary>
-    /// External LogIn Data.
-    /// </summary>
-    [Required]
-    public virtual ExternalLogInData ExternalLogInData { get; set; }
-
     /// <summary>
     /// Is Remember Me.
     /// </summary>

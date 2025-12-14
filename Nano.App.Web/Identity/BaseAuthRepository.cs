@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Nano.App.ApiClient.Models.Identity;
 using Nano.App.ApiClient.Models.Identity.External;
 using Nano.App.ApiClient.Models.Identity.External.Providers;
@@ -47,7 +48,7 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<ExternalLoginProvider>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<AuthenticationScheme>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default)
     {
         return this.IdentityRepository
             .GetExternalProviderSchemesAsync(cancellationToken);
@@ -82,10 +83,19 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
                 Claims = claims
             });
 
-        accessToken.RefreshToken = logIn.IsRefreshable
+        var refreshTokenExpiry = logIn.IsRefreshable
             ? await this.IdentityRepository
                 .CreateRefreshToken(identityUser, this.Options.Authentication.Jwt.RefreshExpirationInHours, logIn.AppId)
             : null;
+
+        if (refreshTokenExpiry != null)
+        {
+            accessToken.RefreshToken = new RefreshToken
+            {
+                Token = refreshTokenExpiry.Value,
+                ExpireAt = refreshTokenExpiry.ExpireAt
+            };
+        }
 
         return accessToken;
     }
@@ -102,12 +112,10 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
         var identityUser = await this.IdentityRepository
             .SignInExternalAsync(new SignInExternal
             {
-                ExternalLogInData = new ExternalLogInData
+                ExternalProvider =
                 {
-                    Id = externalLoginData.Id,
-                    Name = externalLoginData.Name,
-                    Email = externalLoginData.Email,
-                    ExternalToken = externalLoginData.ExternalToken
+                    LoginProvider = externalLoginData.ExternalToken.Name,
+                    ProviderKey = externalLoginData.Id
                 },
                 IsRememberMe = logInExternal.IsRememberMe
             }, cancellationToken);
@@ -130,10 +138,19 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
                 Claims = claims
             });
 
-        accessToken.RefreshToken = logInExternal.IsRefreshable
+        var refreshTokenExpiry = logInExternal.IsRefreshable
             ? await this.IdentityRepository
                 .CreateRefreshToken(identityUser, this.Options.Authentication.Jwt.RefreshExpirationInHours, logInExternal.AppId)
             : null;
+
+        if (refreshTokenExpiry != null)
+        {
+            accessToken.RefreshToken = new RefreshToken
+            {
+                Token = refreshTokenExpiry.Value,
+                ExpireAt = refreshTokenExpiry.ExpireAt
+            };
+        }
 
         return accessToken;
     }
@@ -144,12 +161,10 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
         var identityUser = await this.IdentityRepository
             .SignInExternalAsync(new SignInExternal
             {
-                ExternalLogInData = new ExternalLogInData
+                ExternalProvider =
                 {
-                    Id = logInExternalDirect.ExternalLogInData.Id,
-                    Name = logInExternalDirect.ExternalLogInData.Name,
-                    Email = logInExternalDirect.ExternalLogInData.Email,
-                    ExternalToken = logInExternalDirect.ExternalLogInData.ExternalToken
+                    LoginProvider = logInExternalDirect.ExternalLogInData.ExternalToken.Name,
+                    ProviderKey = logInExternalDirect.ExternalLogInData.Id
                 },
                 IsRememberMe = logInExternalDirect.IsRememberMe
             }, cancellationToken);
@@ -172,10 +187,19 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
                 Claims = claims
             });
 
-        accessToken.RefreshToken = logInExternalDirect.IsRefreshable
+        var refreshTokenExpiry = logInExternalDirect.IsRefreshable
             ? await this.IdentityRepository
                 .CreateRefreshToken(identityUser, this.Options.Authentication.Jwt.RefreshExpirationInHours, logInExternalDirect.AppId)
             : null;
+
+        if (refreshTokenExpiry != null)
+        {
+            accessToken.RefreshToken = new RefreshToken
+            {
+                Token = refreshTokenExpiry.Value,
+                ExpireAt = refreshTokenExpiry.ExpireAt
+            };
+        }
 
         return accessToken; 
     }
@@ -225,9 +249,18 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
             throw new UnauthorizedException();
         }
 
-        accessToken.RefreshToken = await this.IdentityRepository
+        var refreshTokenExpiry = await this.IdentityRepository
             .CreateRefreshToken(identityUser, this.Options.Authentication.Jwt.RefreshExpirationInHours, appId);
-        
+
+        if (refreshTokenExpiry != null)
+        {
+            accessToken.RefreshToken = new RefreshToken
+            {
+                Token = refreshTokenExpiry.Value,
+                ExpireAt = refreshTokenExpiry.ExpireAt
+            };
+        }
+
         return accessToken;
     }
 
