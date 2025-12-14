@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Nano.Data.Eventing.Annotations;
+namespace Nano.Data.Abstractions.Eventing.Annotations;
 
 /// <summary>
 /// Publish Attribute.

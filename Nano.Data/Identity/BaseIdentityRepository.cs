@@ -2,9 +2,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Nano.Common.Exceptions;
-using Nano.Common.Extensions;
 using Nano.Common.Identity.Extensions;
 using Nano.Data.Abstractions.Config;
+using Nano.Data.Abstractions.Consts;
+using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
@@ -21,7 +22,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Identity;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Identity;
@@ -29,11 +29,6 @@ namespace Nano.Data.Identity;
 // BUG: REVIEW: Go Through all methods (add, change, remove), e.g. Get Refresh Tokens, and other
 // BUG: REVIEW: Check Save changes vs AutoSave like in IRepository
 // BUG: REVIEW: Check when we ask for Id vs identityUser
-
-// BUG: 000: Move User.IsActive to IdentityUser.IsActive. Override Identity<TIdentity> with own class.
-// BUG: 000: Handle User.IdentityUser 
-// This is also a general problem, when having custom entities that navigates in publish annotation. Can we solve this or make it clear?
-// - Usually ypu wouldn't navigate over for other entities that User.IdentityUser. BUT still it's supported in the annotations. BUT they control the update
 
 /// <summary>
 /// Base Identity Repository.
@@ -258,14 +253,18 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<RefreshToken> CreateRefreshToken(IdentityUser<TIdentity> identityUser, string appId, int refreshExpirationInHours)
+    public virtual async Task<RefreshToken> CreateRefreshToken(IdentityUser<TIdentity> identityUser, int refreshExpirationInHours, string appId = IdentityDefaults.DEFAULT_APP_ID)
     {
-        if (appId == null)
-            return null;
+        if (identityUser == null) 
+            throw new ArgumentNullException(nameof(identityUser));
+
+        if (appId == null) 
+            throw new ArgumentNullException(nameof(appId));
+
         var token = GetRandomToken();
 
         var removeResult = await this.UserManager
-            .RemoveAuthenticationTokenAsync(identityUser, JwtBearerDefaults.AUTHENTICATION_SCHEME, appId); 
+            .RemoveAuthenticationTokenAsync(identityUser, AuthenticationSchemes.JWT_BEARER, appId); 
 
         if (!removeResult.Succeeded)
         {
@@ -274,19 +273,13 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         var expireAt = DateTimeOffset.UtcNow
             .AddHours(refreshExpirationInHours);
-
-        // BUG: TEST: Look into if this can be used and my IdentityUserTokenExpiry is overkill, i need and expiration on the refresh,
-        // but it works for other tokens managed by microsoft like reset password token, so how? I THINK that is just config and matched with createdAt?? CHECK
-
-        //var setResult = await this.UserManager
-        //    .SetAuthenticationTokenAsync(identityUser, JwtBearerDefaults.AUTHENTICATION_SCHEME, appId, token);
-
+        
         var identityUserToken = new IdentityUserTokenExpiry<TIdentity>
         {
             UserId = identityUser.Id,
             Name = appId,
             Value = token,
-            LoginProvider = JwtBearerDefaults.AUTHENTICATION_SCHEME,
+            LoginProvider = AuthenticationSchemes.JWT_BEARER,
             ExpireAt = expireAt
         };
 
@@ -1028,8 +1021,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             }, cancellationToken);
         }
 
-        await this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id, cancellationToken);
-
         await this.DbContext
             .SaveChangesAsync(cancellationToken);
     }
@@ -1062,8 +1053,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         {
             ThrowIdentityExceptions(result.Errors);
         }
-
-        await this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id, cancellationToken);
     }
 
     /// <summary>
@@ -1114,8 +1103,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         this.DbContext
             .Update(identityUserChangeData);
 
-        await this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id, cancellationToken);
-
         await this.DbContext
             .SaveChangesAsync(cancellationToken);
     }
@@ -1148,8 +1135,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         {
             ThrowIdentityExceptions(result.Errors);
         }
-
-        await this.UpdateEntityUserWhenIdentityUserChanges(identityUser.Id, cancellationToken);
     }
 
     /// <summary>
@@ -2063,6 +2048,8 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         }
     }
 
+    // BUG: 000: Move User.IsActive to IdentityUser.IsActive. Override Identity<TIdentity> with own class.
+
     /// <summary>
     /// Activates the user with the passed user id.
     /// </summary>
@@ -2135,80 +2122,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
 
-    private async Task AssignSignUpRolesAndClaims(IdentityUser<TIdentity> identityUser, IEnumerable<string> roles2 = null, IDictionary<string, string> claims2 = null)
-    {
-        if (identityUser == null)
-            throw new ArgumentNullException(nameof(identityUser));
-
-        var roles = roles2?
-            .Union(this.Options.CurrentValue.Identity.User.DefaultRoles)
-            .Distinct()
-            .ToList() ?? [];
-
-        if (roles.Any())
-        {
-            var roleAssignResult = await this.UserManager
-                .AddToRolesAsync(identityUser, roles);
-
-            if (!roleAssignResult.Succeeded)
-            {
-                ThrowIdentityExceptions(roleAssignResult.Errors);
-            }
-        }
-
-        var claims = claims2?
-            .Select(x => new Claim(x.Key, x.Value))
-            .ToList() ?? [];
-
-        if (claims.Any())
-        {
-            var claimAssignResult = await this.UserManager
-                .AddClaimsAsync(identityUser, claims);
-
-            if (!claimAssignResult.Succeeded)
-            {
-                ThrowIdentityExceptions(claimAssignResult.Errors);
-            }
-        }
-    }
-    private async Task DeleteIdentityUser(IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default)
-    {
-        if (identityUser == null)
-            throw new ArgumentNullException(nameof(identityUser));
-
-        var result = await this.UserManager
-            .DeleteAsync(identityUser);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-
-        await this.DbContext
-            .SaveChangesAsync(cancellationToken);
-    }
-    private async Task UpdateEntityUserWhenIdentityUserChanges(TIdentity id, CancellationToken cancellationToken = default)
-    {
-        var userTypes = this.DbContext.Model
-            .GetEntityTypes()
-            .Where(x => x.ClrType
-                .IsTypeOf(typeof(IEntityUser<TIdentity>)));
-
-        foreach (var userType in userTypes)
-        {
-            var user = await this.DbContext
-                .FindAsync(userType.ClrType, [id], cancellationToken: cancellationToken);
-
-            if (user == null)
-            {
-                continue;
-            }
-
-            // BUG: TEST: UpdateEntityUserWhenIdentityUserChanges
-            this.DbContext
-                .Update(user);
-        }
-    }
     private async Task<TUser> CreateUser<TUser>(TUser user, IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default)
         where TUser : class, IEntityUser<TIdentity>
     {
@@ -2238,6 +2151,58 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         }
 
         return user;
+    }
+    private async Task AssignSignUpRolesAndClaims(IdentityUser<TIdentity> identityUser, IEnumerable<string> roles = null, IDictionary<string, string> claims = null)
+    {
+        if (identityUser == null)
+            throw new ArgumentNullException(nameof(identityUser));
+
+        var allRoles = roles?
+            .Union(this.Options.CurrentValue.Identity.User.DefaultRoles)
+            .Distinct()
+            .ToList() ?? [];
+
+        if (allRoles.Any())
+        {
+            var roleAssignResult = await this.UserManager
+                .AddToRolesAsync(identityUser, allRoles);
+
+            if (!roleAssignResult.Succeeded)
+            {
+                ThrowIdentityExceptions(roleAssignResult.Errors);
+            }
+        }
+
+        var allClaims = claims?
+            .Select(x => new Claim(x.Key, x.Value))
+            .ToList() ?? [];
+
+        if (allClaims.Any())
+        {
+            var claimAssignResult = await this.UserManager
+                .AddClaimsAsync(identityUser, allClaims);
+
+            if (!claimAssignResult.Succeeded)
+            {
+                ThrowIdentityExceptions(claimAssignResult.Errors);
+            }
+        }
+    }
+    private async Task DeleteIdentityUser(IdentityUser<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    {
+        if (identityUser == null)
+            throw new ArgumentNullException(nameof(identityUser));
+
+        var result = await this.UserManager
+            .DeleteAsync(identityUser);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+
+        await this.DbContext
+            .SaveChangesAsync(cancellationToken);
     }
     
     private static void ThrowIdentityExceptions(IEnumerable<IdentityError> errors)

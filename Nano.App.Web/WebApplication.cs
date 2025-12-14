@@ -7,15 +7,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Nano.App.Abstractions;
 using Nano.App.Extensions;
 using Nano.App.Web.Config;
 using Nano.App.Web.Extensions;
 using Nano.Common.Config.Helpers;
-using Nano.Data.Abstractions.Config;
+using Nano.Data.Abstractions.Eventing.Extensions;
+using Nano.Data.Abstractions.Extensions;
+using Nano.Eventing.Abstractions.Extensions;
 
 namespace Nano.App.Web;
 
@@ -41,9 +41,6 @@ public class WebApplication : DefaultApplication
             throw new ArgumentNullException(nameof(applicationLifetime));
 
         base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
-
-        var dataOptions = applicationBuilder.ApplicationServices
-            .GetService<IOptionsMonitor<DataOptions>>();
 
         applicationBuilder
             .UseExceptionHandling()
@@ -90,11 +87,14 @@ public class WebApplication : DefaultApplication
                 return next();
             })
             .UseHttpDocumentataion()
-            .UseHealthChecks()
-            .UseEventHandlers(dataOptions.CurrentValue.ConnectionString != null); // BUG: Get rid of parameter, and should be for both Web and Console
+            .UseHealthChecks();
 
+        // BUG: Also add to console. or find common place if possible.
+        // Doesn't seem a way to add ApplicationBuilder extensions for console
         applicationBuilder
-            .UseDbMigrations(); // BUG: Also add to console. or find common place if possible
+            .UseEventHandlers() 
+            .UseEntityEventHandlers()
+            .UseDbMigrations(); 
     }
 
     /// <summary>

@@ -42,6 +42,9 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IEventingProvider>(provider)
             .AddEventingHandlers();
 
+        services
+            .AddSingleton<IRegisterEventHandlersTask, RegisterEventHandlersTask>();
+
         return services;
     }
 

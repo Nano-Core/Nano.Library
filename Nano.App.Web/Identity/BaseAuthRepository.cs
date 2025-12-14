@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Nano.App.ApiClient.Models.Identity;
 using Nano.App.ApiClient.Models.Identity.External;
 using Nano.App.ApiClient.Models.Identity.External.Providers;
-using Nano.App.Web.Config;
 using Nano.App.Web.Identity.Models;
 using Nano.Common.Exceptions;
 using Nano.Common.Identity.Extensions;
@@ -85,7 +84,7 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
 
         accessToken.RefreshToken = logIn.IsRefreshable
             ? await this.IdentityRepository
-                .CreateRefreshToken(identityUser, logIn.AppId, this.Options.Authentication.Jwt.RefreshExpirationInHours)
+                .CreateRefreshToken(identityUser, this.Options.Authentication.Jwt.RefreshExpirationInHours, logIn.AppId)
             : null;
 
         return accessToken;
@@ -133,7 +132,7 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
 
         accessToken.RefreshToken = logInExternal.IsRefreshable
             ? await this.IdentityRepository
-                .CreateRefreshToken(identityUser, logInExternal.AppId, this.Options.Authentication.Jwt.RefreshExpirationInHours)
+                .CreateRefreshToken(identityUser, this.Options.Authentication.Jwt.RefreshExpirationInHours, logInExternal.AppId)
             : null;
 
         return accessToken;
@@ -175,7 +174,7 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
 
         accessToken.RefreshToken = logInExternalDirect.IsRefreshable
             ? await this.IdentityRepository
-                .CreateRefreshToken(identityUser, logInExternalDirect.AppId, this.Options.Authentication.Jwt.RefreshExpirationInHours)
+                .CreateRefreshToken(identityUser, this.Options.Authentication.Jwt.RefreshExpirationInHours, logInExternalDirect.AppId)
             : null;
 
         return accessToken; 
@@ -227,7 +226,7 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
         }
 
         accessToken.RefreshToken = await this.IdentityRepository
-            .CreateRefreshToken(identityUser, appId, this.Options.Authentication.Jwt.RefreshExpirationInHours);
+            .CreateRefreshToken(identityUser, this.Options.Authentication.Jwt.RefreshExpirationInHours, appId);
         
         return accessToken;
     }

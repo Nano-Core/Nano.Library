@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Nano.Data.Abstractions.Consts;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
@@ -101,10 +102,10 @@ public interface IIdentityRepository<TIdentity>
     /// 
     /// </summary>
     /// <param name="identityUser"></param>
-    /// <param name="appId"></param>
     /// <param name="refreshExpirationInHours"></param>
+    /// <param name="appId"></param>
     /// <returns></returns>
-    Task<RefreshToken> CreateRefreshToken(IdentityUser<TIdentity> identityUser, string appId, int refreshExpirationInHours);
+    Task<RefreshToken> CreateRefreshToken(IdentityUser<TIdentity> identityUser, int refreshExpirationInHours, string appId = IdentityDefaults.DEFAULT_APP_ID);
 
 
     /// <summary>

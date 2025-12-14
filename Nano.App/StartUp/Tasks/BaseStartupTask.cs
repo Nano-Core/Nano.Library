@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Nano.App.StartUp.Tasks;
 
-// BUG: This is meant for consumers to add startup tasks. We need to find a way to automatically increment  / decrement Context, so the consumer doesn't have to remember it
+// BUG: We need to find a way to automatically increment  / decrement Context, so the consumer doesn't have to remember it
 
 /// <inheritdoc />
 public abstract class BaseStartupTask : IHostedService

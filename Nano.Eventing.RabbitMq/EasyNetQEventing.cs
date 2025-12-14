@@ -3,8 +3,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using EasyNetQ;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Nano.Eventing.Abstractions;
 using Nano.Eventing.RabbitMq.Extensions;
 
@@ -16,17 +14,14 @@ public class EasyNetQEventing : IEventing
     private const string QUEUE_TYPE = "quorum";
 
     private readonly IBus bus;
-    private readonly ILogger logger;
 
     /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="bus">The <see cref="IBus"/>.</param>
-    /// <param name="logger">The <see cref="ILogger"/>.</param>
-    public EasyNetQEventing(IBus bus, ILogger logger)
+    public EasyNetQEventing(IBus bus)
     {
         this.bus = bus ?? throw new ArgumentNullException(nameof(bus));
-        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     /// <inheritdoc />
@@ -36,7 +31,8 @@ public class EasyNetQEventing : IEventing
         if (body == null)
             throw new ArgumentNullException(nameof(body));
 
-        var name = typeof(TMessage).GetFriendlyName();
+        var name = typeof(TMessage)
+            .GetFriendlyName();
 
         var exchange = await this.bus.Advanced
             .ExchangeDeclareAsync(name, ExchangeType.Fanout, cancellationToken: cancellationToken);
@@ -47,10 +43,15 @@ public class EasyNetQEventing : IEventing
     }
 
     /// <inheritdoc />
-    public virtual async Task SubscribeAsync<TMessage>(IServiceProvider serviceProvider, string routing = "", CancellationToken cancellationToken = default)
+    public virtual async Task SubscribeAsync<TMessage>(IEventingHandler<TMessage> eventHandler, string routing = "", ushort? prefetchCount = null, CancellationToken cancellationToken = default)
         where TMessage : class
     {
-        var name = typeof(TMessage).GetFriendlyName();
+        if (eventHandler == null) 
+            throw new ArgumentNullException(nameof(eventHandler));
+
+        var name = typeof(TMessage)
+            .GetFriendlyName();
+        
         var queueName = EasyNetQEventing.GetQueueName(name, routing);
 
         var queue = await this.bus.Advanced
@@ -68,58 +69,27 @@ public class EasyNetQEventing : IEventing
         await this.bus.Advanced
             .BindAsync(exchange, queue, routing, cancellationToken);
 
-        var eventType = typeof(TMessage);
-        var genericType = typeof(IEventingHandler<>)
-            .MakeGenericType(eventType);
-
-        var prefetchCount = EasyNetQEventing.GetPrefetchCount<TMessage>(serviceProvider, genericType);
-
         this.bus.Advanced
-            .Consume<TMessage>(queue, async (message, info) =>
+            .Consume<TMessage>(queue, (message, info) =>
             {
-                try
+                var callbackTask = (Task)eventHandler
+                    .GetType()
+                    .GetMethod(nameof(IEventingHandler<dynamic>.CallbackAsync))?
+                    .Invoke(eventHandler, [message.Body, info.Redelivered]);
+
+                if (callbackTask == null)
                 {
-                    if (info.RoutingKey != routing)
-                    {
-                        return;
-                    }
-
-                    await using var serviceScope = serviceProvider
-                        .CreateAsyncScope();
-
-                    var eventHandler = serviceScope.ServiceProvider
-                        .GetRequiredService(genericType);
-
-                    var method = eventHandler
-                        .GetType()
-                        .GetMethod(nameof(IEventingHandler<object>.CallbackAsync));
-
-                    if (method == null)
-                        throw new NullReferenceException(nameof(method));
-
-                    var callbackTask = (Task)method
-                        .Invoke(eventHandler, 
-                        [
-                            message.Body,
-                            info.Redelivered
-                        ]);
-
-                    if (callbackTask == null)
-                    {
-                        throw new NullReferenceException(nameof(callbackTask));
-                    }
-
-                    await callbackTask;
+                    throw new NullReferenceException(nameof(callbackTask));
                 }
-                catch (Exception ex)
+
+                return callbackTask;
+            }, x =>
+            {
+                if (prefetchCount.HasValue)
                 {
-                    this.logger
-                        .LogError(ex, ex.Message);
-
-                    throw;
+                    x.WithPrefetchCount(prefetchCount.Value);
                 }
-            }, x => x
-                .WithPrefetchCount(prefetchCount));
+            });
     }
 
 
@@ -138,28 +108,5 @@ public class EasyNetQEventing : IEventing
             : $".{routing}";
 
         return $"{appName}:{name}{route}";
-    }
-    private static ushort GetPrefetchCount<TMessage>(IServiceProvider serviceProvider, Type genericType)
-        where TMessage : class
-    {
-        if (serviceProvider == null)
-            throw new ArgumentNullException(nameof(serviceProvider));
-
-        var eventHandlerForPrefetchCount = serviceProvider
-            .GetRequiredService(genericType);
-
-        var prefetchCount = (ushort?)genericType
-            .GetProperty(nameof(IEventingHandler<TMessage>.OverridePrefetchCount))?
-            .GetValue(eventHandlerForPrefetchCount);
-
-        if (!prefetchCount.HasValue)
-        {
-            var connection = serviceProvider
-                .GetRequiredService<ConnectionConfiguration>();
-
-            prefetchCount = connection.PrefetchCount;
-        }
-
-        return prefetchCount.Value;
     }
 }

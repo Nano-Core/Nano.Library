@@ -23,7 +23,8 @@ public static class TypeExtensions
 
         if (type.IsGenericType)
         {
-            friendlyName = type.GetTypeString();
+            friendlyName = type
+                .GetTypeString();
         }
 
         return friendlyName;

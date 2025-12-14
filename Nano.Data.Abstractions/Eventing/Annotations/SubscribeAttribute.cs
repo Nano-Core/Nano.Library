@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.Data.Eventing.Annotations;
+namespace Nano.Data.Abstractions.Eventing.Annotations;
 
 /// <summary>
 /// Subscribe Attribute.

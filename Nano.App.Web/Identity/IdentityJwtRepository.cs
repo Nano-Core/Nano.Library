@@ -18,6 +18,7 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.Web.Identity.Models;
+using Nano.Data.Abstractions.Consts;
 using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
 
 namespace Nano.App.Web.Identity;
@@ -46,8 +47,6 @@ public class IdentityJwtRepository : IdentityJwtRepository<Guid>, IIdentityJwtRe
 public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
-    private const string DEFAULT_APP_ID = "Default";
-
     /// <summary>
     /// 
     /// </summary>
@@ -71,7 +70,7 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
 
         var claims = new Collection<Claim>
             {
-                new(ClaimTypesExtended.AppId, generateJwtToken.AppId ?? DEFAULT_APP_ID),
+                new(ClaimTypesExtended.AppId, generateJwtToken.AppId ?? IdentityDefaults.DEFAULT_APP_ID),
                 new(JwtRegisteredClaimNames.Jti, generateJwtToken.Id),
                 new(JwtRegisteredClaimNames.Sub, generateJwtToken.UserId),
                 new(JwtRegisteredClaimNames.Name, generateJwtToken.UserName),
@@ -102,7 +101,7 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
 
         return new AccessToken
         {
-            AppId = generateJwtToken.AppId ?? DEFAULT_APP_ID,
+            AppId = generateJwtToken.AppId ?? IdentityDefaults.DEFAULT_APP_ID,
             UserId = generateJwtToken.UserId,
             Token = token,
             ExpireAt = expireAt
@@ -167,7 +166,7 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
 
         var externalProviderData = await this.RefreshExternalProviderTokenOrDefault(externalProviderName, externalProviderRefreshToken, cancellationToken);
 
-        var appId = appClaim?.Value ?? DEFAULT_APP_ID;
+        var appId = appClaim?.Value ?? IdentityDefaults.DEFAULT_APP_ID;
 
         var accessToken = this.GenerateJwtToken(new GenerateJwtToken
         {

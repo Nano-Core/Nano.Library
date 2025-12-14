@@ -17,9 +17,11 @@ using Nano.Data.Identity.DataProtection.Extensions;
 using Nano.Data.Repository;
 using System;
 using System.Linq;
+using Nano.Data.Abstractions.Eventing;
 using Nano.Data.Abstractions.Eventing.Models;
 using Nano.Data.Abstractions.Identity;
-using Nano.Data.Eventing.Handlers;
+using Nano.Data.Eventing;
+using Nano.Eventing;
 using Nano.Eventing.Abstractions;
 using Z.EntityFramework.Extensions;
 using Z.EntityFramework.Plus;
@@ -102,7 +104,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<IEventingHandler<EntityEvent>, EntityEventHandler<TIdentity>>();
 
         services
-            .AddSingleton<IDbMigrationTask, DbMigrationTask<TIdentity>>();
+            .AddSingleton<IDbMigrationTask, DbMigrationTask<TIdentity>>()
+            .AddSingleton<IRegisterEntityEventHandlersTask, RegisterEntityEventHandlersTask>();
 
         return services;
     }
@@ -173,7 +176,7 @@ public static class ServiceCollectionExtensions
                 x.Lockout.MaxFailedAccessAttempts = options.Lockout.MaxFailedAccessAttempts;
             })
             .AddEntityFrameworkStores<TContext>()
-            .AddTokenProvider<DataProtectorTokenProvider<IdentityUser<TIdentity>>>(TokenProviderNames.JWT_AUTHENTICATION_SCHEME)
+            .AddTokenProvider<DataProtectorTokenProvider<IdentityUser<TIdentity>>>(AuthenticationSchemes.JWT_BEARER)
             .AddDefaultTokenProviders()
             .AddCustomTokenProvider();
 

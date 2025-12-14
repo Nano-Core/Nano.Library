@@ -16,7 +16,7 @@ namespace Nano.App.Web.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Route("v{v:apiVersion}/[controller]")]
-[Authorize(Policy = AuthenticationPolicies.POLICY, Roles = BuiltInUserRoles.ADMINISTRATOR)]
+[Authorize(Policy = AuthenticationPolicies.POLICY/*, Roles = BuiltInUserRoles.ADMINISTRATOR*/)] // BUG: Roles
 public abstract class BaseController : Controller
 {
     /// <summary>
