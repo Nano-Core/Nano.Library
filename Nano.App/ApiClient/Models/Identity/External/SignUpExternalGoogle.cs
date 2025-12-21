@@ -2,7 +2,7 @@
 using Nano.App.ApiClient.Models.Identity.External.Providers;
 using Nano.Data.Abstractions.Models.Abstractions;
 
-namespace Nano.App.ApiClient.Models.Identity;
+namespace Nano.App.ApiClient.Models.Identity.External;
 
 /// <inheritdoc />
 public class SignUpExternalGoogle<TUser> : SignUpExternalImplicit<ExternalLoginProviderGoogle, TUser>

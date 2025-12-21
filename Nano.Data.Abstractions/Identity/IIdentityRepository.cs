@@ -9,6 +9,7 @@ using Nano.Data.Abstractions.Consts;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Models.Identity;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Abstractions.Identity;
@@ -111,10 +112,10 @@ public interface IIdentityRepository<TIdentity>
     /// <summary>
     /// Gets the identity user.
     /// </summary>
-    /// <param name="userId">The user id.</param>
+    /// <param name="id">The user id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="Microsoft.AspNetCore.Identity.IdentityUser"/>.</returns>
-    Task<IdentityUserExt<TIdentity>> GetIdentityUserAsync(TIdentity userId, CancellationToken cancellationToken = default);
+    Task<IdentityUserExt<TIdentity>> GetIdentityUserAsync(TIdentity id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the identity user or default (null).
@@ -141,20 +142,20 @@ public interface IIdentityRepository<TIdentity>
     Task SetPasswordAsync(SetPassword<TIdentity> setPassword, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Resets the password of a user.
-    /// </summary>
-    /// <param name="resetPassword">The <see cref="ResetPassword{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
-    Task ResetPasswordAsync(ResetPassword<TIdentity> resetPassword, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// Changes the password of a user.
     /// </summary>
     /// <param name="changePassword">The <see cref="ChangePassword{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
     Task ChangePasswordAsync(ChangePassword<TIdentity> changePassword, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Resets the password of a user.
+    /// </summary>
+    /// <param name="resetPassword">The <see cref="ResetPassword{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Void.</returns>
+    Task ResetPasswordAsync(ResetPassword<TIdentity> resetPassword, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Changes the email address of a user.
@@ -190,12 +191,12 @@ public interface IIdentityRepository<TIdentity>
     Task ConfirmPhoneNumberAsync(ConfirmPhoneNumber<TIdentity> confirmPhoneNumber, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Verifies the custom token of a user.
+    /// Confirms the custom token of a user.
     /// </summary>
-    /// <param name="customToken">The <see cref="CustomPurposeToken{TIdentity}"/>.</param>
+    /// <param name="confirmCustomPurpose">The <see cref="ConfirmCustomPurpose{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    Task VerifyCustomTokenAsync(CustomPurposeToken<TIdentity> customToken, CancellationToken cancellationToken = default);
+    Task ConfirmCustomTokenAsync(ConfirmCustomPurpose<TIdentity> confirmCustomPurpose, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Generates a reset password token for a user.
@@ -242,8 +243,8 @@ public interface IIdentityRepository<TIdentity>
     /// </summary>
     /// <param name="generateCustomPurposeToken">The <see cref="GenerateCustomPurposeToken{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="CustomPurposeToken{TIdentity}"/>.</returns>
-    Task<CustomPurposeToken<TIdentity>> GenerateCustomTokenAsync(GenerateCustomPurposeToken<TIdentity> generateCustomPurposeToken, CancellationToken cancellationToken = default);
+    /// <returns>The <see cref="ConfirmCustomPurposeToken{TIdentity}"/>.</returns>
+    Task<ConfirmCustomPurposeToken<TIdentity>> GenerateCustomTokenAsync(GenerateCustomPurposeToken<TIdentity> generateCustomPurposeToken, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Activates the user with the passed user id.

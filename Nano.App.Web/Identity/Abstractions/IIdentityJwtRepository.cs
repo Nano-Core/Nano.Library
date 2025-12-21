@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Nano.App.ApiClient.Models.Identity;
 using Nano.App.Web.Identity.Models;
 using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Abstractions.Models.Identity;
 
 namespace Nano.App.Web.Identity.Abstractions;
 

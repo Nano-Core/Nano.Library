@@ -58,14 +58,18 @@ public static class ConfigManager
             .AddEnvironmentVariables()
             .AddCommandLine(args);
 
-        var tempConfiguration = configurationBuilder.Build();
-        var version = tempConfiguration.GetValue<string>("App:Version");
-        
+        var tempConfiguration = configurationBuilder
+            .Build();
+
+        var version = tempConfiguration
+            .GetValue<string>("App:Version"); // BUG: We need to update here if we move Version
+
         ConfigManager.Version = new Version(version);
 
         if (environment == "Development")
         {
-            var entryPoint = tempConfiguration.GetValue<string>("App:EntryPoint");
+            var entryPoint = tempConfiguration
+                .GetValue<string>("App:EntryPoint"); // BUG: We need to update here if we move EntryPoint
 
             if (entryPoint != null)
             {

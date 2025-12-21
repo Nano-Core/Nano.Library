@@ -5,11 +5,14 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.ApiClient.Config;
+using Nano.App.ApiClient.Models.Identity;
+using Nano.App.ApiClient.Models.Identity.External;
 using Nano.App.ApiClient.Requests.Identity;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Models.Identity;
 
 namespace Nano.App.ApiClient;
 
@@ -323,14 +326,14 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
     /// <param name="request">The <see cref="GenerateChangeEmailTokenRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="ChangeEmailToken{TIdentity}"/>.</returns>
-    public virtual Task<CustomPurposeToken<TIdentity>> GetCustomPurposeTokenAsync(GenerateCustomPurposeTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual Task<ConfirmCustomPurpose<TIdentity>> GetCustomPurposeTokenAsync(GenerateCustomPurposeTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<GenerateCustomPurposeTokenRequest<TIdentity>, CustomPurposeToken<TIdentity>>(request, cancellationToken);
+        return this.InvokeAsync<GenerateCustomPurposeTokenRequest<TIdentity>, ConfirmCustomPurpose<TIdentity>>(request, cancellationToken);
     }
 
     /// <summary>

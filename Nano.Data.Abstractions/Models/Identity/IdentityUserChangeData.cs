@@ -1,10 +1,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using Nano.Data.Abstractions.Annotations;
-using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 
-namespace Nano.Data.Abstractions.Models;
+namespace Nano.Data.Abstractions.Models.Identity;
 
 /// <summary>
 /// Identity User Change Data.

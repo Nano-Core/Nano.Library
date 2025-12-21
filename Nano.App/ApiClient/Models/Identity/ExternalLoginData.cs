@@ -1,4 +1,4 @@
-namespace Nano.Data.Abstractions.Identity.Models;
+namespace Nano.App.ApiClient.Models.Identity;
 
 /// <summary>
 /// External Log In Data.

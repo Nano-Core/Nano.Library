@@ -29,8 +29,6 @@ using ReferrerPolicy = NWebsec.AspNetCore.Mvc.ReferrerPolicy;
 
 namespace Nano.App.Web.Extensions;
 
-// BUG: REmove controllers and actions not configured, e.g. Identity repository methods for data if data isn't configured. Also, Transient from Auth controller if not configured, and data from auth controller if not configured.
-
 /// <summary>
 /// Application Builder Extensions.
 /// </summary>
@@ -318,10 +316,7 @@ public static class ApplicationBuilderExtensions
         if (webOptions.Hosting.Session.IsEnabled)
         {
             applicationBuilder
-                .UseSession(new SessionOptions
-                {
-                    IdleTimeout = webOptions.Hosting.Session.Timeout
-                });
+                .UseSession();
         }
 
         return applicationBuilder;

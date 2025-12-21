@@ -21,6 +21,8 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.App.ApiClient.Models.Identity.External;
+using Nano.Data.Abstractions.Models.Identity;
 using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
@@ -29,9 +31,10 @@ namespace Nano.App.Web.Controllers;
 // BUG: We should hide/remove controller actions that are not configured (jwt, api-key). possibly return 404 in middleware
 
 // BUG: Check all return types from AuthRepository / IdentityRepository, they might have changed. 
+// BUG: Check SaveChanges. When autosave is disabled controllers need to save. Similar to how IRepository is used with other controllers
 
 /// <inheritdoc />
-// BUG: [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER)]
+// BUG: roles: [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER)]
 public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : IRepository
     where TEntity : class, IEntityUser<TIdentity>, IEntityCreatable, IEntityUpdatable, IEntityDeletable, IEntityIdentity<TIdentity>, new()
@@ -41,7 +44,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <summary>
     /// 
     /// </summary>
-    protected virtual IdentityOptions Options { get; set; }
+    protected virtual IdentityOptions Options { get; set; } // BUG: Should be IOptionsMonitor<DataOptions>, check other places
 
     /// <summary>
     /// 
@@ -773,7 +776,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [Route("token/custom")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(CustomPurposeToken<Guid>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ConfirmCustomPurpose<Guid>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
@@ -794,7 +797,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <summary>
     /// Verifies a cstuom purpose token of a user.
     /// </summary>
-    /// <param name="customPurposeToken">The generate confirm email token.</param>
+    /// <param name="confirmCustomPurpose">The generate confirm email token.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>Void.</returns>
     /// <response code="200">Success.</response>
@@ -810,10 +813,10 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public virtual async Task<IActionResult> GetConfirmEmailTokenAsync([FromBody][Required] CustomPurposeToken<TIdentity> customPurposeToken, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> GetConfirmEmailTokenAsync([FromBody][Required] ConfirmCustomPurpose<TIdentity> confirmCustomPurpose, CancellationToken cancellationToken = default)
     {
         await this.IdentityRepository
-            .VerifyCustomTokenAsync(customPurposeToken, cancellationToken);
+            .ConfirmCustomTokenAsync(confirmCustomPurpose, cancellationToken);
 
         return this.Ok();
     }

@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Identity;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
-namespace Nano.Data.Abstractions.Identity.Models;
+namespace Nano.Data.Abstractions.Models.Identity;
 
 /// <summary>
 /// Identity User Ext.

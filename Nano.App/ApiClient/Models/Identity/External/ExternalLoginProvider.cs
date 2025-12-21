@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Nano.Data.Abstractions.Identity.Models;
+namespace Nano.App.ApiClient.Models.Identity.External;
 
 /// <summary>
 /// External Login Provider.

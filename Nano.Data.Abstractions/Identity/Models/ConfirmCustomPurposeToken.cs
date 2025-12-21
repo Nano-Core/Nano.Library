@@ -4,13 +4,13 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <inheritdoc />
-public class CustomPurposeToken : CustomPurposeToken<Guid>;
+public class ConfirmCustomPurposeToken : ConfirmCustomPurposeToken<Guid>;
 
 /// <summary>
-/// Custom Purpose Token
+/// Confirm Custom Purpose.
 /// </summary>
 /// <typeparam name="TIdentity">The identity key type</typeparam>
-public class CustomPurposeToken<TIdentity>
+public class ConfirmCustomPurposeToken<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

@@ -23,6 +23,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nano.Data.Abstractions.Eventing.Annotations;
 using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Abstractions.Models.Identity;
 using Nano.Data.Eventing.Extensions;
 using Nano.Data.Identity.Extensions;
 using Nano.Data.Identity.Mappings;

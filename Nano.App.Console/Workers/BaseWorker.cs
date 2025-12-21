@@ -3,8 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Nano.Data.Abstractions;
-using Nano.Eventing.Abstractions;
 
 namespace Nano.App.Console.Workers;
 
@@ -49,34 +47,5 @@ public abstract class BaseWorker : IHostedService, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-    }
-}
-
-/// <inheritdoc />
-public abstract class BaseWorker<TRepository> : BaseWorker
-    where TRepository : IRepository
-{
-    /// <summary>
-    /// Eventing.
-    /// </summary>
-    protected virtual IEventing Eventing { get; }
-
-    /// <summary>
-    /// Repository.
-    /// </summary>
-    protected virtual TRepository Repository { get; }
-
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    /// <param name="logger">The <see cref="ILogger"/>.</param>
-    /// <param name="repository">The <see cref="IRepository"/>.</param>
-    /// <param name="eventing">The <see cref="IEventing"/>.</param>
-    /// <param name="applicationLifetime">The <see cref="IHostApplicationLifetime"/>.</param>
-    protected BaseWorker(ILogger logger, TRepository repository, IEventing eventing, IHostApplicationLifetime applicationLifetime)
-        : base(logger, applicationLifetime)
-    {
-        this.Repository = repository;
-        this.Eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
     }
 }

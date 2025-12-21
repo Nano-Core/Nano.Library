@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Abstractions.Models.Identity;
 
 namespace Nano.Data.Identity.Extensions;
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Abstractions.Models.Identity;
 using Nano.Data.Identity.Consts;
 using Nano.Data.Identity.DataProtection.Extensions;
 using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;

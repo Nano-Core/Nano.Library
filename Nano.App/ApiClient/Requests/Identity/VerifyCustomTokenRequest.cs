@@ -13,7 +13,7 @@ public class VerifyCustomTokenRequest<TIdentity> : BaseRequestPost
     /// <summary>
     /// Custom Purpose Token.
     /// </summary>
-    public virtual CustomPurposeToken<TIdentity> CustomPurposeToken { get; set; } = new();
+    public virtual ConfirmCustomPurpose<TIdentity> ConfirmCustomPurpose { get; set; } = new();
 
     /// <inheritdoc />
     public VerifyCustomTokenRequest()
@@ -24,6 +24,6 @@ public class VerifyCustomTokenRequest<TIdentity> : BaseRequestPost
     /// <inheritdoc />
     public override object GetBody()
     {
-        return this.CustomPurposeToken;
+        return this.ConfirmCustomPurpose;
     }
 }

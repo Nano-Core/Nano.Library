@@ -8,7 +8,6 @@ using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Consts;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Models;
-using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Identity.Consts;
 using Nano.Data.Identity.DataProtection.Consts;
@@ -22,14 +21,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.Data.Abstractions.Models.Identity;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Identity;
-
-// BUG: REVIEW: IdentityRepository
-// - SaveChanges vs AutoSave like in IRepository
-// - Check when we ask for Id vs identityUser
-// - don't return own types, but only the IdentityXXX<TIdentity> types. It's a repository and should return EF types. Look in Data.Abstractions.Identity.Models
 
 /// <summary>
 /// Base Identity Repository.
@@ -315,10 +310,10 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     #region User
 
     /// <inheritdoc />
-    public virtual Task<IdentityUserExt<TIdentity>> GetIdentityUserAsync(TIdentity userId, CancellationToken cancellationToken = default)
+    public virtual Task<IdentityUserExt<TIdentity>> GetIdentityUserAsync(TIdentity id, CancellationToken cancellationToken = default)
     {
         var identityUser = this.UserManager
-            .GetIdentityUserAsync(userId, cancellationToken);
+            .GetIdentityUserAsync(id, cancellationToken);
 
         if (identityUser == null)
         {
@@ -395,31 +390,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task ResetPasswordAsync(ResetPassword<TIdentity> resetPassword, CancellationToken cancellationToken = default)
-    {
-        if (resetPassword == null)
-        {
-            throw new ArgumentNullException(nameof(resetPassword));
-        }
-
-        var identityUser = await this.UserManager
-            .GetIdentityUserAsync(resetPassword.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new UnauthorizedException($"The user: {resetPassword.UserId} was not found or is deactivated.");
-        }
-
-        var result = await this.UserManager
-            .ResetPasswordAsync(identityUser, resetPassword.Token, resetPassword.Password);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-    }
-
-    /// <inheritdoc />
     public virtual async Task ChangePasswordAsync(ChangePassword<TIdentity> changePassword, CancellationToken cancellationToken = default)
     {
         if (changePassword == null)
@@ -445,6 +415,31 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         await this.SignInManager
             .RefreshSignInAsync(identityUser);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task ResetPasswordAsync(ResetPassword<TIdentity> resetPassword, CancellationToken cancellationToken = default)
+    {
+        if (resetPassword == null)
+        {
+            throw new ArgumentNullException(nameof(resetPassword));
+        }
+
+        var identityUser = await this.UserManager
+            .GetIdentityUserAsync(resetPassword.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new UnauthorizedException($"The user: {resetPassword.UserId} was not found or is deactivated.");
+        }
+
+        var result = await this.UserManager
+            .ResetPasswordAsync(identityUser, resetPassword.Token, resetPassword.Password);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
     }
 
     /// <inheritdoc />
@@ -601,15 +596,15 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task VerifyCustomTokenAsync(CustomPurposeToken<TIdentity> customToken, CancellationToken cancellationToken = default)
+    public virtual async Task ConfirmCustomTokenAsync(ConfirmCustomPurpose<TIdentity> confirmCustomPurpose, CancellationToken cancellationToken = default)
     {
-        if (customToken == null)
+        if (confirmCustomPurpose == null)
         {
-            throw new ArgumentNullException(nameof(customToken));
+            throw new ArgumentNullException(nameof(confirmCustomPurpose));
         }
 
         var identityUser = await this.UserManager
-            .GetIdentityUserAsync(customToken.UserId, cancellationToken);
+            .GetIdentityUserAsync(confirmCustomPurpose.UserId, cancellationToken);
 
         if (identityUser == null)
         {
@@ -617,7 +612,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         }
 
         var success = await this.UserManager
-            .VerifyUserTokenAsync(identityUser, CustomTokenOptions.CUSTOM_DATA_PROTECTOR_TOKEN_PROVIDER, customToken.Purpose, customToken.Token);
+            .VerifyUserTokenAsync(identityUser, CustomTokenOptions.CUSTOM_DATA_PROTECTOR_TOKEN_PROVIDER, confirmCustomPurpose.Purpose, confirmCustomPurpose.Token);
 
         if (!success)
         {
@@ -829,7 +824,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<CustomPurposeToken<TIdentity>> GenerateCustomTokenAsync(GenerateCustomPurposeToken<TIdentity> generateCustomPurposeToken, CancellationToken cancellationToken = default)
+    public virtual async Task<ConfirmCustomPurposeToken<TIdentity>> GenerateCustomTokenAsync(GenerateCustomPurposeToken<TIdentity> generateCustomPurposeToken, CancellationToken cancellationToken = default)
     {
         if (generateCustomPurposeToken == null)
         {
@@ -847,7 +842,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         var token = await this.UserManager
             .GenerateUserTokenAsync(identityUser, CustomTokenOptions.CUSTOM_DATA_PROTECTOR_TOKEN_PROVIDER, generateCustomPurposeToken.Purpose);
 
-        return new CustomPurposeToken<TIdentity>
+        return new ConfirmCustomPurposeToken<TIdentity>
         {
             UserId = generateCustomPurposeToken.UserId,
             Token = token,
@@ -873,8 +868,11 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         var entityEntry = this.DbContext
             .Update(user);
 
-        await this.DbContext
-            .SaveChangesAsync(cancellationToken);
+        if (this.Options.CurrentValue.UseAutoSave)
+        {
+            await this.DbContext
+                .SaveChangesAsync(cancellationToken);
+        }
 
         return entityEntry.Entity;
     }
@@ -906,8 +904,11 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         var entityEntry = this.DbContext
             .Update(user);
 
-        await this.DbContext
-            .SaveChangesAsync(cancellationToken);
+        if (this.Options.CurrentValue.UseAutoSave)
+        {
+            await this.DbContext
+                .SaveChangesAsync(cancellationToken);
+        }
 
         return entityEntry.Entity;
     }

@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Xml.XPath;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
@@ -20,7 +19,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Nano.App.ApiClient.Consts;
-using Nano.App.ApiClient.Models;
 using Nano.App.Config;
 using Nano.App.Web.Config;
 using Nano.App.Web.Controllers;
@@ -39,7 +37,6 @@ using Nano.Common.Config.Extensions;
 using Nano.Common.Config.Helpers;
 using Nano.Common.Extensions;
 using Nano.Common.Helpers;
-using Nano.Data.Abstractions.Config;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
@@ -48,17 +45,8 @@ using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
 
 namespace Nano.App.Web.Extensions;
 
-/// <summary>
-/// Service Collection Extensions.
-/// </summary>
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
-    /// <summary>
-    /// Adds web dependicies and services to the <see cref="IServiceCollection"/>.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
     internal static IServiceCollection AddWeb(this IServiceCollection services, IConfiguration configuration)
     {
         if (services == null)
@@ -67,33 +55,11 @@ public static class ServiceCollectionExtensions
         if (configuration == null)
             throw new ArgumentNullException(nameof(configuration));
 
-        var assembly = typeof(BaseController).GetTypeInfo().Assembly;
-
         services
             .AddConfigSection<WebOptions>(WebOptions.SectionName, out var webOptions);
 
-        if (webOptions == null)
-        {
-            throw new NullReferenceException(nameof(webOptions));
-        }
-
-        var serviceProvider = services
-            .BuildServiceProvider();
-
-        var appOptions = serviceProvider
-            .GetService<IOptionsMonitor<AppOptions>>();
-
-        var dataOptions = serviceProvider
-            .GetService<IOptionsMonitor<DataOptions>>();
-
-        // BUG: Remove this, and refactor to use IOptionsMonitor<>
         services
-            .AddSingleton(webOptions);
-
-        services
-            .AddSingleton(webOptions.Identity);
-
-         // BUG: .AddProblemDetails(x => x.CustomizeProblemDetails)
+            .AddSingleton(webOptions.Identity); // BUG: Remove this
 
         services
             .AddCors(x =>
@@ -140,10 +106,10 @@ public static class ServiceCollectionExtensions
                     y.WithExposedHeaders("RequestId", "TZ", "Content-Disposition", "api-supported-versions");
                 });
             })
-            .AddSession()
+            .AddSession(webOptions)
             .AddCaching(webOptions)
             .AddVersioning(webOptions)
-            .AddIdentityAuthenticationAndAuthorization<Guid>(webOptions.Identity.Authentication) // BUG: Should not be guid
+            .AddIdentityAuthenticationAndAuthorization(webOptions.Identity.Authentication)
             .AddDocumentation(appOptions.CurrentValue, webOptions, webOptions.Identity)
             .AddLocalizations()
             .AddTimeZone(appOptions.CurrentValue)
@@ -164,10 +130,9 @@ public static class ServiceCollectionExtensions
             .AddSingleton<DisableAuditControllerMiddleware>()
             .AddScoped<HttpRequestOptionsMiddleware>()
             .AddSingleton<HttpRequestIdentifierMiddleware>()
-            .AddRouting(x => x.LowercaseUrls = true) // BUG: Check more settings (maybe we can remove other swagger filters
+            .AddRouting(x => x.LowercaseUrls = true)
             .AddQueryModelBinders()
-            // BUG: .AddControllers()  use instead of AddMvc???
-            .AddMvc(x =>
+            .AddControllers(x =>
             {
                 x.ReturnHttpNotAcceptable = true;
                 x.RespectBrowserAcceptHeader = true;
@@ -185,6 +150,11 @@ public static class ServiceCollectionExtensions
                 x.Conventions
                     .Add(new ProducesJsonConvention());
 
+                // BUG: 000: Remove controllers and actions not configured,
+                // e.g. Identity repository methods for data if data isn't configured. Also, Transient from Auth controller if not configured,
+                // and data from auth controller if not configured.
+
+                // BUG: 000: Check for dbContext resolves
                 //if (dataOptions.CurrentValue.ConnectionString == null || !webOptions.Hosting.ExposeAuthController)
                 //{
                 //    x.Conventions
@@ -203,20 +173,6 @@ public static class ServiceCollectionExtensions
                         .Add<RequireHttpsAttribute>();
                 }
             })
-            .ConfigureApiBehaviorOptions(x =>
-            {
-                x.InvalidModelStateResponseFactory = context =>
-                {
-                    return new BadRequestObjectResult(new Error
-                    {
-                        Summary = "ModelState Validation Error",
-                        Exceptions = context.ModelState.Values
-                            .SelectMany(z => z.Errors)
-                            .Select(z => z.ErrorMessage)
-                            .ToArray()
-                    });
-                };
-            })
             .AddNewtonsoftJson(x =>
             {
                 x.AllowInputFormatterExceptionMessages = true;
@@ -230,19 +186,18 @@ public static class ServiceCollectionExtensions
                 x.SerializerSettings.ContractResolver = serializerSettings.ContractResolver;
                 x.SerializerSettings.Converters = serializerSettings.Converters;
             })
-            .AddControllersAsServices()
-            //.AddViewComponentsAsServices()
-            .AddApplicationPart(assembly);
+            .AddControllersAsServices();
+        //.AddApplicationPart(typeof(WebOptions).GetTypeInfo().Assembly); // BUG: START APP AND CHECK: Why is this needed?
 
-        // BUG: We need TIdentity
         services
             .AddScoped<IIdentityJwtRepository, IdentityJwtRepository>()
             .AddScoped<IAuthRepository, DefaultAuthRepository>()
             .AddScoped<IAuthTransientRepository, DefaultAuthTransientRepository>();
 
-        services
-            .AddScoped<AuditController>()
-            .AddScoped<DefaultAuthController>();
+        // BUG: START APP AND CHECK: This should already be done with AddControllersAsServices();
+        //services
+        //    .AddScoped<AuditController>()
+        //    .AddScoped<DefaultAuthController>();
 
         services
             .AddHealthChecking(appOptions.CurrentValue, webOptions);
@@ -250,6 +205,23 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    ''
+    private static IServiceCollection AddSession(this IServiceCollection services, WebOptions webOptions)
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        if (webOptions == null)
+            throw new ArgumentNullException(nameof(webOptions));
+
+        services
+            .AddSession(x =>
+            {
+                x.IdleTimeout = webOptions.Hosting.Session.Timeout;
+            });
+
+        return services;
+    }
     private static IServiceCollection AddCaching(this IServiceCollection services, WebOptions webOptions)
     {
         if (services == null)
@@ -339,7 +311,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddHealthChecks()
-            .AddCheck<StartupHealthCheck>("self"); // BUG: this should be above !options.Hosting.HealthCheck.UseHealthCheck or ???
+            .AddCheck<StartupHealthCheck>("self");
 
         if (options.Hosting.HealthCheck.UseHealthCheckUI)
         {
@@ -349,7 +321,7 @@ public static class ServiceCollectionExtensions
             services
                 .AddHealthChecksUI(x =>
                 {
-                    // BUG: ask chat-gpt  x.AddHealthCheckEndpoint(appOptions.Name.ToLower(), $"http://localhost:{port}/healthz");
+                    // BUG: ASK CHAT-GPT:  x.AddHealthCheckEndpoint(appOptions.Name.ToLower(), $"http://localhost:{port}/healthz");
 
                     x.SetApiMaxActiveRequests(1);
                     x.SetEvaluationTimeInSeconds(options.Hosting.HealthCheck.EvaluationInterval);
@@ -556,9 +528,7 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-
-    private static IServiceCollection AddIdentityAuthenticationAndAuthorization<TIdentity>(this IServiceCollection services, AuthenticationOptions options)
-        where TIdentity : IEquatable<TIdentity>
+    private static IServiceCollection AddIdentityAuthenticationAndAuthorization(this IServiceCollection services, AuthenticationOptions options)
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
@@ -614,10 +584,10 @@ public static class ServiceCollectionExtensions
             });
 
         authenticationBuilder
-            .AddJwtAuthentication(options.Jwt)
-            .AddApiKeyAuthentication<TIdentity>(options.ApiKey);
+            .AddJwtAuthentication(options.Jwt);
+            // BUG: 000: Move to Data where we know TIdentity. hmm we have the authentication options here, maybe we need split it
+            //.AddApiKeyAuthentication<TIdentity>(options.ApiKey);
 
         return services;
     }
-
 }

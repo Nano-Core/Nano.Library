@@ -1,8 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Nano.Data.Abstractions.Identity.Models;
 
-namespace Nano.Data.Abstractions.Models;
+namespace Nano.Data.Abstractions.Models.Identity;
 
 /// <summary>
 /// Identity Api Key.

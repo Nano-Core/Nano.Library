@@ -7,6 +7,7 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
+using Nano.App.ApiClient.Models.Identity;
 using Nano.App.ApiClient.Models.Identity.External.Providers;
 using Nano.App.Web.Config;
 using Nano.Common.Exceptions;

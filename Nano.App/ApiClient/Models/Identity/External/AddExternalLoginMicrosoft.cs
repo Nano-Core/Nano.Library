@@ -1,7 +1,7 @@
 ﻿using System;
 using Nano.App.ApiClient.Models.Identity.External.Providers;
 
-namespace Nano.App.ApiClient.Models.Identity;
+namespace Nano.App.ApiClient.Models.Identity.External;
 
 /// <summary>
 /// Add External Login Microsoft.

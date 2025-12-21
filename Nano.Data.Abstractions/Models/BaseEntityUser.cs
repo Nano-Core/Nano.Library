@@ -2,6 +2,7 @@ using System;
 using Nano.Data.Abstractions.Annotations;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Models.Identity;
 
 namespace Nano.Data.Abstractions.Models;
 

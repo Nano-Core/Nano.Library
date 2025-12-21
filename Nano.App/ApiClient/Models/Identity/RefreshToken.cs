@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Nano.Data.Abstractions.Identity.Models;
+namespace Nano.App.ApiClient.Models.Identity;
 
 /// <summary>
 /// Refresh Token.

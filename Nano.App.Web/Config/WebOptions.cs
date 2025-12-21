@@ -6,11 +6,45 @@ using NWebsec.AspNetCore.Mvc;
 
 namespace Nano.App.Web.Config;
 
+// BUG: OPTIONS: Use IOptionsMonitor<>, maybe that allows for reload on changes. (Search using AppOptions and Use IOptionsMonitor<>, or cached things like app name, etc)
+// BUG: OPTIONS: Add required etc validation annotations on options.
+
 /// <summary>
 /// Web Options.
 /// </summary>
 public class WebOptions
 {
+    // BUG: Remember to update appsettings everywhere
+
+    ///// <summary>
+    ///// Description.
+    ///// </summary>
+    //public virtual string Description { get; set; } // BUG: Only web, swagger
+
+    ///// <summary>
+    ///// Terms Of Service.
+    ///// </summary>
+    //public virtual string TermsOfService { get; set; } // BUG: Only web, swagger
+
+    ///// <summary>
+    ///// Default Time Zone.
+    ///// </summary>
+    //[Required]
+    //public virtual string DefaultTimeZone { get; set; } = "UTC"; // BUG: Only web
+
+    ///// <summary>
+    ///// Version.
+    ///// </summary>
+    //[Required]
+    //public virtual string Version { get; set; } = "1.0.0.0"; // BUG: Only web
+
+    ///// <summary>
+    ///// Cultures.
+    ///// </summary>
+    //[Required]
+    //public virtual CultureOptions Cultures { get; set; } = new();  // BUG: Only web
+
+
     /// <summary>
     /// Section Name.
     /// </summary>
@@ -963,7 +997,7 @@ public class WebOptions
             /// Is Enabled.
             /// Enables Hsts (Strict transport security) policies.
             /// </summary>
-            public virtual bool IsEnabled { get; set; } = true;
+            public virtual bool IsEnabled { get; set; } = true; // BUG: Remove , check for null
 
             /// <summary>
             /// Max Size.
@@ -1045,7 +1079,7 @@ public class WebOptions
             /// Is Enabled.
             /// Enables session.
             /// </summary>
-            public virtual bool IsEnabled { get; set; } = true;
+            public virtual bool IsEnabled { get; set; } = true; // BUG: REmove, and check for null
 
             /// <summary>
             /// Timeout.

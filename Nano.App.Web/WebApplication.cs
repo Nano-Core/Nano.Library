@@ -13,9 +13,6 @@ using Nano.App.Extensions;
 using Nano.App.Web.Config;
 using Nano.App.Web.Extensions;
 using Nano.Common.Config.Helpers;
-using Nano.Data.Abstractions.Eventing.Extensions;
-using Nano.Data.Abstractions.Extensions;
-using Nano.Eventing.Abstractions.Extensions;
 
 namespace Nano.App.Web;
 
@@ -39,8 +36,6 @@ public class WebApplication : DefaultApplication
 
         if (applicationLifetime == null)
             throw new ArgumentNullException(nameof(applicationLifetime));
-
-        base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
 
         applicationBuilder
             .UseExceptionHandling()
@@ -89,12 +84,7 @@ public class WebApplication : DefaultApplication
             .UseHttpDocumentataion()
             .UseHealthChecks();
 
-        // BUG: Also add to console. or find common place if possible.
-        // Doesn't seem a way to add ApplicationBuilder extensions for console
-        applicationBuilder
-            .UseEventHandlers() 
-            .UseEntityEventHandlers()
-            .UseDbMigrations(); 
+        base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
     }
 
     /// <summary>

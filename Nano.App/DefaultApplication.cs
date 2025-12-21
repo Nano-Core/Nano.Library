@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Nano.Data.Abstractions.Eventing.Extensions;
+using Nano.Data.Abstractions.Extensions;
+using Nano.Eventing.Abstractions.Extensions;
 
 namespace Nano.App;
 
@@ -39,5 +42,10 @@ public class DefaultApplication : BaseApplication
 
         if (applicationLifetime == null)
             throw new ArgumentNullException(nameof(applicationLifetime));
+
+        applicationBuilder
+            .UseEventHandlers()
+            .UseEntityEventHandlers()
+            .UseDbMigrations();
     }
 }

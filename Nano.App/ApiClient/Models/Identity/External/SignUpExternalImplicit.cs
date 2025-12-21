@@ -2,24 +2,24 @@
 using Nano.App.ApiClient.Models.Identity.External.Providers;
 using Nano.Data.Abstractions.Models.Abstractions;
 
-namespace Nano.App.ApiClient.Models.Identity;
+namespace Nano.App.ApiClient.Models.Identity.External;
 
 /// <summary>
-/// Sign Up External.
+/// Sign Up External Implicit.
 /// </summary>
 /// <typeparam name="TProvider">The provider type.</typeparam>
 /// <typeparam name="TUser">The user type</typeparam>
-public class SignUpExternalAuthCode<TProvider, TUser> : SignUpExternalAuthCode<TProvider, TUser, Guid>
-    where TProvider : ExternalLoginProviderAuthCode, new()
+public class SignUpExternalImplicit<TProvider, TUser> : SignUpExternalImplicit<TProvider, TUser, Guid>
+    where TProvider : ExternalLoginProviderImplicit, new()
     where TUser : IEntityUser<Guid>, new();
 
 /// <summary>
-/// Sign Up External Auth Code.
+/// Sign Up External Implicit.
 /// </summary>
 /// <typeparam name="TProvider">The provider type.</typeparam>
 /// <typeparam name="TUser">The user type.</typeparam>
 /// <typeparam name="TIdentity">The identity type.</typeparam>
-public class SignUpExternalAuthCode<TProvider, TUser, TIdentity> : BaseSignUpExternal<TProvider, TUser, TIdentity>
-    where TProvider : ExternalLoginProviderAuthCode, new()
+public class SignUpExternalImplicit<TProvider, TUser, TIdentity> : BaseSignUpExternal<TProvider, TUser, TIdentity>
+    where TProvider : ExternalLoginProviderImplicit, new()
     where TUser : IEntityUser<TIdentity>, new()
     where TIdentity : IEquatable<TIdentity>;

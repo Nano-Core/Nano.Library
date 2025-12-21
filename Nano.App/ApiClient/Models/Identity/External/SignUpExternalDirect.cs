@@ -1,8 +1,7 @@
 ﻿using System;
-using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 
-namespace Nano.App.ApiClient.Models.Identity;
+namespace Nano.App.ApiClient.Models.Identity.External;
 
 /// <summary>
 /// Sign Up External Direct.

@@ -19,6 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.Web.Identity.Models;
 using Nano.Data.Abstractions.Consts;
+using Nano.Data.Abstractions.Models.Identity;
 using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
 
 namespace Nano.App.Web.Identity;

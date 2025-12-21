@@ -16,6 +16,7 @@ using Nano.App.ApiClient.Consts;
 using Nano.App.ApiClient.Extensions;
 using Nano.App.ApiClient.Models;
 using Nano.App.ApiClient.Models.Identity;
+using Nano.App.ApiClient.Models.Identity.External;
 using Nano.App.ApiClient.Models.Identity.External.Providers;
 using Nano.App.ApiClient.Requests;
 using Nano.App.ApiClient.Requests.Auth;
