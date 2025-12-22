@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IdentityModel.Tokens.Jwt;
-using System.IO;
-using System.Linq;
-using System.Xml.XPath;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using DynamicExpression.Extensions;
@@ -13,22 +6,15 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Nano.App.ApiClient.Consts;
 using Nano.App.Config;
 using Nano.App.Web.Config;
 using Nano.App.Web.Controllers;
-using Nano.App.Web.Hosting.Conventions;
-using Nano.App.Web.Hosting.Documentation.Filters.Document;
-using Nano.App.Web.Hosting.Documentation.Filters.Operation;
-using Nano.App.Web.Hosting.Documentation.Filters.Schema;
-using Nano.App.Web.Hosting.HealthChecks;
-using Nano.App.Web.Hosting.Middleware;
-using Nano.App.Web.Hosting.Serialization.Json.Const;
 using Nano.App.Web.Identity;
 using Nano.App.Web.Identity.Abstractions;
 using Nano.App.Web.Identity.Authentication.Consts;
@@ -37,14 +23,45 @@ using Nano.Common.Config.Extensions;
 using Nano.Common.Config.Helpers;
 using Nano.Common.Extensions;
 using Nano.Common.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Xml.XPath;
+using Nano.App.Web.Conventions;
+using Nano.App.Web.Documentation.Filters.Document;
+using Nano.App.Web.Documentation.Filters.Operation;
+using Nano.App.Web.Documentation.Filters.Schema;
+using Nano.App.Web.HealthChecks;
+using Nano.App.Web.Middleware;
+using Nano.App.Web.Serialization.Json.Const;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
 using AuthenticationOptions = Nano.App.Web.Config.AuthenticationOptions;
-using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
 
 namespace Nano.App.Web.Extensions;
 
+internal sealed class ConditionalControllerFeatureProvider : ControllerFeatureProvider
+{
+    private readonly Func<TypeInfo, bool> predicate;
+
+    internal ConditionalControllerFeatureProvider(Func<TypeInfo, bool> predicate)
+    {
+        this.predicate = predicate;
+    }
+
+    protected override bool IsController(TypeInfo typeInfo)
+    {
+        if (!base.IsController(typeInfo))
+            return false;
+
+        return predicate(typeInfo);
+    }
+}
 internal static class ServiceCollectionExtensions
 {
     internal static IServiceCollection AddWeb(this IServiceCollection services, IConfiguration configuration)
@@ -56,63 +73,17 @@ internal static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(configuration));
 
         services
-            .AddConfigSection<WebOptions>(WebOptions.SectionName, out var webOptions);
+            .AddConfigSection<WebOptions>(BaseAppOptions.SectionName, out var webOptions);
 
         services
-            .AddSingleton(webOptions.Identity); // BUG: Remove this
-
-        services
-            .AddCors(x =>
-            {
-                x.AddPolicy(x.DefaultPolicyName, y =>
-                {
-                    if (webOptions.Hosting.Cors.AllowedOrigins.Any())
-                    {
-                        y.WithOrigins(webOptions.Hosting.Cors.AllowedOrigins);
-                        y.SetIsOriginAllowedToAllowWildcardSubdomains();
-                    }
-                    else
-                    {
-                        y.SetIsOriginAllowed(_ => true);
-                    }
-
-                    if (webOptions.Hosting.Cors.AllowedHeaders.Any())
-                    {
-                        y.WithHeaders(webOptions.Hosting.Cors.AllowedHeaders);
-                    }
-                    else
-                    {
-                        y.AllowAnyHeader();
-                    }
-
-                    if (webOptions.Hosting.Cors.AllowedMethods.Any())
-                    {
-                        y.WithMethods(webOptions.Hosting.Cors.AllowedMethods);
-                    }
-                    else
-                    {
-                        y.AllowAnyMethod();
-                    }
-
-                    if (webOptions.Hosting.Cors.AllowCredentials)
-                    {
-                        y.AllowCredentials();
-                    }
-                    else
-                    {
-                        y.DisallowCredentials();
-                    }
-
-                    y.WithExposedHeaders("RequestId", "TZ", "Content-Disposition", "api-supported-versions");
-                });
-            })
+            .AddCors(webOptions)
             .AddSession(webOptions)
             .AddCaching(webOptions)
             .AddVersioning(webOptions)
             .AddIdentityAuthenticationAndAuthorization(webOptions.Identity.Authentication)
-            .AddDocumentation(appOptions.CurrentValue, webOptions, webOptions.Identity)
-            .AddLocalizations()
-            .AddTimeZone(appOptions.CurrentValue)
+            .AddDocumentation(webOptions)
+            .AddLocalization()
+            .AddTimeZone(webOptions)
             .AddVirusScan(webOptions)
             .AddCompression()
             .Configure<ForwardedHeadersOptions>(x =>
@@ -125,14 +96,12 @@ internal static class ServiceCollectionExtensions
                 x.MultipartBodyLengthLimit = int.MaxValue;
                 x.MultipartHeadersLengthLimit = int.MaxValue;
             })
-            .AddSingleton<ExceptionHandlingMiddleware>()
-            .AddSingleton<DisableAuthControllerMiddleware>()
-            .AddSingleton<DisableAuditControllerMiddleware>()
+            .AddScoped<ExceptionHandlingMiddleware>()
             .AddScoped<HttpRequestOptionsMiddleware>()
-            .AddSingleton<HttpRequestIdentifierMiddleware>()
+            .AddScoped<HttpRequestIdentifierMiddleware>()
             .AddRouting(x => x.LowercaseUrls = true)
             .AddQueryModelBinders()
-            .AddControllers(x =>
+            .AddControllersWithViews(x =>
             {
                 x.ReturnHttpNotAcceptable = true;
                 x.RespectBrowserAcceptHeader = true;
@@ -149,23 +118,6 @@ internal static class ServiceCollectionExtensions
 
                 x.Conventions
                     .Add(new ProducesJsonConvention());
-
-                // BUG: 000: Remove controllers and actions not configured,
-                // e.g. Identity repository methods for data if data isn't configured. Also, Transient from Auth controller if not configured,
-                // and data from auth controller if not configured.
-
-                // BUG: 000: Check for dbContext resolves
-                //if (dataOptions.CurrentValue.ConnectionString == null || !webOptions.Hosting.ExposeAuthController)
-                //{
-                //    x.Conventions
-                //        .Add(new AuthActionHidingConvention());
-                //}
-
-                //if (dataOptions.CurrentValue.ConnectionString == null || !webOptions.Hosting.ExposeAuditController)
-                //{
-                //    x.Conventions
-                //        .Add(new AuditActionHidingConvention());
-                //}
 
                 if (webOptions.Hosting.UseHttpsRequired)
                 {
@@ -186,26 +138,108 @@ internal static class ServiceCollectionExtensions
                 x.SerializerSettings.ContractResolver = serializerSettings.ContractResolver;
                 x.SerializerSettings.Converters = serializerSettings.Converters;
             })
-            .AddControllersAsServices();
-        //.AddApplicationPart(typeof(WebOptions).GetTypeInfo().Assembly); // BUG: START APP AND CHECK: Why is this needed?
+            .AddViewLocalization()
+            .AddDataAnnotationsLocalization()
+            .AddControllersAsServices()
+
+            // BUG: 000: Remove disabled controllers like Identity if not configured or data is not configured.
+            // We should hide/remove controller actions that are not configured (jwt, api-key). possibly return 404 in middleware
+
+            // 000: Remove controllers and actions not configured,
+            // e.g. Identity repository methods for data if data isn't configured. Also, Transient from Auth controller if not configured,
+            // and data from auth controller if not configured.
+            .AddApplicationPart(typeof(WebOptions).GetTypeInfo().Assembly)
+            .ConfigureApplicationPartManager(manager =>
+            {
+                manager.FeatureProviders.Add(
+                    new ConditionalControllerFeatureProvider(type =>
+                    {
+                        //if (!webOptions.Hosting.ExposeAuthController &&
+                        //    type.AsType() == typeof(AuthController))
+                        //    return false;
+
+                        //if (!webOptions.Hosting.ExposeAuditController &&
+                        //    type.AsType() == typeof(AuditController))
+                        //    return false;
+
+                        return true;
+                    })
+                );
+            });
 
         services
             .AddScoped<IIdentityJwtRepository, IdentityJwtRepository>()
             .AddScoped<IAuthRepository, DefaultAuthRepository>()
             .AddScoped<IAuthTransientRepository, DefaultAuthTransientRepository>();
 
-        // BUG: START APP AND CHECK: This should already be done with AddControllersAsServices();
-        //services
-        //    .AddScoped<AuditController>()
-        //    .AddScoped<DefaultAuthController>();
-
         services
-            .AddHealthChecking(appOptions.CurrentValue, webOptions);
+            .AddHealthChecking(webOptions);
 
         return services;
     }
 
-    ''
+
+    private static IServiceCollection AddCors(this IServiceCollection services, WebOptions webOptions)
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        if (webOptions == null)
+            throw new ArgumentNullException(nameof(webOptions));
+
+        if (webOptions.HttpPolicyHeaders.Cors == null)
+        {
+            return services;
+        }
+
+        services
+            .AddCors(x =>
+            {
+                x.AddPolicy(x.DefaultPolicyName, y =>
+                {
+                    if (webOptions.HttpPolicyHeaders.Cors.AllowedOrigins.Any())
+                    {
+                        y.WithOrigins(webOptions.HttpPolicyHeaders.Cors.AllowedOrigins);
+                        y.SetIsOriginAllowedToAllowWildcardSubdomains();
+                    }
+                    else
+                    {
+                        y.SetIsOriginAllowed(_ => true);
+                    }
+
+                    if (webOptions.HttpPolicyHeaders.Cors.AllowedHeaders.Any())
+                    {
+                        y.WithHeaders(webOptions.HttpPolicyHeaders.Cors.AllowedHeaders);
+                    }
+                    else
+                    {
+                        y.AllowAnyHeader();
+                    }
+
+                    if (webOptions.HttpPolicyHeaders.Cors.AllowedMethods.Any())
+                    {
+                        y.WithMethods(webOptions.HttpPolicyHeaders.Cors.AllowedMethods);
+                    }
+                    else
+                    {
+                        y.AllowAnyMethod();
+                    }
+
+                    if (webOptions.HttpPolicyHeaders.Cors.AllowCredentials)
+                    {
+                        y.AllowCredentials();
+                    }
+                    else
+                    {
+                        y.DisallowCredentials();
+                    }
+
+                    y.WithExposedHeaders("RequestId", "TZ", "Content-Disposition", "api-supported-versions");
+                });
+            });
+
+        return services;
+    }
     private static IServiceCollection AddSession(this IServiceCollection services, WebOptions webOptions)
     {
         if (services == null)
@@ -214,10 +248,15 @@ internal static class ServiceCollectionExtensions
         if (webOptions == null)
             throw new ArgumentNullException(nameof(webOptions));
 
+        if (webOptions.Session == null)
+        {
+            return services;
+        }
+
         services
             .AddSession(x =>
             {
-                x.IdleTimeout = webOptions.Hosting.Session.Timeout;
+                x.IdleTimeout = webOptions.Session.Timeout;
             });
 
         return services;
@@ -230,13 +269,16 @@ internal static class ServiceCollectionExtensions
         if (webOptions == null)
             throw new ArgumentNullException(nameof(webOptions));
 
-        var cacheOptions = webOptions.Hosting.Cache;
+        if (webOptions.ResponseCache == null)
+        {
+            return services;
+        }
 
         services
             .AddResponseCaching(x =>
             {
-                x.SizeLimit = cacheOptions.MaxSize * 1024;
-                x.MaximumBodySize = cacheOptions.MaxBodySize * 1024;
+                x.SizeLimit = webOptions.ResponseCache.MaxSize * 1024;
+                x.MaximumBodySize = webOptions.ResponseCache.MaxBodySize * 1024;
             });
 
         return services;
@@ -296,15 +338,15 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
-    private static IServiceCollection AddHealthChecking(this IServiceCollection services, AppOptions appOptions, WebOptions options)
+    private static IServiceCollection AddHealthChecking(this IServiceCollection services, WebOptions webOptions)
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
+        if (webOptions == null)
+            throw new ArgumentNullException(nameof(webOptions));
 
-        if (!options.Hosting.HealthCheck.UseHealthCheck)
+        if (webOptions.HealthCheck == null)
         {
             return services;
         }
@@ -313,9 +355,9 @@ internal static class ServiceCollectionExtensions
             .AddHealthChecks()
             .AddCheck<StartupHealthCheck>("self");
 
-        if (options.Hosting.HealthCheck.UseHealthCheckUI)
+        if (webOptions.HealthCheck.UseHealthCheckUi)
         {
-            var port = options.Hosting.Ports.FirstOrDefault();
+            var port = webOptions.Hosting.Ports.FirstOrDefault();
 
             // TODO: HealthChecks UI: Doesn't poll: JS: Configured polling interval: NaN milliseconds (https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/issues/636)
             services
@@ -324,11 +366,11 @@ internal static class ServiceCollectionExtensions
                     // BUG: ASK CHAT-GPT:  x.AddHealthCheckEndpoint(appOptions.Name.ToLower(), $"http://localhost:{port}/healthz");
 
                     x.SetApiMaxActiveRequests(1);
-                    x.SetEvaluationTimeInSeconds(options.Hosting.HealthCheck.EvaluationInterval);
-                    x.SetMinimumSecondsBetweenFailureNotifications(options.Hosting.HealthCheck.FailureNotificationInterval);
-                    x.MaximumHistoryEntriesPerEndpoint(options.Hosting.HealthCheck.MaximumHistoryEntriesPerEndpoint);
+                    x.SetEvaluationTimeInSeconds(webOptions.HealthCheck.EvaluationInterval);
+                    x.SetMinimumSecondsBetweenFailureNotifications(webOptions.HealthCheck.FailureNotificationInterval);
+                    x.MaximumHistoryEntriesPerEndpoint(webOptions.HealthCheck.MaximumHistoryEntriesPerEndpoint);
 
-                    foreach (var webHook in options.Hosting.HealthCheck.WebHooks)
+                    foreach (var webHook in webOptions.HealthCheck.WebHooks)
                     {
                         x.AddWebhookNotification(webHook.Name, webHook.Uri, webHook.Payload);
                     }
@@ -338,166 +380,160 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
-    private static IServiceCollection AddDocumentation(this IServiceCollection services, AppOptions appOptions, WebOptions webOptions, IdentityOptions securityOptions)
+    private static IServiceCollection AddDocumentation(this IServiceCollection services, WebOptions webOptions)
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
-
-        if (appOptions == null)
-            throw new ArgumentNullException(nameof(appOptions));
 
         if (webOptions == null)
             throw new ArgumentNullException(nameof(webOptions));
 
-        if (webOptions.Documentation.IsEnabled)
+        if (webOptions.Documentation == null)
         {
-            var apiVersionDescriptionProvider = services
-                .BuildServiceProvider()
-                .GetService<IApiVersionDescriptionProvider>();
-
-            return services
-                .AddSwaggerGen(x =>
-                {
-                    foreach (var provider in apiVersionDescriptionProvider.ApiVersionDescriptions)
-                    {
-                        var info = new OpenApiInfo
-                        {
-                            Title = appOptions.Name,
-                            Description = appOptions.Description,
-                            Version = provider.ApiVersion.ToString(),
-                            Contact = webOptions.Documentation.Contact,
-                            License = webOptions.Documentation.License
-                        };
-
-                        if (provider.IsDeprecated)
-                        {
-                            info.Description += " This version has been deprecated.";
-                        }
-
-                        if (!string.IsNullOrEmpty(appOptions.TermsOfService))
-                        {
-                            info.TermsOfService = new Uri(appOptions.TermsOfService);
-                        }
-
-                        x.SwaggerDoc(provider.GroupName, info);
-                    }
-
-                    x.IgnoreObsoleteActions();
-                    x.IgnoreObsoleteProperties();
-                    x.EnableAnnotations(true, true);
-                    x.CustomSchemaIds(y => y.FullName);
-                    x.OrderActionsBy(y => y.RelativePath);
-
-                    x.SchemaFilter<EnumsFilter>();
-                    x.SchemaFilter<ResponseOnlyFilter>();
-                    x.OperationFilter<SwaggerResponseOnlyFilter>();
-                    x.OperationFilter<NonResponseType200Filter>();
-                    x.DocumentFilter<RemoveVersionsRoutesFilter>();
-
-                    var openApiSecurityRequirement = new OpenApiSecurityRequirement();
-
-                    if (securityOptions?.Authentication.Jwt != null)
-                    {
-                        var jwtSecurityScheme = new OpenApiSecurityScheme
-                        {
-                            In = ParameterLocation.Header,
-                            Type = SecuritySchemeType.ApiKey,
-                            Name = "Authorization",
-                            Description = "JWT Authorization header using the Bearer scheme. Format: Authorization: Bearer [token]"
-                        };
-
-                        x.AddSecurityDefinition("Bearer", jwtSecurityScheme);
-
-                        openApiSecurityRequirement
-                            .Add(jwtSecurityScheme, new List<string>());
-                    }
-
-                    if (securityOptions?.Authentication.ApiKey != null)
-                    {
-                        var apiKeySecurityScheme = new OpenApiSecurityScheme
-                        {
-                            Name = "x-api-key",
-                            Type = SecuritySchemeType.ApiKey,
-                            In = ParameterLocation.Header,
-                            Description = "API Key needed to access endpoints."
-                        };
-
-                        x.AddSecurityDefinition("Api-Key", apiKeySecurityScheme);
-                        
-                        openApiSecurityRequirement
-                            .Add(apiKeySecurityScheme, new List<string>());
-                    }
-
-                    x.AddSecurityRequirement(openApiSecurityRequirement);
-
-                    TypesHelper.GetAllTypes()
-                        .Where(y => y.IsTypeOf(typeof(BaseController)))
-                        .Select(y => y.Module)
-                        .Distinct()
-                        .ToList()
-                        .ForEach(y =>
-                        {
-                            var name = y.Name.Replace(".dll", ".xml").Replace(".exe", ".xml");
-                            var path = Path.Combine(AppContext.BaseDirectory, name);
-
-                            if (File.Exists(path))
-                            {
-                                x.IncludeXmlComments(path, true);
-                            }
-
-                            var modelsName = y.Name.Replace(".dll", "").Replace(".exe", "") + ".Models.xml";
-                            var modelsPath = Path.Combine(AppContext.BaseDirectory, modelsName);
-
-                            if (File.Exists(modelsPath))
-                            {
-                                x.IncludeXmlComments(modelsPath);
-                            }
-
-                            y.Assembly
-                                .GetManifestResourceNames()
-                                .Where(z => z.ToLower().EndsWith(".xml"))
-                                .ToList()
-                                .ForEach(z =>
-                                {
-                                    var resource = y.Assembly.GetManifestResourceStream(z);
-
-                                    if (resource != null)
-                                    {
-                                        x.IncludeXmlComments(() => new XPathDocument(resource));
-                                    }
-                                });
-                        });
-                })
-                .AddSwaggerGenNewtonsoftSupport();
+            return services;
         }
 
-        return services;
-    }
-    private static IServiceCollection AddLocalizations(this IServiceCollection services)
-    {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        // BUG: 000: BuildServiceProvider(). ONLY place
+        var apiVersionDescriptionProvider = services
+            .BuildServiceProvider()
+            .GetService<IApiVersionDescriptionProvider>();
 
         services
-            .AddLocalization()
-            .AddMvc()
-            .AddViewLocalization()
-            .AddDataAnnotationsLocalization();
+            .AddSwaggerGen(x =>
+            {
+                foreach (var provider in apiVersionDescriptionProvider.ApiVersionDescriptions)
+                {
+                    var info = new OpenApiInfo
+                    {
+                        Title = webOptions.Name,
+                        Description = webOptions.Documentation.Description,
+                        Version = provider.ApiVersion.ToString(),
+                    };
+
+                    if (webOptions.Documentation.Contact != null)
+                    {
+                        info.Contact = webOptions.Documentation.Contact;
+                    }
+
+                    if (webOptions.Documentation.License != null)
+                    {
+                        info.License = webOptions.Documentation.License;
+                    }
+
+                    if (!string.IsNullOrEmpty(webOptions.Documentation.TermsOfService))
+                    {
+                        info.TermsOfService = new Uri(webOptions.Documentation.TermsOfService);
+                    }
+
+                    if (provider.IsDeprecated)
+                    {
+                        info.Description += " This version has been deprecated.";
+                    }
+
+                    x.SwaggerDoc(provider.GroupName, info);
+                }
+
+                x.IgnoreObsoleteActions();
+                x.IgnoreObsoleteProperties();
+                x.EnableAnnotations(true, true);
+                x.CustomSchemaIds(y => y.FullName);
+                x.OrderActionsBy(y => y.RelativePath);
+
+                x.SchemaFilter<EnumsFilter>();
+                x.SchemaFilter<ResponseOnlyFilter>();
+                x.OperationFilter<SwaggerResponseOnlyFilter>();
+                x.DocumentFilter<RemoveVersionsRoutesFilter>();
+
+                var openApiSecurityRequirement = new OpenApiSecurityRequirement();
+
+                if (webOptions.Identity?.Authentication.Jwt != null)
+                {
+                    var jwtSecurityScheme = new OpenApiSecurityScheme
+                    {
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.ApiKey,
+                        Name = "Authorization",
+                        Description = "JWT Authorization header using the Bearer scheme. Format: Authorization: Bearer [token]"
+                    };
+
+                    x.AddSecurityDefinition("Bearer", jwtSecurityScheme);
+
+                    openApiSecurityRequirement
+                        .Add(jwtSecurityScheme, new List<string>());
+                }
+
+                if (webOptions.Identity?.Authentication.ApiKey != null)
+                {
+                    var apiKeySecurityScheme = new OpenApiSecurityScheme
+                    {
+                        Name = "x-api-key",
+                        Type = SecuritySchemeType.ApiKey,
+                        In = ParameterLocation.Header,
+                        Description = "API Key needed to access endpoints."
+                    };
+
+                    x.AddSecurityDefinition("Api-Key", apiKeySecurityScheme);
+
+                    openApiSecurityRequirement
+                        .Add(apiKeySecurityScheme, new List<string>());
+                }
+
+                x.AddSecurityRequirement(openApiSecurityRequirement);
+
+                TypesHelper.GetAllTypes()
+                    .Where(y => y.IsTypeOf(typeof(BaseController)))
+                    .Select(y => y.Module)
+                    .Distinct()
+                    .ToList()
+                    .ForEach(y =>
+                    {
+                        var name = y.Name.Replace(".dll", ".xml").Replace(".exe", ".xml");
+                        var path = Path.Combine(AppContext.BaseDirectory, name);
+
+                        if (File.Exists(path))
+                        {
+                            x.IncludeXmlComments(path, true);
+                        }
+
+                        var modelsName = y.Name.Replace(".dll", "").Replace(".exe", "") + ".Models.xml";
+                        var modelsPath = Path.Combine(AppContext.BaseDirectory, modelsName);
+
+                        if (File.Exists(modelsPath))
+                        {
+                            x.IncludeXmlComments(modelsPath);
+                        }
+
+                        y.Assembly
+                            .GetManifestResourceNames()
+                            .Where(z => z.ToLower().EndsWith(".xml"))
+                            .ToList()
+                            .ForEach(z =>
+                            {
+                                var resource = y.Assembly.GetManifestResourceStream(z);
+
+                                if (resource != null)
+                                {
+                                    x.IncludeXmlComments(() => new XPathDocument(resource));
+                                }
+                            });
+                    });
+            })
+            .AddSwaggerGenNewtonsoftSupport();
 
         return services;
     }
-    private static IServiceCollection AddTimeZone(this IServiceCollection services, AppOptions appOptions)
+    private static IServiceCollection AddTimeZone(this IServiceCollection services, WebOptions webOptions)
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        if (appOptions == null)
-            throw new ArgumentNullException(nameof(appOptions));
+        if (webOptions == null)
+            throw new ArgumentNullException(nameof(webOptions));
 
         services
             .AddRequestTimeZone(x =>
             {
-                x.Id = appOptions.DefaultTimeZone;
+                x.Id = webOptions.DefaultTimeZone;
                 x.EnableRequestToUtc = true;
                 x.EnableResponseToLocal = true;
                 x.JsonSerializerType = JsonSerializerType.Newtonsoft;
@@ -513,18 +549,18 @@ internal static class ServiceCollectionExtensions
         if (webOptions == null)
             throw new ArgumentNullException(nameof(webOptions));
 
-        var virusScanOptions = webOptions.Hosting.VirusScan;
-
-        if (virusScanOptions.IsEnabled)
+        if (webOptions.VirusScan == null)
         {
-            services
-                .AddRequestVirusScan(x =>
-                {
-                    x.Host = virusScanOptions.Host;
-                    x.Port = virusScanOptions.Port;
-                    x.UseHealthCheck = virusScanOptions.UseHealthCheck;
-                });
+            return services;
         }
+
+        services
+            .AddRequestVirusScan(x =>
+            {
+                x.Host = webOptions.VirusScan.Host;
+                x.Port = webOptions.VirusScan.Port;
+                x.UseHealthCheck = webOptions.VirusScan.UseHealthCheck;
+            });
 
         return services;
     }

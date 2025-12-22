@@ -62,14 +62,14 @@ public static class ConfigManager
             .Build();
 
         var version = tempConfiguration
-            .GetValue<string>("App:Version"); // BUG: We need to update here if we move Version
+            .GetValue<string>("App:Version");
 
         ConfigManager.Version = new Version(version);
 
         if (environment == "Development")
         {
             var entryPoint = tempConfiguration
-                .GetValue<string>("App:EntryPoint"); // BUG: We need to update here if we move EntryPoint
+                .GetValue<string>("App:EntryPoint");
 
             if (entryPoint != null)
             {

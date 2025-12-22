@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
-using Nano.App.Web.Hosting.ModelBinders;
+using Nano.App.Web.ModelBinders;
 
 namespace Nano.App.Web.Annotations;
 

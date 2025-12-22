@@ -52,6 +52,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Hosting\Documentation\.xmldoc\" />
+	  <Folder Include="Documentation\.xmldoc\" />
 	</ItemGroup>
 </Project>

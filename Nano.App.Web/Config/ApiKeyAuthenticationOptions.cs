@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Nano.App.Web.Config;
 
 /// <summary>
@@ -8,5 +10,6 @@ public class ApiKeyAuthenticationOptions
     /// <summary>
     /// Secret.
     /// </summary>
-    public virtual string Secret { get; set; } = null;
+    [Required]
+    public virtual string Secret { get; set; }
 }

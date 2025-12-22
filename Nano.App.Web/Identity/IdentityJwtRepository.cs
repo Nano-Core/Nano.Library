@@ -1,10 +1,8 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Nano.App.ApiClient.Models.Identity;
 using Nano.App.Web.Identity.Abstractions;
 using Nano.Common.Exceptions;
 using Nano.Common.Identity.Consts;
-using Nano.Data.Abstractions.Identity.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,8 +21,6 @@ using Nano.Data.Abstractions.Models.Identity;
 using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
 
 namespace Nano.App.Web.Identity;
-
-// BUG: We should remove the TIdentiy, it shouldn't be needed
 
 /// <summary>
 /// 

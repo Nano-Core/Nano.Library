@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Nano.App.Web.Config;
 
 /// <summary>
@@ -8,20 +10,24 @@ public class MicrosoftOptions
     /// <summary>
     /// Tenant Id.
     /// </summary>
+    [Required]
     public virtual string TenantId { get; set; }
 
     /// <summary>
     /// Client Id.
     /// </summary>
+    [Required]
     public virtual string ClientId { get; set; }
 
     /// <summary>
     /// Client Secret.
     /// </summary>
+    [Required]
     public virtual string ClientSecret { get; set; }
 
     /// <summary>
     /// Scopes.
     /// </summary>
+    [Required]
     public virtual string[] Scopes { get; set; } = [];
 }

@@ -1,6 +1,5 @@
 using Nano.App.Web.Identity.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
-using Nano.Data.Abstractions.Identity.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,6 @@ using System.Threading.Tasks;
 using Nano.App.ApiClient.Models.Identity;
 using Nano.App.ApiClient.Models.Identity.External;
 using Nano.App.ApiClient.Models.Identity.External.Providers;
-using Nano.App.Web.Config;
 using Nano.App.Web.Identity.Models;
 using Nano.Common.Exceptions;
 using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
@@ -173,6 +171,6 @@ public abstract class BaseAuthTransientRepository<TIdentity> : BaseBaseAuthRepos
     {
         await Task.CompletedTask;
 
-        throw new NotImplementedException(); // BUG: Implement referesh with external token
+        throw new NotImplementedException(); // TODO: External Login Refresh 
     }
 }

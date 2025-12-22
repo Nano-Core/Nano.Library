@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Nano.App.Abstractions;
 using Nano.App.ApiClient.Extensions;
-using Nano.App.Config;
 using Nano.App.StartUp;
 using Nano.App.StartUp.Tasks;
 using Nano.Common.Config.Extensions;
@@ -29,8 +28,7 @@ internal static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(configuration));
 
         services
-            .AddConfig(configuration)
-            .AddConfigSection<AppOptions>(AppOptions.SectionName, out _);
+            .AddConfig(configuration);
 
         services
             .AddNulLogger()

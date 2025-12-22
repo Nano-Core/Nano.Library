@@ -15,7 +15,6 @@ using Nano.App.ApiClient.Models.Identity;
 using Nano.App.ApiClient.Models.Identity.External;
 using Nano.App.Web.Identity.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
-using Nano.Data.Abstractions.Identity.Models;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Nano.App.Web.Controllers;

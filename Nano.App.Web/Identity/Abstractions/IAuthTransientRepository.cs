@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Nano.App.ApiClient.Models.Identity;
 using Nano.App.ApiClient.Models.Identity.External;
 using Nano.App.ApiClient.Models.Identity.External.Providers;
-using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.App.Web.Identity.Abstractions;
 
@@ -20,17 +19,6 @@ public interface IAuthTransientRepository : IAuthTransientRepository<Guid>;
 public interface IAuthTransientRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
-    // BUG: Is this needed to be exposed in controller?
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    ///// <typeparam name="TProvider"></typeparam>
-    ///// <param name="logInExternalProvider"></param>
-    ///// <param name="cancellationToken"></param>
-    ///// <returns></returns>
-    //Task<ExternalLogInData> GetExternalProviderLogInData<TProvider>(TProvider logInExternalProvider, CancellationToken cancellationToken = default)
-    //    where TProvider : BaseLogInExternalProvider;
-
     /// <summary>
     /// Signs in the admin user statically.
     /// The login is transient, no Identity store is used.
@@ -45,6 +33,16 @@ public interface IAuthTransientRepository<TIdentity>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The collection of <see cref="ExternalLoginProvider"/>'s.</returns>
     Task<IEnumerable<ExternalLoginProvider>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TProvider"></typeparam>
+    /// <param name="logInExternalProvider"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<ExternalLogInData> GetExternalProviderLogInData<TProvider>(TProvider logInExternalProvider, CancellationToken cancellationToken = default)
+        where TProvider : BaseLogInExternalProvider;
 
     /// <summary>
     /// Signs in a user, from external login.

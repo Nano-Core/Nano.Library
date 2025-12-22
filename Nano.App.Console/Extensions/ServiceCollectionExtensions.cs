@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nano.App.Console.Config;
@@ -8,6 +6,10 @@ using Nano.App.Console.Workers;
 using Nano.Common.Config.Extensions;
 using Nano.Common.Extensions;
 using Nano.Common.Helpers;
+using System;
+using System.Globalization;
+using System.Linq;
+using Nano.App.Config;
 
 namespace Nano.App.Console.Extensions;
 
@@ -31,7 +33,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(configuration));
 
         services
-            .AddConfigSection<ConsoleOptions>(ConsoleOptions.SectionName, out _);
+            .AddConfigSection<ConsoleOptions>(BaseAppOptions.SectionName, out var options);
 
         TypesHelper.GetAllTypes()
             .Where(x =>
@@ -47,6 +49,7 @@ public static class ServiceCollectionExtensions
                     .AddSingleton(typeof(IHostedService), x);
             });
 
+        CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(options.Cultures.Default);
         return services;
     }
 }

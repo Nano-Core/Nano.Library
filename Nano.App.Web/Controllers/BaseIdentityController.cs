@@ -21,17 +21,15 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Nano.App.ApiClient.Models.Identity.External;
+using Nano.App.Web.Config;
 using Nano.Data.Abstractions.Models.Identity;
-using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.App.Web.Controllers;
 
-// BUG: We should hide/remove controller actions that are not configured (jwt, api-key). possibly return 404 in middleware
-
 // BUG: Check all return types from AuthRepository / IdentityRepository, they might have changed. 
-// BUG: Check SaveChanges. When autosave is disabled controllers need to save. Similar to how IRepository is used with other controllers
 
 /// <inheritdoc />
 // BUG: roles: [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER)]
@@ -41,10 +39,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     where TIdentity : IEquatable<TIdentity>
     where TCriteria : class, IQueryCriteria, new()
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    protected virtual IdentityOptions Options { get; set; } // BUG: Should be IOptionsMonitor<DataOptions>, check other places
+    private readonly IOptionsMonitor<WebOptions> options;
 
     /// <summary>
     /// 
@@ -57,15 +52,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     protected virtual IIdentityRepository<TIdentity> IdentityRepository { get; }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger logger, TRepository repository, IAuthRepository<TIdentity> authRepository, IIdentityRepository<TIdentity> identityRepository)
-        : this(logger, repository, null, identityRepository, authRepository)
+    protected BaseIdentityController(ILogger logger, TRepository repository, IOptionsMonitor<WebOptions> options, IAuthRepository<TIdentity> authRepository, IIdentityRepository<TIdentity> identityRepository)
+        : this(logger, repository, null, options, identityRepository, authRepository)
     {
     }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IAuthRepository<TIdentity> authRepository)
+    protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, IOptionsMonitor<WebOptions> options, IIdentityRepository<TIdentity> identityRepository, IAuthRepository<TIdentity> authRepository)
         : base(logger, repository, eventing)
     {
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
         this.AuthRepository = authRepository ?? throw new ArgumentNullException(nameof(authRepository));
         this.IdentityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
     }
@@ -795,7 +791,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Verifies a cstuom purpose token of a user.
+    /// Confirm a cstuom purpose token of a user.
     /// </summary>
     /// <param name="confirmCustomPurpose">The generate confirm email token.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -806,7 +802,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occured.</response>
     [HttpPost]
-    [Route("token/custom/verify")]
+    [Route("token/custom/confirm")]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1101,7 +1097,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         await Task.CompletedTask;
 
         var identityApiKey = this.IdentityRepository
-            .CreateApiKeyAsync(createApiKey, this.Options.Authentication.ApiKey.Secret, out var apiKey);
+            .CreateApiKeyAsync(createApiKey, this.options.CurrentValue.Identity.Authentication.ApiKey.Secret, out var apiKey);
 
         if (identityApiKey == null)
         {

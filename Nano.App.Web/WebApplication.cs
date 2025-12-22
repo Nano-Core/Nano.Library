@@ -1,18 +1,21 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nano.App.Abstractions;
 using Nano.App.Extensions;
 using Nano.App.Web.Config;
 using Nano.App.Web.Extensions;
 using Nano.Common.Config.Helpers;
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using Microsoft.Extensions.Options;
+using Nano.App.Config;
 
 namespace Nano.App.Web;
 
@@ -37,19 +40,22 @@ public class WebApplication : DefaultApplication
         if (applicationLifetime == null)
             throw new ArgumentNullException(nameof(applicationLifetime));
 
+        var services = applicationBuilder.ApplicationServices;
+
+        var webOptions = services
+            .GetRequiredService<IOptionsMonitor<WebOptions>>();
+
         applicationBuilder
             .UseExceptionHandling()
-            .UseDisableAuthController()
-            .UseDisableAuditController()
-            .UseHttpCorsPolicy()
-            .UseHttpXForwardedHeaders()
-            .UseHttpXRobotsTagHeaders()
-            .UseHttpXFrameOptionsPolicyHeader()
-            .UseHttpXXssProtectionPolicyHeader()
-            .UseXHttpContentTypeOptionsPolicyHeader()
-            .UseHttpReferrerPolicyHeader()
-            .UseHttpStrictTransportSecurityPolicyHeader()
-            .UseContentSecurityPolicyHeader()
+            .UseHttpCorsPolicy(webOptions.CurrentValue)
+            .UseHttpXForwardedHeaders(webOptions.CurrentValue)
+            .UseHttpXRobotsTagHeaders(webOptions.CurrentValue)
+            .UseHttpXFrameOptionsPolicyHeader(webOptions.CurrentValue)
+            .UseHttpXXssProtectionPolicyHeader(webOptions.CurrentValue)
+            .UseXHttpContentTypeOptionsPolicyHeader(webOptions.CurrentValue)
+            .UseHttpReferrerPolicyHeader(webOptions.CurrentValue)
+            .UseHttpStrictTransportSecurityPolicyHeader(webOptions.CurrentValue)
+            .UseHttpContentSecurityPolicyHeader(webOptions.CurrentValue)
             .UseStaticFiles()
             .UseCookiePolicy(new CookiePolicyOptions
             {
@@ -58,20 +64,20 @@ public class WebApplication : DefaultApplication
             .UseRouting()
             .UseAuthentication()
             .UseAuthorization()
-            .UseHttpSession()
+            .UseHttpSession(webOptions.CurrentValue)
             .UseHttpRequestOptions()
             .UseHttpRequestIdentifier()
-            .UseHttpRequestLocalization()
+            .UseHttpRequestLocalization(webOptions.CurrentValue)
             .UseHttpRequestTimeZone()
-            .UseHttpResponseCaching()
-            .UseHttpResponseCompression()
+            .UseHttpResponseCaching(webOptions.CurrentValue)
+            .UseHttpResponseCompression(webOptions.CurrentValue)
             .UseEndpoints(x =>
             {
                 x.MapControllers();
                 x.MapDefaultControllerRoute();
                 x.MapRazorPages();
             })
-            .UseHttpRequestVirusScan()
+            .UseHttpRequestVirusScan(webOptions.CurrentValue)
             .Use((context, next) =>
             {
                 if (context.Request.Path == "/signin-facebook")
@@ -81,8 +87,8 @@ public class WebApplication : DefaultApplication
 
                 return next();
             })
-            .UseHttpDocumentataion()
-            .UseHealthChecks();
+            .UseHttpDocumentataion(webOptions.CurrentValue)
+            .UseHttpHealthChecks(webOptions.CurrentValue);
 
         base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
     }
@@ -115,10 +121,15 @@ public class WebApplication : DefaultApplication
         var applicationKey = Assembly.GetEntryAssembly()?.FullName ?? Assembly.GetExecutingAssembly().FullName;
 
         var webOptions = config
-            .GetSection(WebOptions.SectionName)
-            .Get<WebOptions>() ?? new WebOptions();
+            .GetSection(BaseAppOptions.SectionName)
+            .Get<WebOptions>();
 
-        var shutdownTimeout = TimeSpan.FromSeconds(webOptions.Hosting.ShutdownTimeout);
+        if (webOptions == null)
+        {
+            throw new NullReferenceException(nameof(webOptions));
+        }
+
+        var shutdownTimeout = TimeSpan.FromSeconds(webOptions.ShutdownTimeout);
 
         return new WebHostBuilder()
             .UseEnvironment(environment)
@@ -140,21 +151,19 @@ public class WebApplication : DefaultApplication
                         });
                     });
 
-                var certificate = webOptions.Hosting.Certificate;
-
                 webOptions.Hosting.PortsHttps
                     .ToList()
                     .ForEach(y =>
                     {
                         x.ListenAnyIP(y, z =>
                         {
-                            z.Protocols = HttpProtocols.Http1AndHttp2;
+                            z.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
 
-                            if (certificate.Path != null)
+                            if (webOptions.Hosting.Certificate != null)
                             {
-                                if (File.Exists(certificate.Path))
+                                if (File.Exists(webOptions.Hosting.Certificate.Path))
                                 {
-                                    z.UseHttps(certificate.Path, certificate.Password);
+                                    z.UseHttps(webOptions.Hosting.Certificate.Path, webOptions.Hosting.Certificate.Password);
                                 }
                             }
                         });

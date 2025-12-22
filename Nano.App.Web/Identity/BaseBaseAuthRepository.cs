@@ -2,8 +2,6 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
@@ -11,8 +9,8 @@ using Nano.App.ApiClient.Models.Identity;
 using Nano.App.ApiClient.Models.Identity.External.Providers;
 using Nano.App.Web.Config;
 using Nano.Common.Exceptions;
-using Nano.Data.Abstractions.Config;
-using Nano.Data.Abstractions.Identity.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
 
 namespace Nano.App.Web.Identity;
@@ -138,7 +136,7 @@ public class BaseBaseAuthRepository<TIdentity>
                     var debugToken = await debugTokenResponse.Content
                         .ReadAsStringAsync(cancellationToken);
 
-                    var validation = JsonSerializer.Deserialize<dynamic>(debugToken); // BUG: Uses Microsoft serialization
+                    var validation = JsonConvert.DeserializeObject<dynamic>(debugToken);
 
                     if (validation == null)
                     {
@@ -164,7 +162,7 @@ public class BaseBaseAuthRepository<TIdentity>
                     var user = await userResponse.Content
                         .ReadAsStringAsync(cancellationToken);
 
-                    var externalLoginData = JsonSerializer.Deserialize<ExternalLogInData>(user);
+                    var externalLoginData = JsonConvert.DeserializeObject<ExternalLogInData>(user);
                     if (externalLoginData != null)
                     {
                         externalLoginData.ExternalToken = new ExternalLoginTokenData
@@ -227,7 +225,7 @@ public class BaseBaseAuthRepository<TIdentity>
                         var stringContent = await httpResponse.Content
                             .ReadAsStringAsync(cancellationToken);
 
-                        var content = JsonSerializer.Deserialize<JsonObject>(stringContent);
+                        var content = JsonConvert.DeserializeObject<JObject>(stringContent);
 
                         var error = (string)content?["error"];
                         var errorDescription = (string)content?["error"];

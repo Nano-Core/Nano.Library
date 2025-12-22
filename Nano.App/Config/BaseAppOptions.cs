@@ -23,4 +23,16 @@ public abstract class BaseAppOptions
     /// </summary>
     [Required]
     public virtual string EntryPoint { get; set; }
+
+    /// <summary>
+    /// Version.
+    /// </summary>
+    [Required]
+    public virtual string Version { get; set; } = "1.0.0.0";
+
+    /// <summary>
+    /// Cultures.
+    /// </summary>
+    [Required]
+    public virtual CultureOptions Cultures { get; set; } = new();
 }

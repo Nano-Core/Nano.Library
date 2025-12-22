@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.App.Config;
@@ -17,5 +18,5 @@ public class CultureOptions
     /// Supported.
     /// </summary>
     [Required]
-    public virtual string[] Supported { get; set; } = [];
+    public virtual IEnumerable<string> Supported { get; set; } = [];
 }
