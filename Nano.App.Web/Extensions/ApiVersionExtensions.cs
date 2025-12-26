@@ -1,6 +1,6 @@
 using System;
 using Asp.Versioning;
-using Nano.Common.Config.Helpers;
+using Nano.Common.Config;
 
 namespace Nano.App.Web.Extensions;
 

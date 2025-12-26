@@ -4,6 +4,8 @@ using Nano.Common.Enums;
 
 namespace Nano.App.ApiClient.Config;
 
+// BUG: Should be inside App in configuration. Maybe as Dictionary
+
 /// <summary>
 /// Api Options.
 /// </summary>

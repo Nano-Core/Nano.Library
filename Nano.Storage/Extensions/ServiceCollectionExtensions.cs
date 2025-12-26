@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
     /// <typeparam name="TProvider">The <typeparamref name="TProvider"/> type.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddStorage<TProvider>(this IServiceCollection services)
+    public static IServiceCollection AddNanoStorage<TProvider>(this IServiceCollection services)
         where TProvider : class, IStorageProvider, new()
     {
         if (services == null)

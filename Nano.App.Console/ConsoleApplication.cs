@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Nano.App.Abstractions;
 using Nano.App.Console.Extensions;
 using Nano.App.Extensions;
-using Nano.Common.Config.Helpers;
+using Nano.Common.Config;
 
 namespace Nano.App.Console;
 
@@ -50,7 +50,7 @@ public class ConsoleApplication : DefaultApplication
             .UseConsoleLifetime()
             .ConfigureServices(x =>
             {
-                x.AddApp<TApplication>(config);
+                x.AddNanoApp<TApplication>(config);
                 x.AddConsole(config);
             });
     }

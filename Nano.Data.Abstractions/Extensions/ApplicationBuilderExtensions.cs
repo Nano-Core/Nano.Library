@@ -15,7 +15,7 @@ public static class ApplicationBuilderExtensions
     /// <param name="applicationBuilder"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static IApplicationBuilder UseDbMigrations(this IApplicationBuilder applicationBuilder)
+    public static IApplicationBuilder UseNanoDbMigrations(this IApplicationBuilder applicationBuilder)
     {
         if (applicationBuilder == null)
             throw new ArgumentNullException(nameof(applicationBuilder));

@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using Nano.App.Web.Config.Enums;
-using NWebsec.AspNetCore.Mvc;
 
 namespace Nano.App.Web.Config;
 
@@ -14,7 +13,7 @@ public class HttpPolicyHeaderOptions
     /// Added X-Content-Type Options header.
     /// </summary>
     [Required]
-    public virtual bool UseContentTypeOptions { get; set; } = true;
+    public virtual bool UseContentTypeOptionsNoSniff { get; set; } = true;
 
     /// <summary>
     /// Use Referrer Policy Header.
@@ -55,5 +54,5 @@ public class HttpPolicyHeaderOptions
     /// Robots.
     /// Settings for robots (search engines) behavior.
     /// </summary>
-    public virtual RobotOptions Robots { get; set; }
+    public virtual RobotsOptions Robots { get; set; }
 }

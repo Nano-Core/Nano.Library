@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,13 +8,16 @@ using Nano.App.Abstractions;
 using Nano.App.Extensions;
 using Nano.App.Web.Config;
 using Nano.App.Web.Extensions;
-using Nano.Common.Config.Helpers;
 using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Options;
 using Nano.App.Config;
+using Nano.App.Web.Identity;
+using Nano.App.Web.Identity.Abstractions;
+using Nano.Common.Config;
+using Nano.Common.Config.Extensions;
 
 namespace Nano.App.Web;
 
@@ -46,38 +48,35 @@ public class WebApplication : DefaultApplication
             .GetRequiredService<IOptionsMonitor<WebOptions>>();
 
         applicationBuilder
-            .UseExceptionHandling()
-            .UseHttpCorsPolicy(webOptions.CurrentValue)
-            .UseHttpXForwardedHeaders(webOptions.CurrentValue)
-            .UseHttpXRobotsTagHeaders(webOptions.CurrentValue)
-            .UseHttpXFrameOptionsPolicyHeader(webOptions.CurrentValue)
-            .UseHttpXXssProtectionPolicyHeader(webOptions.CurrentValue)
-            .UseXHttpContentTypeOptionsPolicyHeader(webOptions.CurrentValue)
-            .UseHttpReferrerPolicyHeader(webOptions.CurrentValue)
-            .UseHttpStrictTransportSecurityPolicyHeader(webOptions.CurrentValue)
-            .UseHttpContentSecurityPolicyHeader(webOptions.CurrentValue)
+            .UseNanoExceptionHandling()
+            .UseNanoHttpCorsPolicy(webOptions.CurrentValue)
+            .UseNanoHttpXForwardedHeaders(webOptions.CurrentValue)
+            .UseNanoHttpXRobotsTagHeaders(webOptions.CurrentValue)
+            .UseNanoHttpXFrameOptionsPolicyHeader(webOptions.CurrentValue)
+            .UseNanoHttpXXssProtectionPolicyHeader(webOptions.CurrentValue)
+            .UseNanoHttpContentTypeOptionsPolicyHeader(webOptions.CurrentValue)
+            .UseNanoHttpReferrerPolicyHeader(webOptions.CurrentValue)
+            .UseNanoHttpStrictTransportSecurityPolicyHeader(webOptions.CurrentValue)
+            .UseNanoHttpContentSecurityPolicyHeader(webOptions.CurrentValue)
             .UseStaticFiles()
-            .UseCookiePolicy(new CookiePolicyOptions
-            {
-                Secure = CookieSecurePolicy.SameAsRequest
-            })
+            .UseCookiePolicy()
             .UseRouting()
             .UseAuthentication()
             .UseAuthorization()
-            .UseHttpSession(webOptions.CurrentValue)
-            .UseHttpRequestOptions()
-            .UseHttpRequestIdentifier()
-            .UseHttpRequestLocalization(webOptions.CurrentValue)
-            .UseHttpRequestTimeZone()
-            .UseHttpResponseCaching(webOptions.CurrentValue)
-            .UseHttpResponseCompression(webOptions.CurrentValue)
+            .UseNanoSession(webOptions.CurrentValue)
+            .UseNanoRequestOptions()
+            .UseNanoRequestIdentifier()
+            .UseNanoRequestVirusScan(webOptions.CurrentValue)
+            .UseNanoRequestLocalization(webOptions.CurrentValue)
+            .UseNanoRequestTimeZone()
+            .UseNanoResponseCompression(webOptions.CurrentValue)
+            .UseNanoResponseCaching(webOptions.CurrentValue)
             .UseEndpoints(x =>
             {
                 x.MapControllers();
                 x.MapDefaultControllerRoute();
                 x.MapRazorPages();
             })
-            .UseHttpRequestVirusScan(webOptions.CurrentValue)
             .Use((context, next) =>
             {
                 if (context.Request.Path == "/signin-facebook")
@@ -87,8 +86,8 @@ public class WebApplication : DefaultApplication
 
                 return next();
             })
-            .UseHttpDocumentataion(webOptions.CurrentValue)
-            .UseHttpHealthChecks(webOptions.CurrentValue);
+            .UseNanoDocumentataion(webOptions.CurrentValue)
+            .UseNanoHealthChecks(webOptions.CurrentValue);
 
         base.Configure(applicationBuilder, hostingEnvironment, applicationLifetime);
     }
@@ -120,16 +119,16 @@ public class WebApplication : DefaultApplication
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
         var applicationKey = Assembly.GetEntryAssembly()?.FullName ?? Assembly.GetExecutingAssembly().FullName;
 
-        var webOptions = config
+        var tempWebOptions = config
             .GetSection(BaseAppOptions.SectionName)
             .Get<WebOptions>();
 
-        if (webOptions == null)
+        if (tempWebOptions == null)
         {
-            throw new NullReferenceException(nameof(webOptions));
+            throw new NullReferenceException(nameof(tempWebOptions));
         }
 
-        var shutdownTimeout = TimeSpan.FromSeconds(webOptions.ShutdownTimeout);
+        var shutdownTimeout = TimeSpan.FromSeconds(tempWebOptions.ShutdownTimeout);
 
         return new WebHostBuilder()
             .UseEnvironment(environment)
@@ -141,7 +140,7 @@ public class WebApplication : DefaultApplication
                 x.Limits.MaxRequestBodySize = null;
                 x.Limits.MaxResponseBufferSize = null;
 
-                webOptions.Hosting.Ports
+                tempWebOptions.Hosting.Ports
                     .ToList()
                     .ForEach(y =>
                     {
@@ -151,7 +150,7 @@ public class WebApplication : DefaultApplication
                         });
                     });
 
-                webOptions.Hosting.PortsHttps
+                tempWebOptions.Hosting.PortsHttps
                     .ToList()
                     .ForEach(y =>
                     {
@@ -159,11 +158,11 @@ public class WebApplication : DefaultApplication
                         {
                             z.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
 
-                            if (webOptions.Hosting.Certificate != null)
+                            if (tempWebOptions.Hosting.Certificate != null)
                             {
-                                if (File.Exists(webOptions.Hosting.Certificate.Path))
+                                if (File.Exists(tempWebOptions.Hosting.Certificate.Path))
                                 {
-                                    z.UseHttps(webOptions.Hosting.Certificate.Path, webOptions.Hosting.Certificate.Password);
+                                    z.UseHttps(tempWebOptions.Hosting.Certificate.Path, tempWebOptions.Hosting.Certificate.Password);
                                 }
                             }
                         });
@@ -172,8 +171,33 @@ public class WebApplication : DefaultApplication
             .UseContentRoot(root)
             .ConfigureServices(x =>
             {
-                x.AddApp<TApplication>(config);
-                x.AddWeb(config);
+                x.AddNanoApp<TApplication>(config);
+
+                x.AddConfigSection<WebOptions>(BaseAppOptions.SectionName, out var webOptions);
+
+                x.AddNanoExceptionHandling(webOptions);
+                x.AddNanoCors(webOptions);
+                x.AddNanoForwardedHeaders(webOptions);
+                x.AddNanoHsts(webOptions);
+                x.AddNanoCookies(webOptions);
+                x.AddNanoSession(webOptions);
+                x.AddNanoResponseCaching(webOptions);
+                x.AddNanoVersioning(webOptions);
+                x.AddNanoIdentityAuthenticationAndAuthorization(webOptions.Identity.Authentication);
+                x.AddNanoRequestLocalization(webOptions);
+                x.AddNanoRequestTimeZone(webOptions);
+                x.AddNanoVirusScan(webOptions);
+                x.AddNanoResponseCompression(webOptions);
+                x.AddNanoRequestOptions(webOptions);
+                x.AddNanoRequestIdentifier(webOptions);
+                x.AddNanoFormOptions(webOptions);
+                x.AddNanoMvc(webOptions);
+                x.AddNanoDocumentation(webOptions);
+                x.AddNanoHealthChecking(webOptions);
+
+                x.AddScoped<IIdentityJwtRepository, IdentityJwtRepository>();
+                x.AddScoped<IAuthRepository, DefaultAuthRepository>();
+                x.AddScoped<IAuthTransientRepository, DefaultAuthTransientRepository>();
             })
             .UseStartup<TApplication>()
             .UseSetting(WebHostDefaults.ApplicationKey, applicationKey)

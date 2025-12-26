@@ -8,6 +8,12 @@ namespace Nano.App.Web.Config;
 public class CspOptions
 {
     /// <summary>
+    /// Report Only.
+    /// </summary>
+    [Required]
+    public virtual bool ReportOnly { get; set; } = false;
+
+    /// <summary>
     /// Block All Mixed Content.
     /// </summary>
     [Required]
@@ -18,6 +24,11 @@ public class CspOptions
     /// </summary>
     [Required]
     public virtual bool UpgradeInsecureRequests { get; set; } = false;
+
+    /// <summary>
+    /// Trusted Types.
+    /// </summary>
+    public virtual CspDirectiveTrustedTypes TrustedTypes { get; set; }
 
     /// <summary>
     /// Defaults.
@@ -110,12 +121,6 @@ public class CspOptions
     [Required]
     public virtual string[] ReportUris { get; set; } = [];
 
-    /// <summary>
-    /// Plugin Types.
-    /// </summary>
-    [Required]
-    public virtual string[] PluginTypes { get; set; } = [];
-
 
     /// <summary>
     /// Csp Directive.
@@ -186,7 +191,12 @@ public class CspOptions
     }
 
     /// <summary>
-    /// Sandbox.
+    /// Csp Directive Trusted Types.
+    /// </summary>
+    public class CspDirectiveTrustedTypes;
+
+    /// <summary>
+    /// Csp Directive Sandbox.
     /// </summary>
     public class CspDirectiveSandbox
     {

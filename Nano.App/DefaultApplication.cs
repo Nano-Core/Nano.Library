@@ -46,6 +46,6 @@ public class DefaultApplication : BaseApplication
         applicationBuilder
             .UseEventHandlers()
             .UseEntityEventHandlers()
-            .UseDbMigrations();
+            .UseNanoDbMigrations();
     }
 }

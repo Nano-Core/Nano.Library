@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
     /// <typeparam name="TContext">The <see cref="DbContext"/> implementation.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddDataContext<TProvider, TContext>(this IServiceCollection services)
+    public static IServiceCollection AddNanoDataContext<TProvider, TContext>(this IServiceCollection services)
         where TProvider : class, IDataProvider, new()
         where TContext : DefaultDbContext
     {
@@ -41,7 +41,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
 
         services
-            .AddDataContext<TProvider, TContext, Guid>();
+            .AddNanoDataContext<TProvider, TContext, Guid>();
 
         services
             .AddScoped<DefaultDbContext, TContext>();
@@ -57,7 +57,7 @@ public static class ServiceCollectionExtensions
     /// <typeparam name="TIdentity">The identity type.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddDataContext<TProvider, TContext, TIdentity>(this IServiceCollection services)
+    public static IServiceCollection AddNanoDataContext<TProvider, TContext, TIdentity>(this IServiceCollection services)
         where TProvider : class, IDataProvider, new()
         where TContext : BaseDbContext<TIdentity>
         where TIdentity : IEquatable<TIdentity>

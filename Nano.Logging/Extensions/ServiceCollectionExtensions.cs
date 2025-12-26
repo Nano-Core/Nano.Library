@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
     /// <typeparam name="TProvider">The <typeparamref name="TProvider"/> type.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddLogging<TProvider>(this IServiceCollection services)
+    public static IServiceCollection AddNanoLogging<TProvider>(this IServiceCollection services)
         where TProvider : class, ILoggingProvider, new()
     {
         if (services == null)

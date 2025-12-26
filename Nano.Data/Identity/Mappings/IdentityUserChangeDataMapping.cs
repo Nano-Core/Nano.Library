@@ -1,7 +1,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Identity;
 using Nano.Data.Identity.Consts;
 using Nano.Data.Mappings;
@@ -22,6 +21,9 @@ public class IdentityUserChangeDataMapping<TIdentity> : BaseEntityIdentityMappin
 
         builder
             .ToTable(TableNames.IDENTITY_USER_CHANGE_DATA);
+
+        builder
+            .HasQueryFilter(x => x.IdentityUser.IsActive);
 
         builder
             .HasOne(x => x.IdentityUser)

@@ -20,10 +20,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.System" Version="9.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.UI" Version="9.0.0" />
@@ -35,8 +31,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="9.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.10" />
-		<PackageReference Include="NWebsec.AspNetCore.Middleware" Version="3.0.0" />
-		<PackageReference Include="NWebsec.AspNetCore.Mvc" Version="3.0.0" />
+		<PackageReference Include="NetEscapades.AspNetCore.SecurityHeaders" Version="1.3.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.6" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="9.0.6" />
@@ -52,6 +47,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Documentation\.xmldoc\" />
+	  <Folder Include="Mvc\Documentation\.xmldoc\" />
+	  <Folder Include="Identity\Extensions\" />
 	</ItemGroup>
 </Project>

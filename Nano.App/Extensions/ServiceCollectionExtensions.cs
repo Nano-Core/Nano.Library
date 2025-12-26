@@ -18,7 +18,7 @@ namespace Nano.App.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddApp<TApplication>(this IServiceCollection services, IConfiguration configuration) 
+    internal static IServiceCollection AddNanoApp<TApplication>(this IServiceCollection services, IConfiguration configuration) 
         where TApplication : class, IApplication
     {
         if (services == null)

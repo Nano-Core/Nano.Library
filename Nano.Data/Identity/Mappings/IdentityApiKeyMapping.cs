@@ -24,6 +24,9 @@ public class IdentityApiKeyMapping<TIdentity> : BaseEntityIdentityMapping<Identi
             .ToTable(TableNames.IDENTITY_API_KEY);
 
         builder
+            .HasQueryFilter(x => x.IdentityUser.IsActive);
+
+        builder
             .HasOne(x => x.IdentityUser)
             .WithMany()
             .IsRequired();
