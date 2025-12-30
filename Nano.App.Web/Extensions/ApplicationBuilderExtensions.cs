@@ -1,4 +1,3 @@
-using Asp.Versioning.ApiExplorer;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +8,7 @@ using Microsoft.Net.Http.Headers;
 using Nano.App.Web.Config;
 using Nano.App.Web.Config.Enums;
 using Nano.App.Web.Extensions.Const;
-using Nano.Common.Config;
+using Nano.App.Web.Mvc.Middleware;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Nano.App.Web.Mvc.Middleware;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Nano.App.Web.Mvc.Documentation.Filters.Document;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
@@ -524,13 +525,16 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoDocumentataion(this IApplicationBuilder applicationBuilder, WebOptions webOptions)
+    internal static IApplicationBuilder UseNanoDocumentataion(this IApplicationBuilder applicationBuilder, WebOptions webOptions, string environment)
     {
         if (applicationBuilder == null)
             throw new ArgumentNullException(nameof(applicationBuilder));
 
         if (webOptions == null)
             throw new ArgumentNullException(nameof(webOptions));
+
+        if (environment == null) 
+            throw new ArgumentNullException(nameof(environment));
 
         if (webOptions.Documentation != null)
         {
@@ -546,15 +550,20 @@ internal static class ApplicationBuilderExtensions
 
                     foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
                     {
-                        var defaultVersionText = webOptions.Documentation.UseDefaultVersion && description.ApiVersion.IsDefault()
+                        var defaultVersion = webOptions.Version
+                            .ParseVersion();
+
+                        var defaultApiVersion = new ApiVersion(defaultVersion.Major, defaultVersion.Minor);
+
+                        var defaultVersionText = webOptions.Documentation.UseDefaultVersion && description.ApiVersion == defaultApiVersion
                             ? " (Default)"
                             : string.Empty;
 
-                        x.SwaggerEndpoint($"{description.GroupName}/swagger.json", $"{nameof(Nano)} - {webOptions.Name} {description.ApiVersion}{defaultVersionText} ({ConfigManager.Environment})");
+                        x.SwaggerEndpoint($"{description.GroupName}/swagger.json", $"{nameof(Nano)} - {webOptions.Name} {description.ApiVersion}{defaultVersionText} ({environment})");
                     }
 
                     x.RoutePrefix = "docs";
-                    x.DocumentTitle = $"{nameof(Nano)} - {webOptions.Name} Docs ({ConfigManager.Environment})";
+                    x.DocumentTitle = $"{nameof(Nano)} - {webOptions.Name} Docs ({environment})";
 
                     x.EnableFilter();
                     x.EnableDeepLinking();
@@ -596,13 +605,16 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoHealthChecks(this IApplicationBuilder applicationBuilder, WebOptions webOptions)
+    internal static IApplicationBuilder UseNanoHealthChecks(this IApplicationBuilder applicationBuilder, WebOptions webOptions, string environment)
     {
         if (applicationBuilder == null)
             throw new ArgumentNullException(nameof(applicationBuilder));
 
         if (webOptions == null) 
             throw new ArgumentNullException(nameof(webOptions));
+
+        if (environment == null) 
+            throw new ArgumentNullException(nameof(environment));
 
         if (webOptions.HealthCheck == null)
         {
@@ -617,21 +629,18 @@ internal static class ApplicationBuilderExtensions
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             });
 
-        if (webOptions.HealthCheck.UseHealthCheckUi)
-        {
-            applicationBuilder
-                .UseHealthChecksUI(x =>
-                {
-                    x.PageTitle = $"{nameof(Nano)} - {webOptions.Name} Healthz v{webOptions.Version} ({ConfigManager.Environment})";
-                    x.UIPath = HealthzCheckUris.UiPath;
-                    x.ApiPath = HealthzCheckUris.ApiPath;
-                    x.ResourcesPath = HealthzCheckUris.RexPath;
-                    x.WebhookPath = HealthzCheckUris.WebHooksPath;
-                    x.UseRelativeApiPath = true;
-                    x.UseRelativeResourcesPath = true;
-                    x.UseRelativeWebhookPath = true;
-                });
-        }
+        applicationBuilder
+            .UseHealthChecksUI(x =>
+            {
+                x.PageTitle = $"{nameof(Nano)} - {webOptions.Name} Healthz v{webOptions.Version} ({environment})";
+                x.UIPath = HealthzCheckUris.UiPath;
+                x.ApiPath = HealthzCheckUris.ApiPath;
+                x.ResourcesPath = HealthzCheckUris.RexPath;
+                x.WebhookPath = HealthzCheckUris.WebHooksPath;
+                x.UseRelativeApiPath = true;
+                x.UseRelativeResourcesPath = true;
+                x.UseRelativeWebhookPath = true;
+            });
 
         return applicationBuilder;
     }

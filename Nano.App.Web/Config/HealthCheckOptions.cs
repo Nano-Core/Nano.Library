@@ -8,12 +8,6 @@ namespace Nano.App.Web.Config;
 public class HealthCheckOptions
 {
     /// <summary>
-    /// Use Health Check UI.
-    /// </summary>
-    [Required]
-    public virtual bool UseHealthCheckUi { get; set; } = true;
-
-    /// <summary>
     /// Evaluation Interval.
     /// The interval between health-checks.
     /// </summary>

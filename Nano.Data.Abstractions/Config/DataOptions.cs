@@ -1,6 +1,6 @@
-using Nano.Common.Enums;
 using Nano.Data.Abstractions.Config.Enums;
 using System.ComponentModel.DataAnnotations;
+using Nano.Common.Config.Enums;
 
 namespace Nano.Data.Abstractions.Config;
 

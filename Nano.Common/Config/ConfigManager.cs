@@ -12,33 +12,9 @@ namespace Nano.Common.Config;
 public static class ConfigManager
 {
     /// <summary>
-    /// Path.
-    /// </summary>
-    public static string Path { get; }
-
-    /// <summary>
-    /// Environment.
-    /// </summary>
-    public static string Environment { get; }
-
-    /// <summary>
-    /// Version.
-    /// </summary>
-    public static Version Version { get; set; }
-
-    /// <summary>
     /// The configuration, set when <see cref="BuildConfiguration"/> is invoked.
     /// </summary>
     internal static IConfiguration Configuration { get; set; }
-
-    /// <summary>
-    /// Constructor (static).
-    /// </summary>
-    static ConfigManager()
-    {
-        ConfigManager.Path = Directory.GetCurrentDirectory();
-        ConfigManager.Environment = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
-    }
 
     /// <summary>
     /// Builds the <see cref="IConfiguration"/>.
@@ -48,8 +24,8 @@ public static class ConfigManager
     {
         const string NAME = "appsettings";
 
-        var path = ConfigManager.Path;
-        var environment = ConfigManager.Environment;
+        var path = Directory.GetCurrentDirectory();
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
         var configurationBuilder = new ConfigurationBuilder()
             .SetBasePath(path)
@@ -60,11 +36,6 @@ public static class ConfigManager
 
         var tempConfiguration = configurationBuilder
             .Build();
-
-        var version = tempConfiguration
-            .GetValue<string>("App:Version");
-
-        ConfigManager.Version = new Version(version);
 
         if (environment == "Development")
         {
@@ -84,9 +55,7 @@ public static class ConfigManager
             }
         }
 
-        ConfigManager.Configuration = configurationBuilder
+        return ConfigManager.Configuration = configurationBuilder
             .Build();
-
-        return Configuration;
     }
 }

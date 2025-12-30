@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Nano.Common.Enums;
+using Nano.Common.Config.Enums;
 
 namespace Nano.Storage.Abstractions.Config;
 

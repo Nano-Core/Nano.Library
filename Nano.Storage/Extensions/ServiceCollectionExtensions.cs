@@ -24,7 +24,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
 
         services
-            .AddConfigSection<StorageOptions>(StorageOptions.SectionName, out var options);
+            .AddNanoConfigSection<StorageOptions>(StorageOptions.SectionName, out var options);
 
         if (options == null)
         {

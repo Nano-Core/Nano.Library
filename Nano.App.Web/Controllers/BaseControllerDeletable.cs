@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.ApiClient.Consts;
-using Nano.App.ApiClient.Models;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Models.Abstractions;
@@ -59,8 +58,8 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DeleteAsync([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
     {
         await this.Repository
@@ -90,8 +89,8 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DeleteManyAsync([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
     {
         await this.Repository
@@ -121,8 +120,8 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DeleteManyBulkAsync([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
     {
         await this.Repository
@@ -147,8 +146,8 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DeleteQueryAsync([FromBody][Required]TCriteria select, CancellationToken cancellationToken = default)
     {
         await this.Repository

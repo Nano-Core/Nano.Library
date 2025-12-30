@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.ApiClient.Consts;
-using Nano.App.ApiClient.Models;
 using Nano.App.ApiClient.Requests.Models;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
@@ -64,8 +63,8 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
     {
         entity = await this.Repository
@@ -99,8 +98,8 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditAndGetAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
     {
         entity = await this.Repository
@@ -129,8 +128,8 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditManyAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         await this.Repository
@@ -164,8 +163,8 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditManyBulkAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         await this.Repository
@@ -190,8 +189,8 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditQueryAsync([FromBody][Required]UpdateQuery<TCriteria> query, CancellationToken cancellationToken = default)
     {
         await this.Repository

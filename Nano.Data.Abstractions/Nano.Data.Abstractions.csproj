@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<ApplicationIcon>..\icon.ico</ApplicationIcon>
 		<Configurations>Debug;Release</Configurations>
-		<Version>9.1.0.0</Version>
+		<Version>10.0.0.0</Version>
 		<LangVersion>latest</LangVersion>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningsAsErrors></WarningsAsErrors>
@@ -18,8 +18,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DynamicExpression" Version="9.0.3" />
-		<PackageReference Include="libphonenumber-csharp" Version="9.0.17" />
+		<PackageReference Include="DynamicExpression" Version="10.0.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -28,5 +28,9 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Nano.Common\Nano.Common.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Consts\" />
 	</ItemGroup>
 </Project>

@@ -11,5 +11,5 @@ public class IdentityOptions
     /// Authentication Options.
     /// </summary>
     [Required]
-    public virtual AuthenticationOptions Authentication { get; set; } = new();
+    public virtual AuthenticationOptions Authentication { get; set; } = new(); 
 }

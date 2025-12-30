@@ -10,7 +10,7 @@ using Nano.App.ApiClient.Consts;
 using Nano.App.ApiClient.Models;
 using Nano.App.ApiClient.Requests.Types;
 using Nano.Common.Extensions;
-using Nano.Common.Serialization;
+using Nano.Common.Serialization.Json;
 using Newtonsoft.Json;
 
 namespace Nano.App.ApiClient.Extensions;

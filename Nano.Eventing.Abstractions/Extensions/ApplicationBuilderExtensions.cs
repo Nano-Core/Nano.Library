@@ -26,7 +26,7 @@ public static class ApplicationBuilderExtensions
             .GetService<IRegisterEventHandlersTask>();
 
         registerEventHandlersTask?
-            .RegisterEventHandlers(applicationBuilder.ApplicationServices)
+            .RegisterEventHandlers(scope.ServiceProvider)
             .GetAwaiter()
             .GetResult();
 

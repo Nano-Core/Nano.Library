@@ -1,69 +1,71 @@
+using Microsoft.Extensions.Options;
+using Nano.App.ApiClient.Models.Identity;
+using Nano.App.ApiClient.Models.Identity.External;
+using Nano.App.ApiClient.Models.Identity.External.Providers;
+using Nano.App.Web.Config;
 using Nano.App.Web.Identity.Abstractions;
+using Nano.App.Web.Identity.Models;
 using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Data.Abstractions.Identity.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.App.ApiClient.Models.Identity;
-using Nano.App.ApiClient.Models.Identity.External;
-using Nano.App.ApiClient.Models.Identity.External.Providers;
-using Nano.App.Web.Identity.Models;
-using Nano.Common.Exceptions;
-using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
 
 namespace Nano.App.Web.Identity;
 
 /// <summary>
 /// Base Identity Transient Repository.
 /// </summary>
-public abstract class BaseAuthTransientRepository<TIdentity> : BaseBaseAuthRepository<TIdentity>, IAuthTransientRepository<TIdentity>
-    where TIdentity : IEquatable<TIdentity>
+public abstract class BaseAuthTransientRepository : BaseBaseAuthRepository, IAuthTransientRepository
 {
     /// <summary>
     /// Logger.
     /// </summary>
-    protected virtual IIdentityJwtRepository<TIdentity> IdentityJwtRepository { get; }
+    protected virtual IIdentityJwtRepository IdentityJwtRepository { get; }
 
     /// <summary>
     /// The user authenticates and on success recieves a jwt token for use with auhtorization.
     /// </summary>
-    /// <param name="options">The <see cref="IdentityOptions"/>.</param>
+    /// <param name="options">The <see cref="IOptionsMonitor{WebOptions}"/>.</param>
     /// <param name="identityJwtRepository"></param>
-    protected BaseAuthTransientRepository(IdentityOptions options, IIdentityJwtRepository<TIdentity> identityJwtRepository)
+    protected BaseAuthTransientRepository(IOptionsMonitor<WebOptions> options, IIdentityJwtRepository identityJwtRepository)
         : base(options)
     {
         this.IdentityJwtRepository = identityJwtRepository ?? throw new ArgumentNullException(nameof(identityJwtRepository));
     }
 
     /// <inheritdoc />
-    public virtual AccessToken LogInRootTransientAsync(LogInRoot logInRoot)
+    public virtual async Task<AccessToken> LogInRootTransientAsync(LogInRoot logInRoot)
     {
         if (logInRoot == null)
         {
             throw new ArgumentNullException(nameof(logInRoot));
         }
 
-        if (this.Options.Authentication.RootLogin?.Username == null)
+        if (this.Options.CurrentValue.Identity.Authentication.RootLogin?.Username == null)
         {
-            throw new NullReferenceException(nameof(this.Options.Authentication.RootLogin.Username));
+            throw new NullReferenceException(nameof(this.Options.CurrentValue.Identity.Authentication.RootLogin.Username));
         }
 
-        if (this.Options.Authentication.RootLogin?.Password == null)
+        if (this.Options.CurrentValue.Identity.Authentication.RootLogin?.Password == null)
         {
-            throw new NullReferenceException(nameof(this.Options.Authentication.RootLogin.Password));
+            throw new NullReferenceException(nameof(this.Options.CurrentValue.Identity.Authentication.RootLogin.Password));
         }
 
-        if (logInRoot.Username != this.Options.Authentication.RootLogin.Username || logInRoot.Password != this.Options.Authentication.RootLogin.Password)
+        if (logInRoot.Username != this.Options.CurrentValue.Identity.Authentication.RootLogin.Username || logInRoot.Password != this.Options.CurrentValue.Identity.Authentication.RootLogin.Password)
         {
             throw new UnauthorizedException($"The user: {logInRoot.Username} failed with incorrect username or password.");
         }
 
+        await Task.CompletedTask;
+
         var tokenData = new GenerateJwtToken
         {
-            UserId = default,
-            UserName = this.Options.Authentication.RootLogin.Username,
+            UserId = null,
+            UserName = this.Options.CurrentValue.Identity.Authentication.RootLogin.Username,
             Claims =
             [
                 new Claim(ClaimTypes.Role, BuiltInUserRoles.ADMINISTRATOR)
@@ -83,9 +85,9 @@ public abstract class BaseAuthTransientRepository<TIdentity> : BaseBaseAuthRepos
 
         var schemes = new List<ExternalLoginProvider>();
 
-        if (this.Options.Authentication.Jwt.ExternalLogins.Facebook != null)
+        if (this.Options.CurrentValue.Identity.Authentication.Jwt.ExternalLogins.Facebook != null)
         {
-            const string NAME = nameof(this.Options.Authentication.Jwt.ExternalLogins.Facebook);
+            const string NAME = nameof(this.Options.CurrentValue.Identity.Authentication.Jwt.ExternalLogins.Facebook);
 
             schemes
                 .Add(new ExternalLoginProvider
@@ -95,9 +97,9 @@ public abstract class BaseAuthTransientRepository<TIdentity> : BaseBaseAuthRepos
                 });
         }
 
-        if (this.Options.Authentication.Jwt.ExternalLogins.Google != null)
+        if (this.Options.CurrentValue.Identity.Authentication.Jwt.ExternalLogins.Google != null)
         {
-            const string NAME = nameof(this.Options.Authentication.Jwt.ExternalLogins.Google);
+            const string NAME = nameof(this.Options.CurrentValue.Identity.Authentication.Jwt.ExternalLogins.Google);
 
             schemes
                 .Add(new ExternalLoginProvider
@@ -107,9 +109,9 @@ public abstract class BaseAuthTransientRepository<TIdentity> : BaseBaseAuthRepos
                 });
         }
 
-        if (this.Options.Authentication.Jwt.ExternalLogins.Microsoft != null)
+        if (this.Options.CurrentValue.Identity.Authentication.Jwt.ExternalLogins.Microsoft != null)
         {
-            const string NAME = nameof(this.Options.Authentication.Jwt.ExternalLogins.Microsoft);
+            const string NAME = nameof(this.Options.CurrentValue.Identity.Authentication.Jwt.ExternalLogins.Microsoft);
 
             schemes
                 .Add(new ExternalLoginProvider

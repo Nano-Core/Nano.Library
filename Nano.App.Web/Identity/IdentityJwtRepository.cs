@@ -1,10 +1,7 @@
 using Microsoft.IdentityModel.Tokens;
 using Nano.App.ApiClient.Models.Identity;
 using Nano.App.Web.Identity.Abstractions;
-using Nano.Common.Exceptions;
-using Nano.Common.Identity.Consts;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -15,46 +12,30 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using Nano.App.Web.Config;
 using Nano.App.Web.Identity.Models;
 using Nano.Data.Abstractions.Consts;
-using Nano.Data.Abstractions.Models.Identity;
-using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
+using Nano.Data.Abstractions.Identity.Consts;
 
 namespace Nano.App.Web.Identity;
 
 /// <summary>
 /// 
 /// </summary>
-public class IdentityJwtRepository : IdentityJwtRepository<Guid>, IIdentityJwtRepository
+public class IdentityJwtRepository : IIdentityJwtRepository
 {
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="options"></param>
-    /// <exception cref="ArgumentNullException"></exception>
-    public IdentityJwtRepository(IdentityOptions options)
-        : base(options)
-    {
-    }
-}
-
-/// <summary>
-/// 
-/// </summary>
-public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity>
-    where TIdentity : IEquatable<TIdentity>
-{
-    /// <summary>
-    /// 
-    /// </summary>
-    protected virtual IdentityOptions Options { get; }
+    protected virtual IOptionsMonitor<WebOptions> Options { get; }
     
     /// <summary>
     /// 
     /// </summary>
     /// <param name="options"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public IdentityJwtRepository(IdentityOptions options)
+    public IdentityJwtRepository(IOptionsMonitor<WebOptions> options)
     {
         this.Options = options ?? throw new ArgumentNullException(nameof(options));
     }
@@ -80,9 +61,9 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
             .Distinct();
 
         var notBeforeAt = DateTimeOffset.UtcNow;
-        var expireAt = DateTimeOffset.UtcNow.AddMinutes(this.Options.Authentication.Jwt.ExpirationInMinutes);
+        var expireAt = DateTimeOffset.UtcNow.AddMinutes(this.Options.CurrentValue.Identity.Authentication.Jwt.ExpirationInMinutes);
 
-        var base64 = Convert.FromBase64String(this.Options.Authentication.Jwt.PrivateKey);
+        var base64 = Convert.FromBase64String(this.Options.CurrentValue.Identity.Authentication.Jwt.PrivateKey);
 
         var rsaAlgorithm = RSA.Create();
         rsaAlgorithm
@@ -91,7 +72,7 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
         var rsaSecurityKey = new RsaSecurityKey(rsaAlgorithm);
         
         var signingCredentials = new SigningCredentials(rsaSecurityKey, SecurityAlgorithms.RsaSha512);
-        var securityToken = new JwtSecurityToken(this.Options.Authentication.Jwt.Issuer, this.Options.Authentication.Jwt.Audience, claims, notBeforeAt.DateTime, expireAt.DateTime, signingCredentials);
+        var securityToken = new JwtSecurityToken(this.Options.CurrentValue.Identity.Authentication.Jwt.Issuer, this.Options.CurrentValue.Identity.Authentication.Jwt.Audience, claims, notBeforeAt.DateTime, expireAt.DateTime, signingCredentials);
 
         var token = new JwtSecurityTokenHandler()
             .WriteToken(securityToken);
@@ -106,15 +87,15 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> GenerateJwtTokenByRefreshAsync(IdentityUserExt<TIdentity> identityUser, LogInRefresh logInRefresh, IEnumerable<Claim> claims, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> GenerateJwtTokenByRefreshAsync(GenerateJwtToken generateJwtToken, LogInRefresh logInRefresh, CancellationToken cancellationToken = default)
     {
-        if (identityUser == null) 
-            throw new ArgumentNullException(nameof(identityUser));
+        if (generateJwtToken == null) 
+            throw new ArgumentNullException(nameof(generateJwtToken));
         
         if (logInRefresh == null)
             throw new ArgumentNullException(nameof(logInRefresh));
 
-        var base64 = Convert.FromBase64String(this.Options.Authentication.Jwt.PrivateKey);
+        var base64 = Convert.FromBase64String(this.Options.CurrentValue.Identity.Authentication.Jwt.PrivateKey);
 
         var rsaAlgorithm = RSA.Create();
         rsaAlgorithm
@@ -128,8 +109,8 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
             ValidateAudience = true,
             ValidateLifetime = false,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = this.Options.Authentication.Jwt.Issuer,
-            ValidAudience = this.Options.Authentication.Jwt.Audience,
+            ValidIssuer = this.Options.CurrentValue.Identity.Authentication.Jwt.Issuer,
+            ValidAudience = this.Options.CurrentValue.Identity.Authentication.Jwt.Audience,
             IssuerSigningKey = rsaSecurityKey,
             ClockSkew = TimeSpan.FromMinutes(5)
         };
@@ -141,11 +122,6 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
         if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.RsaSha512, StringComparison.InvariantCultureIgnoreCase))
         {
             throw new UnauthorizedAccessException("The jwt token is invalid.");
-        }
-
-        if (identityUser == null)
-        {
-            throw new UnauthorizedException($"The user: '{identityUser.UserName}' was not found or is deactivated.");
         }
 
         var appClaim = principal.Claims
@@ -168,16 +144,16 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
         var accessToken = this.GenerateJwtToken(new GenerateJwtToken
         {
             AppId = appId,
-            UserId = identityUser.Id.ToString(),
-            UserName = identityUser.UserName,
-            UserEmail = identityUser.Email,
+            UserId = generateJwtToken.Id,
+            UserName = generateJwtToken.UserName,
+            UserEmail = generateJwtToken.UserEmail,
             ExternalToken = new ExternalLoginTokenData
             {
                 Name = externalProviderData.Name,
                 RefreshToken = externalProviderData.RefreshToken,
                 Token = externalProviderData.Token
             },
-            Claims = claims
+            Claims = generateJwtToken.Claims
         });
 
         return accessToken;
@@ -241,7 +217,7 @@ public class IdentityJwtRepository<TIdentity> : IIdentityJwtRepository<TIdentity
             return new ExternalLoginTokenData();
         }
 
-        var externalLoginOptions = this.Options.Authentication.Jwt.ExternalLogins.Microsoft;
+        var externalLoginOptions = this.Options.CurrentValue.Identity.Authentication.Jwt.ExternalLogins.Microsoft;
 
         using var httpClient = new HttpClient();
         {

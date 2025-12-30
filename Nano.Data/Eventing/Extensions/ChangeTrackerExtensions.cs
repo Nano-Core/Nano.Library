@@ -9,7 +9,6 @@ using Nano.Data.Abstractions.Eventing.Annotations;
 using Nano.Data.Abstractions.Eventing.Models;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Data.Extensions;
 
 namespace Nano.Data.Eventing.Extensions;
 

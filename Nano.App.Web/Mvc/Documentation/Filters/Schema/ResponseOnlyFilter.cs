@@ -1,34 +1,60 @@
-using System.Linq;
-using System.Reflection;
-using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Nano.Data.Abstractions.Annotations;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
+using System.Linq;
+using System.Reflection;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.OpenApi;
 
 namespace Nano.App.Web.Mvc.Documentation.Filters.Schema;
 
 /// <summary>
-/// Response Only Filter.
+/// 
 /// </summary>
-public class ResponseOnlyFilter : ISchemaFilter
+public sealed class RequestIgnoreSchemaFilter : ISchemaFilter
 {
-    /// <inheritdoc />
-    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    private readonly IApiDescriptionGroupCollectionProvider apiDescriptionProvider;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="apiDescriptionProvider"></param>
+    public RequestIgnoreSchemaFilter(IApiDescriptionGroupCollectionProvider apiDescriptionProvider)
     {
-        if (schema?.Properties == null || context?.Type == null)
+        this.apiDescriptionProvider = apiDescriptionProvider ?? throw new ArgumentNullException(nameof(apiDescriptionProvider));
+    }
+
+    /// <inheritdoc />
+    public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
+    {
+        if (schema.Properties == null || context.Type == null)
         {
             return;
         }
 
-        var responseOnlyProperties = context.Type
-            .GetProperties()
-            .Where(x => x.GetCustomAttribute<SwaggerResponseOnlyAttribute>() != null)
-            .Select(x => char.ToLowerInvariant(x.Name[0]) + x.Name[1..])
-            .Where(x => schema.Properties.ContainsKey(x));
-
-        foreach (var propName in responseOnlyProperties)
+        if (!IsUsedInRequest(context.Type))
         {
-            schema.Properties
-                .Remove(propName);
+            return;
         }
+
+        var propertiesToRemove = context.Type
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(x => x.GetCustomAttribute<RequestIgnoreAttribute>() != null)
+            .Select(x => x.Name);
+
+        foreach (var prop in propertiesToRemove)
+        {
+            schema.Properties.Remove(prop);
+        }
+    }
+
+
+    private bool IsUsedInRequest(Type modelType)
+    {
+        return this.apiDescriptionProvider.ApiDescriptionGroups.Items
+            .SelectMany(x => x.Items)
+            .SelectMany(x => x.ParameterDescriptions)
+            .Any(x => x.Source == BindingSource.Body && x.Type == modelType);
     }
 }

@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using Nano.Common.Config.Extensions;
 using Nano.Logging.Abstractions;
 using Nano.Logging.Abstractions.Config;
+using System;
+using Nano.Common.Config.Extensions;
 
 namespace Nano.Logging.Extensions;
 
@@ -14,6 +14,8 @@ namespace Nano.Logging.Extensions;
 // - Structured logging examples
 // - Logging with OpenTelemetry + Serilog
 // - Advice on filtering noisy logs
+
+// TODO: Logging and Observability(OpenTelemetry - https://opentelemetry.io/docs)
 
 /// <summary>
 /// Service Collection Extensions.
@@ -33,7 +35,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
 
         services
-            .AddConfigSection<LoggingOptions>(LoggingOptions.SectionName, out var options);
+            .AddNanoConfigSection<LoggingOptions>(LoggingOptions.SectionName, out var options);
 
         if (options == null)
         {

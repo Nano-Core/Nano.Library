@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Nano.App.Web.Config;
-using Nano.App.Web.Identity.Authentication.Consts;
+using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using FacebookOptions = Nano.App.Web.Config.FacebookOptions;
 
 namespace Nano.App.Web.Identity.Authentication.Extensions;
@@ -17,23 +17,6 @@ namespace Nano.App.Web.Identity.Authentication.Extensions;
 /// </summary>
 public static class AuthenticationBuilderExtensions
 {
-    internal static AuthenticationBuilder AddApiKeyAuthentication<TIdentity>(this AuthenticationBuilder builder, ApiKeyAuthenticationOptions options)
-        where TIdentity : IEquatable<TIdentity>
-    {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
-
-        if (options == null)
-        {
-            return builder;
-        }
-
-        builder
-            .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler<TIdentity>>(ApiKeyDefaults.AuthenticationScheme, _ => { });
-
-        return builder;
-    }
-
     internal static AuthenticationBuilder AddJwtAuthentication(this AuthenticationBuilder builder, JwtAuthenticationOptions options)
     {
         if (builder == null)
@@ -53,7 +36,7 @@ public static class AuthenticationBuilderExtensions
         var rsaSecurityKey = new RsaSecurityKey(rsaAlgorithm);
 
         builder
-            .AddJwtBearer(x =>
+            .AddJwtBearer(AuthenticationSchemes.JWT, x =>
             {
                 x.SaveToken = true;
                 x.IncludeErrorDetails = true;
@@ -110,7 +93,7 @@ public static class AuthenticationBuilderExtensions
         }
 
         builder
-            .AddGoogle(x =>
+            .AddGoogle("Google", x =>
             {
                 x.ClientId = options.ClientId;
                 x.ClientSecret = options.ClientSecret;
@@ -135,7 +118,7 @@ public static class AuthenticationBuilderExtensions
         }
 
         builder
-            .AddFacebook(x =>
+            .AddFacebook("Facebook", x =>
             {
                 x.AppId = options.AppId;
                 x.AppSecret = options.AppSecret;
@@ -160,7 +143,7 @@ public static class AuthenticationBuilderExtensions
         }
 
         builder
-            .AddMicrosoftAccount(x =>
+            .AddMicrosoftAccount("Microsoft", x =>
             {
                 x.ClientId = options.ClientId;
                 x.ClientSecret = options.ClientSecret;

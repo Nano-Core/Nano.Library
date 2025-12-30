@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Nano.Data.Abstractions.Consts;
 using Nano.Data.Abstractions.Identity.Models;
-using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Abstractions.Models.Identity;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
@@ -374,19 +373,17 @@ public interface IIdentityRepository<TIdentity>
     /// Create Api Key.
     /// </summary>
     /// <param name="createApiKey">The create the key.</param>
-    /// <param name="secret"></param>
     /// <param name="apiKey">The generated api key.</param>
     /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
-    IdentityApiKey<TIdentity> CreateApiKeyAsync(CreateApiKey<TIdentity> createApiKey, string secret, out string apiKey);
+    IdentityApiKey<TIdentity> CreateApiKeyAsync(CreateApiKey<TIdentity> createApiKey, out string apiKey);
 
     /// <summary>
     /// Validate Api Key.
     /// </summary>
     /// <param name="apiKey">The api key.</param>
-    /// <param name="secret"></param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
-    Task<IdentityApiKey<TIdentity>> ValidateApiKeyAsync(string apiKey, string secret, CancellationToken cancellationToken = default);
+    Task<IdentityApiKey<TIdentity>> ValidateApiKeyAsync(string apiKey, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Edit Api Key.

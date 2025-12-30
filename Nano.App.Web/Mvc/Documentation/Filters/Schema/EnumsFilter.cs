@@ -1,8 +1,7 @@
 using System;
 using System.Linq;
 using System.Runtime.Serialization;
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Nano.App.Web.Mvc.Documentation.Filters.Schema;
@@ -13,20 +12,19 @@ namespace Nano.App.Web.Mvc.Documentation.Filters.Schema;
 public class EnumsFilter : ISchemaFilter
 {
     /// <inheritdoc />
-    public void Apply(OpenApiSchema model, SchemaFilterContext context)
+    public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
     {
-        if (model == null)
-            throw new ArgumentNullException(nameof(model));
-
-        if (context == null)
-            throw new ArgumentNullException(nameof(context));
-
         if (!context.Type.IsEnum)
         {
             return;
         }
 
-        model.Enum
+        if (schema.Enum == null)
+        {
+            return;
+        }
+
+        schema.Enum
             .Clear();
 
         var enumNames = Enum.GetNames(context.Type);
@@ -48,8 +46,8 @@ public class EnumsFilter : ISchemaFilter
                 ? enumName
                 : enumMemberAttribute.Value;
 
-            model.Enum
-                .Add(new OpenApiString(label));
+            schema.Enum
+                .Add(label);
         }
     }
 }

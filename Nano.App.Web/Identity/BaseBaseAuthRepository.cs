@@ -1,37 +1,35 @@
+using Google.Apis.Auth;
+using Microsoft.Extensions.Options;
+using Nano.App.ApiClient.Models.Identity;
+using Nano.App.ApiClient.Models.Identity.External.Providers;
+using Nano.App.Web.Config;
+using Nano.Data.Abstractions.Identity.Exceptions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Google.Apis.Auth;
-using Nano.App.ApiClient.Models.Identity;
-using Nano.App.ApiClient.Models.Identity.External.Providers;
-using Nano.App.Web.Config;
-using Nano.Common.Exceptions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
 
 namespace Nano.App.Web.Identity;
 
 /// <summary>
 /// 
 /// </summary>
-/// <typeparam name="TIdentity"></typeparam>
-public class BaseBaseAuthRepository<TIdentity>
-    where TIdentity : IEquatable<TIdentity> 
+public class BaseBaseAuthRepository
 {
     /// <summary>
     /// Options.
     /// </summary>
-    protected virtual IdentityOptions Options { get; }
+    protected virtual IOptionsMonitor<WebOptions> Options { get; }
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="options"></param>
-    protected BaseBaseAuthRepository(IdentityOptions options)
+    protected BaseBaseAuthRepository(IOptionsMonitor<WebOptions> options)
     {
         this.Options = options ?? throw new ArgumentNullException(nameof(options));
     }
@@ -55,15 +53,15 @@ public class BaseBaseAuthRepository<TIdentity>
 
         return logInExternalProvider.Name switch
         {
-            "Google" => await this.GetExternalProviderLoginDataGoogle(logInExternalProvider, this.Options.Authentication.Jwt?.ExternalLogins?.Google),
-            "Facebook" => await this.GetExternalProviderLoginDataFacebook(logInExternalProvider, this.Options.Authentication.Jwt?.ExternalLogins?.Facebook, cancellationToken),
-            "Microsoft" => await this.GetExternalProviderLoginDataMicrosoft(logInExternalProvider, this.Options.Authentication.Jwt?.ExternalLogins?.Microsoft, cancellationToken),
+            "Google" => await GetExternalProviderLoginDataGoogle(logInExternalProvider, this.Options.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins?.Google),
+            "Facebook" => await GetExternalProviderLoginDataFacebook(logInExternalProvider, this.Options.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins?.Facebook, cancellationToken),
+            "Microsoft" => await GetExternalProviderLoginDataMicrosoft(logInExternalProvider, this.Options.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins?.Microsoft, cancellationToken),
             _ => throw new NotSupportedException(logInExternalProvider.Name)
         };
     }
 
 
-    private async Task<ExternalLogInData> GetExternalProviderLoginDataGoogle<TProvider>(TProvider logInExternalProvider, GoogleOptions externalLoginOptions)
+    private static async Task<ExternalLogInData> GetExternalProviderLoginDataGoogle<TProvider>(TProvider logInExternalProvider, GoogleOptions externalLoginOptions)
         where TProvider : BaseLogInExternalProvider
     {
         if (logInExternalProvider == null)
@@ -106,7 +104,7 @@ public class BaseBaseAuthRepository<TIdentity>
                 throw new NotSupportedException(logInExternalProvider.GetType().Name);
         }
     }
-    private async Task<ExternalLogInData> GetExternalProviderLoginDataFacebook<TProvider>(TProvider logInExternalProvider, FacebookOptions externalLoginOptions, CancellationToken cancellationToken = default)
+    private static async Task<ExternalLogInData> GetExternalProviderLoginDataFacebook<TProvider>(TProvider logInExternalProvider, FacebookOptions externalLoginOptions, CancellationToken cancellationToken = default)
         where TProvider : BaseLogInExternalProvider
     {
         if (logInExternalProvider == null)
@@ -179,7 +177,7 @@ public class BaseBaseAuthRepository<TIdentity>
                 throw new NotSupportedException(logInExternalProvider.GetType().Name);
         }
     }
-    private async Task<ExternalLogInData> GetExternalProviderLoginDataMicrosoft<TProvider>(TProvider logInExternalProvider, MicrosoftOptions externalLoginOptions, CancellationToken cancellationToken = default)
+    private static async Task<ExternalLogInData> GetExternalProviderLoginDataMicrosoft<TProvider>(TProvider logInExternalProvider, MicrosoftOptions externalLoginOptions, CancellationToken cancellationToken = default)
         where TProvider : BaseLogInExternalProvider
     {
         if (logInExternalProvider == null)

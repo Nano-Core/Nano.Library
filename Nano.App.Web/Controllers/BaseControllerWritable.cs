@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.ApiClient.Consts;
-using Nano.App.ApiClient.Models;
 using Nano.App.ApiClient.Requests.Models;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
@@ -61,8 +60,8 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> CreateAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
     {
         entity = await this.Repository
@@ -90,8 +89,8 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> CreateAndGetAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
     {
         entity = await this.Repository
@@ -118,8 +117,8 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> CreateManyAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         await this.Repository
@@ -146,8 +145,8 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> CreateManyBulkAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         await this.Repository
@@ -175,8 +174,8 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
     {
         entity = await this.Repository
@@ -210,8 +209,8 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditAndGetAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
     {
         entity = await this.Repository
@@ -240,8 +239,8 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditManyAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         await this.Repository
@@ -275,8 +274,8 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditManyBulkAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         await this.Repository
@@ -301,8 +300,8 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditQueryAsync([FromBody][Required]UpdateQuery<TCriteria> query, CancellationToken cancellationToken = default)
     {
         await this.Repository
@@ -331,8 +330,8 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DeleteAsync([FromRoute][Required]TIdentity id, CancellationToken cancellationToken = default)
     {
         await this.Repository
@@ -362,8 +361,8 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DeleteManyAsync([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
     {
         await this.Repository
@@ -393,8 +392,8 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DeleteManyBulkAsync([FromBody][Required] TIdentity[] ids, CancellationToken cancellationToken = default)
     {
         await this.Repository
@@ -419,8 +418,8 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DeleteQueryAsync([FromBody][Required]TCriteria select, CancellationToken cancellationToken = default)
     {
         await this.Repository

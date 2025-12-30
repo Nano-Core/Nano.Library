@@ -2,7 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
-using Nano.Common.Extensions;
+using Nano.Common.Config.Extensions;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Extensions;

@@ -1,19 +1,26 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Nano.App.Abstractions;
 
 /// <summary>
 /// Application.
 /// </summary>
-public interface IApplication : IStartup
+public interface IApplication
 {
     /// <summary>
-    /// Configures the application.
+    /// Allows consumers to register application services.
     /// </summary>
-    /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
-    /// <param name="hostingEnvironment">The <see cref="Microsoft.AspNetCore.Hosting.IHostingEnvironment"/>.</param>
-    /// <param name="applicationLifetime">The <see cref="Microsoft.AspNetCore.Hosting.IApplicationLifetime"/>.</param>
-    void Configure(IApplicationBuilder applicationBuilder, IHostEnvironment hostingEnvironment, IHostApplicationLifetime applicationLifetime);
+    public IApplication ConfigureServices(Action<IServiceCollection> configure);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public IApplication Build();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void Run();
 }

@@ -1,11 +1,11 @@
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Extensions;
 using Nano.Common.Helpers;
 using Nano.Eventing.Abstractions;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nano.Eventing;
 
@@ -31,7 +31,8 @@ public class RegisterEventHandlersTask : IRegisterEventHandlersTask
 
         await Task.CompletedTask;
 
-        var eventHandlerTypes = TypesHelper.GetAllTypes()
+        var eventHandlerTypes = TypesHelper
+            .GetAllTypes()
             .SelectMany(x => x.GetInterfaces(), (x, y) => new
             {
                 Type = x,

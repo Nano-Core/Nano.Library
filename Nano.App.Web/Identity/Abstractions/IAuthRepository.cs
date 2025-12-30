@@ -1,4 +1,3 @@
-using Nano.Data.Abstractions.Identity.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -7,9 +6,11 @@ using Microsoft.AspNetCore.Authentication;
 using Nano.App.ApiClient.Models.Identity;
 using Nano.App.ApiClient.Models.Identity.External;
 using Nano.App.ApiClient.Models.Identity.External.Providers;
-using Nano.Common.Exceptions;
+using Nano.Data.Abstractions.Identity.Exceptions;
 
 namespace Nano.App.Web.Identity.Abstractions;
+
+// BUG: TIdentity, we only register default (guid). We need somehow to move it to Data.Abstractions
 
 /// <summary>
 /// 

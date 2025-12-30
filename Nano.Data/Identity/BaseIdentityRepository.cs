@@ -2,14 +2,11 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Nano.Common.Exceptions;
-using Nano.Common.Identity.Extensions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Consts;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Data.Identity.Consts;
 using Nano.Data.Identity.DataProtection.Consts;
 using Nano.Data.Identity.Extensions;
 using Nano.Data.Identity.Helpers;
@@ -21,10 +18,16 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.Data.Abstractions.Exceptions;
+using Nano.Data.Abstractions.Identity.Authentication.Consts;
+using Nano.Data.Abstractions.Identity.Exceptions;
+using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Models.Identity;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Identity;
+
+// TODO: IdentityApiKey Roles and Claims (don't inherit from IdentityUser
 
 /// <summary>
 /// Base Identity Repository.
@@ -697,7 +700,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             {
                 var duplicateEmail = new IdentityErrorDescriber().DuplicateEmail(generateChangeEmailToken.NewEmailAddress);
 
-                throw new TranslationException(duplicateEmail.Description);
+                throw new IdentityException(duplicateEmail.Description);
             }
         }
 
@@ -778,14 +781,17 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             throw new NullReferenceException(nameof(identityUser));
         }
 
-        var existingUser = await this.UserManager
-            .GetIdentityUserAsync(generateChangePhoneToken.UserId, cancellationToken);
-
-        if (existingUser != null)
+        if (this.Options.CurrentValue.Identity.User.IsUniquePhoneNumberRequired)
         {
-            var duplicatePhoneNumber = new IdentityErrorDescriber().DuplicatePhoneNumber(generateChangePhoneToken.NewPhoneNumber);
+            var existingUser = await this.UserManager
+                .GetIdentityUserAsync(generateChangePhoneToken.UserId, cancellationToken);
 
-            throw new TranslationException(duplicatePhoneNumber.Description);
+            if (existingUser != null)
+            {
+                var duplicatePhoneNumber = new IdentityErrorDescriber().DuplicatePhoneNumber(generateChangePhoneToken.NewPhoneNumber);
+
+                throw new IdentityException(duplicatePhoneNumber.Description);
+            }
         }
 
         var identityUserChangeData = this.DbContext
@@ -1070,7 +1076,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         var identityUserTokenExpiry = this.DbContext
             .Set<IdentityUserTokenExpiry<TIdentity>>()
-            .FirstOrDefault(x => x.UserId.Equals(identityUser.Id) && x.LoginProvider == AuthenticationSchemes.JWT_BEARER && x.Name == appId);
+            .FirstOrDefault(x => x.UserId.Equals(identityUser.Id) && x.LoginProvider == AuthenticationSchemes.JWT && x.Name == appId);
 
         if (identityUserTokenExpiry != null)
         {
@@ -1086,7 +1092,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             UserId = identityUser.Id,
             Name = appId,
             Value = token,
-            LoginProvider = AuthenticationSchemes.JWT_BEARER,
+            LoginProvider = AuthenticationSchemes.JWT,
             ExpireAt = expireAt
         };
 
@@ -1123,15 +1129,10 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual IdentityApiKey<TIdentity> CreateApiKeyAsync(CreateApiKey<TIdentity> createApiKey, string secret, out string apiKey)
+    public virtual IdentityApiKey<TIdentity> CreateApiKeyAsync(CreateApiKey<TIdentity> createApiKey, out string apiKey)
     {
         if (createApiKey == null)
             throw new ArgumentNullException(nameof(createApiKey));
-
-        if (secret == null) throw new ArgumentNullException(nameof(secret));
-
-        if (secret == null)
-            throw new ArgumentNullException(nameof(secret));
 
         var identityUser = this.UserManager.Users
             .SingleOrDefault(x => x.Id.Equals(createApiKey.UserId));
@@ -1144,7 +1145,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         apiKey = PasswordGenerator.Generate(new Microsoft.AspNetCore.Identity.PasswordOptions { RequiredLength = 48 });
 
         var base64Hash = apiKey
-            .HmacEncrypt(secret);
+            .HmacEncrypt(this.Options.CurrentValue.Identity.Authentication.ApiKey?.Secret);
 
         var identityApiKey = new IdentityApiKey<TIdentity>
         {
@@ -1163,17 +1164,13 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IdentityApiKey<TIdentity>> ValidateApiKeyAsync(string apiKey, string secret, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityApiKey<TIdentity>> ValidateApiKeyAsync(string apiKey, CancellationToken cancellationToken = default)
     {
         if (apiKey == null)
-        {
             throw new ArgumentNullException(nameof(apiKey));
-        }
-
-        if (secret == null)
-            throw new ArgumentNullException(nameof(secret));
 
         var now = DateTimeOffset.UtcNow;
+        var secret = this.Options.CurrentValue.Identity.Authentication.ApiKey?.Secret;
         var base64Hash = apiKey.HmacEncrypt(secret);
 
         var identityApiKey = await this.DbContext
@@ -1199,9 +1196,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     public virtual async Task<IdentityApiKey<TIdentity>> EditApiKeyAsync(EditApiKey<TIdentity> editApiKey, CancellationToken cancellationToken = default)
     {
         if (editApiKey == null)
-        {
             throw new ArgumentNullException(nameof(editApiKey));
-        }
 
         var identityApiKey = await this.DbContext
             .Set<IdentityApiKey<TIdentity>>()
@@ -1222,9 +1217,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     public virtual async Task<IdentityApiKey<TIdentity>> RevokeApiKeyAsync(RevokeApiKey<TIdentity> revokeApiKey, CancellationToken cancellationToken = default)
     {
         if (revokeApiKey == null)
-        {
             throw new ArgumentNullException(nameof(revokeApiKey));
-        }
 
         var identityApiKey = await this.DbContext
             .Set<IdentityApiKey<TIdentity>>()
@@ -1829,13 +1822,11 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         where TUser : class, IEntityUser<TIdentity>
     {
         if (identityUser == null)
-        {
             throw new ArgumentNullException(nameof(identityUser));
-        }
 
         user.Id = identityUser.Id.Parse<TIdentity>();
 
-        user.IdentityUser = this.DbContext
+        user.IdentityUserEx = this.DbContext
             .Find<IdentityUserExt<TIdentity>>(identityUser.Id);
 
         try
@@ -1927,7 +1918,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             throw new ArgumentNullException(nameof(errors));
 
         var exceptions = errors
-            .Select(x => new TranslationException(x.Description));
+            .Select(x => new IdentityException(x.Description));
 
         throw new AggregateException(exceptions);
     }

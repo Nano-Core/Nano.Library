@@ -14,26 +14,32 @@ public class IdentityOptions
     public virtual int TokensExpirationInHours { get; set; } = 24;
 
     /// <summary>
-    /// User Options.
+    /// User.
     /// </summary>
     [Required]
     public virtual UserOptions User { get; set; } = new();
 
     /// <summary>
-    /// Sign In Options.
+    /// Sign In.
     /// </summary>
     [Required]
     public virtual SignInOptions SignIn { get; set; } = new();
 
     /// <summary>
-    /// Lockout Options.
+    /// Lockout.
     /// </summary>
     [Required]
     public virtual LockoutOptions Lockout { get; set; } = new();
 
     /// <summary>
-    /// Password Options.
+    /// Password.
     /// </summary>
     [Required]
     public virtual PasswordOptions Password { get; set; } = new();
+
+    /// <summary>
+    /// Authentication.
+    /// </summary>
+    [Required]
+    public virtual AuthenticationOptions Authentication { get; set; } = new();
 }

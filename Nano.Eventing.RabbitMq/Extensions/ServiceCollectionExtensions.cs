@@ -1,8 +1,8 @@
 using System;
 using EasyNetQ;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.Common.Extensions;
-using Nano.Common.Serialization;
+using Nano.Common.Config.Extensions;
+using Nano.Common.Serialization.Json;
 using Nano.Eventing.Abstractions;
 using Nano.Eventing.Abstractions.Config;
 

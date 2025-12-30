@@ -1,41 +1,24 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nano.App.Console.Config;
 using Nano.App.Console.Workers;
-using Nano.Common.Config.Extensions;
 using Nano.Common.Extensions;
-using Nano.Common.Helpers;
 using System;
 using System.Globalization;
 using System.Linq;
-using Nano.App.Config;
+using Nano.Common.Helpers;
 
 namespace Nano.App.Console.Extensions;
 
-/// <summary>
-/// Service Collection Extensions.
-/// </summary>
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
-    /// <summary>
-    /// Adds <see cref="ConsoleOptions"/> to the <see cref="IServiceCollection"/>.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    internal static IServiceCollection AddConsole(this IServiceCollection services, IConfiguration configuration)
+    internal static IServiceCollection AddNanoWorkers(this IServiceCollection services)
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        if (configuration == null)
-            throw new ArgumentNullException(nameof(configuration));
-
-        services
-            .AddConfigSection<ConsoleOptions>(BaseAppOptions.SectionName, out var options);
-
-        TypesHelper.GetAllTypes()
+        TypesHelper
+            .GetAllTypes()
             .Where(x =>
                 !x.IsAbstract &&
                 x.IsTypeOf(typeof(BaseWorker)))
@@ -49,7 +32,19 @@ public static class ServiceCollectionExtensions
                     .AddSingleton(typeof(IHostedService), x);
             });
 
+        return services;
+    }
+
+    internal static IServiceCollection AddNanoCultureInfo(this IServiceCollection services, ConsoleOptions options)
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        if (options == null)
+            throw new ArgumentNullException(nameof(options));
+
         CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(options.Cultures.Default);
+
         return services;
     }
 }

@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Nano.Data.Abstractions.Annotations;
+using Nano.Common.Annotations;
 using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Abstractions.Models.Identity;

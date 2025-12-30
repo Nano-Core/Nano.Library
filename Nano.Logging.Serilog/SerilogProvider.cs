@@ -4,7 +4,6 @@ using Nano.Logging.Abstractions;
 using Nano.Logging.Abstractions.Config;
 using Nano.Logging.Serilog.Extensions;
 using Serilog;
-using Serilog.Extensions.Logging;
 
 namespace Nano.Logging.Serilog;
 
@@ -19,8 +18,6 @@ public class SerilogProvider : ILoggingProvider
 
         if (options == null) 
             throw new ArgumentNullException(nameof(options));
-
-        var a = new SerilogLoggerProvider();
 
         services
             .AddSerilog(x =>

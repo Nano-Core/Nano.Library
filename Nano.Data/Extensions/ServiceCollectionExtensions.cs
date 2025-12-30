@@ -3,16 +3,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.Common.Config.Extensions;
-using Nano.Common.Identity.Extensions;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using System;
 using System.Linq;
+using Nano.App.Web.Identity.Authentication.Extensions;
+using Nano.Common.Config.Extensions;
 using Nano.Data.Abstractions.Eventing;
 using Nano.Data.Abstractions.Eventing.Models;
+using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Eventing;
 using Nano.Data.Identity.Extensions;
 using Nano.Eventing.Abstractions;
@@ -33,7 +34,7 @@ public static class ServiceCollectionExtensions
     /// <typeparam name="TContext">The <see cref="DbContext"/> implementation.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddNanoDataContext<TProvider, TContext>(this IServiceCollection services)
+    public static IServiceCollection AddNanoData<TProvider, TContext>(this IServiceCollection services)
         where TProvider : class, IDataProvider, new()
         where TContext : DefaultDbContext
     {
@@ -41,7 +42,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
 
         services
-            .AddNanoDataContext<TProvider, TContext, Guid>();
+            .AddNanoData<TProvider, TContext, Guid>();
 
         services
             .AddScoped<DefaultDbContext, TContext>();
@@ -57,7 +58,7 @@ public static class ServiceCollectionExtensions
     /// <typeparam name="TIdentity">The identity type.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddNanoDataContext<TProvider, TContext, TIdentity>(this IServiceCollection services)
+    public static IServiceCollection AddNanoData<TProvider, TContext, TIdentity>(this IServiceCollection services)
         where TProvider : class, IDataProvider, new()
         where TContext : BaseDbContext<TIdentity>
         where TIdentity : IEquatable<TIdentity>
@@ -66,7 +67,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
 
         services
-            .AddConfigSection<DataOptions>(DataOptions.SectionName, out var options);
+            .AddNanoConfigSection<DataOptions>(DataOptions.SectionName, out var options);
 
         if (options == null)
         {
@@ -93,11 +94,15 @@ public static class ServiceCollectionExtensions
             .AddScoped<IRepository, DefaultRepository<TContext, TIdentity>>();
 
         services
-            .AddScoped<IEventingHandler<EntityEvent>, EntityEventHandler<TIdentity>>();
+            .AddScoped<IDbMigrationTask, DbMigrationTask<TIdentity>>();
 
         services
-            .AddSingleton<IDbMigrationTask, DbMigrationTask<TIdentity>>()
-            .AddSingleton<IRegisterEntityEventHandlersTask, RegisterEntityEventHandlersTask>();
+            .AddScoped<IEventingHandler<EntityEvent>, EntityEventHandler<TIdentity>>()
+            .AddScoped<IRegisterEntityEventHandlersTask, RegisterEntityEventHandlersTask>();
+
+        services
+            .AddAuthentication()
+            .AddApiKeyAuthentication<TIdentity>(options.Identity.Authentication.ApiKey);
 
         return services;
     }

@@ -5,34 +5,19 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Nano.Common.Config.Extensions;
 
 /// <summary>
-/// Service Collection Extensions.
+/// 
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds <see cref="IConfiguration"/> appOptions to the <see cref="IServiceCollection"/>.
+    /// 
     /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddConfig(this IServiceCollection services, IConfiguration configuration)
-    {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        return services
-            .AddSingleton(configuration);
-    }
-
-    /// <summary>
-    /// Adds a appOptions <see cref="IConfigurationSection"/>.
-    /// </summary>
-    /// <typeparam name="TSection">The option implementation type.</typeparam>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <param name="name">The name of the section.</param>
-    /// <param name="options">The options configured and loaded.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddConfigSection<TSection>(this IServiceCollection services, string name, out TSection options)
+    /// <typeparam name="TSection"></typeparam>
+    /// <param name="services"></param>
+    /// <param name="name"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddNanoConfigSection<TSection>(this IServiceCollection services, string name, out TSection options)
         where TSection : class, new()
     {
         if (services == null)

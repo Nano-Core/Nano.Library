@@ -1,5 +1,5 @@
-using Microsoft.OpenApi.Models;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.OpenApi;
 
 namespace Nano.App.Web.Config;
 

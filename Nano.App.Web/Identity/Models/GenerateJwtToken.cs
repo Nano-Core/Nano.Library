@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Nano.App.ApiClient.Models.Identity;
-using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.App.Web.Identity.Models;
 

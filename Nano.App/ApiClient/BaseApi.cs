@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -10,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using Nano.App.ApiClient.Config;
 using Nano.App.ApiClient.Consts;
@@ -20,10 +20,10 @@ using Nano.App.ApiClient.Models.Identity.External;
 using Nano.App.ApiClient.Models.Identity.External.Providers;
 using Nano.App.ApiClient.Requests;
 using Nano.App.ApiClient.Requests.Auth;
-using Nano.Common.Exceptions;
-using Nano.Common.Identity.Extensions;
-using Nano.Common.Serialization;
-using Nano.Data.Abstractions.Identity.Models;
+using Nano.App.Exceptions;
+using Nano.Common.Serialization.Json;
+using Nano.Data.Abstractions.Identity.Exceptions;
+using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Newtonsoft.Json;
 using Vivet.AspNetCore.RequestTimeZone;
@@ -207,7 +207,7 @@ public abstract class BaseApi
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
-        request.Controller ??= this.GetInferredController<TResponse>();
+        request.Controller ??= GetInferredController<TResponse>();
 
         return request switch
         {
@@ -237,7 +237,7 @@ public abstract class BaseApi
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
-        request.Controller ??= this.GetInferredController<TEntity>();
+        request.Controller ??= GetInferredController<TEntity>();
 
         return request switch
         {
@@ -265,16 +265,16 @@ public abstract class BaseApi
 
         if (this.apiOptions.LogIn is { Username: not null, Password: not null })
         {
-            var logInRequest = new LogInRequest
+            var logInRootRequest = new LogInRootRequest
             {
-                LogIn = new LogIn
+                LogInRoot = new LogInRoot
                 {
                     Username = this.apiOptions.LogIn.Username,
                     Password = this.apiOptions.LogIn.Password
                 }
             };
 
-            this.accessToken = await this.InvokeAsync<LogInRequest, AccessToken>(logInRequest, cancellationToken);
+            this.accessToken = await this.InvokeAsync<LogInRootRequest, AccessToken>(logInRootRequest, cancellationToken);
 
             return this.accessToken?.Token;
         }
@@ -522,32 +522,6 @@ public abstract class BaseApi
 
         return new Uri(uri);
     }
-    private string GetInferredController<TResponse>()
-        where TResponse : class
-    {
-        var type = typeof(TResponse);
-
-        return type.IsGenericType
-            ? $"{type.GenericTypeArguments[0].Name}s"
-            : $"{type.Name.ToLower()}s";
-    }
-    private HttpMethod GetMethod<TRequest>(TRequest request)
-        where TRequest : BaseRequest
-    {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
-
-        return request switch
-        {
-            BaseRequestGet => HttpMethod.Get,
-            BaseRequestPut => HttpMethod.Put,
-            BaseRequestPost => HttpMethod.Post,
-            BaseRequestPostForm => HttpMethod.Post,
-            BaseRequestDelete => HttpMethod.Delete,
-            BaseRequestOptions => HttpMethod.Options,
-            _ => throw new NotSupportedException()
-        };
-    }
     private async Task<HttpRequestMessage> GetHttpRequestMessage<TRequest>(TRequest request, CancellationToken cancellationToken)
         where TRequest : BaseRequest
     {
@@ -555,7 +529,7 @@ public abstract class BaseApi
             throw new ArgumentNullException(nameof(request));
 
         var uri = this.GetUri(request);
-        var method = this.GetMethod(request);
+        var method = GetMethod(request);
         var headers = request.GetHeaders();
         var jwtToken = await this.AuthenticateAsync(request, cancellationToken);
 
@@ -604,27 +578,27 @@ public abstract class BaseApi
                 throw new PermissionDeniedException();
 
             case HttpStatusCode.BadRequest:
-                {
-                    var errorContent = await httpResponse.Content
-                        .ReadAsStringAsync(cancellationToken);
+            {
+                var errorContent = await httpResponse.Content
+                    .ReadAsStringAsync(cancellationToken);
 
-                    throw this.GetBadRequestException(errorContent);
-                }
+                throw GetBadRequestException(errorContent);
+            }
 
             case HttpStatusCode.InternalServerError:
+            {
+                var errorContent = await httpResponse.Content
+                    .ReadAsStringAsync(cancellationToken);
+
+                var internalServerErrorException = GetInternalServerErrorException(errorContent);
+
+                if (internalServerErrorException != null)
                 {
-                    var errorContent = await httpResponse.Content
-                        .ReadAsStringAsync(cancellationToken);
-
-                    var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
-
-                    if (internalServerErrorException != null)
-                    {
-                        throw internalServerErrorException;
-                    }
-
-                    break;
+                    throw internalServerErrorException;
                 }
+
+                break;
+            }
         }
 
         httpResponse
@@ -649,27 +623,27 @@ public abstract class BaseApi
                 throw new PermissionDeniedException();
 
             case HttpStatusCode.BadRequest:
-                {
-                    var errorContent = await httpResponse.Content
-                        .ReadAsStringAsync(cancellationToken);
+            {
+                var errorContent = await httpResponse.Content
+                    .ReadAsStringAsync(cancellationToken);
 
-                    throw this.GetBadRequestException(errorContent);
-                }
+                throw GetBadRequestException(errorContent);
+            }
 
             case HttpStatusCode.InternalServerError:
+            {
+                var errorContent = await httpResponse.Content
+                    .ReadAsStringAsync(cancellationToken);
+
+                var internalServerErrorException = GetInternalServerErrorException(errorContent);
+
+                if (internalServerErrorException != null)
                 {
-                    var errorContent = await httpResponse.Content
-                        .ReadAsStringAsync(cancellationToken);
-
-                    var internalServerErrorException = this.GetInternalServerErrorException(errorContent);
-
-                    if (internalServerErrorException != null)
-                    {
-                        throw internalServerErrorException;
-                    }
-
-                    break;
+                    throw internalServerErrorException;
                 }
+
+                break;
+            }
         }
 
         httpResponse
@@ -719,24 +693,48 @@ public abstract class BaseApi
 
         httpContext.Request.Headers[HeaderNames.Authorization] = $"Bearer {token}";
     }
-    private Exception GetBadRequestException(string content)
+
+    private static string GetInferredController<TResponse>()
+        where TResponse : class
+    {
+        var type = typeof(TResponse);
+
+        return type.IsGenericType
+            ? $"{type.GenericTypeArguments[0].Name}s"
+            : $"{type.Name.ToLower()}s";
+    }
+    private static HttpMethod GetMethod<TRequest>(TRequest request)
+        where TRequest : BaseRequest
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        return request switch
+        {
+            BaseRequestGet => HttpMethod.Get,
+            BaseRequestPut => HttpMethod.Put,
+            BaseRequestPost => HttpMethod.Post,
+            BaseRequestPostForm => HttpMethod.Post,
+            BaseRequestDelete => HttpMethod.Delete,
+            BaseRequestOptions => HttpMethod.Options,
+            _ => throw new NotSupportedException()
+        };
+    }
+    private static Exception GetBadRequestException(string content)
     {
         if (content == null)
             throw new ArgumentNullException(nameof(content));
 
         try
         {
-            var error = JsonConvert.DeserializeObject<Error>(content, SerializerSettings.GetDefault());
+            var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(content, SerializerSettings.GetDefault());
 
-            if (error == null)
+            if (problemDetails == null)
             {
-                throw new NullReferenceException(nameof(error));
+                throw new NullReferenceException(nameof(problemDetails));
             }
 
-            var badRequestExceptions = error.Exceptions
-                .Select(x => new BadRequestException(x));
-
-            return new AggregateException(badRequestExceptions);
+            throw new ProblemDetailsException(problemDetails);
         }
         catch (JsonException)
         {
@@ -756,35 +754,21 @@ public abstract class BaseApi
             return new BadRequestException(exceptionMessage);
         }
     }
-    private Exception GetInternalServerErrorException(string content)
+    private static Exception GetInternalServerErrorException(string content)
     {
         if (content == null)
             throw new ArgumentNullException(nameof(content));
 
         try
         {
-            var error = JsonConvert.DeserializeObject<Error>(content, SerializerSettings.GetDefault());
+            var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(content, SerializerSettings.GetDefault());
 
-            if (error == null)
+            if (problemDetails == null)
             {
-                throw new NullReferenceException(nameof(error));
+                throw new NullReferenceException(nameof(problemDetails));
             }
 
-            if (error.IsCoded)
-            {
-                var codeExceptions = error.Exceptions
-                    .Select(x => new CodedException(x));
-
-                throw new AggregateException(codeExceptions);
-            }
-
-            if (error.IsTranslated)
-            {
-                var translationExceptions = error.Exceptions
-                    .Select(x => new TranslationException(x));
-
-                throw new AggregateException(translationExceptions);
-            }
+            throw new ProblemDetailsException(problemDetails);
         }
         catch (JsonException)
         {
@@ -793,8 +777,6 @@ public abstract class BaseApi
 
             return new InvalidOperationException(exceptionMessage);
         }
-
-        return null;
     }
 }
 

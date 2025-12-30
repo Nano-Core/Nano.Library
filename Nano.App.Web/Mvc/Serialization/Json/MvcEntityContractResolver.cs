@@ -26,12 +26,13 @@ public class MvcEntityContractResolver : DefaultEntityContractResolver
         var property = base.CreateProperty(member, memberSerialization);
         var propertyType = property.PropertyType;
 
-        this.SerializeOnlyIncludedProperties(member, propertyType, ref property);
+        SerializeOnlyIncludedProperties(member, propertyType, ref property);
 
         return property;
     }
 
-    private void SerializeOnlyIncludedProperties(MemberInfo member, Type propertyType, ref JsonProperty property)
+
+    private static void SerializeOnlyIncludedProperties(MemberInfo member, Type propertyType, ref JsonProperty property)
     {
         if (member == null)
             throw new ArgumentNullException(nameof(member));

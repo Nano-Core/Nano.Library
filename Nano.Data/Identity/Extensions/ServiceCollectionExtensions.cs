@@ -3,9 +3,8 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Data.Abstractions.Identity;
-using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Models.Identity;
-using Nano.Data.Identity.Consts;
 using Nano.Data.Identity.DataProtection.Extensions;
 using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;
 
@@ -46,7 +45,7 @@ internal static class ServiceCollectionExtensions
                 x.Lockout.MaxFailedAccessAttempts = options.Lockout.MaxFailedAccessAttempts;
             })
             .AddEntityFrameworkStores<TContext>()
-            .AddTokenProvider<DataProtectorTokenProvider<IdentityUserExt<TIdentity>>>(AuthenticationSchemes.JWT_BEARER)
+            .AddTokenProvider<DataProtectorTokenProvider<IdentityUserExt<TIdentity>>>(AuthenticationSchemes.JWT)
             .AddDefaultTokenProviders()
             .AddCustomTokenProvider();
 

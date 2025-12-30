@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<ApplicationIcon>..\icon.ico</ApplicationIcon>
 		<Configurations>Debug;Release</Configurations>
-		<Version>9.1.0.0</Version>
+		<Version>10.0.0.0</Version>
 		<LangVersion>latest</LangVersion>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningsAsErrors></WarningsAsErrors>
@@ -21,7 +21,7 @@
 		<PackageReference Include="EasyNetQ" Version="8.0.0-beta99" />
 		<PackageReference Include="EasyNetQ.DI.Microsoft" Version="8.0.0-beta96" />
 		<PackageReference Include="EasyNetQ.Serialization.NewtonsoftJson" Version="8.0.0-beta99" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>

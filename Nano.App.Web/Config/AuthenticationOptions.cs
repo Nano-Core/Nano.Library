@@ -13,11 +13,6 @@ public class AuthenticationOptions
     public virtual JwtAuthenticationOptions Jwt { get; set; }
 
     /// <summary>
-    /// Api Key.
-    /// </summary>
-    public virtual ApiKeyAuthenticationOptions ApiKey { get; set; }
-
-    /// <summary>
     /// Log In Root Options.
     /// </summary>
     public virtual LogInRootOptions RootLogin { get; set; }

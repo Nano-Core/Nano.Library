@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,13 +10,7 @@ namespace Nano.App.Web.Identity.Abstractions;
 /// <summary>
 /// 
 /// </summary>
-public interface IAuthTransientRepository : IAuthTransientRepository<Guid>;
-
-/// <summary>
-/// 
-/// </summary>
-public interface IAuthTransientRepository<TIdentity>
-    where TIdentity : IEquatable<TIdentity>
+public interface IAuthTransientRepository
 {
     /// <summary>
     /// Signs in the admin user statically.
@@ -25,7 +18,7 @@ public interface IAuthTransientRepository<TIdentity>
     /// </summary>
     /// <param name="logInRoot">The <see cref="LogInRoot"/>.</param>
     /// <returns>The <see cref="AccessToken"/>.</returns>
-    AccessToken LogInRootTransientAsync(LogInRoot logInRoot);
+    Task<AccessToken> LogInRootTransientAsync(LogInRoot logInRoot);
 
     /// <summary>
     /// Gets all the configured external logins schemes.

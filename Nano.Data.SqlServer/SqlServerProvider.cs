@@ -4,7 +4,7 @@ using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Extensions;
 using System;
-using Nano.Common.Extensions;
+using Nano.Common.Config.Extensions;
 
 namespace Nano.Data.SqlServer;
 

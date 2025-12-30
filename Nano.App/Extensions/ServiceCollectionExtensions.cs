@@ -8,9 +8,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Nano.App.Abstractions;
 using Nano.App.ApiClient.Extensions;
+using Nano.App.Config;
+using Nano.App.Config.Extensions;
 using Nano.App.StartUp;
 using Nano.App.StartUp.Tasks;
-using Nano.Common.Config.Extensions;
 using Nano.Common.Extensions;
 using Nano.Common.Helpers;
 
@@ -18,8 +19,8 @@ namespace Nano.App.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddNanoApp<TApplication>(this IServiceCollection services, IConfiguration configuration) 
-        where TApplication : class, IApplication
+    internal static IServiceCollection AddNanoApp<TOptions>(this IServiceCollection services, IConfiguration configuration, out TOptions options)
+        where TOptions : BaseAppOptions, new()
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
@@ -28,14 +29,14 @@ internal static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(configuration));
 
         services
-            .AddConfig(configuration);
+            .AddNanoConfig(configuration)
+            .AddNanoConfigSection(configuration, BaseAppOptions.SectionName, out options);
 
         services
             .AddNulLogger()
-            .AddSingleton<IApplication, TApplication>()
             .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-            .AddApis(configuration)
-            .AddStartUpTasks();
+            .AddStartUpTasks()
+            .AddNanoApis(options);
 
         return services;
     }
@@ -47,7 +48,7 @@ internal static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
 
         services
-            .AddSingleton<ILogger, NullLogger>();
+            .AddSingleton<ILogger, NullLogger>(_ => NullLogger.Instance);
 
         return services;
     }
@@ -59,7 +60,8 @@ internal static class ServiceCollectionExtensions
         services
             .AddSingleton<StartupTaskContext>();
 
-        TypesHelper.GetAllTypes()
+        TypesHelper
+            .GetAllTypes()
             .Where(x =>
                 !x.IsAbstract &&
                 x.IsTypeOf(typeof(BaseStartupTask)))

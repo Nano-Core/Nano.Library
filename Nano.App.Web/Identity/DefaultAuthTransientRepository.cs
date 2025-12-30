@@ -1,25 +1,14 @@
-using System;
+using Microsoft.Extensions.Options;
 using Nano.App.Web.Config;
 using Nano.App.Web.Identity.Abstractions;
 
 namespace Nano.App.Web.Identity;
 
 /// <inheritdoc cref="IAuthTransientRepository" />
-public class DefaultAuthTransientRepository : BaseAuthTransientRepository<Guid>, IAuthTransientRepository
+public class DefaultAuthTransientRepository : BaseAuthTransientRepository
 {
     /// <inheritdoc />
-    public DefaultAuthTransientRepository(IdentityOptions options, IIdentityJwtRepository identityJwtRepository)
-        : base(options, identityJwtRepository)
-    {
-    }
-}
-
-/// <inheritdoc />
-public class DefaultAuthTransientRepository<TIdentity> : BaseAuthTransientRepository<TIdentity>
-    where TIdentity : IEquatable<TIdentity>
-{
-    /// <inheritdoc />
-    public DefaultAuthTransientRepository(IdentityOptions options, IIdentityJwtRepository<TIdentity> identityJwtRepository)
+    public DefaultAuthTransientRepository(IOptionsMonitor<WebOptions> options, IIdentityJwtRepository identityJwtRepository)
         : base(options, identityJwtRepository)
     {
     }

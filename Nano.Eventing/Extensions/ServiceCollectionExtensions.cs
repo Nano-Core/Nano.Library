@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
 
         services
-            .AddConfigSection<EventingOptions>(EventingOptions.SectionName, out var options);
+            .AddNanoConfigSection<EventingOptions>(EventingOptions.SectionName, out var options);
 
         if (options == null)
         {
@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
             .AddEventingHandlers();
 
         services
-            .AddSingleton<IRegisterEventHandlersTask, RegisterEventHandlersTask>();
+            .AddScoped<IRegisterEventHandlersTask, RegisterEventHandlersTask>();
 
         return services;
     }

@@ -1,10 +1,8 @@
 ﻿using System;
 using Nano.App.Config;
-using Nano.Common.Enums;
+using Nano.Common.Config.Enums;
 
 namespace Nano.App.ApiClient.Config;
-
-// BUG: Should be inside App in configuration. Maybe as Dictionary
 
 /// <summary>
 /// Api Options.

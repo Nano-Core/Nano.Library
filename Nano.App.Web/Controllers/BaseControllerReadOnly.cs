@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.ApiClient.Consts;
-using Nano.App.ApiClient.Models;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Models;
@@ -57,8 +56,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> IndexAsync([FromQuery][Required]IQuery query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         query ??= new Query();
@@ -102,8 +101,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> IndexPostAsync([FromBody][Required]IQuery query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         query ??= new Query();
@@ -146,8 +145,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DetailsAsync([FromRoute][Required]TIdentity id, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         TEntity result;
@@ -188,8 +187,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DetailsManyAsync([FromQuery][Required]TIdentity[] ids, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         IEnumerable<TEntity> result;
@@ -231,8 +230,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DetailsManyPostAsync([FromBody][Required]TIdentity[] ids, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         IEnumerable<TEntity> result;
@@ -273,8 +272,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryAsync([FromQuery][Required]IQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         query ??= new Query<TCriteria>();
@@ -318,8 +317,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryPostAsync([FromBody][Required]IQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         query ??= new Query<TCriteria>();
@@ -362,8 +361,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryFirstAsync([FromQuery][Required]IQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         query ??= new Query<TCriteria>();
@@ -407,8 +406,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryFirstPostAsync([FromBody][Required]IQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         query ??= new Query<TCriteria>();
@@ -450,8 +449,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryCountAsync([FromQuery][Required]TCriteria criteria, CancellationToken cancellationToken = default)
     {
         var result = await this.Repository
@@ -478,8 +477,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(Error), (int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryCountPostAsync([FromBody][Required]TCriteria criteria, CancellationToken cancellationToken = default)
     {
         var result = await this.Repository

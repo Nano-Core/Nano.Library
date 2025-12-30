@@ -6,14 +6,15 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Options;
 using Nano.App.ApiClient.Models.Identity;
 using Nano.App.ApiClient.Models.Identity.External;
 using Nano.App.ApiClient.Models.Identity.External.Providers;
+using Nano.App.Web.Config;
 using Nano.App.Web.Identity.Models;
-using Nano.Common.Exceptions;
-using Nano.Common.Identity.Extensions;
 using Nano.Data.Abstractions.Identity;
-using IdentityOptions = Nano.App.Web.Config.IdentityOptions;
+using Nano.Data.Abstractions.Identity.Exceptions;
+using Nano.Data.Abstractions.Identity.Extensions;
 
 namespace Nano.App.Web.Identity;
 
@@ -21,7 +22,7 @@ namespace Nano.App.Web.Identity;
 /// 
 /// </summary>
 /// <typeparam name="TIdentity"></typeparam>
-public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TIdentity>, IAuthRepository<TIdentity>
+public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository, IAuthRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
@@ -32,15 +33,15 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
     /// <summary>
     /// 
     /// </summary>
-    protected virtual IIdentityJwtRepository<TIdentity> IdentityJwtRepository { get; }
+    protected virtual IIdentityJwtRepository IdentityJwtRepository { get; } // BUG: TIdentity: should is the problem, that it needs to be moved also
 
     /// <summary>
     /// The user authenticates and on success recieves a jwt token for use with auhtorization.
     /// </summary>
-    /// <param name="options">The <see cref="IdentityOptions"/>.</param>
+    /// <param name="options">The <see cref="IOptionsMonitor{WebOptions}"/>.</param>
     /// <param name="identityRepository"></param>
     /// <param name="identityJwtRepository"></param>
-    protected BaseAuthRepository(IdentityOptions options, IIdentityRepository<TIdentity> identityRepository, IIdentityJwtRepository<TIdentity> identityJwtRepository)
+    protected BaseAuthRepository(IOptionsMonitor<WebOptions> options, IIdentityRepository<TIdentity> identityRepository, IIdentityJwtRepository identityJwtRepository)
         : base(options)
     {
         this.IdentityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
@@ -85,7 +86,7 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
 
         var refreshTokenExpiry = logIn.IsRefreshable
             ? await this.IdentityRepository
-                .CreateRefreshToken(identityUser, this.Options.Authentication.Jwt.RefreshExpirationInHours, logIn.AppId)
+                .CreateRefreshToken(identityUser, this.Options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, logIn.AppId)
             : null;
 
         if (refreshTokenExpiry != null)
@@ -140,7 +141,7 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
 
         var refreshTokenExpiry = logInExternal.IsRefreshable
             ? await this.IdentityRepository
-                .CreateRefreshToken(identityUser, this.Options.Authentication.Jwt.RefreshExpirationInHours, logInExternal.AppId)
+                .CreateRefreshToken(identityUser, this.Options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, logInExternal.AppId)
             : null;
 
         if (refreshTokenExpiry != null)
@@ -189,7 +190,7 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
 
         var refreshTokenExpiry = logInExternalDirect.IsRefreshable
             ? await this.IdentityRepository
-                .CreateRefreshToken(identityUser, this.Options.Authentication.Jwt.RefreshExpirationInHours, logInExternalDirect.AppId)
+                .CreateRefreshToken(identityUser, this.Options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, logInExternalDirect.AppId)
             : null;
 
         if (refreshTokenExpiry != null)
@@ -242,7 +243,13 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
             .GetAllClaims(identityUser, logInRefresh.TransientRoles, logInRefresh.TransientClaims, cancellationToken);
 
         var accessToken = await this.IdentityJwtRepository
-            .GenerateJwtTokenByRefreshAsync(identityUser, logInRefresh, claims, cancellationToken);
+            .GenerateJwtTokenByRefreshAsync(new GenerateJwtToken
+            {
+                Id = identityUser.Id.ToString(),
+                UserName = identityUser.UserName,
+                UserEmail = identityUser.Email,
+                Claims = claims
+            }, logInRefresh, cancellationToken);
 
         if (accessToken == null)
         {
@@ -250,7 +257,7 @@ public abstract class BaseAuthRepository<TIdentity> : BaseBaseAuthRepository<TId
         }
 
         var refreshTokenExpiry = await this.IdentityRepository
-            .CreateRefreshToken(identityUser, this.Options.Authentication.Jwt.RefreshExpirationInHours, appId);
+            .CreateRefreshToken(identityUser, this.Options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, appId);
 
         if (refreshTokenExpiry != null)
         {

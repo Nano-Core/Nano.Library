@@ -1,6 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nano.App.Abstractions;
@@ -10,38 +8,47 @@ namespace Nano.App;
 /// <summary>
 /// Base Application (abstract).
 /// </summary>
-public abstract class BaseApplication : IApplication
+public abstract class BaseApplication<THost, THostBuilder> : IApplication
+    where THost : IHost
+    where THostBuilder : IHostApplicationBuilder
 {
     /// <summary>
-    /// Configuration.
+    /// 
     /// </summary>
-    protected virtual IConfiguration Configuration { get; }
+    protected THost application;
 
     /// <summary>
-    /// Constructor.
-    /// Accepting an instance of <see cref="IConfiguration"/>.
+    /// 
     /// </summary>
-    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
-    protected BaseApplication(IConfiguration configuration)
+    protected THostBuilder applicationBuilder;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="builder"></param>
+    protected BaseApplication(THostBuilder builder)
     {
-        this.Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        this.applicationBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
     }
 
-    /// <inheritdoc />
-    public virtual IServiceProvider ConfigureServices(IServiceCollection services)
+    /// <summary>
+    /// Allows consumers to register application services.
+    /// </summary>
+    public virtual IApplication ConfigureServices(Action<IServiceCollection> configure)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        configure(applicationBuilder.Services);
 
-        var provider = services
-            .BuildServiceProvider();
-
-        return provider;
+        return this;
     }
 
-    /// <inheritdoc />
-    public abstract void Configure(IApplicationBuilder applicationBuilder);
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public abstract IApplication Build();
 
-    /// <inheritdoc />
-    public abstract void Configure(IApplicationBuilder applicationBuilder, IHostEnvironment hostingEnvironment, IHostApplicationLifetime applicationLifetime);
+    /// <summary>
+    /// 
+    /// </summary>
+    public virtual void Run() => this.application.Run();
 }

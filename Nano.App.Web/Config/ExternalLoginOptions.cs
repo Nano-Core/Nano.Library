@@ -19,4 +19,6 @@ public class ExternalLoginOptions
     /// Microsoft.
     /// </summary>
     public virtual MicrosoftOptions Microsoft { get; set; }
+
+    internal virtual bool IsConfigured => this.Google != null || this.Facebook != null || this.Microsoft != null;
 }

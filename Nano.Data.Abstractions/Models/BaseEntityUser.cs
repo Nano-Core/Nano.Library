@@ -1,6 +1,5 @@
 using System;
 using Nano.Data.Abstractions.Annotations;
-using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Abstractions.Models.Identity;
 
@@ -14,6 +13,6 @@ public abstract class BaseEntityUser<TIdentity> : BaseEntity<TIdentity>, IEntity
 {
     /// <inheritdoc />
     [Include]
-    [SwaggerResponseOnly]
-    public virtual IdentityUserExt<TIdentity> IdentityUser { get; set; }
+    [RequestIgnore]
+    public virtual IdentityUserExt<TIdentity> IdentityUserEx { get; set; }
 }

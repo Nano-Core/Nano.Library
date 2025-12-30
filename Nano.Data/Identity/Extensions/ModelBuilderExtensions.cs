@@ -2,8 +2,6 @@ using System;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Nano.Data.Abstractions.Identity.Models;
-using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Identity;
 using Nano.Data.Identity.Consts;
 

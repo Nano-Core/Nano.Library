@@ -1,35 +1,40 @@
+using Microsoft.Extensions.DependencyInjection;
+using Nano.App.ApiClient.Config;
+using Nano.App.ApiClient.Consts;
+using Nano.App.Config;
+using Nano.Common.Config.Extensions;
+using Nano.Common.Extensions;
+using Nano.Common.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Nano.App.ApiClient.Config;
-using Nano.App.ApiClient.Consts;
-using Nano.Common.Extensions;
-using Nano.Common.Helpers;
 
 namespace Nano.App.ApiClient.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddApis(this IServiceCollection services, IConfiguration configuration)
+    internal static IServiceCollection AddNanoApis(this IServiceCollection services, BaseAppOptions appOptions)
     {
+        if (services == null) 
+            throw new ArgumentNullException(nameof(services));
+        
+        if (appOptions == null) 
+            throw new ArgumentNullException(nameof(appOptions));
+        
         var hosts = new List<string>();
 
-        var types = TypesHelper.GetAllTypes()
+        var types = TypesHelper
+            .GetAllTypes()
             .Where(x => !x.IsAbstract && x.IsTypeOf(typeof(BaseApi)))
             .Distinct();
 
         foreach (var type in types)
         {
-            var section = configuration
-                .GetSection(type.Name);
-            
-            var options = section
-                .Get<ApiOptions>();
+            appOptions.Apis
+                .TryGetValue(type.Name, out var options);
 
             if (options == null)
             {

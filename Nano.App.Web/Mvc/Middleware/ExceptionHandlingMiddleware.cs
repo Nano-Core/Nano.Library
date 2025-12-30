@@ -1,20 +1,23 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Nano.App.Web.Config;
+using Nano.App.Web.Extensions.Const;
+using Nano.Data.Abstractions.Annotations;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Nano.App.ApiClient.Models;
-using Nano.App.Web.Config;
-using Nano.App.Web.Extensions.Const;
-using Nano.Common.Exceptions;
-using Nano.Common.Serialization;
-using Nano.Data.Abstractions.Annotations;
-using Newtonsoft.Json;
+using Nano.App.ApiClient.Consts;
+using Nano.App.Exceptions;
+using Nano.Common.Serialization.Json;
+using Nano.Data.Abstractions.Exceptions;
+using Nano.Data.Abstractions.Identity.Exceptions;
 using Vivet.AspNetCore.RequestVirusScan.Exceptions;
 
 namespace Nano.App.Web.Mvc.Middleware;
@@ -112,8 +115,23 @@ public class ExceptionHandlingMiddleware : IMiddleware
                 exceptions = [topException];
             }
 
-            var error = new Error();
-            var uxExceptionAttribute = this.GetUxExceptionAttribute(httpContext, topException);
+            var exceptionMessages = exceptions
+                .Select(x => x.Message)
+                .ToArray();
+
+            var problemDetails = new ProblemDetails
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1",
+                Status = response.StatusCode,
+                Title = "Internal Server Error",
+                Detail = topException.Message,
+                Extensions =
+                {
+                    { ProblemDetailsExtensions.EXCEPTIONS, exceptionMessages }
+                }
+            };
+
+            var uxExceptionAttribute = GetUxExceptionAttribute(httpContext, topException);
 
             if (uxExceptionAttribute == null)
             {
@@ -122,68 +140,65 @@ public class ExceptionHandlingMiddleware : IMiddleware
                     case BadRequestException:
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
 
-                        error.Summary = "Bad Request";
-                        error.IsTranslated = true;
-                        error.Exceptions = exceptions
-                            .Select(x => x.Message)
-                            .ToArray();
+                        problemDetails.Status = response.StatusCode;
+                        problemDetails.Title = "Bad Request";
+
+                        problemDetails.Extensions
+                            .Add(ProblemDetailsExtensions.IS_TRANSLATED, true);
 
                         break;
 
                     case VirusScanException:
-                        error.Summary = "Virus Scan Error";
-                        error.Exceptions = exceptions
-                            .Select(x => x.Message)
-                            .ToArray();
+                        problemDetails.Title = "Virus Scan Error";
 
                         break;
 
                     case CodedException:
-                        error.Summary = "Coded Error";
-                        error.IsCoded = true;
-                        error.Exceptions = exceptions
-                            .Select(x => x.Message)
-                            .ToArray();
+                        problemDetails.Title = "Coded Error";
+
+                        problemDetails.Extensions
+                            .Add(ProblemDetailsExtensions.IS_CODED, true);
 
                         break;
 
+                    case IdentityException:
                     case TranslationException:
-                        error.Summary = "Translated Error";
-                        error.IsTranslated = true;
-                        error.Exceptions = exceptions
-                            .Select(x => x.Message)
-                            .ToArray();
+                        problemDetails.Title = "Translated Error";
+
+                        problemDetails.Extensions
+                            .Add(ProblemDetailsExtensions.IS_TRANSLATED, true);
+
+                        break;
+
+                    case ProblemDetailsException problemDetailsException:
+                        problemDetails = problemDetailsException.ProblemDetails;
 
                         break;
 
                     default:
-                        error.Summary = "Internal Server Error";
-                        error.Exceptions =
-                        [
-                            this.WebOptions.CurrentValue.Hosting.ExposeErrors
-                                ? $"{topException.GetType().Name} - {topException.Message}"
-                                : "An error occurred."
-                        ];
+                        if (!this.WebOptions.CurrentValue.Hosting.ExposeErrors)
+                        {
+                            problemDetails.Detail = null;
+
+                            problemDetails.Extensions
+                                .Remove(ProblemDetailsExtensions.EXCEPTIONS);
+                        }
 
                         break;
                 }
             }
             else
             {
-                error.Summary = "Internal Server Error";
-                error.Exceptions =
-                [
-                    uxExceptionAttribute.Message 
-                ];
-                error.IsCoded = true;
+                problemDetails.Detail = uxExceptionAttribute.Message;
+
+                problemDetails.Extensions
+                    .Add(ProblemDetailsExtensions.IS_CODED, true);
             }
 
-            logLevel = error.IsTranslated
-                ? LogLevel.Information
-                : LogLevel.Error;
+            logLevel = SetLogLevel(problemDetails);
 
             var serializerSettings = SerializerSettings.GetDefault();
-            var result = JsonConvert.SerializeObject(error, serializerSettings);
+            var result = JsonConvert.SerializeObject(problemDetails, serializerSettings);
 
             await response
                 .WriteAsync(result);
@@ -221,7 +236,8 @@ public class ExceptionHandlingMiddleware : IMiddleware
         }
     }
 
-    private UxExceptionAttribute GetUxExceptionAttribute(HttpContext httpContext, Exception exception)
+
+    private static UxExceptionAttribute GetUxExceptionAttribute(HttpContext httpContext, Exception exception)
     {
         if (httpContext == null)
             throw new ArgumentNullException(nameof(httpContext));
@@ -243,5 +259,23 @@ public class ExceptionHandlingMiddleware : IMiddleware
                 exception.Message
                     .Contains(x.Properties
                         .Aggregate(string.Empty, (current, y) => current + $"_{y}")));
+    }
+    private static LogLevel SetLogLevel(ProblemDetails problemDetails)
+    {
+        if (problemDetails == null) 
+            throw new ArgumentNullException(nameof(problemDetails));
+        
+        problemDetails.Extensions
+            .TryGetValue(ProblemDetailsExtensions.IS_TRANSLATED, out var isTranslated);
+
+        problemDetails.Extensions
+            .TryGetValue(ProblemDetailsExtensions.IS_CODED, out var isCoded);
+
+        bool.TryParse(isTranslated?.ToString(), out var boolIsTranslated);
+        bool.TryParse(isCoded?.ToString(), out var boolIsCoded);
+
+        return boolIsTranslated || boolIsCoded
+            ? LogLevel.Information
+            : LogLevel.Error;
     }
 }

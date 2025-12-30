@@ -26,7 +26,9 @@ public static class TypesHelper
                     return null;
                 }
 
-                return x;
+                return name.StartsWith(nameof(Microsoft))
+                    ? null
+                    : x;
             })
             .Where(x => x != null)
             .SelectMany(x => x.GetTypes())
