@@ -38,7 +38,7 @@ public class AuthExternalRepository : IAuthExternalRepository
             ExternalLoginProviderFacebook facebookProvider => await this.facebookRepository.Authenticate(facebookProvider, cancellationToken),
             ExternalLoginProviderGoogle googleProvider => await this.googleRepository.Authenticate(googleProvider, cancellationToken),
             ExternalLoginProviderMicrosoft microsoftProvider => await this.microsoftRepository.Authenticate(microsoftProvider, cancellationToken),
-            _ => throw new NotSupportedException(provider.Name)
+            _ => throw new NotSupportedException(nameof(provider))
         };
     }
 

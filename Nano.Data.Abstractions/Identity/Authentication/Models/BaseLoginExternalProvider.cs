@@ -11,5 +11,5 @@ public abstract class BaseLogInExternalProvider
     /// Name.
     /// </summary>
     [Required]
-    public string Name { get; set; } // BUG: Internal
+    internal string Name { get; set; }
 }

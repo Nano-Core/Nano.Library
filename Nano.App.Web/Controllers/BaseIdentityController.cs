@@ -27,6 +27,7 @@ using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 namespace Nano.App.Web.Controllers;
 
 // BUG: Check all return types from IdentityRepository, they might have changed. 
+// Check nulls for all dependencies.
 // - roles: [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER)]
 
 /// <inheritdoc />
