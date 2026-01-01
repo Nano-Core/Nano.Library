@@ -17,10 +17,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Common.Identity.Authentication.Consts;
-using Nano.Common.Identity.Authentication.Exceptions;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
-using Nano.Data.Abstractions.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Exceptions;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Models.Identity;
@@ -245,7 +243,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         {
             const string MESSAGE = "IX___EFAuthUser_PhoneNumber";
 
-            if (ex.Message.Contains(MESSAGE) || ex.InnerException != null && ex.InnerException.Message.Contains(MESSAGE))
+            if (ex.Message.Contains(MESSAGE) || (ex.InnerException != null && ex.InnerException.Message.Contains(MESSAGE)))
             {
                 ThrowIdentityExceptions([new IdentityErrorDescriber().DuplicatePhoneNumber(signUp.PhoneNumber)]);
             }

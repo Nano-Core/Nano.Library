@@ -15,7 +15,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Nano.App.ApiClient.Consts;
 using Nano.App.Exceptions;
-using Nano.Common.Identity.Authentication.Exceptions;
 using Nano.Common.Serialization.Json;
 using Nano.Data.Abstractions.Identity.Exceptions;
 using Vivet.AspNetCore.RequestVirusScan.Exceptions;

@@ -74,7 +74,7 @@ public class EasyNetQEventing : IEventing
             {
                 var callbackTask = (Task)eventHandler
                     .GetType()
-                    .GetMethod(nameof(IEventingHandler<dynamic>.CallbackAsync))?
+                    .GetMethod(nameof(IEventingHandler<>.CallbackAsync))?
                     .Invoke(eventHandler, [message.Body, info.Redelivered]);
 
                 if (callbackTask == null)

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Nano.Common.Identity.Authentication.Exceptions;
-using Nano.Common.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Identity.Exceptions;
 
 namespace Nano.Data.Abstractions.Identity.Authentication.Abstractions;
 

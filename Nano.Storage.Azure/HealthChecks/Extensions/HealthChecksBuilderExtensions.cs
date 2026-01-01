@@ -23,7 +23,7 @@ internal static class HealthChecksBuilderExtensions
     /// <param name="tags">A list of tags that can be used to filter sets of health checks. Optional.</param>
     /// <param name="timeout">An optional System.TimeSpan representing the timeout of the check.</param>
     /// <returns>The <see cref="IHealthChecksBuilder"/>.</returns>
-    internal static IHealthChecksBuilder AddAzureFileshareStorage(this IHealthChecksBuilder builder, HealthStatus? failureStatus = default, IEnumerable<string> tags = default, TimeSpan? timeout = default)
+    internal static IHealthChecksBuilder AddAzureFileshareStorage(this IHealthChecksBuilder builder, HealthStatus? failureStatus = null, IEnumerable<string> tags = null, TimeSpan? timeout = null)
     {
         if (builder == null)
             throw new ArgumentNullException(nameof(builder));

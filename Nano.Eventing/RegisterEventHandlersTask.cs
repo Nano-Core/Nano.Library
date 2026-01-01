@@ -64,7 +64,7 @@ public class RegisterEventHandlersTask : IRegisterEventHandlersTask
                 .GetRequiredService(genericType);
 
             var prefetchCount = (ushort?)genericType
-                .GetProperty(nameof(IEventingHandler<dynamic>.OverridePrefetchCount))?
+                .GetProperty(nameof(IEventingHandler<>.OverridePrefetchCount))?
                 .GetValue(eventHandler);
 
             var subscribeMethod = eventing

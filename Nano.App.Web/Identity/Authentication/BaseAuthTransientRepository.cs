@@ -8,10 +8,10 @@ using Microsoft.Extensions.Options;
 using Nano.App.ApiClient.Models.Identity;
 using Nano.App.Web.Config;
 using Nano.App.Web.Identity.Authentication.Abstractions;
-using Nano.Common.Identity.Authentication.Abstractions;
-using Nano.Common.Identity.Authentication.Exceptions;
-using Nano.Common.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Data.Abstractions.Identity.Exceptions;
 
 namespace Nano.App.Web.Identity.Authentication;
 

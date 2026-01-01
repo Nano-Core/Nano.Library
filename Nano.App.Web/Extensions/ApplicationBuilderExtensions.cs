@@ -512,11 +512,10 @@ internal static class ApplicationBuilderExtensions
                     };
                     context.Response.Headers[HeaderNames.Vary] = string.Join(", ", varyHeaders.Distinct());
 
-                    var responseCachingFeature = context.Features.Get<IResponseCachingFeature>();
-                    if (responseCachingFeature != null)
-                    {
-                        responseCachingFeature.VaryByQueryKeys = ["*"];
-                    }
+                    var responseCachingFeature = context.Features
+                        .Get<IResponseCachingFeature>();
+                    
+                    responseCachingFeature?.VaryByQueryKeys = ["*"];
                 }
 
                 return next();

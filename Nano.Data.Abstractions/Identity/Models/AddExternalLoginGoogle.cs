@@ -1,5 +1,5 @@
 ﻿using System;
-using Nano.Common.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.Data.Abstractions.Identity.Models;
 

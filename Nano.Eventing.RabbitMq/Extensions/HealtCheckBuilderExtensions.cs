@@ -14,7 +14,7 @@ internal static class HealtCheckBuilderExtensions
 {
     private const string NAME = "rabbitmq";
 
-    internal static IHealthChecksBuilder AddRabbitMqHealthChecks(this IHealthChecksBuilder builder, HealthStatus? failureStatus = default, IEnumerable<string> tags = default, TimeSpan? timeout = default)
+    internal static IHealthChecksBuilder AddRabbitMqHealthChecks(this IHealthChecksBuilder builder, HealthStatus? failureStatus = null, IEnumerable<string> tags = null, TimeSpan? timeout = null)
     {
         if (builder == null)
             throw new ArgumentNullException(nameof(builder));

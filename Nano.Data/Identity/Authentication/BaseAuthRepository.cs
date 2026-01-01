@@ -5,14 +5,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Nano.Common.Identity.Authentication.Abstractions;
-using Nano.Common.Identity.Authentication.Consts;
-using Nano.Common.Identity.Authentication.Exceptions;
-using Nano.Common.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Data.Abstractions.Identity.Exceptions;
 using Nano.Data.Abstractions.Identity.Extensions;
+using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.Data.Identity.Authentication;
 

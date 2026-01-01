@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.ApiClient.Models.Identity;
-using Nano.Common.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.App.Web.Identity.Authentication.Abstractions;
 

@@ -185,7 +185,7 @@ internal static class EntityEntryExtensions
         }
 
         propertyNames
-            .Add(nameof(BaseEntity<object>.CreatedAt));
+            .Add(nameof(BaseEntity<>.CreatedAt));
 
         return propertyNames
             .Distinct()

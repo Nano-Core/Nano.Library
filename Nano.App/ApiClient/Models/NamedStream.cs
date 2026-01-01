@@ -8,15 +8,13 @@ namespace Nano.App.ApiClient.Models;
 /// </summary>
 public class NamedStream : IDisposable
 {
-    private string name;
-
     /// <summary>
     /// Name.
     /// </summary>
     public virtual string Name
     {
-        get => this.name;
-        set => this.name = Path.GetFileName(value);
+        get;
+        set => field = Path.GetFileName(value);
     }
 
     /// <summary>

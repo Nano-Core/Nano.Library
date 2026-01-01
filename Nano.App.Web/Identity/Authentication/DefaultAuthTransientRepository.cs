@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
 using Nano.App.Web.Config;
 using Nano.App.Web.Identity.Authentication.Abstractions;
-using Nano.Common.Identity.Authentication.Abstractions;
+using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
 
 namespace Nano.App.Web.Identity.Authentication;
 

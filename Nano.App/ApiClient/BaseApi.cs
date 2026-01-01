@@ -19,9 +19,9 @@ using Nano.App.ApiClient.Models.Identity;
 using Nano.App.ApiClient.Requests;
 using Nano.App.ApiClient.Requests.Auth;
 using Nano.App.Exceptions;
-using Nano.Common.Identity.Authentication.Exceptions;
-using Nano.Common.Identity.Authentication.Models;
 using Nano.Common.Serialization.Json;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Identity.Exceptions;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Newtonsoft.Json;
@@ -683,14 +683,7 @@ public abstract class BaseApi
         if (token == null)
             throw new ArgumentNullException(nameof(token));
 
-        var httpContext = this.httpContextAccessor?.HttpContext;
-
-        if (httpContext == null)
-        {
-            return;
-        }
-
-        httpContext.Request.Headers[HeaderNames.Authorization] = $"Bearer {token}";
+        this.httpContextAccessor.HttpContext?.Request.Headers[HeaderNames.Authorization] = $"Bearer {token}";
     }
 
     private static string GetInferredController<TResponse>()

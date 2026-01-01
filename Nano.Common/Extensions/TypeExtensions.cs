@@ -28,7 +28,7 @@ public static class TypeExtensions
             .GetParentTypes()
             .Any(x =>
                 x == baseType ||
-                x.IsGenericType && x.GetGenericTypeDefinition() == baseType);
+                (x.IsGenericType && x.GetGenericTypeDefinition() == baseType));
     }
 
     /// <summary>

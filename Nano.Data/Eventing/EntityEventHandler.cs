@@ -46,7 +46,7 @@ public class EntityEventHandler<TIdentity> : IEventingHandler<EntityEvent>
         var id = isGuid ? guid : @event.Id;
 
         var propertyId = type
-            .GetProperty(nameof(IEntityIdentity<dynamic>.Id));
+            .GetProperty(nameof(IEntityIdentity<>.Id));
 
         if (propertyId == null)
         {

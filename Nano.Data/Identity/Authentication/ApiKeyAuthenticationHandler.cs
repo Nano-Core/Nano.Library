@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Nano.Common.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
+using Nano.Data.Abstractions.Identity.Consts;
 
 namespace Nano.Data.Identity.Authentication;
 
@@ -79,7 +79,7 @@ public class ApiKeyAuthenticationHandler<TIdentity> : AuthenticationHandler<Auth
         var claims = await this.identityRepository
             .GetAllClaims(identityUser, transientClaims: transientClaims);
 
-        var identity = new ClaimsIdentity(claims, nameof(ApiKeyAuthenticationHandler<TIdentity>));
+        var identity = new ClaimsIdentity(claims, nameof(ApiKeyAuthenticationHandler<>));
         var ticket = new AuthenticationTicket(new ClaimsPrincipal(identity), this.Scheme.Name);
 
         return AuthenticateResult.Success(ticket);

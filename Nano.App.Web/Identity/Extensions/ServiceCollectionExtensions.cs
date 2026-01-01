@@ -13,8 +13,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using Nano.App.Web.Identity.Authentication;
 using Nano.App.Web.Identity.Authentication.Abstractions;
-using Nano.Common.Identity.Authentication;
-using Nano.Common.Identity.Authentication.Abstractions;
+using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
 using AuthenticationOptions = Nano.App.Web.Config.AuthenticationOptions;
 
 namespace Nano.App.Web.Identity.Extensions;

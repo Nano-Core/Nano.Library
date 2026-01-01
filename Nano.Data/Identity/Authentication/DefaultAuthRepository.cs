@@ -1,5 +1,4 @@
 using System;
-using Nano.Common.Identity.Authentication.Abstractions;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
 

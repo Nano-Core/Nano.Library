@@ -1,7 +1,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Http;
-using Nano.Common.Identity.Authentication.Consts;
+using Nano.Data.Abstractions.Identity.Consts;
 
 namespace Nano.Data.Abstractions.Identity.Extensions;
 

@@ -6,7 +6,6 @@ using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 using System;
-using Nano.Common.Identity.Authentication.Abstractions;
 using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
 
 namespace Nano.App.Web.Controllers;
