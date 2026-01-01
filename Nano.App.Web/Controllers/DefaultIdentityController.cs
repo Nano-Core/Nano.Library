@@ -16,14 +16,14 @@ public class DefaultIdentityController<TEntity, TCriteria> : BaseIdentityControl
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected DefaultIdentityController(ILogger logger, IRepository repository, IAuthRepository<Guid> authRepository, IAuthExternalRepository authExternalRepository, IIdentityRepository<Guid> identityRepository)
-        : this(logger, repository, null, authRepository, authExternalRepository, identityRepository)
+    protected DefaultIdentityController(ILogger logger, IRepository repository, IIdentityRepository<Guid> identityRepository, IAuthExternalRepository authExternalRepository = null)
+        : this(logger, repository, null, identityRepository, authExternalRepository)
     {
     }
 
     /// <inheritdoc />
-    protected DefaultIdentityController(ILogger logger, IRepository repository, IEventing eventing, IAuthRepository<Guid> authRepository, IAuthExternalRepository authExternalRepository, IIdentityRepository<Guid> identityRepository)
-        : base(logger, repository, eventing, authRepository, authExternalRepository, identityRepository)
+    protected DefaultIdentityController(ILogger logger, IRepository repository, IEventing eventing, IIdentityRepository<Guid> identityRepository, IAuthExternalRepository authExternalRepository = null)
+        : base(logger, repository, eventing, identityRepository, authExternalRepository)
     {
     }
 }

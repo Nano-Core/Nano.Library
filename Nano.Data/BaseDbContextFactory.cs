@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Nano.Common.Config;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
+using Nano.Data.Config;
 
 namespace Nano.Data;
 

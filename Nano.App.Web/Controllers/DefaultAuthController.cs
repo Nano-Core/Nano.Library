@@ -14,8 +14,8 @@ namespace Nano.App.Web.Controllers;
 public class DefaultAuthController : BaseAuthController<Guid>
 {
     /// <inheritdoc />
-    public DefaultAuthController(ILogger logger, IOptionsMonitor<WebOptions> options, IAuthRepository authRepository, IAuthTransientRepository authTransientRepository)
-        : base(logger, options, authRepository, authTransientRepository)
+    public DefaultAuthController(ILogger logger, IOptionsMonitor<WebOptions> options, IAuthRepository authRepository, IAuthExternalRepository authExternalRepository, IAuthTransientRepository authTransientRepository)
+        : base(logger, options, authRepository, authExternalRepository, authTransientRepository)
     {
     }
 }

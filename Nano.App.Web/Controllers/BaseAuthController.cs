@@ -30,10 +30,7 @@ namespace Nano.App.Web.Controllers;
 public abstract class BaseAuthController<TIdentity> : BaseController
     where TIdentity : IEquatable<TIdentity>
 {
-    /// <summary>
-    /// Auth Repository.
-    /// </summary>
-    protected virtual IOptionsMonitor<WebOptions> Options { get; }
+    private readonly IOptionsMonitor<WebOptions> options;
 
     /// <summary>
     /// Auth Repository.
@@ -41,14 +38,14 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     protected virtual IAuthRepository<TIdentity> AuthRepository { get; }
 
     /// <summary>
-    /// 
-    /// </summary>
-    protected virtual IAuthTransientRepository AuthTransientRepository { get; }
-
-    /// <summary>
     ///
     /// </summary>
     protected virtual IAuthExternalRepository AuthExternalRepository { get; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    protected virtual IAuthTransientRepository AuthTransientRepository { get; }
 
     /// <summary>
     /// Constructor.
@@ -58,14 +55,15 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <param name="authRepository"></param>
     /// <param name="authTransientRepository">The <see cref="IAuthTransientRepository"/>.</param>
     /// <param name="authExternalRepository"></param>
-    protected BaseAuthController(ILogger logger, IOptionsMonitor<WebOptions> options, IAuthRepository<TIdentity> authRepository = null, IAuthTransientRepository authTransientRepository = null, IAuthExternalRepository authExternalRepository = null)
+    protected BaseAuthController(ILogger logger, IOptionsMonitor<WebOptions> options, IAuthRepository<TIdentity> authRepository = null, IAuthExternalRepository authExternalRepository = null, IAuthTransientRepository authTransientRepository = null)
         : base(logger)
     {
-        this.Options = options;
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
         this.AuthRepository = authRepository;
-        this.AuthTransientRepository = authTransientRepository;
         this.AuthExternalRepository = authExternalRepository;
+        this.AuthTransientRepository = authTransientRepository;
     }
+
 
     #region Login
 
@@ -94,7 +92,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInAsync([FromBody][Required]LogIn logIn, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.AuthRepository
-            .LogInAsync(logIn, this.Options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
+            .LogInAsync(logIn, this.options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
 
         if (accessToken == null)
         {
@@ -163,7 +161,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInRefreshAsync([FromBody][Required] LogInRefresh logInRefresh, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.AuthRepository
-            .LogInRefreshAsync(logInRefresh, this.Options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
+            .LogInRefreshAsync(logInRefresh, this.options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
 
         if (accessToken == null)
         {
@@ -197,7 +195,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInExternalDirectAsync([FromBody][Required] LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.AuthRepository
-            .LogInExternalDirectAsync(logInExternalDirect, this.Options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
+            .LogInExternalDirectAsync(logInExternalDirect, this.options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
 
         if (accessToken == null)
         {
@@ -265,7 +263,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInExternalGoogleAsync([FromBody][Required] LogInExternalGoogle logInExternal, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.AuthRepository
-            .LogInExternalAsync(logInExternal, this.Options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
+            .LogInExternalAsync(logInExternal, this.options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
 
         if (accessToken == null)
         {
@@ -333,7 +331,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInExternalFacebookAsync([FromBody][Required] LogInExternalFacebook logInExternal, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.AuthRepository
-            .LogInExternalAsync(logInExternal, this.Options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
+            .LogInExternalAsync(logInExternal, this.options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
 
         if (accessToken == null)
         {
@@ -401,7 +399,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     public virtual async Task<IActionResult> LogInExternalMicrosoftAsync([FromBody][Required] LogInExternalMicrosoft logInExternal, CancellationToken cancellationToken = default)
     {
         var accessToken = await this.AuthRepository
-            .LogInExternalAsync(logInExternal, this.Options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
+            .LogInExternalAsync(logInExternal, this.options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
 
         if (accessToken == null)
         {

@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.Options;
 
-namespace Nano.Data;
+namespace Nano.Data.Config;
 
 internal sealed class StaticOptionsMonitor<T> : IOptionsMonitor<T>
 {
