@@ -1,12 +1,13 @@
 using DynamicExpression.Interfaces;
 using Microsoft.Extensions.Logging;
-using Nano.App.Web.Identity.Abstractions;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 using System;
+using Nano.Common.Identity.Authentication.Abstractions;
+using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
 
 namespace Nano.App.Web.Controllers;
 
@@ -16,14 +17,14 @@ public class DefaultIdentityController<TEntity, TCriteria> : BaseIdentityControl
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected DefaultIdentityController(ILogger logger, IRepository repository, IIdentityRepository<Guid> identityRepository, IAuthRepository<Guid> authRepository)
-        : this(logger, repository, null, identityRepository, authRepository)
+    protected DefaultIdentityController(ILogger logger, IRepository repository, IAuthRepository<Guid> authRepository, IAuthExternalRepository authExternalRepository, IIdentityRepository<Guid> identityRepository)
+        : this(logger, repository, null, authRepository, authExternalRepository, identityRepository)
     {
     }
 
     /// <inheritdoc />
-    protected DefaultIdentityController(ILogger logger, IRepository repository, IEventing eventing, IIdentityRepository<Guid> identityRepository, IAuthRepository<Guid> authRepository)
-        : base(logger, repository, eventing, identityRepository, authRepository)
+    protected DefaultIdentityController(ILogger logger, IRepository repository, IEventing eventing, IAuthRepository<Guid> authRepository, IAuthExternalRepository authExternalRepository, IIdentityRepository<Guid> identityRepository)
+        : base(logger, repository, eventing, authRepository, authExternalRepository, identityRepository)
     {
     }
 }

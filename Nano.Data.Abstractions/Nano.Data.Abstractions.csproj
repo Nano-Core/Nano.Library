@@ -19,7 +19,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="DynamicExpression" Version="10.0.0" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -28,9 +27,5 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Nano.Common\Nano.Common.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Consts\" />
 	</ItemGroup>
 </Project>

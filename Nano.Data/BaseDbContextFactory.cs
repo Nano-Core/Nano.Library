@@ -2,7 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using Nano.Common.Config;
+using Nano.Common.Config.Helpers;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 

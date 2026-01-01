@@ -1,4 +1,4 @@
-﻿using Nano.App.ApiClient.Models.Identity.External;
+﻿using Nano.Common.Identity.Authentication.Models;
 
 namespace Nano.App.ApiClient.Requests.Auth;
 

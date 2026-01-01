@@ -1,5 +1,3 @@
-using Nano.App.Web.Config;
-
 namespace Nano.Data.Abstractions.Config;
 
 /// <summary>

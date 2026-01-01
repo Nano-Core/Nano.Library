@@ -1,0 +1,28 @@
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace Nano.Common.Identity.Authentication.Models;
+
+/// <summary>
+/// Log In External Transient Refresh.
+/// </summary>
+public class LogInExternalTransientRefresh
+{
+    /// <summary>
+    /// Token.
+    /// </summary>
+    [Required]
+    public virtual string Token { get; set; }
+
+    /// <summary>
+    /// Transient Roles.
+    /// Non persisted roles, that is added to the jwt-token when logging in.
+    /// </summary>
+    public virtual IEnumerable<string> TransientRoles { get; set; } = new List<string>();
+
+    /// <summary>
+    /// Transient Claims.
+    /// Non persisted claims, that is added to the jwt-token when logging in.
+    /// </summary>
+    public virtual IDictionary<string, string> TransientClaims { get; set; } = new Dictionary<string, string>();
+}

@@ -1,10 +1,9 @@
 using System;
 using Microsoft.AspNetCore.Authentication;
-using Nano.App.Web.Config;
+using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
-using Nano.Data.Identity.Authentication;
 
-namespace Nano.App.Web.Identity.Authentication.Extensions;
+namespace Nano.Data.Identity.Authentication.Extensions;
 
 /// <summary>
 /// Service Collection Extensions.

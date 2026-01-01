@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Data.Abstractions.Identity;
+using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Models.Identity;
+using Nano.Data.Identity.Authentication;
 using Nano.Data.Identity.DataProtection.Extensions;
 using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;
 
@@ -60,6 +62,8 @@ internal static class ServiceCollectionExtensions
             });
 
         services
+            .AddScoped<IAuthRepository, DefaultAuthRepository>()
+            .AddScoped<IAuthRepository<TIdentity>, DefaultAuthRepository<TIdentity>>()
             .AddScoped<IIdentityRepository, DefaultIdentityRepository>()
             .AddScoped<IIdentityRepository<TIdentity>, DefaultIdentityRepository<TIdentity>>();
 

@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Nano.App.Web.Config;
+using Nano.Common.Config;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
-using FacebookOptions = Nano.App.Web.Config.FacebookOptions;
+using FacebookOptions = Nano.Common.Config.FacebookOptions;
 
 namespace Nano.App.Web.Identity.Authentication.Extensions;
 

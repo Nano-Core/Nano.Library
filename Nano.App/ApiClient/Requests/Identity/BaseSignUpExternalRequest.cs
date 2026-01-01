@@ -1,4 +1,4 @@
-﻿using Nano.App.ApiClient.Models.Identity;
+﻿using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 

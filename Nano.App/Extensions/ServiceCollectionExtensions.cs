@@ -6,7 +6,6 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Nano.App.Abstractions;
 using Nano.App.ApiClient.Extensions;
 using Nano.App.Config;
 using Nano.App.Config.Extensions;

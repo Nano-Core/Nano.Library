@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.Data.Abstractions.Exceptions;
+namespace Nano.Data.Abstractions.Identity.Exceptions;
 
 /// <summary>
 /// Identity Exception.

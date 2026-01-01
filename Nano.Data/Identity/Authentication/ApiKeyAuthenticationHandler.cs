@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Nano.Common.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
-using Nano.Data.Abstractions.Identity.Consts;
 
 namespace Nano.Data.Identity.Authentication;
 

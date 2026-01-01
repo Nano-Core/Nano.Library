@@ -1,4 +1,5 @@
 using Nano.App.Config;
+using Nano.Common.Config;
 
 namespace Nano.App.Web.Config;
 

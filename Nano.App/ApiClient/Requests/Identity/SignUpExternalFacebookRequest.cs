@@ -1,5 +1,5 @@
 ﻿using System;
-using Nano.App.ApiClient.Models.Identity.External;
+using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.ApiClient.Requests.Identity;

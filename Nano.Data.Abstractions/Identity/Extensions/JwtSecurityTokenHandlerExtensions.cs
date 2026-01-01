@@ -1,7 +1,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Common.Identity.Authentication.Consts;
 
 namespace Nano.Data.Abstractions.Identity.Extensions;
 

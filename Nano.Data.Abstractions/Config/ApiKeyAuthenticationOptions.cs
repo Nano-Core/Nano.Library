@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Nano.App.Web.Config;
+namespace Nano.Data.Abstractions.Config;
 
 /// <summary>
 /// Api Authentication Key Options.

@@ -1,15 +1,20 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using Nano.App.Web.Identity.Abstractions;
+using Nano.App.Web.Config;
 using Nano.App.Web.Identity.Authentication.Consts;
 using Nano.App.Web.Identity.Authentication.Extensions;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc.Filters;
+using Nano.App.Web.Identity.Authentication;
+using Nano.App.Web.Identity.Authentication.Abstractions;
+using Nano.Common.Identity.Authentication;
+using Nano.Common.Identity.Authentication.Abstractions;
 using AuthenticationOptions = Nano.App.Web.Config.AuthenticationOptions;
 
 namespace Nano.App.Web.Identity.Extensions;
@@ -75,10 +80,60 @@ internal static class ServiceCollectionExtensions
                 };
             });
 
-        services
-            .AddScoped<IIdentityJwtRepository, IdentityJwtRepository>()
-            .AddScoped<IAuthRepository, DefaultAuthRepository>() // BUG: TIdentity
-            .AddScoped<IAuthTransientRepository, DefaultAuthTransientRepository>();
+        if (options.Jwt != null)
+        {
+            services
+                .AddScoped<IAuthJwtRepository>(x =>
+                {
+                    var webOptions = x
+                        .GetRequiredService<IOptionsMonitor<WebOptions>>();
+
+                    return new AuthJwtRepository(webOptions.CurrentValue.Identity.Authentication.Jwt);
+                });
+
+            if (options.Jwt.ExternalLogins.Facebook != null)
+            {
+                services
+                    .AddScoped<IAuthExternalFacebookRepository>(x =>
+                    {
+                        var webOptions = x
+                            .GetRequiredService<IOptionsMonitor<WebOptions>>();
+
+                        return new AuthExternalFacebookRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins.Facebook);
+                    });
+            }
+
+            if (options.Jwt.ExternalLogins.Google != null)
+            {
+                services
+                    .AddScoped<IAuthExternalGoogleRepository>(x =>
+                    {
+                        var webOptions = x
+                            .GetRequiredService<IOptionsMonitor<WebOptions>>();
+
+                        return new AuthExternalGoogleRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins.Google);
+                    });
+            }
+
+            if (options.Jwt.ExternalLogins.Microsoft != null)
+            {
+                services
+                    .AddScoped<IAuthExternalMicrosoftRepository>(x =>
+                    {
+                        var webOptions = x
+                            .GetRequiredService<IOptionsMonitor<WebOptions>>();
+
+                        return new AuthExternalMicrosoftRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins.Microsoft);
+                    });
+            }
+
+            if (options.Jwt.ExternalLogins.IsConfigured)
+            {
+                services
+                    .AddScoped<IAuthExternalRepository, AuthExternalRepository>()
+                    .AddScoped<IAuthTransientRepository, DefaultAuthTransientRepository>();
+            }
+        }
 
         return services;
     }
