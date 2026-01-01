@@ -81,10 +81,10 @@ internal static class ServiceCollectionExtensions
 
         services
             .AddAuthJwtRepository(options.Jwt)
+            .AddAuthExternalRepository(options.Jwt?.ExternalLogins)
             .AddAuthExternalFacebookRepository(options.Jwt?.ExternalLogins.Facebook)
             .AddAuthExternalGoogleRepository(options.Jwt?.ExternalLogins.Google)
-            .AddAuthExternalMicrosoftRepository(options.Jwt?.ExternalLogins.Microsoft)
-            .AddAuthExternalRepository(options.Jwt?.ExternalLogins);
+            .AddAuthExternalMicrosoftRepository(options.Jwt?.ExternalLogins.Microsoft);
 
         return services;
     }
