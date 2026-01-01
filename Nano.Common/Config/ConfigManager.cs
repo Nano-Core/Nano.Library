@@ -4,16 +4,13 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 
-namespace Nano.Common.Config.Helpers;
+namespace Nano.Common.Config;
 
 /// <summary>
 /// Config Manager.
 /// </summary>
 public static class ConfigManager
 {
-    /// <summary>
-    /// The configuration, set when <see cref="BuildConfiguration"/> is invoked.
-    /// </summary>
     internal static IConfiguration Configuration { get; set; }
 
     /// <summary>

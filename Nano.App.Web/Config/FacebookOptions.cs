@@ -1,23 +1,23 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Nano.Common.Config;
+namespace Nano.App.Web.Config;
 
 /// <summary>
-/// Google Options.
+/// Facebook Options.
 /// </summary>
-public class GoogleOptions
+public class FacebookOptions
 {
     /// <summary>
-    /// Client Id.
+    /// App Id.
     /// </summary>
     [Required]
-    public virtual string ClientId { get; set; }
+    public virtual string AppId { get; set; }
 
     /// <summary>
-    /// Client Secret.
+    /// App Secret.
     /// </summary>
     [Required]
-    public virtual string ClientSecret { get; set; }
+    public virtual string AppSecret { get; set; }
 
     /// <summary>
     /// Scopes.

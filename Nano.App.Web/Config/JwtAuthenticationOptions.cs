@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Nano.Common.Config;
+namespace Nano.App.Web.Config;
 
 /// <summary>
 /// Jwt Options (nested class)

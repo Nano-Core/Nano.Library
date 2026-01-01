@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
+using Nano.App.Web.Config;
 using Nano.Common.Config;
 using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
 using Nano.Data.Abstractions.Identity.Authentication.Models;

@@ -7,7 +7,7 @@ using Nano.App.Extensions;
 using System;
 using System.IO;
 using System.Reflection;
-using Nano.Common.Config.Helpers;
+using Nano.Common.Config;
 
 namespace Nano.App.Console;
 

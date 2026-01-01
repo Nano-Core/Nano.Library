@@ -9,7 +9,8 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningsAsErrors></WarningsAsErrors>
 		<NoWarn />
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<EnablePackageValidation>true</EnablePackageValidation>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<EmbedAllSources>true</EmbedAllSources>
 	    <IncludeSymbols>true</IncludeSymbols>

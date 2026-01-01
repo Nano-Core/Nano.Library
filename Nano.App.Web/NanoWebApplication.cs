@@ -13,7 +13,7 @@ using Nano.App.Web.Identity.Extensions;
 using System;
 using System.IO;
 using System.Reflection;
-using Nano.Common.Config.Helpers;
+using Nano.Common.Config;
 using Nano.Data.Abstractions.Eventing.Extensions;
 using Nano.Data.Abstractions.Extensions;
 using Nano.Eventing.Abstractions.Extensions;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.App.Web.Config;
 using Nano.Common.Config;
 using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
 using Nano.Data.Abstractions.Identity.Authentication.Models;

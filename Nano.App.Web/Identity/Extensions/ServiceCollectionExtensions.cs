@@ -79,60 +79,12 @@ internal static class ServiceCollectionExtensions
                 };
             });
 
-        if (options.Jwt != null)
-        {
-            services
-                .AddScoped<IAuthJwtRepository>(x =>
-                {
-                    var webOptions = x
-                        .GetRequiredService<IOptionsMonitor<WebOptions>>();
-
-                    return new AuthJwtRepository(webOptions.CurrentValue.Identity.Authentication.Jwt);
-                });
-
-            if (options.Jwt.ExternalLogins.Facebook != null)
-            {
-                services
-                    .AddScoped<IAuthExternalFacebookRepository>(x =>
-                    {
-                        var webOptions = x
-                            .GetRequiredService<IOptionsMonitor<WebOptions>>();
-
-                        return new AuthExternalFacebookRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins.Facebook);
-                    });
-            }
-
-            if (options.Jwt.ExternalLogins.Google != null)
-            {
-                services
-                    .AddScoped<IAuthExternalGoogleRepository>(x =>
-                    {
-                        var webOptions = x
-                            .GetRequiredService<IOptionsMonitor<WebOptions>>();
-
-                        return new AuthExternalGoogleRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins.Google);
-                    });
-            }
-
-            if (options.Jwt.ExternalLogins.Microsoft != null)
-            {
-                services
-                    .AddScoped<IAuthExternalMicrosoftRepository>(x =>
-                    {
-                        var webOptions = x
-                            .GetRequiredService<IOptionsMonitor<WebOptions>>();
-
-                        return new AuthExternalMicrosoftRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins.Microsoft);
-                    });
-            }
-
-            if (options.Jwt.ExternalLogins.IsConfigured)
-            {
-                services
-                    .AddScoped<IAuthExternalRepository, AuthExternalRepository>()
-                    .AddScoped<IAuthTransientRepository, DefaultAuthTransientRepository>();
-            }
-        }
+        services
+            .AddAuthJwtRepository(options.Jwt)
+            .AddAuthExternalFacebookRepository(options.Jwt?.ExternalLogins.Facebook)
+            .AddAuthExternalGoogleRepository(options.Jwt?.ExternalLogins.Google)
+            .AddAuthExternalMicrosoftRepository(options.Jwt?.ExternalLogins.Microsoft)
+            .AddAuthExternalRepository(options.Jwt?.ExternalLogins);
 
         return services;
     }
@@ -141,6 +93,8 @@ internal static class ServiceCollectionExtensions
     {
         if (services == null)
             throw new ArgumentNullException(nameof(services));
+
+        // BUG: Does this fallback to anonymous?
 
         services
             .AddAuthorization(x =>
@@ -172,6 +126,108 @@ internal static class ServiceCollectionExtensions
                     });
                 });
             });
+
+        return services;
+    }
+
+
+    private static IServiceCollection AddAuthJwtRepository(this IServiceCollection services, JwtAuthenticationOptions options = null)
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        if (options == null)
+        {
+            return services;
+        }
+
+        services
+            .AddScoped<IAuthJwtRepository>(x =>
+            {
+                var webOptions = x
+                    .GetRequiredService<IOptionsMonitor<WebOptions>>();
+
+                return new AuthJwtRepository(webOptions.CurrentValue.Identity.Authentication.Jwt);
+            });
+
+        return services;
+    }
+    private static IServiceCollection AddAuthExternalFacebookRepository(this IServiceCollection services, FacebookOptions options = null)
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        if (options == null)
+        {
+            return services;
+        }
+
+        services
+            .AddScoped<IAuthExternalFacebookRepository>(x =>
+            {
+                var webOptions = x
+                    .GetRequiredService<IOptionsMonitor<WebOptions>>();
+
+                return new AuthExternalFacebookRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins.Facebook);
+            });
+
+        return services;
+    }
+    private static IServiceCollection AddAuthExternalGoogleRepository(this IServiceCollection services, GoogleOptions options = null)
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        if (options == null)
+        {
+            return services;
+        }
+
+        services
+            .AddScoped<IAuthExternalGoogleRepository>(x =>
+            {
+                var webOptions = x
+                    .GetRequiredService<IOptionsMonitor<WebOptions>>();
+
+                return new AuthExternalGoogleRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins.Google);
+            });
+
+        return services;
+    }
+    private static IServiceCollection AddAuthExternalMicrosoftRepository(this IServiceCollection services, MicrosoftOptions options = null)
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        if (options == null)
+        {
+            return services;
+        }
+
+        services
+            .AddScoped<IAuthExternalMicrosoftRepository>(x =>
+            {
+                var webOptions = x
+                    .GetRequiredService<IOptionsMonitor<WebOptions>>();
+
+                return new AuthExternalMicrosoftRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins.Microsoft);
+            });
+
+        return services;
+    }
+    private static IServiceCollection AddAuthExternalRepository(this IServiceCollection services, ExternalLoginOptions options = null)
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        if (options is not { IsConfigured: true })
+        {
+            return services;
+        }
+
+        services
+            .AddScoped<IAuthExternalRepository, AuthExternalRepository>()
+            .AddScoped<IAuthTransientRepository, DefaultAuthTransientRepository>();
 
         return services;
     }
