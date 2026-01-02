@@ -94,8 +94,6 @@ internal static class ServiceCollectionExtensions
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
-        // BUG: Does this fallback to anonymous?
-
         services
             .AddAuthorization(x =>
             {

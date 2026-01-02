@@ -1,8 +1,10 @@
+using Nano.Data.Abstractions.Identity.Authentication.Models;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.Data.Abstractions.Identity.Authentication.Abstractions;
+
+// TODO: SSO implementation Test and improvements (Facebook, Apple, Google, Microsoft) (remember inject HttpClient)
 
 /// <summary>
 /// 
