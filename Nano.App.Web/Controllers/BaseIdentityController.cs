@@ -37,12 +37,8 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     where TIdentity : IEquatable<TIdentity>
     where TCriteria : class, IQueryCriteria, new()
 {
+    private readonly IIdentityRepository<TIdentity> identityRepository;
     private readonly IAuthExternalRepository authExternalRepository;
-
-    /// <summary>
-    /// 
-    /// </summary>
-    protected virtual IIdentityRepository<TIdentity> IdentityRepository { get; }
 
     /// <inheritdoc />
     protected BaseIdentityController(ILogger logger, TRepository repository, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository authExternalRepository = null)
@@ -54,7 +50,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository authExternalRepository = null)
         : base(logger, repository, eventing)
     {
-        this.IdentityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
+        this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
         this.authExternalRepository = authExternalRepository;
     }
 
@@ -81,7 +77,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> GetPasswordOptionsAsync(CancellationToken cancellationToken = default)
     {
-        var passwordOptions = await this.IdentityRepository
+        var passwordOptions = await this.identityRepository
             .GetPaswordOptionsAsync(cancellationToken);
 
         if (passwordOptions == null)
@@ -112,7 +108,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> IsEmailAddressTakenAsync([FromQuery][Required] string emailAddress, CancellationToken cancellationToken = default)
     {
-        var isEmailAddressTaken = await this.IdentityRepository
+        var isEmailAddressTaken = await this.identityRepository
             .IsEmailAddressTakenAsync(emailAddress, cancellationToken);
 
         var response = new IsEmailAddressTaken
@@ -143,7 +139,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> IsPhoneNumberTakenAsync([FromQuery][Required] string phoneNumber, CancellationToken cancellationToken = default)
     {
-        var isPhoneNumberTaken = await this.IdentityRepository
+        var isPhoneNumberTaken = await this.identityRepository
             .IsPhoneNumberTakenAsync(phoneNumber, cancellationToken);
 
         var response = new IsEmailAddressTaken
@@ -174,7 +170,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpAsync([FromBody][Required] SignUp<TEntity, TIdentity> signUp, CancellationToken cancellationToken = default)
     {
-        var user = await this.IdentityRepository
+        var user = await this.identityRepository
             .SignUpAsync(signUp, cancellationToken);
 
         if (user == null)
@@ -206,7 +202,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpExternalDirectAsync([FromBody][Required] SignUpExternalDirect<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
     {
-        var user = await this.IdentityRepository
+        var user = await this.identityRepository
             .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
             {
                 User = signUpExternal.User,
@@ -250,7 +246,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var externalProviderLogInData = await this.authExternalRepository
             .GetExternalLogInData(signUpExternal.Provider, cancellationToken);
 
-        var user = await this.IdentityRepository
+        var user = await this.identityRepository
             .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
             {
                 User = signUpExternal.User,
@@ -294,7 +290,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var externalProviderLogInData = await this.authExternalRepository
             .GetExternalLogInData(signUpExternal.Provider, cancellationToken);
 
-        var user = await this.IdentityRepository
+        var user = await this.identityRepository
             .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
             {
                 User = signUpExternal.User,
@@ -338,7 +334,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var externalProviderLogInData = await this.authExternalRepository
             .GetExternalLogInData(signUpExternal.Provider, cancellationToken);
 
-        var user = await this.IdentityRepository
+        var user = await this.identityRepository
             .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
             {
                 User = signUpExternal.User,
@@ -386,7 +382,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SetUsernameAsync([FromBody][Required] SetUsername<TIdentity> setUsername, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .SetUsernameAsync(setUsername, cancellationToken);
 
         return this.Ok();
@@ -415,7 +411,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SetPasswordAsync([FromBody][Required] SetPassword<TIdentity> setPassword, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .SetPasswordAsync(setPassword, cancellationToken);
 
         return this.Ok();
@@ -441,7 +437,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> ResetPasswordAsync([FromBody][Required] ResetPassword<TIdentity> resetPassword, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .ResetPasswordAsync(resetPassword, cancellationToken);
 
         return this.Ok();
@@ -471,7 +467,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public virtual async Task<IActionResult> GetResetPasswordTokenAsync([FromBody][Required] GenerateResetPasswordToken generateResetPasswordToken, CancellationToken cancellationToken = default)
     {
-        var resetPasswordToken = await this.IdentityRepository
+        var resetPasswordToken = await this.identityRepository
             .GenerateResetPasswordTokenAsync(generateResetPasswordToken, cancellationToken);
 
         if (resetPasswordToken == null)
@@ -503,7 +499,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> ChangePasswordAsync([FromBody][Required] ChangePassword<TIdentity> changePassword, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .ChangePasswordAsync(changePassword, cancellationToken);
 
         return this.Ok();
@@ -531,7 +527,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> ChangeEmailAsync([FromBody][Required] ChangeEmail<TIdentity> changeEmail, [FromQuery] bool setUsername = false, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .ChangeEmailAsync(changeEmail, setUsername, cancellationToken);
 
         return this.Ok();
@@ -560,7 +556,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public virtual async Task<IActionResult> GetChangeEmailTokenAsync([FromBody][Required] GenerateChangeEmailToken<TIdentity> generateChangeEmailToken, CancellationToken cancellationToken = default)
     {
-        var changeEmailToken = await this.IdentityRepository
+        var changeEmailToken = await this.identityRepository
             .GenerateChangeEmailTokenAsync(generateChangeEmailToken, cancellationToken);
 
         if (changeEmailToken == null)
@@ -590,7 +586,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> ConfirmEmailAsync([FromBody][Required] ConfirmEmail<TIdentity> confirmEmail, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .ConfirmEmailAsync(confirmEmail, cancellationToken);
 
         return this.Ok();
@@ -619,7 +615,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public virtual async Task<IActionResult> GetConfirmEmailTokenAsync([FromBody][Required] GenerateConfirmEmailToken<TIdentity> generateConfirmEmailToken, CancellationToken cancellationToken = default)
     {
-        var confirmEmailToken = await this.IdentityRepository
+        var confirmEmailToken = await this.identityRepository
             .GenerateConfirmEmailTokenAsync(generateConfirmEmailToken, cancellationToken);
 
         if (confirmEmailToken == null)
@@ -651,7 +647,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> ChangePhoneAsync([FromBody][Required] ChangePhoneNumber<TIdentity> changePhoneNumber, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .ChangePhoneNumberAsync(changePhoneNumber, cancellationToken);
 
         return this.Ok();
@@ -680,7 +676,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public virtual async Task<IActionResult> GetChangePhoneTokenAsync([FromBody][Required] GenerateChangePhoneToken<TIdentity> generateChangePhoneToken, CancellationToken cancellationToken = default)
     {
-        var changeEmailToken = await this.IdentityRepository
+        var changeEmailToken = await this.identityRepository
             .GenerateChangePhoneNumberTokenAsync(generateChangePhoneToken, cancellationToken);
 
         if (changeEmailToken == null)
@@ -710,7 +706,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> ConfirmPhoneAsync([FromBody][Required] ConfirmPhoneNumber<TIdentity> confirmPhoneNumber, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .ConfirmPhoneNumberAsync(confirmPhoneNumber, cancellationToken);
 
         return this.Ok();
@@ -739,7 +735,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public virtual async Task<IActionResult> GetConfirmPhoneTokenAsync([FromBody][Required] GenerateConfirmPhoneToken<TIdentity> generateConfirmPhoneToken, CancellationToken cancellationToken = default)
     {
-        var confirmEmailToken = await this.IdentityRepository
+        var confirmEmailToken = await this.identityRepository
             .GenerateConfirmPhoneNumberTokenAsync(generateConfirmPhoneToken, cancellationToken);
 
         if (confirmEmailToken == null)
@@ -771,7 +767,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> VerifyCustomPurposeTokenAsync([FromBody][Required] GenerateCustomPurposeToken<TIdentity> confirmEmail, CancellationToken cancellationToken = default)
     {
-        var customPurposeToken = await this.IdentityRepository
+        var customPurposeToken = await this.identityRepository
             .GenerateCustomTokenAsync(confirmEmail, cancellationToken);
 
         if (customPurposeToken == null)
@@ -803,7 +799,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public virtual async Task<IActionResult> GetConfirmEmailTokenAsync([FromBody][Required] ConfirmCustomPurpose<TIdentity> confirmCustomPurpose, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .ConfirmCustomTokenAsync(confirmCustomPurpose, cancellationToken);
 
         return this.Ok();
@@ -835,7 +831,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> GetExternalLoginsAsync([FromRoute][Required] TIdentity userId, CancellationToken cancellationToken = default)
     {
-        var userLoginInfos = await this.IdentityRepository
+        var userLoginInfos = await this.identityRepository
             .GetUserExternalLoginsAsync(userId, cancellationToken);
 
         var externalLogins = userLoginInfos
@@ -877,7 +873,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var externalProviderLogInData = await this.authExternalRepository
             .GetExternalLogInData(addExternalLogin.Provider, cancellationToken);
 
-        var userLoginInfo = await this.IdentityRepository
+        var userLoginInfo = await this.identityRepository
             .AddExternalLoginAsync(addExternalLogin.UserId, new ExternalProvider
             {
                 LoginProvider = externalProviderLogInData.ExternalToken.Name,
@@ -927,7 +923,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var externalProviderLogInData = await this.authExternalRepository
             .GetExternalLogInData(addExternalLogin.Provider, cancellationToken);
 
-        var userLoginInfo = await this.IdentityRepository
+        var userLoginInfo = await this.identityRepository
             .AddExternalLoginAsync(addExternalLogin.UserId, new ExternalProvider
             {
                 LoginProvider = externalProviderLogInData.ExternalToken.Name,
@@ -977,7 +973,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var externalProviderLogInData = await this.authExternalRepository
             .GetExternalLogInData(addExternalLogin.Provider, cancellationToken);
 
-        var userLoginInfo = await this.IdentityRepository
+        var userLoginInfo = await this.identityRepository
             .AddExternalLoginAsync(addExternalLogin.UserId, new ExternalProvider
             {
                 LoginProvider = externalProviderLogInData.ExternalToken.Name,
@@ -1023,7 +1019,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> RemoveExternalLoginAsync([FromBody][Required] RemoveExternalLogin<TIdentity> removeExternalLogin, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .RemoveExternalLoginAsync(removeExternalLogin, cancellationToken);
 
         return this.Ok();
@@ -1053,7 +1049,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> GetApiKeysAsync([FromRoute][Required] TIdentity userId, CancellationToken cancellationToken = default)
     {
-        var identityApiKeys = await this.IdentityRepository
+        var identityApiKeys = await this.identityRepository
             .GetApiKeysAsync(userId, cancellationToken);
 
         if (identityApiKeys == null)
@@ -1088,7 +1084,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         await Task.CompletedTask;
 
-        var identityApiKey = this.IdentityRepository
+        var identityApiKey = this.identityRepository
             .CreateApiKeyAsync(createApiKey, out var apiKey);
 
         if (identityApiKey == null)
@@ -1128,7 +1124,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditApiKeyAsync([FromBody][Required] EditApiKey<TIdentity> editApiKey, CancellationToken cancellationToken = default)
     {
-        var identityApiKey = await this.IdentityRepository
+        var identityApiKey = await this.identityRepository
             .EditApiKeyAsync(editApiKey, cancellationToken);
 
         if (identityApiKey == null)
@@ -1161,7 +1157,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> RevokeApiKeyAsync([FromRoute][Required] TIdentity apiKeyId, [FromQuery] DateTimeOffset? revokeAt, CancellationToken cancellationToken = default)
     {
-        var identityApiKey = await this.IdentityRepository
+        var identityApiKey = await this.identityRepository
             .RevokeApiKeyAsync(new RevokeApiKey<TIdentity>
             {
                 Id = apiKeyId,
@@ -1197,7 +1193,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> GetRolesAsync([FromRoute][Required] TIdentity userId, CancellationToken cancellationToken = default)
     {
-        var roles = await this.IdentityRepository
+        var roles = await this.identityRepository
             .GetUserRolesAsync(userId, cancellationToken);
 
         return this.Ok(roles);
@@ -1225,7 +1221,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> AssignRoleAsync([FromBody][Required] AssignRole<TIdentity> assignRole, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .AssignUserRoleAsync(assignRole, cancellationToken);
 
         return this.Ok();
@@ -1254,7 +1250,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> RemoveRoleAsync([FromBody][Required] RemoveRole<TIdentity> removeRole, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .RemoveUserRoleAsync(removeRole, cancellationToken);
 
         return this.Ok();
@@ -1282,7 +1278,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> GetRoleClaimsAsync([FromRoute][Required] TIdentity roleId, CancellationToken cancellationToken = default)
     {
-        var userRoleClaims = await this.IdentityRepository
+        var userRoleClaims = await this.identityRepository
             .GetRoleClaimsAsync(roleId, cancellationToken);
 
         if (userRoleClaims == null)
@@ -1315,7 +1311,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> AssignRoleClaimAsync([FromBody][Required] AssignRoleClaim<TIdentity> assignRoleClaim, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .AssignRoleClaimAsync(assignRoleClaim, cancellationToken);
 
         return this.Ok();
@@ -1344,7 +1340,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> RemoveRoleClaimAsync([FromBody][Required] RemoveRoleClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .RemoveRoleClaimAsync(removeClaim, cancellationToken);
 
         return this.Ok();
@@ -1372,7 +1368,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> ReplaceRoleClaimAsync([FromBody][Required] ReplaceRoleClaim<TIdentity> replaceClaim, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .ReplaceRoleClaimAsync(replaceClaim, cancellationToken);
 
         return this.Ok();
@@ -1400,7 +1396,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> GetClaimsAsync([FromRoute][Required] TIdentity userId, CancellationToken cancellationToken = default)
     {
-        var userClaims = await this.IdentityRepository
+        var userClaims = await this.identityRepository
             .GetUserClaimsAsync(userId, cancellationToken);
 
         if (userClaims == null)
@@ -1433,7 +1429,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> AssignClaimAsync([FromBody][Required] AssignClaim<TIdentity> assignClaim, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .AssignUserClaimAsync(assignClaim, cancellationToken);
 
         return this.Ok();
@@ -1462,7 +1458,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> RemoveClaimAsync([FromBody][Required] RemoveClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .RemoveUserClaimAsync(removeClaim, cancellationToken);
 
         return this.Ok();
@@ -1490,7 +1486,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> ReplaceClaimAsync([FromBody][Required] ReplaceClaim<TIdentity> replaceClaim, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .ReplaceUserClaimAsync(replaceClaim, cancellationToken);
 
         return this.Ok();
@@ -1516,7 +1512,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> ActivateAsync([FromRoute][Required] TIdentity id, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .ActivateIdentityUser(id, cancellationToken);
 
         await this.Repository
@@ -1546,7 +1542,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DeactivateAsync([FromRoute][Required] TIdentity id, CancellationToken cancellationToken = default)
     {
-        await this.IdentityRepository
+        await this.identityRepository
             .DeactivateIdentityUser(id, cancellationToken);
 
         await this.Repository

@@ -1,13 +1,14 @@
+using Nano.Data.Abstractions.Identity.Authentication.Models;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.Data.Abstractions.Identity.Authentication;
 
 /// <summary>
 /// 
 /// </summary>
-public interface IAuthExternalFacebookRepository
+public interface IAuthExternalFacebookRepository : IDisposable
 {
     /// <summary>
     /// 

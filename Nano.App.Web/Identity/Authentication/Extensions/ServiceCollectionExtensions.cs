@@ -1,23 +1,22 @@
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using Nano.App.Web.Config;
-using Nano.App.Web.Identity.Authentication.Consts;
-using Nano.App.Web.Identity.Authentication.Extensions;
-using Nano.Data.Abstractions.Identity.Authentication.Consts;
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using Nano.App.Config;
-using Nano.App.Web.Identity.Authentication;
+using Nano.App.Web.Config;
 using Nano.App.Web.Identity.Authentication.Abstractions;
+using Nano.App.Web.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity.Authentication;
+using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using AuthenticationOptions = Nano.App.Web.Config.AuthenticationOptions;
 
-namespace Nano.App.Web.Identity.Extensions;
+namespace Nano.App.Web.Identity.Authentication.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
@@ -179,6 +178,41 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
+    private static IServiceCollection AddAuthExternalRepository(this IServiceCollection services, ExternalLoginOptions options = null)
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        if (options is not { IsConfigured: true })
+        {
+            return services;
+        }
+
+        services
+            .AddScoped<IAuthExternalRepository>(x =>
+            {
+                var webOptions = x
+                    .GetRequiredService<IOptionsMonitor<WebOptions>>();
+
+                var authJwtRepository = x
+                    .GetRequiredService<IAuthJwtRepository>();
+
+                var authExternalFacebookRepository = x
+                    .GetService<IAuthExternalFacebookRepository>();
+
+                var authExternalGoogleRepository = x
+                    .GetService<IAuthExternalGoogleRepository>();
+
+                var authExternalMicrosoftRepository = x
+                    .GetService<IAuthExternalMicrosoftRepository>();
+
+                return new AuthExternalRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins, authJwtRepository, authExternalFacebookRepository, authExternalGoogleRepository, authExternalMicrosoftRepository);
+            });
+        services
+            .AddScoped<IAuthExternalRepository, AuthExternalRepository>();
+
+        return services;
+    }
     private static IServiceCollection AddAuthExternalFacebookRepository(this IServiceCollection services, FacebookOptions options = null)
     {
         if (services == null)
@@ -190,12 +224,21 @@ internal static class ServiceCollectionExtensions
         }
 
         services
+            .AddHttpClient<IAuthExternalFacebookRepository>();
+
+        services
             .AddScoped<IAuthExternalFacebookRepository>(x =>
             {
                 var webOptions = x
                     .GetRequiredService<IOptionsMonitor<WebOptions>>();
 
-                return new AuthExternalFacebookRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins.Facebook);
+                var httpClientFactory = x
+                    .GetRequiredService<IHttpClientFactory>();
+
+                var httpClient = httpClientFactory
+                    .CreateClient(nameof(IAuthExternalFacebookRepository));
+
+                return new AuthExternalFacebookRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins.Facebook, httpClient);
             });
 
         return services;
@@ -230,6 +273,8 @@ internal static class ServiceCollectionExtensions
         {
             return services;
         }
+        services
+            .AddHttpClient<IAuthExternalMicrosoftRepository>();
 
         services
             .AddScoped<IAuthExternalMicrosoftRepository>(x =>
@@ -237,43 +282,14 @@ internal static class ServiceCollectionExtensions
                 var webOptions = x
                     .GetRequiredService<IOptionsMonitor<WebOptions>>();
 
-                return new AuthExternalMicrosoftRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins.Microsoft);
+                var httpClientFactory = x
+                    .GetRequiredService<IHttpClientFactory>();
+
+                var httpClient = httpClientFactory
+                    .CreateClient(nameof(IAuthExternalMicrosoftRepository));
+
+                return new AuthExternalMicrosoftRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins.Microsoft, httpClient);
             });
-
-        return services;
-    }
-    private static IServiceCollection AddAuthExternalRepository(this IServiceCollection services, ExternalLoginOptions options = null)
-    {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (options is not { IsConfigured: true })
-        {
-            return services;
-        }
-
-        services
-            .AddScoped<IAuthExternalRepository>(x =>
-            {
-                var webOptions = x
-                    .GetRequiredService<IOptionsMonitor<WebOptions>>();
-
-                var authJwtRepository = x
-                    .GetRequiredService<IAuthJwtRepository>();
-
-                var authExternalFacebookRepository = x
-                    .GetService<IAuthExternalFacebookRepository>();
-
-                var authExternalGoogleRepository = x
-                    .GetService<IAuthExternalGoogleRepository>();
-
-                var authExternalMicrosoftRepository = x
-                    .GetService<IAuthExternalMicrosoftRepository>();
-
-                return new AuthExternalRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins, authJwtRepository, authExternalFacebookRepository, authExternalGoogleRepository, authExternalMicrosoftRepository);
-            });
-        services
-            .AddScoped<IAuthExternalRepository, AuthExternalRepository>();
 
         return services;
     }

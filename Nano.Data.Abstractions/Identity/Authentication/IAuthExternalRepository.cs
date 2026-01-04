@@ -5,8 +5,7 @@ using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.Data.Abstractions.Identity.Authentication;
 
-// TODO: SSO implementation Test and improvements (Facebook, Apple, Google, Microsoft)
-// Remember to inject HttpClient
+// TODO: Apple External Login
 
 /// <summary>
 /// 

@@ -18,14 +18,17 @@ namespace Nano.App.Web.Identity.Authentication;
 public class AuthExternalMicrosoftRepository : IAuthExternalMicrosoftRepository
 {
     private readonly MicrosoftOptions options;
+    private readonly HttpClient httpClient;
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="options"></param>
-    public AuthExternalMicrosoftRepository(MicrosoftOptions options)
+    /// <param name="httpClient"></param>
+    public AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClient httpClient)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));
+        this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
     /// <inheritdoc />
@@ -117,50 +120,45 @@ public class AuthExternalMicrosoftRepository : IAuthExternalMicrosoftRepository
         if (logInExternalRefresh == null)
             throw new ArgumentNullException(nameof(logInExternalRefresh));
 
-        using var httpClient = new HttpClient();
+        var httpRequestMessage = new HttpRequestMessage();
+
+        httpRequestMessage.Method = HttpMethod.Post;
+        httpRequestMessage.RequestUri = new Uri($"https://login.microsoftonline.com/{this.options.TenantId}/oauth2/v2.0/token");
+
+        using var formContent = new MultipartFormDataContent();
+
+        formContent.Add(new StringContent(this.options.ClientId), "client_id");
+        formContent.Add(new StringContent(this.options.ClientSecret), "client_secret");
+        formContent.Add(new StringContent("refresh_token"), "grant_type");
+        formContent.Add(new StringContent(logInExternalRefresh.RefreshToken), "refresh_token");
+        formContent.Add(new StringContent(this.options.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
+
+        httpRequestMessage.Content = formContent;
+
+        var httpResponse = await this.httpClient
+            .SendAsync(httpRequestMessage, cancellationToken);
+
+        var stringContent = await httpResponse.Content
+            .ReadAsStringAsync(cancellationToken);
+
+        var content = JsonConvert.DeserializeObject<JObject>(stringContent);
+
+        var error = (string)content?["error"];
+        var errorDescription = (string)content?["error"];
+
+        if (error != null)
         {
-            var httpRequestMessage = new HttpRequestMessage();
-            {
-                httpRequestMessage.Method = HttpMethod.Post;
-                httpRequestMessage.RequestUri = new Uri($"https://login.microsoftonline.com/{this.options.TenantId}/oauth2/v2.0/token");
-
-                using var formContent = new MultipartFormDataContent();
-                {
-                    formContent.Add(new StringContent(this.options.ClientId), "client_id");
-                    formContent.Add(new StringContent(this.options.ClientSecret), "client_secret");
-                    formContent.Add(new StringContent("refresh_token"), "grant_type");
-                    formContent.Add(new StringContent(logInExternalRefresh.RefreshToken), "refresh_token");
-                    formContent.Add(new StringContent(this.options.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
-
-                    httpRequestMessage.Content = formContent;
-
-                    var httpResponse = await httpClient
-                        .SendAsync(httpRequestMessage, cancellationToken);
-
-                    var stringContent = await httpResponse.Content
-                        .ReadAsStringAsync(cancellationToken);
-
-                    var content = JsonConvert.DeserializeObject<JObject>(stringContent);
-
-                    var error = (string)content?["error"];
-                    var errorDescription = (string)content?["error"];
-
-                    if (error != null)
-                    {
-                        throw new UnauthorizedException($"{error}: {errorDescription}");
-                    }
-
-                    var accessToken = (string)content?["access_token"];
-                    var refreshToken = (string)content?["refresh_token"];
-
-                    return new ExternalLoginTokenData
-                    {
-                        Name = logInExternalRefresh.ProviderName,
-                        Token = accessToken,
-                        RefreshToken = refreshToken
-                    };
-                }
-            }
+            throw new UnauthorizedException($"{error}: {errorDescription}");
         }
+
+        var accessToken = (string)content?["access_token"];
+        var refreshToken = (string)content?["refresh_token"];
+
+        return new ExternalLoginTokenData
+        {
+            Name = logInExternalRefresh.ProviderName,
+            Token = accessToken,
+            RefreshToken = refreshToken
+        };
     }
 }

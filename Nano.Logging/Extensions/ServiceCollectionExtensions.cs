@@ -9,13 +9,10 @@ namespace Nano.Logging.Extensions;
 
 // TODO: Make Microsoft Logging Console Provider
 // TODO: Make Nlog Logging Console Provider
-// TODO: Improve logging from Chat-gPT serilog
-// - A “production-grade” Serilog template
-// - Structured logging examples
-// - Logging with OpenTelemetry + Serilog
-// - Advice on filtering noisy logs
 
-// TODO: Logging and Observability(OpenTelemetry - https://opentelemetry.io/docs)
+// TODO: Logging and Observability and Telemetry (OpenTelemetry - https://opentelemetry.io/docs)
+// - Logging with OpenTelemetry + Serilog
+// - IHostApplicationBuilder.Metrics(IMetricsBuilder)
 
 /// <summary>
 /// Service Collection Extensions.
