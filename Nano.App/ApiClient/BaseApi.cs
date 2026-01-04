@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using DynamicExpression.Interfaces;
+﻿using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Nano.App.ApiClient.Config;
 using Nano.App.ApiClient.Consts;
@@ -25,6 +17,15 @@ using Nano.Data.Abstractions.Identity.Exceptions;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Vivet.AspNetCore.RequestTimeZone;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 
@@ -37,7 +38,7 @@ public abstract class BaseApi
 {
     private volatile AccessToken accessToken;
 
-    private readonly ApiOptions apiOptions;
+    private readonly IOptionsMonitor<ApiOptions> apiOptions;
     private readonly IHttpContextAccessor httpContextAccessor;
     private readonly HttpClient httpClient;
 
@@ -47,7 +48,7 @@ public abstract class BaseApi
     /// <param name="apiOptions">The <see cref="ApiOptions"/>.</param>
     /// <param name="httpContextAccessor">The <see cref="IHttpContextAccessor"/>.</param>
     /// <param name="httpClient">The <see cref="HttpClient"/>.</param>
-    protected BaseApi(ApiOptions apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor = null)
+    protected BaseApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor = null)
     {
         this.apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
         this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
@@ -262,14 +263,14 @@ public abstract class BaseApi
             return request.JwtTokenOverride;
         }
 
-        if (this.apiOptions.LogIn is { Username: not null, Password: not null })
+        if (this.apiOptions.CurrentValue.LogIn is { Username: not null, Password: not null })
         {
             var logInRootRequest = new LogInRootRequest
             {
                 LogInRoot = new LogInRoot
                 {
-                    Username = this.apiOptions.LogIn.Username,
-                    Password = this.apiOptions.LogIn.Password
+                    Username = this.apiOptions.CurrentValue.LogIn.Username,
+                    Password = this.apiOptions.CurrentValue.LogIn.Password
                 }
             };
 
@@ -284,11 +285,6 @@ public abstract class BaseApi
         if (jwtToken != null)
         {
             return jwtToken;
-        }
-
-        if (!string.IsNullOrEmpty(this.accessToken?.Token) && !this.accessToken.IsExpired)
-        {
-            return this.accessToken?.Token;
         }
 
         return this.accessToken?.Token;
@@ -503,16 +499,16 @@ public abstract class BaseApi
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
-        var protocol = this.apiOptions.UseSsl
+        var protocol = this.apiOptions.CurrentValue.UseSsl
             ? "https://"
             : "http://";
-        var host = this.apiOptions.Host.EndsWith("/")
-            ? this.apiOptions.Host[..^1]
-            : this.apiOptions.Host;
-        var port = this.apiOptions.Port;
-        var root = this.apiOptions.Root.EndsWith("/")
-            ? this.apiOptions.Root[..^1]
-            : this.apiOptions.Root;
+        var host = this.apiOptions.CurrentValue.Host.EndsWith("/")
+            ? this.apiOptions.CurrentValue.Host[..^1]
+            : this.apiOptions.CurrentValue.Host;
+        var port = this.apiOptions.CurrentValue.Port;
+        var root = this.apiOptions.CurrentValue.Root.EndsWith("/")
+            ? this.apiOptions.CurrentValue.Root[..^1]
+            : this.apiOptions.CurrentValue.Root;
         var controller = string.IsNullOrEmpty(request.Controller) ? null : $"{request.Controller}/";
         var action = string.IsNullOrEmpty(request.Action) ? null : $"{request.Action}/";
         var route = request.GetRoute();
@@ -777,7 +773,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseApi(ApiOptions apiOptions, HttpClient httpClient)
+    protected BaseApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient)
         : base(apiOptions, httpClient)
     {
     }

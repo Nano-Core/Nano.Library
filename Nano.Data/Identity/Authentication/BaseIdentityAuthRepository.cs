@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Nano.Data.Abstractions.Identity;
-using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
+using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Exceptions;
@@ -15,16 +15,13 @@ using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.Data.Identity.Authentication;
 
-/// <summary>
-/// 
-/// </summary>
-/// <typeparam name="TIdentity"></typeparam>
-public abstract class BaseAuthRepository<TIdentity> : IAuthRepository<TIdentity>
+/// <inheritdoc />
+public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
+    private readonly IIdentityRepository<TIdentity> identityRepository;
     private readonly IAuthJwtRepository authJwtRepository;
     private readonly IAuthExternalRepository authExternalRepository;
-    private readonly IIdentityRepository<TIdentity> identityRepository;
 
     /// <summary>
     /// The user authenticates and on success recieves a jwt token for use with auhtorization.
@@ -32,11 +29,11 @@ public abstract class BaseAuthRepository<TIdentity> : IAuthRepository<TIdentity>
     /// <param name="identityRepository"></param>
     /// <param name="authJwtRepository"></param>
     /// <param name="authExternalRepository"></param>
-    protected BaseAuthRepository(IAuthJwtRepository authJwtRepository, IAuthExternalRepository authExternalRepository, IIdentityRepository<TIdentity> identityRepository)
+    protected BaseIdentityAuthRepository(IIdentityRepository<TIdentity> identityRepository, IAuthJwtRepository authJwtRepository, IAuthExternalRepository authExternalRepository = null)
     {
-        this.authJwtRepository = authJwtRepository ?? throw new ArgumentNullException(nameof(authJwtRepository));
-        this.authExternalRepository = authExternalRepository ?? throw new ArgumentNullException(nameof(authExternalRepository));
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
+        this.authJwtRepository = authJwtRepository ?? throw new ArgumentNullException(nameof(authJwtRepository));
+        this.authExternalRepository = authExternalRepository;
     }
 
     /// <inheritdoc />
@@ -47,8 +44,11 @@ public abstract class BaseAuthRepository<TIdentity> : IAuthRepository<TIdentity>
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInAsync(LogIn logIn, int refreshExpirationInHours, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInAsync(LogIn logIn, CancellationToken cancellationToken = default)
     {
+        if (logIn == null) 
+            throw new ArgumentNullException(nameof(logIn));
+        
         var identityUser = await this.identityRepository
             .SignInAsync(new SignIn
             {
@@ -77,7 +77,7 @@ public abstract class BaseAuthRepository<TIdentity> : IAuthRepository<TIdentity>
 
         var refreshTokenExpiry = logIn.IsRefreshable
             ? await this.identityRepository
-                .CreateRefreshToken(identityUser, refreshExpirationInHours, logIn.AppId)
+                .CreateRefreshToken(identityUser, logIn.AppId)
             : null;
 
         if (refreshTokenExpiry != null)
@@ -93,64 +93,11 @@ public abstract class BaseAuthRepository<TIdentity> : IAuthRepository<TIdentity>
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternal, int refreshExpirationInHours, CancellationToken cancellationToken = default)
-        where TProvider : BaseLogInExternalProvider, new()
+    public virtual async Task<AccessToken> LogInExternalDirectAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
     {
-        if (logInExternal == null)
-            throw new ArgumentNullException(nameof(logInExternal));
-
-        var externalLoginData = await this.authExternalRepository
-            .Authenticate(logInExternal.Provider, cancellationToken);
-
-        var identityUser = await this.identityRepository
-            .SignInExternalAsync(new SignInExternal
-            {
-                ExternalProvider =
-                {
-                    LoginProvider = externalLoginData.ExternalToken.Name,
-                    ProviderKey = externalLoginData.Id
-                },
-                IsRememberMe = logInExternal.IsRememberMe
-            }, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new UnauthorizedException();
-        }
-
-        var claims = await this.identityRepository
-            .GetAllClaims(identityUser, logInExternal.TransientRoles, logInExternal.TransientClaims, cancellationToken);
-
-        var accessToken = this.authJwtRepository
-            .GenerateJwtToken(new GenerateJwtToken
-            {
-                AppId = logInExternal.AppId,
-                UserId = identityUser.Id.ToString(),
-                UserName = identityUser.UserName,
-                UserEmail = identityUser.Email,
-                Claims = claims
-            });
-
-        var refreshTokenExpiry = logInExternal.IsRefreshable
-            ? await this.identityRepository
-                .CreateRefreshToken(identityUser, refreshExpirationInHours, logInExternal.AppId)
-            : null;
-
-        if (refreshTokenExpiry != null)
-        {
-            accessToken.RefreshToken = new RefreshToken
-            {
-                Token = refreshTokenExpiry.Value,
-                ExpireAt = refreshTokenExpiry.ExpireAt
-            };
-        }
-
-        return accessToken;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInExternalDirectAsync(LogInExternalDirect logInExternalDirect, int refreshExpirationInHours, CancellationToken cancellationToken = default)
-    {
+        if (logInExternalDirect == null) 
+            throw new ArgumentNullException(nameof(logInExternalDirect));
+        
         var identityUser = await this.identityRepository
             .SignInExternalAsync(new SignInExternal
             {
@@ -177,16 +124,15 @@ public abstract class BaseAuthRepository<TIdentity> : IAuthRepository<TIdentity>
                 UserId = identityUser.Id.ToString(),
                 UserName = identityUser.UserName,
                 UserEmail = identityUser.Email,
-                Claims = claims
+                Claims = claims,
+                ExternalToken = logInExternalDirect.ExternalLogInData.ExternalToken
             });
 
-        var refreshTokenExpiry = logInExternalDirect.IsRefreshable
-            ? await this.identityRepository
-                .CreateRefreshToken(identityUser, refreshExpirationInHours, logInExternalDirect.AppId)
-            : null;
-
-        if (refreshTokenExpiry != null)
+        if (logInExternalDirect.IsRefreshable)
         {
+            var refreshTokenExpiry = await this.identityRepository
+                .CreateRefreshToken(identityUser, logInExternalDirect.AppId);
+
             accessToken.RefreshToken = new RefreshToken
             {
                 Token = refreshTokenExpiry.Value,
@@ -198,8 +144,11 @@ public abstract class BaseAuthRepository<TIdentity> : IAuthRepository<TIdentity>
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInRefreshAsync(LogInRefresh logInRefresh, int refreshExpirationInHours, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInRefreshAsync(LogInRefresh logInRefresh, CancellationToken cancellationToken = default)
     {
+        if (logInRefresh == null) 
+            throw new ArgumentNullException(nameof(logInRefresh));
+        
         var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
         var userIdString = jwtSecurityTokenHandler
@@ -234,21 +183,29 @@ public abstract class BaseAuthRepository<TIdentity> : IAuthRepository<TIdentity>
         var claims = await this.identityRepository
             .GetAllClaims(identityUser, logInRefresh.TransientRoles, logInRefresh.TransientClaims, cancellationToken);
 
-        var externalProviderName = claims
-            .Where(x => x.Type == ClaimTypesExtended.ExternalProviderName)
-            .Select(x => x.Value)
-            .FirstOrDefault();
+        ExternalLoginTokenData externalLoginTokenData = null;
+        if (this.authExternalRepository != null)
+        {
+            var externalProviderName = claims
+                .Where(x => x.Type == ClaimTypesExtended.ExternalProviderName)
+                .Select(x => x.Value)
+                .FirstOrDefault();
 
-        var externalProviderRefreshToken = claims
-            .Where(x => x.Type == ClaimTypesExtended.ExternalProviderRefreshToken)
-            .Select(x => x.Value)
-            .FirstOrDefault();
+            var externalProviderRefreshToken = claims
+                .Where(x => x.Type == ClaimTypesExtended.ExternalProviderRefreshToken)
+                .Select(x => x.Value)
+                .FirstOrDefault();
 
-        var externalLoginTokenData = await this.authExternalRepository
-            .AuthenticateRefresh(externalProviderName, externalProviderRefreshToken, cancellationToken);
+            externalLoginTokenData = await this.authExternalRepository
+                .LogInExternalRefreshAsync(new LogInExternalRefresh
+                {
+                    ProviderName = externalProviderName,
+                    RefreshToken = externalProviderRefreshToken
+                }, cancellationToken);
+        }
 
         this.authJwtRepository
-            .ValidateRefreshToken(logInRefresh.RefreshToken);
+            .ValidateTokenForRefresh(logInRefresh.Token);
 
         var accessToken = this.authJwtRepository
             .GenerateJwtToken(new GenerateJwtToken
@@ -267,7 +224,7 @@ public abstract class BaseAuthRepository<TIdentity> : IAuthRepository<TIdentity>
         }
 
         var refreshTokenExpiry = await this.identityRepository
-            .CreateRefreshToken(identityUser, refreshExpirationInHours, appId);
+            .CreateRefreshToken(identityUser, appId);
 
         if (refreshTokenExpiry != null)
         {

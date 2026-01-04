@@ -1,3 +1,4 @@
+using Nano.App.Config;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.App.Web.Config;
@@ -40,10 +41,9 @@ public class JwtAuthenticationOptions
     public virtual int ExpirationInMinutes { get; set; } = 60;
 
     /// <summary>
-    /// Refresh Expiration In Hours.
+    /// Log In Root Options.
     /// </summary>
-    [Required]
-    public virtual int RefreshExpirationInHours { get; set; } = 72;
+    public virtual LogInRootOptions RootLogin { get; set; }
 
     /// <summary>
     /// External Logins.

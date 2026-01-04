@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.Web.Config;
 using Nano.Common.Config;
-using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
+using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Exceptions;
 using Newtonsoft.Json;
@@ -112,13 +112,10 @@ public class AuthExternalMicrosoftRepository : IAuthExternalMicrosoftRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<ExternalLoginTokenData> AuthenticateRefresh(string name, string externalRefreshToken, CancellationToken cancellationToken = default)
+    public virtual async Task<ExternalLoginTokenData> AuthenticateRefresh(LogInExternalRefreshMicrosoft logInExternalRefresh, CancellationToken cancellationToken = default)
     {
-        if (name == null)
-            throw new ArgumentNullException(nameof(name));
-
-        if (externalRefreshToken == null)
-            throw new ArgumentNullException(nameof(externalRefreshToken));
+        if (logInExternalRefresh == null)
+            throw new ArgumentNullException(nameof(logInExternalRefresh));
 
         using var httpClient = new HttpClient();
         {
@@ -132,7 +129,7 @@ public class AuthExternalMicrosoftRepository : IAuthExternalMicrosoftRepository
                     formContent.Add(new StringContent(this.options.ClientId), "client_id");
                     formContent.Add(new StringContent(this.options.ClientSecret), "client_secret");
                     formContent.Add(new StringContent("refresh_token"), "grant_type");
-                    formContent.Add(new StringContent(externalRefreshToken), "refresh_token");
+                    formContent.Add(new StringContent(logInExternalRefresh.RefreshToken), "refresh_token");
                     formContent.Add(new StringContent(this.options.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
 
                     httpRequestMessage.Content = formContent;
@@ -158,7 +155,7 @@ public class AuthExternalMicrosoftRepository : IAuthExternalMicrosoftRepository
 
                     return new ExternalLoginTokenData
                     {
-                        Name = name,
+                        Name = logInExternalRefresh.ProviderName,
                         Token = accessToken,
                         RefreshToken = refreshToken
                     };

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Data.Abstractions.Identity;
-using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
+using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Models.Identity;
 using Nano.Data.Identity.Authentication;
@@ -14,7 +14,7 @@ namespace Nano.Data.Identity.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddIdentity<TContext, TIdentity>(this IServiceCollection services, IdentityOptions options)
+    internal static IServiceCollection AddIdentity<TContext, TIdentity>(this IServiceCollection services, IdentityOptions options = null)
         where TContext : BaseDbContext<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
@@ -52,18 +52,21 @@ internal static class ServiceCollectionExtensions
             .AddCustomTokenProvider();
 
         services
-            .AddDataProtection()
-            .PersistKeysToDbContext<TContext>();
-
-        services
             .Configure<DataProtectionTokenProviderOptions>(x =>
             {
                 x.TokenLifespan = TimeSpan.FromHours(options.TokensExpirationInHours);
-            });
+            })
+            .AddDataProtection()
+            .PersistKeysToDbContext<TContext>();
+
+        if (options.Authentication.Jwt != null)
+        {
+            services
+                .AddScoped<IIdentityAuthRepository, DefaultIdentityAuthRepository>()
+                .AddScoped<IIdentityAuthRepository<TIdentity>, DefaultIdentityAuthRepository<TIdentity>>();
+        }
 
         services
-            .AddScoped<IAuthRepository, DefaultAuthRepository>()
-            .AddScoped<IAuthRepository<TIdentity>, DefaultAuthRepository<TIdentity>>()
             .AddScoped<IIdentityRepository, DefaultIdentityRepository>()
             .AddScoped<IIdentityRepository<TIdentity>, DefaultIdentityRepository<TIdentity>>();
 

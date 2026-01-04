@@ -1,6 +1,6 @@
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 
-namespace Nano.Data.Abstractions.Identity.Authentication.Abstractions;
+namespace Nano.Data.Abstractions.Identity.Authentication;
 
 /// <summary>
 /// 
@@ -18,5 +18,5 @@ public interface IAuthJwtRepository
     /// 
     /// </summary>
     /// <param name="refreshToken"></param>
-    void ValidateRefreshToken(string refreshToken);
+    void ValidateTokenForRefresh(string refreshToken);
 }

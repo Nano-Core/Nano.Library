@@ -50,7 +50,7 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
 
         if (controller.ControllerType == typeof(DefaultAuthController))
         {
-            if (!(this.webOptions.CurrentValue.Identity.Authentication.Jwt != null || this.webOptions.CurrentValue.Identity.Authentication.RootLogin != null) || !this.webOptions.CurrentValue.Hosting.ExposeAuthController)
+            if (!(this.webOptions.CurrentValue.Identity.Authentication.Jwt != null || this.webOptions.CurrentValue.Identity.Authentication.Jwt?.RootLogin != null) || !this.webOptions.CurrentValue.Hosting.ExposeAuthController)
             {
                 controller.ApiExplorer.IsVisible = false;
 
@@ -72,7 +72,7 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
                     return true;
                 }
 
-                if (nameof(DefaultAuthController.LogInRootAsync).ReplaceAsync() == x.ActionName && this.webOptions.CurrentValue.Identity?.Authentication.RootLogin == null)
+                if (nameof(DefaultAuthController.LogInRootAsync).ReplaceAsync() == x.ActionName && this.webOptions.CurrentValue.Identity?.Authentication.Jwt?.RootLogin == null)
                 {
                     return true;
                 }
@@ -118,11 +118,6 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
                 }
 
                 if (nameof(DefaultAuthController.LogInExternalMicrosoftTransientAsync).ReplaceAsync() == x.ActionName && this.webOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Microsoft == null)
-                {
-                    return true;
-                }
-
-                if (nameof(DefaultAuthController.LogInRefreshExternalAsync).ReplaceAsync() == x.ActionName && !(this.webOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.IsConfigured ?? false))
                 {
                     return true;
                 }

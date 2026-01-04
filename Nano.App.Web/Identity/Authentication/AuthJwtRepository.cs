@@ -1,35 +1,30 @@
+using Microsoft.IdentityModel.Tokens;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Data.Abstractions.Identity.Exceptions;
 using System;
 using System.Collections.ObjectModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using Microsoft.IdentityModel.Tokens;
 using Nano.App.Web.Config;
-using Nano.Common.Config;
-using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
-using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Identity.Consts;
-using Nano.Data.Abstractions.Identity.Exceptions;
+using Nano.App.Web.Identity.Authentication.Extensions;
+using Nano.Data.Abstractions.Identity.Authentication;
 
 namespace Nano.App.Web.Identity.Authentication;
 
 /// <inheritdoc />
 public class AuthJwtRepository : IAuthJwtRepository
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    protected virtual JwtAuthenticationOptions Options { get; }
+    private readonly JwtAuthenticationOptions options;
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="options"></param>
-    /// <exception cref="ArgumentNullException"></exception>
     public AuthJwtRepository(JwtAuthenticationOptions options)
     {
-        this.Options = options ?? throw new ArgumentNullException(nameof(options));
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
     /// <inheritdoc />
@@ -53,11 +48,13 @@ public class AuthJwtRepository : IAuthJwtRepository
             .Distinct();
 
         var notBeforeAt = DateTimeOffset.UtcNow;
-        var expireAt = DateTimeOffset.UtcNow.AddMinutes(this.Options.ExpirationInMinutes);
+        var expireAt = DateTimeOffset.UtcNow.AddMinutes(this.options.ExpirationInMinutes);
 
-        var rsaSecurityKey = this.CreateRsaSecurityKey();
+        var rsaSecurityKey = this.options.PrivateKey
+            .CreateRsaSecurityKey();
+        
         var signingCredentials = new SigningCredentials(rsaSecurityKey, SecurityAlgorithms.RsaSha512);
-        var securityToken = new JwtSecurityToken(this.Options.Issuer, this.Options.Audience, claims, notBeforeAt.DateTime, expireAt.DateTime, signingCredentials);
+        var securityToken = new JwtSecurityToken(this.options.Issuer, this.options.Audience, claims, notBeforeAt.DateTime, expireAt.DateTime, signingCredentials);
 
         var token = new JwtSecurityTokenHandler()
             .WriteToken(securityToken);
@@ -72,9 +69,10 @@ public class AuthJwtRepository : IAuthJwtRepository
     }
 
     /// <inheritdoc />
-    public virtual void ValidateRefreshToken(string refreshToken)
+    public virtual void ValidateTokenForRefresh(string refreshToken)
     {
-        var rsaSecurityKey = this.CreateRsaSecurityKey();
+        var rsaSecurityKey = this.options.PublicKey
+            .CreateRsaSecurityKey();
 
         var validationParameters = new TokenValidationParameters
         {
@@ -82,8 +80,8 @@ public class AuthJwtRepository : IAuthJwtRepository
             ValidateAudience = true,
             ValidateLifetime = false,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = this.Options.Issuer,
-            ValidAudience = this.Options.Audience,
+            ValidIssuer = this.options.Issuer,
+            ValidAudience = this.options.Audience,
             IssuerSigningKey = rsaSecurityKey,
             ClockSkew = TimeSpan.FromMinutes(5)
         };
@@ -97,18 +95,5 @@ public class AuthJwtRepository : IAuthJwtRepository
         {
             throw new UnauthorizedException("The jwt token is invalid.");
         }
-    }
-
-
-    private RsaSecurityKey CreateRsaSecurityKey()
-    {
-        var base64 = Convert.FromBase64String(this.Options.PrivateKey);
-
-        var rsaAlgorithm = RSA.Create();
-
-        rsaAlgorithm
-            .ImportRSAPublicKey(base64, out _);
-
-        return new RsaSecurityKey(rsaAlgorithm);
     }
 }

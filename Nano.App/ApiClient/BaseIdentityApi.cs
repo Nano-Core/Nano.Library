@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Nano.App.ApiClient.Config;
 using Nano.App.ApiClient.Models.Identity;
 using Nano.App.ApiClient.Requests.Identity;
@@ -28,7 +29,7 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
     protected static string IdentityController => $"{typeof(TUser).Name.ToLower()}s";
 
     /// <inheritdoc />
-    protected BaseIdentityApi(ApiOptions apiOptions, HttpClient httpClient)
+    protected BaseIdentityApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient)
         : base(apiOptions, httpClient)
     {
     }

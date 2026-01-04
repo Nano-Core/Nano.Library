@@ -6,18 +6,18 @@ using Microsoft.AspNetCore.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Exceptions;
 
-namespace Nano.Data.Abstractions.Identity.Authentication.Abstractions;
+namespace Nano.Data.Abstractions.Identity.Authentication;
 
 /// <summary>
 /// 
 /// </summary>
-public interface IAuthRepository : IAuthRepository<Guid>;
+public interface IIdentityAuthRepository : IIdentityAuthRepository<Guid>;
 
 /// <summary>
 /// 
 /// </summary>
 /// <typeparam name="TIdentity"></typeparam>
-public interface IAuthRepository<TIdentity>
+public interface IIdentityAuthRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
@@ -31,40 +31,26 @@ public interface IAuthRepository<TIdentity>
     /// 
     /// </summary>
     /// <param name="logIn"></param>
-    /// <param name="refreshExpirationInHours"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="UnauthorizedException"></exception>
-    Task<AccessToken> LogInAsync(LogIn logIn, int refreshExpirationInHours, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <typeparam name="TProvider"></typeparam>
-    /// <param name="logInExternal"></param>
-    /// <param name="refreshExpirationInHours"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task<AccessToken> LogInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternal, int refreshExpirationInHours, CancellationToken cancellationToken = default)
-        where TProvider : BaseLogInExternalProvider, new();
+    Task<AccessToken> LogInAsync(LogIn logIn, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="logInExternalDirect"></param>
-    /// <param name="refreshExpirationInHours"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<AccessToken> LogInExternalDirectAsync(LogInExternalDirect logInExternalDirect, int refreshExpirationInHours, CancellationToken cancellationToken = default);
+    Task<AccessToken> LogInExternalDirectAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="logInRefresh"></param>
-    /// <param name="refreshExpirationInHours"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<AccessToken> LogInRefreshAsync(LogInRefresh logInRefresh, int refreshExpirationInHours, CancellationToken cancellationToken = default);
+    Task<AccessToken> LogInRefreshAsync(LogInRefresh logInRefresh, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Logs out a user.

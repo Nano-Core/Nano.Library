@@ -11,9 +11,10 @@ using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using Nano.App.Config;
 using Nano.App.Web.Identity.Authentication;
 using Nano.App.Web.Identity.Authentication.Abstractions;
-using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
+using Nano.Data.Abstractions.Identity.Authentication;
 using AuthenticationOptions = Nano.App.Web.Config.AuthenticationOptions;
 
 namespace Nano.App.Web.Identity.Extensions;
@@ -79,12 +80,16 @@ internal static class ServiceCollectionExtensions
                 };
             });
 
-        services
-            .AddAuthJwtRepository(options.Jwt)
-            .AddAuthExternalRepository(options.Jwt?.ExternalLogins)
-            .AddAuthExternalFacebookRepository(options.Jwt?.ExternalLogins.Facebook)
-            .AddAuthExternalGoogleRepository(options.Jwt?.ExternalLogins.Google)
-            .AddAuthExternalMicrosoftRepository(options.Jwt?.ExternalLogins.Microsoft);
+        if (options.Jwt != null)
+        {
+            services
+                .AddAuthJwtRepository(options.Jwt)
+                .AddAuthRootRepository(options.Jwt.RootLogin)
+                .AddAuthExternalRepository(options.Jwt.ExternalLogins)
+                .AddAuthExternalFacebookRepository(options.Jwt.ExternalLogins.Facebook)
+                .AddAuthExternalGoogleRepository(options.Jwt.ExternalLogins.Google)
+                .AddAuthExternalMicrosoftRepository(options.Jwt.ExternalLogins.Microsoft);
+        }
 
         return services;
     }
@@ -146,6 +151,30 @@ internal static class ServiceCollectionExtensions
                     .GetRequiredService<IOptionsMonitor<WebOptions>>();
 
                 return new AuthJwtRepository(webOptions.CurrentValue.Identity.Authentication.Jwt);
+            });
+
+        return services;
+    }
+    private static IServiceCollection AddAuthRootRepository(this IServiceCollection services, LogInRootOptions options = null)
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        if (options == null)
+        {
+            return services;
+        }
+
+        services
+            .AddScoped<IAuthRootRepository>(x =>
+            {
+                var webOptions = x
+                    .GetRequiredService<IOptionsMonitor<WebOptions>>();
+
+                var authJwtRepository = x
+                    .GetRequiredService<IAuthJwtRepository>();
+
+                return new AuthRootRepository(webOptions.CurrentValue.Identity.Authentication.Jwt.RootLogin, authJwtRepository);
             });
 
         return services;
@@ -224,8 +253,27 @@ internal static class ServiceCollectionExtensions
         }
 
         services
-            .AddScoped<IAuthExternalRepository, AuthExternalRepository>()
-            .AddScoped<IAuthTransientRepository, DefaultAuthTransientRepository>();
+            .AddScoped<IAuthExternalRepository>(x =>
+            {
+                var webOptions = x
+                    .GetRequiredService<IOptionsMonitor<WebOptions>>();
+
+                var authJwtRepository = x
+                    .GetRequiredService<IAuthJwtRepository>();
+
+                var authExternalFacebookRepository = x
+                    .GetService<IAuthExternalFacebookRepository>();
+
+                var authExternalGoogleRepository = x
+                    .GetService<IAuthExternalGoogleRepository>();
+
+                var authExternalMicrosoftRepository = x
+                    .GetService<IAuthExternalMicrosoftRepository>();
+
+                return new AuthExternalRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins, authJwtRepository, authExternalFacebookRepository, authExternalGoogleRepository, authExternalMicrosoftRepository);
+            });
+        services
+            .AddScoped<IAuthExternalRepository, AuthExternalRepository>();
 
         return services;
     }

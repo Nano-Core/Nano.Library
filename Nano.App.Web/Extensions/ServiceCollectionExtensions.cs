@@ -115,7 +115,6 @@ internal static class ServiceCollectionExtensions
         services
             .Configure<ForwardedHeadersOptions>(x =>
             {
-                // TODO: 000: More options
                 x.ForwardedHeaders = ForwardedHeaders.All;
             });
 
@@ -174,9 +173,8 @@ internal static class ServiceCollectionExtensions
         services
             .AddCookiePolicy(x =>
             {
-                // TODO: 000: More options, check what else we do with cookies. I think I removed something. check old code
-
-                x.Secure = CookieSecurePolicy.SameAsRequest;
+                x.Secure = CookieSecurePolicy.Always;
+                x.MinimumSameSitePolicy = SameSiteMode.Strict;
             });
 
         return services;

@@ -343,10 +343,9 @@ public interface IIdentityRepository<TIdentity>
     /// 
     /// </summary>
     /// <param name="identityUser"></param>
-    /// <param name="refreshExpirationInHours"></param>
     /// <param name="appId"></param>
     /// <returns></returns>
-    Task<IdentityUserTokenExpiry<TIdentity>> CreateRefreshToken(IdentityUserExt<TIdentity> identityUser, int refreshExpirationInHours, string appId = IdentityDefaults.DEFAULT_APP_ID);
+    Task<IdentityUserTokenExpiry<TIdentity>> CreateRefreshToken(IdentityUserExt<TIdentity> identityUser, string appId = IdentityDefaults.DEFAULT_APP_ID);
 
     #endregion
 

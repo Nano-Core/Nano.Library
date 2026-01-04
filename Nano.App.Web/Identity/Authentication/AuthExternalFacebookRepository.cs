@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.Web.Config;
 using Nano.Common.Config;
-using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
+using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Newtonsoft.Json;
 
@@ -93,13 +93,10 @@ public class AuthExternalFacebookRepository : IAuthExternalFacebookRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<ExternalLoginTokenData> AuthenticateRefresh(string name, string externalRefreshToken = null, CancellationToken cancellationToken = default)
+    public virtual async Task<ExternalLoginTokenData> AuthenticateRefresh(LogInExternalRefreshFacebook logInExternalRefresh, CancellationToken cancellationToken = default)
     {
-        if (name == null)
-            throw new ArgumentNullException(nameof(name));
-
-        if (externalRefreshToken == null)
-            throw new ArgumentNullException(nameof(externalRefreshToken));
+        if (logInExternalRefresh == null)
+            throw new ArgumentNullException(nameof(logInExternalRefresh));
 
         await Task.CompletedTask;
 

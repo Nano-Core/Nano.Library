@@ -1,30 +1,34 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.App.ApiClient.Models.Identity;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 
-namespace Nano.App.Web.Identity.Authentication.Abstractions;
+namespace Nano.Data.Abstractions.Identity.Authentication;
+
+// TODO: SSO implementation Test and improvements (Facebook, Apple, Google, Microsoft)
+// Remember to inject HttpClient
 
 /// <summary>
 /// 
 /// </summary>
-public interface IAuthTransientRepository
+public interface IAuthExternalRepository
 {
-    /// <summary>
-    /// Signs in the admin user statically.
-    /// The login is transient, no Identity store is used.
-    /// </summary>
-    /// <param name="logInRoot">The <see cref="LogInRoot"/>.</param>
-    /// <returns>The <see cref="AccessToken"/>.</returns>
-    Task<AccessToken> LogInRootTransientAsync(LogInRoot logInRoot);
-
     /// <summary>
     /// Gets all the configured external logins schemes.
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The collection of <see cref="ExternalLoginProvider"/>'s.</returns>
     Task<IEnumerable<ExternalLoginProvider>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TProvider"></typeparam>
+    /// <param name="provider"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<ExternalLogInData> GetExternalLogInData<TProvider>(TProvider provider, CancellationToken cancellationToken = default)
+        where TProvider : BaseLogInExternalProvider;
 
     /// <summary>
     /// Signs in a user, from external login.
@@ -35,7 +39,7 @@ public interface IAuthTransientRepository
     /// <param name="logInExternalTransient">The <see cref="BaseLogInExternal{T}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="AccessToken"/>.</returns>
-    Task<AccessToken> LogInExternalTransientAsync<TProvider>(BaseLogInExternal<TProvider> logInExternalTransient, CancellationToken cancellationToken = default)
+    Task<AccessToken> LogInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternalTransient, CancellationToken cancellationToken = default)
         where TProvider : BaseLogInExternalProvider, new();
 
     /// <summary>
@@ -48,13 +52,13 @@ public interface IAuthTransientRepository
     /// <param name="transientClaims">The claims added to the token.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="AccessToken"/>.</returns>
-    Task<AccessToken> LogInExternalTransientAsync(ExternalLogInData externalLogInData, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default);
+    Task<AccessToken> LogInExternalAsync(ExternalLogInData externalLogInData, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="logInRefresh"></param>
+    /// <param name="logInExternalRefresh"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<AccessToken> LogInExternalTransientRefreshAsync(LogInExternalTransientRefresh logInRefresh, CancellationToken cancellationToken = default);
+    Task<ExternalLoginTokenData> LogInExternalRefreshAsync(LogInExternalRefresh logInExternalRefresh, CancellationToken cancellationToken = default);
 }

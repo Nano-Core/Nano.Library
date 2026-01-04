@@ -10,12 +10,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Nano.App.ApiClient.Consts;
 using Nano.App.ApiClient.Models.Identity;
-using Nano.App.Web.Config;
 using Nano.App.Web.Identity.Authentication.Abstractions;
-using Nano.Data.Abstractions.Identity.Authentication.Abstractions;
+using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
 
@@ -30,38 +28,34 @@ namespace Nano.App.Web.Controllers;
 public abstract class BaseAuthController<TIdentity> : BaseController
     where TIdentity : IEquatable<TIdentity>
 {
-    private readonly IOptionsMonitor<WebOptions> options;
-
     /// <summary>
     /// Auth Repository.
     /// </summary>
-    protected virtual IAuthRepository<TIdentity> AuthRepository { get; }
-
-    /// <summary>
-    ///
-    /// </summary>
-    protected virtual IAuthExternalRepository AuthExternalRepository { get; }
+    protected virtual IIdentityAuthRepository<TIdentity> IdentityAuthRepository { get; }
 
     /// <summary>
     /// 
     /// </summary>
-    protected virtual IAuthTransientRepository AuthTransientRepository { get; }
+    protected virtual IAuthRootRepository AuthRootRepository { get; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    protected virtual IAuthExternalRepository AuthExternalRepository { get; }
 
     /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="logger">The <see cref="ILogger"/>.</param>
-    /// <param name="options"></param>
-    /// <param name="authRepository"></param>
-    /// <param name="authTransientRepository">The <see cref="IAuthTransientRepository"/>.</param>
+    /// <param name="identityAuthRepository"></param>
+    /// <param name="authRootRepository"></param>
     /// <param name="authExternalRepository"></param>
-    protected BaseAuthController(ILogger logger, IOptionsMonitor<WebOptions> options, IAuthRepository<TIdentity> authRepository = null, IAuthExternalRepository authExternalRepository = null, IAuthTransientRepository authTransientRepository = null)
+    protected BaseAuthController(ILogger logger, IIdentityAuthRepository<TIdentity> identityAuthRepository = null, IAuthRootRepository authRootRepository = null, IAuthExternalRepository authExternalRepository = null)
         : base(logger)
     {
-        this.options = options ?? throw new ArgumentNullException(nameof(options));
-        this.AuthRepository = authRepository;
+        this.IdentityAuthRepository = identityAuthRepository;
+        this.AuthRootRepository = authRootRepository;
         this.AuthExternalRepository = authExternalRepository;
-        this.AuthTransientRepository = authTransientRepository;
     }
 
 
@@ -91,8 +85,13 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> LogInAsync([FromBody][Required]LogIn logIn, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.AuthRepository
-            .LogInAsync(logIn, this.options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
+        if (this.IdentityAuthRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.IdentityAuthRepository));
+        }
+
+        var accessToken = await this.IdentityAuthRepository
+            .LogInAsync(logIn, cancellationToken);
 
         if (accessToken == null)
         {
@@ -126,8 +125,13 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> LogInRootAsync([FromBody][Required]LogInRoot logInRoot, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.AuthTransientRepository
-            .LogInRootTransientAsync(logInRoot);
+        if (this.AuthRootRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.AuthRootRepository));
+        }
+
+        var accessToken = await this.AuthRootRepository
+            .LogInRootAsync(logInRoot);
 
         if (accessToken == null)
         {
@@ -160,8 +164,13 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> LogInRefreshAsync([FromBody][Required] LogInRefresh logInRefresh, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.AuthRepository
-            .LogInRefreshAsync(logInRefresh, this.options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
+        if (this.IdentityAuthRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.IdentityAuthRepository));
+        }
+
+        var accessToken = await this.IdentityAuthRepository
+            .LogInRefreshAsync(logInRefresh, cancellationToken);
 
         if (accessToken == null)
         {
@@ -194,8 +203,13 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> LogInExternalDirectAsync([FromBody][Required] LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.AuthRepository
-            .LogInExternalDirectAsync(logInExternalDirect, this.options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
+        if (this.IdentityAuthRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.IdentityAuthRepository));
+        }
+
+        var accessToken = await this.IdentityAuthRepository
+            .LogInExternalDirectAsync(logInExternalDirect, cancellationToken);
 
         if (accessToken == null)
         {
@@ -228,8 +242,13 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> LogInExternalDirectTransientAsync([FromBody][Required] LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.AuthTransientRepository
-            .LogInExternalTransientAsync(logInExternalDirect.ExternalLogInData, logInExternalDirect.TransientRoles, logInExternalDirect.TransientClaims, cancellationToken);
+        if (this.AuthExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.AuthExternalRepository));
+        }
+
+        var accessToken = await this.AuthExternalRepository
+            .LogInExternalAsync(logInExternalDirect.ExternalLogInData, logInExternalDirect.TransientRoles, logInExternalDirect.TransientClaims, cancellationToken);
 
         if (accessToken == null)
         {
@@ -262,8 +281,24 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> LogInExternalGoogleAsync([FromBody][Required] LogInExternalGoogle logInExternal, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.AuthRepository
-            .LogInExternalAsync(logInExternal, this.options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
+        if (this.IdentityAuthRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.IdentityAuthRepository));
+        }
+
+        var externalLoginData = await this.AuthExternalRepository
+            .GetExternalLogInData(logInExternal.Provider, cancellationToken);
+
+        var accessToken = await this.IdentityAuthRepository
+            .LogInExternalDirectAsync(new LogInExternalDirect
+            {
+                AppId = logInExternal.AppId,
+                IsRefreshable = logInExternal.IsRefreshable,
+                IsRememberMe = logInExternal.IsRememberMe,
+                TransientRoles = logInExternal.TransientRoles,
+                TransientClaims = logInExternal.TransientClaims,
+                ExternalLogInData = externalLoginData
+            }, cancellationToken);
 
         if (accessToken == null)
         {
@@ -296,8 +331,13 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> LogInExternalGoogleTransientAsync([FromBody][Required] LogInExternalGoogle logInExternal, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.AuthTransientRepository
-            .LogInExternalTransientAsync(logInExternal, cancellationToken);
+        if (this.AuthExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.AuthExternalRepository));
+        }
+
+        var accessToken = await this.AuthExternalRepository
+            .LogInExternalAsync(logInExternal, cancellationToken);
 
         if (accessToken == null)
         {
@@ -330,8 +370,24 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> LogInExternalFacebookAsync([FromBody][Required] LogInExternalFacebook logInExternal, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.AuthRepository
-            .LogInExternalAsync(logInExternal, this.options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
+        if (this.IdentityAuthRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.IdentityAuthRepository));
+        }
+
+        var externalLoginData = await this.AuthExternalRepository
+            .GetExternalLogInData(logInExternal.Provider, cancellationToken);
+
+        var accessToken = await this.IdentityAuthRepository
+            .LogInExternalDirectAsync(new LogInExternalDirect
+            {
+                AppId = logInExternal.AppId,
+                IsRefreshable = logInExternal.IsRefreshable,
+                IsRememberMe = logInExternal.IsRememberMe,
+                TransientRoles = logInExternal.TransientRoles,
+                TransientClaims = logInExternal.TransientClaims,
+                ExternalLogInData = externalLoginData
+            }, cancellationToken);
 
         if (accessToken == null)
         {
@@ -364,8 +420,13 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> LogInExternalFacebookTransientAsync([FromBody][Required] LogInExternalFacebook logInExternal, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.AuthTransientRepository
-            .LogInExternalTransientAsync(logInExternal, cancellationToken);
+        if (this.AuthExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.AuthExternalRepository));
+        }
+
+        var accessToken = await this.AuthExternalRepository
+            .LogInExternalAsync(logInExternal, cancellationToken);
 
         if (accessToken == null)
         {
@@ -398,8 +459,24 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> LogInExternalMicrosoftAsync([FromBody][Required] LogInExternalMicrosoft logInExternal, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.AuthRepository
-            .LogInExternalAsync(logInExternal, this.options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours, cancellationToken);
+        if (this.IdentityAuthRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.IdentityAuthRepository));
+        }
+
+        var externalLoginData = await this.AuthExternalRepository
+            .GetExternalLogInData(logInExternal.Provider, cancellationToken);
+
+        var accessToken = await this.IdentityAuthRepository
+            .LogInExternalDirectAsync(new LogInExternalDirect
+            {
+                AppId = logInExternal.AppId,
+                IsRefreshable = logInExternal.IsRefreshable,
+                IsRememberMe = logInExternal.IsRememberMe,
+                TransientRoles = logInExternal.TransientRoles,
+                TransientClaims = logInExternal.TransientClaims,
+                ExternalLogInData = externalLoginData
+            }, cancellationToken);
 
         if (accessToken == null)
         {
@@ -432,42 +509,13 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> LogInExternalMicrosoftTransientAsync([FromBody][Required] LogInExternalMicrosoft logInExternal, CancellationToken cancellationToken = default)
     {
-        var accessToken = await this.AuthTransientRepository
-            .LogInExternalTransientAsync(logInExternal, cancellationToken);
-
-        if (accessToken == null)
+        if (this.AuthExternalRepository == null)
         {
-            return this.Unauthorized();
+            throw new NullReferenceException(nameof(this.AuthExternalRepository));
         }
 
-        return this.Ok(accessToken);
-    }
-
-    /// <summary>
-    /// Refreshes a user's external token and token.
-    /// </summary>
-    /// <param name="logInExternalTransientRefresh">The login refresh.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
-    [HttpPost]
-    [Route("login/external/refresh")]
-    [AllowAnonymous]
-    [Consumes(HttpContentType.JSON)]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> LogInRefreshExternalAsync([FromBody][Required]LogInExternalTransientRefresh logInExternalTransientRefresh, CancellationToken cancellationToken = default)
-    {
-        var accessToken = await this.AuthTransientRepository
-            .LogInExternalTransientRefreshAsync(logInExternalTransientRefresh, cancellationToken);
+        var accessToken = await this.AuthExternalRepository
+            .LogInExternalAsync(logInExternal, cancellationToken);
 
         if (accessToken == null)
         {
@@ -494,7 +542,12 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> LogOutAsync(CancellationToken cancellationToken = default)
     {
-        await this.AuthRepository
+        if (this.IdentityAuthRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.IdentityAuthRepository));
+        }
+
+        await this.IdentityAuthRepository
             .SignOutAsync(cancellationToken);
 
         await this.HttpContext
@@ -528,16 +581,21 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> GetExternalSchemesAsync(CancellationToken cancellationToken = default)
     {
+        if (this.IdentityAuthRepository == null && this.AuthExternalRepository == null)
+        {
+            throw new NullReferenceException($"{nameof(this.IdentityAuthRepository)}, {nameof(this.AuthExternalRepository)}");
+        }
+
         IEnumerable<ExternalLoginProvider> logInProviders;
 
-        if (this.AuthRepository == null)
+        if (this.IdentityAuthRepository == null)
         {
-            logInProviders = await this.AuthTransientRepository
+            logInProviders = await this.AuthExternalRepository
                 .GetExternalProviderSchemesAsync(cancellationToken);
         }
         else
         {
-            var authenticationSchemes = await this.AuthRepository
+            var authenticationSchemes = await this.IdentityAuthRepository
                 .GetExternalProviderSchemesAsync(cancellationToken);
 
             logInProviders = authenticationSchemes?
@@ -577,8 +635,13 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> GetExternalLoginDataGoogleAsync([FromBody][Required] ExternalLoginProviderGoogle externalLoginProvider, CancellationToken cancellationToken = default)
     {
+        if (this.AuthExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.AuthExternalRepository));
+        }
+
         var externalLoginData = await this.AuthExternalRepository
-            .Authenticate(externalLoginProvider, cancellationToken);
+            .GetExternalLogInData(externalLoginProvider, cancellationToken);
 
         if (externalLoginData == null)
         {
@@ -609,8 +672,13 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> GetExternalLoginDataFaceBookAsync([FromBody][Required] ExternalLoginProviderFacebook externalLoginProvider, CancellationToken cancellationToken = default)
     {
+        if (this.AuthExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.AuthExternalRepository));
+        }
+
         var externalLoginData = await this.AuthExternalRepository
-            .Authenticate(externalLoginProvider, cancellationToken);
+            .GetExternalLogInData(externalLoginProvider, cancellationToken);
 
         if (externalLoginData == null)
         {
@@ -623,7 +691,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <summary>
     /// Get external login data from an external Microsoft authentication provider.
     /// </summary>
-    /// <param name="externalLoginProviderMicrosoft">The external login provider.</param>
+    /// <param name="externalLoginProvider">The external login provider.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The external login data.</returns>
     /// <response code="200">Success.</response>
@@ -639,10 +707,15 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> GetExternalLoginDataMicrosoftAsync([FromBody][Required] ExternalLoginProviderMicrosoft externalLoginProviderMicrosoft, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> GetExternalLoginDataMicrosoftAsync([FromBody][Required] ExternalLoginProviderMicrosoft externalLoginProvider, CancellationToken cancellationToken = default)
     {
+        if (this.AuthExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.AuthExternalRepository));
+        }
+
         var externalLoginData = await this.AuthExternalRepository
-            .Authenticate(externalLoginProviderMicrosoft, cancellationToken);
+            .GetExternalLogInData(externalLoginProvider, cancellationToken);
 
         if (externalLoginData == null)
         {

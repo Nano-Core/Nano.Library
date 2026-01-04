@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Nano.App.Web.Config;
-using Nano.Common.Config;
+using Nano.App.Web.Extensions;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
-using FacebookOptions = Nano.App.Web.Config.FacebookOptions;
 
 namespace Nano.App.Web.Identity.Authentication.Extensions;
 
@@ -28,13 +26,8 @@ public static class AuthenticationBuilderExtensions
             return builder;
         }
 
-        var base64 = Convert.FromBase64String(options.PublicKey);
-
-        var rsaAlgorithm = RSA.Create();
-        rsaAlgorithm
-            .ImportRSAPublicKey(base64, out _);
-
-        var rsaSecurityKey = new RsaSecurityKey(rsaAlgorithm);
+        var rsaSecurityKey = options.PublicKey
+            .CreateRsaSecurityKey();
 
         builder
             .AddJwtBearer(AuthenticationSchemes.JWT, x =>

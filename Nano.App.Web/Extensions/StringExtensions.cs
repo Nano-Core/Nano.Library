@@ -1,4 +1,6 @@
+using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Security.Cryptography;
 
 namespace Nano.App.Web.Extensions;
 
