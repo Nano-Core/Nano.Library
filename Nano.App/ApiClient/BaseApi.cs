@@ -31,6 +31,8 @@ using Vivet.AspNetCore.RequestTimeZone.Providers;
 
 namespace Nano.App.ApiClient;
 
+// TODO: BaseApi Complete Review
+
 /// <summary>
 /// Base Api (abstract).
 /// </summary>
@@ -48,11 +50,11 @@ public abstract class BaseApi
     /// <param name="apiOptions">The <see cref="ApiOptions"/>.</param>
     /// <param name="httpContextAccessor">The <see cref="IHttpContextAccessor"/>.</param>
     /// <param name="httpClient">The <see cref="HttpClient"/>.</param>
-    protected BaseApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor = null)
+    protected BaseApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
     {
         this.apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
         this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-        this.httpContextAccessor = httpContextAccessor;
+        this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }
 
     /// <summary>
@@ -773,8 +775,8 @@ public abstract class BaseApi<TIdentity> : BaseApi
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient)
-        : base(apiOptions, httpClient)
+    protected BaseApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        : base(apiOptions, httpClient, httpContextAccessor)
     {
     }
 

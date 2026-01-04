@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Nano.App.ApiClient.Config;
 using Nano.App.ApiClient.Models.Identity;
@@ -13,6 +8,12 @@ using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Abstractions.Models.Identity;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nano.App.ApiClient;
 
@@ -29,8 +30,8 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
     protected static string IdentityController => $"{typeof(TUser).Name.ToLower()}s";
 
     /// <inheritdoc />
-    protected BaseIdentityApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient)
-        : base(apiOptions, httpClient)
+    protected BaseIdentityApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        : base(apiOptions, httpClient, httpContextAccessor)
     {
     }
 

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Http;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 
 namespace Nano.App.ApiClient.Extensions;
@@ -77,7 +78,10 @@ internal static class ServiceCollectionExtensions
                     var apiOptions = serviceProvider
                         .GetRequiredKeyedService<ApiOptions>(optionsServiceId);
 
-                    return Activator.CreateInstance(type, apiOptions, httpClient);
+                    var httpContextAccessor = serviceProvider
+                        .GetRequiredService<IHttpContextAccessor>();
+                    
+                    return Activator.CreateInstance(type, apiOptions, httpClient, httpContextAccessor);
                 });
 
             if (!hosts.Contains(options.Host) && options.UseHealthCheck)
