@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.Web.Config;
-using Nano.Common.Config;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Exceptions;
@@ -48,45 +47,44 @@ public class AuthExternalMicrosoftRepository : IAuthExternalMicrosoftRepository
         switch (provider)
         {
             case ExternalLoginProviderAuthCode authCodeLogin:
-                using (var httpClient = new HttpClient())
+            {
+                using var httpRequestMessage = new HttpRequestMessage();
+
+                httpRequestMessage.Method = HttpMethod.Post;
+                httpRequestMessage.RequestUri = new Uri($"https://login.microsoftonline.com/{options.TenantId}/oauth2/v2.0/token");
+
+                using var formContent = new MultipartFormDataContent();
                 {
-                    var httpRequestMessage = new HttpRequestMessage();
+                    formContent.Add(new StringContent(options.ClientId), "client_id");
+                    formContent.Add(new StringContent(options.ClientSecret), "client_secret");
+                    formContent.Add(new StringContent("authorization_code"), "grant_type");
+                    formContent.Add(new StringContent(authCodeLogin.Code), "code");
+                    formContent.Add(new StringContent(authCodeLogin.CodeVerifier), "code_verifier");
+                    formContent.Add(new StringContent(authCodeLogin.RedirectUri), "redirect_uri");
+                    formContent.Add(new StringContent(options.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
 
-                    httpRequestMessage.Method = HttpMethod.Post;
-                    httpRequestMessage.RequestUri = new Uri($"https://login.microsoftonline.com/{options.TenantId}/oauth2/v2.0/token");
+                    httpRequestMessage.Content = formContent;
 
-                    using var formContent = new MultipartFormDataContent();
+                    var httpResponse = await httpClient
+                        .SendAsync(httpRequestMessage, cancellationToken);
+
+                    var stringContent = await httpResponse.Content
+                        .ReadAsStringAsync(cancellationToken);
+
+                    var content = JsonConvert.DeserializeObject<JObject>(stringContent);
+
+                    var error = (string)content?["error"];
+                    var errorDescription = (string)content?["error"];
+
+                    if (error != null)
                     {
-                        formContent.Add(new StringContent(options.ClientId), "client_id");
-                        formContent.Add(new StringContent(options.ClientSecret), "client_secret");
-                        formContent.Add(new StringContent("authorization_code"), "grant_type");
-                        formContent.Add(new StringContent(authCodeLogin.Code), "code");
-                        formContent.Add(new StringContent(authCodeLogin.CodeVerifier), "code_verifier");
-                        formContent.Add(new StringContent(authCodeLogin.RedirectUri), "redirect_uri");
-                        formContent.Add(new StringContent(options.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
-
-                        httpRequestMessage.Content = formContent;
-
-                        var httpResponse = await httpClient
-                            .SendAsync(httpRequestMessage, cancellationToken);
-
-                        var stringContent = await httpResponse.Content
-                            .ReadAsStringAsync(cancellationToken);
-
-                        var content = JsonConvert.DeserializeObject<JObject>(stringContent);
-
-                        var error = (string)content?["error"];
-                        var errorDescription = (string)content?["error"];
-
-                        if (error != null)
-                        {
-                            throw new InvalidOperationException($"{error}: {errorDescription}");
-                        }
-
-                        accessToken = (string)content?["access_token"];
-                        refreshToken = (string)content?["refresh_token"];
+                        throw new InvalidOperationException($"{error}: {errorDescription}");
                     }
+
+                    accessToken = (string)content?["access_token"];
+                    refreshToken = (string)content?["refresh_token"];
                 }
+            }
                 break;
 
             default:

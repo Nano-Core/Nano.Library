@@ -1,5 +1,3 @@
-using Nano.App.Config;
-
 namespace Nano.App.Web.Config;
 
 /// <summary>

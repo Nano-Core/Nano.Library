@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Nano.App.Web.Config;
-using Nano.Common.Config;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 

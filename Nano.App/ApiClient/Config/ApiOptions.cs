@@ -1,6 +1,6 @@
 ﻿using System;
 using Nano.App.Config;
-using Nano.Common.Config.Enums;
+using Nano.Common.Mvc.HealthChecks.Enums;
 
 namespace Nano.App.ApiClient.Config;
 

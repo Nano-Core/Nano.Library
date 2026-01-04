@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Nano.App.Web.Config;
-using Nano.App.Web.Extensions;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 
 namespace Nano.App.Web.Identity.Authentication.Extensions;

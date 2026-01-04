@@ -14,7 +14,7 @@ internal static class VersionExtensions
         if (value == null) 
             throw new ArgumentNullException(nameof(value));
 
-        if (value == "")
+        if (value == string.Empty)
         {
             return new Version(1, 0);
         }

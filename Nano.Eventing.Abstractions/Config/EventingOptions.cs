@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Nano.Common.Config.Enums;
+using Nano.Common.Mvc.HealthChecks.Enums;
 
 namespace Nano.Eventing.Abstractions.Config;
 

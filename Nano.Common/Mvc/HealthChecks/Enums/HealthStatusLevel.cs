@@ -1,4 +1,4 @@
-namespace Nano.Common.Config.Enums;
+namespace Nano.Common.Mvc.HealthChecks.Enums;
 
 /// <summary>
 /// Health Status Level.
