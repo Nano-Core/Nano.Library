@@ -42,7 +42,17 @@ public interface IIdentityAuthRepository<TIdentity>
     /// <param name="logInExternalDirect"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<AccessToken> LogInExternalDirectAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default);
+    Task<AccessToken> LogInExternalAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TProvider"></typeparam>
+    /// <param name="logInExternalTransient"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<AccessToken> LogInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternalTransient, CancellationToken cancellationToken = default)
+        where TProvider : BaseLogInExternalProvider, new();
 
     /// <summary>
     /// 
@@ -57,5 +67,5 @@ public interface IIdentityAuthRepository<TIdentity>
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    Task SignOutAsync(CancellationToken cancellationToken = default);
+    Task LogOutAsync(CancellationToken cancellationToken = default);
 }

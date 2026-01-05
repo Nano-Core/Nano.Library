@@ -66,7 +66,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
             .EnableAnnotations(true, true);
         
         options
-            .CustomSchemaIds(y => y.FullName);
+            .CustomSchemaIds(y => y.Name);
         
         options
             .OrderActionsBy(y => y.RelativePath);

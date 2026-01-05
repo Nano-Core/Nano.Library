@@ -21,7 +21,7 @@ public abstract class BaseLogIn
     /// </summary>
     [Required]
     [DefaultValue(false)]
-    public virtual bool IsRememberMe { get; set; } = false;
+    public virtual bool IsRememberMe { get; set; } = false; // BUG: Not for Transient logins
 
     /// <summary>
     /// Is Refreshable.
@@ -29,7 +29,7 @@ public abstract class BaseLogIn
     /// </summary>
     [Required]
     [DefaultValue(false)]
-    public virtual bool IsRefreshable { get; set; } = false;
+    public virtual bool IsRefreshable { get; set; } = false; // BUG: Not for Transient logins
 
     /// <summary>
     /// Transient Roles.

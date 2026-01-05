@@ -33,9 +33,11 @@ public class AuthJwtRepository : IAuthJwtRepository
         if (generateJwtToken == null)
             throw new ArgumentNullException(nameof(generateJwtToken));
 
+        var appId = generateJwtToken.AppId ?? IdentityDefaults.DEFAULT_APP_ID;
+
         var claims = new Collection<Claim>
             {
-                new(ClaimTypesExtended.AppId, generateJwtToken.AppId ?? IdentityDefaults.DEFAULT_APP_ID),
+                new(ClaimTypesExtended.AppId, appId),
                 new(JwtRegisteredClaimNames.Jti, generateJwtToken.Id),
                 new(JwtRegisteredClaimNames.Sub, generateJwtToken.UserId),
                 new(JwtRegisteredClaimNames.Name, generateJwtToken.UserName),
@@ -61,7 +63,7 @@ public class AuthJwtRepository : IAuthJwtRepository
 
         return new AccessToken
         {
-            AppId = generateJwtToken.AppId ?? IdentityDefaults.DEFAULT_APP_ID,
+            AppId = appId,
             UserId = generateJwtToken.UserId,
             Token = token,
             ExpireAt = expireAt
@@ -93,7 +95,7 @@ public class AuthJwtRepository : IAuthJwtRepository
 
         if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.RsaSha512, StringComparison.InvariantCultureIgnoreCase))
         {
-            throw new UnauthorizedException("The jwt token is invalid.");
+            throw new UnauthorizedException("Invalid jwt token.");
         }
     }
 }

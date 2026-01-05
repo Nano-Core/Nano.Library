@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Exceptions;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Identity.Models;
@@ -93,7 +91,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInExternalDirectAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInExternalAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
     {
         if (logInExternalDirect == null) 
             throw new ArgumentNullException(nameof(logInExternalDirect));
@@ -144,6 +142,32 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     }
 
     /// <inheritdoc />
+    public virtual async Task<AccessToken> LogInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternalTransient, CancellationToken cancellationToken = default)
+        where TProvider : BaseLogInExternalProvider, new()
+    {
+        if (logInExternalTransient == null)
+            throw new ArgumentNullException(nameof(logInExternalTransient));
+
+        var externalLoginData = await this.authExternalRepository
+            .AuthenticateAsync(logInExternalTransient.Provider, cancellationToken);
+
+        if (externalLoginData == null)
+        {
+            throw new UnauthorizedException();
+        }
+
+        return await this.LogInExternalAsync(new LogInExternalDirect
+        {
+            AppId = logInExternalTransient.AppId,
+            IsRefreshable = logInExternalTransient.IsRefreshable,
+            IsRememberMe = logInExternalTransient.IsRememberMe,
+            ExternalLogInData = externalLoginData,
+            TransientRoles = logInExternalTransient.TransientRoles,
+            TransientClaims = logInExternalTransient.TransientClaims
+        }, cancellationToken);
+    }
+
+    /// <inheritdoc />
     public virtual async Task<AccessToken> LogInRefreshAsync(LogInRefresh logInRefresh, CancellationToken cancellationToken = default)
     {
         if (logInRefresh == null) 
@@ -184,25 +208,26 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
             .GetAllClaims(identityUser, logInRefresh.TransientRoles, logInRefresh.TransientClaims, cancellationToken);
 
         ExternalLoginTokenData externalLoginTokenData = null;
-        if (this.authExternalRepository != null)
-        {
-            var externalProviderName = claims
-                .Where(x => x.Type == ClaimTypesExtended.ExternalProviderName)
-                .Select(x => x.Value)
-                .FirstOrDefault();
+        // BUG: Refresh external
+        //if (this.authExternalRepository != null)
+        //{
+        //    var externalProviderName = claims
+        //        .Where(x => x.Type == ClaimTypesExtended.ExternalProviderName)
+        //        .Select(x => x.Value)
+        //        .FirstOrDefault();
 
-            var externalProviderRefreshToken = claims
-                .Where(x => x.Type == ClaimTypesExtended.ExternalProviderRefreshToken)
-                .Select(x => x.Value)
-                .FirstOrDefault();
+        //    var externalProviderRefreshToken = claims
+        //        .Where(x => x.Type == ClaimTypesExtended.ExternalProviderRefreshToken)
+        //        .Select(x => x.Value)
+        //        .FirstOrDefault();
 
-            externalLoginTokenData = await this.authExternalRepository
-                .LogInExternalRefreshAsync(new LogInExternalRefresh
-                {
-                    ProviderName = externalProviderName,
-                    RefreshToken = externalProviderRefreshToken
-                }, cancellationToken);
-        }
+        //    externalLoginTokenData = await this.authExternalRepository
+        //        .LogInExternalRefreshAsync(new LogInExternalRefresh
+        //        {
+        //            ProviderName = externalProviderName,
+        //            RefreshToken = externalProviderRefreshToken
+        //        }, cancellationToken);
+        //}
 
         this.authJwtRepository
             .ValidateTokenForRefresh(logInRefresh.Token);
@@ -239,7 +264,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     }
 
     /// <inheritdoc />
-    public virtual Task SignOutAsync(CancellationToken cancellationToken = default)
+    public virtual Task LogOutAsync(CancellationToken cancellationToken = default)
     {
         return this.identityRepository
             .SignOutAsync(cancellationToken);

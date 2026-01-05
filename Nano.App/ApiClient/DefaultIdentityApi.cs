@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Nano.App.ApiClient;
 
@@ -17,8 +18,8 @@ public class DefaultIdentityApi<TUser> : BaseIdentityApi<TUser, Guid>
     where TUser : class, IEntityUser<Guid>
 {
     /// <inheritdoc />
-    public DefaultIdentityApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient)
-        : base(apiOptions, httpClient)
+    public DefaultIdentityApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        : base(apiOptions, httpClient, httpContextAccessor)
     {
     }
 

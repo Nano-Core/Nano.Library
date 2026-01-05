@@ -84,6 +84,7 @@ internal static class ServiceCollectionExtensions
             services
                 .AddAuthJwtRepository(options.Jwt)
                 .AddAuthRootRepository(options.Jwt.RootLogin)
+                .AddAuthTransientRepository(options.Jwt.ExternalLogins)
                 .AddAuthExternalRepository(options.Jwt.ExternalLogins)
                 .AddAuthExternalFacebookRepository(options.Jwt.ExternalLogins.Facebook)
                 .AddAuthExternalGoogleRepository(options.Jwt.ExternalLogins.Google)
@@ -178,6 +179,35 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
+    private static IServiceCollection AddAuthTransientRepository(this IServiceCollection services, ExternalLoginOptions options = null)
+    {
+        if (services == null)
+            throw new ArgumentNullException(nameof(services));
+
+        if (options is not { IsConfigured: true })
+        {
+            return services;
+        }
+
+        services
+            .AddScoped<IAuthTransientRepository>(x =>
+            {
+                var webOptions = x
+                    .GetRequiredService<IOptionsMonitor<WebOptions>>();
+
+                var authJwtRepository = x
+                    .GetRequiredService<IAuthJwtRepository>();
+
+                var authExternalRepository = x
+                    .GetService<IAuthExternalRepository>();
+
+                return new AuthTransientRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins, authJwtRepository, authExternalRepository);
+            });
+        services
+            .AddScoped<IAuthExternalRepository, AuthExternalRepository>();
+
+        return services;
+    }
     private static IServiceCollection AddAuthExternalRepository(this IServiceCollection services, ExternalLoginOptions options = null)
     {
         if (services == null)
@@ -191,12 +221,6 @@ internal static class ServiceCollectionExtensions
         services
             .AddScoped<IAuthExternalRepository>(x =>
             {
-                var webOptions = x
-                    .GetRequiredService<IOptionsMonitor<WebOptions>>();
-
-                var authJwtRepository = x
-                    .GetRequiredService<IAuthJwtRepository>();
-
                 var authExternalFacebookRepository = x
                     .GetService<IAuthExternalFacebookRepository>();
 
@@ -206,7 +230,7 @@ internal static class ServiceCollectionExtensions
                 var authExternalMicrosoftRepository = x
                     .GetService<IAuthExternalMicrosoftRepository>();
 
-                return new AuthExternalRepository(webOptions.CurrentValue.Identity.Authentication.Jwt?.ExternalLogins, authJwtRepository, authExternalFacebookRepository, authExternalGoogleRepository, authExternalMicrosoftRepository);
+                return new AuthExternalRepository(authExternalFacebookRepository, authExternalGoogleRepository, authExternalMicrosoftRepository);
             });
         services
             .AddScoped<IAuthExternalRepository, AuthExternalRepository>();
