@@ -18,6 +18,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Exceptions;
 using Nano.Data.Abstractions.Identity.Extensions;
@@ -26,7 +27,8 @@ using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Identity;
 
-// TODO: IdentityApiKey Roles and Claims (don't inherit from IdentityUser)
+// BUG: IdentityApiKey Roles and Claims (don't inherit from IdentityUser)
+// BUG: Add more methods to Controller / ApiClient
 
 /// <summary>
 /// Base Identity Repository.
@@ -1045,18 +1047,13 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IdentityUserTokenExpiry<TIdentity>> CreateRefreshToken(IdentityUserExt<TIdentity> identityUser, string appId = IdentityDefaults.DEFAULT_APP_ID)
+    public virtual async Task<IdentityUserTokenExpiry<TIdentity>> CreateRefreshToken(TIdentity userId, RefreshToken refreshToken, string appId = IdentityDefaults.DEFAULT_APP_ID)
     {
-        if (identityUser == null)
-            throw new ArgumentNullException(nameof(identityUser));
-
         appId ??= IdentityDefaults.DEFAULT_APP_ID;
-
-        var token = GetRandomToken();
 
         var identityUserTokenExpiry = this.dbContext
             .Set<IdentityUserTokenExpiry<TIdentity>>()
-            .FirstOrDefault(x => x.UserId.Equals(identityUser.Id) && x.LoginProvider == AuthenticationSchemes.JWT && x.Name == appId);
+            .FirstOrDefault(x => x.UserId.Equals(userId) && x.LoginProvider == AuthenticationSchemes.JWT && x.Name == appId);
 
         if (identityUserTokenExpiry != null)
         {
@@ -1064,16 +1061,13 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
                 .Remove(identityUserTokenExpiry);
         }
 
-        var expireAt = DateTimeOffset.UtcNow
-            .AddHours(this.options.CurrentValue.Identity.Authentication.Jwt.RefreshExpirationInHours);
-
         var identityUserToken = new IdentityUserTokenExpiry<TIdentity>
         {
-            UserId = identityUser.Id,
+            UserId = userId,
             Name = appId,
-            Value = token,
+            Value = refreshToken.Token,
             LoginProvider = AuthenticationSchemes.JWT,
-            ExpireAt = expireAt
+            ExpireAt = refreshToken.ExpireAt
         };
 
         await this.dbContext
@@ -1151,7 +1145,9 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         var now = DateTimeOffset.UtcNow;
         var secret = this.options.CurrentValue.Identity.Authentication.ApiKey?.Secret;
-        var base64Hash = apiKey.HmacEncrypt(secret);
+
+        var base64Hash = apiKey
+            .HmacEncrypt(secret);
 
         var identityApiKey = await this.dbContext
             .Set<IdentityApiKey<TIdentity>>()
@@ -1879,19 +1875,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             .SaveChangesAsync(cancellationToken);
     }
 
-    private static string GetRandomToken()
-    {
-        var bytes = new byte[32];
-
-        using var generator = RandomNumberGenerator.Create();
-
-        generator
-            .GetBytes(bytes);
-
-        var token = Convert.ToBase64String(bytes);
-
-        return token;
-    }
     private static void ThrowIdentityExceptions(IEnumerable<IdentityError> errors)
     {
         if (errors == null)

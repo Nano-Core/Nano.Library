@@ -17,6 +17,12 @@ public interface IAuthJwtRepository
     /// <summary>
     /// 
     /// </summary>
+    /// <returns></returns>
+    RefreshToken GenerateJwtRefreshToken();
+
+    /// <summary>
+    /// 
+    /// </summary>
     /// <param name="refreshToken"></param>
     void ValidateTokenForRefresh(string refreshToken);
 }

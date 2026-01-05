@@ -1,4 +1,7 @@
 using Microsoft.IdentityModel.Tokens;
+using Nano.App.Web.Config;
+using Nano.App.Web.Identity.Authentication.Extensions;
+using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Exceptions;
@@ -7,9 +10,7 @@ using System.Collections.ObjectModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using Nano.App.Web.Config;
-using Nano.App.Web.Identity.Authentication.Extensions;
-using Nano.Data.Abstractions.Identity.Authentication;
+using System.Security.Cryptography;
 
 namespace Nano.App.Web.Identity.Authentication;
 
@@ -71,6 +72,21 @@ public class AuthJwtRepository : IAuthJwtRepository
     }
 
     /// <inheritdoc />
+    public virtual RefreshToken GenerateJwtRefreshToken()
+    {
+        var token = GetRandomToken();
+
+        var expireAt = DateTimeOffset.UtcNow
+            .AddHours(this.options.RefreshExpirationInHours);
+
+        return new RefreshToken
+        {
+            Token = token,
+            ExpireAt = expireAt
+        };
+    }
+
+    /// <inheritdoc />
     public virtual void ValidateTokenForRefresh(string refreshToken)
     {
         var rsaSecurityKey = this.options.PublicKey
@@ -97,5 +113,20 @@ public class AuthJwtRepository : IAuthJwtRepository
         {
             throw new UnauthorizedException("Invalid jwt token.");
         }
+    }
+
+
+    private static string GetRandomToken()
+    {
+        var bytes = new byte[32];
+
+        using var generator = RandomNumberGenerator.Create();
+
+        generator
+            .GetBytes(bytes);
+
+        var token = Convert.ToBase64String(bytes);
+
+        return token;
     }
 }

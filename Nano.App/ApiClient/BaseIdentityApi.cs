@@ -20,7 +20,7 @@ namespace Nano.App.ApiClient;
 /// <summary>
 /// Default Identity Api.
 /// </summary>
-public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
+public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     where TUser : class, IEntityUser<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
@@ -327,14 +327,14 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseApi<TIdentity>
     /// <param name="request">The <see cref="GenerateChangeEmailTokenRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="ChangeEmailToken{TIdentity}"/>.</returns>
-    public virtual Task<ConfirmCustomPurpose<TIdentity>> GetCustomPurposeTokenAsync(GenerateCustomPurposeTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual Task<ConfirmCustomPurposeToken<TIdentity>> GetCustomPurposeTokenAsync(GenerateCustomPurposeTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         if (request == null)
             throw new ArgumentNullException(nameof(request));
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<GenerateCustomPurposeTokenRequest<TIdentity>, ConfirmCustomPurpose<TIdentity>>(request, cancellationToken);
+        return this.InvokeAsync<GenerateCustomPurposeTokenRequest<TIdentity>, ConfirmCustomPurposeToken<TIdentity>>(request, cancellationToken);
     }
 
     /// <summary>

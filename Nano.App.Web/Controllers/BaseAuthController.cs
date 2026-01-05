@@ -474,8 +474,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
             throw new NullReferenceException(nameof(this.identityAuthRepository));
         }
 
-        // BUG: login refresh external: If Transient we can't use this endpoint because we only have the External Refresh Token. Maybe we need back the refresh external endpoint, or how to handle?
-
         var accessToken = await this.identityAuthRepository
             .LogInRefreshAsync(logInRefresh, cancellationToken);
 

@@ -1,15 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Exceptions;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Abstractions.Models.Identity;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nano.Data.Identity.Authentication;
 
@@ -73,18 +76,13 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
                 Claims = claims
             });
 
-        var refreshTokenExpiry = logIn.IsRefreshable
-            ? await this.identityRepository
-                .CreateRefreshToken(identityUser, logIn.AppId)
+        var refreshToken = logIn.IsRefreshable
+            ? await this.CreateRefreshToken(identityUser, logIn.AppId)
             : null;
 
-        if (refreshTokenExpiry != null)
+        if (refreshToken != null)
         {
-            accessToken.RefreshToken = new RefreshToken
-            {
-                Token = refreshTokenExpiry.Value,
-                ExpireAt = refreshTokenExpiry.ExpireAt
-            };
+            accessToken.RefreshToken = refreshToken;
         }
 
         return accessToken;
@@ -128,14 +126,9 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
 
         if (logInExternalDirect.IsRefreshable)
         {
-            var refreshTokenExpiry = await this.identityRepository
-                .CreateRefreshToken(identityUser, logInExternalDirect.AppId);
+            var refreshToken = await this.CreateRefreshToken(identityUser, logInExternalDirect.AppId);
 
-            accessToken.RefreshToken = new RefreshToken
-            {
-                Token = refreshTokenExpiry.Value,
-                ExpireAt = refreshTokenExpiry.ExpireAt
-            };
+            accessToken.RefreshToken = refreshToken;
         }
 
         return accessToken; 
@@ -147,6 +140,11 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     {
         if (logInExternalTransient == null)
             throw new ArgumentNullException(nameof(logInExternalTransient));
+
+        if (this.authExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.authExternalRepository));
+        }
 
         var externalLoginData = await this.authExternalRepository
             .AuthenticateAsync(logInExternalTransient.Provider, cancellationToken);
@@ -208,26 +206,25 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
             .GetAllClaims(identityUser, logInRefresh.TransientRoles, logInRefresh.TransientClaims, cancellationToken);
 
         ExternalLoginTokenData externalLoginTokenData = null;
-        // BUG: Refresh external
-        //if (this.authExternalRepository != null)
-        //{
-        //    var externalProviderName = claims
-        //        .Where(x => x.Type == ClaimTypesExtended.ExternalProviderName)
-        //        .Select(x => x.Value)
-        //        .FirstOrDefault();
+        if (this.authExternalRepository != null)
+        {
+            var externalProviderName = claims
+                .Where(x => x.Type == ClaimTypesExtended.ExternalProviderName)
+                .Select(x => x.Value)
+                .FirstOrDefault();
 
-        //    var externalProviderRefreshToken = claims
-        //        .Where(x => x.Type == ClaimTypesExtended.ExternalProviderRefreshToken)
-        //        .Select(x => x.Value)
-        //        .FirstOrDefault();
+            var externalProviderRefreshToken = claims
+                .Where(x => x.Type == ClaimTypesExtended.ExternalProviderRefreshToken)
+                .Select(x => x.Value)
+                .FirstOrDefault();
 
-        //    externalLoginTokenData = await this.authExternalRepository
-        //        .LogInExternalRefreshAsync(new LogInExternalRefresh
-        //        {
-        //            ProviderName = externalProviderName,
-        //            RefreshToken = externalProviderRefreshToken
-        //        }, cancellationToken);
-        //}
+            externalLoginTokenData = await this.authExternalRepository
+                .AuthenticateRefreshAsync(new LogInExternalRefresh
+                {
+                    ProviderName = externalProviderName,
+                    RefreshToken = externalProviderRefreshToken
+                }, cancellationToken);
+        }
 
         this.authJwtRepository
             .ValidateTokenForRefresh(logInRefresh.Token);
@@ -248,16 +245,11 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
             throw new UnauthorizedException();
         }
 
-        var refreshTokenExpiry = await this.identityRepository
-            .CreateRefreshToken(identityUser, appId);
+        var refreshToken = await this.CreateRefreshToken(identityUser, appId);
 
-        if (refreshTokenExpiry != null)
+        if (refreshToken != null)
         {
-            accessToken.RefreshToken = new RefreshToken
-            {
-                Token = refreshTokenExpiry.Value,
-                ExpireAt = refreshTokenExpiry.ExpireAt
-            };
+            accessToken.RefreshToken = refreshToken;
         }
 
         return accessToken;
@@ -270,6 +262,20 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
             .SignOutAsync(cancellationToken);
     }
 
+
+    private async Task<RefreshToken> CreateRefreshToken(IdentityUserExt<TIdentity> identityUser, string appId = IdentityDefaults.DEFAULT_APP_ID)
+    {
+        if (identityUser == null)
+            throw new ArgumentNullException(nameof(identityUser));
+
+        var refreshToken = this.authJwtRepository
+            .GenerateJwtRefreshToken();
+
+        await this.identityRepository
+            .CreateRefreshToken(identityUser.Id, refreshToken, appId);
+
+        return refreshToken;
+    }
 
     private static TIdentity ConvertToIdentity(string value)
     {

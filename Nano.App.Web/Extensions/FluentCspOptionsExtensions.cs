@@ -5,7 +5,7 @@ using Nano.App.Web.Config;
 
 namespace Nano.App.Web.Extensions;
 
-// TODO: Csp Extensions
+// BUG: Csp Extensions
 // navigate-to,
 // prefetch-src,
 // report-to,

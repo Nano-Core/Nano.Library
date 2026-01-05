@@ -1,6 +1,10 @@
-﻿using Nano.App.ApiClient.Requests.Attributes;
+﻿using System;
+using Nano.App.ApiClient.Requests.Attributes;
 
 namespace Nano.App.ApiClient.Requests.Identity;
+
+/// <inheritdoc />
+public class ActivateUserRequest : ActivateUserRequest<Guid>;
 
 /// <summary>
 /// Activate User Request.

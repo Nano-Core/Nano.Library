@@ -59,14 +59,10 @@ internal static class ServiceCollectionExtensions
             .AddDataProtection()
             .PersistKeysToDbContext<TContext>();
 
-        if (options.Authentication.Jwt != null)
-        {
-            services
-                .AddScoped<IIdentityAuthRepository, DefaultIdentityAuthRepository>()
-                .AddScoped<IIdentityAuthRepository<TIdentity>, DefaultIdentityAuthRepository<TIdentity>>();
-        }
-
+        // TODO: How to only register IIdentityAuthRepository if Web.Identity.Authentication.Jwt is configured.
         services
+            .AddScoped<IIdentityAuthRepository, DefaultIdentityAuthRepository>()
+            .AddScoped<IIdentityAuthRepository<TIdentity>, DefaultIdentityAuthRepository<TIdentity>>()
             .AddScoped<IIdentityRepository, DefaultIdentityRepository>()
             .AddScoped<IIdentityRepository<TIdentity>, DefaultIdentityRepository<TIdentity>>();
 

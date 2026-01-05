@@ -41,6 +41,12 @@ public class JwtAuthenticationOptions
     public virtual int ExpirationInMinutes { get; set; } = 60;
 
     /// <summary>
+    /// Refresh Expiration In Hours.
+    /// </summary>
+    [Required]
+    public virtual int RefreshExpirationInHours { get; set; } = 72;
+
+    /// <summary>
     /// Log In Root Options.
     /// </summary>
     public virtual LogInRootOptions RootLogin { get; set; }

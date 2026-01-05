@@ -1,14 +1,15 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Models.Identity;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Nano.Data.Abstractions.Identity.Consts;
-using Nano.Data.Abstractions.Identity.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Data.Abstractions.Models.Identity;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Abstractions.Identity;
@@ -342,10 +343,11 @@ public interface IIdentityRepository<TIdentity>
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="identityUser"></param>
+    /// <param name="userId"></param>
+    /// <param name="refreshToken"></param>
     /// <param name="appId"></param>
     /// <returns></returns>
-    Task<IdentityUserTokenExpiry<TIdentity>> CreateRefreshToken(IdentityUserExt<TIdentity> identityUser, string appId = IdentityDefaults.DEFAULT_APP_ID);
+    Task<IdentityUserTokenExpiry<TIdentity>> CreateRefreshToken(TIdentity userId, RefreshToken refreshToken, string appId = IdentityDefaults.DEFAULT_APP_ID);
 
     #endregion
 

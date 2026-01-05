@@ -6,10 +6,13 @@ using Nano.App.ApiClient.Consts;
 using Nano.App.ApiClient.Models.Identity;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Identity;
+using Nano.Data.Abstractions.Identity.Authentication;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Models.Identity;
 using Nano.Eventing.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -19,18 +22,15 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Identity.Authentication;
-using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Models.Identity;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.App.Web.Controllers;
-
-// BUG: Check all return types from IdentityRepository, they might have changed. 
-// Check nulls for all dependencies.
-// - roles: [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER)]
+// BUG: 000: Roles: [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER)]
+// Set them indivudually on each action
+// check on methods for: [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
 
 /// <inheritdoc />
+[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
 public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : IRepository
     where TEntity : class, IEntityUser<TIdentity>, IEntityCreatable, IEntityUpdatable, IEntityDeletable, IEntityIdentity<TIdentity>, new()
@@ -142,7 +142,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var isPhoneNumberTaken = await this.identityRepository
             .IsPhoneNumberTakenAsync(phoneNumber, cancellationToken);
 
-        var response = new IsEmailAddressTaken
+        var response = new IsPhoneNumberTaken
         {
             IsTaken = isPhoneNumberTaken
         };
@@ -243,6 +243,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpExternalGoogleAsync([FromBody][Required] SignUpExternalGoogle<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
     {
+        if (authExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.authExternalRepository));
+        }
+
         var externalProviderLogInData = await this.authExternalRepository
             .AuthenticateAsync(signUpExternal.Provider, cancellationToken);
 
@@ -287,6 +292,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpExternalFacebookAsync([FromBody][Required] SignUpExternalFacebook<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
     {
+        if (authExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.authExternalRepository));
+        }
+
         var externalProviderLogInData = await this.authExternalRepository
             .AuthenticateAsync(signUpExternal.Provider, cancellationToken);
 
@@ -331,6 +341,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpExternalMicrosoftAsync([FromBody][Required] SignUpExternalMicrosoft<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
     {
+        if (authExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.authExternalRepository));
+        }
+
         var externalProviderLogInData = await this.authExternalRepository
             .AuthenticateAsync(signUpExternal.Provider, cancellationToken);
 
@@ -459,7 +474,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(ResetPasswordToken<Guid>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ResetPasswordToken), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -548,7 +563,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [Route("email/change/token")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(ChangeEmailToken<Guid>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ChangeEmailToken), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -607,7 +622,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [Route("email/confirm/token")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(ConfirmEmailToken<Guid>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ConfirmEmailToken), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -668,7 +683,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [Route("phone/change/token")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(ChangePhoneNumberToken<Guid>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ChangePhoneNumberToken), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -727,7 +742,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [Route("phone/confirm/token")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(ConfirmPhoneNumberToken<Guid>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ConfirmPhoneNumberToken), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -760,7 +775,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [Route("token/custom")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(ConfirmCustomPurpose<Guid>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ConfirmCustomPurposeToken), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -831,6 +846,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> GetExternalLoginsAsync([FromRoute][Required] TIdentity userId, CancellationToken cancellationToken = default)
     {
+        if (this.authExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.authExternalRepository));
+        }
+
         var userLoginInfos = await this.identityRepository
             .GetUserExternalLoginsAsync(userId, cancellationToken);
 
@@ -870,6 +890,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> AddExternalLoginGoogleAsync([FromBody][Required] AddExternalLoginGoogle<TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
     {
+        if (this.authExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.authExternalRepository));
+        }
+
         var externalProviderLogInData = await this.authExternalRepository
             .AuthenticateAsync(addExternalLogin.Provider, cancellationToken);
 
@@ -920,6 +945,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> AddExternalLoginFacebookAsync([FromBody][Required] AddExternalLoginFacebook<TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
     {
+        if (this.authExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.authExternalRepository));
+        }
+
         var externalProviderLogInData = await this.authExternalRepository
             .AuthenticateAsync(addExternalLogin.Provider, cancellationToken);
 
@@ -970,6 +1000,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> AddExternalLoginMicrosoftAsync([FromBody][Required] AddExternalLoginMicrosoft<TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
     {
+        if (this.authExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.authExternalRepository));
+        }
+
         var externalProviderLogInData = await this.authExternalRepository
             .AuthenticateAsync(addExternalLogin.Provider, cancellationToken);
 
