@@ -3,8 +3,8 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using EasyNetQ;
+using Nano.Common.Extensions;
 using Nano.Eventing.Abstractions;
-using Nano.Eventing.RabbitMq.Extensions;
 
 namespace Nano.Eventing.RabbitMq;
 
@@ -69,8 +69,8 @@ public class EasyNetQEventing : IEventing
         await this.bus.Advanced
             .BindAsync(exchange, queue, routing, cancellationToken);
 
-        this.bus.Advanced
-            .Consume<TMessage>(queue, (message, info) =>
+        await this.bus.Advanced
+            .ConsumeAsync<TMessage>(queue, (message, info) =>
             {
                 var callbackTask = (Task)eventHandler
                     .GetType()

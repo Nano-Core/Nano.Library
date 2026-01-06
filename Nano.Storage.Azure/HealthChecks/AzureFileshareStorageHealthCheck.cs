@@ -10,32 +10,58 @@ using Nano.Storage.Abstractions.Config;
 namespace Nano.Storage.Azure.HealthChecks;
 
 /// <summary>
-/// Azure File-Share Storage Health-Check.
+/// Performs a health check against an Azure File Share to verify its availability.
 /// </summary>
+/// <remarks>
+/// The health check verifies that the configured Azure File Share exists and is reachable.
+/// Configuration is resolved from <see cref="StorageOptions"/> using
+/// <see cref="IOptionsMonitor{TOptions}"/>. A cached <see cref="ShareClient"/> instance
+/// is reused across executions.
+/// </remarks>
 public class AzureFileshareStorageHealthCheck : IHealthCheck
 {
     private readonly IOptionsMonitor<StorageOptions> options;
-    private readonly ShareClientOptions clientOptions;
-    
+    private readonly ShareClientOptions? clientOptions;
+
     private static readonly ConcurrentDictionary<string, ShareClient> clientsHolder = new();
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="AzureFileshareStorageHealthCheck"/>.
     /// </summary>
-    /// <param name="options">The <see cref="StorageOptions"/>.</param>
-    /// <param name="clientOptions">the <see cref="ShareClientOptions"/>.</param>
-    public AzureFileshareStorageHealthCheck(IOptionsMonitor<StorageOptions> options, ShareClientOptions clientOptions = null)
+    /// <param name="options">
+    /// A non-null <see cref="IOptionsMonitor{StorageOptions}"/> providing the connection
+    /// string and share name for the Azure File Share.
+    /// </param>
+    /// <param name="clientOptions">
+    /// Optional <see cref="ShareClientOptions"/> used to configure the underlying
+    /// <see cref="ShareClient"/>. If <c>null</c>, default client options are used.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="options"/> is <c>null</c>.
+    /// </exception>
+    public AzureFileshareStorageHealthCheck(IOptionsMonitor<StorageOptions> options, ShareClientOptions? clientOptions = null)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));
         this.clientOptions = clientOptions;
     }
 
     /// <summary>
-    /// Check Health Async.
+    /// Executes the health check asynchronously.
     /// </summary>
-    /// <param name="context">The <see cref="HealthCheckContext"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="HealthCheckResult"/>.</returns>
+    /// <param name="context">
+    /// The <see cref="HealthCheckContext"/> containing registration and failure status information.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// A <see cref="CancellationToken"/> that can be used to cancel the health check operation.
+    /// </param>
+    /// <returns>
+    /// A <see cref="HealthCheckResult"/> indicating whether the Azure File Share exists.
+    /// Returns <see cref="HealthCheckResult.Healthy"/> when the share is found; otherwise,
+    /// returns a result with the configured failure status.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="context"/> is <c>null</c>.
+    /// </exception>
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         if (context == null)
@@ -61,18 +87,16 @@ public class AzureFileshareStorageHealthCheck : IHealthCheck
 
     private ShareClient GetClient()
     {
-        var exists = clientsHolder
+        AzureFileshareStorageHealthCheck.clientsHolder
             .TryGetValue(this.options.CurrentValue.Connectionstring, out var client);
 
-        if (exists)
+        if (client == null)
         {
-            return client;
+            client = new ShareClient(this.options.CurrentValue.Connectionstring, this.options.CurrentValue.ShareName, this.clientOptions);
+
+            AzureFileshareStorageHealthCheck.clientsHolder
+                .TryAdd(this.options.CurrentValue.Connectionstring, client);
         }
-
-        client = new ShareClient(this.options.CurrentValue.Connectionstring, this.options.CurrentValue.ShareName, this.clientOptions);
-
-        clientsHolder
-            .TryAdd(this.options.CurrentValue.Connectionstring, client);
 
         return client;
     }

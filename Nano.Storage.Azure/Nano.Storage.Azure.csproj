@@ -1,28 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
-		<ApplicationIcon>..\icon.ico</ApplicationIcon>
-		<Configurations>Debug;Release</Configurations>
-		<Version>10.0.0.0</Version>
-		<LangVersion>latest</LangVersion>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<WarningsAsErrors></WarningsAsErrors>
-		<NoWarn />
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<EmbedAllSources>true</EmbedAllSources>
-	    <IncludeSymbols>true</IncludeSymbols>
-	    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	
+		<Summary></Summary>
+		<Description></Description>
+		<PackageReleaseNotes>
+			- Added .NET 10 support
+		</PackageReleaseNotes>
+
+		<nullable>enable</nullable>
+
 	</PropertyGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="Azure.Storage.Files.Shares" Version="12.24.0" />
 	  <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="10.0.1" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>

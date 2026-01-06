@@ -1,0 +1,50 @@
+<Project>
+
+    <PropertyGroup>
+	    <TargetFramework>net10.0</TargetFramework>
+	    <NoWarn>NU1902; NU5104</NoWarn>
+	    <AssemblyVersion>10.0.0.0</AssemblyVersion>
+	    <FileVersion>10.0.0.0</FileVersion>
+	    <Version>10.0.0.0</Version>
+	    <PlatformTarget>AnyCPU</PlatformTarget>
+	    <Configurations>Debug;Release</Configurations>
+	    <LangVersion>latest</LangVersion>
+	    <NeutralLanguage>en-US</NeutralLanguage>
+	    <License>LICENSE</License>
+	    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	    <WarningsAsErrors />
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<Authors>Michael Vivet</Authors>
+	    <Owners>Michael Vivet</Owners>
+	    <Product>$(ProjectName)</Product>
+		<RepositoryType>git</RepositoryType>
+	    <RepositoryBranch>master</RepositoryBranch>
+	    <RepositoryUrl>https://github.com/Nano-Core/Nano.Library.git</RepositoryUrl>
+	    <RepositoryCommit>$(GitCommitHash)</RepositoryCommit>
+	    <EmbedAllSources>true</EmbedAllSources>
+	    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+	    <IncludeSymbols>true</IncludeSymbols>
+	    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+	    <PackageVersion>$(Version)</PackageVersion>
+		<PackageTags></PackageTags>
+		<PackageProjectUrl>https://github.com/Nano-Core/Nano.Library/$(ProjectName)</PackageProjectUrl>
+	    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+	    <PackageIcon>icon.png</PackageIcon>
+	    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\LICENSE" Pack="true" Visible="false" PackagePath="" />
+		<None Include="..\icon.png" Pack="true" Visible="false" PackagePath="" />
+		<None Include="README.md" Pack="true" Visible="false" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+	</ItemGroup>
+
+</Project>

@@ -8,8 +8,6 @@ using RabbitMQ.Client;
 
 namespace Nano.Eventing.RabbitMq.Extensions;
 
-// TODO: Upgrade AspNetCore.HealthChecks.Rabbitmq not possible, EasyNetQ expects lower version of RabbitMQ.Client.
-
 internal static class HealtCheckBuilderExtensions
 {
     private const string NAME = "rabbitmq";
@@ -20,7 +18,7 @@ internal static class HealtCheckBuilderExtensions
             throw new ArgumentNullException(nameof(builder));
 
         builder
-            .AddRabbitMQ((x, y) =>
+            .AddRabbitMQ(x =>
             {
                 var options = x
                     .GetRequiredService<IOptionsMonitor<EventingOptions>>();
@@ -29,12 +27,14 @@ internal static class HealtCheckBuilderExtensions
                     ? $"amqp://{options.CurrentValue.Host}:{options.CurrentValue.Port}{options.CurrentValue.VHost}"
                     : $"amqp://{options.CurrentValue.Username}:{options.CurrentValue.Password}@{options.CurrentValue.Host}:{options.CurrentValue.Port}{options.CurrentValue.VHost}";
 
-                y.RequestedConnectionTimeout = timeout;
-                y.ConnectionFactory = new ConnectionFactory
+                var factory = new ConnectionFactory
                 {
                     Uri = new Uri(connectionString),
                     AutomaticRecoveryEnabled = true
                 };
+
+                return factory
+                    .CreateConnectionAsync();
             }, NAME, failureStatus, tags, timeout);
 
         return builder;

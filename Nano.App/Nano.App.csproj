@@ -1,29 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
-		<ApplicationIcon>..\icon.ico</ApplicationIcon>
-		<Configurations>Debug;Release</Configurations>
-		<Version>10.0.0.0</Version>
-		<LangVersion>latest</LangVersion>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<WarningsAsErrors></WarningsAsErrors>
-		<NoWarn />
-		<DocumentationFile>$(MSBuildThisFileDirectory)\bin\$(Configuration)\Nano.App.xml</DocumentationFile>
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<EmbedAllSources>true</EmbedAllSources>
-	    <IncludeSymbols>true</IncludeSymbols>
-	    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		
+		<Summary></Summary>
+		<Description></Description>
+		<PackageReleaseNotes>
+			- Added .NET 10 support
+		</PackageReleaseNotes>
+
+		<nullable>disable</nullable>
+
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AspNetCore.HealthChecks.Network" Version="9.0.0" />
 		<PackageReference Include="Vivet.AspNetCore.RequestTimeZone" Version="9.0.11" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>

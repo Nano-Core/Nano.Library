@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -43,36 +44,36 @@ public class HttpRequestOptionsMiddleware : IMiddleware
             }
 
             headers
-                .Add("Access-Control-Allow-Origin", new[] { (string)httpContext.Request.Headers["Origin"] });
+                .TryAdd("Access-Control-Allow-Origin", new[] { (string)httpContext.Request.Headers["Origin"] });
 
             if (corsPolicy.AllowAnyHeader)
             {
                 headers
-                    .Add("Access-Control-Allow-Headers", new[] { "*" });
+                    .TryAdd("Access-Control-Allow-Headers", new[] { "*" });
             }
             else
             {
                 var allowedHeaders = string.Join(", ", corsPolicy.Headers);
 
                 headers
-                    .Add("Access-Control-Allow-Headers", allowedHeaders);
+                    .TryAdd("Access-Control-Allow-Headers", allowedHeaders);
             }
 
             if (corsPolicy.AllowAnyMethod)
             {
                 headers
-                    .Add("Access-Control-Allow-Methods", new[] { "*" });
+                    .TryAdd("Access-Control-Allow-Methods", new[] { "*" });
             }
             else
             {
                 var allowedMethods = string.Join(", ", corsPolicy.Methods);
 
                 headers
-                    .Add("Access-Control-Allow-Methods", allowedMethods);
+                    .TryAdd("Access-Control-Allow-Methods", allowedMethods);
             }
 
             headers
-                .Add("Access-Control-Allow-Credentials", new[] { corsPolicy.SupportsCredentials.ToString() });
+                .TryAdd("Access-Control-Allow-Credentials", new[] { corsPolicy.SupportsCredentials.ToString() });
 
             response.StatusCode = (int)HttpStatusCode.OK;
 

@@ -1,16 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.32112.339
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11312.151
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{EA0E8885-9387-4A54-8DE6-65EB2431C1B9}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		appsettings.default.json = appsettings.default.json
-		icon.ico = icon.ico
+		Directory.Build.props = Directory.Build.props
 		icon.png = icon.png
 		LICENSE = LICENSE
-		NanoCore.nuspec = NanoCore.nuspec
 		README.md = README.md
 	EndProjectSection
 	ProjectSection(FolderGlobals) = preProject
@@ -70,6 +69,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.Storage.Azure", "Nano.Storage.Azure\Nano.Storage.Azure.csproj", "{3E381C11-A637-CB16-5EFA-6598B5FF9654}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.App.Console", "Nano.App.Console\Nano.App.Console.csproj", "{83F6B233-1820-E3F6-A71B-6C9A962F3F8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.Logging.NLog", "Nano.Logging.NLog\Nano.Logging.NLog.csproj", "{140CA3CC-12A5-0D07-35FC-375228D5E4EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.Logging.Microsoft", "Nano.Logging.Microsoft\Nano.Logging.Microsoft.csproj", "{D68EAE2D-1E89-6428-C534-2771ECF9AB9C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -161,6 +164,14 @@ Global
 		{83F6B233-1820-E3F6-A71B-6C9A962F3F8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83F6B233-1820-E3F6-A71B-6C9A962F3F8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83F6B233-1820-E3F6-A71B-6C9A962F3F8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{140CA3CC-12A5-0D07-35FC-375228D5E4EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{140CA3CC-12A5-0D07-35FC-375228D5E4EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{140CA3CC-12A5-0D07-35FC-375228D5E4EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{140CA3CC-12A5-0D07-35FC-375228D5E4EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D68EAE2D-1E89-6428-C534-2771ECF9AB9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D68EAE2D-1E89-6428-C534-2771ECF9AB9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D68EAE2D-1E89-6428-C534-2771ECF9AB9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D68EAE2D-1E89-6428-C534-2771ECF9AB9C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

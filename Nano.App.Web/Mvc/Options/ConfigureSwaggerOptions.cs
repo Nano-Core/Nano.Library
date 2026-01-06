@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.XPath;
+using Nano.Common.Extensions;
 
 namespace Nano.App.Web.Mvc.Options;
 
@@ -66,7 +67,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
             .EnableAnnotations(true, true);
         
         options
-            .CustomSchemaIds(y => y.Name);
+            .CustomSchemaIds(y => y.GetFriendlyName());
         
         options
             .OrderActionsBy(y => y.RelativePath);

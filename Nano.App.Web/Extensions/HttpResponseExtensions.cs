@@ -18,17 +18,17 @@ internal static class HttpResponseExtensions
         {
             case CrossOriginEmbedderPolicy.UnsafeNone:
                 httpResponse.Headers
-                    .Add("Cross-Origin-Embedder-Policy", "unsafe-none");
+                    .TryAdd("Cross-Origin-Embedder-Policy", "unsafe-none");
                 break;
 
             case CrossOriginEmbedderPolicy.RequireCorp:
                 httpResponse.Headers
-                    .Add("Cross-Origin-Embedder-Policy", "require-corp");
+                    .TryAdd("Cross-Origin-Embedder-Policy", "require-corp");
                 break;
 
             case CrossOriginEmbedderPolicy.Credentialless:
                 httpResponse.Headers
-                    .Add("Cross-Origin-Embedder-Policy", "credentialless");
+                    .TryAdd("Cross-Origin-Embedder-Policy", "credentialless");
                 break;
 
             case null:
@@ -50,17 +50,17 @@ internal static class HttpResponseExtensions
         {
             case CrossOriginOpenerPolicy.UnsafeNone:
                 httpResponse.Headers
-                    .Add("Cross-Origin-Opener-Policy", "unsafe-none");
+                    .TryAdd("Cross-Origin-Opener-Policy", "unsafe-none");
                 break;
 
             case CrossOriginOpenerPolicy.SameOrigin:
                 httpResponse.Headers
-                    .Add("Cross-Origin-Opener-Policy", "same-origin");
+                    .TryAdd("Cross-Origin-Opener-Policy", "same-origin");
                 break;
 
             case CrossOriginOpenerPolicy.SameOriginAllowPopups:
                 httpResponse.Headers
-                    .Add("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+                    .TryAdd("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
                 break;
 
             case null:
@@ -82,17 +82,17 @@ internal static class HttpResponseExtensions
         {
             case CrossOriginResourcePolicy.SameSite:
                 httpResponse.Headers
-                    .Add("Cross-Origin-Resource-Policy", "same-site");
+                    .TryAdd("Cross-Origin-Resource-Policy", "same-site");
                 break;
 
             case CrossOriginResourcePolicy.SameOrigin:
                 httpResponse.Headers
-                    .Add("Cross-Origin-Resource-Policy", "same-origin");
+                    .TryAdd("Cross-Origin-Resource-Policy", "same-origin");
                 break;
 
             case CrossOriginResourcePolicy.CrossOrigin:
                 httpResponse.Headers
-                    .Add("Cross-Origin-Resource-Policy", "cross-origin");
+                    .TryAdd("Cross-Origin-Resource-Policy", "cross-origin");
                 break;
 
             case null:
@@ -157,7 +157,7 @@ internal static class HttpResponseExtensions
         if (directives.Count > 0)
         {
             httpResponse.Headers
-                .Add("X-Robots-Tag", string.Join(", ", directives));
+                .TryAdd("X-Robots-Tag", string.Join(", ", directives));
         }
 
         return httpResponse;
@@ -174,12 +174,12 @@ internal static class HttpResponseExtensions
         {
             case XFrameOptionsPolicy.Deny:
                 httpResponse.Headers
-                    .Add(KEY, "DENY");
+                    .TryAdd(KEY, "DENY");
                 break;
 
             case XFrameOptionsPolicy.SameOrigin:
                 httpResponse.Headers
-                    .Add(KEY, "SAMEORIGIN");
+                    .TryAdd(KEY, "SAMEORIGIN");
                 break;
 
             case XFrameOptionsPolicy.Disabled:
@@ -198,7 +198,7 @@ internal static class HttpResponseExtensions
             throw new ArgumentNullException(nameof(httpResponse));
 
         httpResponse.Headers
-            .Add("X-Content-Type-Options", "nosniff");
+            .TryAdd("X-Content-Type-Options", "nosniff");
 
         return httpResponse;
     }
@@ -246,7 +246,7 @@ internal static class HttpResponseExtensions
             .TrimEnd(',');
 
         httpResponse.Headers
-            .Add("Permissions-Policy", permissionPolicyValues);
+            .TryAdd("Permissions-Policy", permissionPolicyValues);
 
         return httpResponse;
     }
