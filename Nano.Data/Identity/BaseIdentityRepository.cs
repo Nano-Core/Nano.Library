@@ -17,9 +17,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Exceptions;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Models.Identity;
@@ -27,7 +25,7 @@ using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Identity;
 
-// BUG: API-KEY: IdentityApiKey Roles and Claims (don't inherit from IdentityUser)
+// TODO: API-KEY: IdentityApiKey Roles and Claims (don't inherit from IdentityUser)
 
 /// <summary>
 /// Base Identity Repository.

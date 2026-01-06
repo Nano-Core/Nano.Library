@@ -1,5 +1,4 @@
 using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Identity.Consts;
 
 namespace Nano.Data.Abstractions.Identity.Authentication;
 

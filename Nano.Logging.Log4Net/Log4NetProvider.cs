@@ -25,7 +25,7 @@ public class Log4NetProvider : ILoggingProvider
 
         var patternLayout = new PatternLayout
         {
-            ConversionPattern = "%utcdate{dd-MM-yyyy HH:mm:ss.ffffff} [%level] %message%newline"
+            ConversionPattern = "%utcdate{dd-MM-yyyy HH:mm:ss.ffffff} [%level] %logger - %message%newline"
         };
 
         patternLayout
@@ -36,31 +36,31 @@ public class Log4NetProvider : ILoggingProvider
             Layout = patternLayout
         };
 
-        var hierarchy = (Hierarchy)LogManager
-            .CreateRepository("default");
+        consoleAppender
+            .ActivateOptions();
+
+        var hierarchy = (Hierarchy)LogManager.CreateRepository("default");
 
         hierarchy.Root
             .AddAppender(consoleAppender);
 
-        hierarchy.Root.Level = options.LogLevel
-            .GetLogLevel();
+        hierarchy.Root.Level = options.LogLevel.GetLogLevel();
+
+        if (options.LogLevelOverrides != null)
+        {
+            foreach (var over in options.LogLevelOverrides)
+            {
+                if (hierarchy.GetLogger(over.Namespace) is Logger logger)
+                {
+                    logger.Level = over.LogLevel.GetLogLevel();
+
+                    logger
+                        .AddAppender(consoleAppender);
+                }
+            }
+        }
 
         hierarchy.Configured = true;
-
-        // BUG: Log4Net: Namespace overrides
-        //foreach (var logLevelOverride in this.Options.LogLevelOverrides)
-        //{
-        //    var nestedHierarchy = (Hierarchy)LogManager
-        //        .CreateRepository(logLevelOverride.Namespace);
-
-        //    nestedHierarchy.Root.Level = logLevelOverride.LogLevel
-        //        .GetLogLevel();
-
-        //    nestedHierarchy.Root
-        //        .AddAppender(consoleAppender);
-
-        //    nestedHierarchy.Configured = true;
-        //}
 
         var providerOptions = new Log4NetProviderOptions
         {

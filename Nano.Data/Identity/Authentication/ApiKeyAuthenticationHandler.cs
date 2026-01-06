@@ -14,12 +14,6 @@ using Nano.Data.Abstractions.Identity.Consts;
 
 namespace Nano.Data.Identity.Authentication;
 
-// BUG: API-KEY: Distributed architecture
-// - Validate api-key endpoint,
-// - Still needs ApiKeyAuthenticationHandler? )
-// - Kubernetes ingress nginx integration
-// - https://chatgpt.com/c/695ceb26-c6e4-832f-8840-b36bd21b5be9
-
 /// <summary>
 /// Api Key Authentication Handler.
 /// </summary>

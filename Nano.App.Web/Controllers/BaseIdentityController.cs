@@ -27,7 +27,13 @@ using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.App.Web.Controllers;
 
-/// <inheritdoc />
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="TRepository"></typeparam>
+/// <typeparam name="TEntity"></typeparam>
+/// <typeparam name="TIdentity"></typeparam>
+/// <typeparam name="TCriteria"></typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.IDENTITY)]
 public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : IRepository
@@ -1399,6 +1405,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpGet]
     [Route("roles")]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [ProducesResponseType(typeof(IEnumerable<IdentityRole<Guid>>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -1430,6 +1437,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("roles/create")]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<IdentityRole<Guid>>), (int)HttpStatusCode.OK)]
@@ -1464,6 +1472,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpPost]
     [HttpDelete]
     [Route("roles/delete")]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1577,6 +1586,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpGet]
     [Route("roles/claims/{roleId}")]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<Claim>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1609,6 +1619,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPost]
     [Route("roles/claims/assign")]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1637,6 +1648,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpPost]
     [HttpDelete]
     [Route("roles/claims/remove")]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1664,6 +1676,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occured.</response>
     [HttpPut]
     [Route("roles/claims/replace")]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]

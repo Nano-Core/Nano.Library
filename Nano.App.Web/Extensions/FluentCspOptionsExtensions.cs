@@ -41,19 +41,6 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspTrustedTypes(this CspBuilder builder, CspOptions.CspDirectiveTrustedTypes cspDirective = null)
-    {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
-
-        if (cspDirective == null)
-        {
-            return builder;
-        }
-
-        return builder;
-    }
-
     internal static CspBuilder UseCspDefaults(this CspBuilder builder, CspOptions.CspDirective cspDirective = null)
     {
         if (builder == null)

@@ -434,7 +434,7 @@ public abstract class BaseApi
         if (!string.IsNullOrEmpty(CultureInfo.CurrentCulture.Name))
         {
             httpRequest.Headers.AcceptLanguage
-                .Add(new System.Net.Http.Headers.StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
+                .Add(new StringWithQualityHeaderValue(CultureInfo.CurrentCulture.Name));
         }
 
         if (DateTimeInfo.TimeZone.Value != null)

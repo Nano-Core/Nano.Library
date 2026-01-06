@@ -297,7 +297,6 @@ internal static class ApplicationBuilderExtensions
 
                         x
                             .UseCspReportUris(webOptions.HttpPolicyHeaders.Csp.ReportUris)
-                            .UseCspTrustedTypes(webOptions.HttpPolicyHeaders.Csp.TrustedTypes)
                             .UseCspDefaults(webOptions.HttpPolicyHeaders.Csp.Defaults)
                             .UseCspStyles(webOptions.HttpPolicyHeaders.Csp.Styles)
                             .UseCspScripts(webOptions.HttpPolicyHeaders.Csp.Scripts)
@@ -334,7 +333,6 @@ internal static class ApplicationBuilderExtensions
 
                         x
                             .UseCspReportUris(webOptions.HttpPolicyHeaders.Csp.ReportUris)
-                            .UseCspTrustedTypes(webOptions.HttpPolicyHeaders.Csp.TrustedTypes)
                             .UseCspDefaults(webOptions.HttpPolicyHeaders.Csp.Defaults)
                             .UseCspStyles(webOptions.HttpPolicyHeaders.Csp.Styles)
                             .UseCspScripts(webOptions.HttpPolicyHeaders.Csp.Scripts)

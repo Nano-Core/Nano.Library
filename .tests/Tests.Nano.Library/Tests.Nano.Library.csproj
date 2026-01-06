@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<ApplicationIcon>..\..\icon.ico</ApplicationIcon>
 		<Configurations>Debug;Release</Configurations>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<Version>9.0.0.0</Version>
+		<Version>10.0.0.0</Version>
 		<LangVersion>latest</LangVersion>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningsAsErrors></WarningsAsErrors>
@@ -17,11 +17,6 @@
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
 		<PackageReference Include="MSTest.TestAdapter" Version="4.0.1" />
 		<PackageReference Include="MSTest.TestFramework" Version="4.0.1" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\..\Nano.App.Web\Nano.App.Web.csproj" />
-		<ProjectReference Include="..\..\Nano.App\Nano.App.csproj" />
 	</ItemGroup>
 
 </Project>

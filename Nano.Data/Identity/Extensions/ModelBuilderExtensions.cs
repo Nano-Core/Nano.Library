@@ -5,7 +5,8 @@ using Nano.Data.Identity.Consts;
 using Nano.Data.Identity.Mappings;
 using Nano.Data.Mappings.Extensions;
 using System;
-using Nano.Data.Abstractions.Config;
+using Microsoft.AspNetCore.Identity;
+using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;
 
 namespace Nano.Data.Identity.Extensions;
 
@@ -21,14 +22,13 @@ internal static class ModelBuilderExtensions
         var isUniquePhoneNumberRequired = options?.User.IsUniquePhoneNumberRequired ?? true;
 
         modelBuilder
-            .MapIdentityUser<TIdentity>(isUniqueEmailAddressRequired, isUniquePhoneNumberRequired)
+            .MapIdentityUserEx<TIdentity>(isUniqueEmailAddressRequired, isUniquePhoneNumberRequired)
             .MapIdentityUserRole<TIdentity>()
             .MapIdentityUserClaim<TIdentity>()
             .MapIdentityUserLogin<TIdentity>()
             .MapIdentityUserToken<TIdentity>()
             .MapIdentityRole<TIdentity>()
             .MapIdentityRoleClaim<TIdentity>()
-            .MapIdentityUserLogin<TIdentity>()
             .MapDataProtectionKey<TIdentity>();
 
         modelBuilder
@@ -40,7 +40,7 @@ internal static class ModelBuilderExtensions
     }
 
 
-    private static ModelBuilder MapIdentityUser<TIdentity>(this ModelBuilder modelBuilder, bool isUniqueEmailAddressRequired, bool isUniquePhoneNumberRequired)
+    private static ModelBuilder MapIdentityUserEx<TIdentity>(this ModelBuilder modelBuilder, bool isUniqueEmailAddressRequired, bool isUniquePhoneNumberRequired)
         where TIdentity : IEquatable<TIdentity>
     {
         var entityTypeBuilder = modelBuilder

@@ -4,9 +4,9 @@ using Serilog.Events;
 namespace Nano.Logging.Serilog.Extensions;
 
 /// <summary>
-/// Serilog Log-Level Extensions.
+/// Log Level Extensions.
 /// </summary>
-public static class SerilogLogLevelExtensions
+public static class LogLevelExtensions
 {
     /// <summary>
     /// Get Log-Level.

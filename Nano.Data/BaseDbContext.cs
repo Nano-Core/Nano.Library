@@ -31,7 +31,7 @@ using Z.EntityFramework.Plus;
 
 namespace Nano.Data;
 
-// BUG: Entity Event Map (Important)
+// TODO: Entity Event Map (Important)
 // 1. Make a map of Publish Attributes and their property names.
 // 2. When SaveChanges then check if any property names are affected (e.g. User.IdentityUser.Email is changed, then User needs to be fetched and published)
 
