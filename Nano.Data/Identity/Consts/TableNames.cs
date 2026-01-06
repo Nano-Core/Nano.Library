@@ -4,7 +4,7 @@ internal static class TableNames
 {
     internal const string IDENTITY_USER_LOGIN_TABLE_NAME = "__EFAuthUserLogin";
     internal const string IDENTITY_USER_ROLE = "__EFAuthUserRole";
-    internal const string IDENTITY_USER_TOKEN_EXPIRY = "__EFAuthUserToken";
+    internal const string IDENTITY_USER_TOKEN = "__EFAuthUserToken";
     internal const string IDENTITY_USER_CLAIM = "__EFAuthUserClaim";
     internal const string IDENTITY_USER = "__EFAuthUser";
     internal const string IDENTITY_ROLE_CLAIM = "__EFAuthRoleClaim";
@@ -12,4 +12,5 @@ internal static class TableNames
     internal const string IDENTITY_API_KEY = "__EFAuthApiKey";
     internal const string IDENTITY_DATA_PROTECTION_KEYS = "__EFDataProtectionKeys";
     internal const string IDENTITY_USER_CHANGE_DATA = "__EFAuthUserChangeData";
+    internal const string IDENTITY_USER_REFRESH_TOKEN = "__EFAuthUserRefreshToken";
 }

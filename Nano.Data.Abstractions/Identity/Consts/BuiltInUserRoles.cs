@@ -31,6 +31,11 @@ public static class BuiltInUserRoles
     public const string WRITER = "writer";
 
     /// <summary>
+    /// Identity.
+    /// </summary>
+    public const string IDENTITY = "reader";
+
+    /// <summary>
     /// Administrator.
     /// </summary>
     public const string ADMINISTRATOR = "administrator";

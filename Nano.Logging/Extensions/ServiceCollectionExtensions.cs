@@ -7,10 +7,10 @@ using Nano.Common.Config.Extensions;
 
 namespace Nano.Logging.Extensions;
 
-// TODO: Make Microsoft Logging Console Provider
-// TODO: Make Nlog Logging Console Provider
+// BUG: Make Microsoft Logging Console Provider
+// BUG: Make Nlog Logging Console Provider
 
-// TODO: Logging and Observability and Telemetry (OpenTelemetry - https://opentelemetry.io/docs)
+// BUG: Logging and Observability and Telemetry (OpenTelemetry - https://opentelemetry.io/docs)
 // - Logging with OpenTelemetry + Serilog
 // - IHostApplicationBuilder.Metrics(IMetricsBuilder)
 

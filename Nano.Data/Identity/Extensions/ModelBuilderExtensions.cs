@@ -1,19 +1,24 @@
-using System;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Nano.Data.Abstractions.Models.Identity;
 using Nano.Data.Identity.Consts;
+using Nano.Data.Identity.Mappings;
+using Nano.Data.Mappings.Extensions;
+using System;
+using Nano.Data.Abstractions.Config;
 
 namespace Nano.Data.Identity.Extensions;
 
 internal static class ModelBuilderExtensions
 {
-    internal static ModelBuilder MapIdentity<TIdentity>(this ModelBuilder modelBuilder, bool isUniqueEmailAddressRequired, bool isUniquePhoneNumberRequired)
+    internal static ModelBuilder MapIdentity<TIdentity>(this ModelBuilder modelBuilder, IdentityOptions options)
         where TIdentity : IEquatable<TIdentity>
     {
         if (modelBuilder == null)
             throw new ArgumentNullException(nameof(modelBuilder));
+
+        var isUniqueEmailAddressRequired = options?.User.IsUniqueEmailAddressRequired ?? true;
+        var isUniquePhoneNumberRequired = options?.User.IsUniquePhoneNumberRequired ?? true;
 
         modelBuilder
             .MapIdentityUser<TIdentity>(isUniqueEmailAddressRequired, isUniquePhoneNumberRequired)
@@ -26,6 +31,11 @@ internal static class ModelBuilderExtensions
             .MapIdentityUserLogin<TIdentity>()
             .MapDataProtectionKey<TIdentity>();
 
+        modelBuilder
+            .AddMapping<IdentityApiKey<TIdentity>, IdentityApiKeyMapping<TIdentity>>()
+            .AddMapping<IdentityUserChangeData<TIdentity>, IdentityUserChangeDataMapping<TIdentity>>()
+            .AddMapping<IdentityUserRefreshToken<TIdentity>, IdentityUserRefreshTokenMapping<TIdentity>>();
+
         return modelBuilder;
     }
 
@@ -34,7 +44,7 @@ internal static class ModelBuilderExtensions
         where TIdentity : IEquatable<TIdentity>
     {
         var entityTypeBuilder = modelBuilder
-            .Entity<IdentityUserExt<TIdentity>>();
+            .Entity<IdentityUserEx<TIdentity>>();
 
         entityTypeBuilder
             .ToTable(TableNames.IDENTITY_USER);
@@ -50,10 +60,12 @@ internal static class ModelBuilderExtensions
         entityTypeBuilder
             .HasIndex(x => x.IsActive);
 
-        entityTypeBuilder.HasIndex(x => x.Email)
+        entityTypeBuilder
+            .HasIndex(x => x.Email)
             .IsUnique(isUniqueEmailAddressRequired);
 
-        entityTypeBuilder.HasIndex(x => x.PhoneNumber)
+        entityTypeBuilder
+            .HasIndex(x => x.PhoneNumber)
             .IsUnique(isUniquePhoneNumberRequired);
 
         return modelBuilder;
@@ -78,7 +90,6 @@ internal static class ModelBuilderExtensions
         entityTypeBuilder
             .ToTable(TableNames.IDENTITY_USER_CLAIM);
 
-
         return modelBuilder;
     }
     private static ModelBuilder MapIdentityUserLogin<TIdentity>(this ModelBuilder modelBuilder)
@@ -96,13 +107,10 @@ internal static class ModelBuilderExtensions
         where TIdentity : IEquatable<TIdentity>
     {
         var entityTypeBuilder = modelBuilder
-            .Entity<IdentityUserTokenExpiry<TIdentity>>();
+            .Entity<IdentityUserToken<TIdentity>>();
 
         entityTypeBuilder
-            .ToTable(TableNames.IDENTITY_USER_TOKEN_EXPIRY);
-
-        entityTypeBuilder
-            .Property(x => x.ExpireAt);
+            .ToTable(TableNames.IDENTITY_USER_TOKEN);
 
         return modelBuilder;
     }

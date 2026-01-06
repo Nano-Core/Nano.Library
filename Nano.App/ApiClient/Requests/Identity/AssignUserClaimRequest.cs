@@ -4,19 +4,19 @@ using Nano.Data.Abstractions.Identity.Models;
 namespace Nano.App.ApiClient.Requests.Identity;
 
 /// <inheritdoc />
-public class AssignClaimRequest : AssignClaimRequest<Guid>;
+public class AssignUserClaimRequest : AssignUserClaimRequest<Guid>;
 
 /// <inheritdoc />
-public class AssignClaimRequest<TIdentity> : BaseRequestPost
+public class AssignUserClaimRequest<TIdentity> : BaseRequestPost
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// Assign Claim.
     /// </summary>
-    public virtual AssignClaim<TIdentity> AssignClaim { get; set; } = new();
+    public virtual AssignUserClaim<TIdentity> AssignUserClaim { get; set; } = new();
 
     /// <inheritdoc />
-    public AssignClaimRequest()
+    public AssignUserClaimRequest()
     {
         this.Action = "claims/assign";
     }
@@ -24,6 +24,6 @@ public class AssignClaimRequest<TIdentity> : BaseRequestPost
     /// <inheritdoc />
     public override object GetBody()
     {
-        return this.AssignClaim;
+        return this.AssignUserClaim;
     }
 }

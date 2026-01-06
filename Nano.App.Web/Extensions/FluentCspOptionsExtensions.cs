@@ -5,13 +5,13 @@ using Nano.App.Web.Config;
 
 namespace Nano.App.Web.Extensions;
 
-// BUG: Csp Extensions
+// TODO: Csp Directives
 // navigate-to,
 // prefetch-src,
-// report-to,
 // require-trusted-types-for,
 // trusted-types,
 // require-sri-for,
+// report-to,
 // script-src-attr,
 // script-src-elem,
 // style-src-attr,

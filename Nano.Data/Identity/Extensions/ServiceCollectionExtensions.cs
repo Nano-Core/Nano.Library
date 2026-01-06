@@ -27,7 +27,7 @@ internal static class ServiceCollectionExtensions
         }
 
         services
-            .AddIdentity<IdentityUserExt<TIdentity>, IdentityRole<TIdentity>>(x =>
+            .AddIdentity<IdentityUserEx<TIdentity>, IdentityRole<TIdentity>>(x =>
             {
                 x.User.RequireUniqueEmail = true;
                 x.User.AllowedUserNameCharacters = options.User.AllowedUserNameCharacters;
@@ -47,7 +47,7 @@ internal static class ServiceCollectionExtensions
                 x.Lockout.MaxFailedAccessAttempts = options.Lockout.MaxFailedAccessAttempts;
             })
             .AddEntityFrameworkStores<TContext>()
-            .AddTokenProvider<DataProtectorTokenProvider<IdentityUserExt<TIdentity>>>(AuthenticationSchemes.JWT)
+            .AddTokenProvider<DataProtectorTokenProvider<IdentityUserEx<TIdentity>>>(AuthenticationSchemes.JWT)
             .AddDefaultTokenProviders()
             .AddCustomTokenProvider();
 

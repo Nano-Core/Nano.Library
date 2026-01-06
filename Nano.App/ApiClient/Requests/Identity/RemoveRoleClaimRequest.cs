@@ -13,7 +13,7 @@ public class RemoveRoleClaimRequest<TIdentity> : BaseRequestPost
     /// <summary>
     /// Remove Role Claim.
     /// </summary>
-    public virtual RemoveClaim<TIdentity> RemoveRoleClaim { get; set; } = new();
+    public virtual RemoveUserClaim<TIdentity> RemoveRoleClaim { get; set; } = new();
 
     /// <inheritdoc />
     public RemoveRoleClaimRequest()

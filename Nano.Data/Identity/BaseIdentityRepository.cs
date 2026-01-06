@@ -27,8 +27,7 @@ using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Identity;
 
-// BUG: IdentityApiKey Roles and Claims (don't inherit from IdentityUser)
-// BUG: Add more methods to Controller / ApiClient
+// BUG: API-KEY: IdentityApiKey Roles and Claims (don't inherit from IdentityUser)
 
 /// <summary>
 /// Base Identity Repository.
@@ -38,8 +37,8 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 {
     private readonly IOptionsMonitor<DataOptions> options;
     private readonly BaseDbContext<TIdentity> dbContext;
-    private readonly SignInManager<IdentityUserExt<TIdentity>> signInManager;
-    private readonly UserManager<IdentityUserExt<TIdentity>> userManager;
+    private readonly SignInManager<IdentityUserEx<TIdentity>> signInManager;
+    private readonly UserManager<IdentityUserEx<TIdentity>> userManager;
     private readonly RoleManager<IdentityRole<TIdentity>> roleManager;
 
     /// <summary>
@@ -50,7 +49,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     /// <param name="signInManager">The <see cref="SignInManager{T}"/>.</param>
     /// <param name="userManager">The <see cref="UserManager{T}"/>.</param>
     /// <param name="roleManager">The <see cref="RoleManager{T}"/></param>
-    protected BaseIdentityRepository(IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, SignInManager<IdentityUserExt<TIdentity>> signInManager, UserManager<IdentityUserExt<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
+    protected BaseIdentityRepository(IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, SignInManager<IdentityUserEx<TIdentity>> signInManager, UserManager<IdentityUserEx<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
@@ -70,7 +69,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IdentityUserExt<TIdentity>> SignInAsync(SignIn signIn, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityUserEx<TIdentity>> SignInAsync(SignIn signIn, CancellationToken cancellationToken = default)
     {
         if (signIn == null)
             throw new ArgumentNullException(nameof(signIn));
@@ -110,7 +109,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IdentityUserExt<TIdentity>> SignInExternalAsync(SignInExternal signInExternal, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityUserEx<TIdentity>> SignInExternalAsync(SignInExternal signInExternal, CancellationToken cancellationToken = default)
     {
         if (signInExternal == null)
             throw new NullReferenceException(nameof(signInExternal));
@@ -144,10 +143,10 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         }
 
         var identityUserTokenExpiries = this.dbContext
-            .Set<IdentityUserTokenExpiry<TIdentity>>();
+            .Set<IdentityUserRefreshToken<TIdentity>>();
 
         var refreshTokens = identityUserTokenExpiries
-            .Where(x => x.UserId.Equals(userId.Value) && x.Name == appId);
+            .Where(x => x.IdentityUserId.Equals(userId.Value) && x.AppId == appId);
 
         if (refreshTokens.Any())
         {
@@ -209,7 +208,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             throw new ArgumentNullException(nameof(signUp));
         }
 
-        var identityUser = new IdentityUserExt<TIdentity>
+        var identityUser = new IdentityUserEx<TIdentity>
         {
             Email = signUp.EmailAddress,
             UserName = signUp.Username,
@@ -256,7 +255,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         if (identityUser == null)
         {
-            identityUser = new IdentityUserExt<TIdentity>
+            identityUser = new IdentityUserEx<TIdentity>
             {
                 Email = signUpExternal.Email,
                 UserName = signUpExternal.Email
@@ -295,7 +294,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     #region User
 
     /// <inheritdoc />
-    public virtual Task<IdentityUserExt<TIdentity>> GetIdentityUserAsync(TIdentity id, CancellationToken cancellationToken = default)
+    public virtual Task<IdentityUserEx<TIdentity>> GetIdentityUserAsync(TIdentity id, CancellationToken cancellationToken = default)
     {
         var identityUser = this.userManager
             .GetIdentityUserAsync(id, cancellationToken);
@@ -309,7 +308,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IdentityUserExt<TIdentity>> GetIdentityUserOrDefaultAsync(TIdentity userId, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityUserEx<TIdentity>> GetIdentityUserOrDefaultAsync(TIdentity userId, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -403,209 +402,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task ResetPasswordAsync(ResetPassword<TIdentity> resetPassword, CancellationToken cancellationToken = default)
-    {
-        if (resetPassword == null)
-        {
-            throw new ArgumentNullException(nameof(resetPassword));
-        }
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(resetPassword.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new UnauthorizedException($"The user: {resetPassword.UserId} was not found or is deactivated.");
-        }
-
-        var result = await this.userManager
-            .ResetPasswordAsync(identityUser, resetPassword.Token, resetPassword.Password);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-    }
-
-    /// <inheritdoc />
-    public virtual async Task ChangeEmailAsync(ChangeEmail<TIdentity> changeEmail, bool setUsername, CancellationToken cancellationToken = default)
-    {
-        if (changeEmail == null)
-        {
-            throw new ArgumentNullException(nameof(changeEmail));
-        }
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(changeEmail.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        var identityUserChangeData = this.dbContext
-            .Set<IdentityUserChangeData<TIdentity>>()
-            .FirstOrDefault(x => x.IdentityUserId.Equals(changeEmail.UserId));
-
-        if (identityUserChangeData == null)
-        {
-            throw new NullReferenceException(nameof(identityUserChangeData));
-        }
-
-        if (identityUserChangeData.NewEmail == null)
-        {
-            throw new NullReferenceException(nameof(identityUserChangeData.NewEmail));
-        }
-
-        var result = await this.userManager
-            .ChangeEmailAsync(identityUser, identityUserChangeData.NewEmail, changeEmail.Token);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-
-        identityUserChangeData.NewEmail = null;
-
-        this.dbContext
-            .Update(identityUserChangeData);
-
-        if (setUsername)
-        {
-            await this.SetUsernameAsync(new SetUsername<TIdentity>
-            {
-                UserId = identityUser.Id,
-                NewUsername = identityUserChangeData.NewEmail
-            }, cancellationToken);
-        }
-
-        await this.dbContext
-            .SaveChangesAsync(cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task ConfirmEmailAsync(ConfirmEmail<TIdentity> confirmEmail, CancellationToken cancellationToken = default)
-    {
-        if (confirmEmail == null)
-        {
-            throw new ArgumentNullException(nameof(confirmEmail));
-        }
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(confirmEmail.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        var result = await this.userManager
-            .ConfirmEmailAsync(identityUser, confirmEmail.Token);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-    }
-
-    /// <inheritdoc />
-    public virtual async Task ChangePhoneNumberAsync(ChangePhoneNumber<TIdentity> changePhoneNumber, CancellationToken cancellationToken = default)
-    {
-        if (changePhoneNumber == null)
-        {
-            throw new ArgumentNullException(nameof(changePhoneNumber));
-        }
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(changePhoneNumber.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        var identityUserChangeData = this.dbContext
-            .Set<IdentityUserChangeData<TIdentity>>()
-            .FirstOrDefault(x => x.IdentityUserId.Equals(changePhoneNumber.UserId));
-
-        if (identityUserChangeData == null)
-        {
-            throw new NullReferenceException(nameof(identityUserChangeData));
-        }
-
-        if (identityUserChangeData.NewPhoneNumber == null)
-        {
-            throw new NullReferenceException(nameof(identityUserChangeData.NewPhoneNumber));
-        }
-
-        var result = await this.userManager
-            .ChangePhoneNumberAsync(identityUser, identityUserChangeData.NewPhoneNumber, changePhoneNumber.Token);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-
-        identityUserChangeData.NewPhoneNumber = null;
-
-        this.dbContext
-            .Update(identityUserChangeData);
-
-        await this.dbContext
-            .SaveChangesAsync(cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task ConfirmPhoneNumberAsync(ConfirmPhoneNumber<TIdentity> confirmPhoneNumber, CancellationToken cancellationToken = default)
-    {
-        if (confirmPhoneNumber == null)
-        {
-            throw new ArgumentNullException(nameof(confirmPhoneNumber));
-        }
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(confirmPhoneNumber.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        var result = await this.userManager
-            .ConfirmPhoneNumberAsync(identityUser, confirmPhoneNumber.Token);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-    }
-
-    /// <inheritdoc />
-    public virtual async Task ConfirmCustomTokenAsync(ConfirmCustomPurpose<TIdentity> confirmCustomPurpose, CancellationToken cancellationToken = default)
-    {
-        if (confirmCustomPurpose == null)
-        {
-            throw new ArgumentNullException(nameof(confirmCustomPurpose));
-        }
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(confirmCustomPurpose.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        var success = await this.userManager
-            .VerifyUserTokenAsync(identityUser, CustomTokenOptions.CUSTOM_DATA_PROTECTOR_TOKEN_PROVIDER, confirmCustomPurpose.Purpose, confirmCustomPurpose.Token);
-
-        if (!success)
-        {
-            ThrowIdentityExceptions([new IdentityError { Description = "Invalid Token." }]);
-        }
-    }
-
-    /// <inheritdoc />
     public virtual async Task<ResetPasswordToken<TIdentity>> GenerateResetPasswordTokenAsync(GenerateResetPasswordToken generateResetPasswordToken, CancellationToken cancellationToken = default)
     {
         if (generateResetPasswordToken == null)
@@ -632,29 +428,28 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<ConfirmEmailToken<TIdentity>> GenerateConfirmEmailTokenAsync(GenerateConfirmEmailToken<TIdentity> generateConfirmEmailToken, CancellationToken cancellationToken = default)
+    public virtual async Task ResetPasswordAsync(ResetPassword<TIdentity> resetPassword, CancellationToken cancellationToken = default)
     {
-        if (generateConfirmEmailToken == null)
+        if (resetPassword == null)
         {
-            throw new ArgumentNullException(nameof(generateConfirmEmailToken));
+            throw new ArgumentNullException(nameof(resetPassword));
         }
 
         var identityUser = await this.userManager
-            .GetIdentityUserAsync(generateConfirmEmailToken.UserId, cancellationToken);
+            .GetIdentityUserAsync(resetPassword.UserId, cancellationToken);
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new UnauthorizedException($"The user: {resetPassword.UserId} was not found or is deactivated.");
         }
 
-        var token = await this.userManager
-            .GenerateEmailConfirmationTokenAsync(identityUser);
+        var result = await this.userManager
+            .ResetPasswordAsync(identityUser, resetPassword.Token, resetPassword.Password);
 
-        return new ConfirmEmailToken<TIdentity>
+        if (!result.Succeeded)
         {
-            UserId = generateConfirmEmailToken.UserId,
-            Token = token
-        };
+            ThrowIdentityExceptions(result.Errors);
+        }
     }
 
     /// <inheritdoc />
@@ -722,15 +517,71 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<ConfirmPhoneNumberToken<TIdentity>> GenerateConfirmPhoneNumberTokenAsync(GenerateConfirmPhoneToken<TIdentity> generateConfirmPhoneToken, CancellationToken cancellationToken = default)
+    public virtual async Task ChangeEmailAsync(ChangeEmail<TIdentity> changeEmail, bool setUsername, CancellationToken cancellationToken = default)
     {
-        if (generateConfirmPhoneToken == null)
+        if (changeEmail == null)
         {
-            throw new ArgumentNullException(nameof(generateConfirmPhoneToken));
+            throw new ArgumentNullException(nameof(changeEmail));
         }
 
         var identityUser = await this.userManager
-            .GetIdentityUserAsync(generateConfirmPhoneToken.UserId, cancellationToken);
+            .GetIdentityUserAsync(changeEmail.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NullReferenceException(nameof(identityUser));
+        }
+
+        var identityUserChangeData = this.dbContext
+            .Set<IdentityUserChangeData<TIdentity>>()
+            .FirstOrDefault(x => x.IdentityUserId.Equals(changeEmail.UserId));
+
+        if (identityUserChangeData == null)
+        {
+            throw new NullReferenceException(nameof(identityUserChangeData));
+        }
+
+        if (identityUserChangeData.NewEmail == null)
+        {
+            throw new NullReferenceException(nameof(identityUserChangeData.NewEmail));
+        }
+
+        var result = await this.userManager
+            .ChangeEmailAsync(identityUser, identityUserChangeData.NewEmail, changeEmail.Token);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+
+        identityUserChangeData.NewEmail = null;
+
+        this.dbContext
+            .Update(identityUserChangeData);
+
+        if (setUsername)
+        {
+            await this.SetUsernameAsync(new SetUsername<TIdentity>
+            {
+                UserId = identityUser.Id,
+                NewUsername = identityUserChangeData.NewEmail
+            }, cancellationToken);
+        }
+
+        await this.dbContext
+            .SaveChangesAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<ConfirmEmailToken<TIdentity>> GenerateConfirmEmailTokenAsync(GenerateConfirmEmailToken<TIdentity> generateConfirmEmailToken, CancellationToken cancellationToken = default)
+    {
+        if (generateConfirmEmailToken == null)
+        {
+            throw new ArgumentNullException(nameof(generateConfirmEmailToken));
+        }
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(generateConfirmEmailToken.UserId, cancellationToken);
 
         if (identityUser == null)
         {
@@ -738,13 +589,38 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         }
 
         var token = await this.userManager
-            .GeneratePhoneNumberConfirmationTokenAsync(identityUser);
+            .GenerateEmailConfirmationTokenAsync(identityUser);
 
-        return new ConfirmPhoneNumberToken<TIdentity>
+        return new ConfirmEmailToken<TIdentity>
         {
-            UserId = generateConfirmPhoneToken.UserId,
+            UserId = generateConfirmEmailToken.UserId,
             Token = token
         };
+    }
+
+    /// <inheritdoc />
+    public virtual async Task ConfirmEmailAsync(ConfirmEmail<TIdentity> confirmEmail, CancellationToken cancellationToken = default)
+    {
+        if (confirmEmail == null)
+        {
+            throw new ArgumentNullException(nameof(confirmEmail));
+        }
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(confirmEmail.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NullReferenceException(nameof(identityUser));
+        }
+
+        var result = await this.userManager
+            .ConfirmEmailAsync(identityUser, confirmEmail.Token);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
     }
 
     /// <inheritdoc />
@@ -812,7 +688,105 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<ConfirmCustomPurposeToken<TIdentity>> GenerateCustomTokenAsync(GenerateCustomPurposeToken<TIdentity> generateCustomPurposeToken, CancellationToken cancellationToken = default)
+    public virtual async Task ChangePhoneNumberAsync(ChangePhoneNumber<TIdentity> changePhoneNumber, CancellationToken cancellationToken = default)
+    {
+        if (changePhoneNumber == null)
+        {
+            throw new ArgumentNullException(nameof(changePhoneNumber));
+        }
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(changePhoneNumber.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NullReferenceException(nameof(identityUser));
+        }
+
+        var identityUserChangeData = this.dbContext
+            .Set<IdentityUserChangeData<TIdentity>>()
+            .FirstOrDefault(x => x.IdentityUserId.Equals(changePhoneNumber.UserId));
+
+        if (identityUserChangeData == null)
+        {
+            throw new NullReferenceException(nameof(identityUserChangeData));
+        }
+
+        if (identityUserChangeData.NewPhoneNumber == null)
+        {
+            throw new NullReferenceException(nameof(identityUserChangeData.NewPhoneNumber));
+        }
+
+        var result = await this.userManager
+            .ChangePhoneNumberAsync(identityUser, identityUserChangeData.NewPhoneNumber, changePhoneNumber.Token);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+
+        identityUserChangeData.NewPhoneNumber = null;
+
+        this.dbContext
+            .Update(identityUserChangeData);
+
+        await this.dbContext
+            .SaveChangesAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<ConfirmPhoneNumberToken<TIdentity>> GenerateConfirmPhoneNumberTokenAsync(GenerateConfirmPhoneToken<TIdentity> generateConfirmPhoneToken, CancellationToken cancellationToken = default)
+    {
+        if (generateConfirmPhoneToken == null)
+        {
+            throw new ArgumentNullException(nameof(generateConfirmPhoneToken));
+        }
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(generateConfirmPhoneToken.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NullReferenceException(nameof(identityUser));
+        }
+
+        var token = await this.userManager
+            .GeneratePhoneNumberConfirmationTokenAsync(identityUser);
+
+        return new ConfirmPhoneNumberToken<TIdentity>
+        {
+            UserId = generateConfirmPhoneToken.UserId,
+            Token = token
+        };
+    }
+
+    /// <inheritdoc />
+    public virtual async Task ConfirmPhoneNumberAsync(ConfirmPhoneNumber<TIdentity> confirmPhoneNumber, CancellationToken cancellationToken = default)
+    {
+        if (confirmPhoneNumber == null)
+        {
+            throw new ArgumentNullException(nameof(confirmPhoneNumber));
+        }
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(confirmPhoneNumber.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NullReferenceException(nameof(identityUser));
+        }
+
+        var result = await this.userManager
+            .ConfirmPhoneNumberAsync(identityUser, confirmPhoneNumber.Token);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<ConfirmCustomPurposeToken<TIdentity>> GenerateCustomPurposeTokenAsync(GenerateCustomPurposeToken<TIdentity> generateCustomPurposeToken, CancellationToken cancellationToken = default)
     {
         if (generateCustomPurposeToken == null)
         {
@@ -839,10 +813,35 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IdentityUserExt<TIdentity>> ActivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default)
+    public virtual async Task ConfirmCustomPurposeTokenAsync(ConfirmCustomPurpose<TIdentity> confirmCustomPurpose, CancellationToken cancellationToken = default)
+    {
+        if (confirmCustomPurpose == null)
+        {
+            throw new ArgumentNullException(nameof(confirmCustomPurpose));
+        }
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(confirmCustomPurpose.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NullReferenceException(nameof(identityUser));
+        }
+
+        var success = await this.userManager
+            .VerifyUserTokenAsync(identityUser, CustomTokenOptions.CUSTOM_DATA_PROTECTOR_TOKEN_PROVIDER, confirmCustomPurpose.Purpose, confirmCustomPurpose.Token);
+
+        if (!success)
+        {
+            ThrowIdentityExceptions([new IdentityError { Description = "Invalid Token." }]);
+        }
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IdentityUserEx<TIdentity>> ActivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default)
     {
         var user = this.dbContext
-            .Set<IdentityUserExt<TIdentity>>()
+            .Set<IdentityUserEx<TIdentity>>()
             .IgnoreQueryFilters()
             .FirstOrDefault(x => x.Id.Equals(id));
 
@@ -866,11 +865,11 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IdentityUserExt<TIdentity>> DeactivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityUserEx<TIdentity>> DeactivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default)
     {
         var refreshTokens = this.dbContext
-            .Set<IdentityUserTokenExpiry<TIdentity>>()
-            .Where(x => x.UserId.Equals(id));
+            .Set<IdentityUserRefreshToken<TIdentity>>()
+            .Where(x => x.IdentityUserId.Equals(id));
 
         this.dbContext
             .RemoveRange(refreshTokens);
@@ -879,7 +878,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             .SignOutAsync();
 
         var user = this.dbContext
-            .Set<IdentityUserExt<TIdentity>>()
+            .Set<IdentityUserEx<TIdentity>>()
             .FirstOrDefault(x => x.Id.Equals(id));
 
         if (user == null)
@@ -907,32 +906,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     #region External Logins
 
     /// <inheritdoc />
-    public virtual async Task<UserLoginInfo> GetUserExternalLoginAsync(TIdentity userId, string loginProvider, CancellationToken cancellationToken = default)
-    {
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(userId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        return await this.GetUserExternalLoginAsync(identityUser, loginProvider, cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<UserLoginInfo> GetUserExternalLoginAsync(IdentityUserExt<TIdentity> identityUser, string loginProvider, CancellationToken cancellationToken = default)
-    {
-        if (identityUser == null)
-            throw new ArgumentNullException(nameof(identityUser));
-
-        var externalLogins = await this.GetUserExternalLoginsAsync(identityUser, cancellationToken);
-
-        return externalLogins
-            .FirstOrDefault(x => x.LoginProvider == loginProvider);
-    }
-
-    /// <inheritdoc />
     public virtual async Task<IEnumerable<UserLoginInfo>> GetUserExternalLoginsAsync(TIdentity userId, CancellationToken cancellationToken = default)
     {
         var identityUser = await this.userManager
@@ -947,7 +920,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<UserLoginInfo>> GetUserExternalLoginsAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<UserLoginInfo>> GetUserExternalLoginsAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default)
     {
         if (identityUser == null)
             throw new ArgumentNullException(nameof(identityUser));
@@ -1019,13 +992,18 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     #region Refresh Tokens
 
     /// <inheritdoc />
-    public virtual async Task<IdentityUserTokenExpiry<TIdentity>> GetRefreshToken(TIdentity userId, string appId = IdentityDefaults.DEFAULT_APP_ID, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityUserRefreshToken<TIdentity>> GetRefreshToken(TIdentity userId, string appId, CancellationToken cancellationToken = default)
     {
+        if (appId == null) 
+            throw new ArgumentNullException(nameof(appId));
+        
         await Task.CompletedTask;
 
         var identityUserToken = this.dbContext
-            .Set<IdentityUserTokenExpiry<TIdentity>>()
-            .Where(x => x.UserId.Equals(userId) && x.Name == appId)
+            .Set<IdentityUserRefreshToken<TIdentity>>()
+            .Where(x => 
+                x.IdentityUserId.Equals(userId) && 
+                x.AppId == appId)
             .AsNoTracking()
             .FirstOrDefault();
 
@@ -1033,27 +1011,33 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IdentityUserTokenExpiry<TIdentity>> GetRefreshTokens(TIdentity userId, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<IdentityUserRefreshToken<TIdentity>>> GetRefreshTokens(TIdentity userId, CancellationToken cancellationToken = default)
     {
         await Task.CompletedTask;
 
         var identityUserToken = this.dbContext
-            .Set<IdentityUserTokenExpiry<TIdentity>>()
-            .Where(x => x.UserId.Equals(userId))
-            .AsNoTracking()
-            .FirstOrDefault();
+            .Set<IdentityUserRefreshToken<TIdentity>>()
+            .Where(x =>
+                x.IdentityUserId.Equals(userId))
+            .AsNoTracking();
 
         return identityUserToken;
     }
 
     /// <inheritdoc />
-    public virtual async Task<IdentityUserTokenExpiry<TIdentity>> CreateRefreshToken(TIdentity userId, RefreshToken refreshToken, string appId = IdentityDefaults.DEFAULT_APP_ID)
+    public virtual async Task<IdentityUserRefreshToken<TIdentity>> CreateRefreshToken(TIdentity userId, RefreshToken refreshToken, string appId)
     {
-        appId ??= IdentityDefaults.DEFAULT_APP_ID;
+        if (refreshToken == null) 
+            throw new ArgumentNullException(nameof(refreshToken));
+
+        if (appId == null) 
+            throw new ArgumentNullException(nameof(appId));
 
         var identityUserTokenExpiry = this.dbContext
-            .Set<IdentityUserTokenExpiry<TIdentity>>()
-            .FirstOrDefault(x => x.UserId.Equals(userId) && x.LoginProvider == AuthenticationSchemes.JWT && x.Name == appId);
+            .Set<IdentityUserRefreshToken<TIdentity>>()
+            .FirstOrDefault(x => 
+                x.IdentityUserId.Equals(userId) && 
+                x.AppId == appId);
 
         if (identityUserTokenExpiry != null)
         {
@@ -1061,12 +1045,11 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
                 .Remove(identityUserTokenExpiry);
         }
 
-        var identityUserToken = new IdentityUserTokenExpiry<TIdentity>
+        var identityUserToken = new IdentityUserRefreshToken<TIdentity>
         {
-            UserId = userId,
-            Name = appId,
+            IdentityUserId = userId,
+            AppId = appId,
             Value = refreshToken.Token,
-            LoginProvider = AuthenticationSchemes.JWT,
             ExpireAt = refreshToken.ExpireAt
         };
 
@@ -1285,7 +1268,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<string>> GetUserRolesAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<string>> GetUserRolesAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default)
     {
         if (identityUser == null)
         {
@@ -1297,15 +1280,15 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task AssignUserRoleAsync(AssignRole<TIdentity> assignRole, CancellationToken cancellationToken = default)
+    public virtual async Task AssignUserRoleAsync(AssignUserRole<TIdentity> assignUserRole, CancellationToken cancellationToken = default)
     {
-        if (assignRole == null)
+        if (assignUserRole == null)
         {
-            throw new ArgumentNullException(nameof(assignRole));
+            throw new ArgumentNullException(nameof(assignUserRole));
         }
 
         var identityUser = await this.userManager
-            .GetIdentityUserAsync(assignRole.UserId, cancellationToken);
+            .GetIdentityUserAsync(assignUserRole.UserId, cancellationToken);
 
         if (identityUser == null)
         {
@@ -1313,7 +1296,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         }
 
         var result = await this.userManager
-            .AddToRoleAsync(identityUser, assignRole.RoleName);
+            .AddToRoleAsync(identityUser, assignUserRole.RoleName);
 
         if (!result.Succeeded)
         {
@@ -1322,13 +1305,13 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task RemoveUserRoleAsync(RemoveRole<TIdentity> removeRole, CancellationToken cancellationToken = default)
+    public virtual async Task RemoveUserRoleAsync(RemoveUserRole<TIdentity> removeUserRole, CancellationToken cancellationToken = default)
     {
-        if (removeRole == null)
-            throw new ArgumentNullException(nameof(removeRole));
+        if (removeUserRole == null)
+            throw new ArgumentNullException(nameof(removeUserRole));
 
         var identityUser = await this.userManager
-            .GetIdentityUserAsync(removeRole.UserId, cancellationToken);
+            .GetIdentityUserAsync(removeUserRole.UserId, cancellationToken);
 
         if (identityUser == null)
         {
@@ -1336,7 +1319,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         }
 
         var result = await this.userManager
-            .RemoveFromRoleAsync(identityUser, removeRole.RoleName);
+            .RemoveFromRoleAsync(identityUser, removeUserRole.RoleName);
 
         if (!result.Succeeded)
         {
@@ -1353,9 +1336,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     public virtual async Task<Claim> GetRoleClaimAsync(GetRoleClaim<TIdentity> getClaim, CancellationToken cancellationToken = default)
     {
         if (getClaim == null)
-        {
             throw new ArgumentNullException(nameof(getClaim));
-        }
 
         var claims = await this.GetRoleClaimsAsync(getClaim.RoleId, cancellationToken);
 
@@ -1370,9 +1351,16 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             .GetIdentityRoleAsync(roleId, cancellationToken);
 
         if (identityRole == null)
-        {
             throw new NullReferenceException(nameof(identityRole));
-        }
+
+        return await this.GetRoleClaimsAsync(identityRole, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<Claim>> GetRoleClaimsAsync(IdentityRole<TIdentity> identityRole, CancellationToken cancellationToken = default)
+    {
+        if (identityRole == null)
+            throw new NullReferenceException(nameof(identityRole));
 
         var claims = await this.roleManager
             .GetClaimsAsync(identityRole);
@@ -1384,9 +1372,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     public virtual async Task<IdentityRoleClaim<TIdentity>> AssignRoleClaimAsync(AssignRoleClaim<TIdentity> assignClaim, CancellationToken cancellationToken = default)
     {
         if (assignClaim == null)
-        {
             throw new ArgumentNullException(nameof(assignClaim));
-        }
 
         var identityRole = await this.roleManager
             .GetIdentityRoleAsync(assignClaim.RoleId, cancellationToken);
@@ -1420,9 +1406,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     public virtual async Task<IdentityRoleClaim<TIdentity>> ReplaceRoleClaimAsync(ReplaceRoleClaim<TIdentity> replaceClaim, CancellationToken cancellationToken = default)
     {
         if (replaceClaim == null)
-        {
             throw new ArgumentNullException(nameof(replaceClaim));
-        }
 
         var identityRole = await this.roleManager
             .GetIdentityRoleAsync(replaceClaim.RoleId, cancellationToken);
@@ -1472,9 +1456,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     public virtual async Task<IdentityRoleClaim<TIdentity>> AssignOrReplaceRoleClaimAsync(AssignOrReplaceRoleClaim<TIdentity> assignOrReplaceRoleClaim, CancellationToken cancellationToken = default)
     {
         if (assignOrReplaceRoleClaim == null)
-        {
             throw new ArgumentNullException(nameof(assignOrReplaceRoleClaim));
-        }
 
         var identityRole = await this.roleManager
             .GetIdentityRoleAsync(assignOrReplaceRoleClaim.RoleId, cancellationToken);
@@ -1514,9 +1496,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     public virtual async Task RemoveRoleClaimAsync(RemoveRoleClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default)
     {
         if (removeClaim == null)
-        {
             throw new ArgumentNullException(nameof(removeClaim));
-        }
 
         var identityRole = await this.roleManager
             .GetIdentityRoleAsync(removeClaim.RoleId, cancellationToken);
@@ -1552,7 +1532,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     #region Claims
 
     /// <inheritdoc />
-    public virtual async Task<IList<Claim>> GetAllClaims(IdentityUserExt<TIdentity> identityUser, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default)
+    public virtual async Task<IList<Claim>> GetAllClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default)
     {
         if (identityUser == null)
             throw new ArgumentNullException(nameof(identityUser));
@@ -1624,7 +1604,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default)
     {
         if (identityUser == null)
         {
@@ -1636,15 +1616,15 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IdentityUserClaim<TIdentity>> AssignUserClaimAsync(AssignClaim<TIdentity> assignClaim, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityUserClaim<TIdentity>> AssignUserClaimAsync(AssignUserClaim<TIdentity> assignUserClaim, CancellationToken cancellationToken = default)
     {
-        if (assignClaim == null)
+        if (assignUserClaim == null)
         {
-            throw new ArgumentNullException(nameof(assignClaim));
+            throw new ArgumentNullException(nameof(assignUserClaim));
         }
 
         var identityUser = await this.userManager
-            .GetIdentityUserAsync(assignClaim.UserId, cancellationToken);
+            .GetIdentityUserAsync(assignUserClaim.UserId, cancellationToken);
 
         if (identityUser == null)
         {
@@ -1653,8 +1633,8 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         var userClaim = new IdentityUserClaim<TIdentity>
         {
-            ClaimType = assignClaim.ClaimType,
-            ClaimValue = assignClaim.ClaimValue
+            ClaimType = assignUserClaim.ClaimType,
+            ClaimValue = assignUserClaim.ClaimValue
         };
 
         var claim = userClaim
@@ -1672,13 +1652,13 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task<IdentityUserClaim<TIdentity>> ReplaceUserClaimAsync(ReplaceClaim<TIdentity> replaceClaim, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityUserClaim<TIdentity>> ReplaceUserClaimAsync(ReplaceUserClaim<TIdentity> replaceUserClaim, CancellationToken cancellationToken = default)
     {
-        if (replaceClaim == null)
-            throw new ArgumentNullException(nameof(replaceClaim));
+        if (replaceUserClaim == null)
+            throw new ArgumentNullException(nameof(replaceUserClaim));
 
         var identityUser = await this.userManager
-            .GetIdentityUserAsync(replaceClaim.UserId, cancellationToken);
+            .GetIdentityUserAsync(replaceUserClaim.UserId, cancellationToken);
 
         if (identityUser == null)
         {
@@ -1686,7 +1666,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         }
 
         var existingClaim = (await this.GetUserClaimsAsync(identityUser, cancellationToken))
-            .FirstOrDefault(x => x.Type == replaceClaim.ClaimType);
+            .FirstOrDefault(x => x.Type == replaceUserClaim.ClaimType);
 
         if (existingClaim == null)
         {
@@ -1695,8 +1675,8 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         var newClaim = new IdentityUserClaim<TIdentity>
         {
-            ClaimType = replaceClaim.ClaimType,
-            ClaimValue = replaceClaim.NewClaimValue
+            ClaimType = replaceUserClaim.ClaimType,
+            ClaimValue = replaceUserClaim.NewClaimValue
         };
 
         var claim = newClaim
@@ -1756,15 +1736,15 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
-    public virtual async Task RemoveUserClaimAsync(RemoveClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default)
+    public virtual async Task RemoveUserClaimAsync(RemoveUserClaim<TIdentity> removeUserClaim, CancellationToken cancellationToken = default)
     {
-        if (removeClaim == null)
+        if (removeUserClaim == null)
         {
-            throw new ArgumentNullException(nameof(removeClaim));
+            throw new ArgumentNullException(nameof(removeUserClaim));
         }
 
         var identityUser = await this.userManager
-            .GetIdentityUserAsync(removeClaim.UserId, cancellationToken);
+            .GetIdentityUserAsync(removeUserClaim.UserId, cancellationToken);
 
         if (identityUser == null)
         {
@@ -1775,7 +1755,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             .GetClaimsAsync(identityUser);
 
         var claim = claims
-            .FirstOrDefault(x => x.Type == removeClaim.ClaimType);
+            .FirstOrDefault(x => x.Type == removeUserClaim.ClaimType);
 
         if (claim == null)
         {
@@ -1794,7 +1774,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     #endregion
 
 
-    private async Task<TUser> CreateUser<TUser>(TUser user, IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    private async Task<TUser> CreateUser<TUser>(TUser user, IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default)
         where TUser : class, IEntityUser<TIdentity>
     {
         if (identityUser == null)
@@ -1803,7 +1783,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         user.Id = identityUser.Id.Parse<TIdentity>();
 
         user.IdentityUserEx = this.dbContext
-            .Find<IdentityUserExt<TIdentity>>(identityUser.Id);
+            .Find<IdentityUserEx<TIdentity>>(identityUser.Id);
 
         try
         {
@@ -1822,7 +1802,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         return user;
     }
-    private async Task AssignSignUpRolesAndClaims(IdentityUserExt<TIdentity> identityUser, IEnumerable<string> roles = null, IDictionary<string, string> claims = null)
+    private async Task AssignSignUpRolesAndClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string> roles = null, IDictionary<string, string> claims = null)
     {
         if (identityUser == null)
             throw new ArgumentNullException(nameof(identityUser));
@@ -1858,7 +1838,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             }
         }
     }
-    private async Task DeleteIdentityUser(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    private async Task DeleteIdentityUser(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default)
     {
         if (identityUser == null)
             throw new ArgumentNullException(nameof(identityUser));

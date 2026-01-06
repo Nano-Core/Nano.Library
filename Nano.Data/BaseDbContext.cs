@@ -25,14 +25,13 @@ using Nano.Data.Abstractions.Eventing.Annotations;
 using Nano.Data.Abstractions.Models.Identity;
 using Nano.Data.Eventing.Extensions;
 using Nano.Data.Identity.Extensions;
-using Nano.Data.Identity.Mappings;
 using Nano.Data.Mappings;
 using Nano.Data.Mappings.Extensions;
 using Z.EntityFramework.Plus;
 
 namespace Nano.Data;
 
-// TODO: Entity Event Map (Important)
+// BUG: Entity Event Map (Important)
 // 1. Make a map of Publish Attributes and their property names.
 // 2. When SaveChanges then check if any property names are affected (e.g. User.IdentityUser.Email is changed, then User needs to be fetched and published)
 
@@ -40,7 +39,7 @@ namespace Nano.Data;
 /// Base Db Context (abstract).
 /// </summary>
 /// <typeparam name="TIdentity">The identity type.</typeparam>
-public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserExt<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserTokenExpiry<TIdentity>>, IDataProtectionKeyContext
+public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserEx<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserToken<TIdentity>>, IDataProtectionKeyContext
     where TIdentity : IEquatable<TIdentity>
 {
     private bool isEntityEventEnabled = true;
@@ -328,11 +327,9 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         }
 
         modelBuilder
-            .MapIdentity<TIdentity>(this.options.CurrentValue.Identity?.User.IsUniqueEmailAddressRequired ?? true, this.options.CurrentValue.Identity?.User.IsUniquePhoneNumberRequired ?? true)
+            .MapIdentity<TIdentity>(this.options.CurrentValue.Identity)
             .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()
-            .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>()
-            .AddMapping<IdentityApiKey<TIdentity>, IdentityApiKeyMapping<TIdentity>>()
-            .AddMapping<IdentityUserChangeData<TIdentity>, IdentityUserChangeDataMapping<TIdentity>>();
+            .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>();
     }
 
     private void PreSaveEntityEvents()

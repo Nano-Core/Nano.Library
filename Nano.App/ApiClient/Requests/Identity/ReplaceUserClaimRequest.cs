@@ -4,19 +4,19 @@ using Nano.Data.Abstractions.Identity.Models;
 namespace Nano.App.ApiClient.Requests.Identity;
 
 /// <inheritdoc />
-public class ReplaceClaimRequest : ReplaceClaimRequest<Guid>;
+public class ReplaceUserClaimRequest : ReplaceUserClaimRequest<Guid>;
 
 /// <inheritdoc />
-public class ReplaceClaimRequest<TIdentity> : BaseRequestPut
+public class ReplaceUserClaimRequest<TIdentity> : BaseRequestPut
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// Replace Claim.
     /// </summary>
-    public virtual ReplaceClaim<TIdentity> ReplaceClaim { get; set; } = new();
+    public virtual ReplaceUserClaim<TIdentity> ReplaceUserClaim { get; set; } = new();
 
     /// <inheritdoc />
-    public ReplaceClaimRequest()
+    public ReplaceUserClaimRequest()
     {
         this.Action = "claims/replace";
     }
@@ -24,6 +24,6 @@ public class ReplaceClaimRequest<TIdentity> : BaseRequestPut
     /// <inheritdoc />
     public override object GetBody()
     {
-        return this.ReplaceClaim;
+        return this.ReplaceUserClaim;
     }
 }

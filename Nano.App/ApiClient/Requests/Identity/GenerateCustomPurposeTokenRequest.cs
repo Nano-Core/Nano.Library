@@ -18,7 +18,7 @@ public class GenerateCustomPurposeTokenRequest<TIdentity> : BaseRequestPost
     /// <inheritdoc />
     public GenerateCustomPurposeTokenRequest()
     {
-        this.Action = "token/custom";
+        this.Action = "token/custom-purpose";
     }
 
     /// <inheritdoc />

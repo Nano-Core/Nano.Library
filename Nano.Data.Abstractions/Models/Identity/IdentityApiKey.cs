@@ -18,7 +18,7 @@ public class IdentityApiKey<TIdentity> : BaseEntityIdentity<TIdentity>
     /// <summary>
     /// Identity User.
     /// </summary>
-    public virtual IdentityUserExt<TIdentity> IdentityUser { get; set; }
+    public virtual IdentityUserEx<TIdentity> IdentityUser { get; set; }
 
     /// <summary>
     /// Name.

@@ -1,16 +1,16 @@
-using Microsoft.AspNetCore.Identity;
-using Nano.Common.Annotations;
-using Nano.Data.Abstractions.Models.Abstractions;
 using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
+using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Abstractions.Models.Identity;
 
 /// <summary>
-/// Identity User Change Data.
+/// Identity User Refresh Token.
 /// </summary>
 /// <typeparam name="TIdentity">The identity key type</typeparam>
-public class IdentityUserChangeData<TIdentity> : BaseEntityIdentity<TIdentity>, IEntityAuditableNegated
+public class IdentityUserRefreshToken<TIdentity> : BaseEntityIdentity<TIdentity>, IEntityAuditableNegated
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
@@ -24,18 +24,22 @@ public class IdentityUserChangeData<TIdentity> : BaseEntityIdentity<TIdentity>, 
     public virtual IdentityUserEx<TIdentity> IdentityUser { get; set; }
 
     /// <summary>
-    /// New Email.
+    /// App Id.
     /// </summary>
-    [EmailAddress]
+    [Required]
     [MaxLength(256)]
-    [ProtectedPersonalData]
-    public virtual string NewEmail { get; set; }
+    public virtual string AppId { get; set; }
 
     /// <summary>
-    /// New Phone Number.
+    /// Token.
     /// </summary>
-    [InternationalPhone]
-    [MaxLength(20)]
     [ProtectedPersonalData]
-    public virtual string NewPhoneNumber { get; set; }
+    [Required]
+    [MaxLength(256)]
+    public virtual string Value { get; set; }
+
+    /// <summary>
+    /// Expire At.
+    /// </summary>
+    public virtual DateTimeOffset? ExpireAt { get; set; }
 }

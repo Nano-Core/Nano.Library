@@ -1,7 +1,8 @@
+using Microsoft.AspNetCore.Identity;
+using Nano.Data.Abstractions.Models.Abstractions;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
 
 namespace Nano.Data.Abstractions.Models.Identity;
 
@@ -9,7 +10,7 @@ namespace Nano.Data.Abstractions.Models.Identity;
 /// Identity User Ext.
 /// </summary>
 /// <typeparam name="TIdentity"></typeparam>
-public class IdentityUserExt<TIdentity> : IdentityUser<TIdentity>
+public class IdentityUserEx<TIdentity> : IdentityUser<TIdentity>, IEntityIdentity<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

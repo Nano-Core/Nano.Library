@@ -173,10 +173,8 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
         
         var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
-        var userIdString = jwtSecurityTokenHandler
-            .GetJwtUserId(logInRefresh.Token);
-
-        var userId = ConvertToIdentity(userIdString);
+        var userId = jwtSecurityTokenHandler
+            .GetJwtUserId<TIdentity>(logInRefresh.Token);
 
         var identityUser = await this.identityRepository
             .GetIdentityUserAsync(userId, cancellationToken);
@@ -263,7 +261,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     }
 
 
-    private async Task<RefreshToken> CreateRefreshToken(IdentityUserExt<TIdentity> identityUser, string appId = IdentityDefaults.DEFAULT_APP_ID)
+    private async Task<RefreshToken> CreateRefreshToken(IdentityUserEx<TIdentity> identityUser, string appId = null)
     {
         if (identityUser == null)
             throw new ArgumentNullException(nameof(identityUser));
@@ -275,35 +273,5 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
             .CreateRefreshToken(identityUser.Id, refreshToken, appId);
 
         return refreshToken;
-    }
-
-    private static TIdentity ConvertToIdentity(string value)
-    {
-        if (value == null)
-            throw new ArgumentNullException(nameof(value));
-
-        var target = typeof(TIdentity);
-
-        if (target == typeof(Guid) && Guid.TryParse(value, out var guid))
-        {
-            return (TIdentity)(object)guid;
-        }
-
-        if (target == typeof(int) && int.TryParse(value, out var integer))
-        {
-            return (TIdentity)(object)integer;
-        }
-
-        if (target == typeof(long) && long.TryParse(value, out var bigInteger))
-        {
-            return (TIdentity)(object)bigInteger;
-        }
-
-        if (target == typeof(string))
-        {
-            return (TIdentity)(object)value;
-        }
-
-        throw new InvalidOperationException($"Unsupported identity type: {target.FullName}");
     }
 }

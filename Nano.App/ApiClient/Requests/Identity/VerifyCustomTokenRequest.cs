@@ -18,7 +18,7 @@ public class VerifyCustomTokenRequest<TIdentity> : BaseRequestPost
     /// <inheritdoc />
     public VerifyCustomTokenRequest()
     {
-        this.Action = "token/custom/verify";
+        this.Action = "token/custom-purpose/confirm";
     }
 
     /// <inheritdoc />

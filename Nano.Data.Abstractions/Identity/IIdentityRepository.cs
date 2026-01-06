@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Abstractions.Models.Identity;
@@ -40,7 +39,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="signIn">The <see cref="SignIn"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
-    Task<IdentityUserExt<TIdentity>> SignInAsync(SignIn signIn, CancellationToken cancellationToken = default);
+    Task<IdentityUserEx<TIdentity>> SignInAsync(SignIn signIn, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
@@ -48,7 +47,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="signInExternal"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IdentityUserExt<TIdentity>> SignInExternalAsync(SignInExternal signInExternal, CancellationToken cancellationToken = default);
+    Task<IdentityUserEx<TIdentity>> SignInExternalAsync(SignInExternal signInExternal, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
@@ -115,7 +114,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="id">The user id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="Microsoft.AspNetCore.Identity.IdentityUser"/>.</returns>
-    Task<IdentityUserExt<TIdentity>> GetIdentityUserAsync(TIdentity id, CancellationToken cancellationToken = default);
+    Task<IdentityUserEx<TIdentity>> GetIdentityUserAsync(TIdentity id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the identity user or default (null).
@@ -123,7 +122,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="userId">The user id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
-    Task<IdentityUserExt<TIdentity>> GetIdentityUserOrDefaultAsync(TIdentity userId, CancellationToken cancellationToken = default);
+    Task<IdentityUserEx<TIdentity>> GetIdentityUserOrDefaultAsync(TIdentity userId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Sets a emailAddress for a user.
@@ -150,12 +149,28 @@ public interface IIdentityRepository<TIdentity>
     Task ChangePasswordAsync(ChangePassword<TIdentity> changePassword, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Generates a reset password token for a user.
+    /// </summary>
+    /// <param name="generateResetPasswordToken">The <see cref="GenerateResetPasswordToken"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="ResetPasswordToken{TIdentity}"/>.</returns>
+    Task<ResetPasswordToken<TIdentity>> GenerateResetPasswordTokenAsync(GenerateResetPasswordToken generateResetPasswordToken, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Resets the password of a user.
     /// </summary>
     /// <param name="resetPassword">The <see cref="ResetPassword{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
     Task ResetPasswordAsync(ResetPassword<TIdentity> resetPassword, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Generates an change email token for a user.
+    /// </summary>
+    /// <param name="generateChangeEmailToken">The <see cref="GenerateChangeEmailToken{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="ChangeEmailToken{TIdentity}"/>.</returns>
+    Task<ChangeEmailToken<TIdentity>> GenerateChangeEmailTokenAsync(GenerateChangeEmailToken<TIdentity> generateChangeEmailToken, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Changes the email address of a user.
@@ -167,46 +182,6 @@ public interface IIdentityRepository<TIdentity>
     Task ChangeEmailAsync(ChangeEmail<TIdentity> changeEmail, bool setUsername, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Confirms the email of a user.
-    /// </summary>
-    /// <param name="confirmEmail">The <see cref="ConfirmEmail{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
-    Task ConfirmEmailAsync(ConfirmEmail<TIdentity> confirmEmail, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Changes the phone number of a user.
-    /// </summary>
-    /// <param name="changePhoneNumber">The <see cref="ChangePhoneNumber{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
-    Task ChangePhoneNumberAsync(ChangePhoneNumber<TIdentity> changePhoneNumber, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Confirms the phone number of a user.
-    /// </summary>
-    /// <param name="confirmPhoneNumber">The <see cref="ConfirmPhoneNumber{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
-    Task ConfirmPhoneNumberAsync(ConfirmPhoneNumber<TIdentity> confirmPhoneNumber, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Confirms the custom token of a user.
-    /// </summary>
-    /// <param name="confirmCustomPurpose">The <see cref="ConfirmCustomPurpose{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
-    Task ConfirmCustomTokenAsync(ConfirmCustomPurpose<TIdentity> confirmCustomPurpose, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Generates a reset password token for a user.
-    /// </summary>
-    /// <param name="generateResetPasswordToken">The <see cref="GenerateResetPasswordToken"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ResetPasswordToken{TIdentity}"/>.</returns>
-    Task<ResetPasswordToken<TIdentity>> GenerateResetPasswordTokenAsync(GenerateResetPasswordToken generateResetPasswordToken, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// Generates an email confirmation token for a user.
     /// </summary>
     /// <param name="generateConfirmEmailToken">The <see cref="GenerateConfirmEmailToken{TIdentity}"/>.</param>
@@ -215,20 +190,12 @@ public interface IIdentityRepository<TIdentity>
     Task<ConfirmEmailToken<TIdentity>> GenerateConfirmEmailTokenAsync(GenerateConfirmEmailToken<TIdentity> generateConfirmEmailToken, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Generates an change email token for a user.
+    /// Confirms the email of a user.
     /// </summary>
-    /// <param name="generateChangeEmailToken">The <see cref="GenerateChangeEmailToken{TIdentity}"/>.</param>
+    /// <param name="confirmEmail">The <see cref="ConfirmEmail{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ChangeEmailToken{TIdentity}"/>.</returns>
-    Task<ChangeEmailToken<TIdentity>> GenerateChangeEmailTokenAsync(GenerateChangeEmailToken<TIdentity> generateChangeEmailToken, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Generates a confirm phone number token for a user.
-    /// </summary>
-    /// <param name="generateConfirmPhoneToken">The <see cref="GenerateConfirmPhoneToken{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ConfirmPhoneNumberToken{TIdentity}"/>.</returns>
-    Task<ConfirmPhoneNumberToken<TIdentity>> GenerateConfirmPhoneNumberTokenAsync(GenerateConfirmPhoneToken<TIdentity> generateConfirmPhoneToken, CancellationToken cancellationToken = default);
+    /// <returns>Void.</returns>
+    Task ConfirmEmailAsync(ConfirmEmail<TIdentity> confirmEmail, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Generates a change phone number token for a user.
@@ -239,12 +206,44 @@ public interface IIdentityRepository<TIdentity>
     Task<ChangePhoneNumberToken<TIdentity>> GenerateChangePhoneNumberTokenAsync(GenerateChangePhoneToken<TIdentity> generateChangePhoneToken, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Changes the phone number of a user.
+    /// </summary>
+    /// <param name="changePhoneNumber">The <see cref="ChangePhoneNumber{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Void.</returns>
+    Task ChangePhoneNumberAsync(ChangePhoneNumber<TIdentity> changePhoneNumber, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Generates a confirm phone number token for a user.
+    /// </summary>
+    /// <param name="generateConfirmPhoneToken">The <see cref="GenerateConfirmPhoneToken{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="ConfirmPhoneNumberToken{TIdentity}"/>.</returns>
+    Task<ConfirmPhoneNumberToken<TIdentity>> GenerateConfirmPhoneNumberTokenAsync(GenerateConfirmPhoneToken<TIdentity> generateConfirmPhoneToken, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Confirms the phone number of a user.
+    /// </summary>
+    /// <param name="confirmPhoneNumber">The <see cref="ConfirmPhoneNumber{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Void.</returns>
+    Task ConfirmPhoneNumberAsync(ConfirmPhoneNumber<TIdentity> confirmPhoneNumber, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Generates a custom token for a user.
     /// </summary>
     /// <param name="generateCustomPurposeToken">The <see cref="GenerateCustomPurposeToken{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="ConfirmCustomPurposeToken{TIdentity}"/>.</returns>
-    Task<ConfirmCustomPurposeToken<TIdentity>> GenerateCustomTokenAsync(GenerateCustomPurposeToken<TIdentity> generateCustomPurposeToken, CancellationToken cancellationToken = default);
+    Task<ConfirmCustomPurposeToken<TIdentity>> GenerateCustomPurposeTokenAsync(GenerateCustomPurposeToken<TIdentity> generateCustomPurposeToken, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Confirms the custom token of a user.
+    /// </summary>
+    /// <param name="confirmCustomPurpose">The <see cref="ConfirmCustomPurpose{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Void.</returns>
+    Task ConfirmCustomPurposeTokenAsync(ConfirmCustomPurpose<TIdentity> confirmCustomPurpose, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Activates the user with the passed user id.
@@ -252,7 +251,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="id">The user id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
-    Task<IdentityUserExt<TIdentity>> ActivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default);
+    Task<IdentityUserEx<TIdentity>> ActivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Deactivates the user with the passed user id.
@@ -260,30 +259,12 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="id">The user id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
-    Task<IdentityUserExt<TIdentity>> DeactivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default);
+    Task<IdentityUserEx<TIdentity>> DeactivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default);
 
     #endregion
 
 
     #region External Logins
-
-    /// <summary>
-    /// Gets external login of a user.
-    /// </summary>
-    /// <param name="userId">The user id.</param>
-    /// <param name="loginProvider">The provider name.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="UserLoginInfo"/>.</returns>
-    Task<UserLoginInfo> GetUserExternalLoginAsync(TIdentity userId, string loginProvider, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Gets external logins of a user.
-    /// </summary>
-    /// <param name="identityUser">The <see cref="IdentityUser{TIdentity}"/>.</param>
-    /// <param name="loginProvider">The provider name.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="UserLoginInfo"/>.</returns>
-    Task<UserLoginInfo> GetUserExternalLoginAsync(IdentityUserExt<TIdentity> identityUser, string loginProvider, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets external logins of a user.
@@ -299,7 +280,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="identityUser">The <see cref="IdentityUser{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The collection of <see cref="UserLoginInfo"/>.</returns>
-    Task<IEnumerable<UserLoginInfo>> GetUserExternalLoginsAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default);
+    Task<IEnumerable<UserLoginInfo>> GetUserExternalLoginsAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
@@ -330,7 +311,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="appId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IdentityUserTokenExpiry<TIdentity>> GetRefreshToken(TIdentity userId, string appId = IdentityDefaults.DEFAULT_APP_ID, CancellationToken cancellationToken = default);
+    Task<IdentityUserRefreshToken<TIdentity>> GetRefreshToken(TIdentity userId, string appId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
@@ -338,7 +319,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="userId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IdentityUserTokenExpiry<TIdentity>> GetRefreshTokens(TIdentity userId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<IdentityUserRefreshToken<TIdentity>>> GetRefreshTokens(TIdentity userId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
@@ -347,7 +328,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="refreshToken"></param>
     /// <param name="appId"></param>
     /// <returns></returns>
-    Task<IdentityUserTokenExpiry<TIdentity>> CreateRefreshToken(TIdentity userId, RefreshToken refreshToken, string appId = IdentityDefaults.DEFAULT_APP_ID);
+    Task<IdentityUserRefreshToken<TIdentity>> CreateRefreshToken(TIdentity userId, RefreshToken refreshToken, string appId = null);
 
     #endregion
 
@@ -444,23 +425,23 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="identityUser">The <see cref="IdentityUser{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The role names.</returns>
-    Task<IEnumerable<string>> GetUserRolesAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default);
+    Task<IEnumerable<string>> GetUserRolesAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Assign a role to a user.
     /// </summary>
-    /// <param name="assignRole">The <see cref="AssignRole{TIdentity}"/>.</param>
+    /// <param name="assignUserRole">The <see cref="AssignUserRole{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    Task AssignUserRoleAsync(AssignRole<TIdentity> assignRole, CancellationToken cancellationToken = default);
+    Task AssignUserRoleAsync(AssignUserRole<TIdentity> assignUserRole, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Removes a role from a user.
     /// </summary>
-    /// <param name="removeRole">The <see cref="RemoveRole{TIdentity}"/>.</param>
+    /// <param name="removeUserRole">The <see cref="RemoveUserRole{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    Task RemoveUserRoleAsync(RemoveRole<TIdentity> removeRole, CancellationToken cancellationToken = default);
+    Task RemoveUserRoleAsync(RemoveUserRole<TIdentity> removeUserRole, CancellationToken cancellationToken = default);
 
     #endregion
 
@@ -484,6 +465,14 @@ public interface IIdentityRepository<TIdentity>
     Task<IEnumerable<Claim>> GetRoleClaimsAsync(TIdentity roleId, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="identityRole"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<IEnumerable<Claim>> GetRoleClaimsAsync(IdentityRole<TIdentity> identityRole, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Assigns a <see cref="IdentityRoleClaim{TIdentity}"/> to a role.
     /// </summary>
     /// <param name="assignClaim">The <see cref="AssignRoleClaim{TIdentity}"/>.</param>
@@ -494,7 +483,7 @@ public interface IIdentityRepository<TIdentity>
     /// <summary>
     /// Replace a <see cref="IdentityRoleClaim{TIdentity}"/> to a role.
     /// </summary>
-    /// <param name="replaceClaim">The <see cref="ReplaceClaim{TIdentity}"/>.</param>
+    /// <param name="replaceClaim">The <see cref="ReplaceUserClaim{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityRoleClaim{TIdentity}"/>.</returns>
     Task<IdentityRoleClaim<TIdentity>> ReplaceRoleClaimAsync(ReplaceRoleClaim<TIdentity> replaceClaim, CancellationToken cancellationToken = default);
@@ -529,7 +518,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    Task<IList<Claim>> GetAllClaims(IdentityUserExt<TIdentity> identityUser, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default);
+    Task<IList<Claim>> GetAllClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the <see cref="Claim"/> of a user.
@@ -553,23 +542,23 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="identityUser">The <see cref="IdentityUser{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="Claim"/>'s.</returns>
-    Task<IEnumerable<Claim>> GetUserClaimsAsync(IdentityUserExt<TIdentity> identityUser, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Claim>> GetUserClaimsAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Assigns a <see cref="IdentityUserClaim{TIdentity}"/> to a user.
     /// </summary>
-    /// <param name="assignClaim">The <see cref="AssignClaim{TIdentity}"/>.</param>
+    /// <param name="assignUserClaim">The <see cref="AssignUserClaim{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUserClaim{TIdentity}"/>.</returns>
-    Task<IdentityUserClaim<TIdentity>> AssignUserClaimAsync(AssignClaim<TIdentity> assignClaim, CancellationToken cancellationToken = default);
+    Task<IdentityUserClaim<TIdentity>> AssignUserClaimAsync(AssignUserClaim<TIdentity> assignUserClaim, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Replace a <see cref="IdentityUserClaim{TIdentity}"/> to a user.
     /// </summary>
-    /// <param name="replaceClaim">The <see cref="ReplaceClaim{TIdentity}"/>.</param>
+    /// <param name="replaceUserClaim">The <see cref="ReplaceUserClaim{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUserClaim{TIdentity}"/>.</returns>
-    Task<IdentityUserClaim<TIdentity>> ReplaceUserClaimAsync(ReplaceClaim<TIdentity> replaceClaim, CancellationToken cancellationToken = default);
+    Task<IdentityUserClaim<TIdentity>> ReplaceUserClaimAsync(ReplaceUserClaim<TIdentity> replaceUserClaim, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Assign or Replace a <see cref="IdentityUserClaim{TIdentity}"/> to a user.
@@ -582,10 +571,10 @@ public interface IIdentityRepository<TIdentity>
     /// <summary>
     /// Removes a <see cref="IdentityUserClaim{TIdentity}"/> from a user.
     /// </summary>
-    /// <param name="removeClaim">The <see cref="RemoveClaim{TIdentity}"/>.</param>
+    /// <param name="removeUserClaim">The <see cref="RemoveUserClaim{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    Task RemoveUserClaimAsync(RemoveClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default);
+    Task RemoveUserClaimAsync(RemoveUserClaim<TIdentity> removeUserClaim, CancellationToken cancellationToken = default);
 
     #endregion
 }

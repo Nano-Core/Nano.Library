@@ -10,7 +10,6 @@ using Nano.App.ApiClient.Extensions;
 using Nano.App.Config;
 using Nano.App.Config.Extensions;
 using Nano.App.StartUp;
-using Nano.App.StartUp.Tasks;
 using Nano.Common.Extensions;
 using Nano.Common.Helpers;
 

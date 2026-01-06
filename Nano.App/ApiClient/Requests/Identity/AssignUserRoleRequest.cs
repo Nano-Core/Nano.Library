@@ -4,26 +4,26 @@ using Nano.Data.Abstractions.Identity.Models;
 namespace Nano.App.ApiClient.Requests.Identity;
 
 /// <inheritdoc />
-public class AssignRoleRequest : AssignRoleRequest<Guid>;
+public class AssignUserRoleRequest : AssignUserRoleRequest<Guid>;
 
 /// <inheritdoc />
-public class AssignRoleRequest<TIdentity> : BaseRequestPost
+public class AssignUserRoleRequest<TIdentity> : BaseRequestPost
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// Assign Role.
     /// </summary>
-    public virtual AssignRole<TIdentity> AssignRole { get; set; } = new();
+    public virtual AssignUserRole<TIdentity> AssignUserRole { get; set; } = new();
 
     /// <inheritdoc />
-    public AssignRoleRequest()
+    public AssignUserRoleRequest()
     {
-        this.Action = "roles/assign";
+        this.Action = "roles/user/assign";
     }
 
     /// <inheritdoc />
     public override object GetBody()
     {
-        return this.AssignRole;
+        return this.AssignUserRole;
     }
 }

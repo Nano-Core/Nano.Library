@@ -4,13 +4,13 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <inheritdoc />
-public class AssignRole : AssignRole<Guid>;
+public class RemoveUserRole : RemoveUserRole<Guid>;
 
 /// <summary>
-/// Assign Role.
+/// Remove Role.
 /// </summary>
 /// <typeparam name="TIdentity">The identity key type</typeparam>
-public class AssignRole<TIdentity>
+public class RemoveUserRole<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

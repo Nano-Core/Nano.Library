@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.ApiClient.Consts;
-using Nano.App.Web.Identity.Authentication;
 using Nano.App.Web.Identity.Authentication.Abstractions;
 using Nano.Data.Abstractions.Identity.Authentication;
 using System;

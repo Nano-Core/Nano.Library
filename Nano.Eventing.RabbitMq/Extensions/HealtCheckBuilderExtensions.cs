@@ -8,7 +8,7 @@ using RabbitMQ.Client;
 
 namespace Nano.Eventing.RabbitMq.Extensions;
 
-// TODO: Upgrade to latest AspNetCore.HealthChecks.Rabbitmq, but we can't because eventing fails as the EasyNetQ expects a lower version of RabbitMQ.Client.
+// TODO: Upgrade AspNetCore.HealthChecks.Rabbitmq not possible, EasyNetQ expects lower version of RabbitMQ.Client.
 
 internal static class HealtCheckBuilderExtensions
 {

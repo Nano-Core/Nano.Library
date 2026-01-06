@@ -1,11 +1,8 @@
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.Data.Abstractions.Identity.Authentication;
-
-// TODO: Apple External Login
 
 /// <summary>
 /// 

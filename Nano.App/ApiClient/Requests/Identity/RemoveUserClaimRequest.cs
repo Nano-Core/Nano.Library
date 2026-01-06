@@ -4,19 +4,19 @@ using Nano.Data.Abstractions.Identity.Models;
 namespace Nano.App.ApiClient.Requests.Identity;
 
 /// <inheritdoc />
-public class RemoveClaimRequest : RemoveClaimRequest<Guid>;
+public class RemoveUserClaimRequest : RemoveUserClaimRequest<Guid>;
 
 /// <inheritdoc />
-public class RemoveClaimRequest<TIdentity> : BaseRequestPost
+public class RemoveUserClaimRequest<TIdentity> : BaseRequestPost
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// Remove Claim.
     /// </summary>
-    public virtual RemoveClaim<TIdentity> RemoveClaim { get; set; } = new();
+    public virtual RemoveUserClaim<TIdentity> RemoveUserClaim { get; set; } = new();
 
     /// <inheritdoc />
-    public RemoveClaimRequest()
+    public RemoveUserClaimRequest()
     {
         this.Action = "claims/remove";
     }
@@ -24,6 +24,6 @@ public class RemoveClaimRequest<TIdentity> : BaseRequestPost
     /// <inheritdoc />
     public override object GetBody()
     {
-        return this.RemoveClaim;
+        return this.RemoveUserClaim;
     }
 }

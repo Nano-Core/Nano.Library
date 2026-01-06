@@ -9,7 +9,7 @@ namespace Nano.Data.Identity.Extensions;
 
 internal static class UserManagerExtensions
 {
-    internal static Task<IdentityUserExt<TIdentity>> GetIdentityUserAsync<TIdentity>(this UserManager<IdentityUserExt<TIdentity>> userManager, TIdentity userId, CancellationToken cancellationToken = default)
+    internal static Task<IdentityUserEx<TIdentity>> GetIdentityUserAsync<TIdentity>(this UserManager<IdentityUserEx<TIdentity>> userManager, TIdentity userId, CancellationToken cancellationToken = default)
         where TIdentity : IEquatable<TIdentity>
     {
         if (userManager == null)
@@ -29,7 +29,7 @@ internal static class UserManagerExtensions
             .FindByIdAsync(userIdString);
     }
 
-    internal static Task<IdentityUserExt<TIdentity>> FindByPhoneNumberAsync<TIdentity>(this UserManager<IdentityUserExt<TIdentity>> userManager, string phoneNumber)
+    internal static Task<IdentityUserEx<TIdentity>> FindByPhoneNumberAsync<TIdentity>(this UserManager<IdentityUserEx<TIdentity>> userManager, string phoneNumber)
         where TIdentity : IEquatable<TIdentity>
     {
         if (userManager == null)
@@ -41,8 +41,8 @@ internal static class UserManagerExtensions
             .FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
     }
 
-    internal static Task<string> GeneratePhoneNumberConfirmationTokenAsync<TUser, TIdentity>(this UserManager<IdentityUserExt<TIdentity>> userManager, TUser user)
-        where TUser : IdentityUserExt<TIdentity>
+    internal static Task<string> GeneratePhoneNumberConfirmationTokenAsync<TUser, TIdentity>(this UserManager<IdentityUserEx<TIdentity>> userManager, TUser user)
+        where TUser : IdentityUserEx<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
         if (userManager == null)
@@ -64,8 +64,8 @@ internal static class UserManagerExtensions
             .GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber);
     }
 
-    internal static Task<IdentityResult> ConfirmPhoneNumberAsync<TUser, TIdentity>(this UserManager<IdentityUserExt<TIdentity>> userManager, TUser user, string token)
-        where TUser : IdentityUserExt<TIdentity>
+    internal static Task<IdentityResult> ConfirmPhoneNumberAsync<TUser, TIdentity>(this UserManager<IdentityUserEx<TIdentity>> userManager, TUser user, string token)
+        where TUser : IdentityUserEx<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
         if (userManager == null)

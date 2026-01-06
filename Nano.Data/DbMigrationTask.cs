@@ -84,6 +84,7 @@ public class DbMigrationTask<TIdentity> : IDbMigrationTask
             BuiltInUserRoles.CREATOR,
             BuiltInUserRoles.EDITOR,
             BuiltInUserRoles.DELETER,
+            BuiltInUserRoles.IDENTITY,
             BuiltInUserRoles.ADMINISTRATOR
         };
 

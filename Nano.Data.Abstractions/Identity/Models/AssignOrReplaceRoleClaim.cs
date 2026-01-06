@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <inheritdoc />
-public class AddOrReplaceRoleClaim : ReplaceClaim<Guid>;
+public class AddOrReplaceRoleClaim : ReplaceUserClaim<Guid>;
 
 /// <summary>
 /// Add Or Replace Role Claim.

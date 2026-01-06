@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <inheritdoc />
-public class AddOrReplaceClaim : ReplaceClaim<Guid>;
+public class AddOrReplaceUserClaim : ReplaceUserClaim<Guid>;
 
 /// <summary>
-/// Add Or Replace Claim.
+/// Add Or Replace User Claim.
 /// </summary>
 /// <typeparam name="TIdentity">The identity key type</typeparam>
 public class AssignOrReplaceClaim<TIdentity>

@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 
-namespace Nano.App.Web.Identity.Authentication;
+namespace Nano.App.Web.Identity.Authentication.Abstractions;
 
 /// <summary>
 /// 

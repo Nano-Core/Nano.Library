@@ -4,13 +4,13 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <inheritdoc />
-public class RemoveRole : RemoveRole<Guid>;
+public class ReplaceUserClaim : ReplaceUserClaim<Guid>;
 
 /// <summary>
-/// Remove Role.
+/// Replace User Claim.
 /// </summary>
 /// <typeparam name="TIdentity">The identity key type</typeparam>
-public class RemoveRole<TIdentity>
+public class ReplaceUserClaim<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
@@ -20,9 +20,14 @@ public class RemoveRole<TIdentity>
     public virtual TIdentity UserId { get; set; }
 
     /// <summary>
-    /// Role Name.
+    /// Claim Type.
     /// </summary>
     [Required]
-    [MaxLength(256)]
-    public virtual string RoleName { get; set; }
+    public virtual string ClaimType { get; set; }
+
+    /// <summary>
+    /// New Claim Value.
+    /// </summary>
+    [Required]
+    public virtual string NewClaimValue { get; set; }
 }

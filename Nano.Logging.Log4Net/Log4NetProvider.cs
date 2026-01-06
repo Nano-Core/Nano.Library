@@ -47,7 +47,7 @@ public class Log4NetProvider : ILoggingProvider
 
         hierarchy.Configured = true;
 
-        // TODO: Log4Net: Namespace overrides.
+        // BUG: Log4Net: Namespace overrides
         //foreach (var logLevelOverride in this.Options.LogLevelOverrides)
         //{
         //    var nestedHierarchy = (Hierarchy)LogManager

@@ -8,11 +8,11 @@ using Nano.Data.Mappings;
 namespace Nano.Data.Identity.Mappings;
 
 /// <inheritdoc />
-public class IdentityApiKeyMapping<TIdentity> : BaseEntityIdentityMapping<IdentityApiKey<TIdentity>, TIdentity>
+public class IdentityUserRefreshTokenMapping<TIdentity> : BaseEntityIdentityMapping<IdentityUserRefreshToken<TIdentity>, TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    public override void Map(EntityTypeBuilder<IdentityApiKey<TIdentity>> builder)
+    public override void Map(EntityTypeBuilder<IdentityUserRefreshToken<TIdentity>> builder)
     {
         if (builder == null)
             throw new ArgumentNullException(nameof(builder));
@@ -20,33 +20,32 @@ public class IdentityApiKeyMapping<TIdentity> : BaseEntityIdentityMapping<Identi
         base.Map(builder);
 
         builder
-            .ToTable(TableNames.IDENTITY_API_KEY);
+            .ToTable(TableNames.IDENTITY_USER_REFRESH_TOKEN);
 
         builder
             .HasQueryFilter(x => x.IdentityUser.IsActive);
 
         builder
             .HasOne(x => x.IdentityUser)
-            .WithMany()
+            .WithOne();
+
+        builder
+            .Property(x => x.AppId)
+            .HasMaxLength(256)
             .IsRequired();
 
         builder
-            .Property(x => x.Name)
-            .HasMaxLength(255)
+            .HasIndex(x => x.AppId);
+
+        builder
+            .Property(x => x.Value)
+            .HasMaxLength(256)
             .IsRequired();
 
         builder
-            .Property(x => x.Hash)
-            .IsRequired();
+            .Property(x => x.ExpireAt);
 
         builder
-            .Property(x => x.CreatedAt)
-            .IsRequired();
-
-        builder
-            .Property(x => x.RevokedAt);
-
-        builder
-            .HasIndex(x => x.RevokedAt);
+            .HasIndex(x => x.ExpireAt);
     }
 }
