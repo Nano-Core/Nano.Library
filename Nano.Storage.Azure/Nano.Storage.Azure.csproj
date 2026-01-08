@@ -1,17 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-	
-		<Summary></Summary>
-		<Description></Description>
-		<PackageReleaseNotes>
-			- Added .NET 10 support
-		</PackageReleaseNotes>
-
-		<nullable>enable</nullable>
-
-	</PropertyGroup>
-
 	<ItemGroup>
 	  <PackageReference Include="Azure.Storage.Files.Shares" Version="12.24.0" />
 	  <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="10.0.1" />

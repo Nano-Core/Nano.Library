@@ -1,5 +1,4 @@
 <Project>
-
     <PropertyGroup>
 	    <TargetFramework>net10.0</TargetFramework>
 	    <NoWarn>NU1902; NU5104</NoWarn>
@@ -10,16 +9,26 @@
 	    <Configurations>Debug;Release</Configurations>
 	    <LangVersion>latest</LangVersion>
 	    <NeutralLanguage>en-US</NeutralLanguage>
+	    <nullable>enable</nullable>
 	    <License>LICENSE</License>
 	    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	    <WarningsAsErrors />
-	    <Optimize>True</Optimize>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
 	    <PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<Authors>Michael Vivet</Authors>
 	    <Owners>Michael Vivet</Owners>
 	    <Product>$(ProjectName)</Product>
+	    <Summary>Reusable libraries for building .NET microservice applications</Summary>
+	    <Description>
+		    This package is part of the Nano Library, a set of reusable .NET libraries for building microservice applications.
+		    Nano addresses common non-business concerns such as logging, persistence, messaging, validation, and documentation,
+		    while remaining fully configurable and extensible, so applications can stay focused on business logic.
+		    See https://github.com/Nano-Core/Nano.Library for details.
+	    </Description>
+	    <PackageReleaseNotes>
+		    - Added .NET 10 support
+	    </PackageReleaseNotes>
 		<RepositoryType>git</RepositoryType>
 	    <RepositoryBranch>master</RepositoryBranch>
 	    <RepositoryUrl>https://github.com/Nano-Core/Nano.Library.git</RepositoryUrl>
@@ -36,7 +45,10 @@
 	    <PackageIcon>icon.png</PackageIcon>
 	    <PackageReadmeFile>README.md</PackageReadmeFile>
 		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)'=='RELEASE'">
+		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<ItemGroup>

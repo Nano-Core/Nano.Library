@@ -13,10 +13,8 @@ namespace Nano.Storage.Azure.HealthChecks;
 /// Performs a health check against an Azure File Share to verify its availability.
 /// </summary>
 /// <remarks>
-/// The health check verifies that the configured Azure File Share exists and is reachable.
-/// Configuration is resolved from <see cref="StorageOptions"/> using
-/// <see cref="IOptionsMonitor{TOptions}"/>. A cached <see cref="ShareClient"/> instance
-/// is reused across executions.
+///     The health check verifies that the configured Azure File Share exists and is reachable. Configuration is resolved from <see cref="StorageOptions"/>
+///     using <see cref="IOptionsMonitor{TOptions}"/>. A cached <see cref="ShareClient"/> instance is reused across executions.
 /// </remarks>
 public class AzureFileshareStorageHealthCheck : IHealthCheck
 {
@@ -28,17 +26,9 @@ public class AzureFileshareStorageHealthCheck : IHealthCheck
     /// <summary>
     /// Initializes a new instance of <see cref="AzureFileshareStorageHealthCheck"/>.
     /// </summary>
-    /// <param name="options">
-    /// A non-null <see cref="IOptionsMonitor{StorageOptions}"/> providing the connection
-    /// string and share name for the Azure File Share.
-    /// </param>
-    /// <param name="clientOptions">
-    /// Optional <see cref="ShareClientOptions"/> used to configure the underlying
-    /// <see cref="ShareClient"/>. If <c>null</c>, default client options are used.
-    /// </param>
-    /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="options"/> is <c>null</c>.
-    /// </exception>
+    /// <param name="options">A non-null <see cref="IOptionsMonitor{StorageOptions}"/> providing the connectionstring and share name for the Azure File Share.</param>
+    /// <param name="clientOptions">Optional <see cref="ShareClientOptions"/> used to configure the underlying <see cref="ShareClient"/>. If <c>null</c>, default client options are used.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="options"/> is <c>null</c>.</exception>
     public AzureFileshareStorageHealthCheck(IOptionsMonitor<StorageOptions> options, ShareClientOptions? clientOptions = null)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));
@@ -48,20 +38,13 @@ public class AzureFileshareStorageHealthCheck : IHealthCheck
     /// <summary>
     /// Executes the health check asynchronously.
     /// </summary>
-    /// <param name="context">
-    /// The <see cref="HealthCheckContext"/> containing registration and failure status information.
-    /// </param>
-    /// <param name="cancellationToken">
-    /// A <see cref="CancellationToken"/> that can be used to cancel the health check operation.
-    /// </param>
+    /// <param name="context">The <see cref="HealthCheckContext"/> containing registration and failure status information.</param>
+    /// <param name="cancellationToken">A <see cref="CancellationToken"/> that can be used to cancel the health check operation.</param>
     /// <returns>
-    /// A <see cref="HealthCheckResult"/> indicating whether the Azure File Share exists.
-    /// Returns <see cref="HealthCheckResult.Healthy"/> when the share is found; otherwise,
-    /// returns a result with the configured failure status.
+    ///     A <see cref="HealthCheckResult"/> indicating whether the Azure File Share exists. Returns <see cref="HealthCheckResult.Healthy"/> when the share is found;
+    ///     otherwise, returns a result with the configured failure status.
     /// </returns>
-    /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="context"/> is <c>null</c>.
-    /// </exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="context"/> is <c>null</c>.</exception>
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         if (context == null)

@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Nano.App.Console\Nano.App.Console.csproj" />
+	  <ProjectReference Include="..\Nano.App.Web\Nano.App.Web.csproj" />
+	  <ProjectReference Include="..\Nano.App\Nano.App.csproj" />
+	  <ProjectReference Include="..\Nano.Common\Nano.Common.csproj" />
+	  <ProjectReference Include="..\Nano.Data.Abstractions\Nano.Data.Abstractions.csproj" />
+	  <ProjectReference Include="..\Nano.Data.InMemory\Nano.Data.InMemory.csproj" />
+	  <ProjectReference Include="..\Nano.Data.MySql\Nano.Data.MySql.csproj" />
+	  <ProjectReference Include="..\Nano.Data.SqLite\Nano.Data.SqLite.csproj" />
+	  <ProjectReference Include="..\Nano.Data.SqlServer\Nano.Data.SqlServer.csproj" />
+	  <ProjectReference Include="..\Nano.Data\Nano.Data.csproj" />
+	  <ProjectReference Include="..\Nano.Eventing.Abstractions\Nano.Eventing.Abstractions.csproj" />
+	  <ProjectReference Include="..\Nano.Eventing.RabbitMq\Nano.Eventing.RabbitMq.csproj" />
+	  <ProjectReference Include="..\Nano.Eventing\Nano.Eventing.csproj" />
+	  <ProjectReference Include="..\Nano.Logging.Abstractions\Nano.Logging.Abstractions.csproj" />
+	  <ProjectReference Include="..\Nano.Logging.Log4Net\Nano.Logging.Log4Net.csproj" />
+	  <ProjectReference Include="..\Nano.Logging.Microsoft\Nano.Logging.Microsoft.csproj" />
+	  <ProjectReference Include="..\Nano.Logging.NLog\Nano.Logging.NLog.csproj" />
+	  <ProjectReference Include="..\Nano.Logging.Serilog\Nano.Logging.Serilog.csproj" />
+	  <ProjectReference Include="..\Nano.Logging\Nano.Logging.csproj" />
+	  <ProjectReference Include="..\Nano.Storage.Abstractions\Nano.Storage.Abstractions.csproj" />
+	  <ProjectReference Include="..\Nano.Storage.Azure\Nano.Storage.Azure.csproj" />
+	  <ProjectReference Include="..\Nano.Storage\Nano.Storage.csproj" />
+	</ItemGroup>
+</Project>

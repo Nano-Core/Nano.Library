@@ -1,15 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-
-		<Summary></Summary>
-		<Description></Description>
-		<PackageReleaseNotes>
-			- Added .NET 10 support
-		</PackageReleaseNotes>
-
 		<nullable>disable</nullable>
-
 	</PropertyGroup>
 
 	<ItemGroup>

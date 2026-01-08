@@ -11,28 +11,21 @@ namespace Nano.Storage.Azure;
 /// Storage provider implementation for Azure File Shares.
 /// </summary>
 /// <remarks>
-/// This provider registers Azure File Share–related services based on the supplied
-/// <see cref="StorageOptions"/>. When health checks are enabled, it adds an
-/// Azure File Share health check to the application's health check pipeline.
+///     This provider registers Azure File Share–related services based on the supplied <see cref="StorageOptions"/>.
+///     When health checks are enabled, it adds an Azure File Share health check to the application's health check pipeline.
 /// </remarks>
 public class AzureFileshareProvider : IStorageProvider
 {
     /// <summary>
     /// Configures services required for Azure File Share storage.
     /// </summary>
-    /// <param name="services">
-    /// The <see cref="IServiceCollection"/> to which storage-related services are added.
-    /// </param>
-    /// <param name="options">
-    /// The non-null <see cref="StorageOptions"/> used to control provider behavior.
-    /// </param>
+    /// <param name="services">The <see cref="IServiceCollection"/> to which storage-related services are added.</param>
+    /// <param name="options">The non-null <see cref="StorageOptions"/> used to control provider behavior.</param>
     /// <remarks>
-    /// If <see cref="StorageOptions.UseHealthCheck"/> is <c>false</c>, no services
-    /// are registered and the method returns without side effects.
+    ///     If <see cref="StorageOptions.UseHealthCheck"/> is <c>false</c>, no health-check services
+    ///     are registered and the method returns without side effects.
     /// </remarks>
-    /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="services"/> or <paramref name="options"/> is <c>null</c>.
-    /// </exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> or <paramref name="options"/> is <c>null</c>.</exception>
     public virtual void Configure(IServiceCollection services, StorageOptions options)
     {
         if (services == null)

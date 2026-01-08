@@ -29,7 +29,8 @@ public sealed class NanoConsoleApplication : BaseApplication<IHost, HostApplicat
         var root = Directory.GetCurrentDirectory();
         var config = ConfigManager.BuildConfiguration(args);
         var applicationName = Assembly.GetEntryAssembly()?.GetName().Name;
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+        var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Development"; 
+
 
         var applicationOptions = new HostApplicationBuilderSettings
         {

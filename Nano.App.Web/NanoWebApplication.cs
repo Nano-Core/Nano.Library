@@ -38,7 +38,7 @@ public sealed class NanoWebApplication : BaseApplication<WebApplication, WebAppl
     public static NanoWebApplication ConfigureApp(params string[] args)
     {
         var root = Directory.GetCurrentDirectory();
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environments.Development;
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Development;
         var applicationName = Assembly.GetEntryAssembly()?.GetName().Name;
         var config = ConfigManager.BuildConfiguration(args);
 

@@ -22,7 +22,7 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
     /// </summary>
     /// <param name="webOptions"></param>
     /// <param name="dataOptions"></param>
-    public ConditionalActionsConvention(IOptionsMonitor<WebOptions> webOptions, IOptionsMonitor<DataOptions> dataOptions)
+    public ConditionalActionsConvention(IOptionsMonitor<WebOptions> webOptions, IOptionsMonitor<DataOptions> dataOptions = null)
     {
         this.webOptions = webOptions ?? throw new ArgumentNullException(nameof(webOptions));
         this.dataOptions = dataOptions;
@@ -36,6 +36,10 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
     {
         if (controller == null) 
             throw new ArgumentNullException(nameof(controller));
+
+        // BUG: We need to remove some methods from identitycontroller: api-keys 
+        // but how can we know which controller is derived from BaseidentityController. reflection?
+        // we also need to detect overrides of DefaultAuthController / BaseAuthController and AuditController
 
         if (controller.ControllerType == typeof(AuditController))
         {

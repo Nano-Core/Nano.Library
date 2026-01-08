@@ -74,6 +74,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.Logging.NLog", "Nano.L
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.Logging.Microsoft", "Nano.Logging.Microsoft\Nano.Logging.Microsoft.csproj", "{D68EAE2D-1E89-6428-C534-2771ECF9AB9C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.All", "Nano.All\Nano.All.csproj", "{6219CAB8-3D59-E51B-3EFB-6118F79513E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NanoCore", "NanoCore\NanoCore.csproj", "{60DC9187-86CA-AB6D-F1A3-595B71E237F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -172,6 +176,14 @@ Global
 		{D68EAE2D-1E89-6428-C534-2771ECF9AB9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D68EAE2D-1E89-6428-C534-2771ECF9AB9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D68EAE2D-1E89-6428-C534-2771ECF9AB9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6219CAB8-3D59-E51B-3EFB-6118F79513E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6219CAB8-3D59-E51B-3EFB-6118F79513E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6219CAB8-3D59-E51B-3EFB-6118F79513E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6219CAB8-3D59-E51B-3EFB-6118F79513E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60DC9187-86CA-AB6D-F1A3-595B71E237F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60DC9187-86CA-AB6D-F1A3-595B71E237F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60DC9187-86CA-AB6D-F1A3-595B71E237F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60DC9187-86CA-AB6D-F1A3-595B71E237F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

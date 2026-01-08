@@ -6,6 +6,7 @@ using Microsoft.OpenApi;
 using Nano.App.Web.Config;
 using Nano.App.Web.Mvc.Documentation.Filters.Document;
 using Nano.App.Web.Mvc.Documentation.Filters.Schema;
+using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
@@ -13,7 +14,6 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.XPath;
-using Nano.Common.Extensions;
 
 namespace Nano.App.Web.Mvc.Options;
 
@@ -22,6 +22,7 @@ namespace Nano.App.Web.Mvc.Options;
 /// </summary>
 public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 {
+    //private static readonly Regex curlyBracketsRegex = new(@"\{([^}]+)\}", RegexOptions.Compiled);
     private static readonly string[] xmlEmbeddedResources =
     [
         "Nano.App.Web.Mvc.Documentation..xmldoc.Nano.App.xml",
@@ -71,6 +72,31 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
         
         options
             .OrderActionsBy(y => y.RelativePath);
+
+        options
+            .CustomOperationIds(x =>
+            {
+                var httpMethod = x.HttpMethod?
+                    .ToLower();
+
+                var id = x.RelativePath?
+                    .Replace("/", "-");
+
+                if (id == null)
+                {
+                    return null;
+                }
+
+                if (id.StartsWith(this.webOptions.CurrentValue.Hosting.Root))
+                {
+                    id = id[this.webOptions.CurrentValue.Hosting.Root.Length..];
+                }
+
+                id = Regex.Regexes.CurlyBrackets()
+                    .Replace(id, "$1");
+
+                return $"{httpMethod}{id}";
+            });
 
         options
             .SchemaFilter<EnumsFilter>();
