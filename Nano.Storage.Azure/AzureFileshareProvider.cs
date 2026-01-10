@@ -8,10 +8,10 @@ using Nano.Storage.Azure.HealthChecks.Extensions;
 namespace Nano.Storage.Azure;
 
 /// <summary>
-/// Storage provider implementation for Azure File Shares.
+/// Nano Storage provider implementation for Azure File Shares.
 /// </summary>
 /// <remarks>
-///     This provider registers Azure File Share–related services based on the supplied <see cref="StorageOptions"/>.
+///     This Nano provider registers Azure File Share–related services based on the supplied <see cref="StorageOptions"/>.
 ///     When health checks are enabled, it adds an Azure File Share health check to the application's health check pipeline.
 /// </remarks>
 public class AzureFileshareProvider : IStorageProvider

@@ -29,11 +29,6 @@ public static class ServiceCollectionExtensions
         services
             .AddNanoConfigSection<EventingOptions>(EventingOptions.SectionName, out var options);
 
-        if (options == null)
-        {
-            throw new NullReferenceException(nameof(options));
-        }
-
         var provider = Activator.CreateInstance<TProvider>();
         provider
             .Configure(services, options);

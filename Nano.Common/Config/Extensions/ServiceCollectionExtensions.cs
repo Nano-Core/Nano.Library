@@ -43,6 +43,11 @@ public static class ServiceCollectionExtensions
                 .ValidateOnStart();
         }
 
+        if (options is null)
+        {
+            throw new InvalidOperationException($"Configuration section '{name}' could not be loaded.");
+        }
+
         return services;
     }
 }

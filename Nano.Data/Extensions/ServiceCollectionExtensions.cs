@@ -69,11 +69,6 @@ public static class ServiceCollectionExtensions
         services
             .AddNanoConfigSection<DataOptions>(DataOptions.SectionName, out var options);
 
-        if (options == null)
-        {
-            return services;
-        }
-
         EntityFrameworkManager.IsCommunity = true;
 
         var provider = new TProvider();

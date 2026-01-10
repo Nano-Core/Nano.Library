@@ -7,16 +7,31 @@ using Nano.Storage.Abstractions.Config;
 namespace Nano.Storage.Extensions;
 
 /// <summary>
-/// Service Collection Extensions.
+/// Provides extension methods for registering Nano storage services.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds storage provider of type <typeparamref name="TProvider"/> to the <see cref="IServiceCollection"/>.
+    /// Registers a storage provider and related services.
     /// </summary>
-    /// <typeparam name="TProvider">The <typeparamref name="TProvider"/> type.</typeparam>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
+    /// <typeparam name="TProvider">The <see cref="IStorageProvider"/> implementation used to configure storage services.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/> to which storage services are added.</param>
+    /// <returns>The same <see cref="IServiceCollection"/> instance to allow fluent configuration.</returns>
+    /// <remarks>
+    /// This method:
+    /// <list type="bullet">
+    ///   <item>
+    ///     <description>Loads <see cref="StorageOptions"/> from configuration.</description>
+    ///   </item>
+    ///   <item>
+    ///     <description>Instantiates <typeparamref name="TProvider"/> and invokes <see cref="IStorageProvider.Configure"/>.</description>
+    ///   </item>
+    ///   <item>
+    ///     <description>Registers <see cref="IStorageProvider"/> and <see cref="IPathProvider"/> in the dependency injection container.</description>
+    ///   </item>
+    /// </list>
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is <c>null</c>.</exception>
     public static IServiceCollection AddNanoStorage<TProvider>(this IServiceCollection services)
         where TProvider : class, IStorageProvider, new()
     {

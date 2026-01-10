@@ -6,23 +6,30 @@ using Nano.Storage.Abstractions.Config;
 
 namespace Nano.Storage;
 
+// BUG: Handle windows vs linux vs mac
+
 /// <summary>
-/// Path Provider.
+/// Default implementation of <see cref="IPathProvider"/> that provides filesystem paths based on the configured <see cref="StorageOptions"/>.
 /// </summary>
+/// <remarks>
+///     The <see cref="RootDir"/> represents the absolute base directory for storage operations and is derived from the configured logical container or share name in <see cref="StorageOptions"/>.
+///     The <see cref="TempDir"/> provides a system-specific temporary directory for transient files such as uploads or processing artifacts.
+/// </remarks>
 public class PathProvider : IPathProvider
 {
     private readonly IOptionsMonitor<StorageOptions> options;
 
     /// <inheritdoc />
-    public virtual string RootDir => Path.Combine("/mnt/", this.options.CurrentValue.ShareName);
+    public virtual string RootDir => Path.Combine("/mnt", this.options.CurrentValue.ShareName);
 
     /// <inheritdoc />
     public virtual string TempDir => Path.GetTempPath();
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="PathProvider"/>.
     /// </summary>
-    /// <param name="options">The <see cref="IOptionsMonitor{StorageOptions}"/>.</param>
+    /// <param name="options">A non-null <see cref="IOptionsMonitor{StorageOptions}"/> providing access to the configured storage share name.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="options"/> is <c>null</c>.</exception>
     public PathProvider(IOptionsMonitor<StorageOptions> options)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));

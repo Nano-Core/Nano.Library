@@ -16,6 +16,7 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
 	    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+	    <IsPackable>false</IsPackable>
 		<Authors>Michael Vivet</Authors>
 	    <Owners>Michael Vivet</Owners>
 	    <Product>$(ProjectName)</Product>

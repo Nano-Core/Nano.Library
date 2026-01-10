@@ -70,17 +70,23 @@ public class AzureFileshareStorageHealthCheck : IHealthCheck
 
     private ShareClient GetClient()
     {
+        var connectionString = this.GetConnectionString();
+
         AzureFileshareStorageHealthCheck.clientsHolder
-            .TryGetValue(this.options.CurrentValue.Connectionstring, out var client);
+            .TryGetValue(connectionString, out var client);
 
         if (client == null)
         {
-            client = new ShareClient(this.options.CurrentValue.Connectionstring, this.options.CurrentValue.ShareName, this.clientOptions);
+            client = new ShareClient(connectionString, this.options.CurrentValue.ShareName, this.clientOptions);
 
             AzureFileshareStorageHealthCheck.clientsHolder
-                .TryAdd(this.options.CurrentValue.Connectionstring, client);
+                .TryAdd(connectionString, client);
         }
 
         return client;
+    }
+    private string GetConnectionString()
+    {
+        return $"DefaultEndpointsProtocol=https;AccountName={this.options.CurrentValue.AccountName};AccountKey={this.options.CurrentValue.AccountKey};EndpointSuffix=core.windows.net";
     }
 }
