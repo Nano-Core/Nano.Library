@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+		<ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
