@@ -1,25 +1,29 @@
 using System.Threading.Tasks;
+using Nano.Eventing.Abstractions.Config;
 
 namespace Nano.Eventing.Abstractions;
 
 /// <summary>
-/// Event Handler interface.
+/// Represents a handler for a specific type of event in the Nano eventing system.
+/// <para>
+///     Implement this interface to process messages of type <typeparamref name="TEvent"/>.
+/// </para>
 /// </summary>
-/// <typeparam name="TEvent">The event type.</typeparam>
+/// <typeparam name="TEvent">The type of event to handle.</typeparam>
 public interface IEventingHandler<in TEvent>
     where TEvent : class
 {
     /// <summary>
-    /// Override Prefetch Count.
+    /// Optional override for the prefetch count when subscribing to this event.
+    /// If null, the default prefetch count from <see cref="EventingOptions.PrefetchCount"/> is used.
     /// </summary>
     ushort? OverridePrefetchCount { get; }
 
     /// <summary>
-    /// CallbackAsync.
-    /// Invoked when recieving a publshed message.
+    /// Callback method invoked when a message of type <typeparamref name="TEvent"/> is received.
     /// </summary>
-    /// <param name="event">The instance of type <typeparamref name="TEvent"/>.</param>
-    /// <param name="isRetrying">Is Retrying. Indicates whether the message is being redelivered.</param>
-    /// <returns>Void.</returns>
+    /// <param name="event">The event instance.</param>
+    /// <param name="isRetrying">Indicates whether the message is being redelivered due to a previous failure.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous callback operation.</returns>
     Task CallbackAsync(TEvent @event, bool isRetrying);
 }

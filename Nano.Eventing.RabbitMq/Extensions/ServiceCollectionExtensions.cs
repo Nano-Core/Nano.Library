@@ -9,16 +9,23 @@ using Nano.Eventing.Abstractions.Config;
 namespace Nano.Eventing.RabbitMq.Extensions;
 
 /// <summary>
-/// Service Collection Extensions.
+/// Extension methods for <see cref="IServiceCollection"/> to register eventing services.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Add EasyNetQ Eventiong
+    /// Registers EasyNetQ-based RabbitMQ eventing services in the <see cref="IServiceCollection"/>.
     /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <param name="options"></param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
+    /// <param name="services">The <see cref="IServiceCollection"/> to which eventing services are added.</param>
+    /// <param name="options">Configuration options for RabbitMQ eventing, including connection settings, heartbeat, timeout, prefetch count, and health check options.</param>
+    /// <returns>The <see cref="IServiceCollection"/> with the eventing services registered.</returns>
+    /// <remarks>
+    ///     This method registers:
+    ///     - EasyNetQ as the RabbitMQ client.
+    ///     - <see cref="IEventing"/> as <see cref="RabbitMqEventing"/>.
+    ///     - Optional health checks if <see cref="EventingOptions.UseHealthCheck"/> is true.
+    ///     It also configures JSON serialization using Newtonsoft.Json with default serializer settings.
+    /// </remarks>
     public static IServiceCollection AddEasyNetQEventing(this IServiceCollection services, EventingOptions options)
     {
         if (services == null) 
@@ -48,7 +55,7 @@ public static class ServiceCollectionExtensions
             .UseNewtonsoftJson(serializerSettings);
 
         services
-            .AddScoped<IEventing, EasyNetQEventing>();
+            .AddScoped<IEventing, RabbitMqEventing>();
 
         if (options.UseHealthCheck)
         {

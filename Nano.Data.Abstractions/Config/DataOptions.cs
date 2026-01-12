@@ -9,10 +9,7 @@ namespace Nano.Data.Abstractions.Config;
 /// </summary>
 public class DataOptions
 {
-    /// <summary>
-    /// Section Name.
-    /// </summary>
-    public static string SectionName => "Data";
+    internal static string SectionName => "Data";
 
     /// <summary>
     /// Batch Size.
@@ -113,21 +110,21 @@ public class DataOptions
     /// <summary>
     /// Default Collation.
     /// </summary>
-    public virtual string DefaultCollation { get; set; } = null;
+    public virtual string DefaultCollation { get; set; } = null!;
 
     /// <summary>
     /// Connection String.
     /// </summary>
     [Required]
-    public virtual string ConnectionString { get; set; } = null;
+    public virtual string ConnectionString { get; set; } = null!;
 
     /// <summary>
     /// Cache.
     /// </summary>
-    public virtual CacheOptions Cache { get; set; }
+    public virtual CacheOptions? Cache { get; set; }
 
     /// <summary>
     /// Identity.
     /// </summary>
-    public virtual IdentityOptions Identity { get; set; }
+    public virtual IdentityOptions? Identity { get; set; }
 }

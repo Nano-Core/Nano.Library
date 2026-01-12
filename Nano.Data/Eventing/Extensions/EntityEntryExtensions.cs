@@ -15,13 +15,18 @@ namespace Nano.Data.Eventing.Extensions;
 
 internal static class EntityEntryExtensions
 {
-    internal static EntityEvent GetEntityEvent(this EntityEntry entityEntry)
+    internal static EntityEvent? GetEntityEvent(this EntityEntry entityEntry)
     {
         if (entityEntry == null)
             throw new ArgumentNullException(nameof(entityEntry));
 
         var type = entityEntry
             .GetPublishType();
+
+        if (type == null)
+        {
+            throw new NullReferenceException(nameof(type));
+        }
 
         var entityEvent = entityEntry
             .GetEntityEvent(type);
@@ -56,13 +61,13 @@ internal static class EntityEntryExtensions
                 throw new ArgumentOutOfRangeException(nameof(entityEntry.State), entityEntry.State, $"The {entityEntry.State} is out of range.");
         }
 
-        entityEvent.Data = entityEntry
+        entityEvent?.Data = entityEntry
             .GetEntityEventData(propertyNames);
 
         return entityEvent;
     }
 
-    internal static EntityEvent GetEntityEvent(this EntityEntry entityEntry, Type type)
+    internal static EntityEvent? GetEntityEvent(this EntityEntry entityEntry, Type type)
     {
         if (entityEntry == null)
             throw new ArgumentNullException(nameof(entityEntry));
@@ -122,14 +127,17 @@ internal static class EntityEntryExtensions
                     .GetValue(value);
             } while (indexOfDot > -1);
 
-            entityEventData
-                .Add(name, value);
+            if (value != null)
+            {
+                entityEventData
+                    .Add(name, value);
+            }
         }
 
         return entityEventData;
     }
 
-    internal static Type GetPublishType(this EntityEntry entityEntry)
+    internal static Type? GetPublishType(this EntityEntry entityEntry)
     {
         if (entityEntry == null)
             throw new ArgumentNullException(nameof(entityEntry));
@@ -168,7 +176,7 @@ internal static class EntityEntryExtensions
         var propertyNames = new List<string>();
         while (type is { IsAbstract: false } && type.IsTypeOf(typeof(IEntity)))
         {
-            var attribute = (PublishAttribute)type
+            var attribute = type
                 .GetCustomAttributes(typeof(PublishAttribute))
                 .FirstOrDefault();
 
@@ -178,8 +186,10 @@ internal static class EntityEntryExtensions
                 continue;
             }
 
+            var publishAttribute = (PublishAttribute)(attribute);
+
             propertyNames
-                .AddRange(attribute.PropertyNames);
+                .AddRange(publishAttribute.PropertyNames);
 
             type = type.BaseType;
         }
@@ -258,10 +268,10 @@ internal static class EntityEntryExtensions
                     .FirstOrDefault(x => x.Metadata.Name == propertyNameTemp)?
                     .TargetEntry;
 
-                var hasChanged = nestedEntityEntry
+                var hasChanged = nestedEntityEntry?
                     .HasPublishPropertiesChanged(properties);
 
-                if (hasChanged)
+                if (hasChanged.HasValue && hasChanged.Value)
                 {
                     return true;
                 }
@@ -271,7 +281,7 @@ internal static class EntityEntryExtensions
         return false;
     }
 
-    internal static object TryGetOriginalValue(this EntityEntry entry, string propertyName)
+    internal static object? TryGetOriginalValue(this EntityEntry entry, string propertyName)
     {
         if (entry == null)
             throw new ArgumentNullException(nameof(entry));

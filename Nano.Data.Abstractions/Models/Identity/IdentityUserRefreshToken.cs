@@ -15,19 +15,20 @@ public class IdentityUserRefreshToken<TIdentity> : BaseEntityIdentity<TIdentity>
     /// <summary>
     /// Identity User Id.
     /// </summary>
-    public virtual TIdentity IdentityUserId { get; set; }
+    [Required]
+    public virtual TIdentity IdentityUserId { get; set; } = default!;
 
     /// <summary>
     /// Identity User.
     /// </summary>
-    public virtual IdentityUserEx<TIdentity> IdentityUser { get; set; }
+    public virtual IdentityUserEx<TIdentity> IdentityUser { get; set; } = null!;
 
     /// <summary>
     /// App Id.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string AppId { get; set; }
+    public virtual string AppId { get; set; } = null!;
 
     /// <summary>
     /// Token.
@@ -35,7 +36,7 @@ public class IdentityUserRefreshToken<TIdentity> : BaseEntityIdentity<TIdentity>
     [ProtectedPersonalData]
     [Required]
     [MaxLength(256)]
-    public virtual string Value { get; set; }
+    public virtual string Value { get; set; } = null!;
 
     /// <summary>
     /// Expire At.

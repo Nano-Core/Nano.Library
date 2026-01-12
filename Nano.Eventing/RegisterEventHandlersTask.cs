@@ -9,15 +9,17 @@ using System.Threading.Tasks;
 
 namespace Nano.Eventing;
 
-/// <inheritdoc />
+/// <summary>
+/// Default implementation of <see cref="IRegisterEventHandlersTask"/>.
+/// </summary>
 public class RegisterEventHandlersTask : IRegisterEventHandlersTask
 {
     private readonly IEventing eventing;
 
     /// <summary>
-    /// 
+    /// Initializes a new instance of <see cref="RegisterEventHandlersTask"/>.
     /// </summary>
-    /// <param name="eventing"></param>
+    /// <param name="eventing">The <see cref="IEventing"/> instance used to subscribe handlers.</param>
     public RegisterEventHandlersTask(IEventing eventing)
     {
         this.eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
@@ -54,8 +56,13 @@ public class RegisterEventHandlersTask : IRegisterEventHandlersTask
         {
             var routing = string.Empty;
 
-            var eventType = eventHandlerType
+            var eventType = eventHandlerType?
                 .GetGenericArguments()[0];
+
+            if (eventType == null)
+            {
+                continue;
+            }
 
             var genericType = typeof(IEventingHandler<>)
                 .MakeGenericType(eventType);

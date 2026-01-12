@@ -24,7 +24,7 @@ public class UserOptions
     /// Allowed User Name Characters.
     /// Defaults to abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+
     /// </summary>
-    public virtual string AllowedUserNameCharacters { get; set; } = null;
+    public virtual string AllowedUserNameCharacters { get; set; } = null!;
 
     /// <summary>
     /// Default Roles.

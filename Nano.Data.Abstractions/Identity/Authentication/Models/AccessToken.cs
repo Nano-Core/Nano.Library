@@ -12,18 +12,18 @@ public class AccessToken
     /// App Id.
     /// </summary>
     [MaxLength(256)]
-    public string AppId { get; set; }
+    public string? AppId { get; set; }
 
     /// <summary>
     /// User Id.
     /// </summary>
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
 
     /// <summary>
     /// Token.
     /// </summary>
     [Required]
-    public string Token { get; set; }
+    public string Token { get; set; } = null!;
 
     /// <summary>
     /// Expire At.
@@ -39,5 +39,5 @@ public class AccessToken
     /// <summary>
     /// Refresh Token.
     /// </summary>
-    public RefreshToken RefreshToken { get; set; }
+    public RefreshToken? RefreshToken { get; set; }
 }

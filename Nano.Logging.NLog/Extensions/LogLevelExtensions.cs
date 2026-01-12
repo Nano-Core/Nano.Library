@@ -2,17 +2,9 @@ using Nano.Logging.Abstractions.Enums;
 
 namespace Nano.Logging.NLog.Extensions;
 
-/// <summary>
-/// Log Level Extensions.
-/// </summary>
-public static class LogLevelExtensions
+internal static class LogLevelExtensions
 {
-    /// <summary>
-    /// Get Log-Level.
-    /// </summary>
-    /// <param name="logLevel">The <see cref="LogLevel"/>.</param>
-    /// <returns>The <see cref="Microsoft.Extensions.Logging.LogLevel"/>.</returns>
-    public static global::NLog.LogLevel GetLogLevel(this LogLevel logLevel)
+    internal static global::NLog.LogLevel GetLogLevel(this LogLevel logLevel)
     {
         return logLevel switch
         {

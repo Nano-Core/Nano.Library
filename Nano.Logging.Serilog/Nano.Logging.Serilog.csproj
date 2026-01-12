@@ -1,9 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<nullable>disable</nullable>
-	</PropertyGroup>
-
 	<ItemGroup>
 		<PackageReference Include="Serilog" Version="4.3.0" />
 		<PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />

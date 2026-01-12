@@ -261,7 +261,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     }
 
 
-    private async Task<RefreshToken> CreateRefreshToken(IdentityUserEx<TIdentity> identityUser, string appId = null)
+    private async Task<RefreshToken> CreateRefreshToken(IdentityUserEx<TIdentity> identityUser, string? appId = null)
     {
         if (identityUser == null)
             throw new ArgumentNullException(nameof(identityUser));

@@ -1530,7 +1530,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     #region Claims
 
     /// <inheritdoc />
-    public virtual async Task<IList<Claim>> GetAllClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default)
+    public virtual async Task<IList<Claim>> GetAllClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? transientRoles = null, IDictionary<string, string>? transientClaims = null, CancellationToken cancellationToken = default)
     {
         if (identityUser == null)
             throw new ArgumentNullException(nameof(identityUser));

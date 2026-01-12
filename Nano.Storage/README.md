@@ -1,85 +1,108 @@
-# Nano.Storage
+﻿# Nano.Storage
 [![Build and Deploy](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml/badge.svg)](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml)
 [![NuGet](https://img.shields.io/nuget/dt/Nano.Storage.svg)](https://www.nuget.org/packages/Nano.Storage/)
 [![NuGet](https://img.shields.io/nuget/v/Nano.Storage.svg)](https://www.nuget.org/packages/Nano.Storage/)
+
+> _Pluggable, provider-agnostic file storage for Nano applications._
 
 ***
 
 ## Table of Contents
 * [Summary](#summary)
-* [Configuration](#configuration)
 * [Registration](#registration)
+* [Configuration](#configuration)
 * [Storage Providers](#storage-providers)
-* [Path Provider](#path-provider)
+* [Examples](#examples)
 
 ## Summary
-Extend your Nano application with integration to file storage.  
-Nano supports cloud storage integration.  
+**Nano.Storage** adds a flexible, provider-agnostic file storage layer to your Nano applications.  
 
-The ```IStorageProvider``` is registered during startup, and the implementing type defines the storage provider used in the application.  
+Connect a storage system by registering an `IStorageProvider`. 
+Each provider handles setup, connectivity, and optional health checks, etc. while Nano exposes a consistent interface.  
+
+When a storage provider is registered, Nano automatically provides an `IPathProvider` that can be injected, giving easy access to 
+the root directory and the temporary (`tmp`) directory.
+
+## Registration
+To use Nano.Storage, you must register a storage provider as a dependency in your application.  
+This is done using the `AddNanoStorage<TProvider>()` extension method, where `TProvider` is your chosen `IStorageProvider` implementation.
+
+```csharp
+.ConfigureServices(services =>
+{
+    services
+        .AddNanoStorage<TProvider>();
+});
+```
+
+#### docker-compose:
+Besides registering storage in your Nano application, you also need to configure your docker-compose setup 
+so that your container can access the storage directory both locally. 
+
+This is done by mapping a local folder to a path inside the container:
+```yaml
+services:
+  {my.service}:
+    volumes:
+      - {share-name}:/mnt/{share-name}
+```
+
+#### Kubernetes:
+When deploying Nano applications to Kubernetes, your `deployment.yaml` must also include a mapping to the shared storage directory.  
+
+How this mapping is configured depends on the storage provider you are using.  
+Please refer to the documentation of the specific `IStorageProvider` implementation for detailed instructions.  
+
+This ensures that your application code can access the same storage paths inside Kubernetes in cloud environments.
+
+> 💡 Optionally (recommended), map a writable `tmp` directory for temporary files. This allows the main container to remain immutable while supporting transient data.
+```yaml
+template
+  spec
+    volumes:
+    - name: tmp
+      emptyDir: {}
+```
 
 ## Configuration
-The ```Storage``` section of the configuration defines storage in the application.  
+The ```Storage``` section in the configuration defines the storage provider and related settings used by the application.
 
-##### Eventing Section
+| Setting             | Type   | Default     | Description                                                                                                           |
+| ------------------- | ------ | ----------- | --------------------------------------------------------------------------------------------------------------------- |
+|  `AccountName`      | string | null        | The account or tenant identifier used to authenticate with the storage provider.                                      |
+|  `AccountKey`       | string | null        | The secret, key, or credential used to authenticate with the storage provider.                                        |
+|  `ShareName`        | string | null        | The logical container, share, or bucket name used for file storage.                                                   |
+|  `UseHealthCheck`   | bool   | null        | A value indicating whether storage health checks should be registered.  _Only relevant for_ ```NanoWebApplication```  |
+|  `UnhealthyStatus`  | enum   | Unhealthy   | The health status reported when the storage provider is unavailable. _Only relevant for_ ```NanoWebApplication```     |
+
 ```json
   "Storage": {
     "AccountName": null,
     "AccountKey": null,
     "ShareName": null,
-    "EnableHealthCheck": true,
+    "UseHealthCheck": true,
     "UnhealthyStatus": "Unhealthy"
   }
 ```
 
-Config UseHealthCheck: When enabling health-checks in the storage section of the confiugration, the application will be configured with a health-check for the storage provider. 
-When the application starts, a check is made to ensure that the storage provider is up and running, returning a healthy status code when checked.  
-The health status of the application, including the storage provider, can be found here:  
-* ```http://{host}:{port}/healthz```  
-
-## Registration
-Show generic registration example.  
-The storage provider must be registered as dependencies.
-Invoke the method ```.AddStorage<TProvider>();```, using the storage provider implementation as generic type parameters.
-
-##### Sample Implementation
-```csharp
-.ConfigureServices(x =>
-{
-    x.AddStorage<EasyNetQProvider>();
-})
-```
-
 ## Storage Providers
-Storage providers integrate shared drives into your container and enables easy access to mapped drives.  
-Nano provides several storage providers (and more added on request), so usually there is no need to implement a custom data provider for your application.  
+Storage providers integrate shared storage into your application and provide easy access to mapped directories.  
 
-Storage providers implements the interface ```IStorageProvider```. It contains a single method ```Configure(...)```, that is responsible for handling any configuration and setup required for the storage provider.  
+All storage providers implement the `IStorageProvider` interface. 
+This interface is responsible for handling all configuration and setup required for the storage provider.  
 
-The eventing providers currently supported by Nano, can be referenced in the [Appendix - Supported Providers](supported-providers).  
+To implement a new storage provider:
 
-### Supported Providers
-The following providers are currently supported.  
-* Azure File Share 
+1. Create a class that implements `IStorageProvider`.
+2. Ensure that all required services are registered in `Configure`.
+3. Register your provider in the application using `AddNanoStorage<MyProvider>()`.
 
-### Create Custom Provider
-It's also possible to implement your own provider. 
-Implement the interface ```IStorageProvider```, and use the implementation when registering Nano storage.
-
-## Path Provider
-Nano exposes ```IPathProvider``` that gets registered when a Storage Provider is registered.
-This gives easy access to the root path of your shared drives as well as the temp dir.
-Works on both Linux, Mac and Windows.
-
-Show Path.Combine example.
-
-## Container setup
-Docker / Kubernetes requirements for storage mapping
-Show what yaml that needs to be added to docker compose and kubernets and for both tmp drive and shared drive.
+The following storage providers are currently supported:
+* [Azure.Storage.Azure](https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Storage.Azure)
 
 ## Examples
 See examples of Nano applications with storage registered here:
-* link 1
-* link 2
+* [Nano.Templates.Web.Storage](https://github.com/Nano-Core/Nano.Templates/tree/master/Web.Storage)
+* [Nano.Templates.Console.Storage](https://github.com/Nano-Core/Nano.Templates/tree/master/Console.Storage)
 
 ***

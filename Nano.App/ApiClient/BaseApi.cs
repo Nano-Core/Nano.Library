@@ -37,7 +37,7 @@ public abstract class BaseApi
 {
     private volatile AccessToken accessToken;
 
-    private readonly IOptionsMonitor<ApiOptions> apiOptions;
+    private readonly IOptionsMonitor<ApiClientOptions> apiOptions;
     private readonly HttpClient httpClient;
 
     /// <summary>
@@ -48,10 +48,10 @@ public abstract class BaseApi
     /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="apiOptions">The <see cref="ApiOptions"/>.</param>
+    /// <param name="apiOptions">The <see cref="ApiClientOptions"/>.</param>
     /// <param name="httpContextAccessor">The <see cref="IHttpContextAccessor"/>.</param>
     /// <param name="httpClient">The <see cref="HttpClient"/>.</param>
-    protected BaseApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+    protected BaseApi(IOptionsMonitor<ApiClientOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
     {
         this.apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
         this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
@@ -656,7 +656,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+    protected BaseApi(IOptionsMonitor<ApiClientOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         : base(apiOptions, httpClient, httpContextAccessor)
     {
     }

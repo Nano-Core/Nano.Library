@@ -12,16 +12,18 @@ namespace Nano.Logging.Extensions;
 // - IHostApplicationBuilder.Metrics(IMetricsBuilder)
 
 /// <summary>
-/// Service Collection Extensions.
+/// Provides extension methods for <see cref="IServiceCollection"/> to register Nano services.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds logging provider of type <typeparamref name="TProvider"/> to the <see cref="IServiceCollection"/>.
+    /// Registers a Nano logging provider of type <typeparamref name="TProvider"/> with the <see cref="IServiceCollection"/>.
+    /// Configures the provider using the <see cref="LoggingOptions"/> section from the application's configuration.
     /// </summary>
-    /// <typeparam name="TProvider">The <typeparamref name="TProvider"/> type.</typeparam>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
+    /// <typeparam name="TProvider">The type of the logging provider to register. Must implement <see cref="ILoggingProvider"/> and have a parameterless constructor.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/> to add the logging provider to.</param>
+    /// <returns>The same <see cref="IServiceCollection"/> instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="services"/> is <c>null</c>.</exception>
     public static IServiceCollection AddNanoLogging<TProvider>(this IServiceCollection services)
         where TProvider : class, ILoggingProvider, new()
     {

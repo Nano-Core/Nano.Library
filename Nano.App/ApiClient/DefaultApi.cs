@@ -12,7 +12,7 @@ namespace Nano.App.ApiClient;
 public class DefaultApi : BaseApi<Guid>
 {
     /// <inheritdoc />
-    public DefaultApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+    public DefaultApi(IOptionsMonitor<ApiClientOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         : base(apiOptions, httpClient, httpContextAccessor)
     {
     }

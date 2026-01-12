@@ -11,10 +11,21 @@ using Nano.Logging.Log4Net.Extensions;
 
 namespace Nano.Logging.Log4Net;
 
-/// <inheritdoc />
+/// <summary>
+/// A logging provider that configures log4net as the application's logging framework.
+/// </summary>
 public class Log4NetProvider : ILoggingProvider
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Configures log4net logging for the application using the provided <see cref="LoggingOptions"/>.
+    /// <para>
+    ///     This includes creating a console appender with a timestamped output format, setting the default minimum log level,
+    ///     applying namespace-specific log level overrides, and registering log4net with the <see cref="IServiceCollection"/>.
+    /// </para>
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> to register log4net services with.</param>
+    /// <param name="options">The <see cref="LoggingOptions"/> controlling log levels and overrides.</param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="services"/> or <paramref name="options"/> is <c>null</c>.</exception>
     public virtual void Configure(IServiceCollection services, LoggingOptions options)
     {
         if (services == null)
@@ -46,17 +57,14 @@ public class Log4NetProvider : ILoggingProvider
 
         hierarchy.Root.Level = options.LogLevel.GetLogLevel();
 
-        if (options.LogLevelOverrides != null)
+        foreach (var over in options.LogLevelOverrides)
         {
-            foreach (var over in options.LogLevelOverrides)
+            if (hierarchy.GetLogger(over.Namespace) is Logger logger)
             {
-                if (hierarchy.GetLogger(over.Namespace) is Logger logger)
-                {
-                    logger.Level = over.LogLevel.GetLogLevel();
+                logger.Level = over.LogLevel.GetLogLevel();
 
-                    logger
-                        .AddAppender(consoleAppender);
-                }
+                logger
+                    .AddAppender(consoleAppender);
             }
         }
 

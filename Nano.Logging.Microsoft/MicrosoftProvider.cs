@@ -7,10 +7,21 @@ using Nano.Logging.Microsoft.Extensions;
 
 namespace Nano.Logging.Microsoft;
 
-/// <inheritdoc />
+/// <summary>
+/// A logging provider that configures the built-in Microsoft.Extensions.Logging framework.
+/// </summary>
 public class MicrosoftProvider : ILoggingProvider
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Configures Microsoft logging for the application using the provided <see cref="LoggingOptions"/>.
+    /// <para>
+    ///     This includes adding a simple console logger with timestamped output, setting the default minimum log level,
+    ///     and applying namespace-specific log level overrides.
+    /// </para>
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> to register Microsoft logging services with.</param>
+    /// <param name="options">The <see cref="LoggingOptions"/> controlling log levels and overrides.</param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="services"/> or <paramref name="options"/> is <c>null</c>.</exception>
     public virtual void Configure(IServiceCollection services, LoggingOptions options)
     {
         if (services == null)
@@ -30,23 +41,20 @@ public class MicrosoftProvider : ILoggingProvider
                 
                 x.SetMinimumLevel(options.LogLevel.GetLogLevel());
 
-                if (options.LogLevelOverrides != null)
+                foreach (var @override in options.LogLevelOverrides)
                 {
-                    foreach (var @override in options.LogLevelOverrides)
+                    x.AddFilter((category, logLevel) =>
                     {
-                        x.AddFilter((category, logLevel) =>
+                        if (category?.StartsWith(@override.Namespace) ?? false)
                         {
-                            if (category.StartsWith(@override.Namespace))
-                            {
-                                var filterLogLevel = @override.LogLevel
-                                    .GetLogLevel();
+                            var filterLogLevel = @override.LogLevel
+                                .GetLogLevel();
 
-                                return logLevel >= filterLogLevel;
-                            }
+                            return logLevel >= filterLogLevel;
+                        }
 
-                            return true;
-                        });
-                    }
+                        return true;
+                    });
                 }
             });
     }

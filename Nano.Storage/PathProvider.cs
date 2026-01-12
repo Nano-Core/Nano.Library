@@ -6,8 +6,6 @@ using Nano.Storage.Abstractions.Config;
 
 namespace Nano.Storage;
 
-// BUG: Handle windows vs linux vs mac
-
 /// <summary>
 /// Default implementation of <see cref="IPathProvider"/> that provides filesystem paths based on the configured <see cref="StorageOptions"/>.
 /// </summary>

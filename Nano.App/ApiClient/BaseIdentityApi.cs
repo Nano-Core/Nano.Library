@@ -31,7 +31,7 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     protected static string IdentityController => $"{typeof(TUser).Name.ToLower()}s";
 
     /// <inheritdoc />
-    protected BaseIdentityApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+    protected BaseIdentityApi(IOptionsMonitor<ApiClientOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         : base(apiOptions, httpClient, httpContextAccessor)
     {
     }

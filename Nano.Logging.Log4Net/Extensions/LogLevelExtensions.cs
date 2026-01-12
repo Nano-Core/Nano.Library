@@ -3,17 +3,9 @@ using Nano.Logging.Abstractions.Enums;
 
 namespace Nano.Logging.Log4Net.Extensions;
 
-/// <summary>
-/// Log4Net Log-Level Extensions.
-/// </summary>
-public static class Log4NetLogLevelExtensions
+internal static class Log4NetLogLevelExtensions
 {
-    /// <summary>
-    /// Get Log-Level.
-    /// </summary>
-    /// <param name="logLevel">The <see cref="LogLevel"/>.</param>
-    /// <returns>The <see cref="Level"/>.</returns>
-    public static Level GetLogLevel(this LogLevel logLevel)
+    internal static Level GetLogLevel(this LogLevel logLevel)
     {
         return logLevel switch
         {

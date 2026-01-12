@@ -3,3 +3,19 @@
 [![NuGet](https://img.shields.io/nuget/dt/Nano.Logging.Abstractions.svg)](https://www.nuget.org/packages/Nano.Logging.Abstractions/)
 [![NuGet](https://img.shields.io/nuget/v/Nano.Logging.Abstractions.svg)](https://www.nuget.org/packages/Nano.Logging.Abstractions/)
 
+> _Pluggable, provider-agnostic logging for Nano applications._
+
+***
+
+## Table of Contents
+* [Summary](#summary)
+
+## Summary
+Abstractions contains the interfaces used when implementing logging providers.
+
+This should not be included indepentely and is already included in [Nano.Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging), 
+which you should use when implementing custom logging providers.
+
+Read more here: [Nano.Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)
+
+***

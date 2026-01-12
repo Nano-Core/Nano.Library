@@ -1,9 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<nullable>disable</nullable>
-	</PropertyGroup>
-
 	<ItemGroup>
 	  <ProjectReference Include="..\Nano.Common\Nano.Common.csproj" />
 	</ItemGroup>

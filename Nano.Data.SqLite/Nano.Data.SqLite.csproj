@@ -1,9 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<nullable>disable</nullable>
-	</PropertyGroup>
-
 	<ItemGroup>
 		<PackageReference Include="AspNetCore.HealthChecks.Sqlite" Version="9.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.11" />

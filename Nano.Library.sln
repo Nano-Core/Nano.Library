@@ -30,8 +30,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\build-and-deploy.yml = .github\workflows\build-and-deploy.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.App.Web", "Nano.App.Web\Nano.App.Web.csproj", "{9DCA21D0-C8D3-97D0-6BD6-01FC69E0DBE9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Nano.Library", ".tests\Tests.Nano.Library\Tests.Nano.Library.csproj", "{F8CDE9D5-7786-9CD4-173A-20498276AE8A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.Common", "Nano.Common\Nano.Common.csproj", "{0EC98B4B-4E9F-E2FC-4E50-246F24E929CA}"
@@ -78,6 +76,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.All", "Nano.All\Nano.A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NanoCore", "NanoCore\NanoCore.csproj", "{60DC9187-86CA-AB6D-F1A3-595B71E237F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.App.Api", "Nano.App.Api\Nano.App.Api.csproj", "{CB3FC7FE-AA4F-D181-F711-3A2592914A53}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,10 +88,6 @@ Global
 		{30C59216-F05B-421F-AB63-FA9F8F3BE7EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30C59216-F05B-421F-AB63-FA9F8F3BE7EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30C59216-F05B-421F-AB63-FA9F8F3BE7EB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9DCA21D0-C8D3-97D0-6BD6-01FC69E0DBE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9DCA21D0-C8D3-97D0-6BD6-01FC69E0DBE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9DCA21D0-C8D3-97D0-6BD6-01FC69E0DBE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9DCA21D0-C8D3-97D0-6BD6-01FC69E0DBE9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F8CDE9D5-7786-9CD4-173A-20498276AE8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F8CDE9D5-7786-9CD4-173A-20498276AE8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8CDE9D5-7786-9CD4-173A-20498276AE8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -184,6 +180,10 @@ Global
 		{60DC9187-86CA-AB6D-F1A3-595B71E237F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60DC9187-86CA-AB6D-F1A3-595B71E237F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60DC9187-86CA-AB6D-F1A3-595B71E237F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB3FC7FE-AA4F-D181-F711-3A2592914A53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB3FC7FE-AA4F-D181-F711-3A2592914A53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB3FC7FE-AA4F-D181-F711-3A2592914A53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB3FC7FE-AA4F-D181-F711-3A2592914A53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

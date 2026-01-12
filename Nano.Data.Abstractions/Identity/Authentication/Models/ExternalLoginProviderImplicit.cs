@@ -11,5 +11,5 @@ public class ExternalLoginProviderImplicit : BaseLogInExternalProvider
     /// Access Token.
     /// </summary>
     [Required]
-    public virtual string AccessToken { get; set; }
+    public virtual string AccessToken { get; set; } = null!;
 }

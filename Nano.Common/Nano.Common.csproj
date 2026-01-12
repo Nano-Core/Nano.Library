@@ -1,9 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<nullable>disable</nullable>
-	</PropertyGroup>
-
 	<ItemGroup>
 		<PackageReference Include="libphonenumber-csharp" Version="9.0.21" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.1" />

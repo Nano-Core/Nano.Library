@@ -328,7 +328,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="refreshToken"></param>
     /// <param name="appId"></param>
     /// <returns></returns>
-    Task<IdentityUserRefreshToken<TIdentity>> CreateRefreshToken(TIdentity userId, RefreshToken refreshToken, string appId = null);
+    Task<IdentityUserRefreshToken<TIdentity>> CreateRefreshToken(TIdentity userId, RefreshToken refreshToken, string? appId = null);
 
     #endregion
 
@@ -518,7 +518,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    Task<IList<Claim>> GetAllClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string> transientRoles = null, IDictionary<string, string> transientClaims = null, CancellationToken cancellationToken = default);
+    Task<IList<Claim>> GetAllClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? transientRoles = null, IDictionary<string, string>? transientClaims = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the <see cref="Claim"/> of a user.

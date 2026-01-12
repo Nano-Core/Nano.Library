@@ -1,32 +1,33 @@
 namespace Nano.Logging.Abstractions.Enums;
 
 /// <summary>
-/// Log Level
+/// Represents the severity level of a log message.
+/// Used by logging providers to determine which messages should be recorded or displayed.
 /// </summary>
 public enum LogLevel
 {
     /// <summary>
-    /// Debug.
+    /// Debug-level messages, typically used for detailed diagnostic information.
     /// </summary>
     Debug,
 
     /// <summary>
-    /// Information.
+    /// Informational messages that highlight the progress of the application.
     /// </summary>
     Information,
 
     /// <summary>
-    /// Warning.
+    /// Warning messages indicating a potential issue or important event that does not stop program execution.
     /// </summary>
     Warning,
 
     /// <summary>
-    /// Error.
+    /// Error messages indicating a failure that prevents a specific operation from completing.
     /// </summary>
     Error,
 
     /// <summary>
-    /// Fatal.
+    /// Fatal errors representing critical failures that cause the application to terminate.
     /// </summary>
     Fatal
 }

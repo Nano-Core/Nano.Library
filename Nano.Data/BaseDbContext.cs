@@ -31,7 +31,7 @@ using Z.EntityFramework.Plus;
 
 namespace Nano.Data;
 
-// TODO: Entity Event Map (Important)
+// BUG: Entity Event Map (Important)
 // 1. Make a map of Publish Attributes and their property names.
 // 2. When SaveChanges then check if any property names are affected (e.g. User.IdentityUser.Email is changed, then User needs to be fetched and published)
 
@@ -394,7 +394,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
             entityEntry.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
         }
     }
-    private void SetOriginalValues(object entity, object tracked = null, EntityEntry owner = null, string propertName = null)
+    private void SetOriginalValues(object entity, object? tracked = null, EntityEntry? owner = null, string? propertName = null)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));

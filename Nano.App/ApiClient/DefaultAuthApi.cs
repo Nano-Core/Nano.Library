@@ -10,7 +10,7 @@ namespace Nano.App.ApiClient;
 public class DefaultAuthApi : BaseApi<Guid>
 {
     /// <inheritdoc />
-    protected DefaultAuthApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+    protected DefaultAuthApi(IOptionsMonitor<ApiClientOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         : base(apiOptions, httpClient, httpContextAccessor)
     {
     }

@@ -3,17 +3,9 @@ using Serilog.Events;
 
 namespace Nano.Logging.Serilog.Extensions;
 
-/// <summary>
-/// Log Level Extensions.
-/// </summary>
-public static class LogLevelExtensions
+internal static class LogLevelExtensions
 {
-    /// <summary>
-    /// Get Log-Level.
-    /// </summary>
-    /// <param name="logLevel">The <see cref="LogLevel"/>.</param>
-    /// <returns>The <see cref="LogEventLevel"/>.</returns>
-    public static LogEventLevel GetLogLevel(this LogLevel logLevel)
+    internal static LogEventLevel GetLogLevel(this LogLevel logLevel)
     {
         return logLevel switch
         {

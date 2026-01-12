@@ -13,7 +13,7 @@ public abstract class BaseLogIn
     /// App Id.
     /// </summary>
     [MaxLength(256)]
-    public virtual string AppId { get; set; }
+    public virtual string? AppId { get; set; }
 
     /// <summary>
     /// Is Remember Me.

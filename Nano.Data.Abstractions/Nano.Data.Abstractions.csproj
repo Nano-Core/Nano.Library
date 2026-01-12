@@ -1,9 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<nullable>disable</nullable>
-	</PropertyGroup>
-
 	<ItemGroup>
 		<PackageReference Include="DynamicExpression" Version="10.0.0" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />

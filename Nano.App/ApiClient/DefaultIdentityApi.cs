@@ -12,7 +12,7 @@ public class DefaultIdentityApi<TUser> : BaseIdentityApi<TUser, Guid>
     where TUser : class, IEntityUser<Guid>
 {
     /// <inheritdoc />
-    protected DefaultIdentityApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+    protected DefaultIdentityApi(IOptionsMonitor<ApiClientOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         : base(apiOptions, httpClient, httpContextAccessor)
     {
     }

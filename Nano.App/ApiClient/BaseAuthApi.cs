@@ -20,7 +20,7 @@ public abstract class BaseAuthApi<TIdentity> : BaseApi<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseAuthApi(IOptionsMonitor<ApiOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+    protected BaseAuthApi(IOptionsMonitor<ApiClientOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         : base(apiOptions, httpClient, httpContextAccessor)
     {
     }

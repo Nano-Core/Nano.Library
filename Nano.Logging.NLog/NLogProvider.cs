@@ -10,10 +10,21 @@ using NLog.Targets;
 
 namespace Nano.Logging.NLog;
 
-/// <inheritdoc />
+/// <summary>
+/// A logging provider that configures NLog as the application's logging framework.
+/// </summary>
 public class NLogProvider : ILoggingProvider
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Configures NLog logging for the application using the provided <see cref="LoggingOptions"/>.
+    /// <para>
+    ///     This includes creating a console target with timestamped output, setting the default minimum log level,
+    ///     applying namespace-specific log level overrides, and registering NLog with the <see cref="IServiceCollection"/>.
+    /// </para>
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> to register NLog services with.</param>
+    /// <param name="options">The <see cref="LoggingOptions"/> controlling log levels and overrides.</param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="services"/> or <paramref name="options"/> is <c>null</c>.</exception>
     public virtual void Configure(IServiceCollection services, LoggingOptions options)
     {
         if (services == null)
@@ -34,13 +45,10 @@ public class NLogProvider : ILoggingProvider
         configuration.LoggingRules
             .Add(new LoggingRule("*", options.LogLevel.GetLogLevel(), target));
 
-        if (options.LogLevelOverrides != null)
+        foreach (var @override in options.LogLevelOverrides)
         {
-            foreach (var @override in options.LogLevelOverrides)
-            {
-                configuration.LoggingRules
-                    .Add(new LoggingRule($"{@override.Namespace}.*", @override.LogLevel.GetLogLevel(), target));
-            }
+            configuration.LoggingRules
+                .Add(new LoggingRule($"{@override.Namespace}.*", @override.LogLevel.GetLogLevel(), target));
         }
 
         services

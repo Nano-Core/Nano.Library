@@ -51,7 +51,7 @@ internal static class ServiceCollectionExtensions
                 .AddHttpClient(type.Name, (serviceProvider, client) =>
                 {
                     var apiOptions = serviceProvider
-                        .GetRequiredKeyedService<ApiOptions>(optionsServiceId);
+                        .GetRequiredKeyedService<ApiClientOptions>(optionsServiceId);
 
                     client.Timeout = apiOptions.Timeout;
                     client.BaseAddress = new Uri(apiOptions.Host);
@@ -76,7 +76,7 @@ internal static class ServiceCollectionExtensions
                         .CreateClient(type.Name);
 
                     var apiOptions = serviceProvider
-                        .GetRequiredKeyedService<ApiOptions>(optionsServiceId);
+                        .GetRequiredKeyedService<ApiClientOptions>(optionsServiceId);
 
                     var httpContextAccessor = serviceProvider
                         .GetRequiredService<IHttpContextAccessor>();

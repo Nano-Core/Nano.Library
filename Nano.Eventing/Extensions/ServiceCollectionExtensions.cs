@@ -10,16 +10,27 @@ using System.Linq;
 namespace Nano.Eventing.Extensions;
 
 /// <summary>
-/// Service Collection Extensions.
+/// Extension methods for <see cref="IServiceCollection"/> to register Nano eventing services and handlers.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds eventing provider of type <typeparamref name="TProvider"/> to the <see cref="IServiceCollection"/>.
+    /// Adds an eventing provider of type <typeparamref name="TProvider"/> to the service collection,
+    /// registers all <see cref="IEventingHandler{TEvent}"/> implementations, and configures the <see cref="EventingOptions"/> section from configuration.
     /// </summary>
-    /// <typeparam name="TProvider">The <typeparamref name="TProvider"/> type.</typeparam>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
+    /// <typeparam name="TProvider">The type of the eventing provider. Must implement <see cref="IEventingProvider"/> and have a parameterless constructor.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/> to which eventing services are added.</param>
+    /// <returns>The <see cref="IServiceCollection"/> with the eventing provider and handlers registered.</returns>
+    /// <remarks>
+    ///     This method performs the following actions:
+    ///     <list type="bullet">
+    ///     <item>Registers the <see cref="EventingOptions"/> configuration section.</item>
+    ///     <item>Creates an instance of <typeparamref name="TProvider"/> and invokes its <see cref="IEventingProvider.Configure"/> method.</item>
+    ///     <item>Registers <typeparamref name="TProvider"/> as a singleton <see cref="IEventingProvider"/>.</item>
+    ///     <item>Scans all loaded types for implementations of <see cref="IEventingHandler{TEvent}"/> and registers them as scoped services.</item>
+    ///     <item>Registers <see cref="IRegisterEventHandlersTask"/> as a scoped service for automatic event handler registration.</item>
+    ///     </list>
+    /// </remarks>
     public static IServiceCollection AddNanoEventing<TProvider>(this IServiceCollection services)
         where TProvider : class, IEventingProvider, new()
     {
@@ -70,8 +81,13 @@ public static class ServiceCollectionExtensions
 
         foreach (var eventHandlerType in eventHandlerTypes)
         {
-            var serviceType = eventHandlerType.GenericType;
-            var implementationType = eventHandlerType.Type;
+            var serviceType = eventHandlerType?.GenericType;
+            var implementationType = eventHandlerType?.Type;
+
+            if (serviceType == null || implementationType == null)
+            {
+                continue;
+            }
 
             services
                 .AddScoped(serviceType, implementationType);

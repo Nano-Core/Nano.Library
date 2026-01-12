@@ -9,10 +9,7 @@ namespace Nano.App.Config;
 /// </summary>
 public abstract class BaseAppOptions
 {
-    /// <summary>
-    /// Section Name.
-    /// </summary>
-    public static string SectionName => "App";
+    internal static string SectionName => "App";
 
     /// <summary>
     /// Name.
@@ -42,5 +39,5 @@ public abstract class BaseAppOptions
     /// Apis.
     /// </summary>
     [Required]
-    public virtual IDictionary<string, ApiOptions> Apis { get; set; } = new Dictionary<string, ApiOptions>();
+    public virtual IDictionary<string, ApiClientOptions> Apis { get; set; } = new Dictionary<string, ApiClientOptions>();
 }

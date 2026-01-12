@@ -1,21 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<Summary>Nano Framework components</Summary>
-		<Description>
-			This package is part of the Nano Framework, that enables you to quickly build micros-service architecures,
-			and ensures development time is invested in business featues and not technical trouble.
-			See more details here: https://github.com/Nano-Core/Nano.Library
-		</Description>
-		<PackageReleaseNotes>
-			- Added .NET 10 support
-		</PackageReleaseNotes>
-		<nullable>enable</nullable>
-	</PropertyGroup>
-
 	<ItemGroup>
 		<ProjectReference Include="..\Nano.App.Console\Nano.App.Console.csproj" />
-		<ProjectReference Include="..\Nano.App.Web\Nano.App.Web.csproj" />
 		<ProjectReference Include="..\Nano.App\Nano.App.csproj" />
 		<ProjectReference Include="..\Nano.Common\Nano.Common.csproj" />
 		<ProjectReference Include="..\Nano.Data.Abstractions\Nano.Data.Abstractions.csproj" />
@@ -37,4 +23,5 @@
 		<ProjectReference Include="..\Nano.Storage.Azure\Nano.Storage.Azure.csproj" />
 		<ProjectReference Include="..\Nano.Storage\Nano.Storage.csproj" />
 	</ItemGroup>
+
 </Project>
