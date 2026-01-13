@@ -35,8 +35,7 @@ public class RabbitMqEventing : IEventing
     public virtual async Task PublishAsync<TMessage>(TMessage body, string routing = "", CancellationToken cancellationToken = default)
         where TMessage : class
     {
-        if (body == null)
-            throw new ArgumentNullException(nameof(body));
+        ArgumentNullException.ThrowIfNull(body);
 
         var name = typeof(TMessage)
             .GetFriendlyName();
@@ -53,12 +52,11 @@ public class RabbitMqEventing : IEventing
     public virtual async Task SubscribeAsync<TMessage>(IEventingHandler<TMessage> eventHandler, string routing = "", ushort? prefetchCount = null, CancellationToken cancellationToken = default)
         where TMessage : class
     {
-        if (eventHandler == null) 
-            throw new ArgumentNullException(nameof(eventHandler));
+        ArgumentNullException.ThrowIfNull(eventHandler);
 
         var name = typeof(TMessage)
             .GetFriendlyName();
-        
+
         var queueName = RabbitMqEventing.GetQueueName(name, routing);
 
         var queue = await this.bus.Advanced
@@ -79,17 +77,17 @@ public class RabbitMqEventing : IEventing
         await this.bus.Advanced
             .ConsumeAsync<TMessage>(queue, (message, info) =>
             {
-                var callbackTask = (Task)eventHandler
+                var callbackTask = eventHandler
                     .GetType()
                     .GetMethod(nameof(IEventingHandler<>.CallbackAsync))?
-                    .Invoke(eventHandler, [message.Body, info.Redelivered])!;
+                    .Invoke(eventHandler, [message.Body, info.Redelivered]);
 
                 if (callbackTask == null)
                 {
                     throw new NullReferenceException(nameof(callbackTask));
                 }
 
-                return callbackTask;
+                return (Task)callbackTask;
             }, x =>
             {
                 if (prefetchCount.HasValue)
@@ -102,11 +100,8 @@ public class RabbitMqEventing : IEventing
 
     private static string GetQueueName(string name, string routing)
     {
-        if (name == null)
-            throw new ArgumentNullException(nameof(name));
-
-        if (routing == null)
-            throw new ArgumentNullException(nameof(routing));
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(routing);
 
         var appName = Assembly.GetEntryAssembly()?.GetName().Name;
 

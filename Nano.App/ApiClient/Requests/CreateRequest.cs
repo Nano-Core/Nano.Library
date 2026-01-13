@@ -1,4 +1,5 @@
-﻿using Nano.Data.Abstractions.Models.Abstractions;
+﻿using System.ComponentModel.DataAnnotations;
+using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.ApiClient.Requests;
 
@@ -10,7 +11,8 @@ public class CreateRequest : BaseRequestPost
     /// <summary>
     /// Entity.
     /// </summary>
-    public virtual IEntityCreatable Entity { get; set; }
+    [Required]
+    public virtual IEntityCreatable Entity { get; set; } = null!;
 
     /// <summary>
     /// Constructor.

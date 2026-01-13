@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.App.ApiClient.Requests;
 
@@ -14,7 +15,8 @@ public class DeleteManyRequest<TIdentity> : BaseRequestDelete
     /// <summary>
     /// Ids.
     /// </summary>
-    public virtual IEnumerable<TIdentity> Ids { get; set; }
+    [Required]
+    public virtual IEnumerable<TIdentity> Ids { get; set; } = [];
 
     /// <summary>
     /// Constructor.

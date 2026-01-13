@@ -29,8 +29,7 @@ public class AuthExternalFacebookRepository : IAuthExternalFacebookRepository
     /// <inheritdoc />
     public virtual async Task<ExternalLogInData> Authenticate(ExternalLoginProviderFacebook provider, CancellationToken cancellationToken = default)
     {
-        if (provider == null)
-            throw new ArgumentNullException(nameof(provider));
+        ArgumentNullException.ThrowIfNull(provider);
 
         if (options == null)
             throw new ArgumentNullException(nameof(options));
@@ -79,7 +78,7 @@ public class AuthExternalFacebookRepository : IAuthExternalFacebookRepository
                     .ReadAsStringAsync(cancellationToken);
 
                 var externalLoginData = JsonConvert.DeserializeObject<ExternalLogInData>(user);
-                    
+
                 externalLoginData?.ExternalToken = new ExternalLoginTokenData
                 {
                     Name = "Facebook",
@@ -97,8 +96,7 @@ public class AuthExternalFacebookRepository : IAuthExternalFacebookRepository
     /// <inheritdoc />
     public virtual async Task<ExternalLoginTokenData> AuthenticateRefresh(LogInExternalRefreshFacebook logInExternalRefresh, CancellationToken cancellationToken = default)
     {
-        if (logInExternalRefresh == null)
-            throw new ArgumentNullException(nameof(logInExternalRefresh));
+        ArgumentNullException.ThrowIfNull(logInExternalRefresh);
 
         await Task.CompletedTask;
 

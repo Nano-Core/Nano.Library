@@ -14,7 +14,7 @@ public class DefaultIdentityAuthRepository<TIdentity> : BaseIdentityAuthReposito
     /// <param name="identityRepository"></param>
     /// <param name="authJwtRepository"></param>
     /// <param name="authExternalRepository"></param>
-    public DefaultIdentityAuthRepository(IIdentityRepository<TIdentity> identityRepository, IAuthJwtRepository authJwtRepository, IAuthExternalRepository authExternalRepository = null)
+    public DefaultIdentityAuthRepository(IIdentityRepository<TIdentity> identityRepository, IAuthJwtRepository authJwtRepository, IAuthExternalRepository? authExternalRepository = null)
         : base(identityRepository, authJwtRepository, authExternalRepository)
     {
     }
@@ -29,7 +29,7 @@ public class DefaultIdentityAuthRepository : BaseIdentityAuthRepository<Guid>, I
     /// <param name="identityRepository"></param>
     /// <param name="authJwtRepository"></param>
     /// <param name="authExternalRepository"></param>
-    public DefaultIdentityAuthRepository(IIdentityRepository identityRepository, IAuthJwtRepository authJwtRepository, IAuthExternalRepository authExternalRepository = null)
+    public DefaultIdentityAuthRepository(IIdentityRepository identityRepository, IAuthJwtRepository authJwtRepository, IAuthExternalRepository? authExternalRepository = null)
         : base(identityRepository, authJwtRepository, authExternalRepository)
     {
     }

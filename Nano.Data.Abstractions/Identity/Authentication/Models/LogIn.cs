@@ -12,12 +12,12 @@ public class LogIn : BaseLogIn
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Username { get; set; }
+    public virtual string Username { get; set; } = null!;
 
     /// <summary>
     /// Password.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Password { get; set; }
+    public virtual string Password { get; set; } = null!;
 }

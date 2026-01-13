@@ -11,7 +11,7 @@ namespace Nano.Common.Config;
 /// </summary>
 public static class ConfigManager
 {
-    internal static IConfiguration Configuration { get; set; }
+    internal static IConfiguration Configuration { get; set; } = null!;
 
     /// <summary>
     /// Builds the <see cref="IConfiguration"/>.

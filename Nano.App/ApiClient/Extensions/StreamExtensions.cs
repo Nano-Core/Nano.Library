@@ -18,8 +18,7 @@ public static class StreamExtensions
     /// <returns>The content as byte array.</returns>
     public static async Task<byte[]> ReadAllBytesAsync(this Stream stream, CancellationToken cancellationToken = default)
     {
-        if (stream == null)
-            throw new ArgumentNullException(nameof(stream));
+        ArgumentNullException.ThrowIfNull(stream);
 
         await using var memoryStream = new MemoryStream();
         {

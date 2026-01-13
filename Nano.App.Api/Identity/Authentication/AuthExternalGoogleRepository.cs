@@ -25,8 +25,7 @@ public class AuthExternalGoogleRepository : IAuthExternalGoogleRepository
     /// <inheritdoc />
     public virtual async Task<ExternalLogInData> Authenticate(ExternalLoginProviderGoogle provider, CancellationToken cancellationToken = default)
     {
-        if (provider == null)
-            throw new ArgumentNullException(nameof(provider));
+        ArgumentNullException.ThrowIfNull(provider);
 
         if (options == null)
             throw new ArgumentNullException(nameof(options));
@@ -65,8 +64,7 @@ public class AuthExternalGoogleRepository : IAuthExternalGoogleRepository
     /// <inheritdoc />
     public virtual async Task<ExternalLoginTokenData> AuthenticateRefresh(LogInExternalRefreshGoogle logInExternalRefresh, CancellationToken cancellationToken = default)
     {
-        if (logInExternalRefresh == null)
-            throw new ArgumentNullException(nameof(logInExternalRefresh));
+        ArgumentNullException.ThrowIfNull(logInExternalRefresh);
 
         await Task.CompletedTask;
 

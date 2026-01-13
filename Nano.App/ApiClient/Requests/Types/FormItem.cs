@@ -1,4 +1,6 @@
-﻿namespace Nano.App.ApiClient.Requests.Types;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Nano.App.ApiClient.Requests.Types;
 
 /// <summary>
 /// Form Item.
@@ -8,10 +10,11 @@ public class FormItem
     /// <summary>
     /// Name.
     /// </summary>
-    public virtual string Name { get; set; }
+    [Required]
+    public virtual string Name { get; set; } = null!;
 
     /// <summary>
     /// Value.
     /// </summary>
-    public virtual object Value { get; set; }
+    public virtual object? Value { get; set; }
 }

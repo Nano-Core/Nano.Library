@@ -20,8 +20,7 @@ public class MvcEntityContractResolver : DefaultEntityContractResolver
     /// <returns>The <see cref="JsonProperty"/>.</returns>
     protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
     {
-        if (member == null)
-            throw new ArgumentNullException(nameof(member));
+        ArgumentNullException.ThrowIfNull(member);
 
         var property = base.CreateProperty(member, memberSerialization);
         var propertyType = property.PropertyType;
@@ -37,11 +36,8 @@ public class MvcEntityContractResolver : DefaultEntityContractResolver
         if (member == null)
             throw new ArgumentNullException(nameof(member));
 
-        if (propertyType == null)
-            throw new ArgumentNullException(nameof(propertyType));
-
-        if (property == null)
-            throw new ArgumentNullException(nameof(property));
+        ArgumentNullException.ThrowIfNull(propertyType);
+        ArgumentNullException.ThrowIfNull(property);
 
         if (propertyType.IsTypeOf(typeof(IEntity)) || (propertyType.IsGenericType && propertyType.GenericTypeArguments[0].IsTypeOf(typeof(IEntity))))
         {

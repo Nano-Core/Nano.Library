@@ -34,10 +34,9 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
     /// <param name="controller"></param>
     public void Apply(ControllerModel controller)
     {
-        if (controller == null) 
-            throw new ArgumentNullException(nameof(controller));
+        ArgumentNullException.ThrowIfNull(controller);
 
-        // BUG: We need to remove some methods from identitycontroller: api-keys 
+        // BUG: We need to remove some methods from identitycontroller: api-keys
         // but how can we know which controller is derived from BaseidentityController. reflection?
         // we also need to detect overrides of DefaultAuthController / BaseAuthController and AuditController
 

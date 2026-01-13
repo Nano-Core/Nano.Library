@@ -11,14 +11,9 @@ internal static class DbContextOptionsBuilderExtensions
 {
     internal static DbContextOptionsBuilder AddDataContext(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider, DataOptions options)
     {
-        if (builder == null) 
-            throw new ArgumentNullException(nameof(builder));
-
-        if (serviceProvider == null)
-            throw new ArgumentNullException(nameof(serviceProvider));
-
-        if (options == null) 
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(options);
 
         builder
             .EnableSensitiveDataLogging(options.UseSensitiveDataLogging)

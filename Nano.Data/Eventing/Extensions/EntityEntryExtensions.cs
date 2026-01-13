@@ -17,8 +17,7 @@ internal static class EntityEntryExtensions
 {
     internal static EntityEvent? GetEntityEvent(this EntityEntry entityEntry)
     {
-        if (entityEntry == null)
-            throw new ArgumentNullException(nameof(entityEntry));
+        ArgumentNullException.ThrowIfNull(entityEntry);
 
         var type = entityEntry
             .GetPublishType();
@@ -69,11 +68,8 @@ internal static class EntityEntryExtensions
 
     internal static EntityEvent? GetEntityEvent(this EntityEntry entityEntry, Type type)
     {
-        if (entityEntry == null)
-            throw new ArgumentNullException(nameof(entityEntry));
-
-        if (type == null)
-            throw new ArgumentNullException(nameof(type));
+        ArgumentNullException.ThrowIfNull(entityEntry);
+        ArgumentNullException.ThrowIfNull(type);
 
         var state = entityEntry.State
             .ToString();
@@ -94,8 +90,7 @@ internal static class EntityEntryExtensions
 
     internal static IDictionary<string, object> GetEntityEventData(this EntityEntry entityEntry, params string[] publishProperties)
     {
-        if (entityEntry == null)
-            throw new ArgumentNullException(nameof(entityEntry));
+        ArgumentNullException.ThrowIfNull(entityEntry);
 
         var entityEventData = new Dictionary<string, object>();
         foreach (var propertyName in publishProperties)
@@ -139,8 +134,7 @@ internal static class EntityEntryExtensions
 
     internal static Type? GetPublishType(this EntityEntry entityEntry)
     {
-        if (entityEntry == null)
-            throw new ArgumentNullException(nameof(entityEntry));
+        ArgumentNullException.ThrowIfNull(entityEntry);
 
         var type = entityEntry.Entity
             .GetType();
@@ -167,8 +161,7 @@ internal static class EntityEntryExtensions
 
     internal static string[] GetPublishProperties(this EntityEntry entityEntry)
     {
-        if (entityEntry == null)
-            throw new ArgumentNullException(nameof(entityEntry));
+        ArgumentNullException.ThrowIfNull(entityEntry);
 
         var type = entityEntry.Entity
             .GetType();
@@ -183,10 +176,11 @@ internal static class EntityEntryExtensions
             if (attribute == null)
             {
                 type = type.BaseType;
+
                 continue;
             }
 
-            var publishAttribute = (PublishAttribute)(attribute);
+            var publishAttribute = (PublishAttribute)attribute;
 
             propertyNames
                 .AddRange(publishAttribute.PropertyNames);
@@ -204,8 +198,7 @@ internal static class EntityEntryExtensions
 
     internal static bool HasPublishPropertiesChanged(this EntityEntry entityEntry, string[] publishProperties)
     {
-        if (entityEntry == null)
-            throw new ArgumentNullException(nameof(entityEntry));
+        ArgumentNullException.ThrowIfNull(entityEntry);
 
         foreach (var propertyName in publishProperties)
         {
@@ -283,11 +276,8 @@ internal static class EntityEntryExtensions
 
     internal static object? TryGetOriginalValue(this EntityEntry entry, string propertyName)
     {
-        if (entry == null)
-            throw new ArgumentNullException(nameof(entry));
-
-        if (propertyName == null)
-            throw new ArgumentNullException(nameof(propertyName));
+        ArgumentNullException.ThrowIfNull(entry);
+        ArgumentNullException.ThrowIfNull(propertyName);
 
         var prop = entry.OriginalValues.Properties
             .FirstOrDefault(x => x.Name == propertyName);

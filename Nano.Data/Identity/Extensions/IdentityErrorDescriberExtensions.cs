@@ -16,8 +16,7 @@ public static class IdentityErrorDescriberExtensions
     /// <returns>A <see cref="IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is invalid.</returns>
     public static IdentityError InvalidPhoneNumber(this IdentityErrorDescriber errorDescriber, string phoneNumber)
     {
-        if (errorDescriber == null)
-            throw new ArgumentNullException(nameof(errorDescriber));
+        ArgumentNullException.ThrowIfNull(errorDescriber);
 
         return new IdentityError
         {
@@ -34,8 +33,7 @@ public static class IdentityErrorDescriberExtensions
     /// <returns>A <see cref="IdentityError"/> indicating the specified <paramref name="phoneNumber"/> is already associated with an account.</returns>
     public static IdentityError DuplicatePhoneNumber(this IdentityErrorDescriber errorDescriber, string phoneNumber)
     {
-        if (errorDescriber == null)
-            throw new ArgumentNullException(nameof(errorDescriber));
+        ArgumentNullException.ThrowIfNull(errorDescriber);
 
         return new IdentityError
         {

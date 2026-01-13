@@ -17,11 +17,11 @@ public class GetRole<TIdentity>
     /// User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
     /// Role Name.
     /// </summary>
     [Required]
-    public virtual string RoleName { get; set; }
+    public virtual string RoleName { get; set; } = null!;
 }

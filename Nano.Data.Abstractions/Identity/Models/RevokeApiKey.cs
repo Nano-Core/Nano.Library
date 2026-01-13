@@ -17,11 +17,10 @@ public class RevokeApiKey<TIdentity>
     /// Id.
     /// </summary>
     [Required]
-    public virtual TIdentity Id { get; set; }
+    public virtual TIdentity Id { get; set; } = default!;
 
     /// <summary>
     /// Revoke At.
     /// </summary>
-    [Required]
     public virtual DateTimeOffset? RevokeAt { get; set; }
 }

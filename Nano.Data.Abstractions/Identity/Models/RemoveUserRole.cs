@@ -17,12 +17,12 @@ public class RemoveUserRole<TIdentity>
     /// User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
     /// Role Name.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string RoleName { get; set; }
+    public virtual string RoleName { get; set; } = null!;
 }

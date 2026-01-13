@@ -18,7 +18,7 @@ public class DbMigrationTask<TIdentity> : IDbMigrationTask
     private readonly ILogger logger;
     private readonly IOptionsMonitor<DataOptions> options;
     private readonly BaseDbContext<TIdentity> dbContext;
-    private readonly RoleManager<IdentityRole<TIdentity>> roleManager;
+    private readonly RoleManager<IdentityRole<TIdentity>>? roleManager;
 
     /// <summary>
     /// Constructor.
@@ -27,7 +27,7 @@ public class DbMigrationTask<TIdentity> : IDbMigrationTask
     /// <param name="options">The <see cref="IOptionsMonitor{DataOptions}"/></param>
     /// <param name="dbContext">The <see cref="BaseDbContext{TIdentity}"/>.</param>
     /// <param name="roleManager">The <see cref="RoleManager{T}"/></param>
-    public DbMigrationTask(ILogger logger, IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, RoleManager<IdentityRole<TIdentity>> roleManager = null)
+    public DbMigrationTask(ILogger logger, IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, RoleManager<IdentityRole<TIdentity>>? roleManager = null)
     {
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this.options = options ?? throw new ArgumentNullException(nameof(options));

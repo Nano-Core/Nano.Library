@@ -27,11 +27,8 @@ public class NLogProvider : ILoggingProvider
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="services"/> or <paramref name="options"/> is <c>null</c>.</exception>
     public virtual void Configure(IServiceCollection services, LoggingOptions options)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
 
         var configuration = new LoggingConfiguration();
         var target = new ConsoleTarget("console")

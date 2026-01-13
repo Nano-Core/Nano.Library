@@ -16,12 +16,14 @@ public static class StringExtensions
     /// <returns>The string without quotes.</returns>
     public static string RemoveQuotes(this string @string)
     {
-        if (@string.StartsWith("\""))
+        ArgumentNullException.ThrowIfNull(@string);
+
+        if (@string.StartsWith("\"", StringComparison.Ordinal))
         {
             @string = @string[1..];
         }
 
-        if (@string.EndsWith("\""))
+        if (@string.EndsWith("\"", StringComparison.Ordinal))
         {
             @string = @string[..^1];
         }
@@ -37,8 +39,7 @@ public static class StringExtensions
     /// <returns>The http content type.</returns>
     public static string GetHttpContentType(this string filename)
     {
-        if (filename == null)
-            throw new ArgumentNullException(nameof(filename));
+        ArgumentNullException.ThrowIfNull(filename);
 
         var extension = Path
             .GetExtension(filename)
@@ -56,8 +57,7 @@ public static class StringExtensions
             ".xhtml" => HttpContentType.XHTML,
             ".xml" => HttpContentType.XML,
             ".zip" => HttpContentType.ZIP,
-            _ => throw new ArgumentOutOfRangeException(nameof(filename), extension,
-                $"The extension: {extension} of filename {filename} is invalid.")
+            _ => throw new ArgumentOutOfRangeException(nameof(filename), extension, $"The extension: {extension} of filename {filename} is invalid.")
         };
     }
 }

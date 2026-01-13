@@ -6,9 +6,8 @@ internal static class StringExtensions
 {
     internal static string ReplaceAsync(this string methodName)
     {
-        if (methodName == null) 
-            throw new ArgumentNullException(nameof(methodName));
-        
+        ArgumentNullException.ThrowIfNull(methodName);
+
         return methodName
             .Replace("Async", "");
     }

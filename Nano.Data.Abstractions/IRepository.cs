@@ -26,7 +26,7 @@ public interface IRepository : IDisposable
     /// <param name="key">The <typeparamref name="TKey"/> type, uniquely identify the <see cref="IEntity"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
-    Task<TEntity> GetAsync<TEntity, TKey>(TKey key, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetAsync<TEntity, TKey>(TKey key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>;
 
@@ -39,7 +39,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
-    Task<TEntity> GetAsync<TEntity, TKey>(TKey key, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetAsync<TEntity, TKey>(TKey key, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>;
 
@@ -50,7 +50,7 @@ public interface IRepository : IDisposable
     /// <param name="key">The unique key.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
-    Task<TEntity> GetAsync<TEntity>(int key, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetAsync<TEntity>(int key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<int>;
 
     /// <summary>
@@ -61,7 +61,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
-    Task<TEntity> GetAsync<TEntity>(int key, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetAsync<TEntity>(int key, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<int>;
 
     /// <summary>
@@ -71,7 +71,7 @@ public interface IRepository : IDisposable
     /// <param name="key">The unique key.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
-    Task<TEntity> GetAsync<TEntity>(long key, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetAsync<TEntity>(long key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<long>;
 
     /// <summary>
@@ -82,7 +82,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
-    Task<TEntity> GetAsync<TEntity>(long key, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetAsync<TEntity>(long key, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<long>;
 
     /// <summary>
@@ -92,7 +92,7 @@ public interface IRepository : IDisposable
     /// <param name="key">The unique key.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
-    Task<TEntity> GetAsync<TEntity>(string key, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetAsync<TEntity>(string key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<string>;
 
     /// <summary>
@@ -103,7 +103,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
-    Task<TEntity> GetAsync<TEntity>(string key, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetAsync<TEntity>(string key, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<string>;
 
     /// <summary>
@@ -113,7 +113,7 @@ public interface IRepository : IDisposable
     /// <param name="key">The unique key.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
-    Task<TEntity> GetAsync<TEntity>(Guid key, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetAsync<TEntity>(Guid key, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<Guid>;
 
     /// <summary>
@@ -124,7 +124,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The first instance, matching the passed <paramref name="key"/>.</returns>
-    Task<TEntity> GetAsync<TEntity>(Guid key, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetAsync<TEntity>(Guid key, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<Guid>;
 
     /// <summary>
@@ -135,7 +135,7 @@ public interface IRepository : IDisposable
     /// <param name="criteria">The <see cref="IQuery{TCriteria}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances, matching the passed <paramref name="criteria"/>.</returns>
-    Task<TEntity> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> criteria, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : class, IQueryCriteria, new();
 
@@ -148,7 +148,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances, matching the passed <paramref name="criteria"/>.</returns>
-    Task<TEntity> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> criteria, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> criteria, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : class, IQueryCriteria, new();
 
@@ -159,7 +159,7 @@ public interface IRepository : IDisposable
     /// <param name="where">The where clause.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The fist instance matching the passed <paramref name="where"/> clause.</returns>
-    Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -170,7 +170,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The fist instance matching the passed <paramref name="where"/> clause.</returns>
-    Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -181,7 +181,7 @@ public interface IRepository : IDisposable
     /// <param name="ordering">The order by clause</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The fist instance matching the passed <paramref name="where"/> clause.</returns>
-    Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -193,7 +193,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The fist instance matching the passed <paramref name="where"/> clause.</returns>
-    Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -541,7 +541,7 @@ public interface IRepository : IDisposable
     /// <param name="entity">The instance of <see cref="IEntityCreatable"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The <see cref="Task{TEntity}"/>.</returns>
-    Task<TEntity> AddAndGetAsync<TEntity, TKey>(TEntity entity, CancellationToken cancellationToken = default)
+    Task<TEntity?> AddAndGetAsync<TEntity, TKey>(TEntity entity, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>;
 
@@ -586,7 +586,7 @@ public interface IRepository : IDisposable
     /// <param name="entity">The instance of <see cref="IEntityUpdatable"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The <see cref="Task{TEntity}"/>.</returns>
-    Task<TEntity> UpdateAndGetAsync<TEntity, TKey>(TEntity entity, CancellationToken cancellationToken = default)
+    Task<TEntity?> UpdateAndGetAsync<TEntity, TKey>(TEntity entity, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>;
 

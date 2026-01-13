@@ -19,11 +19,8 @@ public static class TypeExtensions
     /// <returns>True or false, depending on whehter the <paramref name="type"/> implements or derives from <paramref name="baseType"/>.</returns>
     public static bool IsTypeOf(this Type type, Type baseType)
     {
-        if (type == null)
-            throw new ArgumentNullException(nameof(type));
-
-        if (baseType == null)
-            throw new ArgumentNullException(nameof(baseType));
+        ArgumentNullException.ThrowIfNull(type);
+        ArgumentNullException.ThrowIfNull(baseType);
 
         return type
             .GetParentTypes()
@@ -40,8 +37,7 @@ public static class TypeExtensions
     /// <returns>Boolean indicating if the type is simple.</returns>
     public static bool IsSimple(this Type type)
     {
-        if (type == null)
-            throw new ArgumentNullException(nameof(type));
+        ArgumentNullException.ThrowIfNull(type);
 
         return type.IsPrimitive
                || type.IsEnum
@@ -68,8 +64,7 @@ public static class TypeExtensions
     /// <returns>A friendly display name.</returns>
     public static string GetFriendlyName(this Type type)
     {
-        if (type == null)
-            throw new ArgumentNullException(nameof(type));
+        ArgumentNullException.ThrowIfNull(type);
 
         var friendlyName = type.FullName;
 
@@ -79,14 +74,13 @@ public static class TypeExtensions
                 .GetTypeString();
         }
 
-        return friendlyName;
+        return friendlyName ?? throw new NullReferenceException(nameof(friendlyName));
     }
 
 
     private static IEnumerable<Type> GetBaseTypes(this Type type)
     {
-        if (type == null)
-            throw new ArgumentNullException(nameof(type));
+        ArgumentNullException.ThrowIfNull(type);
 
         var types = new List<Type>();
 
@@ -101,8 +95,7 @@ public static class TypeExtensions
     }
     private static IEnumerable<Type> GetParentTypes(this Type type)
     {
-        if (type == null)
-            throw new ArgumentNullException(nameof(type));
+        ArgumentNullException.ThrowIfNull(type);
 
         return type
             .GetInterfaces()
@@ -110,12 +103,14 @@ public static class TypeExtensions
     }
     private static string GetTypeString(this Type type)
     {
+        ArgumentNullException.ThrowIfNull(type);
+
         var output = new StringBuilder();
         var qualifiedName = type.AssemblyQualifiedName;
         var backTick = qualifiedName?.IndexOf('`') + 1 ?? 0;
 
         output
-            .Append(qualifiedName?[..(backTick - 1)].Replace("[", string.Empty));
+            .Append(qualifiedName?[..(backTick - 1)]?.Replace("[", string.Empty));
 
         var typeStrings = type
             .GetGenericArguments()
@@ -124,7 +119,10 @@ public static class TypeExtensions
                 : x.ToString())
             .ToList();
 
-        output.Append($"<{string.Join(",", typeStrings)}>");
-        return output.ToString();
+        output
+            .Append($"<{string.Join(",", typeStrings)}>");
+
+        return output
+            .ToString();
     }
 }

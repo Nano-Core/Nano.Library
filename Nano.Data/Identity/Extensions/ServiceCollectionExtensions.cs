@@ -14,12 +14,11 @@ namespace Nano.Data.Identity.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddIdentity<TContext, TIdentity>(this IServiceCollection services, IdentityOptions options = null)
+    internal static IServiceCollection AddIdentity<TContext, TIdentity>(this IServiceCollection services, IdentityOptions? options = null)
         where TContext : BaseDbContext<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         if (options == null)
         {

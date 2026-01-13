@@ -16,8 +16,7 @@ public class RoutePrefixConvention : IApplicationModelConvention
     /// <param name="templateProvider">The <see cref="IRouteTemplateProvider"/>.</param>
     public RoutePrefixConvention(IRouteTemplateProvider templateProvider)
     {
-        if (templateProvider == null)
-            throw new ArgumentNullException(nameof(templateProvider));
+        ArgumentNullException.ThrowIfNull(templateProvider);
 
         this.prefix = new AttributeRouteModel(templateProvider);
     }
@@ -25,6 +24,8 @@ public class RoutePrefixConvention : IApplicationModelConvention
     /// <inheritdoc />
     public void Apply(ApplicationModel application)
     {
+        ArgumentNullException.ThrowIfNull(application);
+
         foreach (var controller in application.Controllers)
         {
             var matched = controller.Selectors

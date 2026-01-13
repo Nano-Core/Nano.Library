@@ -22,8 +22,7 @@ public static class QueryableExtensions
     public static IQueryable<T> IncludeAnnotations<T>(this IQueryable<T> queryable, int maxDepth)
         where T : class
     {
-        if (queryable == null)
-            throw new ArgumentNullException(nameof(queryable));
+        ArgumentNullException.ThrowIfNull(queryable);
 
         return queryable
             .IncludeAnnotations(typeof(T), string.Empty, maxDepth);
@@ -41,11 +40,8 @@ public static class QueryableExtensions
     internal static IQueryable<T> IncludeAnnotations<T>(this IQueryable<T> queryable, Type type, string name, int depth)
         where T : class
     {
-        if (queryable == null)
-            throw new ArgumentNullException(nameof(queryable));
-
-        if (type == null)
-            throw new ArgumentNullException(nameof(type));
+        ArgumentNullException.ThrowIfNull(queryable);
+        ArgumentNullException.ThrowIfNull(type);
 
         if (depth <= 0)
         {
@@ -74,7 +70,7 @@ public static class QueryableExtensions
             queryable = queryable
                 .Include(navigationName);
 
-            if (includePropertyInfo.IncludeAttribute.QuerySplitBehavior == QuerySplitBehavior.SplitQuery)
+            if (includePropertyInfo.IncludeAttribute?.QuerySplitBehavior == QuerySplitBehavior.SplitQuery)
             {
                 queryable = queryable
                     .AsSplitQuery();
@@ -83,7 +79,7 @@ public static class QueryableExtensions
             queryable = queryable
                 .IncludeAnnotations(nextType, navigationName, depth - 1);
         }
-            
+
         return queryable;
     }
 }

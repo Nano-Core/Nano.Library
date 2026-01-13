@@ -33,8 +33,7 @@ public abstract class BaseAuthApi<TIdentity> : BaseApi<TIdentity>
     /// <returns>The <see cref="AccessToken"/>.</returns>
     public virtual async Task<AccessToken> LogInAsync(LogInRequest request, CancellationToken cancellationToken = default)
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         var response = await this.InvokeAsync<LogInRequest, AccessToken>(request, cancellationToken);
 
@@ -56,8 +55,7 @@ public abstract class BaseAuthApi<TIdentity> : BaseApi<TIdentity>
     /// <returns>The <see cref="AccessToken"/>.</returns>
     public virtual async Task<AccessToken> LogInRootAsync(LogInRootRequest request, CancellationToken cancellationToken = default)
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         var response = await this.InvokeAsync<LogInRootRequest, AccessToken>(request, cancellationToken);
 
@@ -80,14 +78,13 @@ public abstract class BaseAuthApi<TIdentity> : BaseApi<TIdentity>
     public virtual async Task<AccessToken> LogInExternalAsync<TLogin>(TLogin request, CancellationToken cancellationToken = default)
         where TLogin : BaseLogInExternalRequest
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         var response = await this.InvokeAsync<TLogin, AccessToken>(request, cancellationToken);
 
         if (response == null)
         {
-            return null;
+            throw new UnauthorizedException();
         }
 
         this.SetAuthorizationHeader(response.Token);
@@ -103,17 +100,16 @@ public abstract class BaseAuthApi<TIdentity> : BaseApi<TIdentity>
     /// <returns>The <see cref="AccessToken"/>.</returns>
     public virtual async Task<AccessToken> LogInRefreshAsync(LogInRefreshRequest request, CancellationToken cancellationToken = default)
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         var response = await this.InvokeAsync<LogInRefreshRequest, AccessToken>(request, cancellationToken);
-
-        this.SetAuthorizationHeader(response.Token);
 
         if (response == null)
         {
             throw new UnauthorizedException();
         }
+
+        this.SetAuthorizationHeader(response.Token);
 
         return response;
     }
@@ -126,8 +122,7 @@ public abstract class BaseAuthApi<TIdentity> : BaseApi<TIdentity>
     /// <returns>Void..</returns>
     public virtual Task LogOutAsync(LogOutRequest request, CancellationToken cancellationToken = default)
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         return this.InvokeAsync(request, cancellationToken);
     }
@@ -138,11 +133,10 @@ public abstract class BaseAuthApi<TIdentity> : BaseApi<TIdentity>
     /// <param name="request">The <see cref="BaseGetExternalLoginDataRequest{TProvider}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="AccessToken"/>.</returns>
-    public virtual Task<ExternalLogInData> GetExternalLoginDataAsync<TProvider>(BaseGetExternalLoginDataRequest<TProvider> request, CancellationToken cancellationToken = default)
+    public virtual Task<ExternalLogInData?> GetExternalLoginDataAsync<TProvider>(BaseGetExternalLoginDataRequest<TProvider> request, CancellationToken cancellationToken = default)
         where TProvider : BaseLogInExternalProvider, new()
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         return this.InvokeAsync<BaseGetExternalLoginDataRequest<TProvider>, ExternalLogInData>(request, cancellationToken);
     }
@@ -153,19 +147,17 @@ public abstract class BaseAuthApi<TIdentity> : BaseApi<TIdentity>
     /// <param name="request">The <see cref="GetExternalSchemesRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>A collection of <see cref="ExternalLoginProvider"/>'s.</returns>
-    public virtual Task<IEnumerable<ExternalLoginProvider>> GetExternalSchemesAsync(GetExternalSchemesRequest request, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<ExternalLoginProvider>> GetExternalSchemesAsync(GetExternalSchemesRequest request, CancellationToken cancellationToken = default)
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
-        return this.InvokeAsync<GetExternalSchemesRequest, IEnumerable<ExternalLoginProvider>>(request, cancellationToken);
+        return await this.InvokeAsync<GetExternalSchemesRequest, IEnumerable<ExternalLoginProvider>>(request, cancellationToken) ?? [];
     }
 
 
     private void SetAuthorizationHeader(string token)
     {
-        if (token == null)
-            throw new ArgumentNullException(nameof(token));
+        ArgumentNullException.ThrowIfNull(token);
 
         this.httpContextAccessor.HttpContext?.Request.Headers[HeaderNames.Authorization] = $"Bearer {token}";
     }

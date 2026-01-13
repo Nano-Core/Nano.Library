@@ -18,18 +18,17 @@ public static class RoleManagerExtensions
     /// <param name="roleId">The role id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The role.</returns>
-    public static Task<IdentityRole<TIdentity>> GetIdentityRoleAsync<TIdentity>(this RoleManager<IdentityRole<TIdentity>> roleManager, TIdentity roleId, CancellationToken cancellationToken = default)
+    public static Task<IdentityRole<TIdentity>?> GetIdentityRoleAsync<TIdentity>(this RoleManager<IdentityRole<TIdentity>> roleManager, TIdentity roleId, CancellationToken cancellationToken = default)
         where TIdentity : IEquatable<TIdentity>
     {
-        if (roleManager == null)
-            throw new ArgumentNullException(nameof(roleManager));
+        ArgumentNullException.ThrowIfNull(roleManager);
 
         var roleIdString = roleId
             .ToString();
 
         if (roleIdString == null)
         {
-            throw new ArgumentNullException(nameof(roleIdString));
+            throw new NullReferenceException(nameof(roleIdString));
         }
 
         return roleManager

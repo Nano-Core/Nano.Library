@@ -14,11 +14,8 @@ public class InMemoryProvider : IDataProvider
     /// <inheritdoc />
     public virtual void Configure(DbContextOptionsBuilder builder, DataOptions options)
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
-
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(options);
 
         builder
             .UseInMemoryDatabase(options.ConnectionString);
@@ -27,10 +24,7 @@ public class InMemoryProvider : IDataProvider
     /// <inheritdoc />
     public virtual void Configure(IServiceCollection services, DataOptions options)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
     }
 }

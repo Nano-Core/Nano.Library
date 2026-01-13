@@ -119,10 +119,10 @@ public interface IIdentityRepository<TIdentity>
     /// <summary>
     /// Gets the identity user or default (null).
     /// </summary>
-    /// <param name="userId">The user id.</param>
+    /// <param name="id">The user id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
-    Task<IdentityUserEx<TIdentity>> GetIdentityUserOrDefaultAsync(TIdentity userId, CancellationToken cancellationToken = default);
+    Task<IdentityUserEx<TIdentity>?> GetIdentityUserOrDefaultAsync(TIdentity id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Sets a emailAddress for a user.
@@ -311,7 +311,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="appId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IdentityUserRefreshToken<TIdentity>> GetRefreshToken(TIdentity userId, string appId, CancellationToken cancellationToken = default);
+    Task<IdentityUserRefreshToken<TIdentity>?> GetRefreshToken(TIdentity userId, string appId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 
@@ -328,7 +328,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="refreshToken"></param>
     /// <param name="appId"></param>
     /// <returns></returns>
-    Task<IdentityUserRefreshToken<TIdentity>> CreateRefreshToken(TIdentity userId, RefreshToken refreshToken, string? appId = null);
+    Task<IdentityUserRefreshToken<TIdentity>> CreateRefreshToken(TIdentity userId, RefreshToken refreshToken, string appId);
 
     #endregion
 
@@ -341,7 +341,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="id">The id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>>.</returns>
-    Task<IdentityApiKey<TIdentity>> GetApiKeyAsync(TIdentity id, CancellationToken cancellationToken = default);
+    Task<IdentityApiKey<TIdentity>?> GetApiKeyAsync(TIdentity id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the api keys of a user.
@@ -365,7 +365,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="apiKey">The api key.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
-    Task<IdentityApiKey<TIdentity>> ValidateApiKeyAsync(string apiKey, CancellationToken cancellationToken = default);
+    Task<IdentityApiKey<TIdentity>?> ValidateApiKeyAsync(string apiKey, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Edit Api Key.
@@ -373,7 +373,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="editApiKey">The update api key.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
-    Task<IdentityApiKey<TIdentity>> EditApiKeyAsync(EditApiKey<TIdentity> editApiKey, CancellationToken cancellationToken = default);
+    Task<IdentityApiKey<TIdentity>?> EditApiKeyAsync(EditApiKey<TIdentity> editApiKey, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Revoke Api Key.
@@ -381,7 +381,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="revokeApiKey">The revoke api key.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
-    Task<IdentityApiKey<TIdentity>> RevokeApiKeyAsync(RevokeApiKey<TIdentity> revokeApiKey, CancellationToken cancellationToken = default);
+    Task<IdentityApiKey<TIdentity>?> RevokeApiKeyAsync(RevokeApiKey<TIdentity> revokeApiKey, CancellationToken cancellationToken = default);
 
     #endregion
 
@@ -454,7 +454,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="getClaim">The <see cref="GetClaim{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="Claim"/>.</returns>
-    Task<Claim> GetRoleClaimAsync(GetRoleClaim<TIdentity> getClaim, CancellationToken cancellationToken = default);
+    Task<Claim?> GetRoleClaimAsync(GetRoleClaim<TIdentity> getClaim, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the <see cref="Claim"/>'s of a role.
@@ -526,7 +526,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="getClaim">The <see cref="GetClaim{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="Claim"/>.</returns>
-    Task<Claim> GetUserClaimAsync(GetClaim<TIdentity> getClaim, CancellationToken cancellationToken = default);
+    Task<Claim?> GetUserClaimAsync(GetClaim<TIdentity> getClaim, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the <see cref="Claim"/>'s of a user.

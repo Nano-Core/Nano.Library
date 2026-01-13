@@ -20,8 +20,7 @@ public static class ApplicationBuilderExtensions
     /// <returns>The same <see cref="IApplicationBuilder"/> instance, for chaining.</returns>
     public static IApplicationBuilder UseEventHandlers(this IApplicationBuilder applicationBuilder)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
 
         using var scope = applicationBuilder.ApplicationServices
             .CreateScope();

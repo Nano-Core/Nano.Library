@@ -17,8 +17,7 @@ public static class HttpRequestExtensions
     /// <returns>The remote ip-address.</returns>
     public static string GetRemoteIpAddress(this HttpRequest httpRequest)
     {
-        if (httpRequest == null)
-            throw new ArgumentNullException(nameof(httpRequest));
+        ArgumentNullException.ThrowIfNull(httpRequest);
 
         var xForwardedFor = httpRequest.Headers["X-Forwarded-For"].ToString();
 

@@ -13,24 +13,25 @@ public class IdentityApiKey<TIdentity> : BaseEntityIdentity<TIdentity>
     /// Identity User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity IdentityUserId { get; set; }
+    public virtual TIdentity IdentityUserId { get; set; } = default!;
 
     /// <summary>
     /// Identity User.
     /// </summary>
-    public virtual IdentityUserEx<TIdentity> IdentityUser { get; set; }
+    public virtual IdentityUserEx<TIdentity> IdentityUser { get; set; } = null!;
 
     /// <summary>
     /// Name.
     /// </summary>
     [Required]
-    public virtual string Name { get; set; }
+    [MaxLength(256)]
+    public virtual string Name { get; set; } = null!;
 
     /// <summary>
     /// Hash.
     /// </summary>
     [Required]
-    public virtual string Hash { get; set; }
+    public virtual string Hash { get; set; } = null!;
 
     /// <summary>
     /// Created At.

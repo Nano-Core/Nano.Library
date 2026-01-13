@@ -11,17 +11,17 @@ public class ExternalLoginProviderAuthCode : BaseLogInExternalProvider
     /// Code.
     /// </summary>
     [Required]
-    public virtual string Code { get; set; }
+    public virtual string Code { get; set; } = null!;
 
     /// <summary>
     /// Code Verifier.
     /// </summary>
     [Required]
-    public virtual string CodeVerifier { get; set; }
+    public virtual string CodeVerifier { get; set; } = null!;
 
     /// <summary>
     /// Redirect Uri.
     /// </summary>
     [Required]
-    public virtual string RedirectUri { get; set; }
+    public virtual string RedirectUri { get; set; } = null!;
 }

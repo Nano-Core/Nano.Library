@@ -557,7 +557,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
             var authenticationSchemes = await this.identityAuthRepository
                 .GetExternalProviderSchemesAsync(cancellationToken);
 
-            logInProviders = authenticationSchemes?
+            logInProviders = authenticationSchemes
                 .Select(x => new ExternalLoginProvider
                 {
                     Name = x.Name,

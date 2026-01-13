@@ -17,7 +17,7 @@ public class FileExtensionValidationAttribute : ValidationAttribute
     /// <inheritdoc />
     public FileExtensionValidationAttribute(params string[] allowedExtensions)
     {
-        this.allowedExtensions = allowedExtensions;
+        this.allowedExtensions = allowedExtensions ?? throw new ArgumentNullException(nameof(allowedExtensions));
     }
 
     /// <inheritdoc />
@@ -28,10 +28,7 @@ public class FileExtensionValidationAttribute : ValidationAttribute
             return ValidationResult.Success;
         }
 
-        if (validationContext == null)
-        {
-            throw new ArgumentNullException(nameof(validationContext));
-        }
+        ArgumentNullException.ThrowIfNull(validationContext);
 
         switch (value)
         {

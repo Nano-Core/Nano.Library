@@ -3,20 +3,20 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Nano.Common.Config.Extensions;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
-using Nano.Data.Abstractions.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
-using System;
-using System.Linq;
-using Nano.Common.Config.Extensions;
 using Nano.Data.Abstractions.Eventing;
 using Nano.Data.Abstractions.Eventing.Models;
 using Nano.Data.Abstractions.Identity.Extensions;
+using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Eventing;
 using Nano.Data.Identity.Authentication.Extensions;
 using Nano.Data.Identity.Extensions;
 using Nano.Eventing.Abstractions;
+using System;
+using System.Linq;
 using Z.EntityFramework.Extensions;
 using Z.EntityFramework.Plus;
 
@@ -38,8 +38,7 @@ public static class ServiceCollectionExtensions
         where TProvider : class, IDataProvider, new()
         where TContext : DefaultDbContext
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddNanoData<TProvider, TContext, Guid>();
@@ -63,11 +62,15 @@ public static class ServiceCollectionExtensions
         where TContext : BaseDbContext<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddNanoConfigSection<DataOptions>(DataOptions.SectionName, out var options);
+
+        if (options is null)
+        {
+            throw new InvalidOperationException($"Configuration section '{DataOptions.SectionName}' could not be loaded.");
+        }
 
         EntityFrameworkManager.IsCommunity = true;
 
@@ -97,7 +100,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddAuthentication()
-            .AddApiKeyAuthentication<TIdentity>(options.Identity.Authentication.ApiKey);
+            .AddApiKeyAuthentication<TIdentity>(options.Identity?.Authentication.ApiKey);
 
         return services;
     }
@@ -106,6 +109,9 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddContext<TContext>(this IServiceCollection services, DataOptions options)
         where TContext : DbContext
     {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
+
         if (options.UseConnectionPooling)
         {
             services
@@ -137,11 +143,8 @@ public static class ServiceCollectionExtensions
     }
     private static IServiceCollection AddAudit(this IServiceCollection services, DataOptions options)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (options == null) 
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
 
         if (options.UseAudit)
         {
@@ -200,10 +203,9 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    private static IServiceCollection AddCache(this IServiceCollection services, CacheOptions options)
+    private static IServiceCollection AddCache(this IServiceCollection services, CacheOptions? options)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         if (options == null)
         {

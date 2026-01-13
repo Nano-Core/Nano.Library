@@ -12,7 +12,7 @@ public interface IApplication
     /// Allows consumers to register application services.
     /// </summary>
     public IApplication ConfigureServices(Action<IServiceCollection> configure);
-    
+
     /// <summary>
     /// 
     /// </summary>

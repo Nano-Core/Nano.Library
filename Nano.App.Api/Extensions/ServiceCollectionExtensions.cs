@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Nano.App.Api.Config;
-using Nano.App.Api.Mvc.Documentation.Filters.Document;
+using Nano.App.Api.Mvc.Extensions;
 using Nano.App.Api.Mvc.HealthChecks;
 using Nano.App.Api.Mvc.Middleware;
 using Nano.App.Api.Mvc.Options;
@@ -30,25 +30,19 @@ internal static class ServiceCollectionExtensions
 {
     internal static IServiceCollection AddNanoExceptionHandling(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddScoped<ExceptionHandlingMiddleware>();
 
         return services;
     }
-    
+
     internal static IServiceCollection AddNanoCors(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         if (apiOptions.HttpPolicyHeaders.Cors == null)
         {
@@ -103,14 +97,11 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     internal static IServiceCollection AddNanoForwardedHeaders(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .Configure<ForwardedHeadersOptions>(x =>
@@ -120,14 +111,11 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     internal static IServiceCollection AddNanoHsts(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         if (apiOptions.HttpPolicyHeaders.Cors == null)
         {
@@ -161,14 +149,11 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     internal static IServiceCollection AddNanoCookies(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddCookiePolicy(x =>
@@ -179,14 +164,11 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     internal static IServiceCollection AddNanoSession(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         if (apiOptions.Session == null)
         {
@@ -201,14 +183,11 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     internal static IServiceCollection AddNanoResponseCaching(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         if (apiOptions.ResponseCache == null)
         {
@@ -225,14 +204,11 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     internal static IServiceCollection AddNanoVersioning(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         var version = apiOptions.Version
             .ParseVersion();
@@ -269,28 +245,22 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     internal static IServiceCollection AddNanoRequestLocalization(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddLocalization();
 
         return services;
     }
-    
+
     internal static IServiceCollection AddNanoRequestTimeZone(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddRequestTimeZone(x =>
@@ -303,14 +273,11 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     internal static IServiceCollection AddNanoVirusScan(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         if (apiOptions.VirusScan == null)
         {
@@ -327,14 +294,11 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     internal static IServiceCollection AddNanoResponseCompression(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null) 
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddResponseCompression(x =>
@@ -350,42 +314,33 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     internal static IServiceCollection AddNanoRequestOptions(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddScoped<HttpRequestOptionsMiddleware>();
 
         return services;
     }
-    
+
     internal static IServiceCollection AddNanoRequestIdentifier(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddScoped<HttpRequestIdentifierMiddleware>();
 
         return services;
     }
-    
+
     internal static IServiceCollection AddNanoFormOptions(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .Configure<FormOptions>(x =>
@@ -397,14 +352,11 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     internal static IServiceCollection AddNanoMvc(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddRouting(x =>
@@ -436,11 +388,8 @@ internal static class ServiceCollectionExtensions
 
     internal static IServiceCollection AddNanoDocumentation(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         if (apiOptions.Documentation == null)
         {
@@ -455,7 +404,7 @@ internal static class ServiceCollectionExtensions
 
                 var apiVersionDescriptionProvider = x
                     .GetRequiredService<IApiVersionDescriptionProvider>();
-                
+
                 var options = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
@@ -469,11 +418,8 @@ internal static class ServiceCollectionExtensions
 
     internal static IServiceCollection AddNanoHealthChecking(this IServiceCollection services, ApiOptions apiOptions)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddHealthChecks()
@@ -483,14 +429,14 @@ internal static class ServiceCollectionExtensions
         {
             return services;
         }
-        
+
         services
             .AddHealthChecksUI(x =>
             {
                 var port = apiOptions.Hosting.Ports
                     .FirstOrDefault();
 
-                x.AddHealthCheckEndpoint(apiOptions.Name.ToLower(), $"http://localhost:{port}/healthz"); 
+                x.AddHealthCheckEndpoint(apiOptions.Name.ToLower(), $"http://localhost:{port}/healthz");
 
                 x.SetApiMaxActiveRequests(1);
                 x.SetEvaluationTimeInSeconds(apiOptions.HealthCheck.EvaluationInterval);

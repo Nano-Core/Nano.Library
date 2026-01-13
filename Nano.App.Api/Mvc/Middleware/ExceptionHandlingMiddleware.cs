@@ -50,11 +50,8 @@ public class ExceptionHandlingMiddleware : IMiddleware
     /// <inheritdoc />
     public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
     {
-        if (httpContext == null)
-            throw new ArgumentNullException(nameof(httpContext));
-
-        if (next == null)
-            throw new ArgumentNullException(nameof(next));
+        ArgumentNullException.ThrowIfNull(httpContext);
+        ArgumentNullException.ThrowIfNull(next);
 
         var timestamp = Stopwatch.GetTimestamp();
 
@@ -238,9 +235,8 @@ public class ExceptionHandlingMiddleware : IMiddleware
 
     private static UxExceptionAttribute GetUxExceptionAttribute(HttpContext httpContext, Exception exception)
     {
-        if (httpContext == null)
-            throw new ArgumentNullException(nameof(httpContext));
-        
+        ArgumentNullException.ThrowIfNull(httpContext);
+
         var endpoint = httpContext
             .GetEndpoint();
 
@@ -261,9 +257,8 @@ public class ExceptionHandlingMiddleware : IMiddleware
     }
     private static LogLevel SetLogLevel(ProblemDetails problemDetails)
     {
-        if (problemDetails == null) 
-            throw new ArgumentNullException(nameof(problemDetails));
-        
+        ArgumentNullException.ThrowIfNull(problemDetails);
+
         problemDetails.Extensions
             .TryGetValue(ProblemDetailsExtensions.IS_TRANSLATED, out var isTranslated);
 

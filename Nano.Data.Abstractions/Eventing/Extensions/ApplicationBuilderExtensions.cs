@@ -17,8 +17,7 @@ public static class ApplicationBuilderExtensions
     /// <exception cref="ArgumentNullException"></exception>
     public static IApplicationBuilder UseEntityEventHandlers(this IApplicationBuilder applicationBuilder)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
 
         using var scope = applicationBuilder.ApplicationServices
             .CreateScope();

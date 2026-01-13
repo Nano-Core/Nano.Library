@@ -17,18 +17,18 @@ public class ResetPassword<TIdentity>
     /// User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
     /// Token.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; }
+    public virtual string Token { get; set; } = null!;
 
     /// <summary>
     /// Password.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Password { get; set; }
+    public virtual string Password { get; set; } = null!;
 }

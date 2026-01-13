@@ -12,11 +12,10 @@ namespace Nano.Data.Identity.Extensions;
 
 internal static class ModelBuilderExtensions
 {
-    internal static ModelBuilder MapIdentity<TIdentity>(this ModelBuilder modelBuilder, IdentityOptions options)
+    internal static ModelBuilder MapIdentity<TIdentity>(this ModelBuilder modelBuilder, IdentityOptions? options = null)
         where TIdentity : IEquatable<TIdentity>
     {
-        if (modelBuilder == null)
-            throw new ArgumentNullException(nameof(modelBuilder));
+        ArgumentNullException.ThrowIfNull(modelBuilder);
 
         var isUniqueEmailAddressRequired = options?.User.IsUniqueEmailAddressRequired ?? true;
         var isUniquePhoneNumberRequired = options?.User.IsUniquePhoneNumberRequired ?? true;
@@ -43,6 +42,8 @@ internal static class ModelBuilderExtensions
     private static ModelBuilder MapIdentityUserEx<TIdentity>(this ModelBuilder modelBuilder, bool isUniqueEmailAddressRequired, bool isUniquePhoneNumberRequired)
         where TIdentity : IEquatable<TIdentity>
     {
+        ArgumentNullException.ThrowIfNull(modelBuilder);
+
         var entityTypeBuilder = modelBuilder
             .Entity<IdentityUserEx<TIdentity>>();
 

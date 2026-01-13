@@ -12,7 +12,7 @@ namespace Nano.Data.Eventing;
 /// <summary>
 /// Entity Event Handler.
 /// </summary>
-public class EntityEventHandler<TIdentity> : IEventingHandler<EntityEvent> 
+public class EntityEventHandler<TIdentity> : IEventingHandler<EntityEvent>
     where TIdentity : IEquatable<TIdentity>
 {
     private readonly BaseDbContext<TIdentity> dbContext;
@@ -32,8 +32,7 @@ public class EntityEventHandler<TIdentity> : IEventingHandler<EntityEvent>
     /// <inheritdoc />
     public virtual async Task CallbackAsync(EntityEvent @event, bool isRetrying)
     {
-        if (@event == null)
-            throw new ArgumentNullException(nameof(@event));
+        ArgumentNullException.ThrowIfNull(@event);
 
         var type = this.dbContext.Model
             .GetEntityTypes()
@@ -129,6 +128,10 @@ public class EntityEventHandler<TIdentity> : IEventingHandler<EntityEvent>
 
     private static void SetEntityEventProperties(EntityEvent @event, IReflect type, object entity)
     {
+        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(type);
+        ArgumentNullException.ThrowIfNull(entity);
+
         foreach (var pair in @event.Data)
         {
             var dataProperty = type
@@ -139,7 +142,7 @@ public class EntityEventHandler<TIdentity> : IEventingHandler<EntityEvent>
                 continue;
             }
 
-            var value = pair.Value?.ToString();
+            var value = pair.Value.ToString();
 
             if (value == null)
             {

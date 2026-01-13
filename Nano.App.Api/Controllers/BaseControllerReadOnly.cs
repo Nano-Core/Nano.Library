@@ -58,7 +58,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> IndexAsync([FromQuery][Required]IQuery query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> IndexAsync([FromQuery] [Required] IQuery query, [FromQuery] int? includeDepth, CancellationToken cancellationToken = default)
     {
         query ??= new Query();
 
@@ -103,7 +103,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> IndexPostAsync([FromBody][Required]IQuery query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> IndexPostAsync([FromBody][Required] IQuery query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
         query ??= new Query();
 

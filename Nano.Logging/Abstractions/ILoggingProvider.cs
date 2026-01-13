@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Nano.Logging.Abstractions.Config;
 
 namespace Nano.Logging.Abstractions;

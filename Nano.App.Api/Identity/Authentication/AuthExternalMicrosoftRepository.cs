@@ -33,8 +33,7 @@ public class AuthExternalMicrosoftRepository : IAuthExternalMicrosoftRepository
     /// <inheritdoc />
     public virtual async Task<ExternalLogInData> Authenticate(ExternalLoginProviderMicrosoft provider, CancellationToken cancellationToken = default)
     {
-        if (provider == null)
-            throw new ArgumentNullException(nameof(provider));
+        ArgumentNullException.ThrowIfNull(provider);
 
         if (options == null)
             throw new ArgumentNullException(nameof(options));
@@ -115,8 +114,7 @@ public class AuthExternalMicrosoftRepository : IAuthExternalMicrosoftRepository
     /// <inheritdoc />
     public virtual async Task<ExternalLoginTokenData> AuthenticateRefresh(LogInExternalRefreshMicrosoft logInExternalRefresh, CancellationToken cancellationToken = default)
     {
-        if (logInExternalRefresh == null)
-            throw new ArgumentNullException(nameof(logInExternalRefresh));
+        ArgumentNullException.ThrowIfNull(logInExternalRefresh);
 
         var httpRequestMessage = new HttpRequestMessage();
 

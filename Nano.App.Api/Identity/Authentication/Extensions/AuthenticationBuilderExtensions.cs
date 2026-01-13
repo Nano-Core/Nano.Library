@@ -17,8 +17,7 @@ public static class AuthenticationBuilderExtensions
 {
     internal static AuthenticationBuilder AddJwtAuthentication(this AuthenticationBuilder builder, JwtAuthenticationOptions options)
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         if (options == null)
         {
@@ -77,8 +76,7 @@ public static class AuthenticationBuilderExtensions
 
     private static AuthenticationBuilder AddExternalLoginGoogle(this AuthenticationBuilder builder, GoogleOptions options)
     {
-        if (builder == null) 
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         if (options == null)
         {
@@ -102,8 +100,7 @@ public static class AuthenticationBuilderExtensions
     }
     private static AuthenticationBuilder AddExternalLoginFacebook(this AuthenticationBuilder builder, FacebookOptions options)
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         if (options == null)
         {
@@ -127,8 +124,7 @@ public static class AuthenticationBuilderExtensions
     }
     private static AuthenticationBuilder AddExternalLoginMicrosoft(this AuthenticationBuilder builder, MicrosoftOptions options)
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         if (options == null)
         {

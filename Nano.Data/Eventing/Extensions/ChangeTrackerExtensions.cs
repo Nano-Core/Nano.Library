@@ -16,8 +16,7 @@ internal static class ChangeTrackerExtensions
 {
     internal static List<EntityEvent> GetPendingEntityEvents(this ChangeTracker changeTracker)
     {
-        if (changeTracker == null) 
-            throw new ArgumentNullException(nameof(changeTracker));
+        ArgumentNullException.ThrowIfNull(changeTracker);
 
         return changeTracker
             .Entries<IEntity>()
@@ -28,6 +27,6 @@ internal static class ChangeTrackerExtensions
             .Select(x => x
                 .GetEntityEvent())
             .Where(x => x != null)
-            .ToList();
+            .ToList()!;
     }
 }

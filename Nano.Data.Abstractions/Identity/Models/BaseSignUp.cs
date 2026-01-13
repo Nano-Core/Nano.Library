@@ -34,5 +34,5 @@ public abstract class BaseSignUp<TUser, TIdentity> : BaseSignUp
     /// User.
     /// </summary>
     [Required]
-    public virtual TUser User { get; set; }
+    public virtual TUser User { get; set; } = default!;
 }

@@ -17,8 +17,7 @@ public class DefaultEntityContractResolver : DefaultContractResolver
     /// <returns>The <see cref="JsonProperty"/>.</returns>
     protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
     {
-        if (member == null)
-            throw new ArgumentNullException(nameof(member));
+        ArgumentNullException.ThrowIfNull(member);
 
         var property = base.CreateProperty(member, memberSerialization);
         var propertyType = property.PropertyType;
@@ -32,7 +31,7 @@ public class DefaultEntityContractResolver : DefaultContractResolver
 
         return property;
     }
-    
+
     /// <summary>
     /// Serialize Only Non Empty Enumerables.
     /// </summary>
@@ -41,14 +40,9 @@ public class DefaultEntityContractResolver : DefaultContractResolver
     /// <param name="property">The <see cref="JsonProperty"/>.</param>
     protected void SerializeOnlyNonEmptyEnumerables(MemberInfo member, Type propertyType, ref JsonProperty property)
     {
-        if (member == null)
-            throw new ArgumentNullException(nameof(member));
-
-        if (propertyType == null)
-            throw new ArgumentNullException(nameof(propertyType));
-
-        if (property == null)
-            throw new ArgumentNullException(nameof(property));
+        ArgumentNullException.ThrowIfNull(member);
+        ArgumentNullException.ThrowIfNull(propertyType);
+        ArgumentNullException.ThrowIfNull(property);
 
         if (propertyType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(propertyType))
         {

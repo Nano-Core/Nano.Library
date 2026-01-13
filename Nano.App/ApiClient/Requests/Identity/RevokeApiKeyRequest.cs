@@ -16,7 +16,7 @@ public class RevokeApiKeyRequest<TIdentity> : BaseRequestDelete
     /// </summary>
     [Required]
     [Route]
-    public virtual TIdentity ApiKeyId { get; set; }
+    public virtual TIdentity ApiKeyId { get; set; } = default!;
 
     /// <summary>
     /// Revoke At.
@@ -30,7 +30,7 @@ public class RevokeApiKeyRequest<TIdentity> : BaseRequestDelete
     }
 
     /// <inheritdoc />
-    public override object GetBody()
+    public override object? GetBody()
     {
         return null;
     }

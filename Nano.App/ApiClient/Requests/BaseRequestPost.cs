@@ -8,5 +8,5 @@ public abstract class BaseRequestPost : BaseRequest
     /// <summary>
     /// Get Body.
     /// </summary>
-    public abstract object GetBody();
+    public abstract object? GetBody();
 }

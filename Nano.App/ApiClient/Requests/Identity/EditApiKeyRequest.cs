@@ -17,7 +17,7 @@ public class EditApiKeyRequest<TIdentity> : BaseRequestPut
     /// </summary>
     [Required]
     [Route]
-    public virtual TIdentity Id { get; set; }
+    public virtual TIdentity Id { get; set; } = default!;
 
     /// <summary>
     /// Create Api Key.

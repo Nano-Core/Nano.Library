@@ -8,7 +8,7 @@ namespace Nano.App.ApiClient.Requests;
 /// </summary>
 /// <typeparam name="TCriteria">The type of <see cref="IQueryCriteria"/>.</typeparam>
 public class EditQueryRequest<TCriteria> : BaseRequestPut
-    where TCriteria : IQueryCriteria, new()
+    where TCriteria : class, IQueryCriteria, new()
 {
     /// <summary>
     /// Query.

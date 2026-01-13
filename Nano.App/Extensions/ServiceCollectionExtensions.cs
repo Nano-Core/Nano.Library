@@ -20,11 +20,8 @@ internal static class ServiceCollectionExtensions
     internal static IServiceCollection AddNanoApp<TOptions>(this IServiceCollection services, IConfiguration configuration, out TOptions options)
         where TOptions : BaseAppOptions, new()
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (configuration == null)
-            throw new ArgumentNullException(nameof(configuration));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         services
             .AddNanoConfig(configuration)
@@ -42,8 +39,7 @@ internal static class ServiceCollectionExtensions
 
     private static IServiceCollection AddNulLogger(this IServiceCollection services)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddSingleton<ILogger, NullLogger>(_ => NullLogger.Instance);
@@ -52,8 +48,7 @@ internal static class ServiceCollectionExtensions
     }
     private static IServiceCollection AddStartUpTasks(this IServiceCollection services)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddSingleton<StartupTaskContext>();

@@ -26,12 +26,11 @@ public static class TypesHelper
                     return null;
                 }
 
-                return name.StartsWith(nameof(Microsoft))
+                return name.StartsWith(nameof(Microsoft), StringComparison.Ordinal)
                     ? null
                     : x;
             })
             .Where(x => x != null)
-            .SelectMany(x => x.GetTypes())
-            .Where(x => x != null);
+            .SelectMany(x => x!.GetTypes());
     }
 }

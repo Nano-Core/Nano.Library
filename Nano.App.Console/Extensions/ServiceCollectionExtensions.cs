@@ -14,34 +14,30 @@ internal static class ServiceCollectionExtensions
 {
     internal static IServiceCollection AddNanoWorkers(this IServiceCollection services)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
-        TypesHelper
+        var types = TypesHelper
             .GetAllTypes()
             .Where(x =>
                 !x.IsAbstract &&
                 x.IsTypeOf(typeof(BaseWorker)))
             .GroupBy(x => x.FullName)
             .Select(x => x.FirstOrDefault())
-            .Where(x => x != null)
-            .ToList()
-            .ForEach(x =>
-            {
-                services
-                    .AddSingleton(typeof(IHostedService), x);
-            });
+            .Where(x => x != null);
+
+        foreach (var type in types)
+        {
+            services
+                .AddSingleton(typeof(IHostedService), type!);
+        }
 
         return services;
     }
 
     internal static IServiceCollection AddNanoCultureInfo(this IServiceCollection services, ConsoleOptions options)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
 
         CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(options.Cultures.Default);
 

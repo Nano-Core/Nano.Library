@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Nano.App.ApiClient.Requests.Attributes;
 
 namespace Nano.App.ApiClient.Requests;
@@ -16,7 +17,8 @@ public class DeleteRequest<TIdentity> : BaseRequestDelete
     /// Id.
     /// </summary>
     [Route]
-    public virtual TIdentity Id { get; set; }
+    [Required]
+    public virtual TIdentity Id { get; set; } = default!;
 
     /// <summary>
     /// Constructor.
@@ -27,7 +29,7 @@ public class DeleteRequest<TIdentity> : BaseRequestDelete
     }
 
     /// <inheritdoc />
-    public override object GetBody()
+    public override object? GetBody()
     {
         return null;
     }

@@ -20,33 +20,22 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddNanoConfigSection<TSection>(this IServiceCollection services, string name, out TSection options)
         where TSection : class, new()
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (name == null)
-            throw new ArgumentNullException(nameof(name));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(name);
 
         var section = ConfigManager.Configuration
             .GetSection(name);
-        
+
         options = section
-            .Get<TSection>();
+            .Get<TSection>() ?? throw new InvalidOperationException($"Configuration section '{name}' could not be loaded."); ;
 
-        if (options != null)
-        {
-            var optionsBuilder = services
-                .AddOptions<TSection>();
+        var optionsBuilder = services
+            .AddOptions<TSection>();
 
-            optionsBuilder
-                .Bind(section)
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
-        }
-
-        if (options is null)
-        {
-            throw new InvalidOperationException($"Configuration section '{name}' could not be loaded.");
-        }
+        optionsBuilder
+            .Bind(section)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         return services;
     }

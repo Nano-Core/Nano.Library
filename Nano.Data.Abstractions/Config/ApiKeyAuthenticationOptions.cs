@@ -11,5 +11,5 @@ public class ApiKeyAuthenticationOptions
     /// Secret.
     /// </summary>
     [Required]
-    public virtual string Secret { get; set; }
+    public virtual string Secret { get; set; } = null!;
 }

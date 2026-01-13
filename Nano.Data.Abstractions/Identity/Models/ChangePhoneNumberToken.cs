@@ -17,17 +17,17 @@ public class ChangePhoneNumberToken<TIdentity>
     /// User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
     /// Token.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; }
+    public virtual string Token { get; set; } = null!;
 
     /// <summary>
     /// New Phone Number.
     /// </summary>
     [Required]
-    public virtual string NewPhoneNumber { get; set; }
+    public virtual string NewPhoneNumber { get; set; } = null!;
 }

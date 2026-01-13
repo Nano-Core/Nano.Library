@@ -12,8 +12,7 @@ public abstract class BaseEntityIdentityMapping<TEntity, TIdentity> : BaseEntity
     /// <inheritdoc />
     public override void Map(EntityTypeBuilder<TEntity> builder)
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         builder
             .HasKey(y => y.Id);

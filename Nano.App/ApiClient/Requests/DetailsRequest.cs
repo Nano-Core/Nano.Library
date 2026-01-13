@@ -16,7 +16,7 @@ public class DetailsRequest<TIdentity> : BaseRequestGet
     /// Id.
     /// </summary>
     [Route(Order = 0)]
-    public virtual TIdentity Id { get; set; }
+    public virtual TIdentity Id { get; set; } = default!;
 
     /// <summary>
     /// Include Depth.

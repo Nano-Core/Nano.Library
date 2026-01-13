@@ -15,7 +15,7 @@ public class ActivateUserRequest<TIdentity> : BaseRequestPost
     /// Id.
     /// </summary>
     [Route(Order = 0)]
-    public virtual TIdentity Id { get; set; }
+    public virtual TIdentity Id { get; set; } = default!;
 
     /// <summary>
     /// Constructor.
@@ -26,7 +26,7 @@ public class ActivateUserRequest<TIdentity> : BaseRequestPost
     }
 
     /// <inheritdoc />
-    public override object GetBody()
+    public override object? GetBody()
     {
         return null;
     }

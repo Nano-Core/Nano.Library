@@ -17,17 +17,17 @@ public class ReplaceRoleClaim<TIdentity>
     /// Role Id.
     /// </summary>
     [Required]
-    public virtual TIdentity RoleId { get; set; }
+    public virtual TIdentity RoleId { get; set; } = default!;
 
     /// <summary>
     /// Claim Type.
     /// </summary>
     [Required]
-    public virtual string ClaimType { get; set; }
+    public virtual string ClaimType { get; set; } = null!;
 
     /// <summary>
     /// New Claim Value.
     /// </summary>
     [Required]
-    public virtual string NewClaimValue { get; set; }
+    public virtual string NewClaimValue { get; set; } = null!;
 }

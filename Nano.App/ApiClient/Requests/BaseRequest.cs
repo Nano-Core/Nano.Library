@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -19,19 +20,20 @@ public abstract class BaseRequest
     /// Used to override the Jwt-Token for the specific request.
     /// </summary>
     [JsonIgnore]
-    public virtual string JwtTokenOverride { get; set; }
+    public virtual string? JwtTokenOverride { get; set; }
+
+    /// <summary>
+    /// Controller.
+    /// </summary>
+    [Required]
+    [JsonIgnore]
+    protected internal string Action { get; set; } = null!;
 
     /// <summary>
     /// Controller.
     /// </summary>
     [JsonIgnore]
-    protected internal string Action { get; set; }
-
-    /// <summary>
-    /// Controller.
-    /// </summary>
-    [JsonIgnore]
-    protected internal string Controller { get; set; }
+    protected internal string? Controller { get; set; }
 
     /// <summary>
     /// Get Route.
@@ -51,7 +53,7 @@ public abstract class BaseRequest
                 return (property, attribute);
             })
             .Where(x => x.attribute != null)
-            .OrderBy(x => x.attribute.Order)
+            .OrderBy(x => x.attribute!.Order)
             .Select(x =>
             {
                 var value = x.property
@@ -85,11 +87,12 @@ public abstract class BaseRequest
             .Select(x =>
             {
                 var name = x.property.Name;
+
                 var value = x.property
                     .GetValue(this)?
                     .ToString();
 
-                return new KeyValuePair<string, string>(name, $"{x.attribute.ValuePrefix}{value}");
+                return new KeyValuePair<string, string>(name, $"{x.attribute!.ValuePrefix}{value}");
             });
 
         return parameters;
@@ -104,15 +107,14 @@ public abstract class BaseRequest
     {
         var querystring = this.GetQuerystringRecursive(this);
 
-        return querystring.EndsWith('&') 
-            ? querystring[..^1] 
+        return querystring.EndsWith('&')
+            ? querystring[..^1]
             : querystring;
     }
 
     private string GetQuerystringRecursive(object value, string parentName = "")
     {
-        if (value == null)
-            throw new ArgumentNullException(nameof(value));
+        ArgumentNullException.ThrowIfNull(value);
 
         var str = string.Empty;
 
@@ -129,9 +131,11 @@ public abstract class BaseRequest
             var propertyValue = propertyInfo
                 .GetValue(value);
 
+            var name = attribute?.Name ?? propertyInfo.Name;
+
             if (propertyInfo.PropertyType.IsSimple())
             {
-                str += $"{parentName}{propertyInfo.Name}={Uri.EscapeDataString(propertyValue?.ToString() ?? string.Empty)}&";
+                str += $"{parentName}{name}={Uri.EscapeDataString(propertyValue?.ToString() ?? string.Empty)}&";
             }
             else if (propertyInfo.PropertyType.IsTypeOf(typeof(IEnumerable)))
             {
@@ -146,10 +150,10 @@ public abstract class BaseRequest
                     {
                         if (item.GetType().IsSimple())
                         {
-                            return $"{current}{parentName}{propertyInfo.Name}={Uri.EscapeDataString(item.ToString() ?? string.Empty)}&";
+                            return $"{current}{parentName}{name}={Uri.EscapeDataString(item.ToString() ?? string.Empty)}&";
                         }
 
-                        return current + this.GetQuerystringRecursive(item, $"{parentName}{propertyInfo.Name}.");
+                        return current + this.GetQuerystringRecursive(item, $"{parentName}{name}.");
                     });
             }
             else
@@ -159,7 +163,7 @@ public abstract class BaseRequest
                     continue;
                 }
 
-                str += this.GetQuerystringRecursive(propertyValue, $"{parentName}{propertyInfo.Name}.");
+                str += this.GetQuerystringRecursive(propertyValue, $"{parentName}{name}.");
             }
         }
 

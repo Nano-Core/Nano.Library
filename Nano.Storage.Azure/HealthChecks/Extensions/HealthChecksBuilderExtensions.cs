@@ -14,8 +14,7 @@ internal static class HealthChecksBuilderExtensions
 
     internal static IHealthChecksBuilder AddAzureFileshareStorage(this IHealthChecksBuilder builder, HealthStatus? failureStatus = null, IEnumerable<string>? tags = null, TimeSpan? timeout = null)
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         builder
             .Add(new HealthCheckRegistration(NAME, x =>

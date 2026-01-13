@@ -11,11 +11,10 @@ public class ExternalLoginProvider
     /// Name.
     /// </summary>
     [Required]
-    public virtual string Name { get; set; }
+    public virtual string Name { get; set; } = null!;
 
     /// <summary>
     /// Display Name.
     /// </summary>
-    [Required]
-    public virtual string DisplayName { get; set; }
+    public virtual string? DisplayName { get; set; }
 }

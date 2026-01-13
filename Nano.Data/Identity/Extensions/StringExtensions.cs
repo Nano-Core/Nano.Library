@@ -17,11 +17,12 @@ public static class StringExtensions
     /// <returns>The <see cref="JwtSecurityToken"/>.</returns>
     public static JwtSecurityToken GetJwtSecurityToken(this string accessToken)
     {
-        if (accessToken == null)
-            throw new ArgumentNullException(nameof(accessToken));
+        ArgumentNullException.ThrowIfNull(accessToken);
 
         var handler = new JwtSecurityTokenHandler();
-        var jsonToken = handler.ReadToken(accessToken);
+
+        var jsonToken = handler
+            .ReadToken(accessToken);
 
         if (jsonToken is not JwtSecurityToken jwtSecurityToken)
         {
@@ -39,11 +40,8 @@ public static class StringExtensions
     /// <returns>The encrypted base 64 api-key.</returns>
     public static string HmacEncrypt(this string apiKey, string hmacSecret)
     {
-        if (apiKey == null) 
-            throw new ArgumentNullException(nameof(apiKey));
-        
-        if (hmacSecret == null)
-            throw new ArgumentNullException(nameof(hmacSecret));
+        ArgumentNullException.ThrowIfNull(apiKey);
+        ArgumentNullException.ThrowIfNull(hmacSecret);
 
         using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(hmacSecret));
 

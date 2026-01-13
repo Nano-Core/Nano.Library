@@ -8,15 +8,15 @@ public class ExternalLoginTokenData
     /// <summary>
     /// Name.
     /// </summary>
-    public virtual string Name { get; set; }
+    public virtual string Name { get; set; } = null!;
 
     /// <summary>
     /// Token.
     /// </summary>
-    public virtual string Token { get; set; }
+    public virtual string Token { get; set; } = null!;
 
     /// <summary>
     /// Refresh Token.
     /// </summary>
-    public virtual string RefreshToken { get; set; }
+    public virtual string? RefreshToken { get; set; }
 }

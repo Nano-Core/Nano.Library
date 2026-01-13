@@ -12,5 +12,5 @@ public class CreateRole
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Name { get; set; }
+    public virtual string Name { get; set; } = null!;
 }

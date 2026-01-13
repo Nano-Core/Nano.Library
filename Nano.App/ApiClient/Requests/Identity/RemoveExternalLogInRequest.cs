@@ -7,7 +7,7 @@ namespace Nano.App.ApiClient.Requests.Identity;
 public class RemoveExternalLoginRequest : RemoveExternalLoginRequest<Guid>;
 
 /// <inheritdoc />
-public class RemoveExternalLoginRequest<TIdentity> : BaseRequestDelete 
+public class RemoveExternalLoginRequest<TIdentity> : BaseRequestDelete
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

@@ -14,5 +14,5 @@ public abstract class BaseEntityUser<TIdentity> : BaseEntity<TIdentity>, IEntity
     /// <inheritdoc />
     [Include]
     [RequestIgnore]
-    public virtual IdentityUserEx<TIdentity> IdentityUserEx { get; set; }
+    public virtual IdentityUserEx<TIdentity> IdentityUserEx { get; set; } = null!;
 }

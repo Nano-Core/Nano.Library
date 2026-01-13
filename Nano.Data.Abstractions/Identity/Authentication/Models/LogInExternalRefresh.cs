@@ -11,11 +11,11 @@ public class LogInExternalRefresh
     /// Provider Name.
     /// </summary>
     [Required]
-    public string ProviderName { get; set; }
+    public string ProviderName { get; set; } = null!;
 
     /// <summary>
     /// Refresh Token.
     /// </summary>
     [Required]
-    public virtual string RefreshToken { get; set; }
+    public virtual string RefreshToken { get; set; } = null!;
 }

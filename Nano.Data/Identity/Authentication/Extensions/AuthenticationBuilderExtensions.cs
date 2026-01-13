@@ -10,11 +10,10 @@ namespace Nano.Data.Identity.Authentication.Extensions;
 /// </summary>
 public static class AuthenticationBuilderExtensions
 {
-    internal static AuthenticationBuilder AddApiKeyAuthentication<TIdentity>(this AuthenticationBuilder builder, ApiKeyAuthenticationOptions options)
+    internal static AuthenticationBuilder AddApiKeyAuthentication<TIdentity>(this AuthenticationBuilder builder, ApiKeyAuthenticationOptions? options)
         where TIdentity : IEquatable<TIdentity>
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         if (options == null)
         {

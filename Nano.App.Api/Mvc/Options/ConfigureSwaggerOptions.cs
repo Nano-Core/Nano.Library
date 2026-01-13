@@ -34,7 +34,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     private readonly IOptionsMonitor<ApiOptions> webOptions;
     private readonly IAuthenticationSchemeProvider authenticationSchemeProvider;
     private readonly IApiVersionDescriptionProvider apiVersionDescriptionProvider;
-    
+
     /// <summary>
     /// 
     /// </summary>
@@ -52,8 +52,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     /// <inheritdoc />
     public void Configure(SwaggerGenOptions options)
     {
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(options);
 
         this.ConfigureApiInfos(options);
         this.ConfigureSecurityDefinitions(options);
@@ -61,16 +60,16 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 
         options
             .IgnoreObsoleteActions();
-        
+
         options
             .IgnoreObsoleteProperties();
-        
+
         options
             .EnableAnnotations(true, true);
-        
+
         options
             .CustomSchemaIds(y => y.GetFriendlyName());
-        
+
         options
             .OrderActionsBy(y => y.RelativePath);
 
@@ -88,7 +87,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
                     return null;
                 }
 
-                if (id.StartsWith(this.webOptions.CurrentValue.Hosting.Root))
+                if (id.StartsWith(this.webOptions.CurrentValue.Hosting.Root, StringComparison.Ordinal))
                 {
                     id = id[this.webOptions.CurrentValue.Hosting.Root.Length..];
                 }
@@ -112,8 +111,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 
     private void ConfigureApiInfos(SwaggerGenOptions options)
     {
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(options);
 
         foreach (var apiVersionDescription in apiVersionDescriptionProvider.ApiVersionDescriptions)
         {
@@ -150,8 +148,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     }
     private void ConfigureSecurityDefinitions(SwaggerGenOptions options)
     {
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(options);
 
         var authenticationSchemes = this.authenticationSchemeProvider
             .GetAllSchemesAsync()
@@ -168,7 +165,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
                 Type = SecuritySchemeType.ApiKey,
                 Name = AuthenticationSchemes.JWT,
                 Description = "JWT Authorization header using the Bearer scheme. Format: Authorization: Bearer [token]",
-                Scheme = "Bearer" 
+                Scheme = "Bearer"
             };
 
             options
@@ -192,8 +189,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     }
     private void ConfigureDocumentationSources(SwaggerGenOptions options)
     {
-        if (options == null) 
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(options);
 
         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
@@ -231,7 +227,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
             }
 
             options
-                .IncludeXmlComments(file, includeControllerXmlComments: true);
+                .IncludeXmlComments(file, true);
         }
     }
 

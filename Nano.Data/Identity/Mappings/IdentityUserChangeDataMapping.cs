@@ -14,8 +14,7 @@ public class IdentityUserChangeDataMapping<TIdentity> : BaseEntityIdentityMappin
     /// <inheritdoc />
     public override void Map(EntityTypeBuilder<IdentityUserChangeData<TIdentity>> builder)
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         base.Map(builder);
 

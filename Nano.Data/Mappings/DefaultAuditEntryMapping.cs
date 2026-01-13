@@ -11,8 +11,7 @@ public class DefaultAuditEntryMapping : DefaultEntityMapping<DefaultAuditEntry>
     /// <inheritdoc />
     public override void Map(EntityTypeBuilder<DefaultAuditEntry> builder)
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         base.Map(builder);
 
@@ -21,25 +20,25 @@ public class DefaultAuditEntryMapping : DefaultEntityMapping<DefaultAuditEntry>
 
         builder
             .Property(x => x.CreatedBy)
-            .HasMaxLength(255);
+            .HasMaxLength(256);
 
         builder
             .HasIndex(y => y.CreatedBy);
 
         builder
             .Property(x => x.EntitySetName)
-            .HasMaxLength(255);
+            .HasMaxLength(256);
 
         builder
             .Property(x => x.EntityTypeName)
-            .HasMaxLength(255);
+            .HasMaxLength(256);
 
         builder
             .HasIndex(y => y.EntityTypeName);
 
         builder
             .Property(x => x.StateName)
-            .HasMaxLength(255);
+            .HasMaxLength(256);
 
         builder
             .Property(x => x.State);
@@ -54,7 +53,7 @@ public class DefaultAuditEntryMapping : DefaultEntityMapping<DefaultAuditEntry>
 
         builder
             .Property(y => y.RequestId)
-            .HasMaxLength(255);
+            .HasMaxLength(256);
 
         builder
             .HasIndex(y => y.RequestId);

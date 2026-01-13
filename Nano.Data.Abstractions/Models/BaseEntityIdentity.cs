@@ -8,5 +8,5 @@ public abstract class BaseEntityIdentity<TIdentity> : IEntityIdentity<TIdentity>
 {
     /// <inheritdoc />
     [Required]
-    public TIdentity Id { get; set; }
+    public TIdentity Id { get; set; } = default!;
 }

@@ -17,7 +17,7 @@ public class GetApiKeysRequest<TIdentity> : BaseRequestGet
     //[Required]
     [Required]
     [Route(Order = 0)]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <inheritdoc />
     public GetApiKeysRequest()

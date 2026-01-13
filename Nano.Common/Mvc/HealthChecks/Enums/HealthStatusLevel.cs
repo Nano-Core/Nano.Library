@@ -15,7 +15,7 @@ public enum HealthStatusLevel
     /// Indicates that the health check determined that the component was in a degraded state.
     /// </summary>
     Degraded,
-    
+
     /// <summary>
     /// Indicates that the health check determined that the component was healthy.
     /// </summary>

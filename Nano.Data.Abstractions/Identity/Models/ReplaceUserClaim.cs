@@ -17,17 +17,17 @@ public class ReplaceUserClaim<TIdentity>
     /// User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
     /// Claim Type.
     /// </summary>
     [Required]
-    public virtual string ClaimType { get; set; }
+    public virtual string ClaimType { get; set; } = null!;
 
     /// <summary>
     /// New Claim Value.
     /// </summary>
     [Required]
-    public virtual string NewClaimValue { get; set; }
+    public virtual string NewClaimValue { get; set; } = null!;
 }

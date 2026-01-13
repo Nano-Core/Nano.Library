@@ -10,11 +10,17 @@ public static class ObjectExtensions
 {
     internal static T Parse<T>(this object @object)
     {
-        if (@object == null)
-            throw new ArgumentNullException(nameof(@object));
+        ArgumentNullException.ThrowIfNull(@object);
 
-        return (T)TypeDescriptor
+        var convertFrom = TypeDescriptor
             .GetConverter(typeof(T))
-            .ConvertFrom(@object.ToString());
+            .ConvertFrom(@object);
+
+        if (convertFrom == null)
+        {
+            return default!;
+        }
+
+        return (T)convertFrom;
     }
 }

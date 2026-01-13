@@ -29,11 +29,8 @@ internal static class MultipartFormDataContentExtensions
     /// <returns>Void.</returns>
     internal static async Task AddFormItem(this MultipartFormDataContent formContent, FormItem formItem, CancellationToken cancellationToken = default)
     {
-        if (formContent == null)
-            throw new ArgumentNullException(nameof(formContent));
-
-        if (formItem == null)
-            throw new ArgumentNullException(nameof(formItem));
+        ArgumentNullException.ThrowIfNull(formContent);
+        ArgumentNullException.ThrowIfNull(formItem);
 
         if (formItem.Value is IEnumerable array)
         {
@@ -122,16 +119,11 @@ internal static class MultipartFormDataContentExtensions
         }
     }
 
-    private static async Task Add(this MultipartFormDataContent formContent, FileInfo fileInfo, string name, CancellationToken cancellationToken = default)
+    private static async Task Add(this MultipartFormDataContent formContent, FileSystemInfo fileInfo, string name, CancellationToken cancellationToken = default)
     {
-        if (formContent == null)
-            throw new ArgumentNullException(nameof(formContent));
-
-        if (fileInfo == null)
-            throw new ArgumentNullException(nameof(fileInfo));
-
-        if (name == null)
-            throw new ArgumentNullException(nameof(name));
+        ArgumentNullException.ThrowIfNull(formContent);
+        ArgumentNullException.ThrowIfNull(fileInfo);
+        ArgumentNullException.ThrowIfNull(name);
 
         if (!File.Exists(fileInfo.FullName))
         {
@@ -147,14 +139,9 @@ internal static class MultipartFormDataContentExtensions
     }
     private static async Task Add(this MultipartFormDataContent formContent, IFormFile formFile, string name, CancellationToken cancellationToken = default)
     {
-        if (formContent == null)
-            throw new ArgumentNullException(nameof(formContent));
-
-        if (formFile == null)
-            throw new ArgumentNullException(nameof(formFile));
-
-        if (name == null)
-            throw new ArgumentNullException(nameof(name));
+        ArgumentNullException.ThrowIfNull(formContent);
+        ArgumentNullException.ThrowIfNull(formFile);
+        ArgumentNullException.ThrowIfNull(name);
 
         var stream = formFile
             .OpenReadStream();
@@ -173,14 +160,9 @@ internal static class MultipartFormDataContentExtensions
     }
     private static async Task Add(this MultipartFormDataContent formContent, Stream stream, string name, CancellationToken cancellationToken = default)
     {
-        if (formContent == null)
-            throw new ArgumentNullException(nameof(formContent));
-
-        if (stream == null)
-            throw new ArgumentNullException(nameof(stream));
-
-        if (name == null)
-            throw new ArgumentNullException(nameof(name));
+        ArgumentNullException.ThrowIfNull(formContent);
+        ArgumentNullException.ThrowIfNull(stream);
+        ArgumentNullException.ThrowIfNull(name);
 
         var bytes = await stream
             .ReadAllBytesAsync(cancellationToken);
@@ -193,14 +175,9 @@ internal static class MultipartFormDataContentExtensions
     }
     private static async Task Add(this MultipartFormDataContent formContent, FileStream fileStream, string name, CancellationToken cancellationToken = default)
     {
-        if (formContent == null)
-            throw new ArgumentNullException(nameof(formContent));
-
-        if (fileStream == null)
-            throw new ArgumentNullException(nameof(fileStream));
-
-        if (name == null)
-            throw new ArgumentNullException(nameof(name));
+        ArgumentNullException.ThrowIfNull(formContent);
+        ArgumentNullException.ThrowIfNull(fileStream);
+        ArgumentNullException.ThrowIfNull(name);
 
         var bytes = await fileStream
             .ReadAllBytesAsync(cancellationToken);
@@ -213,14 +190,9 @@ internal static class MultipartFormDataContentExtensions
     }
     private static async Task Add(this MultipartFormDataContent formContent, NamedStream namedStream, string name, CancellationToken cancellationToken = default)
     {
-        if (formContent == null)
-            throw new ArgumentNullException(nameof(formContent));
-
-        if (namedStream == null)
-            throw new ArgumentNullException(nameof(namedStream));
-
-        if (name == null)
-            throw new ArgumentNullException(nameof(name));
+        ArgumentNullException.ThrowIfNull(formContent);
+        ArgumentNullException.ThrowIfNull(namedStream);
+        ArgumentNullException.ThrowIfNull(name);
 
         await using (namedStream.Stream)
         {
@@ -234,16 +206,11 @@ internal static class MultipartFormDataContentExtensions
                 .Add(fileContent, name, namedStream.Name);
         }
     }
-    private static Task Add(this MultipartFormDataContent formContent, object value, string name)
+    private static Task Add(this MultipartFormDataContent formContent, object? value, string name)
     {
-        if (formContent == null)
-            throw new ArgumentNullException(nameof(formContent));
-
-        if (value == null)
-            throw new ArgumentNullException(nameof(value));
-
-        if (name == null)
-            throw new ArgumentNullException(nameof(name));
+        ArgumentNullException.ThrowIfNull(formContent);
+        ArgumentNullException.ThrowIfNull(value);
+        ArgumentNullException.ThrowIfNull(name);
 
         var isSimple = value.GetType()
             .IsSimple();

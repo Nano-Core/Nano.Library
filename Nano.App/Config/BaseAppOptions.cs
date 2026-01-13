@@ -21,7 +21,7 @@ public abstract class BaseAppOptions
     /// Entry Point.
     /// </summary>
     [Required]
-    public virtual string EntryPoint { get; set; }
+    public virtual string EntryPoint { get; set; } = null!;
 
     /// <summary>
     /// Version.

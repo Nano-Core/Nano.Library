@@ -12,8 +12,7 @@ public abstract class BaseEntityViewMapping<TEntity> : BaseEntityMapping<TEntity
     /// <inheritdoc />
     public override void Map(EntityTypeBuilder<TEntity> builder)
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         builder
             .ToView(typeof(TEntity).Name)

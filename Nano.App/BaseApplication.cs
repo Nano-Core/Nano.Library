@@ -9,13 +9,13 @@ namespace Nano.App;
 /// Base Application (abstract).
 /// </summary>
 public abstract class BaseApplication<THost, THostBuilder> : IApplication
-    where THost : IHost
+    where THost : class, IHost
     where THostBuilder : IHostApplicationBuilder
 {
     /// <summary>
     /// 
     /// </summary>
-    protected THost application;
+    protected THost? application;
 
     /// <summary>
     /// 
@@ -50,5 +50,14 @@ public abstract class BaseApplication<THost, THostBuilder> : IApplication
     /// <summary>
     /// 
     /// </summary>
-    public virtual void Run() => this.application.Run();
+    public virtual void Run()
+    {
+        if (this.application == null)
+        {
+            throw new InvalidOperationException("No Application has been configured and Build.");
+        }
+
+        this.application
+            .Run();
+    }
 }

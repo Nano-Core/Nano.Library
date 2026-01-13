@@ -22,8 +22,7 @@ public static class ModelBuilderExtensions
         where TEntity : class, IEntity
         where TMapping : BaseEntityMapping<TEntity>, new()
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         var mapping = new TMapping();
 
@@ -39,8 +38,7 @@ public static class ModelBuilderExtensions
     private static ModelBuilder UpdateUniuqeIndexes<TEntity>(this ModelBuilder builder)
         where TEntity : class, IEntity
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         var entity = builder.Entity<TEntity>();
 
@@ -76,8 +74,7 @@ public static class ModelBuilderExtensions
     private static ModelBuilder UpdateSoftDeleteUniuqeIndexes<TEntity>(this ModelBuilder builder)
         where TEntity : class, IEntity
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         var isDeletableSoft = typeof(TEntity).IsTypeOf(typeof(IEntityDeletableSoft));
 

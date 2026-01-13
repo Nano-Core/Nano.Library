@@ -17,12 +17,12 @@ public class SetUsername<TIdentity>
     /// User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
     /// New Username.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string NewUsername { get; set; }
+    public virtual string NewUsername { get; set; } = null!;
 }

@@ -11,9 +11,8 @@ internal static class HttpResponseExtensions
 {
     internal static HttpResponse AddCrossOriginEmbedderPolicyHeader(this HttpResponse httpResponse, CrossOriginEmbedderPolicy? crossOriginEmbedderPolicy)
     {
-        if (httpResponse == null) 
-            throw new ArgumentNullException(nameof(httpResponse));
-        
+        ArgumentNullException.ThrowIfNull(httpResponse);
+
         switch (crossOriginEmbedderPolicy)
         {
             case CrossOriginEmbedderPolicy.UnsafeNone:
@@ -43,8 +42,7 @@ internal static class HttpResponseExtensions
 
     internal static HttpResponse AddCrossOriginOpenerPolicyHeader(this HttpResponse httpResponse, CrossOriginOpenerPolicy? crossOriginOpenerPolicy)
     {
-        if (httpResponse == null)
-            throw new ArgumentNullException(nameof(httpResponse));
+        ArgumentNullException.ThrowIfNull(httpResponse);
 
         switch (crossOriginOpenerPolicy)
         {
@@ -75,8 +73,7 @@ internal static class HttpResponseExtensions
 
     internal static HttpResponse AddCrossOriginResourcePolicyHeader(this HttpResponse httpResponse, CrossOriginResourcePolicy? crossOriginResourcePolicy)
     {
-        if (httpResponse == null)
-            throw new ArgumentNullException(nameof(httpResponse));
+        ArgumentNullException.ThrowIfNull(httpResponse);
 
         switch (crossOriginResourcePolicy)
         {
@@ -107,8 +104,7 @@ internal static class HttpResponseExtensions
 
     internal static HttpResponse AddXRobotsHeader(this HttpResponse httpResponse, RobotsOptions options)
     {
-        if (httpResponse == null)
-            throw new ArgumentNullException(nameof(httpResponse));
+        ArgumentNullException.ThrowIfNull(httpResponse);
 
         var directives = new List<string>();
 
@@ -165,8 +161,7 @@ internal static class HttpResponseExtensions
 
     internal static HttpResponse AddFrameOptionsPolicyHeader(this HttpResponse httpResponse, XFrameOptionsPolicy? frameOptionsPolicy)
     {
-        if (httpResponse == null)
-            throw new ArgumentNullException(nameof(httpResponse));
+        ArgumentNullException.ThrowIfNull(httpResponse);
 
         const string KEY = "X-Frame-Options";
 
@@ -194,8 +189,7 @@ internal static class HttpResponseExtensions
 
     internal static HttpResponse AddContentTypeOptionsNoSniffHeader(this HttpResponse httpResponse)
     {
-        if (httpResponse == null)
-            throw new ArgumentNullException(nameof(httpResponse));
+        ArgumentNullException.ThrowIfNull(httpResponse);
 
         httpResponse.Headers
             .TryAdd("X-Content-Type-Options", "nosniff");
@@ -205,8 +199,7 @@ internal static class HttpResponseExtensions
 
     internal static HttpResponse AddPermissionsPolicyHeader(this HttpResponse httpResponse, CspOptions.CspDirectivePermissionsPolicy cspDirectivePermissionsPolicy)
     {
-        if (httpResponse == null)
-            throw new ArgumentNullException(nameof(httpResponse));
+        ArgumentNullException.ThrowIfNull(httpResponse);
 
         var permissionPolicyValues = string.Empty;
 
@@ -255,8 +248,7 @@ internal static class HttpResponseExtensions
     private static string UseCspPermissionsPolicyDirective<T>(string name, T cspDirective = null)
         where T : CspOptions.CspDirective
     {
-        if (name == null)
-            throw new ArgumentNullException(nameof(name));
+        ArgumentNullException.ThrowIfNull(name);
 
         if (cspDirective == null)
         {

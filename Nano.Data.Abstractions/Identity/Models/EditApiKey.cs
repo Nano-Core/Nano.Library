@@ -17,11 +17,12 @@ public class EditApiKey<TIdentity>
     /// Id.
     /// </summary>
     [Required]
-    public virtual TIdentity Id { get; set; }
+    public virtual TIdentity Id { get; set; } = default!;
 
     /// <summary>
     /// Name.
     /// </summary>
     [Required]
-    public virtual string Name { get; set; }
+    [MaxLength(256)]
+    public virtual string Name { get; set; } = null!;
 }

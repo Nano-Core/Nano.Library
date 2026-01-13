@@ -14,8 +14,7 @@ public class IdentityUserRefreshTokenMapping<TIdentity> : BaseEntityIdentityMapp
     /// <inheritdoc />
     public override void Map(EntityTypeBuilder<IdentityUserRefreshToken<TIdentity>> builder)
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         base.Map(builder);
 

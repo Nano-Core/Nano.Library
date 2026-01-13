@@ -8,9 +8,8 @@ internal static class StringExtensions
 {
     internal static RsaSecurityKey CreateRsaSecurityKey(this string key)
     {
-        if (key == null) 
-            throw new ArgumentNullException(nameof(key));
-        
+        ArgumentNullException.ThrowIfNull(key);
+
         var base64 = Convert.FromBase64String(key);
 
         var rsaAlgorithm = RSA.Create();

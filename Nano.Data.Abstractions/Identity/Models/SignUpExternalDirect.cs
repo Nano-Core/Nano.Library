@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 
@@ -23,5 +24,6 @@ public class SignUpExternalDirect<TUser, TIdentity> : BaseSignUpExternal<TUser, 
     /// <summary>
     /// External Log In Data.
     /// </summary>
-    public virtual ExternalLogInData ExternalLogInData { get; set; }
+    [Required]
+    public virtual ExternalLogInData ExternalLogInData { get; set; } = new();
 }

@@ -24,11 +24,8 @@ public class HttpRequestOptionsMiddleware : IMiddleware
     /// <inheritdoc />
     public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
     {
-        if (httpContext == null)
-            throw new ArgumentNullException(nameof(httpContext));
-
-        if (next == null)
-            throw new ArgumentNullException(nameof(next));
+        ArgumentNullException.ThrowIfNull(httpContext);
+        ArgumentNullException.ThrowIfNull(next);
 
         if (httpContext.Request.Method == HttpMethods.Options)
         {

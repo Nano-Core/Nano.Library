@@ -23,8 +23,7 @@ public class StartupHealthCheck : IHealthCheck
     /// <inheritdoc />
     public virtual Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
-        if (context == null)
-            throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
         var result = this.taskContext.IsDone
             ? HealthCheckResult.Healthy()

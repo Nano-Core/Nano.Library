@@ -20,8 +20,7 @@ public static class EntityTypeBuilderExtensions
     public static void OnInserted<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IInsertedEntry<TEntity>> action)
         where TEntity : class, IEntityCreatable
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         Triggers<TEntity>.Inserted += action;
     }
@@ -36,8 +35,7 @@ public static class EntityTypeBuilderExtensions
     public static void OnInserting<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IInsertingEntry<TEntity>> action)
         where TEntity : class, IEntityCreatable
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         Triggers<TEntity>.Inserting += action;
     }
@@ -52,8 +50,7 @@ public static class EntityTypeBuilderExtensions
     public static void OnUpdated<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IUpdatedEntry<TEntity>> action)
         where TEntity : class, IEntityUpdatable
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         Triggers<TEntity>.Updated += action;
     }
@@ -68,8 +65,7 @@ public static class EntityTypeBuilderExtensions
     public static void OnUpdating<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IUpdatingEntry<TEntity>> action)
         where TEntity : class, IEntityUpdatable
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         Triggers<TEntity>.Updating += action;
     }
@@ -84,8 +80,7 @@ public static class EntityTypeBuilderExtensions
     public static void OnDeleted<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IDeletedEntry<TEntity>> action)
         where TEntity : class, IEntityDeletableSoft
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         Triggers<TEntity>.Deleted += action;
     }
@@ -100,8 +95,7 @@ public static class EntityTypeBuilderExtensions
     public static void OnDeleting<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IDeletingEntry<TEntity>> action)
         where TEntity : class, IEntityDeletableSoft
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         Triggers<TEntity>.Deleting += action;
     }

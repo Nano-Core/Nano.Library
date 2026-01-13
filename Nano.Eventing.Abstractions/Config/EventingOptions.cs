@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Nano.Common.Mvc.HealthChecks.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -8,8 +7,8 @@ namespace Nano.Eventing.Abstractions.Config;
 /// <summary>
 /// Configuration options for eventing in Nano applications.
 /// <para>
-/// These options are used by eventing providers to configure connections, 
-/// message handling, and optional health checks. 
+/// These options are used by eventing providers to configure connections,
+/// message handling, and optional health checks.
 /// They are intentionally agnostic to the underlying messaging system.
 /// </para>
 /// </summary>
@@ -77,11 +76,11 @@ public class EventingOptions
 
     // BUG: Merge into HealthCheckOptions (Eventing, Storage, Data, ApiClient, more?)
     ///// <summary>
-    ///// 
+    /////
     ///// </summary>
     //public virtual HealthCheckOptions? HealthCheck { get; set; }
     ///// <summary>
-    ///// 
+    /////
     ///// </summary>
     //public class HealthCheckOptions
     //{

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.ApiClient.Requests;
@@ -11,7 +12,8 @@ public class CreateManyRequest : BaseRequestPost
     /// <summary>
     /// Entities.
     /// </summary>
-    public virtual IEnumerable<IEntityCreatable> Entities { get; set; }
+    [Required]
+    public virtual IEnumerable<IEntityCreatable> Entities { get; set; } = [];
 
     /// <summary>
     /// Constructor.

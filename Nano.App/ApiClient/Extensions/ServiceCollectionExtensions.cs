@@ -19,12 +19,9 @@ internal static class ServiceCollectionExtensions
 {
     internal static IServiceCollection AddNanoApis(this IServiceCollection services, BaseAppOptions appOptions)
     {
-        if (services == null) 
-            throw new ArgumentNullException(nameof(services));
-        
-        if (appOptions == null) 
-            throw new ArgumentNullException(nameof(appOptions));
-        
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(appOptions);
+
         var hosts = new List<string>();
 
         var types = TypesHelper
@@ -80,7 +77,7 @@ internal static class ServiceCollectionExtensions
 
                     var httpContextAccessor = serviceProvider
                         .GetRequiredService<IHttpContextAccessor>();
-                    
+
                     return Activator.CreateInstance(type, apiOptions, httpClient, httpContextAccessor);
                 });
 
@@ -88,7 +85,7 @@ internal static class ServiceCollectionExtensions
             {
                 var failureStatus = options.UnhealthyStatus
                     .GetHealthStatus();
-                
+
                 services.AddHealthChecks()
                     .AddTcpHealthCheck(y => y
                         .AddHost(options.Host, options.Port), options.Host, failureStatus);

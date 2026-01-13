@@ -31,9 +31,8 @@ public sealed class ConfigureMvcOptions : IConfigureOptions<MvcOptions>
     /// <inheritdoc />
     public void Configure(MvcOptions options)
     {
-        if (options == null) 
-            throw new ArgumentNullException(nameof(options));
-        
+        ArgumentNullException.ThrowIfNull(options);
+
         options.ReturnHttpNotAcceptable = true;
         options.RespectBrowserAcceptHeader = true;
         options.MaxValidationDepth = 128;

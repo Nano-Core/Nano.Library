@@ -1,8 +1,8 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Config.Extensions;
 using Nano.Storage.Abstractions;
 using Nano.Storage.Abstractions.Config;
+using System;
 
 namespace Nano.Storage.Extensions;
 
@@ -35,15 +35,14 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddNanoStorage<TProvider>(this IServiceCollection services)
         where TProvider : class, IStorageProvider, new()
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddNanoConfigSection<StorageOptions>(StorageOptions.SectionName, out var options);
 
-        if (options == null)
+        if (options is null)
         {
-            throw new NullReferenceException(nameof(options));
+            throw new InvalidOperationException($"Configuration section '{StorageOptions.SectionName}' could not be loaded.");
         }
 
         var provider = Activator.CreateInstance<TProvider>();

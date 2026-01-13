@@ -16,12 +16,13 @@ public class IdentityUserChangeData<TIdentity> : BaseEntityIdentity<TIdentity>, 
     /// <summary>
     /// Identity User Id.
     /// </summary>
-    public virtual TIdentity IdentityUserId { get; set; }
+    [Required]
+    public virtual TIdentity IdentityUserId { get; set; } = default!;
 
     /// <summary>
     /// Identity User.
     /// </summary>
-    public virtual IdentityUserEx<TIdentity> IdentityUser { get; set; }
+    public virtual IdentityUserEx<TIdentity> IdentityUser { get; set; } = null!;
 
     /// <summary>
     /// New Email.
@@ -29,7 +30,7 @@ public class IdentityUserChangeData<TIdentity> : BaseEntityIdentity<TIdentity>, 
     [EmailAddress]
     [MaxLength(256)]
     [ProtectedPersonalData]
-    public virtual string NewEmail { get; set; }
+    public virtual string? NewEmail { get; set; }
 
     /// <summary>
     /// New Phone Number.
@@ -37,5 +38,5 @@ public class IdentityUserChangeData<TIdentity> : BaseEntityIdentity<TIdentity>, 
     [InternationalPhone]
     [MaxLength(20)]
     [ProtectedPersonalData]
-    public virtual string NewPhoneNumber { get; set; }
+    public virtual string? NewPhoneNumber { get; set; }
 }

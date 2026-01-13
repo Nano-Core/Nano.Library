@@ -35,7 +35,7 @@ namespace Nano.App.ApiClient;
 /// </summary>
 public abstract class BaseApi
 {
-    private volatile AccessToken accessToken;
+    private volatile AccessToken? accessToken;
 
     private readonly IOptionsMonitor<ApiClientOptions> apiOptions;
     private readonly HttpClient httpClient;
@@ -68,8 +68,7 @@ public abstract class BaseApi
     protected virtual Task InvokeAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequest
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         return request switch
         {
@@ -90,12 +89,11 @@ public abstract class BaseApi
     /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
-    protected virtual async Task<TResponse> InvokeAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+    protected virtual async Task<TResponse?> InvokeAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequest
         where TResponse : class
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         request.Controller ??= GetInferredController<TResponse>();
 
@@ -119,13 +117,12 @@ public abstract class BaseApi
     /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
-    protected virtual async Task<TResponse> InvokeAsync<TEntity, TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+    protected virtual async Task<TResponse?> InvokeAsync<TEntity, TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TRequest : BaseRequest
         where TResponse : class
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         request.Controller ??= GetInferredController<TEntity>();
 
@@ -140,7 +137,7 @@ public abstract class BaseApi
         };
     }
 
-    private async Task<string> AuthenticateAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+    private async Task<string?> AuthenticateAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequest
     {
         if (request.GetType() == typeof(LogInRequest))
@@ -182,8 +179,7 @@ public abstract class BaseApi
     private async Task GetAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestGet
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
@@ -193,12 +189,11 @@ public abstract class BaseApi
             await this.GetResponseAsync(httpResponse, cancellationToken);
         }
     }
-    private async Task<TResponse> GetAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+    private async Task<TResponse?> GetAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestGet
         where TResponse : class
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
@@ -211,8 +206,7 @@ public abstract class BaseApi
     private async Task PutAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestPut
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
@@ -229,12 +223,11 @@ public abstract class BaseApi
             await this.GetResponseAsync(httpResponse, cancellationToken);
         }
     }
-    private async Task<TResponse> PutAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+    private async Task<TResponse?> PutAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestPut
         where TResponse : class
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
@@ -252,8 +245,7 @@ public abstract class BaseApi
     private async Task PostAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestPost
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
@@ -270,12 +262,11 @@ public abstract class BaseApi
             await this.GetResponseAsync(httpResponse, cancellationToken);
         }
     }
-    private async Task<TResponse> PostAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+    private async Task<TResponse?> PostAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestPost
         where TResponse : class
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
@@ -295,8 +286,7 @@ public abstract class BaseApi
     private async Task PostFormAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestPostForm
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
@@ -317,12 +307,11 @@ public abstract class BaseApi
             }
         }
     }
-    private async Task<TResponse> PostFormAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+    private async Task<TResponse?> PostFormAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestPostForm
         where TResponse : class
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
@@ -346,8 +335,7 @@ public abstract class BaseApi
     private async Task DeleteAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestDelete
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
@@ -362,12 +350,11 @@ public abstract class BaseApi
             await this.GetResponseAsync(httpResponse, cancellationToken);
         }
     }
-    private async Task<TResponse> DeleteAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+    private async Task<TResponse?> DeleteAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestDelete
         where TResponse : class
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
         {
@@ -386,17 +373,16 @@ public abstract class BaseApi
     private Uri GetUri<TRequest>(TRequest request)
         where TRequest : BaseRequest
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         var protocol = this.apiOptions.CurrentValue.UseSsl
             ? "https://"
             : "http://";
-        var host = this.apiOptions.CurrentValue.Host.EndsWith("/")
+        var host = this.apiOptions.CurrentValue.Host.EndsWith("/", StringComparison.Ordinal)
             ? this.apiOptions.CurrentValue.Host[..^1]
             : this.apiOptions.CurrentValue.Host;
         var port = this.apiOptions.CurrentValue.Port;
-        var root = this.apiOptions.CurrentValue.Root.EndsWith("/")
+        var root = this.apiOptions.CurrentValue.Root.EndsWith("/", StringComparison.Ordinal)
             ? this.apiOptions.CurrentValue.Root[..^1]
             : this.apiOptions.CurrentValue.Root;
         var controller = string.IsNullOrEmpty(request.Controller) ? null : $"{request.Controller}/";
@@ -410,8 +396,7 @@ public abstract class BaseApi
     private async Task<HttpRequestMessage> GetHttpRequestMessage<TRequest>(TRequest request, CancellationToken cancellationToken)
         where TRequest : BaseRequest
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         var uri = this.GetUri(request);
         var method = GetMethod(request);
@@ -447,8 +432,7 @@ public abstract class BaseApi
     }
     private async Task GetResponseAsync(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
     {
-        if (httpResponse == null)
-            throw new ArgumentNullException(nameof(httpResponse));
+        ArgumentNullException.ThrowIfNull(httpResponse);
 
         switch (httpResponse.StatusCode)
         {
@@ -489,11 +473,10 @@ public abstract class BaseApi
         httpResponse
             .EnsureSuccessStatusCode();
     }
-    private async Task<TResponse> GetResponseAsync<TResponse>(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
+    private async Task<TResponse?> GetResponseAsync<TResponse>(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
         where TResponse : class
     {
-        if (httpResponse == null)
-            throw new ArgumentNullException(nameof(httpResponse));
+        ArgumentNullException.ThrowIfNull(httpResponse);
 
         switch (httpResponse.StatusCode)
         {
@@ -542,6 +525,12 @@ public abstract class BaseApi
             if (typeof(TResponse) == typeof(NamedStream))
             {
                 var name = httpResponse.Content.Headers.ContentDisposition?.FileName;
+
+                if (name == null)
+                {
+                    throw new NullReferenceException(nameof(name));
+                }
+
                 var namedStream = new NamedStream
                 {
                     Name = name,
@@ -577,8 +566,7 @@ public abstract class BaseApi
     private static HttpMethod GetMethod<TRequest>(TRequest request)
         where TRequest : BaseRequest
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         return request switch
         {
@@ -593,8 +581,7 @@ public abstract class BaseApi
     }
     private static Exception GetBadRequestException(string content)
     {
-        if (content == null)
-            throw new ArgumentNullException(nameof(content));
+        ArgumentNullException.ThrowIfNull(content);
 
         try
         {
@@ -609,12 +596,12 @@ public abstract class BaseApi
         }
         catch (JsonException)
         {
-            if (content.StartsWith("\""))
+            if (content.StartsWith("\"", StringComparison.Ordinal))
             {
                 content = content[1..];
             }
 
-            if (content.EndsWith("\""))
+            if (content.EndsWith("\"", StringComparison.Ordinal))
             {
                 content = content[..^1];
             }
@@ -627,8 +614,7 @@ public abstract class BaseApi
     }
     private static Exception GetInternalServerErrorException(string content)
     {
-        if (content == null)
-            throw new ArgumentNullException(nameof(content));
+        ArgumentNullException.ThrowIfNull(content);
 
         try
         {
@@ -669,13 +655,12 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="request">The <see cref="IndexRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
-    public virtual Task<IEnumerable<TEntity>> IndexAsync<TEntity>(IndexRequest request, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> IndexAsync<TEntity>(IndexRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
-        return this.InvokeAsync<IndexRequest, IEnumerable<TEntity>>(request, cancellationToken);
+        return await this.InvokeAsync<IndexRequest, IEnumerable<TEntity>>(request, cancellationToken) ?? [];
     }
 
     /// <summary>
@@ -686,7 +671,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="id">The id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entity.</returns>
-    public virtual Task<TEntity> GetAsync<TEntity>(TIdentity id, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> GetAsync<TEntity>(TIdentity id, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>
     {
         return this.DetailsAsync<TEntity>(new DetailsRequest<TIdentity>
@@ -704,7 +689,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entity.</returns>
-    public virtual Task<TEntity> GetAsync<TEntity>(TIdentity id, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> GetAsync<TEntity>(TIdentity id, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>
     {
         return this.DetailsAsync<TEntity>(new DetailsRequest<TIdentity>
@@ -758,11 +743,10 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="request">The <see cref="DetailsRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entity.</returns>
-    public virtual Task<TEntity> DetailsAsync<TEntity>(DetailsRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> DetailsAsync<TEntity>(DetailsRequest<TIdentity> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         return this.InvokeAsync<DetailsRequest<TIdentity>, TEntity>(request, cancellationToken);
     }
@@ -775,13 +759,12 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="request">The <see cref="DetailsManyRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
-    public virtual Task<IEnumerable<TEntity>> DetailsManyAsync<TEntity>(DetailsManyRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> DetailsManyAsync<TEntity>(DetailsManyRequest<TIdentity> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
-        return this.InvokeAsync<DetailsManyRequest<TIdentity>, IEnumerable<TEntity>>(request, cancellationToken);
+        return await this.InvokeAsync<DetailsManyRequest<TIdentity>, IEnumerable<TEntity>>(request, cancellationToken) ?? [];
     }
 
     /// <summary>
@@ -793,14 +776,13 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="request">The <see cref="QueryRequest{TCriteria}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
-    public virtual Task<IEnumerable<TEntity>> QueryAsync<TEntity, TCriteria>(QueryRequest<TCriteria> request, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> QueryAsync<TEntity, TCriteria>(QueryRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : IQueryCriteria, new()
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
-        return this.InvokeAsync<QueryRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken);
+        return await this.InvokeAsync<QueryRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken) ?? [];
     }
 
     /// <summary>
@@ -812,19 +794,18 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="request">The <see cref="QueryFirstRequest{TCriteria}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The first match entity.</returns>
-    public virtual Task<TEntity> QueryFirstAsync<TEntity, TCriteria>(QueryFirstRequest<TCriteria> request, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> QueryFirstAsync<TEntity, TCriteria>(QueryFirstRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : IQueryCriteria, new()
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         return this.InvokeAsync<QueryFirstRequest<TCriteria>, TEntity>(request, cancellationToken);
     }
 
     /// <summary>
     /// Query.
-    /// Invokes the 'query/first' endpoint of the api.
+    /// Invokes the 'query/count' endpoint of the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <typeparam name="TCriteria">The criteria type</typeparam>
@@ -835,8 +816,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
         where TEntity : class, IEntity
         where TCriteria : IQueryCriteria, new()
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         var response = await this.InvokeAsync<TEntity, QueryCountRequest<TCriteria>, string>(request, cancellationToken);
 
@@ -853,11 +833,10 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="request">The <see cref="CreateRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The created entity.</returns>
-    public virtual Task<TEntity> CreateAsync<TEntity>(CreateRequest request, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> CreateAsync<TEntity>(CreateRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         return this.InvokeAsync<CreateRequest, TEntity>(request, cancellationToken);
     }
@@ -870,11 +849,10 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="request">The <see cref="CreateAndGetRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The created entity.</returns>
-    public virtual Task<TEntity> CreateAndGetAsync<TEntity>(CreateAndGetRequest request, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> CreateAndGetAsync<TEntity>(CreateAndGetRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable, IEntityIdentity<TIdentity>
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         return this.InvokeAsync<CreateAndGetRequest, TEntity>(request, cancellationToken);
     }
@@ -890,8 +868,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     public virtual async Task CreateManyAsync<TEntity>(CreateManyRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         await this.InvokeAsync<CreateManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
     }
@@ -907,8 +884,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     public virtual Task CreateManyBulkAsync<TEntity>(CreateManyBulkRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         return this.InvokeAsync<CreateManyBulkRequest, IEnumerable<TEntity>>(request, cancellationToken);
     }
@@ -921,11 +897,10 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="request">The <see cref="EditRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The updated entity.</returns>
-    public virtual Task<TEntity> EditAsync<TEntity>(EditRequest request, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> EditAsync<TEntity>(EditRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         return this.InvokeAsync<EditRequest, TEntity>(request, cancellationToken);
     }
@@ -938,11 +913,10 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="request">The <see cref="EditAndGetRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The updated entity.</returns>
-    public virtual Task<TEntity> EditAndGetAsync<TEntity>(EditAndGetRequest request, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> EditAndGetAsync<TEntity>(EditAndGetRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable, IEntityIdentity<TIdentity>
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         return this.InvokeAsync<EditAndGetRequest, TEntity>(request, cancellationToken);
     }
@@ -958,8 +932,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     public virtual async Task EditManyAsync<TEntity>(EditManyRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         await this.InvokeAsync<EditManyRequest, IEnumerable<TEntity>>(request, cancellationToken);
     }
@@ -975,8 +948,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     public virtual Task EditManyBulkAsync<TEntity>(EditManyBulkRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         return this.InvokeAsync<EditManyBulkRequest, IEnumerable<TEntity>>(request, cancellationToken);
     }
@@ -992,10 +964,9 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <returns>Nothing.</returns>
     public virtual async Task EditQueryAsync<TEntity, TCriteria>(EditQueryRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable
-        where TCriteria : IQueryCriteria, new()
+        where TCriteria : class, IQueryCriteria, new()
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         await this.InvokeAsync<EditQueryRequest<TCriteria>, TEntity>(request, cancellationToken);
     }
@@ -1011,8 +982,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     public virtual async Task DeleteAsync<TEntity>(DeleteRequest<TIdentity> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         await this.InvokeAsync<DeleteRequest<TIdentity>, TEntity>(request, cancellationToken);
     }
@@ -1028,8 +998,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     public virtual async Task DeleteManyAsync<TEntity>(DeleteManyRequest<TIdentity> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         await this.InvokeAsync<DeleteManyRequest<TIdentity>, TEntity>(request, cancellationToken);
     }
@@ -1045,8 +1014,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
     public virtual async Task DeleteManyBulkAsync<TEntity>(DeleteManyBulkRequest<TIdentity> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         await this.InvokeAsync<DeleteManyBulkRequest<TIdentity>, TEntity>(request, cancellationToken);
     }
@@ -1064,8 +1032,7 @@ public abstract class BaseApi<TIdentity> : BaseApi
         where TEntity : class, IEntityDeletable
         where TCriteria : IQueryCriteria, new()
     {
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         await this.InvokeAsync<DeleteQueryRequest<TCriteria>, TEntity>(request, cancellationToken);
     }

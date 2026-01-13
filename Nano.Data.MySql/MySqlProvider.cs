@@ -17,11 +17,9 @@ public class MySqlProvider : IDataProvider
     /// <inheritdoc />
     public virtual void Configure(DbContextOptionsBuilder builder, DataOptions options)
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
-        if (options == null) 
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(options);
 
         var batchSize = options.BatchSize;
         var retryCount = options.QueryRetryCount;
@@ -29,11 +27,6 @@ public class MySqlProvider : IDataProvider
 
         var connection = new MySqlConnection(connectionString);
         var serverVersion = ServerVersion.AutoDetect(connection);
-
-        if (connectionString == null)
-        {
-            return;
-        }
 
         builder
             .UseMySql(connection, serverVersion, x =>
@@ -51,11 +44,8 @@ public class MySqlProvider : IDataProvider
     /// <inheritdoc />
     public virtual void Configure(IServiceCollection services, DataOptions options)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
 
         if (!options.UseHealthCheck)
         {

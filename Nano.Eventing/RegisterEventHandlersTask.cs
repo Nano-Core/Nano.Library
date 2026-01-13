@@ -28,8 +28,7 @@ public class RegisterEventHandlersTask : IRegisterEventHandlersTask
     /// <inheritdoc />
     public virtual async Task RegisterEventHandlers(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
     {
-        if (serviceProvider == null) 
-            throw new ArgumentNullException(nameof(serviceProvider));
+        ArgumentNullException.ThrowIfNull(serviceProvider);
 
         await Task.CompletedTask;
 
@@ -41,8 +40,7 @@ public class RegisterEventHandlersTask : IRegisterEventHandlersTask
                 InterfaceType = y
             })
             .Where(x =>
-                !x.Type.IsAbstract &&
-                !x.Type.IsGenericType &&
+                x.Type is { IsAbstract: false, IsGenericType: false } &&
                 x.Type.IsTypeOf(typeof(IEventingHandler<>)))
             .GroupBy(x => new
             {

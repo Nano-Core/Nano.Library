@@ -3,35 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using Nano.App.Api.Config;
+using Nano.App.Api.Mvc.Extensions;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Nano.App.Api.Mvc.Documentation.Filters.Document;
-
-internal static class VersionExtensions
-{
-    internal static Version ParseVersion(this string value)
-    {
-        if (value == null) 
-            throw new ArgumentNullException(nameof(value));
-
-        if (value == string.Empty)
-        {
-            return new Version(1, 0);
-        }
-
-        if (Version.TryParse(value, out var version))
-        {
-            return version;
-        }
-
-        if (int.TryParse(value, out var major))
-        {
-            return new Version(major, 0);
-        }
-
-        throw new FormatException($"Invalid version format: '{value}'. Expected 'major.minor'.");
-    }
-}
 
 /// <summary>
 /// Remove Default Version Routes Filter.
@@ -52,15 +27,12 @@ public class RemoveVersionsRoutesFilter : IDocumentFilter
     /// <inheritdoc />
     public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
     {
-        if (swaggerDoc == null)
-            throw new ArgumentNullException(nameof(swaggerDoc));
-
-        if (context == null)
-            throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(swaggerDoc);
+        ArgumentNullException.ThrowIfNull(context);
 
         var version = this.webOptions.CurrentValue.Version
             .ParseVersion();
-        
+
         var defaultVersion = new ApiVersion(version.Major, version.Minor);
         var defaultDocumentName = $"v{defaultVersion}";
         var currentDocumentName = context.DocumentName;
@@ -76,7 +48,7 @@ public class RemoveVersionsRoutesFilter : IDocumentFilter
 
             if (this.webOptions.CurrentValue.Documentation.UseDefaultVersion && currentDocumentName == defaultDocumentName)
             {
-                if (apiDescription.RelativePath.StartsWith(baseRoute))
+                if (apiDescription.RelativePath.StartsWith(baseRoute, StringComparison.Ordinal))
                 {
                     swaggerDoc.Paths
                         .Remove("/" + apiDescription.RelativePath);
@@ -84,7 +56,7 @@ public class RemoveVersionsRoutesFilter : IDocumentFilter
             }
             else
             {
-                if (!apiDescription.RelativePath.StartsWith(baseRoute))
+                if (!apiDescription.RelativePath.StartsWith(baseRoute, StringComparison.Ordinal))
                 {
                     swaggerDoc.Paths
                         .Remove("/" + apiDescription.RelativePath);

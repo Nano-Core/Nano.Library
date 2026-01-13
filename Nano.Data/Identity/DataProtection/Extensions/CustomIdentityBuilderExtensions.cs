@@ -16,8 +16,7 @@ public static class CustomIdentityBuilderExtensions
     /// <returns>The <see cref="IdentityBuilder"/>.</returns>
     public static IdentityBuilder AddCustomTokenProvider(this IdentityBuilder builder)
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         var userType = builder.UserType;
         var totpProvider = typeof(CustomDataProtectorTokenProvider<>).MakeGenericType(userType);

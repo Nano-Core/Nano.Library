@@ -28,20 +28,17 @@ public static class ServiceCollectionExtensions
     /// </remarks>
     public static IServiceCollection AddEasyNetQEventing(this IServiceCollection services, EventingOptions options)
     {
-        if (services == null) 
-            throw new ArgumentNullException(nameof(services));
-
-        if (options == null) 
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
 
         var serializerSettings = SerializerSettings.GetDefault();
 
         services
             .AddEasyNetQ(x =>
             {
-                x.Hosts = 
+                x.Hosts =
                 [
-                    new(options.Host, options.Port)
+                    new HostConfiguration(options.Host, options.Port)
                 ];
                 x.VirtualHost = options.VHost;
                 x.UserName = options.Username;

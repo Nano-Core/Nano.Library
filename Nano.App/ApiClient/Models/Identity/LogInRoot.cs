@@ -11,13 +11,13 @@ public class LogInRoot
     /// Username.
     /// </summary>
     [Required]
-    [MaxLength(255)]
-    public virtual string Username { get; set; }
+    [MaxLength(256)]
+    public virtual string Username { get; set; } = null!;
 
     /// <summary>
     /// Password.
     /// </summary>
     [Required]
-    [MaxLength(255)]
-    public virtual string Password { get; set; }
+    [MaxLength(256)]
+    public virtual string Password { get; set; } = null!;
 }

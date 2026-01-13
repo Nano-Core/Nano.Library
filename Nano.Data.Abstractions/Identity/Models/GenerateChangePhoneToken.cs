@@ -18,12 +18,12 @@ public class GenerateChangePhoneToken<TIdentity>
     /// User id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
     /// New Phone Number.
     /// </summary>
     [Required]
     [InternationalPhone]
-    public virtual string NewPhoneNumber { get; set; }
+    public virtual string NewPhoneNumber { get; set; } = null!;
 }

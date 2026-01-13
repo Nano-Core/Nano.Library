@@ -23,7 +23,7 @@ public static class SerializerSettings
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             PreserveReferencesHandling = PreserveReferencesHandling.None,
             ContractResolver = new DefaultEntityContractResolver(),
-            Converters = 
+            Converters =
             [
                 new StringEnumConverter(),
                 new GeometryConverterIgnoreCase()

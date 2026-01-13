@@ -12,32 +12,34 @@ public class DefaultAuditEntryProperty : DefaultEntity, IEntityAuditableNegated
     /// <summary>
     /// Gets or sets the identifier of the parent audit entry.
     /// </summary>
+    [Required]
     public virtual Guid ParentId { get; set; }
 
     /// <summary>
     /// Gets or sets the parent.
     /// </summary>
-    public virtual DefaultAuditEntry Parent { get; set; }
+    public virtual DefaultAuditEntry Parent { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the name of the property audited.
     /// </summary>
-    [MaxLength(255)]
-    public virtual string PropertyName { get; set; }
+    [Required]
+    [MaxLength(256)]
+    public virtual string PropertyName { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the name of the relation audited.
     /// </summary>
-    [MaxLength(255)]
-    public virtual string RelationName { get; set; }
+    [MaxLength(256)]
+    public virtual string? RelationName { get; set; }
 
     /// <summary>
     /// Gets or sets the new value audited formatted.
     /// </summary>
-    public virtual string NewValue { get; set; }
+    public virtual string? NewValue { get; set; }
 
     /// <summary>
     /// Gets or sets the old value audited formatted.
     /// </summary>
-    public virtual string OldValue { get; set; }
+    public virtual string? OldValue { get; set; }
 }

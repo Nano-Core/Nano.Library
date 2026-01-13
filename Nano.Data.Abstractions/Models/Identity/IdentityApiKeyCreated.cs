@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Nano.Data.Abstractions.Annotations;
 
 namespace Nano.Data.Abstractions.Models.Identity;
@@ -13,10 +14,11 @@ public class IdentityApiKeyCreated<TIdentity> : IdentityApiKey<TIdentity>
     /// Identity Api Key.
     /// </summary>
     [Include]
-    public virtual IdentityApiKey<TIdentity> IdentityApiKey { get; set; }
+    public virtual IdentityApiKey<TIdentity> IdentityApiKey { get; set; } = null!;
 
     /// <summary>
     /// Unencrypted Hash.
     /// </summary>
-    public virtual string UnencryptedHash { get; set; }
+    [Required]
+    public virtual string UnencryptedHash { get; set; } = null!;
 }

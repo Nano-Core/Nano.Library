@@ -46,13 +46,13 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     private ConcurrentQueue<EntityEvent> pendingEvents = [];
 
     private readonly IOptionsMonitor<DataOptions> options;
-    private readonly IEventing eventing;
+    private readonly IEventing? eventing;
 
     /// <inheritdoc />
     public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; protected set; }
 
     /// <inheritdoc />
-    protected BaseDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> options, IEventing eventing = null)
+    protected BaseDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> options, IEventing? eventing = null)
         : base(contextOptions)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));
@@ -70,8 +70,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     /// <inheritdoc />
     public override EntityEntry Update(object entity)
     {
-        if (entity == null)
-            throw new ArgumentNullException(nameof(entity));
+        ArgumentNullException.ThrowIfNull(entity);
 
         var isAuditEnabled = this.options.CurrentValue.UseAudit;
 
@@ -106,8 +105,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     public override EntityEntry<TEntity> Update<TEntity>(TEntity entity)
         where TEntity : class
     {
-        if (entity == null)
-            throw new ArgumentNullException(nameof(entity));
+        ArgumentNullException.ThrowIfNull(entity);
 
         var isAuditEnabled = this.options.CurrentValue.UseAudit;
 
@@ -141,8 +139,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     /// <inheritdoc />
     public override void UpdateRange(params object[] entities)
     {
-        if (entities == null)
-            throw new ArgumentNullException(nameof(entities));
+        ArgumentNullException.ThrowIfNull(entities);
 
         var isAuditEnabled = this.options.CurrentValue.UseAudit;
 
@@ -195,8 +192,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     public virtual EntityEntry<TEntity> AddOrUpdate<TEntity>(TEntity entity)
         where TEntity : class
     {
-        if (entity == null)
-            throw new ArgumentNullException(nameof(entity));
+        ArgumentNullException.ThrowIfNull(entity);
 
         var tracked = this.ChangeTracker
             .Entries<TEntity>()
@@ -229,8 +225,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     public virtual void AddOrUpdateMany<TEntity>(IEnumerable<TEntity> entities)
         where TEntity : class
     {
-        if (entities == null)
-            throw new ArgumentNullException(nameof(entities));
+        ArgumentNullException.ThrowIfNull(entities);
 
         foreach (var entity in entities)
         {
@@ -315,8 +310,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        if (modelBuilder == null)
-            throw new ArgumentNullException(nameof(modelBuilder));
+        ArgumentNullException.ThrowIfNull(modelBuilder);
 
         base.OnModelCreating(modelBuilder);
 
@@ -334,7 +328,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
 
     private void PreSaveEntityEvents()
     {
-        if (!this.IsEventingEnabled())
+        if (this.eventing == null || !this.isEntityEventEnabled)
         {
             return;
         }
@@ -350,7 +344,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     }
     private async Task PublishEntityEvents()
     {
-        if (!this.IsEventingEnabled())
+        if (this.eventing == null || !this.isEntityEventEnabled)
         {
             return;
         }
@@ -362,7 +356,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
                 var success = this.pendingEvents
                     .TryDequeue(out var entityEvent);
 
-                if (success)
+                if (success && entityEvent != null)
                 {
                     await this.eventing
                         .PublishAsync(entityEvent, entityEvent.Type);
@@ -396,8 +390,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     }
     private void SetOriginalValues(object entity, object? tracked = null, EntityEntry? owner = null, string? propertName = null)
     {
-        if (entity == null)
-            throw new ArgumentNullException(nameof(entity));
+        ArgumentNullException.ThrowIfNull(entity);
 
         if (tracked == null)
         {
@@ -467,19 +460,5 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
                 this.ChangeTracker.LazyLoadingEnabled = true;
             }
         }
-    }
-    private bool IsEventingEnabled()
-    {
-        if (this.eventing == null)
-        {
-            return false;
-        }
-
-        if (!this.isEntityEventEnabled)
-        {
-            return false;
-        }
-
-        return true;
     }
 }

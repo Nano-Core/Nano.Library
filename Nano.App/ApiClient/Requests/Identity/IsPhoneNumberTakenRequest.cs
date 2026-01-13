@@ -1,4 +1,5 @@
-﻿using Nano.App.ApiClient.Requests.Attributes;
+﻿using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Requests.Attributes;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -8,8 +9,9 @@ public class IsPhoneNumberTakenRequest : BaseRequestGet
     /// <summary>
     /// Phone Number.
     /// </summary>
+    [Required]
     [Query]
-    public virtual string PhoneNumber { get; set; }
+    public virtual string PhoneNumber { get; set; } = null!;
 
     /// <inheritdoc />
     public IsPhoneNumberTakenRequest()

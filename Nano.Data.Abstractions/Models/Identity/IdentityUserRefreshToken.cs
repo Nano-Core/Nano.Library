@@ -33,9 +33,9 @@ public class IdentityUserRefreshToken<TIdentity> : BaseEntityIdentity<TIdentity>
     /// <summary>
     /// Token.
     /// </summary>
-    [ProtectedPersonalData]
     [Required]
     [MaxLength(256)]
+    [ProtectedPersonalData]
     public virtual string Value { get; set; } = null!;
 
     /// <summary>

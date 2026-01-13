@@ -17,7 +17,7 @@ public abstract class BaseAddExternalLogin<TProvider, TIdentity>
     /// User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
     /// Provider.

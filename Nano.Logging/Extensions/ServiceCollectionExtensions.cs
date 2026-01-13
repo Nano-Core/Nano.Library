@@ -27,11 +27,15 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddNanoLogging<TProvider>(this IServiceCollection services)
         where TProvider : class, ILoggingProvider, new()
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddNanoConfigSection<LoggingOptions>(LoggingOptions.SectionName, out var options);
+
+        if (options is null)
+        {
+            throw new InvalidOperationException($"Configuration section '{LoggingOptions.SectionName}' could not be loaded.");
+        }
 
         var provider = Activator.CreateInstance<TProvider>();
         provider

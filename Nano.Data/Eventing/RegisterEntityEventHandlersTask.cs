@@ -33,8 +33,7 @@ public class RegisterEntityEventHandlersTask : IRegisterEntityEventHandlersTask
     /// <inheritdoc />
     public virtual async Task RegisterEntityEventHandlers(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
     {
-        if (serviceProvider == null) 
-            throw new ArgumentNullException(nameof(serviceProvider));
+        ArgumentNullException.ThrowIfNull(serviceProvider);
 
         await Task.CompletedTask;
 

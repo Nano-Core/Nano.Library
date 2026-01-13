@@ -31,8 +31,7 @@ public class AuthExternalRepository : IAuthExternalRepository
     public virtual Task<ExternalLogInData> AuthenticateAsync<TProvider>(TProvider provider, CancellationToken cancellationToken = default)
         where TProvider : BaseLogInExternalProvider
     {
-        if (provider == null)
-            throw new ArgumentNullException(nameof(provider));
+        ArgumentNullException.ThrowIfNull(provider);
 
         if (provider is ExternalLoginProviderFacebook facebookProvider)
         {
@@ -73,9 +72,8 @@ public class AuthExternalRepository : IAuthExternalRepository
     /// <inheritdoc />
     public virtual async Task<ExternalLoginTokenData> AuthenticateRefreshAsync(LogInExternalRefresh logInExternalRefresh, CancellationToken cancellationToken = default)
     {
-        if (logInExternalRefresh == null) 
-            throw new ArgumentNullException(nameof(logInExternalRefresh));
-        
+        ArgumentNullException.ThrowIfNull(logInExternalRefresh);
+
         await Task.CompletedTask;
 
         if (string.IsNullOrEmpty(logInExternalRefresh.ProviderName) || string.IsNullOrEmpty(logInExternalRefresh.RefreshToken))

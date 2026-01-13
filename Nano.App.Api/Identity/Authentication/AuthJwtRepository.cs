@@ -31,8 +31,7 @@ public class AuthJwtRepository : IAuthJwtRepository
     /// <inheritdoc />
     public virtual AccessToken GenerateJwtToken(GenerateJwtToken generateJwtToken)
     {
-        if (generateJwtToken == null)
-            throw new ArgumentNullException(nameof(generateJwtToken));
+        ArgumentNullException.ThrowIfNull(generateJwtToken);
 
         var appId = generateJwtToken.AppId ?? IdentityDefaults.DEFAULT_APP_ID;
 
@@ -40,9 +39,9 @@ public class AuthJwtRepository : IAuthJwtRepository
             {
                 new(ClaimTypesExtended.AppId, appId),
                 new(JwtRegisteredClaimNames.Jti, generateJwtToken.Id),
-                new(JwtRegisteredClaimNames.Sub, generateJwtToken.UserId),
-                new(JwtRegisteredClaimNames.Name, generateJwtToken.UserName),
-                new(JwtRegisteredClaimNames.Email, generateJwtToken.UserEmail),
+                new(JwtRegisteredClaimNames.Sub, generateJwtToken.UserId ?? string.Empty),
+                new(JwtRegisteredClaimNames.Name, generateJwtToken.UserName ?? string.Empty),
+                new(JwtRegisteredClaimNames.Email, generateJwtToken.UserEmail ?? string.Empty),
                 new(ClaimTypesExtended.ExternalProviderName, generateJwtToken.ExternalToken?.Name ?? string.Empty),
                 new(ClaimTypesExtended.ExternalProviderToken, generateJwtToken.ExternalToken?.Token ?? string.Empty),
                 new(ClaimTypesExtended.ExternalProviderRefreshToken, generateJwtToken.ExternalToken?.RefreshToken ?? string.Empty)
@@ -55,7 +54,7 @@ public class AuthJwtRepository : IAuthJwtRepository
 
         var rsaSecurityKey = this.options.PrivateKey
             .CreateRsaSecurityKey();
-        
+
         var signingCredentials = new SigningCredentials(rsaSecurityKey, SecurityAlgorithms.RsaSha512);
         var securityToken = new JwtSecurityToken(this.options.Issuer, this.options.Audience, claims, notBeforeAt.DateTime, expireAt.DateTime, signingCredentials);
 

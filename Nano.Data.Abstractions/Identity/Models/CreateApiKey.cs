@@ -17,13 +17,14 @@ public class CreateApiKey<TIdentity>
     /// User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
     /// Name.
     /// </summary>
     [Required]
-    public virtual string Name { get; set; }
+    [MaxLength(256)]
+    public virtual string Name { get; set; } = null!;
 
     /// <summary>
     /// Expire At.

@@ -81,8 +81,7 @@ public class AuthTransientRepository : IAuthTransientRepository
     /// <inheritdoc />
     public virtual async Task<AccessToken> LogInExternalAsync(LogInExternalDirect externalLogInData, CancellationToken cancellationToken = default)
     {
-        if (externalLogInData == null)
-            throw new ArgumentNullException(nameof(externalLogInData));
+        ArgumentNullException.ThrowIfNull(externalLogInData);
 
         if (this.authExternalRepository == null)
         {
@@ -91,11 +90,11 @@ public class AuthTransientRepository : IAuthTransientRepository
 
         await Task.CompletedTask;
 
-        var claims = externalLogInData.TransientClaims?
-            .Select(x => new Claim(x.Key, x.Value)) ?? new List<Claim>();
+        var claims = externalLogInData.TransientClaims
+            .Select(x => new Claim(x.Key, x.Value));
 
-        var roleClaims = externalLogInData.TransientRoles?
-            .Select(x => new Claim(ClaimTypes.Role, x)) ?? new List<Claim>();
+        var roleClaims = externalLogInData.TransientRoles
+            .Select(x => new Claim(ClaimTypes.Role, x));
 
         var accessToken = this.authJwtRepository
             .GenerateJwtToken(new GenerateJwtToken
@@ -116,8 +115,7 @@ public class AuthTransientRepository : IAuthTransientRepository
     public virtual async Task<AccessToken> LogInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternal, CancellationToken cancellationToken = default)
         where TProvider : BaseLogInExternalProvider, new()
     {
-        if (logInExternal == null)
-            throw new ArgumentNullException(nameof(logInExternal));
+        ArgumentNullException.ThrowIfNull(logInExternal);
 
         if (this.authExternalRepository == null)
         {

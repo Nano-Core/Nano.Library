@@ -47,5 +47,5 @@ public class ApiClientOptions
     /// <summary>
     /// LogIn.
     /// </summary>
-    public virtual LogInRootOptions LogIn { get; set; }
+    public virtual LogInRootOptions? LogIn { get; set; }
 }

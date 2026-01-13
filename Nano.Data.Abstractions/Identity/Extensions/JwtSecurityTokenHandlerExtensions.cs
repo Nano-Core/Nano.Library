@@ -16,13 +16,10 @@ public static class JwtSecurityTokenHandlerExtensions
     /// <param name="jwtSecurityTokenHandler"></param>
     /// <param name="jwtToken"></param>
     /// <returns></returns>
-    public static string GetJwtUserId(this JwtSecurityTokenHandler jwtSecurityTokenHandler, string jwtToken)
+    public static string? GetJwtUserId(this JwtSecurityTokenHandler jwtSecurityTokenHandler, string jwtToken)
     {
-        if (jwtSecurityTokenHandler == null)
-            throw new ArgumentNullException(nameof(jwtSecurityTokenHandler));
-
-        if (jwtToken == null)
-            throw new ArgumentNullException(nameof(jwtToken));
+        ArgumentNullException.ThrowIfNull(jwtSecurityTokenHandler);
+        ArgumentNullException.ThrowIfNull(jwtToken);
 
         return jwtSecurityTokenHandler
             .GetClaimValue(jwtToken, JwtRegisteredClaimNames.Sub);
@@ -35,15 +32,18 @@ public static class JwtSecurityTokenHandlerExtensions
     /// <param name="jwtToken"></param>
     /// <returns></returns>
     public static TIdentity GetJwtUserId<TIdentity>(this JwtSecurityTokenHandler jwtSecurityTokenHandler, string jwtToken)
+        where TIdentity : IEquatable<TIdentity>
     {
-        if (jwtSecurityTokenHandler == null)
-            throw new ArgumentNullException(nameof(jwtSecurityTokenHandler));
-
-        if (jwtToken == null)
-            throw new ArgumentNullException(nameof(jwtToken));
+        ArgumentNullException.ThrowIfNull(jwtSecurityTokenHandler);
+        ArgumentNullException.ThrowIfNull(jwtToken);
 
         var value = jwtSecurityTokenHandler
             .GetClaimValue(jwtToken, JwtRegisteredClaimNames.Sub);
+
+        if (value == null)
+        {
+            throw new NullReferenceException(nameof(value));
+        }
 
         return value
             .ConvertToTIdentity<TIdentity>();
@@ -55,13 +55,10 @@ public static class JwtSecurityTokenHandlerExtensions
     /// <param name="jwtSecurityTokenHandler"></param>
     /// <param name="jwtToken"></param>
     /// <returns></returns>
-    public static string GetJwtAppId(this JwtSecurityTokenHandler jwtSecurityTokenHandler, string jwtToken)
+    public static string? GetJwtAppId(this JwtSecurityTokenHandler jwtSecurityTokenHandler, string jwtToken)
     {
-        if (jwtSecurityTokenHandler == null)
-            throw new ArgumentNullException(nameof(jwtSecurityTokenHandler));
-
-        if (jwtToken == null)
-            throw new ArgumentNullException(nameof(jwtToken));
+        ArgumentNullException.ThrowIfNull(jwtSecurityTokenHandler);
+        ArgumentNullException.ThrowIfNull(jwtToken);
 
         return jwtSecurityTokenHandler
             .GetClaimValue(jwtToken, ClaimTypesExtended.AppId);
@@ -74,17 +71,12 @@ public static class JwtSecurityTokenHandlerExtensions
     /// <param name="jwtToken"></param>
     /// <param name="claimType"></param>
     /// <returns></returns>
-    public static string GetClaimValue(this JwtSecurityTokenHandler jwtSecurityTokenHandler, string jwtToken, string claimType)
+    public static string? GetClaimValue(this JwtSecurityTokenHandler jwtSecurityTokenHandler, string jwtToken, string claimType)
     {
-        if (jwtSecurityTokenHandler == null) 
-            throw new ArgumentNullException(nameof(jwtSecurityTokenHandler));
-        
-        if (jwtToken == null) 
-            throw new ArgumentNullException(nameof(jwtToken));
-        
-        if (claimType == null) 
-            throw new ArgumentNullException(nameof(claimType));
-        
+        ArgumentNullException.ThrowIfNull(jwtSecurityTokenHandler);
+        ArgumentNullException.ThrowIfNull(jwtToken);
+        ArgumentNullException.ThrowIfNull(claimType);
+
         if (!jwtSecurityTokenHandler.CanReadToken(jwtToken))
         {
             return null;
@@ -103,8 +95,7 @@ public static class JwtSecurityTokenHandlerExtensions
 
     private static TIdentity ConvertToTIdentity<TIdentity>(this string value)
     {
-        if (value == null)
-            throw new ArgumentNullException(nameof(value));
+        ArgumentNullException.ThrowIfNull(value);
 
         var target = typeof(TIdentity);
 

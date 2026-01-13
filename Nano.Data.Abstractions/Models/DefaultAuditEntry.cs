@@ -13,20 +13,20 @@ public class DefaultAuditEntry : DefaultEntity, IEntityAuditableNegated
     /// <summary>
     /// Created By.
     /// </summary>
-    [MaxLength(255)]
-    public virtual string CreatedBy { get; set; }
+    [MaxLength(256)]
+    public virtual string? CreatedBy { get; set; }
 
     /// <summary>
     /// Entity Set Name.
     /// </summary>
-    [MaxLength(255)]
-    public virtual string EntitySetName { get; set; }
+    [MaxLength(256)]
+    public virtual string? EntitySetName { get; set; }
 
     /// <summary>
     /// Entity Type Name.
     /// </summary>
-    [MaxLength(255)]
-    public virtual string EntityTypeName { get; set; }
+    [MaxLength(256)]
+    public virtual string? EntityTypeName { get; set; }
 
     /// <summary>
     /// State.
@@ -36,14 +36,14 @@ public class DefaultAuditEntry : DefaultEntity, IEntityAuditableNegated
     /// <summary>
     /// State Name.
     /// </summary>
-    [MaxLength(255)]
-    public virtual string StateName { get; set; }
+    [MaxLength(256)]
+    public virtual string? StateName { get; set; }
 
     /// <summary>
     /// Request Id.
     /// </summary>
-    [MaxLength(255)]
-    public virtual string RequestId { get; set; }
+    [MaxLength(256)]
+    public virtual string? RequestId { get; set; }
 
     /// <summary>
     /// Gets or sets the properties.

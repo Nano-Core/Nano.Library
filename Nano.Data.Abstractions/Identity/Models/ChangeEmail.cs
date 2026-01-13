@@ -14,14 +14,14 @@ public class ChangeEmail<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Token.
-    /// </summary>
-    [Required]
-    public virtual string Token { get; set; }
-
-    /// <summary>
     /// User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
+
+    /// <summary>
+    /// Token.
+    /// </summary>
+    [Required]
+    public virtual string Token { get; set; } = null!;
 }

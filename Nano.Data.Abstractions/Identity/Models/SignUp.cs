@@ -26,27 +26,27 @@ public class SignUp<TUser, TIdentity> : BaseSignUp<TUser, TIdentity>
     /// </summary>
     [Required]
     [EmailAddress]
-    public virtual string EmailAddress { get; set; }
+    public virtual string EmailAddress { get; set; } = null!;
 
     /// <summary>
     /// Phone Number.
     /// </summary>
     [InternationalPhone]
-    public virtual string PhoneNumber { get; set; }
+    public virtual string? PhoneNumber { get; set; }
 
     /// <summary>
     /// Username.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Username { get; set; }
+    public virtual string Username { get; set; } = null!;
 
     /// <summary>
     /// Password.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Password { get; set; }
+    public virtual string Password { get; set; } = null!;
 
     /// <summary>
     /// Confirm Password.
@@ -54,5 +54,5 @@ public class SignUp<TUser, TIdentity> : BaseSignUp<TUser, TIdentity>
     [Required]
     [MaxLength(256)]
     [Compare(nameof(Password))]
-    public virtual string ConfirmPassword { get; set; }
+    public virtual string ConfirmPassword { get; set; } = null!;
 }

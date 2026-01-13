@@ -11,11 +11,10 @@ namespace Nano.Common.Annotations;
 public class InternationalPhoneAttribute : ValidationAttribute
 {
     /// <inheritdoc />
-    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+    protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
-        if (validationContext == null) 
-            throw new ArgumentNullException(nameof(validationContext));
-        
+        ArgumentNullException.ThrowIfNull(validationContext);
+
         var phone = value as string;
 
         if (string.IsNullOrWhiteSpace(phone))

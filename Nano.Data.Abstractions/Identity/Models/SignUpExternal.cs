@@ -25,10 +25,11 @@ public class SignUpExternal<TUser, TIdentity> : BaseSignUp<TUser, TIdentity>
     /// </summary>
     [Required]
     [EmailAddress]
-    public virtual string Email { get; set; }
+    public virtual string Email { get; set; } = null!;
 
     /// <summary>
     /// 
     /// </summary>
+    [Required]
     public virtual ExternalProvider ExternalProvider { get; set; } = new();
 }

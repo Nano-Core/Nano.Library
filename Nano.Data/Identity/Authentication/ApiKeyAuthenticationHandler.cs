@@ -67,10 +67,10 @@ public class ApiKeyAuthenticationHandler<TIdentity> : AuthenticationHandler<Auth
         var transientClaims = new Dictionary<string, string>
         {
             { JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString() },
-            { JwtRegisteredClaimNames.Sub, identityUser.Id.ToString() },
-            { JwtRegisteredClaimNames.Name, identityUser.UserName },
-            { JwtRegisteredClaimNames.Email, identityUser.Email },
-            { ClaimTypesExtended.ApiKeyId, identityApiKey.Id.ToString() },
+            { JwtRegisteredClaimNames.Sub, identityUser.Id.ToString() ?? "" },
+            { JwtRegisteredClaimNames.Name, identityUser.UserName ?? "" },
+            { JwtRegisteredClaimNames.Email, identityUser.Email ?? "" },
+            { ClaimTypesExtended.ApiKeyId, identityApiKey.Id.ToString() ?? "" },
             { ClaimTypesExtended.ApiKeyName, identityApiKey.Name }
         };
 

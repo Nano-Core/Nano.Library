@@ -17,21 +17,21 @@ public class ChangePassword<TIdentity>
     /// User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
     /// Old Password.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string OldPassword { get; set; }
+    public virtual string OldPassword { get; set; } = null!;
 
     /// <summary>
     /// New Password.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string NewPassword { get; set; }
+    public virtual string NewPassword { get; set; } = null!;
 
     /// <summary>
     /// Confirm New Passowrd.
@@ -39,5 +39,5 @@ public class ChangePassword<TIdentity>
     [Required]
     [MaxLength(256)]
     [Compare("NewPassword")]
-    public virtual string ConfirmNewPassword { get; set; }
+    public virtual string ConfirmNewPassword { get; set; } = null!;
 }

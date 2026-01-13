@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 
 namespace Nano.App.ApiClient.Models;
@@ -11,16 +12,18 @@ public class NamedStream : IDisposable
     /// <summary>
     /// Name.
     /// </summary>
+    [Required]
     public virtual string Name
     {
         get;
         set => field = Path.GetFileName(value);
-    }
+    } = null!;
 
     /// <summary>
     /// Stream.
     /// </summary>
-    public virtual Stream Stream { get; set; }
+    [Required]
+    public virtual Stream Stream { get; set; } = null!;
 
     /// <inheritdoc />
     public void Dispose()

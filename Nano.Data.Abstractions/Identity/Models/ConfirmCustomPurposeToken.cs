@@ -17,17 +17,17 @@ public class ConfirmCustomPurposeToken<TIdentity>
     /// User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
     /// Token.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; }
+    public virtual string Token { get; set; } = null!;
 
     /// <summary>
     /// Purpose.
     /// </summary>
     [Required]
-    public virtual string Purpose { get; set; }
+    public virtual string Purpose { get; set; } = null!;
 }

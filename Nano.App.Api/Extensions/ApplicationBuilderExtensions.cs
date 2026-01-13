@@ -17,7 +17,7 @@ using Microsoft.Net.Http.Headers;
 using Nano.App.Api.Config;
 using Nano.App.Api.Config.Enums;
 using Nano.App.Api.Extensions.Const;
-using Nano.App.Api.Mvc.Documentation.Filters.Document;
+using Nano.App.Api.Mvc.Extensions;
 using Nano.App.Api.Mvc.Middleware;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
@@ -31,8 +31,7 @@ internal static class ApplicationBuilderExtensions
 {
     internal static IApplicationBuilder UseNanoExceptionHandling(this IApplicationBuilder applicationBuilder)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
 
         applicationBuilder
             .UseMiddleware<ExceptionHandlingMiddleware>();
@@ -42,11 +41,8 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoHttpCorsPolicy(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         if (apiOptions.HttpPolicyHeaders.Cors == null)
         {
@@ -70,11 +66,9 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoHttpXForwardedHeaders(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
 
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         if (apiOptions.Hosting.UseForwardedHeaders)
         {
@@ -87,11 +81,8 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoHttpXRobotsTagHeaders(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         if (apiOptions.HttpPolicyHeaders.Robots == null)
         {
@@ -112,11 +103,8 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoHttpXFrameOptionsPolicyHeader(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         applicationBuilder
             .Use((context, next) =>
@@ -132,11 +120,8 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoHttpXXssProtectionPolicyHeader(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         applicationBuilder
             .UseSecurityHeaders(x =>
@@ -169,11 +154,8 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoHttpContentTypeOptionsPolicyHeader(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         if (apiOptions.HttpPolicyHeaders.UseContentTypeOptionsNoSniff)
         {
@@ -192,11 +174,8 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoHttpReferrerPolicyHeader(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         applicationBuilder
             .UseSecurityHeaders(x =>
@@ -249,11 +228,8 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoHttpStrictTransportSecurityPolicyHeader(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         if (apiOptions.HttpPolicyHeaders.Hsts == null)
         {
@@ -268,11 +244,8 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoHttpContentSecurityPolicyHeader(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         if (apiOptions.HttpPolicyHeaders.Csp == null)
         {
@@ -295,24 +268,23 @@ internal static class ApplicationBuilderExtensions
                             x.AddBlockAllMixedContent();
                         }
 
-                        x
-                            .UseCspReportUris(apiOptions.HttpPolicyHeaders.Csp.ReportUris)
-                            .UseCspDefaults(apiOptions.HttpPolicyHeaders.Csp.Defaults)
-                            .UseCspStyles(apiOptions.HttpPolicyHeaders.Csp.Styles)
-                            .UseCspScripts(apiOptions.HttpPolicyHeaders.Csp.Scripts)
-                            .UseCspObjects(apiOptions.HttpPolicyHeaders.Csp.Objects)
-                            .UseCspImages(apiOptions.HttpPolicyHeaders.Csp.Images)
-                            .UseCspMedia(apiOptions.HttpPolicyHeaders.Csp.Media)
-                            .UseCspFrames(apiOptions.HttpPolicyHeaders.Csp.Frames)
-                            .UseCspFrameAncestors(apiOptions.HttpPolicyHeaders.Csp.FrameAncestors)
-                            .UseCspFonts(apiOptions.HttpPolicyHeaders.Csp.Fonts)
-                            .UseCspConnections(apiOptions.HttpPolicyHeaders.Csp.Connections)
-                            .UseCspBaseUris(apiOptions.HttpPolicyHeaders.Csp.BaseUris)
-                            .UseCspChildren(apiOptions.HttpPolicyHeaders.Csp.Children)
-                            .UseCspForms(apiOptions.HttpPolicyHeaders.Csp.Forms)
-                            .UseCspManifests(apiOptions.HttpPolicyHeaders.Csp.Manifests)
-                            .UseCspWorkers(apiOptions.HttpPolicyHeaders.Csp.Workers)
-                            .UseCspSandbox(apiOptions.HttpPolicyHeaders.Csp.Sandbox);
+                        x.UseCspReportUris(apiOptions.HttpPolicyHeaders.Csp.ReportUris);
+                        x.UseCspDefaults(apiOptions.HttpPolicyHeaders.Csp.Defaults);
+                        x.UseCspStyles(apiOptions.HttpPolicyHeaders.Csp.Styles);
+                        x.UseCspScripts(apiOptions.HttpPolicyHeaders.Csp.Scripts);
+                        x.UseCspObjects(apiOptions.HttpPolicyHeaders.Csp.Objects);
+                        x.UseCspImages(apiOptions.HttpPolicyHeaders.Csp.Images);
+                        x.UseCspMedia(apiOptions.HttpPolicyHeaders.Csp.Media);
+                        x.UseCspFrames(apiOptions.HttpPolicyHeaders.Csp.Frames);
+                        x.UseCspFrameAncestors(apiOptions.HttpPolicyHeaders.Csp.FrameAncestors);
+                        x.UseCspFonts(apiOptions.HttpPolicyHeaders.Csp.Fonts);
+                        x.UseCspConnections(apiOptions.HttpPolicyHeaders.Csp.Connections);
+                        x.UseCspBaseUris(apiOptions.HttpPolicyHeaders.Csp.BaseUris);
+                        x.UseCspChildren(apiOptions.HttpPolicyHeaders.Csp.Children);
+                        x.UseCspForms(apiOptions.HttpPolicyHeaders.Csp.Forms);
+                        x.UseCspManifests(apiOptions.HttpPolicyHeaders.Csp.Manifests);
+                        x.UseCspWorkers(apiOptions.HttpPolicyHeaders.Csp.Workers);
+                        x.UseCspSandbox(apiOptions.HttpPolicyHeaders.Csp.Sandbox);
                     }));
         }
         else
@@ -331,24 +303,23 @@ internal static class ApplicationBuilderExtensions
                             x.AddBlockAllMixedContent();
                         }
 
-                        x
-                            .UseCspReportUris(apiOptions.HttpPolicyHeaders.Csp.ReportUris)
-                            .UseCspDefaults(apiOptions.HttpPolicyHeaders.Csp.Defaults)
-                            .UseCspStyles(apiOptions.HttpPolicyHeaders.Csp.Styles)
-                            .UseCspScripts(apiOptions.HttpPolicyHeaders.Csp.Scripts)
-                            .UseCspObjects(apiOptions.HttpPolicyHeaders.Csp.Objects)
-                            .UseCspImages(apiOptions.HttpPolicyHeaders.Csp.Images)
-                            .UseCspMedia(apiOptions.HttpPolicyHeaders.Csp.Media)
-                            .UseCspFrames(apiOptions.HttpPolicyHeaders.Csp.Frames)
-                            .UseCspFrameAncestors(apiOptions.HttpPolicyHeaders.Csp.FrameAncestors)
-                            .UseCspFonts(apiOptions.HttpPolicyHeaders.Csp.Fonts)
-                            .UseCspConnections(apiOptions.HttpPolicyHeaders.Csp.Connections)
-                            .UseCspBaseUris(apiOptions.HttpPolicyHeaders.Csp.BaseUris)
-                            .UseCspChildren(apiOptions.HttpPolicyHeaders.Csp.Children)
-                            .UseCspForms(apiOptions.HttpPolicyHeaders.Csp.Forms)
-                            .UseCspManifests(apiOptions.HttpPolicyHeaders.Csp.Manifests)
-                            .UseCspWorkers(apiOptions.HttpPolicyHeaders.Csp.Workers)
-                            .UseCspSandbox(apiOptions.HttpPolicyHeaders.Csp.Sandbox);
+                        x.UseCspReportUris(apiOptions.HttpPolicyHeaders.Csp.ReportUris);
+                        x.UseCspDefaults(apiOptions.HttpPolicyHeaders.Csp.Defaults);
+                        x.UseCspStyles(apiOptions.HttpPolicyHeaders.Csp.Styles);
+                        x.UseCspScripts(apiOptions.HttpPolicyHeaders.Csp.Scripts);
+                        x.UseCspObjects(apiOptions.HttpPolicyHeaders.Csp.Objects);
+                        x.UseCspImages(apiOptions.HttpPolicyHeaders.Csp.Images);
+                        x.UseCspMedia(apiOptions.HttpPolicyHeaders.Csp.Media);
+                        x.UseCspFrames(apiOptions.HttpPolicyHeaders.Csp.Frames);
+                        x.UseCspFrameAncestors(apiOptions.HttpPolicyHeaders.Csp.FrameAncestors);
+                        x.UseCspFonts(apiOptions.HttpPolicyHeaders.Csp.Fonts);
+                        x.UseCspConnections(apiOptions.HttpPolicyHeaders.Csp.Connections);
+                        x.UseCspBaseUris(apiOptions.HttpPolicyHeaders.Csp.BaseUris);
+                        x.UseCspChildren(apiOptions.HttpPolicyHeaders.Csp.Children);
+                        x.UseCspForms(apiOptions.HttpPolicyHeaders.Csp.Forms);
+                        x.UseCspManifests(apiOptions.HttpPolicyHeaders.Csp.Manifests);
+                        x.UseCspWorkers(apiOptions.HttpPolicyHeaders.Csp.Workers);
+                        x.UseCspSandbox(apiOptions.HttpPolicyHeaders.Csp.Sandbox);
                     }));
         }
 
@@ -366,11 +337,8 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoSession(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         if (apiOptions.Session == null)
         {
@@ -385,8 +353,7 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoRequestOptions(this IApplicationBuilder applicationBuilder)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
 
         applicationBuilder
             .UseMiddleware<HttpRequestOptionsMiddleware>();
@@ -396,8 +363,7 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoRequestIdentifier(this IApplicationBuilder applicationBuilder)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
 
         applicationBuilder
             .UseMiddleware<HttpRequestIdentifierMiddleware>();
@@ -407,11 +373,8 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoRequestVirusScan(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         if (apiOptions.VirusScan == null)
         {
@@ -426,11 +389,8 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoRequestLocalization(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         var cultureInfos = apiOptions.Cultures.Supported
             .Select(y => new CultureInfo(y))
@@ -449,8 +409,7 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoRequestTimeZone(this IApplicationBuilder applicationBuilder)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
 
         applicationBuilder
             .UseRequestTimeZone();
@@ -460,11 +419,8 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoResponseCompression(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         if (apiOptions.Hosting.UseResponseCompression)
         {
@@ -477,11 +433,8 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoResponseCaching(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         applicationBuilder
             .Use((context, next) =>
@@ -512,7 +465,7 @@ internal static class ApplicationBuilderExtensions
 
                     var responseCachingFeature = context.Features
                         .Get<IResponseCachingFeature>();
-                    
+
                     responseCachingFeature?.VaryByQueryKeys = ["*"];
                 }
 
@@ -524,14 +477,9 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoDocumentataion(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions, string environment)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
-
-        if (environment == null) 
-            throw new ArgumentNullException(nameof(environment));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(apiOptions);
+        ArgumentNullException.ThrowIfNull(environment);
 
         if (apiOptions.Documentation != null)
         {
@@ -604,14 +552,9 @@ internal static class ApplicationBuilderExtensions
 
     internal static IApplicationBuilder UseNanoHealthChecks(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions, string environment)
     {
-        if (applicationBuilder == null)
-            throw new ArgumentNullException(nameof(applicationBuilder));
-
-        if (apiOptions == null) 
-            throw new ArgumentNullException(nameof(apiOptions));
-
-        if (environment == null) 
-            throw new ArgumentNullException(nameof(environment));
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(apiOptions);
+        ArgumentNullException.ThrowIfNull(environment);
 
         if (apiOptions.HealthCheck == null)
         {

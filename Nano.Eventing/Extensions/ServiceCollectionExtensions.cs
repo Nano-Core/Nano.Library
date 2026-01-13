@@ -34,11 +34,15 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddNanoEventing<TProvider>(this IServiceCollection services)
         where TProvider : class, IEventingProvider, new()
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddNanoConfigSection<EventingOptions>(EventingOptions.SectionName, out var options);
+
+        if (options is null)
+        {
+            throw new InvalidOperationException($"Configuration section '{EventingOptions.SectionName}' could not be loaded.");
+        }
 
         var provider = Activator.CreateInstance<TProvider>();
         provider
@@ -57,8 +61,7 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddEventingHandlers(this IServiceCollection services)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         var eventHandlerTypes = TypesHelper
             .GetAllTypes()
@@ -68,8 +71,7 @@ public static class ServiceCollectionExtensions
                 GenericType = y
             })
             .Where(x =>
-                !x.Type.IsAbstract &&
-                !x.Type.IsGenericType &&
+                x.Type is { IsAbstract: false, IsGenericType: false } &&
                 x.Type.IsTypeOf(typeof(IEventingHandler<>)))
             .GroupBy(x => new
             {

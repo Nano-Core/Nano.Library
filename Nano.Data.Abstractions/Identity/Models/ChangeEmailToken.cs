@@ -17,18 +17,18 @@ public class ChangeEmailToken<TIdentity>
     /// User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
     /// Token.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; }
+    public virtual string Token { get; set; } = null!;
 
     /// <summary>
     /// New Email Address.
     /// </summary>
     [Required]
     [EmailAddress]
-    public virtual string NewEmailAddress { get; set; }
+    public virtual string NewEmailAddress { get; set; } = null!;
 }

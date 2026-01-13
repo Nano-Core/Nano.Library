@@ -13,7 +13,7 @@ public class LogOutRequest : BaseRequestPost
     }
 
     /// <inheritdoc />
-    public override object GetBody()
+    public override object? GetBody()
     {
         return null;
     }

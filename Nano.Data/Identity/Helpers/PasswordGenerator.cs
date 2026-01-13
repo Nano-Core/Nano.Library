@@ -16,7 +16,7 @@ public static class PasswordGenerator
     /// </summary>
     /// <param name="passwordOptions">The <see cref="PasswordOptions"/>.</param>
     /// <returns>The random password</returns>
-    public static string Generate(PasswordOptions passwordOptions = null)
+    public static string Generate(PasswordOptions? passwordOptions = null)
     {
         passwordOptions ??= new PasswordOptions
         {

@@ -1,4 +1,5 @@
-﻿using Nano.App.ApiClient.Requests.Attributes;
+﻿using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Requests.Attributes;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -9,7 +10,8 @@ public class IsEmailAddressTakenRequest : BaseRequestGet
     /// Change Email Token.
     /// </summary>
     [Query]
-    public virtual string EmailAddress { get; set; }
+    [Required]
+    public virtual string EmailAddress { get; set; } = null!;
 
     /// <inheritdoc />
     public IsEmailAddressTakenRequest()

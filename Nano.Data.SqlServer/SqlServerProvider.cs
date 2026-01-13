@@ -16,20 +16,12 @@ public class SqlServerProvider : IDataProvider
     /// <inheritdoc />
     public virtual void Configure(DbContextOptionsBuilder builder, DataOptions options)
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
-
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(options);
 
         var batchSize = options.BatchSize;
         var retryCount = options.QueryRetryCount;
         var connectionString = options.ConnectionString;
-
-        if (connectionString == null)
-        {
-            return;
-        }
 
         builder
             .UseSqlServer(connectionString, x =>
@@ -47,11 +39,9 @@ public class SqlServerProvider : IDataProvider
     /// <inheritdoc />
     public virtual void Configure(IServiceCollection services, DataOptions options)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(options);
 
         if (!options.UseHealthCheck)
         {

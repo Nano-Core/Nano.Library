@@ -17,10 +17,10 @@ public class GenerateCustomPurposeToken<TIdentity>
     /// User id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
     /// Purpose.
     /// </summary>
-    public virtual string Purpose { get; set; }
+    public virtual string Purpose { get; set; } = null!;
 }

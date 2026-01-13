@@ -15,10 +15,9 @@ public static class HttpContextExtensions
     /// </summary>
     /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
     /// <returns>The app id.</returns>
-    public static string GetJwtAppId(this HttpContext httpContext)
+    public static string? GetJwtAppId(this HttpContext httpContext)
     {
-        if (httpContext == null)
-            throw new ArgumentNullException(nameof(httpContext));
+        ArgumentNullException.ThrowIfNull(httpContext);
 
         return httpContext
             .GetJwtClaimValue(ClaimTypesExtended.AppId);
@@ -29,10 +28,9 @@ public static class HttpContextExtensions
     /// </summary>
     /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
     /// <returns>The user name.</returns>
-    public static string GetJwtUserName(this HttpContext httpContext)
+    public static string? GetJwtUserName(this HttpContext httpContext)
     {
-        if (httpContext == null)
-            throw new ArgumentNullException(nameof(httpContext));
+        ArgumentNullException.ThrowIfNull(httpContext);
 
         return httpContext
             .GetJwtClaimValue(JwtRegisteredClaimNames.Name);
@@ -43,10 +41,9 @@ public static class HttpContextExtensions
     /// </summary>
     /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
     /// <returns>The email.</returns>
-    public static string GetJwtUserEmail(this HttpContext httpContext)
+    public static string? GetJwtUserEmail(this HttpContext httpContext)
     {
-        if (httpContext == null)
-            throw new ArgumentNullException(nameof(httpContext));
+        ArgumentNullException.ThrowIfNull(httpContext);
 
         return httpContext
             .GetJwtClaimValue(JwtRegisteredClaimNames.Email);
@@ -59,8 +56,7 @@ public static class HttpContextExtensions
     /// <returns>The user id.</returns>
     public static Guid? GetJwtUserId(this HttpContext httpContext)
     {
-        if (httpContext == null)
-            throw new ArgumentNullException(nameof(httpContext));
+        ArgumentNullException.ThrowIfNull(httpContext);
 
         var value = httpContext
             .GetJwtClaimValue(JwtRegisteredClaimNames.Sub);
@@ -82,10 +78,9 @@ public static class HttpContextExtensions
     /// </summary>
     /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
     /// <returns>The token.</returns>
-    public static string GetJwtToken(this HttpContext httpContext)
+    public static string? GetJwtToken(this HttpContext httpContext)
     {
-        if (httpContext == null)
-            throw new ArgumentNullException(nameof(httpContext));
+        ArgumentNullException.ThrowIfNull(httpContext);
 
         const string PREFIX = "Baerer ";
 
@@ -114,10 +109,9 @@ public static class HttpContextExtensions
     /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
     /// <param name="claimType">The claim type.</param>
     /// <returns>The email.</returns>
-    public static string GetJwtClaimValue(this HttpContext httpContext, string claimType)
+    public static string? GetJwtClaimValue(this HttpContext httpContext, string claimType)
     {
-        if (httpContext == null)
-            throw new ArgumentNullException(nameof(httpContext));
+        ArgumentNullException.ThrowIfNull(httpContext);
 
         var jwtToken = httpContext
             .GetJwtToken();

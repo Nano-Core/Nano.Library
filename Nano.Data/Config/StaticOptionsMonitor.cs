@@ -12,9 +12,15 @@ internal sealed class StaticOptionsMonitor<T> : IOptionsMonitor<T>
 
     public T CurrentValue { get; }
 
-    public T Get(string name) => CurrentValue;
+    public T Get(string? name)
+    {
+        return this.CurrentValue;
+    }
 
-    public IDisposable OnChange(Action<T, string> listener) => NullDisposable.Instance;
+    public IDisposable OnChange(Action<T, string> listener)
+    {
+        return NullDisposable.Instance;
+    }
 
     private sealed class NullDisposable : IDisposable
     {

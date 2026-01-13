@@ -13,8 +13,7 @@ public class DefaultEntityMapping<TEntity> : BaseEntityIdentityMapping<TEntity, 
     /// <inheritdoc />
     public override void Map(EntityTypeBuilder<TEntity> builder)
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         base.Map(builder);
 

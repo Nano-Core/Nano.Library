@@ -155,11 +155,8 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
 
     private static void ConfigurePorts(KestrelServerOptions kestrel, ApiOptions apiOptions)
     {
-        if (kestrel == null)
-            throw new ArgumentNullException(nameof(kestrel));
-
-        if (apiOptions == null)
-            throw new ArgumentNullException(nameof(apiOptions));
+        ArgumentNullException.ThrowIfNull(kestrel);
+        ArgumentNullException.ThrowIfNull(apiOptions);
 
         foreach (var port in apiOptions.Hosting.Ports)
         {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using DynamicExpression.Interfaces;
 
 namespace Nano.App.ApiClient.Requests.Models;
@@ -7,12 +8,13 @@ namespace Nano.App.ApiClient.Requests.Models;
 /// Update Query.
 /// </summary>
 public class UpdateQuery<TCriteria>
-    where TCriteria : IQueryCriteria, new()
+    where TCriteria : class, IQueryCriteria, new()
 {
     /// <summary>
     /// Criteria.
     /// </summary>
-    public virtual TCriteria Criteria { get; set; }
+    [Required]
+    public virtual TCriteria Criteria { get; set; } = null!;
 
     /// <summary>
     /// Property Updates.

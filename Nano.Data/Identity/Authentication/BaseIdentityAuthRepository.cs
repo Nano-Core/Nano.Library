@@ -22,7 +22,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
 {
     private readonly IIdentityRepository<TIdentity> identityRepository;
     private readonly IAuthJwtRepository authJwtRepository;
-    private readonly IAuthExternalRepository authExternalRepository;
+    private readonly IAuthExternalRepository? authExternalRepository;
 
     /// <summary>
     /// The user authenticates and on success recieves a jwt token for use with auhtorization.
@@ -30,7 +30,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     /// <param name="identityRepository"></param>
     /// <param name="authJwtRepository"></param>
     /// <param name="authExternalRepository"></param>
-    protected BaseIdentityAuthRepository(IIdentityRepository<TIdentity> identityRepository, IAuthJwtRepository authJwtRepository, IAuthExternalRepository authExternalRepository = null)
+    protected BaseIdentityAuthRepository(IIdentityRepository<TIdentity> identityRepository, IAuthJwtRepository authJwtRepository, IAuthExternalRepository? authExternalRepository = null)
     {
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
         this.authJwtRepository = authJwtRepository ?? throw new ArgumentNullException(nameof(authJwtRepository));
@@ -47,9 +47,8 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     /// <inheritdoc />
     public virtual async Task<AccessToken> LogInAsync(LogIn logIn, CancellationToken cancellationToken = default)
     {
-        if (logIn == null) 
-            throw new ArgumentNullException(nameof(logIn));
-        
+        ArgumentNullException.ThrowIfNull(logIn);
+
         var identityUser = await this.identityRepository
             .SignInAsync(new SignIn
             {
@@ -91,9 +90,8 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     /// <inheritdoc />
     public virtual async Task<AccessToken> LogInExternalAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
     {
-        if (logInExternalDirect == null) 
-            throw new ArgumentNullException(nameof(logInExternalDirect));
-        
+        ArgumentNullException.ThrowIfNull(logInExternalDirect);
+
         var identityUser = await this.identityRepository
             .SignInExternalAsync(new SignInExternal
             {
@@ -131,15 +129,14 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
             accessToken.RefreshToken = refreshToken;
         }
 
-        return accessToken; 
+        return accessToken;
     }
 
     /// <inheritdoc />
     public virtual async Task<AccessToken> LogInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternalTransient, CancellationToken cancellationToken = default)
         where TProvider : BaseLogInExternalProvider, new()
     {
-        if (logInExternalTransient == null)
-            throw new ArgumentNullException(nameof(logInExternalTransient));
+        ArgumentNullException.ThrowIfNull(logInExternalTransient);
 
         if (this.authExternalRepository == null)
         {
@@ -168,9 +165,8 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     /// <inheritdoc />
     public virtual async Task<AccessToken> LogInRefreshAsync(LogInRefresh logInRefresh, CancellationToken cancellationToken = default)
     {
-        if (logInRefresh == null) 
-            throw new ArgumentNullException(nameof(logInRefresh));
-        
+        ArgumentNullException.ThrowIfNull(logInRefresh);
+
         var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
         var userId = jwtSecurityTokenHandler
@@ -180,7 +176,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
             .GetIdentityUserAsync(userId, cancellationToken);
 
         var appId = jwtSecurityTokenHandler
-            .GetJwtAppId(logInRefresh.Token);
+            .GetJwtAppId(logInRefresh.Token) ?? IdentityDefaults.DEFAULT_APP_ID;
 
         var identityRefreshToken = await this.identityRepository
             .GetRefreshToken(userId, appId, cancellationToken);
@@ -203,7 +199,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
         var claims = await this.identityRepository
             .GetAllClaims(identityUser, logInRefresh.TransientRoles, logInRefresh.TransientClaims, cancellationToken);
 
-        ExternalLoginTokenData externalLoginTokenData = null;
+        ExternalLoginTokenData? externalLoginTokenData = null;
         if (this.authExternalRepository != null)
         {
             var externalProviderName = claims
@@ -216,12 +212,15 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
                 .Select(x => x.Value)
                 .FirstOrDefault();
 
-            externalLoginTokenData = await this.authExternalRepository
-                .AuthenticateRefreshAsync(new LogInExternalRefresh
-                {
-                    ProviderName = externalProviderName,
-                    RefreshToken = externalProviderRefreshToken
-                }, cancellationToken);
+            if (!string.IsNullOrEmpty(externalProviderName) && !string.IsNullOrEmpty(externalProviderRefreshToken))
+            {
+                externalLoginTokenData = await this.authExternalRepository
+                    .AuthenticateRefreshAsync(new LogInExternalRefresh
+                    {
+                        ProviderName = externalProviderName,
+                        RefreshToken = externalProviderRefreshToken
+                    }, cancellationToken);
+            }
         }
 
         this.authJwtRepository
@@ -243,12 +242,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
             throw new UnauthorizedException();
         }
 
-        var refreshToken = await this.CreateRefreshToken(identityUser, appId);
-
-        if (refreshToken != null)
-        {
-            accessToken.RefreshToken = refreshToken;
-        }
+        accessToken.RefreshToken = await this.CreateRefreshToken(identityUser, appId);
 
         return accessToken;
     }
@@ -263,14 +257,13 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
 
     private async Task<RefreshToken> CreateRefreshToken(IdentityUserEx<TIdentity> identityUser, string? appId = null)
     {
-        if (identityUser == null)
-            throw new ArgumentNullException(nameof(identityUser));
+        ArgumentNullException.ThrowIfNull(identityUser);
 
         var refreshToken = this.authJwtRepository
             .GenerateJwtRefreshToken();
 
         await this.identityRepository
-            .CreateRefreshToken(identityUser.Id, refreshToken, appId);
+            .CreateRefreshToken(identityUser.Id, refreshToken, appId ?? IdentityDefaults.DEFAULT_APP_ID);
 
         return refreshToken;
     }

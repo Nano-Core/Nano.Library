@@ -8,8 +8,7 @@ internal static class ServiceCollectionExtensions
 {
     internal static IServiceCollection AddNanoConfig(this IServiceCollection services, IConfiguration configuration)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         return services
             .AddSingleton(configuration);
@@ -18,28 +17,22 @@ internal static class ServiceCollectionExtensions
     internal static IServiceCollection AddNanoConfigSection<TSection>(this IServiceCollection services, IConfiguration configuration, string name, out TSection options)
         where TSection : class, new()
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (name == null)
-            throw new ArgumentNullException(nameof(name));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(name);
 
         var section = configuration
             .GetSection(name);
-        
+
         options = section
-            .Get<TSection>();
+            .Get<TSection>() ?? throw new InvalidOperationException($"Configuration section '{name}' could not be loaded.");
 
-        if (options != null)
-        {
-            var optionsBuilder = services
-                .AddOptions<TSection>();
+        var optionsBuilder = services
+            .AddOptions<TSection>();
 
-            optionsBuilder
-                .Bind(section)
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
-        }
+        optionsBuilder
+            .Bind(section)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         return services;
     }

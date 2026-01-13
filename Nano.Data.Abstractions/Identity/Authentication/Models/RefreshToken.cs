@@ -12,7 +12,7 @@ public class RefreshToken
     /// Token.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; }
+    public virtual string Token { get; set; } = null!;
 
     /// <summary>
     /// Expire At.

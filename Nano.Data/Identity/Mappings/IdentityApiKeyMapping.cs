@@ -14,8 +14,7 @@ public class IdentityApiKeyMapping<TIdentity> : BaseEntityIdentityMapping<Identi
     /// <inheritdoc />
     public override void Map(EntityTypeBuilder<IdentityApiKey<TIdentity>> builder)
     {
-        if (builder == null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         base.Map(builder);
 
@@ -32,7 +31,7 @@ public class IdentityApiKeyMapping<TIdentity> : BaseEntityIdentityMapping<Identi
 
         builder
             .Property(x => x.Name)
-            .HasMaxLength(255)
+            .HasMaxLength(256)
             .IsRequired();
 
         builder

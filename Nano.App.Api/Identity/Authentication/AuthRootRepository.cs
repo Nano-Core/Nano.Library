@@ -31,10 +31,7 @@ public class AuthRootRepository : IAuthRootRepository
     /// <inheritdoc />
     public virtual async Task<AccessToken> LogInRootAsync(LogInRoot logInRoot)
     {
-        if (logInRoot == null)
-        {
-            throw new ArgumentNullException(nameof(logInRoot));
-        }
+        ArgumentNullException.ThrowIfNull(logInRoot);
 
         await Task.CompletedTask;
 

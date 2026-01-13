@@ -15,7 +15,7 @@ public class GetRoleClaimsRequest<TIdentity> : BaseRequestGet
     /// Role Id.
     /// </summary>
     [Route(Order = 0)]
-    public virtual TIdentity RoleId { get; set; }
+    public virtual TIdentity RoleId { get; set; } = default!;
 
     /// <summary>
     /// Constructor.

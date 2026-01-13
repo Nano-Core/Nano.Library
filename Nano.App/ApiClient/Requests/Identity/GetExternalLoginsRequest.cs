@@ -13,7 +13,7 @@ public class GetExternalLoginsRequest<TIdentity> : BaseRequestGet
     /// User Id.
     /// </summary>
     [Route(Order = 0)]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <inheritdoc />
     public GetExternalLoginsRequest()

@@ -22,11 +22,8 @@ internal static class ServiceCollectionExtensions
 {
     internal static IServiceCollection AddNanoIdentityAuthentication(this IServiceCollection services, AuthenticationOptions options)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
 
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap
             .Clear();
@@ -57,7 +54,7 @@ internal static class ServiceCollectionExtensions
 
                     var hasJwt = schemes
                         .Any(s => s.Name == AuthenticationSchemes.JWT);
-                    
+
                     var hasApiKey = schemes
                         .Any(s => s.Name == AuthenticationSchemes.API_KEY);
 
@@ -71,10 +68,10 @@ internal static class ServiceCollectionExtensions
                         return AuthenticationSchemes.API_KEY;
                     }
 
-                    return hasJwt 
-                        ? AuthenticationSchemes.JWT 
-                        : hasApiKey 
-                            ? AuthenticationSchemes.API_KEY 
+                    return hasJwt
+                        ? AuthenticationSchemes.JWT
+                        : hasApiKey
+                            ? AuthenticationSchemes.API_KEY
                             : null;
                 };
             });
@@ -96,8 +93,7 @@ internal static class ServiceCollectionExtensions
 
     internal static IServiceCollection AddNanoIdentityAuthorization(this IServiceCollection services)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddAuthorization(x =>
@@ -136,8 +132,7 @@ internal static class ServiceCollectionExtensions
 
     private static IServiceCollection AddAuthJwtRepository(this IServiceCollection services, JwtAuthenticationOptions options = null)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         if (options == null)
         {
@@ -157,8 +152,7 @@ internal static class ServiceCollectionExtensions
     }
     private static IServiceCollection AddAuthRootRepository(this IServiceCollection services, LogInRootOptions options = null)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         if (options == null)
         {
@@ -181,8 +175,7 @@ internal static class ServiceCollectionExtensions
     }
     private static IServiceCollection AddAuthTransientRepository(this IServiceCollection services, ExternalLoginOptions options = null)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         if (options is not { IsConfigured: true })
         {
@@ -210,8 +203,7 @@ internal static class ServiceCollectionExtensions
     }
     private static IServiceCollection AddAuthExternalRepository(this IServiceCollection services, ExternalLoginOptions options = null)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         if (options is not { IsConfigured: true })
         {
@@ -239,8 +231,7 @@ internal static class ServiceCollectionExtensions
     }
     private static IServiceCollection AddAuthExternalFacebookRepository(this IServiceCollection services, FacebookOptions options = null)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         if (options == null)
         {
@@ -269,8 +260,7 @@ internal static class ServiceCollectionExtensions
     }
     private static IServiceCollection AddAuthExternalGoogleRepository(this IServiceCollection services, GoogleOptions options = null)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         if (options == null)
         {
@@ -290,13 +280,13 @@ internal static class ServiceCollectionExtensions
     }
     private static IServiceCollection AddAuthExternalMicrosoftRepository(this IServiceCollection services, MicrosoftOptions options = null)
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         if (options == null)
         {
             return services;
         }
+
         services
             .AddHttpClient<IAuthExternalMicrosoftRepository>();
 

@@ -110,7 +110,7 @@ public class DataOptions
     /// <summary>
     /// Default Collation.
     /// </summary>
-    public virtual string DefaultCollation { get; set; } = null!;
+    public virtual string? DefaultCollation { get; set; }
 
     /// <summary>
     /// Connection String.

@@ -17,12 +17,12 @@ public class SetPassword<TIdentity>
     /// User Id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
     /// New Password.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string NewPassword { get; set; }
+    public virtual string NewPassword { get; set; } = null!;
 }

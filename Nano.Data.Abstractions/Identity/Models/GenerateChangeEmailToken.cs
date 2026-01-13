@@ -17,12 +17,12 @@ public class GenerateChangeEmailToken<TIdentity>
     /// User id.
     /// </summary>
     [Required]
-    public virtual TIdentity UserId { get; set; }
+    public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
     /// New Email Address.
     /// </summary>
     [Required]
     [EmailAddress]
-    public virtual string NewEmailAddress { get; set; }
+    public virtual string NewEmailAddress { get; set; } = null!;
 }

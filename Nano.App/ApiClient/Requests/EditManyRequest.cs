@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.ApiClient.Requests;
@@ -11,7 +12,8 @@ public class EditManyRequest : BaseRequestPut
     /// <summary>
     /// Entities.
     /// </summary>
-    public virtual IEnumerable<IEntityUpdatable> Entities { get; set; }
+    [Required]
+    public virtual IEnumerable<IEntityUpdatable> Entities { get; set; } = [];
 
     /// <summary>
     /// Constructor.
