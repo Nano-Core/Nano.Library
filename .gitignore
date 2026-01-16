@@ -8,5 +8,5 @@
 _ReSharper*
 **/bin
 **/obj
-*.DotSettings
+*.DotSettings.User
 **/wwwroot/lib
