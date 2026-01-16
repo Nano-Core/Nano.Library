@@ -21,7 +21,7 @@ public abstract class BaseApplication<THost, THostBuilder> : IApplication
     /// <summary>
     /// 
     /// </summary>
-    protected THost? application;
+    protected THost application = null!;
 
     /// <summary>
     /// 
