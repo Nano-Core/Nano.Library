@@ -13,6 +13,7 @@ public class IdentityApiKeyCreated<TIdentity> : IdentityApiKey<TIdentity>
     /// <summary>
     /// Identity Api Key.
     /// </summary>
+    [Required]
     [Include]
     public virtual IdentityApiKey<TIdentity> IdentityApiKey { get; set; } = null!;
 

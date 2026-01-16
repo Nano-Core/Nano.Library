@@ -1,5 +1,7 @@
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
+// BUG: Check usages on the properties and set [Required]
+
 /// <summary>
 /// External Log In Data.
 /// </summary>

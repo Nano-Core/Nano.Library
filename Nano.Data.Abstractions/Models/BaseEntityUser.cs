@@ -11,6 +11,9 @@ namespace Nano.Data.Abstractions.Models;
 public abstract class BaseEntityUser<TIdentity> : BaseEntity<TIdentity>, IEntityUser<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
+    // BUG: Shouldn't we have IdentityUserExId
+    // BUG: Reanme IdentityUser ?? I think so because it becomes the FK in db
+
     /// <inheritdoc />
     [Include]
     [RequestIgnore]

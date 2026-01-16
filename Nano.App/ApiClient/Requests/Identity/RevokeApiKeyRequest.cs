@@ -15,12 +15,13 @@ public class RevokeApiKeyRequest<TIdentity> : BaseRequestDelete
     /// Api Key Id.
     /// </summary>
     [Required]
-    [Route]
+    [Route(Order = 0)]
     public virtual TIdentity ApiKeyId { get; set; } = default!;
 
     /// <summary>
     /// Revoke At.
     /// </summary>
+    [Query]
     public virtual DateTimeOffset? RevokeAt { get; set; } = new();
 
     /// <inheritdoc />

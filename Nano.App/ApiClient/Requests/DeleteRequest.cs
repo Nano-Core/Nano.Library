@@ -16,8 +16,8 @@ public class DeleteRequest<TIdentity> : BaseRequestDelete
     /// <summary>
     /// Id.
     /// </summary>
-    [Route]
     [Required]
+    [Route(Order = 0)]
     public virtual TIdentity Id { get; set; } = default!;
 
     /// <summary>
