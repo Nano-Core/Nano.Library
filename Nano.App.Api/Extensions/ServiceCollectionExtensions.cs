@@ -26,7 +26,8 @@ using Vivet.AspNetCore.RequestVirusScan.Extensions;
 
 namespace Nano.App.Api.Extensions;
 
-// BUG: Make options classes for UseAudit (just emtpty) and Also check ApiOptions (e.g. Session, Cookies)
+// BUG: 000: Make options classes for UseAudit (just emtpty) and Also check ApiOptions (e.g. Session, Cookies)
+// also all the UseHealthCheck???
 
 internal static class ServiceCollectionExtensions
 {
@@ -222,7 +223,7 @@ internal static class ServiceCollectionExtensions
             {
                 x.ReportApiVersions = true;
 
-                // BUG: Why defined here and below.
+                // BUG: 000: Why defined here and below.
                 if (apiOptions.Documentation?.UseDefaultVersion ?? false)
                 {
                     x.DefaultApiVersion = apiVersion;
@@ -234,7 +235,7 @@ internal static class ServiceCollectionExtensions
                     new QueryStringApiVersionReader("api-version"),
                     new HeaderApiVersionReader("Api-Version"));
             })
-            // BUG: Maybe this should be moved to Documentation.
+            // BUG: 000: Maybe this should be moved to Documentation.
             .AddVersionedApiExplorer(x =>
             {
                 x.GroupNameFormat = "'v'VV";

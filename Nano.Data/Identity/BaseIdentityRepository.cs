@@ -1688,7 +1688,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         ArgumentNullException.ThrowIfNull(identityUser);
 
         user.Id = identityUser.Id.Parse<TIdentity>();
-        user.IdentityUserEx = identityUser;
+        user.IdentityUser = identityUser;
 
         try
         {

@@ -5,7 +5,11 @@ using Nano.App.Abstractions;
 
 namespace Nano.App;
 
-// BUG: Add TenantId to IdentityUserEx (nullable)
+// BUG: 000: Add TenantId to IdentityUserEx (nullable)
+// BUG: 000: How can I force providers to be parameterless constructor
+
+// BUG: Should we make a BackgroundJob option, like we did in ....
+// and auto resolve just one of the consumers dependencies using IServiceScopeFactory and resolving each of that dependencies
 
 /// <summary>
 /// Base Application (abstract).

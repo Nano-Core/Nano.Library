@@ -19,7 +19,7 @@ public class DefaultEntityUserMapping<TEntity> : BaseEntityIdentityMapping<TEnti
         base.Map(builder);
 
         builder
-            .HasQueryFilter(x => x.IsDeleted == 0L && x.IdentityUserEx.IsActive);
+            .HasQueryFilter(x => x.IsDeleted == 0L && x.IdentityUser.IsActive);
 
         builder
             .Property(x => x.CreatedAt)
@@ -39,7 +39,7 @@ public class DefaultEntityUserMapping<TEntity> : BaseEntityIdentityMapping<TEnti
             .HasIndex(x => x.IsDeleted);
 
         builder
-            .HasOne(x => x.IdentityUserEx)
+            .HasOne(x => x.IdentityUser)
             .WithOne()
             .HasForeignKey<TEntity>(x => x.Id)
             .OnDelete(DeleteBehavior.Cascade)

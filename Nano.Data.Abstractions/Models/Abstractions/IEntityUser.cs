@@ -13,5 +13,5 @@ public interface IEntityUser<TIdentity> : IEntityIdentity<TIdentity>
     /// <summary>
     /// Identity User.
     /// </summary>
-    IdentityUserEx<TIdentity> IdentityUserEx { get; set; }
+    IdentityUserEx<TIdentity> IdentityUser { get; set; }
 }

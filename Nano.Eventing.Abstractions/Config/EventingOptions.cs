@@ -74,7 +74,7 @@ public class EventingOptions
     [Required]
     public virtual ushort PrefetchCount { get; set; } = 50;
 
-    // BUG: Merge into HealthCheckOptions (Eventing, Storage, Data, ApiClient, more?)
+    // BUG: 000: Merge into HealthCheckOptions (Eventing, Storage, Data, ApiClient, more?)
     ///// <summary>
     /////
     ///// </summary>
