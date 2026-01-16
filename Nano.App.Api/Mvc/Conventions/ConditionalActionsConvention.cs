@@ -15,14 +15,14 @@ namespace Nano.App.Api.Mvc.Conventions;
 public sealed class ConditionalActionsConvention : IControllerModelConvention
 {
     private readonly IOptionsMonitor<ApiOptions> webOptions;
-    private readonly IOptionsMonitor<DataOptions> dataOptions;
+    private readonly IOptionsMonitor<DataOptions>? dataOptions;
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="webOptions"></param>
     /// <param name="dataOptions"></param>
-    public ConditionalActionsConvention(IOptionsMonitor<ApiOptions> webOptions, IOptionsMonitor<DataOptions> dataOptions = null)
+    public ConditionalActionsConvention(IOptionsMonitor<ApiOptions> webOptions, IOptionsMonitor<DataOptions>? dataOptions = null)
     {
         this.webOptions = webOptions ?? throw new ArgumentNullException(nameof(webOptions));
         this.dataOptions = dataOptions;
@@ -53,7 +53,7 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
 
         if (controller.ControllerType == typeof(DefaultAuthController))
         {
-            if (!(this.webOptions.CurrentValue.Identity.Authentication.Jwt != null || this.webOptions.CurrentValue.Identity.Authentication.Jwt?.RootLogin != null) || !this.webOptions.CurrentValue.Hosting.ExposeAuthController)
+            if (!(this.webOptions.CurrentValue.Identity?.Authentication.Jwt != null || this.webOptions.CurrentValue.Identity?.Authentication.Jwt?.RootLogin != null) || !this.webOptions.CurrentValue.Hosting.ExposeAuthController)
             {
                 controller.ApiExplorer.IsVisible = false;
 
@@ -154,16 +154,14 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
             })
             .ToArray();
 
-        foreach (var action in disabledActions)
-        {
-            var exists = controller.Actions
-                .Any(x => x.ActionName == action.ActionName);
+        var actions = disabledActions
+            .Where(x => controller.Actions
+                .Any(y => y.ActionName == x.ActionName));
 
-            if (exists)
-            {
-                controller.Actions
-                    .Remove(action);
-            }
+        foreach (var action in actions)
+        {
+            controller.Actions
+                .Remove(action);
         }
     }
 }

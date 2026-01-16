@@ -28,7 +28,7 @@ public class NamedStream : IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-        this.Stream?
+        this.Stream
             .Dispose();
     }
 }

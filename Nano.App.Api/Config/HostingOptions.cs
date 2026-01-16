@@ -67,5 +67,5 @@ public class HostingOptions
     /// <summary>
     /// Certificate (ssl)
     /// </summary>
-    public virtual CertificateOptions Certificate { get; set; }
+    public virtual CertificateOptions? Certificate { get; set; }
 }

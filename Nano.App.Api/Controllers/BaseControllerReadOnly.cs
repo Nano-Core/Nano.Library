@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using DynamicExpression.Entities;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,19 +20,13 @@ namespace Nano.App.Api.Controllers;
 /// <inheritdoc />
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR + "," + BuiltInUserRoles.EDITOR + "," + BuiltInUserRoles.DELETER + "," + BuiltInUserRoles.READER)]
 public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria> : BaseController<TRepository>
-    where TRepository : IRepository
+    where TRepository : class, IRepository
     where TEntity : class, IEntityIdentity<TIdentity>
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseControllerReadOnly(ILogger logger, TRepository repository)
-        : this(logger, repository, null)
-    {
-    }
-
-    /// <inheritdoc />
-    protected BaseControllerReadOnly(ILogger logger, TRepository repository, IEventing eventing)
+    protected BaseControllerReadOnly(ILogger logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }
@@ -58,28 +51,22 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> IndexAsync([FromQuery] [Required] IQuery query, [FromQuery] int? includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> IndexAsync([FromQuery][Required]IQuery query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
-        query ??= new Query();
+        IEnumerable<TEntity> results;
 
-        IEnumerable<TEntity> result;
         if (includeDepth.HasValue)
         {
-            result = await this.Repository
+            results = await this.Repository
                 .GetManyAsync<TEntity>(query, includeDepth.Value, cancellationToken);
         }
         else
         {
-            result = await this.Repository
+            results = await this.Repository
                 .GetManyAsync<TEntity>(query, cancellationToken);
         }
 
-        if (result == null)
-        {
-            return this.NotFound();
-        }
-
-        return this.Ok(result);
+        return this.Ok(results);
     }
 
     /// <summary>
@@ -103,28 +90,22 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> IndexPostAsync([FromBody][Required] IQuery query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> IndexPostAsync([FromBody][Required]IQuery query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
-        query ??= new Query();
+        IEnumerable<TEntity> results;
 
-        IEnumerable<TEntity> result;
         if (includeDepth.HasValue)
         {
-            result = await this.Repository
+            results = await this.Repository
                 .GetManyAsync<TEntity>(query, includeDepth.Value, cancellationToken);
         }
         else
         {
-            result = await this.Repository
+            results = await this.Repository
                 .GetManyAsync<TEntity>(query, cancellationToken);
         }
 
-        if (result == null)
-        {
-            return this.NotFound();
-        }
-
-        return this.Ok(result);
+        return this.Ok(results);
     }
 
     /// <summary>
@@ -149,7 +130,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DetailsAsync([FromRoute][Required]TIdentity id, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
-        TEntity result;
+        TEntity? result;
+
         if (includeDepth.HasValue)
         {
             result = await this.Repository
@@ -191,24 +173,20 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DetailsManyAsync([FromQuery][Required]TIdentity[] ids, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
-        IEnumerable<TEntity> result;
+        IEnumerable<TEntity> results;
+
         if (includeDepth.HasValue)
         {
-            result = await this.Repository
+            results = await this.Repository
                 .GetManyAsync<TEntity, TIdentity>(ids, includeDepth.Value, cancellationToken);
         }
         else
         {
-            result = await this.Repository
+            results = await this.Repository
                 .GetManyAsync<TEntity, TIdentity>(ids, cancellationToken);
         }
 
-        if (result == null)
-        {
-            return this.NotFound();
-        }
-
-        return this.Ok(result);
+        return this.Ok(results);
     }
 
     /// <summary>
@@ -234,24 +212,20 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> DetailsManyPostAsync([FromBody][Required]TIdentity[] ids, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
-        IEnumerable<TEntity> result;
+        IEnumerable<TEntity> results;
+
         if (includeDepth.HasValue)
         {
-            result = await this.Repository
+            results = await this.Repository
                 .GetManyAsync<TEntity, TIdentity>(ids, includeDepth.Value, cancellationToken);
         }
         else
         {
-            result = await this.Repository
+            results = await this.Repository
                 .GetManyAsync<TEntity, TIdentity>(ids, cancellationToken);
         }
 
-        if (result == null)
-        {
-            return this.NotFound();
-        }
-
-        return this.Ok(result);
+        return this.Ok(results);
     }
 
     /// <summary>
@@ -276,26 +250,20 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryAsync([FromQuery][Required]IQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
-        query ??= new Query<TCriteria>();
+        IEnumerable<TEntity> results;
 
-        IEnumerable<TEntity> result;
         if (includeDepth.HasValue)
         {
-            result = await this.Repository
+            results = await this.Repository
                 .GetManyAsync<TEntity, TCriteria>(query, includeDepth.Value, cancellationToken);
         }
         else
         {
-            result = await this.Repository
+            results = await this.Repository
                 .GetManyAsync<TEntity, TCriteria>(query, cancellationToken);
         }
 
-        if (result == null)
-        {
-            return this.NotFound();
-        }
-
-        return this.Ok(result);
+        return this.Ok(results);
     }
 
     /// <summary>
@@ -321,26 +289,20 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryPostAsync([FromBody][Required]IQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
-        query ??= new Query<TCriteria>();
+        IEnumerable<TEntity> results;
 
-        IEnumerable<TEntity> result;
         if (includeDepth.HasValue)
         {
-            result = await this.Repository
+            results = await this.Repository
                 .GetManyAsync<TEntity, TCriteria>(query, includeDepth.Value, cancellationToken);
         }
         else
         {
-            result = await this.Repository
+            results = await this.Repository
                 .GetManyAsync<TEntity, TCriteria>(query, cancellationToken);
         }
 
-        if (result == null)
-        {
-            return this.NotFound();
-        }
-
-        return this.Ok(result);
+        return this.Ok(results);
     }
 
     /// <summary>
@@ -365,9 +327,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryFirstAsync([FromQuery][Required]IQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
-        query ??= new Query<TCriteria>();
+        TEntity? result;
 
-        TEntity result;
         if (includeDepth.HasValue)
         {
             result = await this.Repository
@@ -410,9 +371,8 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryFirstPostAsync([FromBody][Required]IQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
     {
-        query ??= new Query<TCriteria>();
+        TEntity? result;
 
-        TEntity result;
         if (includeDepth.HasValue)
         {
             result = await this.Repository

@@ -5,6 +5,8 @@ using Nano.App.Abstractions;
 
 namespace Nano.App;
 
+// BUG: Add TenantId to IdentityUserEx (nullable)
+
 /// <summary>
 /// Base Application (abstract).
 /// </summary>

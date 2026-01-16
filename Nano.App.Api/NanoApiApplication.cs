@@ -65,7 +65,7 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
             .AddNanoSession(webOptions)
             .AddNanoResponseCaching(webOptions)
             .AddNanoVersioning(webOptions)
-            .AddNanoIdentityAuthentication(webOptions.Identity.Authentication)
+            .AddNanoIdentityAuthentication(webOptions.Identity?.Authentication)
             .AddNanoIdentityAuthorization()
             .AddNanoRequestLocalization(webOptions)
             .AddNanoRequestTimeZone(webOptions)

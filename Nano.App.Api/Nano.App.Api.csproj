@@ -1,9 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<nullable>disable</nullable>
-	</PropertyGroup>
-
 	<ItemGroup>
 	  <EmbeddedResource Include="Mvc\Documentation\.xmldoc\Nano.App.Web.xml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

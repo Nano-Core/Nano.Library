@@ -24,19 +24,13 @@ namespace Nano.App.Api.Controllers;
 /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> implementation.</typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.DELETER)]
 public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
-    where TRepository : IRepository
+    where TRepository : class, IRepository
     where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable, new()
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseControllerDeletable(ILogger logger, TRepository repository)
-        : this(logger, repository, null)
-    {
-    }
-
-    /// <inheritdoc />
-    protected BaseControllerDeletable(ILogger logger, TRepository repository, IEventing eventing)
+    protected BaseControllerDeletable(ILogger logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

@@ -78,31 +78,33 @@ public static class ModelBuilderExtensions
 
         var isDeletableSoft = typeof(TEntity).IsTypeOf(typeof(IEntityDeletableSoft));
 
-        if (isDeletableSoft)
+        if (!isDeletableSoft)
         {
-            var entity = builder.Entity<TEntity>();
-
-            entity.Metadata
-                .GetIndexes()
-                .Where(x =>
-                    x.IsUnique &&
-                    x.Properties.All(y => y.Name != "IsDeleted" && !y.IsKey()))
-                .ToList()
-                .ForEach(x =>
-                {
-                    entity.Metadata
-                        .RemoveIndex(x.Properties);
-
-                    var columns = x.Properties
-                        .Select(y => y.Name)
-                        .Union(["IsDeleted"])
-                        .ToArray();
-
-                    entity
-                        .HasIndex(columns)
-                        .IsUnique();
-                });
+            return builder;
         }
+
+        var entity = builder.Entity<TEntity>();
+
+        entity.Metadata
+            .GetIndexes()
+            .Where(x =>
+                x.IsUnique &&
+                x.Properties.All(y => y.Name != "IsDeleted" && !y.IsKey()))
+            .ToList()
+            .ForEach(x =>
+            {
+                entity.Metadata
+                    .RemoveIndex(x.Properties);
+
+                var columns = x.Properties
+                    .Select(y => y.Name)
+                    .Union(["IsDeleted"])
+                    .ToArray();
+
+                entity
+                    .HasIndex(columns)
+                    .IsUnique();
+            });
 
         return builder;
     }

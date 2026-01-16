@@ -80,23 +80,27 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
 
         var hasPublishProperties = publishAnnotation != null && publishAnnotation.PropertyNames.Any();
 
-        if (isAuditEnabled || hasPublishProperties)
+        if (!isAuditEnabled && !hasPublishProperties)
         {
-            var existingEntry = this.ChangeTracker
-                .Entries()
-                .FirstOrDefault(x => x.Entity == entity);
-
-            if (existingEntry == null)
-            {
-                var dbSet = this.SetDynamic(entity.GetType().Name);
-
-                var tracked = dbSet
-                    .AsNoTracking()
-                    .SingleOrDefault(x => x == entity);
-
-                this.SetOriginalValues(entity, tracked);
-            }
+            return base.Update(entity);
         }
+
+        var existingEntry = this.ChangeTracker
+            .Entries()
+            .FirstOrDefault(x => x.Entity == entity);
+
+        if (existingEntry != null)
+        {
+            return base.Update(entity);
+        }
+
+        var dbSet = this.SetDynamic(entity.GetType().Name);
+
+        var tracked = dbSet
+            .AsNoTracking()
+            .SingleOrDefault(x => x == entity);
+
+        this.SetOriginalValues(entity, tracked);
 
         return base.Update(entity);
     }
@@ -115,23 +119,27 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
 
         var hasPublishProperties = publishAnnotation != null && publishAnnotation.PropertyNames.Any();
 
-        if (isAuditEnabled || hasPublishProperties)
+        if (!isAuditEnabled && !hasPublishProperties)
         {
-            var existingEntry = this.ChangeTracker
-                .Entries()
-                .FirstOrDefault(x => x.Entity == entity);
-
-            if (existingEntry == null)
-            {
-                var dbSet = this.Set<TEntity>();
-
-                var tracked = dbSet
-                    .AsNoTracking()
-                    .SingleOrDefault(x => x == entity);
-
-                this.SetOriginalValues(entity, tracked);
-            }
+            return base.Update(entity);
         }
+
+        var existingEntry = this.ChangeTracker
+            .Entries()
+            .FirstOrDefault(x => x.Entity == entity);
+
+        if (existingEntry != null)
+        {
+            return base.Update(entity);
+        }
+
+        var dbSet = this.Set<TEntity>();
+
+        var tracked = dbSet
+            .AsNoTracking()
+            .SingleOrDefault(x => x == entity);
+
+        this.SetOriginalValues(entity, tracked);
 
         return base.Update(entity);
     }
@@ -248,16 +256,15 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
 
         var autoSavePreAction = audit.Configuration.AutoSavePreAction ?? AuditManager.DefaultConfiguration.AutoSavePreAction;
 
-        if (autoSavePreAction != null)
+        if (autoSavePreAction == null || audit.Entries.Count == 0)
         {
-            if (audit.Entries.Any())
-            {
-                autoSavePreAction
-                    .Invoke(this, audit);
-
-                this.SaveChanges();
-            }
+            return rowAffecteds;
         }
+
+        autoSavePreAction
+            .Invoke(this, audit);
+
+        this.SaveChanges();
 
         return rowAffecteds;
     }
@@ -278,17 +285,16 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
 
         var autoSavePreAction = audit.Configuration.AutoSavePreAction ?? AuditManager.DefaultConfiguration.AutoSavePreAction;
 
-        if (autoSavePreAction != null)
+        if (autoSavePreAction == null || audit.Entries.Count == 0)
         {
-            if (audit.Entries.Any())
-            {
-                autoSavePreAction
-                    .Invoke(this, audit);
-
-                await this.SaveChangesAsync(cancellationToken)
-                    .ConfigureAwait(false);
-            }
+            return rowAffecteds;
         }
+
+        autoSavePreAction
+            .Invoke(this, audit);
+
+        await this.SaveChangesAsync(cancellationToken)
+            .ConfigureAwait(false);
 
         return rowAffecteds;
     }

@@ -35,32 +35,32 @@ public class ApiOptions : BaseAppOptions
     /// <summary>
     /// Authentication Options.
     /// </summary>
-    public virtual IdentityOptions Identity { get; set; }
+    public virtual IdentityOptions? Identity { get; set; }
 
     /// <summary>
     /// Response Cache.
     /// Options for caching responses.
     /// </summary>
-    public virtual ResponseCacheOptions ResponseCache { get; set; }
+    public virtual ResponseCacheOptions? ResponseCache { get; set; }
 
     /// <summary>
     /// Session.
     /// Settings for session behavior.
     /// </summary>
-    public virtual SessionOptions Session { get; set; }
+    public virtual SessionOptions? Session { get; set; }
 
     /// <summary>
     /// Virus Scan.
     /// </summary>
-    public virtual VirusScanOptions VirusScan { get; set; }
+    public virtual VirusScanOptions? VirusScan { get; set; }
 
     /// <summary>
     /// Health-Check.
     /// </summary>
-    public virtual HealthCheckOptions HealthCheck { get; set; }
+    public virtual HealthCheckOptions? HealthCheck { get; set; }
 
     /// <summary>
     /// Documentation.
     /// </summary>
-    public virtual DocumentationOptions Documentation { get; set; }
+    public virtual DocumentationOptions? Documentation { get; set; }
 }

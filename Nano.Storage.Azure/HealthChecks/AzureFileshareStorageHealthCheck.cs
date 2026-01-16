@@ -74,13 +74,15 @@ public class AzureFileshareStorageHealthCheck : IHealthCheck
         AzureFileshareStorageHealthCheck.clientsHolder
             .TryGetValue(connectionString, out var client);
 
-        if (client == null)
+        if (client != null)
         {
-            client = new ShareClient(connectionString, this.options.CurrentValue.ShareName, this.clientOptions);
-
-            AzureFileshareStorageHealthCheck.clientsHolder
-                .TryAdd(connectionString, client);
+            return client;
         }
+
+        client = new ShareClient(connectionString, this.options.CurrentValue.ShareName, this.clientOptions);
+
+        AzureFileshareStorageHealthCheck.clientsHolder
+            .TryAdd(connectionString, client);
 
         return client;
     }

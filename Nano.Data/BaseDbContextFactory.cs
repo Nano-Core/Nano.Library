@@ -42,11 +42,8 @@ public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbC
 
         var optionsMonitor = new StaticOptionsMonitor<DataOptions>(options);
 
-        if (Activator.CreateInstance(typeof(TContext), builder.Options, optionsMonitor, null) is not TContext dbContext)
-        {
-            throw new NullReferenceException(nameof(dbContext));
-        }
-
-        return dbContext;
+        return Activator.CreateInstance(typeof(TContext), builder.Options, optionsMonitor, null) is not TContext dbContext
+            ? throw new NullReferenceException(nameof(dbContext))
+            : dbContext;
     }
 }

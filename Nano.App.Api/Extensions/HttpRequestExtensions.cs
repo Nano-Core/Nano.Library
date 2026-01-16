@@ -15,7 +15,7 @@ public static class HttpRequestExtensions
     /// </summary>
     /// <param name="httpRequest">The <see cref="HttpRequest"/>.</param>
     /// <returns>The remote ip-address.</returns>
-    public static string GetRemoteIpAddress(this HttpRequest httpRequest)
+    public static string? GetRemoteIpAddress(this HttpRequest httpRequest)
     {
         ArgumentNullException.ThrowIfNull(httpRequest);
 
@@ -28,7 +28,7 @@ public static class HttpRequestExtensions
 
         var success = IPAddress.TryParse(xForwardedFor.Split(',')[0], out var remoteIpAddress);
 
-        if (!success)
+        if (!success || remoteIpAddress == null)
         {
             return null;
         }

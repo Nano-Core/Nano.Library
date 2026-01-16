@@ -5,7 +5,7 @@ using Nano.App.Api.Config;
 
 namespace Nano.App.Api.Extensions;
 
-// TODO: Csp Directives
+// BUG: Csp Directives  (everything is commented out
 // navigate-to,
 // prefetch-src,
 // require-trusted-types-for,
@@ -40,7 +40,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspDefaults(this CspBuilder builder, CspOptions.CspDirective cspDirective = null)
+    internal static CspBuilder UseCspDefaults(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -73,7 +73,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspStyles(this CspBuilder builder, CspOptions.CspDirectiveStyles cspDirective = null)
+    internal static CspBuilder UseCspStyles(this CspBuilder builder, CspOptions.CspDirectiveStyles? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -111,7 +111,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspScripts(this CspBuilder builder, CspOptions.CspDirectiveScripts cspDirective = null)
+    internal static CspBuilder UseCspScripts(this CspBuilder builder, CspOptions.CspDirectiveScripts? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -159,7 +159,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspObjects(this CspBuilder builder, CspOptions.CspDirective cspDirective = null)
+    internal static CspBuilder UseCspObjects(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -192,7 +192,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspImages(this CspBuilder builder, CspOptions.CspDirective cspDirective = null)
+    internal static CspBuilder UseCspImages(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -225,7 +225,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspMedia(this CspBuilder builder, CspOptions.CspDirective cspDirective = null)
+    internal static CspBuilder UseCspMedia(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -258,7 +258,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspFrames(this CspBuilder builder, CspOptions.CspDirective cspDirective = null)
+    internal static CspBuilder UseCspFrames(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -291,7 +291,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspFrameAncestors(this CspBuilder builder, CspOptions.CspDirective cspDirective = null)
+    internal static CspBuilder UseCspFrameAncestors(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -324,7 +324,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspFonts(this CspBuilder builder, CspOptions.CspDirective cspDirective = null)
+    internal static CspBuilder UseCspFonts(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -357,7 +357,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspConnections(this CspBuilder builder, CspOptions.CspDirective cspDirective = null)
+    internal static CspBuilder UseCspConnections(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -390,7 +390,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspBaseUris(this CspBuilder builder, CspOptions.CspDirective cspDirective = null)
+    internal static CspBuilder UseCspBaseUris(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -423,7 +423,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspChildren(this CspBuilder builder, CspOptions.CspDirective cspDirective = null)
+    internal static CspBuilder UseCspChildren(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -456,7 +456,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspForms(this CspBuilder builder, CspOptions.CspDirective cspDirective = null)
+    internal static CspBuilder UseCspForms(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -489,7 +489,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspManifests(this CspBuilder builder, CspOptions.CspDirective cspDirective = null)
+    internal static CspBuilder UseCspManifests(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -522,7 +522,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspWorkers(this CspBuilder builder, CspOptions.CspDirective cspDirective = null)
+    internal static CspBuilder UseCspWorkers(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -555,7 +555,7 @@ internal static class FluentCspOptionsExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspSandbox(this CspBuilder builder, CspOptions.CspDirectiveSandbox cspDirectiveSandbox = null)
+    internal static CspBuilder UseCspSandbox(this CspBuilder builder, CspOptions.CspDirectiveSandbox? cspDirectiveSandbox = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 

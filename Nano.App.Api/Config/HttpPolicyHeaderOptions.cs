@@ -37,22 +37,22 @@ public class HttpPolicyHeaderOptions
     /// Csp.
     /// Settings for Content-Security-Policy.
     /// </summary>
-    public virtual CspOptions Csp { get; set; }
+    public virtual CspOptions? Csp { get; set; }
 
     /// <summary>
     /// Cors.
     /// </summary>
-    public virtual CorsOptions Cors { get; set; }
+    public virtual CorsOptions? Cors { get; set; }
 
     /// <summary>
     /// Hsts.
     /// Settings for Strict-Transport-Security.
     /// </summary>
-    public virtual HstsOptions Hsts { get; set; }
+    public virtual HstsOptions? Hsts { get; set; }
 
     /// <summary>
     /// Robots.
     /// Settings for robots (search engines) behavior.
     /// </summary>
-    public virtual RobotsOptions Robots { get; set; }
+    public virtual RobotsOptions? Robots { get; set; }
 }

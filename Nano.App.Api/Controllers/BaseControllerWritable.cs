@@ -27,19 +27,13 @@ namespace Nano.App.Api.Controllers;
 /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> implementation.</typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER)]
 public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
-    where TRepository : IRepository
+    where TRepository : class, IRepository
     where TEntity : class, IEntityIdentity<TIdentity>, IEntityWritable, new()
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseControllerWritable(ILogger logger, TRepository repository)
-        : this(logger, repository, null)
-    {
-    }
-
-    /// <inheritdoc />
-    protected BaseControllerWritable(ILogger logger, TRepository repository, IEventing eventing)
+    protected BaseControllerWritable(ILogger logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }
@@ -64,13 +58,13 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> CreateAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
     {
-        entity = await this.Repository
+        var entityCreated = await this.Repository
             .AddAsync(entity, cancellationToken);
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
 
-        return this.Created("create", entity);
+        return this.Created("create", entityCreated);
     }
 
     /// <summary>
@@ -93,13 +87,13 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> CreateAndGetAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
     {
-        entity = await this.Repository
+        var entityCreated = await this.Repository
             .AddAndGetAsync<TEntity, TIdentity>(entity, cancellationToken);
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
 
-        return this.Created("create/get", entity);
+        return this.Created("create/get", entityCreated);
     }
 
     /// <summary>
@@ -178,18 +172,13 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
     {
-        entity = await this.Repository
+        var entityEdited = await this.Repository
             .UpdateAsync(entity, cancellationToken);
-
-        if (entity == null)
-        {
-            return this.NotFound();
-        }
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
 
-        return this.Ok(entity);
+        return this.Ok(entityEdited);
     }
 
     /// <summary>
@@ -213,13 +202,13 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditAndGetAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
     {
-        entity = await this.Repository
+        var entityEdited = await this.Repository
             .UpdateAndGetAsync<TEntity, TIdentity>(entity, cancellationToken);
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
 
-        return this.Ok(entity);
+        return this.Ok(entityEdited);
     }
 
     /// <summary>
@@ -245,11 +234,6 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     {
         await this.Repository
             .UpdateManyAsync(entities, cancellationToken);
-
-        if (entities == null)
-        {
-            return this.NotFound();
-        }
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
@@ -394,7 +378,7 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> DeleteManyBulkAsync([FromBody][Required] TIdentity[] ids, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> DeleteManyBulkAsync([FromBody][Required]TIdentity[] ids, CancellationToken cancellationToken = default)
     {
         await this.Repository
             .DeleteManyBulkAsync<TEntity, TIdentity>(ids, cancellationToken);

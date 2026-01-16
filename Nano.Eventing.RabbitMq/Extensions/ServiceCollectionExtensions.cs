@@ -54,15 +54,17 @@ public static class ServiceCollectionExtensions
         services
             .AddScoped<IEventing, RabbitMqEventing>();
 
-        if (options.UseHealthCheck)
+        if (!options.UseHealthCheck)
         {
-            var failureStatus = options.UnhealthyStatus
-                .GetHealthStatus();
-
-            services
-                .AddHealthChecks()
-                .AddRabbitMqHealthChecks(failureStatus, null, options.Timeout);
+            return services;
         }
+
+        var failureStatus = options.UnhealthyStatus
+            .GetHealthStatus();
+
+        services
+            .AddHealthChecks()
+            .AddRabbitMqHealthChecks(failureStatus, null, options.Timeout);
 
         return services;
     }

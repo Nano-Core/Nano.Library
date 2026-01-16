@@ -39,16 +39,71 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     #region Sign Up
 
     /// <summary>
+    /// Get Password Options Async.
+    /// </summary>
+    /// <param name="request">The <see cref="GetPasswordOptionsRequest"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Void.</returns>
+    public virtual Task<PasswordOptions?> GetPasswordOptionsAsync(GetPasswordOptionsRequest request, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        // BUG: This could be wrong, we don't know that the controller name is the same as TUSer.
+        // - Either document the model naming convention
+        // - or maybe better always have the route "identity"? But that is strange cause when interacting with the controller normally
+        //   (e.g. get user, update user, etc) then "identity" route is unnatural
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return this.InvokeAsync<GetPasswordOptionsRequest, PasswordOptions>(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Is Email Address Taken Async.
+    /// </summary>
+    /// <param name="request">The <see cref="IsEmailAddressTakenRequest"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IsEmailAddressTaken"/>.</returns>
+    public virtual async Task<IsEmailAddressTaken> IsEmailAddressTakenAsync(IsEmailAddressTakenRequest request, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        var isEmailAddressTaken = await this.InvokeAsync<IsEmailAddressTakenRequest, IsEmailAddressTaken>(request, cancellationToken);
+
+        return isEmailAddressTaken ?? throw new NullReferenceException(nameof(isEmailAddressTaken));
+    }
+
+    /// <summary>
+    /// Is Phone Number Taken Async.
+    /// </summary>
+    /// <param name="request">The <see cref="IsPhoneNumberTakenRequest"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="IsPhoneNumberTaken"/>.</returns>
+    public virtual async Task<IsPhoneNumberTaken> IsPhoneNumberTakenAsync(IsPhoneNumberTakenRequest request, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        var isEmailAddressTaken = await this.InvokeAsync<IsPhoneNumberTakenRequest, IsPhoneNumberTaken>(request, cancellationToken);
+
+        return isEmailAddressTaken ?? throw new NullReferenceException(nameof(isEmailAddressTaken));
+    }
+
+    /// <summary>
     /// Sign Up Async.
     /// </summary>
     /// <param name="request">The <see cref="SignUpRequest{TUser}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The instance of <typeparamref name="TUser"/>.</returns>
-    public virtual Task<TUser> SignUpAsync(SignUpRequest<TUser, TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual async Task<TUser> SignUpAsync(SignUpRequest<TUser, TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        return this.InvokeAsync<SignUpRequest<TUser, TIdentity>, TUser>(request, cancellationToken);
+        var user = await this.InvokeAsync<SignUpRequest<TUser, TIdentity>, TUser>(request, cancellationToken);
+
+        return user ?? throw new NullReferenceException(nameof(user));
     }
 
     /// <summary>
@@ -58,12 +113,14 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     /// <param name="request">The <see cref="BaseSignUpExternalRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The instance of <typeparamref name="TUser"/>.</returns>
-    public virtual Task<TUser> SignUpExternalAsync<TSignUp>(TSignUp request, CancellationToken cancellationToken = default)
+    public virtual async Task<TUser> SignUpExternalAsync<TSignUp>(TSignUp request, CancellationToken cancellationToken = default)
         where TSignUp : BaseSignUpExternalRequest
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        return this.InvokeAsync<TSignUp, TUser>(request, cancellationToken);
+        var user = await this.InvokeAsync<TSignUp, TUser>(request, cancellationToken);
+
+        return user ?? throw new NullReferenceException(nameof(user));
     }
 
     #endregion
@@ -102,21 +159,6 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     }
 
     /// <summary>
-    /// Reset Password Async.
-    /// </summary>
-    /// <param name="request">The <see cref="ResetPasswordRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
-    public virtual Task ResetPasswordAsync(ResetPasswordRequest<TIdentity> request, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
-
-        return this.InvokeAsync(request, cancellationToken);
-    }
-
-    /// <summary>
     /// Change Password Async.
     /// </summary>
     /// <param name="request">The <see cref="ChangePasswordRequest{TIdentity}"/>.</param>
@@ -132,33 +174,52 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     }
 
     /// <summary>
-    /// Is Email Address Taken Async.
+    /// Get Reset Password Token Async.
     /// </summary>
-    /// <param name="request">The <see cref="IsEmailAddressTakenRequest"/>.</param>
+    /// <param name="request">The <see cref="GenerateResetPasswordTokenRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="IsEmailAddressTaken"/>.</returns>
-    public virtual Task<IsEmailAddressTaken> IsEmailAddressTakenAsync(IsEmailAddressTakenRequest request, CancellationToken cancellationToken = default)
+    /// <returns>Void.</returns>
+    public virtual async Task<ResetPasswordToken<TIdentity>> GetResetPasswordTokenAsync(GenerateResetPasswordTokenRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<IsEmailAddressTakenRequest, IsEmailAddressTaken>(request, cancellationToken);
+        var resetPasswordToken = await this.InvokeAsync<GenerateResetPasswordTokenRequest, ResetPasswordToken<TIdentity>>(request, cancellationToken);
+
+        return resetPasswordToken ?? throw new NullReferenceException(nameof(resetPasswordToken));
     }
 
     /// <summary>
-    /// Is Phone Number Taken Async.
+    /// Reset Password Async.
     /// </summary>
-    /// <param name="request">The <see cref="IsPhoneNumberTakenRequest"/>.</param>
+    /// <param name="request">The <see cref="ResetPasswordRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="IsPhoneNumberTaken"/>.</returns>
-    public virtual Task<IsPhoneNumberTaken> IsPhoneNumberTakenAsync(IsPhoneNumberTakenRequest request, CancellationToken cancellationToken = default)
+    /// <returns>Void.</returns>
+    public virtual Task ResetPasswordAsync(ResetPasswordRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<IsPhoneNumberTakenRequest, IsPhoneNumberTaken>(request, cancellationToken);
+        return this.InvokeAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Get Change Email Token Async.
+    /// </summary>
+    /// <param name="request">The <see cref="GenerateChangeEmailTokenRequest"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="ChangeEmailToken{TIdentity}"/>.</returns>
+    public virtual async Task<ChangeEmailToken<TIdentity>> GetChangeEmailTokenAsync(GenerateChangeEmailTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        var changeEmailToken = await this.InvokeAsync<GenerateChangeEmailTokenRequest<TIdentity>, ChangeEmailToken<TIdentity>>(request, cancellationToken);
+
+        return changeEmailToken ?? throw new NullReferenceException(nameof(changeEmailToken));
     }
 
     /// <summary>
@@ -177,6 +238,23 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     }
 
     /// <summary>
+    /// Get Confirm Email Token Async.
+    /// </summary>
+    /// <param name="request">The <see cref="GenerateConfirmEmailTokenRequest"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="ConfirmEmailToken{TIdentity}"/>.</returns>
+    public virtual async Task<ConfirmEmailToken<TIdentity>> GetConfirmEmailTokenAsync(GenerateConfirmEmailTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        var confirmEmailToken = await this.InvokeAsync<GenerateConfirmEmailTokenRequest<TIdentity>, ConfirmEmailToken<TIdentity>>(request, cancellationToken);
+
+        return confirmEmailToken ?? throw new NullReferenceException(nameof(confirmEmailToken));
+    }
+
+    /// <summary>
     /// Confirm Email Async.
     /// </summary>
     /// <param name="request">The <see cref="ConfirmEmailRequest{TIdentity}"/>.</param>
@@ -192,33 +270,20 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     }
 
     /// <summary>
-    /// Get Change Email Token Async.
+    /// Get Change Phone Token Async.
     /// </summary>
-    /// <param name="request">The <see cref="GenerateChangeEmailTokenRequest"/>.</param>
+    /// <param name="request">The <see cref="GenerateChangePhoneTokenRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ChangeEmailToken{TIdentity}"/>.</returns>
-    public virtual Task<ChangeEmailToken<TIdentity>> GetChangeEmailTokenAsync(GenerateChangeEmailTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    /// <returns>Void.</returns>
+    public virtual async Task<ChangePhoneNumberToken<TIdentity>> GetChangePhoneTokenAsync(GenerateChangePhoneTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<GenerateChangeEmailTokenRequest<TIdentity>, ChangeEmailToken<TIdentity>>(request, cancellationToken);
-    }
+        var changePhoneNumberToken = await this.InvokeAsync<GenerateChangePhoneTokenRequest<TIdentity>, ChangePhoneNumberToken<TIdentity>>(request, cancellationToken);
 
-    /// <summary>
-    /// Get Confirm Email Token Async.
-    /// </summary>
-    /// <param name="request">The <see cref="GenerateConfirmEmailTokenRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ConfirmEmailToken{TIdentity}"/>.</returns>
-    public virtual Task<ConfirmEmailToken<TIdentity>> GetConfirmEmailTokenAsync(GenerateConfirmEmailTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
-
-        return this.InvokeAsync<GenerateConfirmEmailTokenRequest<TIdentity>, ConfirmEmailToken<TIdentity>>(request, cancellationToken);
+        return changePhoneNumberToken ?? throw new NullReferenceException(nameof(changePhoneNumberToken));
     }
 
     /// <summary>
@@ -237,6 +302,23 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     }
 
     /// <summary>
+    /// Get Confirm Phone Token Async.
+    /// </summary>
+    /// <param name="request">The <see cref="GenerateConfirmPhoneTokenRequest{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="ConfirmPhoneNumberToken{TIdentity}"/>.</returns>
+    public virtual async Task<ConfirmPhoneNumberToken<TIdentity>> GetConfirmPhoneTokenAsync(GenerateConfirmPhoneTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        var confirmPhoneNumberToken = await this.InvokeAsync<GenerateConfirmPhoneTokenRequest<TIdentity>, ConfirmPhoneNumberToken<TIdentity>>(request, cancellationToken);
+
+        return confirmPhoneNumberToken ?? throw new NullReferenceException(nameof(confirmPhoneNumberToken));
+    }
+
+    /// <summary>
     /// Confirm Phone Async.
     /// </summary>
     /// <param name="request">The <see cref="ConfirmPhoneRequest"/>.</param>
@@ -252,78 +334,20 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     }
 
     /// <summary>
-    /// Get Change Phone Token Async.
-    /// </summary>
-    /// <param name="request">The <see cref="GenerateChangePhoneTokenRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
-    public virtual Task<ChangePhoneNumberToken<TIdentity>> GetChangePhoneTokenAsync(GenerateChangePhoneTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
-
-        return this.InvokeAsync<GenerateChangePhoneTokenRequest<TIdentity>, ChangePhoneNumberToken<TIdentity>>(request, cancellationToken);
-    }
-
-    /// <summary>
-    /// Get Confirm Phone Token Async.
-    /// </summary>
-    /// <param name="request">The <see cref="GenerateConfirmPhoneTokenRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ConfirmPhoneNumberToken{TIdentity}"/>.</returns>
-    public virtual Task<ConfirmPhoneNumberToken<TIdentity>> GetConfirmPhoneTokenAsync(GenerateConfirmPhoneTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
-
-        return this.InvokeAsync<GenerateConfirmPhoneTokenRequest<TIdentity>, ConfirmPhoneNumberToken<TIdentity>>(request, cancellationToken);
-    }
-
-    /// <summary>
-    /// Get Reset Password Token Async.
-    /// </summary>
-    /// <param name="request">The <see cref="GenerateResetPasswordTokenRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
-    public virtual Task<ResetPasswordToken<TIdentity>> GetResetPasswordTokenAsync(GenerateResetPasswordTokenRequest request, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
-
-        return this.InvokeAsync<GenerateResetPasswordTokenRequest, ResetPasswordToken<TIdentity>>(request, cancellationToken);
-    }
-
-    /// <summary>
-    /// Get Password Options Async.
-    /// </summary>
-    /// <param name="request">The <see cref="GetPasswordOptionsRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
-    public virtual Task<PasswordOptions> GetPasswordOptionsAsync(GetPasswordOptionsRequest request, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
-
-        return this.InvokeAsync<GetPasswordOptionsRequest, PasswordOptions>(request, cancellationToken);
-    }
-
-    /// <summary>
     /// Get Custom Purpose Token Async.
     /// </summary>
     /// <param name="request">The <see cref="GenerateChangeEmailTokenRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="ChangeEmailToken{TIdentity}"/>.</returns>
-    public virtual Task<ConfirmCustomPurposeToken<TIdentity>> GetCustomPurposeTokenAsync(GenerateCustomPurposeTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual async Task<ConfirmCustomPurposeToken<TIdentity>> GetCustomPurposeTokenAsync(GenerateCustomPurposeTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<GenerateCustomPurposeTokenRequest<TIdentity>, ConfirmCustomPurposeToken<TIdentity>>(request, cancellationToken);
+        var customPurposeToken = await this.InvokeAsync<GenerateCustomPurposeTokenRequest<TIdentity>, ConfirmCustomPurposeToken<TIdentity>>(request, cancellationToken);
+
+        return customPurposeToken ?? throw new NullReferenceException(nameof(customPurposeToken));
     }
 
     /// <summary>
@@ -382,7 +406,7 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     /// <param name="request">The <see cref="GetExternalLoginsRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The collection of <see cref="ExternalLogin"/>.</returns>
-    public virtual Task<IEnumerable<ExternalLogin>> GetExternalLoginsAsync(GetExternalLoginsRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<ExternalLogin>?> GetExternalLoginsAsync(GetExternalLoginsRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -397,7 +421,7 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     /// <param name="request">The <see cref="BaseAddExternalLoginRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="ExternalLogin"/>.</returns>
-    public virtual Task<ExternalLogin> AddExternalLoginAsync<TLogin>(TLogin request, CancellationToken cancellationToken = default)
+    public virtual Task<ExternalLogin?> AddExternalLoginAsync<TLogin>(TLogin request, CancellationToken cancellationToken = default)
         where TLogin : BaseAddExternalLoginRequest
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -433,13 +457,13 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     /// <param name="request">The <see cref="GetRefreshTokensRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The refresh tokens.</returns>
-    public virtual Task<IEnumerable<RefreshToken>> GetUserRefreshTokensAsync(GetRefreshTokensRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<RefreshToken>> GetUserRefreshTokensAsync(GetRefreshTokensRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<GetRefreshTokensRequest<TIdentity>, IEnumerable<RefreshToken>>(request, cancellationToken);
+        return await this.InvokeAsync<GetRefreshTokensRequest<TIdentity>, IEnumerable<RefreshToken>>(request, cancellationToken) ?? [];
     }
 
     #endregion
@@ -453,13 +477,13 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     /// <param name="request">The <see cref="GetApiKeysRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The collection of <see cref="IdentityApiKey{TIdentity}"/>.</returns>
-    public virtual Task<IEnumerable<IdentityApiKey<TIdentity>>> GetApiKeysAsync(GetApiKeysRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<IdentityApiKey<TIdentity>>> GetApiKeysAsync(GetApiKeysRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<GetApiKeysRequest<TIdentity>, IEnumerable<IdentityApiKey<TIdentity>>>(request, cancellationToken);
+        return await this.InvokeAsync<GetApiKeysRequest<TIdentity>, IEnumerable<IdentityApiKey<TIdentity>>>(request, cancellationToken) ?? [];
     }
 
     /// <summary>
@@ -468,13 +492,15 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     /// <param name="request">The <see cref="CreateApiKeyRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="ChangeEmailToken{TIdentity}"/>.</returns>
-    public virtual Task<IdentityApiKeyCreated<TIdentity>> CreateApiKeysAsync(CreateApiKeyRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityApiKeyCreated<TIdentity>> CreateApiKeysAsync(CreateApiKeyRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<CreateApiKeyRequest<TIdentity>, IdentityApiKeyCreated<TIdentity>>(request, cancellationToken);
+        var apiKey = await this.InvokeAsync<CreateApiKeyRequest<TIdentity>, IdentityApiKeyCreated<TIdentity>>(request, cancellationToken);
+
+        return apiKey ?? throw new NullReferenceException(nameof(apiKey));
     }
 
     /// <summary>
@@ -483,7 +509,7 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     /// <param name="request">The <see cref="EditApiKeyRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
-    public virtual Task<IdentityApiKey<TIdentity>> EditApiKeysAsync(EditApiKeyRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual Task<IdentityApiKey<TIdentity>?> EditApiKeysAsync(EditApiKeyRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -498,7 +524,7 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     /// <param name="request">The <see cref="RevokeApiKeyRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
-    public virtual Task<IdentityApiKey<TIdentity>> RevokeApiKeysAsync(RevokeApiKeyRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual Task<IdentityApiKey<TIdentity>?> RevokeApiKeysAsync(RevokeApiKeyRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -518,13 +544,13 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     /// <param name="request">The <see cref="GetRolesRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The roles.</returns>
-    public virtual Task<IEnumerable<IdentityRole<TIdentity>>> GetRolesAsync(GetRolesRequest request, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<IdentityRole<TIdentity>>> GetRolesAsync(GetRolesRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<GetRolesRequest, IEnumerable<IdentityRole<TIdentity>>>(request, cancellationToken);
+        return await this.InvokeAsync<GetRolesRequest, IEnumerable<IdentityRole<TIdentity>>>(request, cancellationToken) ?? [];
     }
 
     /// <summary>
@@ -533,13 +559,15 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     /// <param name="request">The <see cref="CreateRoleRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The role.</returns>
-    public virtual Task<IdentityRole<TIdentity>> CreateRoleAsync(CreateRoleRequest request, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityRole<TIdentity>> CreateRoleAsync(CreateRoleRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<CreateRoleRequest, IdentityRole<TIdentity>>(request, cancellationToken);
+        var identityRole = await this.InvokeAsync<CreateRoleRequest, IdentityRole<TIdentity>>(request, cancellationToken);
+
+        return identityRole ?? throw new NullReferenceException(nameof(identityRole));
     }
 
     /// <summary>
@@ -563,13 +591,13 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     /// <param name="request">The <see cref="GetUserRolesRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The roles.</returns>
-    public virtual Task<IEnumerable<string>> GetUserRolesAsync(GetUserRolesRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<string>> GetUserRolesAsync(GetUserRolesRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<GetUserRolesRequest<TIdentity>, IEnumerable<string>>(request, cancellationToken);
+        return await this.InvokeAsync<GetUserRolesRequest<TIdentity>, IEnumerable<string>>(request, cancellationToken) ?? [];
     }
 
     /// <summary>
@@ -613,13 +641,13 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     /// <param name="request">The <see cref="GetRoleClaimsRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The collection of <see cref="Claim"/>.</returns>
-    public virtual Task<IEnumerable<Claim>> GetRoleClaimsAsync(GetRoleClaimsRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<Claim>> GetRoleClaimsAsync(GetRoleClaimsRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<GetRoleClaimsRequest<TIdentity>, IEnumerable<Claim>>(request, cancellationToken);
+        return await this.InvokeAsync<GetRoleClaimsRequest<TIdentity>, IEnumerable<Claim>>(request, cancellationToken) ?? [];
     }
 
     /// <summary>
@@ -678,13 +706,13 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     /// <param name="request">The <see cref="GetClaimsRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The collection of <see cref="Claim"/>.</returns>
-    public virtual Task<IEnumerable<Claim>> GetUserClaimsAsync(GetClaimsRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(GetClaimsRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<GetClaimsRequest<TIdentity>, IEnumerable<Claim>>(request, cancellationToken);
+        return await this.InvokeAsync<GetClaimsRequest<TIdentity>, IEnumerable<Claim>>(request, cancellationToken) ?? [];
     }
 
     /// <summary>

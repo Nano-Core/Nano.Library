@@ -42,15 +42,15 @@ public class MicrosoftProvider : ILoggingProvider
                 {
                     x.AddFilter((category, logLevel) =>
                     {
-                        if (category?.StartsWith(@override.Namespace) ?? false)
+                        if (!(category?.StartsWith(@override.Namespace) ?? false))
                         {
-                            var filterLogLevel = @override.LogLevel
-                                .GetLogLevel();
-
-                            return logLevel >= filterLogLevel;
+                            return true;
                         }
 
-                        return true;
+                        var filterLogLevel = @override.LogLevel
+                            .GetLogLevel();
+
+                        return logLevel >= filterLogLevel;
                     });
                 }
             });

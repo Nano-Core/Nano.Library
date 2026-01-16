@@ -8,17 +8,17 @@ public class ExternalLoginOptions
     /// <summary>
     /// Google.
     /// </summary>
-    public virtual GoogleOptions Google { get; set; }
+    public virtual GoogleOptions? Google { get; set; }
 
     /// <summary>
     /// Facebook.
     /// </summary>
-    public virtual FacebookOptions Facebook { get; set; }
+    public virtual FacebookOptions? Facebook { get; set; }
 
     /// <summary>
     /// Microsoft.
     /// </summary>
-    public virtual MicrosoftOptions Microsoft { get; set; }
+    public virtual MicrosoftOptions? Microsoft { get; set; }
 
     /// <summary>
     /// 

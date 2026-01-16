@@ -21,12 +21,11 @@ public static class StreamExtensions
         ArgumentNullException.ThrowIfNull(stream);
 
         await using var memoryStream = new MemoryStream();
-        {
-            await stream
-                .CopyToAsync(memoryStream, cancellationToken);
 
-            return memoryStream
-                .ToArray();
-        }
+        await stream
+            .CopyToAsync(memoryStream, cancellationToken);
+
+        return memoryStream
+            .ToArray();
     }
 }

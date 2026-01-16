@@ -26,19 +26,13 @@ namespace Nano.App.Api.Controllers;
 /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> implementation.</typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR)]
 public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
-    where TRepository : IRepository
+    where TRepository : class, IRepository
     where TEntity : class, IEntityIdentity<TIdentity>, IEntityCreatable
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseControllerCreatable(ILogger logger, TRepository repository)
-        : this(logger, repository, null)
-    {
-    }
-
-    /// <inheritdoc />
-    protected BaseControllerCreatable(ILogger logger, TRepository repository, IEventing eventing)
+    protected BaseControllerCreatable(ILogger logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }
@@ -61,15 +55,15 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> CreateAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> CreateAsync([FromBody][Required] TEntity entity, CancellationToken cancellationToken = default)
     {
-        entity = await this.Repository
+        var entityCreated = await this.Repository
             .AddAsync(entity, cancellationToken);
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
 
-        return this.Created("create", entity);
+        return this.Created("create", entityCreated);
     }
 
     /// <summary>
@@ -92,13 +86,13 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> CreateAndGetAsync([FromBody][Required] TEntity entity, CancellationToken cancellationToken = default)
     {
-        entity = await this.Repository
+        var entityCreated = await this.Repository
             .AddAndGetAsync<TEntity, TIdentity>(entity, cancellationToken);
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
 
-        return this.Created("create/get", entity);
+        return this.Created("create/get", entityCreated);
     }
 
     /// <summary>

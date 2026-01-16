@@ -13,13 +13,7 @@ public class DefaultControllerUpdatable<TEntity, TCriteria> : DefaultControllerU
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected DefaultControllerUpdatable(ILogger logger, IRepository repository)
-        : this(logger, repository, null)
-    {
-    }
-
-    /// <inheritdoc />
-    protected DefaultControllerUpdatable(ILogger logger, IRepository repository, IEventing eventing)
+    protected DefaultControllerUpdatable(ILogger logger, IRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }
@@ -32,13 +26,7 @@ public class DefaultControllerUpdatable<TEntity, TIdentity, TCriteria> : BaseCon
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected DefaultControllerUpdatable(ILogger logger, IRepository repository)
-        : this(logger, repository, null)
-    {
-    }
-
-    /// <inheritdoc />
-    protected DefaultControllerUpdatable(ILogger logger, IRepository repository, IEventing eventing)
+    protected DefaultControllerUpdatable(ILogger logger, IRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

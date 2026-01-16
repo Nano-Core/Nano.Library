@@ -41,7 +41,7 @@ public class HttpRequestOptionsMiddleware : IMiddleware
             }
 
             headers
-                .TryAdd("Access-Control-Allow-Origin", new[] { (string)httpContext.Request.Headers["Origin"] });
+                .TryAdd("Access-Control-Allow-Origin", new[] { httpContext.Request.Headers["Origin"].ToString() });
 
             if (corsPolicy.AllowAnyHeader)
             {

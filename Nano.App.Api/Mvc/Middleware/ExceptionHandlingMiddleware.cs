@@ -62,7 +62,7 @@ public class ExceptionHandlingMiddleware : IMiddleware
             ? LogLevel.Error
             : LogLevel.Information;
 
-        Exception exception = null;
+        Exception? exception = null;
         try
         {
             await next(httpContext);
@@ -215,7 +215,7 @@ public class ExceptionHandlingMiddleware : IMiddleware
             if (success)
             {
                 queryString = queryString?
-                    .Replace(accessToken, "<<secret>>");
+                    .Replace(accessToken.ToString(), "<<secret>>");
             }
 
             var pathAndqueryString = $"{path}{queryString}";
@@ -233,7 +233,7 @@ public class ExceptionHandlingMiddleware : IMiddleware
     }
 
 
-    private static UxExceptionAttribute GetUxExceptionAttribute(HttpContext httpContext, Exception exception)
+    private static UxExceptionAttribute? GetUxExceptionAttribute(HttpContext httpContext, Exception exception)
     {
         ArgumentNullException.ThrowIfNull(httpContext);
 

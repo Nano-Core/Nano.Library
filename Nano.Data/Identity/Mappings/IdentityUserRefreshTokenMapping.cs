@@ -34,7 +34,12 @@ public class IdentityUserRefreshTokenMapping<TIdentity> : BaseEntityIdentityMapp
             .IsRequired();
 
         builder
-            .HasIndex(x => x.AppId);
+            .HasIndex(x => new
+            {
+                x.IdentityUserId,
+                x.AppId
+            })
+            .IsUnique();
 
         builder
             .Property(x => x.Value)

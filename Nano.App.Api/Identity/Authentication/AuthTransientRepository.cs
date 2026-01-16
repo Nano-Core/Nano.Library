@@ -17,7 +17,7 @@ public class AuthTransientRepository : IAuthTransientRepository
 {
     private readonly ExternalLoginOptions options;
     private readonly IAuthJwtRepository authJwtRepository;
-    private readonly IAuthExternalRepository authExternalRepository;
+    private readonly IAuthExternalRepository? authExternalRepository;
 
     /// <summary>
     /// 
@@ -25,7 +25,7 @@ public class AuthTransientRepository : IAuthTransientRepository
     /// <param name="options"></param>
     /// <param name="authJwtRepository"></param>
     /// <param name="authExternalRepository"></param>
-    public AuthTransientRepository(ExternalLoginOptions options, IAuthJwtRepository authJwtRepository, IAuthExternalRepository authExternalRepository = null)
+    public AuthTransientRepository(ExternalLoginOptions options, IAuthJwtRepository authJwtRepository, IAuthExternalRepository? authExternalRepository = null)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));
         this.authJwtRepository = authJwtRepository ?? throw new ArgumentNullException(nameof(authJwtRepository));

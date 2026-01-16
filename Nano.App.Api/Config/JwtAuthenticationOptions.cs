@@ -25,14 +25,14 @@ public class JwtAuthenticationOptions
     /// Base64 encoded.
     /// </summary>
     [Required]
-    public virtual string PublicKey { get; set; }
+    public virtual string PublicKey { get; set; } = null!;
 
     /// <summary>
     /// Private Key.
     /// Base64 encoded.
     /// </summary>
     [Required]
-    public virtual string PrivateKey { get; set; }
+    public virtual string PrivateKey { get; set; } = null!;
 
     /// <summary>
     /// Expiration In Minutes.
@@ -49,7 +49,7 @@ public class JwtAuthenticationOptions
     /// <summary>
     /// Log In Root Options.
     /// </summary>
-    public virtual LogInRootOptions RootLogin { get; set; }
+    public virtual LogInRootOptions? RootLogin { get; set; }
 
     /// <summary>
     /// External Logins.

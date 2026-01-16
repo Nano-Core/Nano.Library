@@ -56,7 +56,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 
         this.ConfigureApiInfos(options);
         this.ConfigureSecurityDefinitions(options);
-        this.ConfigureDocumentationSources(options);
+        ConfigureDocumentationSources(options);
 
         options
             .IgnoreObsoleteActions();
@@ -112,6 +112,11 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     private void ConfigureApiInfos(SwaggerGenOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
+
+        if (this.webOptions.CurrentValue.Documentation == null)
+        {
+            return;
+        }
 
         foreach (var apiVersionDescription in apiVersionDescriptionProvider.ApiVersionDescriptions)
         {
@@ -187,7 +192,47 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
                 .AddSecurityDefinition("ApiKey", apiKeySecurityScheme);
         }
     }
-    private void ConfigureDocumentationSources(SwaggerGenOptions options)
+
+    private static bool IsCSharpXmlDoc(string path)
+    {
+        try
+        {
+            using var stream = File.OpenRead(path);
+
+            using var reader = XmlReader.Create(stream, new XmlReaderSettings
+            {
+                DtdProcessing = DtdProcessing.Ignore,
+                IgnoreComments = true,
+                IgnoreWhitespace = true
+            });
+
+            reader
+                .MoveToContent();
+
+            if (!reader.IsStartElement("doc"))
+            {
+                return false;
+            }
+
+            reader
+                .ReadStartElement("doc");
+
+            while (reader.Read())
+            {
+                if (reader is { NodeType: XmlNodeType.Element, Name: "members" })
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+    private static void ConfigureDocumentationSources(SwaggerGenOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
 
@@ -228,46 +273,6 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 
             options
                 .IncludeXmlComments(file, true);
-        }
-    }
-
-    private static bool IsCSharpXmlDoc(string path)
-    {
-        try
-        {
-            using var stream = File.OpenRead(path);
-
-            using var reader = XmlReader.Create(stream, new XmlReaderSettings
-            {
-                DtdProcessing = DtdProcessing.Ignore,
-                IgnoreComments = true,
-                IgnoreWhitespace = true
-            });
-
-            reader
-                .MoveToContent();
-
-            if (!reader.IsStartElement("doc"))
-            {
-                return false;
-            }
-
-            reader
-                .ReadStartElement("doc");
-
-            while (reader.Read())
-            {
-                if (reader.NodeType == XmlNodeType.Element && reader.Name == "members")
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-        catch
-        {
-            return false;
         }
     }
 }

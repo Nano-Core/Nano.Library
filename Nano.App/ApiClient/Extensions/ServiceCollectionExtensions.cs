@@ -78,7 +78,9 @@ internal static class ServiceCollectionExtensions
                     var httpContextAccessor = serviceProvider
                         .GetRequiredService<IHttpContextAccessor>();
 
-                    return Activator.CreateInstance(type, apiOptions, httpClient, httpContextAccessor);
+                    var apiClient = Activator.CreateInstance(type, apiOptions, httpClient, httpContextAccessor);
+
+                    return apiClient ?? throw new NullReferenceException(nameof(apiClient));
                 });
 
             if (!hosts.Contains(options.Host) && options.UseHealthCheck)

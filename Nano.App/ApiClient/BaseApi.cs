@@ -150,7 +150,7 @@ public abstract class BaseApi
             return request.JwtTokenOverride;
         }
 
-        if (this.apiOptions.CurrentValue.LogIn is { Username: not null, Password: not null })
+        if (this.apiOptions.CurrentValue.LogIn is not null)
         {
             var logInRootRequest = new LogInRootRequest
             {
@@ -166,15 +166,10 @@ public abstract class BaseApi
             return this.accessToken?.Token;
         }
 
-        var jwtToken = this.httpContextAccessor?.HttpContext?
+        var jwtToken = this.httpContextAccessor.HttpContext?
             .GetJwtToken();
 
-        if (jwtToken != null)
-        {
-            return jwtToken;
-        }
-
-        return this.accessToken?.Token;
+        return jwtToken ?? this.accessToken?.Token;
     }
     private async Task GetAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestGet
@@ -182,12 +177,11 @@ public abstract class BaseApi
         ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
-        {
-            var httpResponse = await this.httpClient
-                .SendAsync(httpRequest, cancellationToken);
 
-            await this.GetResponseAsync(httpResponse, cancellationToken);
-        }
+        using var httpResponse = await this.httpClient
+            .SendAsync(httpRequest, cancellationToken);
+
+        await GetResponseAsync(httpResponse, cancellationToken);
     }
     private async Task<TResponse?> GetAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestGet
@@ -196,12 +190,11 @@ public abstract class BaseApi
         ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
-        {
-            var httpResponse = await this.httpClient
-                .SendAsync(httpRequest, cancellationToken);
 
-            return await this.GetResponseAsync<TResponse>(httpResponse, cancellationToken);
-        }
+        using var httpResponse = await this.httpClient
+            .SendAsync(httpRequest, cancellationToken);
+
+        return await GetResponseAsync<TResponse>(httpResponse, cancellationToken);
     }
     private async Task PutAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestPut
@@ -209,19 +202,18 @@ public abstract class BaseApi
         ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
-        {
-            var body = request.GetBody();
-            var content = body == null
-                ? string.Empty
-                : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
-            httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
+        var body = request.GetBody();
+        var content = body == null
+            ? string.Empty
+            : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
-            var httpResponse = await this.httpClient
-                .SendAsync(httpRequest, cancellationToken);
+        httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
-            await this.GetResponseAsync(httpResponse, cancellationToken);
-        }
+        using var httpResponse = await this.httpClient
+            .SendAsync(httpRequest, cancellationToken);
+
+        await GetResponseAsync(httpResponse, cancellationToken);
     }
     private async Task<TResponse?> PutAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestPut
@@ -230,17 +222,16 @@ public abstract class BaseApi
         ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
-        {
-            var body = request.GetBody();
-            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
-            httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
+        var body = request.GetBody();
+        var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
-            var httpResponse = await this.httpClient
-                .SendAsync(httpRequest, cancellationToken);
+        httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
-            return await this.GetResponseAsync<TResponse>(httpResponse, cancellationToken);
-        }
+        using var httpResponse = await this.httpClient
+            .SendAsync(httpRequest, cancellationToken);
+
+        return await GetResponseAsync<TResponse>(httpResponse, cancellationToken);
     }
     private async Task PostAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestPost
@@ -248,19 +239,18 @@ public abstract class BaseApi
         ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
-        {
-            var body = request.GetBody();
-            var content = body == null
-                ? string.Empty
-                : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
-            httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
+        var body = request.GetBody();
+        var content = body == null
+            ? string.Empty
+            : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
-            var httpResponse = await this.httpClient
-                .SendAsync(httpRequest, cancellationToken);
+        httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
-            await this.GetResponseAsync(httpResponse, cancellationToken);
-        }
+        using var httpResponse = await this.httpClient
+            .SendAsync(httpRequest, cancellationToken);
+
+        await GetResponseAsync(httpResponse, cancellationToken);
     }
     private async Task<TResponse?> PostAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestPost
@@ -269,19 +259,18 @@ public abstract class BaseApi
         ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
-        {
-            var body = request.GetBody();
-            var content = body == null
-                ? string.Empty
-                : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
-            httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
+        var body = request.GetBody();
+        var content = body == null
+            ? string.Empty
+            : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
-            var httpResponse = await this.httpClient
-                .SendAsync(httpRequest, cancellationToken);
+        httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
-            return await this.GetResponseAsync<TResponse>(httpResponse, cancellationToken);
-        }
+        using var httpResponse = await this.httpClient
+            .SendAsync(httpRequest, cancellationToken);
+
+        return await GetResponseAsync<TResponse>(httpResponse, cancellationToken);
     }
     private async Task PostFormAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestPostForm
@@ -289,23 +278,21 @@ public abstract class BaseApi
         ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
+
+        using var formContent = new MultipartFormDataContent();
+
+        foreach (var x in request.GetForm())
         {
-            using var formContent = new MultipartFormDataContent();
-            {
-                foreach (var x in request.GetForm())
-                {
-                    await formContent
-                        .AddFormItem(x, cancellationToken);
-                }
-
-                httpRequest.Content = formContent;
-
-                var httpResponse = await this.httpClient
-                    .SendAsync(httpRequest, cancellationToken);
-
-                await this.GetResponseAsync(httpResponse, cancellationToken);
-            }
+            await formContent
+                .AddFormItem(x, cancellationToken);
         }
+
+        httpRequest.Content = formContent;
+
+        using var httpResponse = await this.httpClient
+            .SendAsync(httpRequest, cancellationToken);
+
+        await GetResponseAsync(httpResponse, cancellationToken);
     }
     private async Task<TResponse?> PostFormAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestPostForm
@@ -314,23 +301,21 @@ public abstract class BaseApi
         ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
+
+        using var formContent = new MultipartFormDataContent();
+
+        foreach (var formItem in request.GetForm())
         {
-            using var formContent = new MultipartFormDataContent();
-            {
-                foreach (var x in request.GetForm())
-                {
-                    await formContent
-                        .AddFormItem(x, cancellationToken);
-                }
-
-                httpRequest.Content = formContent;
-
-                var httpResponse = await this.httpClient
-                    .SendAsync(httpRequest, cancellationToken);
-
-                return await this.GetResponseAsync<TResponse>(httpResponse, cancellationToken);
-            }
+            await formContent
+                .AddFormItem(formItem, cancellationToken);
         }
+
+        httpRequest.Content = formContent;
+
+        using var httpResponse = await this.httpClient
+            .SendAsync(httpRequest, cancellationToken);
+
+        return await GetResponseAsync<TResponse>(httpResponse, cancellationToken);
     }
     private async Task DeleteAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestDelete
@@ -338,17 +323,16 @@ public abstract class BaseApi
         ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
-        {
-            var body = request.GetBody();
-            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
-            httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
+        var body = request.GetBody();
+        var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
-            var httpResponse = await this.httpClient
-                .SendAsync(httpRequest, cancellationToken);
+        httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
-            await this.GetResponseAsync(httpResponse, cancellationToken);
-        }
+        using var httpResponse = await this.httpClient
+            .SendAsync(httpRequest, cancellationToken);
+
+        await GetResponseAsync(httpResponse, cancellationToken);
     }
     private async Task<TResponse?> DeleteAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequestDelete
@@ -357,17 +341,16 @@ public abstract class BaseApi
         ArgumentNullException.ThrowIfNull(request);
 
         using var httpRequest = await this.GetHttpRequestMessage(request, cancellationToken);
-        {
-            var body = request.GetBody();
-            var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
-            httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
+        var body = request.GetBody();
+        var content = body == null ? string.Empty : JsonConvert.SerializeObject(body, SerializerSettings.GetDefault());
 
-            var httpResponse = await this.httpClient
-                .SendAsync(httpRequest, cancellationToken);
+        httpRequest.Content = new StringContent(content, Encoding.UTF8, HttpContentType.JSON);
 
-            return await this.GetResponseAsync<TResponse>(httpResponse, cancellationToken);
-        }
+        using var httpResponse = await this.httpClient
+            .SendAsync(httpRequest, cancellationToken);
+
+        return await GetResponseAsync<TResponse>(httpResponse, cancellationToken);
     }
 
     private Uri GetUri<TRequest>(TRequest request)
@@ -430,7 +413,33 @@ public abstract class BaseApi
 
         return httpRequest;
     }
-    private async Task GetResponseAsync(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
+
+    private static string GetInferredController<TResponse>()
+        where TResponse : class
+    {
+        var type = typeof(TResponse);
+
+        return type.IsGenericType
+            ? $"{type.GenericTypeArguments[0].Name}s"
+            : $"{type.Name.ToLower()}s";
+    }
+    private static HttpMethod GetMethod<TRequest>(TRequest request)
+        where TRequest : BaseRequest
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        return request switch
+        {
+            BaseRequestGet => HttpMethod.Get,
+            BaseRequestPut => HttpMethod.Put,
+            BaseRequestPost => HttpMethod.Post,
+            BaseRequestPostForm => HttpMethod.Post,
+            BaseRequestDelete => HttpMethod.Delete,
+            BaseRequestOptions => HttpMethod.Options,
+            _ => throw new NotSupportedException()
+        };
+    }
+    private static async Task GetResponseAsync(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
 
@@ -473,7 +482,7 @@ public abstract class BaseApi
         httpResponse
             .EnsureSuccessStatusCode();
     }
-    private async Task<TResponse?> GetResponseAsync<TResponse>(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
+    private static async Task<TResponse?> GetResponseAsync<TResponse>(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
         where TResponse : class
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
@@ -522,64 +531,35 @@ public abstract class BaseApi
             var stream = await httpResponse.Content
                 .ReadAsStreamAsync(cancellationToken);
 
-            if (typeof(TResponse) == typeof(NamedStream))
+            if (typeof(TResponse) != typeof(NamedStream))
             {
-                var name = httpResponse.Content.Headers.ContentDisposition?.FileName;
-
-                if (name == null)
-                {
-                    throw new NullReferenceException(nameof(name));
-                }
-
-                var namedStream = new NamedStream
-                {
-                    Name = name,
-                    Stream = stream
-                };
-
-                return namedStream as TResponse;
+                return stream as TResponse;
             }
 
-            return stream as TResponse;
+            var name = httpResponse.Content.Headers.ContentDisposition?.FileName;
+
+            if (name == null)
+            {
+                throw new NullReferenceException(nameof(name));
+            }
+
+            var namedStream = new NamedStream
+            {
+                Name = name,
+                Stream = stream
+            };
+
+            return namedStream as TResponse;
         }
 
         var content = await httpResponse.Content
             .ReadAsStringAsync(cancellationToken);
 
-        if (string.IsNullOrEmpty(content))
-        {
-            return null;
-        }
-
-        return JsonConvert.DeserializeObject<TResponse>(content, SerializerSettings.GetDefault());
+        return string.IsNullOrEmpty(content)
+            ? null
+            : JsonConvert.DeserializeObject<TResponse>(content, SerializerSettings.GetDefault());
     }
-
-    private static string GetInferredController<TResponse>()
-        where TResponse : class
-    {
-        var type = typeof(TResponse);
-
-        return type.IsGenericType
-            ? $"{type.GenericTypeArguments[0].Name}s"
-            : $"{type.Name.ToLower()}s";
-    }
-    private static HttpMethod GetMethod<TRequest>(TRequest request)
-        where TRequest : BaseRequest
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        return request switch
-        {
-            BaseRequestGet => HttpMethod.Get,
-            BaseRequestPut => HttpMethod.Put,
-            BaseRequestPost => HttpMethod.Post,
-            BaseRequestPostForm => HttpMethod.Post,
-            BaseRequestDelete => HttpMethod.Delete,
-            BaseRequestOptions => HttpMethod.Options,
-            _ => throw new NotSupportedException()
-        };
-    }
-    private static Exception GetBadRequestException(string content)
+    private static BadRequestException GetBadRequestException(string content)
     {
         ArgumentNullException.ThrowIfNull(content);
 
@@ -612,7 +592,7 @@ public abstract class BaseApi
             return new BadRequestException(exceptionMessage);
         }
     }
-    private static Exception GetInternalServerErrorException(string content)
+    private static InvalidOperationException GetInternalServerErrorException(string content)
     {
         ArgumentNullException.ThrowIfNull(content);
 
@@ -833,12 +813,14 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="request">The <see cref="CreateRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The created entity.</returns>
-    public virtual Task<TEntity?> CreateAsync<TEntity>(CreateRequest request, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity> CreateAsync<TEntity>(CreateRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        return this.InvokeAsync<CreateRequest, TEntity>(request, cancellationToken);
+        var entityCreated = await this.InvokeAsync<CreateRequest, TEntity>(request, cancellationToken);
+
+        return entityCreated ?? throw new NullReferenceException(nameof(entityCreated));
     }
 
     /// <summary>
@@ -849,12 +831,14 @@ public abstract class BaseApi<TIdentity> : BaseApi
     /// <param name="request">The <see cref="CreateAndGetRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The created entity.</returns>
-    public virtual Task<TEntity?> CreateAndGetAsync<TEntity>(CreateAndGetRequest request, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity?> CreateAndGetAsync<TEntity>(CreateAndGetRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable, IEntityIdentity<TIdentity>
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        return this.InvokeAsync<CreateAndGetRequest, TEntity>(request, cancellationToken);
+        var entityCreated = await this.InvokeAsync<CreateAndGetRequest, TEntity>(request, cancellationToken);
+
+        return entityCreated ?? throw new NullReferenceException(nameof(entityCreated));
     }
 
     /// <summary>

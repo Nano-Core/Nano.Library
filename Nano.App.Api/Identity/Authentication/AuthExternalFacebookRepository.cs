@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Nano.App.Api.Config;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Identity.Exceptions;
 using Newtonsoft.Json;
 
 namespace Nano.App.Api.Identity.Authentication;
@@ -60,12 +61,12 @@ public class AuthExternalFacebookRepository : IAuthExternalFacebookRepository
 
                 if (!(bool)validation.data.is_valid)
                 {
-                    throw new InvalidOperationException("!validation.data.is_valid");
+                    throw new UnauthorizedException("!validation.data.is_valid");
                 }
 
                 if (validation.data.app_id != options.AppId)
                 {
-                    throw new InvalidOperationException("validation.data.app_id != externalLoginOption.Id");
+                    throw new UnauthorizedException("validation.data.app_id != externalLoginOption.Id");
                 }
 
                 using var userResponse = await httpClient
@@ -85,7 +86,7 @@ public class AuthExternalFacebookRepository : IAuthExternalFacebookRepository
                     Token = implicitLogin.AccessToken
                 };
 
-                return externalLoginData;
+                return externalLoginData ?? throw new UnauthorizedException();
             }
 
             default:
@@ -106,7 +107,7 @@ public class AuthExternalFacebookRepository : IAuthExternalFacebookRepository
     /// <inheritdoc />
     public void Dispose()
     {
-        this.httpClient?
+        this.httpClient
             .Dispose();
     }
 }

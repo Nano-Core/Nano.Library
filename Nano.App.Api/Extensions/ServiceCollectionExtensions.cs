@@ -26,6 +26,8 @@ using Vivet.AspNetCore.RequestVirusScan.Extensions;
 
 namespace Nano.App.Api.Extensions;
 
+// BUG: Make options classes for UseAudit (just emtpty) and Also check ApiOptions (e.g. Session, Cookies)
+
 internal static class ServiceCollectionExtensions
 {
     internal static IServiceCollection AddNanoExceptionHandling(this IServiceCollection services, ApiOptions apiOptions)
@@ -117,7 +119,7 @@ internal static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(apiOptions);
 
-        if (apiOptions.HttpPolicyHeaders.Cors == null)
+        if (apiOptions.HttpPolicyHeaders.Hsts == null)
         {
             return services;
         }
@@ -220,7 +222,8 @@ internal static class ServiceCollectionExtensions
             {
                 x.ReportApiVersions = true;
 
-                if (apiOptions.Documentation.UseDefaultVersion)
+                // BUG: Why defined here and below.
+                if (apiOptions.Documentation?.UseDefaultVersion ?? false)
                 {
                     x.DefaultApiVersion = apiVersion;
                     x.AssumeDefaultVersionWhenUnspecified = true;
@@ -231,12 +234,13 @@ internal static class ServiceCollectionExtensions
                     new QueryStringApiVersionReader("api-version"),
                     new HeaderApiVersionReader("Api-Version"));
             })
+            // BUG: Maybe this should be moved to Documentation.
             .AddVersionedApiExplorer(x =>
             {
                 x.GroupNameFormat = "'v'VV";
                 x.SubstituteApiVersionInUrl = true;
 
-                if (apiOptions.Documentation.UseDefaultVersion)
+                if (apiOptions.Documentation?.UseDefaultVersion ?? false)
                 {
                     x.DefaultApiVersion = apiVersion;
                     x.AssumeDefaultVersionWhenUnspecified = true;
@@ -445,7 +449,7 @@ internal static class ServiceCollectionExtensions
 
                 foreach (var webHook in apiOptions.HealthCheck.WebHooks)
                 {
-                    x.AddWebhookNotification(webHook.Name, webHook.Uri, webHook.Payload);
+                    x.AddWebhookNotification(webHook.Name, webHook.Uri, webHook.Payload ?? "");
                 }
             })
             .AddInMemoryStorage();

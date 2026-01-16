@@ -197,9 +197,14 @@ internal static class HttpResponseExtensions
         return httpResponse;
     }
 
-    internal static HttpResponse AddPermissionsPolicyHeader(this HttpResponse httpResponse, CspOptions.CspDirectivePermissionsPolicy cspDirectivePermissionsPolicy)
+    internal static HttpResponse AddPermissionsPolicyHeader(this HttpResponse httpResponse, CspOptions.CspDirectivePermissionsPolicy? cspDirectivePermissionsPolicy = null)
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
+
+        if (cspDirectivePermissionsPolicy == null)
+        {
+            return httpResponse;
+        }
 
         var permissionPolicyValues = string.Empty;
 
@@ -245,7 +250,7 @@ internal static class HttpResponseExtensions
     }
 
 
-    private static string UseCspPermissionsPolicyDirective<T>(string name, T cspDirective = null)
+    private static string UseCspPermissionsPolicyDirective<T>(string name, T? cspDirective = null)
         where T : CspOptions.CspDirective
     {
         ArgumentNullException.ThrowIfNull(name);

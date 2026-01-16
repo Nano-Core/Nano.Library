@@ -93,16 +93,18 @@ public class DbMigrationTask<TIdentity> : IDbMigrationTask
 
         foreach (var role in roles)
         {
-            var exists = await roleManager
+            var exists = await this.roleManager
                 .RoleExistsAsync(role);
 
-            if (!exists)
+            if (exists)
             {
-                var identityRole = new IdentityRole<TIdentity>(role);
-
-                await roleManager
-                    .CreateAsync(identityRole);
+                continue;
             }
+
+            var identityRole = new IdentityRole<TIdentity>(role);
+
+            await this.roleManager
+                .CreateAsync(identityRole);
         }
 
         await dbContext

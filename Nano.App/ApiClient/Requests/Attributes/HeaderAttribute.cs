@@ -11,10 +11,10 @@ public class HeaderAttribute : Attribute
     /// <summary>
     /// Name.
     /// </summary>
-    public virtual string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Value Prefix.
     /// </summary>
-    public virtual string ValuePrefix { get; set; }
+    public virtual string? ValuePrefix { get; set; }
 }

@@ -15,7 +15,7 @@ namespace Nano.App.Api.Identity.Authentication.Extensions;
 /// </summary>
 public static class AuthenticationBuilderExtensions
 {
-    internal static AuthenticationBuilder AddJwtAuthentication(this AuthenticationBuilder builder, JwtAuthenticationOptions options)
+    internal static AuthenticationBuilder AddJwtAuthentication(this AuthenticationBuilder builder, JwtAuthenticationOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -54,13 +54,15 @@ public static class AuthenticationBuilderExtensions
                 {
                     OnAuthenticationFailed = context =>
                     {
-                        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                        if (context.Exception.GetType() != typeof(SecurityTokenExpiredException))
                         {
-                            const string KEY = "Token-Expired";
-
-                            context.Response.Headers
-                                .TryAdd(KEY, true.ToString());
+                            return Task.CompletedTask;
                         }
+
+                        const string KEY = "Token-Expired";
+
+                        context.Response.Headers
+                            .TryAdd(KEY, true.ToString());
 
                         return Task.CompletedTask;
                     }
@@ -74,7 +76,7 @@ public static class AuthenticationBuilderExtensions
     }
 
 
-    private static AuthenticationBuilder AddExternalLoginGoogle(this AuthenticationBuilder builder, GoogleOptions options)
+    private static AuthenticationBuilder AddExternalLoginGoogle(this AuthenticationBuilder builder, GoogleOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -98,7 +100,7 @@ public static class AuthenticationBuilderExtensions
 
         return builder;
     }
-    private static AuthenticationBuilder AddExternalLoginFacebook(this AuthenticationBuilder builder, FacebookOptions options)
+    private static AuthenticationBuilder AddExternalLoginFacebook(this AuthenticationBuilder builder, FacebookOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -122,7 +124,7 @@ public static class AuthenticationBuilderExtensions
 
         return builder;
     }
-    private static AuthenticationBuilder AddExternalLoginMicrosoft(this AuthenticationBuilder builder, MicrosoftOptions options)
+    private static AuthenticationBuilder AddExternalLoginMicrosoft(this AuthenticationBuilder builder, MicrosoftOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 

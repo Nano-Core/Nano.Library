@@ -29,12 +29,9 @@ public class InternationalPhoneAttribute : ValidationAttribute
             var parsedPhone = phoneNumberUtil
                 .Parse(phone, null);
 
-            if (phoneNumberUtil.IsValidNumber(parsedPhone))
-            {
-                return ValidationResult.Success;
-            }
-
-            return new ValidationResult("Invalid international phone number.");
+            return phoneNumberUtil.IsValidNumber(parsedPhone)
+                ? ValidationResult.Success
+                : new ValidationResult("Invalid international phone number.");
         }
         catch (NumberParseException)
         {

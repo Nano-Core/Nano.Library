@@ -56,13 +56,15 @@ public class Log4NetProvider : ILoggingProvider
 
         foreach (var over in options.LogLevelOverrides)
         {
-            if (hierarchy.GetLogger(over.Namespace) is Logger logger)
+            if (hierarchy.GetLogger(over.Namespace) is not Logger logger)
             {
-                logger.Level = over.LogLevel.GetLogLevel();
-
-                logger
-                    .AddAppender(consoleAppender);
+                continue;
             }
+
+            logger.Level = over.LogLevel.GetLogLevel();
+
+            logger
+                .AddAppender(consoleAppender);
         }
 
         hierarchy.Configured = true;

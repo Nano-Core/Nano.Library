@@ -28,10 +28,10 @@ namespace Nano.App.Api.Controllers;
 public abstract class BaseAuthController<TIdentity> : BaseController
     where TIdentity : IEquatable<TIdentity>
 {
-    private readonly IIdentityAuthRepository<TIdentity> identityAuthRepository;
-    private readonly IAuthTransientRepository authTransientRepository;
-    private readonly IAuthRootRepository authRootRepository;
-    private readonly IAuthExternalRepository authExternalRepository;
+    private readonly IIdentityAuthRepository<TIdentity>? identityAuthRepository;
+    private readonly IAuthTransientRepository? authTransientRepository;
+    private readonly IAuthRootRepository? authRootRepository;
+    private readonly IAuthExternalRepository? authExternalRepository;
 
     /// <summary>
     /// Constructor.
@@ -41,7 +41,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <param name="authTransientRepository"></param>
     /// <param name="authRootRepository"></param>
     /// <param name="authExternalRepository"></param>
-    protected BaseAuthController(ILogger logger, IIdentityAuthRepository<TIdentity> identityAuthRepository = null, IAuthTransientRepository authTransientRepository = null, IAuthRootRepository authRootRepository = null, IAuthExternalRepository authExternalRepository = null)
+    protected BaseAuthController(ILogger logger, IIdentityAuthRepository<TIdentity>? identityAuthRepository = null, IAuthTransientRepository? authTransientRepository = null, IAuthRootRepository? authRootRepository = null, IAuthExternalRepository? authExternalRepository = null)
         : base(logger)
     {
         this.identityAuthRepository = identityAuthRepository;
@@ -85,11 +85,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
         var accessToken = await this.identityAuthRepository
             .LogInAsync(logIn, cancellationToken);
 
-        if (accessToken == null)
-        {
-            return this.Unauthorized();
-        }
-
         return this.Ok(accessToken);
     }
 
@@ -125,11 +120,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
         var accessToken = await this.authRootRepository
             .LogInRootAsync(logInRoot);
 
-        if (accessToken == null)
-        {
-            return this.Unauthorized();
-        }
-
         return this.Ok(accessToken);
     }
 
@@ -163,11 +153,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         var accessToken = await this.identityAuthRepository
             .LogInExternalAsync(logInExternalDirect, cancellationToken);
-
-        if (accessToken == null)
-        {
-            return this.Unauthorized();
-        }
 
         return this.Ok(accessToken);
     }
@@ -203,11 +188,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
         var accessToken = await this.authTransientRepository
             .LogInExternalAsync(logInExternalDirect, cancellationToken);
 
-        if (accessToken == null)
-        {
-            return this.Unauthorized();
-        }
-
         return this.Ok(accessToken);
     }
 
@@ -241,11 +221,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         var accessToken = await this.identityAuthRepository
             .LogInExternalAsync(logInExternal, cancellationToken);
-
-        if (accessToken == null)
-        {
-            return this.Unauthorized();
-        }
 
         return this.Ok(accessToken);
     }
@@ -281,11 +256,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
         var accessToken = await this.authTransientRepository
             .LogInExternalAsync(logInExternal, cancellationToken);
 
-        if (accessToken == null)
-        {
-            return this.Unauthorized();
-        }
-
         return this.Ok(accessToken);
     }
 
@@ -319,11 +289,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         var accessToken = await this.identityAuthRepository
             .LogInExternalAsync(logInExternal, cancellationToken);
-
-        if (accessToken == null)
-        {
-            return this.Unauthorized();
-        }
 
         return this.Ok(accessToken);
     }
@@ -359,11 +324,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
         var accessToken = await this.authTransientRepository
             .LogInExternalAsync(logInExternal, cancellationToken);
 
-        if (accessToken == null)
-        {
-            return this.Unauthorized();
-        }
-
         return this.Ok(accessToken);
     }
 
@@ -397,11 +357,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         var accessToken = await this.identityAuthRepository
             .LogInExternalAsync(logInExternal, cancellationToken);
-
-        if (accessToken == null)
-        {
-            return this.Unauthorized();
-        }
 
         return this.Ok(accessToken);
     }
@@ -437,11 +392,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
         var accessToken = await this.authTransientRepository
             .LogInExternalAsync(logInExternal, cancellationToken);
 
-        if (accessToken == null)
-        {
-            return this.Unauthorized();
-        }
-
         return this.Ok(accessToken);
     }
 
@@ -475,11 +425,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         var accessToken = await this.identityAuthRepository
             .LogInRefreshAsync(logInRefresh, cancellationToken);
-
-        if (accessToken == null)
-        {
-            return this.Unauthorized();
-        }
 
         return this.Ok(accessToken);
     }
@@ -545,12 +490,15 @@ public abstract class BaseAuthController<TIdentity> : BaseController
             throw new NullReferenceException($"{nameof(this.identityAuthRepository)}, {nameof(this.authTransientRepository)}");
         }
 
-        IEnumerable<ExternalLoginProvider> logInProviders;
+        IEnumerable<ExternalLoginProvider>? logInProviders = null;
 
         if (this.identityAuthRepository == null)
         {
-            logInProviders = await this.authTransientRepository
-                .GetExternalProviderSchemesAsync(cancellationToken);
+            if (this.authTransientRepository != null)
+            {
+                logInProviders = await this.authTransientRepository
+                    .GetExternalProviderSchemesAsync(cancellationToken);
+            }
         }
         else
         {
@@ -602,11 +550,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
         var externalLoginData = await this.authExternalRepository
             .AuthenticateAsync(externalLoginProvider, cancellationToken);
 
-        if (externalLoginData == null)
-        {
-            return this.Unauthorized();
-        }
-
         return this.Ok(externalLoginData);
     }
 
@@ -639,11 +582,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
         var externalLoginData = await this.authExternalRepository
             .AuthenticateAsync(externalLoginProvider, cancellationToken);
 
-        if (externalLoginData == null)
-        {
-            return this.Unauthorized();
-        }
-
         return this.Ok(externalLoginData);
     }
 
@@ -675,11 +613,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
 
         var externalLoginData = await this.authExternalRepository
             .AuthenticateAsync(externalLoginProvider, cancellationToken);
-
-        if (externalLoginData == null)
-        {
-            return this.Unauthorized();
-        }
 
         return this.Ok(externalLoginData);
     }

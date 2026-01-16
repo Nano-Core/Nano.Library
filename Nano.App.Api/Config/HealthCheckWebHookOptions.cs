@@ -11,17 +11,17 @@ public class HealthCheckWebHookOptions
     /// Name.
     /// </summary>
     [Required]
-    public virtual string Name { get; set; }
+    public virtual string Name { get; set; } = null!;
 
     /// <summary>
     /// Uri.
     /// </summary>
     [Required]
     [Url]
-    public virtual string Uri { get; set; }
+    public virtual string Uri { get; set; } = null!;
 
     /// <summary>
     /// Payload.
     /// </summary>
-    public virtual string Payload { get; set; }
+    public virtual string? Payload { get; set; }
 }

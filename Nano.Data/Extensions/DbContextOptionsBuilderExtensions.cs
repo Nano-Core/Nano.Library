@@ -25,14 +25,16 @@ internal static class DbContextOptionsBuilderExtensions
             })
             .UseLazyLoadingProxies(options.UseLazyLoading);
 
-        if (options.Cache != null)
+        if (options.Cache == null)
         {
-            var interceptor = serviceProvider
-                .GetRequiredService<SecondLevelCacheInterceptor>();
-
-            builder
-                .AddInterceptors(interceptor);
+            return builder;
         }
+
+        var interceptor = serviceProvider
+            .GetRequiredService<SecondLevelCacheInterceptor>();
+
+        builder
+            .AddInterceptors(interceptor);
 
         return builder;
     }

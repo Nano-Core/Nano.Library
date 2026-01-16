@@ -30,6 +30,11 @@ public class RemoveVersionsRoutesFilter : IDocumentFilter
         ArgumentNullException.ThrowIfNull(swaggerDoc);
         ArgumentNullException.ThrowIfNull(context);
 
+        if (this.webOptions.CurrentValue.Documentation == null)
+        {
+            return;
+        }
+
         var version = this.webOptions.CurrentValue.Version
             .ParseVersion();
 

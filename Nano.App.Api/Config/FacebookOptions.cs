@@ -11,13 +11,13 @@ public class FacebookOptions
     /// App Id.
     /// </summary>
     [Required]
-    public virtual string AppId { get; set; }
+    public virtual string AppId { get; set; } = null!;
 
     /// <summary>
     /// App Secret.
     /// </summary>
     [Required]
-    public virtual string AppSecret { get; set; }
+    public virtual string AppSecret { get; set; } = null!;
 
     /// <summary>
     /// Scopes.

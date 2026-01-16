@@ -522,28 +522,30 @@ internal static class ApplicationBuilderExtensions
                     x.DefaultModelRendering(ModelRendering.Example);
                     x.DocExpansion(DocExpansion.None);
 
-                    if (apiOptions.Documentation.CspNonce != null)
+                    if (apiOptions.Documentation.CspNonce == null)
                     {
-                        var originalIndexStreamFactory = x.IndexStream;
-
-                        x.IndexStream = () =>
-                        {
-                            using var originalStream = originalIndexStreamFactory();
-                            using var originalStreamReader = new StreamReader(originalStream);
-
-                            var originalIndexHtmlContents = originalStreamReader
-                                .ReadToEnd();
-
-                            const string PATTERN = "<(script|style)([^>]*)>";
-                            var replacement = $"<$1$2 nonce=\"{apiOptions.Documentation.CspNonce}\">";
-                            var nonceEnabledIndexHtmlContents = Regex.Replace(originalIndexHtmlContents, PATTERN, replacement, RegexOptions.IgnoreCase);
-
-                            var bytes = Encoding.UTF8
-                                .GetBytes(nonceEnabledIndexHtmlContents);
-
-                            return new MemoryStream(bytes);
-                        };
+                        return;
                     }
+
+                    var originalIndexStreamFactory = x.IndexStream;
+
+                    x.IndexStream = () =>
+                    {
+                        using var originalStream = originalIndexStreamFactory();
+                        using var originalStreamReader = new StreamReader(originalStream);
+
+                        var originalIndexHtmlContents = originalStreamReader
+                            .ReadToEnd();
+
+                        const string PATTERN = "<(script|style)([^>]*)>";
+                        var replacement = $"<$1$2 nonce=\"{apiOptions.Documentation.CspNonce}\">";
+                        var nonceEnabledIndexHtmlContents = Regex.Replace(originalIndexHtmlContents, PATTERN, replacement, RegexOptions.IgnoreCase);
+
+                        var bytes = Encoding.UTF8
+                            .GetBytes(nonceEnabledIndexHtmlContents);
+
+                        return new MemoryStream(bytes);
+                    };
                 });
         }
 

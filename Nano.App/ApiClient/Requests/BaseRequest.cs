@@ -86,7 +86,7 @@ public abstract class BaseRequest
             .Where(x => x.attribute != null)
             .Select(x =>
             {
-                var name = x.property.Name;
+                var name = x.attribute!.Name ?? x.property.Name;
 
                 var value = x.property
                     .GetValue(this)?

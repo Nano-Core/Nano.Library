@@ -36,22 +36,24 @@ namespace Nano.App.Api.Controllers;
 /// <typeparam name="TCriteria"></typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.IDENTITY)]
 public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria>
-    where TRepository : IRepository
+    where TRepository : class, IRepository
     where TEntity : class, IEntityUser<TIdentity>, IEntityCreatable, IEntityUpdatable, IEntityDeletable, IEntityIdentity<TIdentity>, new()
     where TIdentity : IEquatable<TIdentity>
     where TCriteria : class, IQueryCriteria, new()
 {
     private readonly IIdentityRepository<TIdentity> identityRepository;
-    private readonly IAuthExternalRepository authExternalRepository;
+    private readonly IAuthExternalRepository? authExternalRepository;
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger logger, TRepository repository, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository authExternalRepository = null)
-        : this(logger, repository, null, identityRepository, authExternalRepository)
+    protected BaseIdentityController(ILogger logger, TRepository repository, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository? authExternalRepository = null)
+        : base(logger, repository)
     {
+        this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
+        this.authExternalRepository = authExternalRepository;
     }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository authExternalRepository = null)
+    protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository? authExternalRepository = null)
         : base(logger, repository, eventing)
     {
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
@@ -110,7 +112,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> IsEmailAddressTakenAsync([FromQuery][Required] string emailAddress, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> IsEmailAddressTakenAsync([FromQuery][Required]string emailAddress, CancellationToken cancellationToken = default)
     {
         var isEmailAddressTaken = await this.identityRepository
             .IsEmailAddressTakenAsync(emailAddress, cancellationToken);
@@ -141,7 +143,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> IsPhoneNumberTakenAsync([FromQuery][Required] string phoneNumber, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> IsPhoneNumberTakenAsync([FromQuery][Required]string phoneNumber, CancellationToken cancellationToken = default)
     {
         var isPhoneNumberTaken = await this.identityRepository
             .IsPhoneNumberTakenAsync(phoneNumber, cancellationToken);
@@ -176,11 +178,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         var user = await this.identityRepository
             .SignUpAsync(signUp, cancellationToken);
-
-        if (user == null)
-        {
-            return this.NotFound();
-        }
 
         return this.Created("signup", user);
     }
@@ -219,11 +216,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
                 Roles = signUpExternal.Roles,
                 Claims = signUpExternal.Claims
             }, cancellationToken);
-
-        if (user == null)
-        {
-            return this.NotFound();
-        }
 
         return this.Created("signup/external/direct", user);
     }
@@ -269,11 +261,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
                 Claims = signUpExternal.Claims
             }, cancellationToken);
 
-        if (user == null)
-        {
-            return this.NotFound();
-        }
-
         return this.Created("signup/external/google", user);
     }
 
@@ -318,11 +305,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
                 Claims = signUpExternal.Claims
             }, cancellationToken);
 
-        if (user == null)
-        {
-            return this.NotFound();
-        }
-
         return this.Created("signup/external/facebook", user);
     }
 
@@ -366,11 +348,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
                 Roles = signUpExternal.Roles,
                 Claims = signUpExternal.Claims
             }, cancellationToken);
-
-        if (user == null)
-        {
-            return this.NotFound();
-        }
 
         return this.Created("signup/external/microsoft", user);
     }
@@ -516,11 +493,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var resetPasswordToken = await this.identityRepository
             .GenerateResetPasswordTokenAsync(generateResetPasswordToken, cancellationToken);
 
-        if (resetPasswordToken == null)
-        {
-            return this.NotFound();
-        }
-
         return this.Ok(resetPasswordToken);
     }
 
@@ -578,11 +550,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var changeEmailToken = await this.identityRepository
             .GenerateChangeEmailTokenAsync(generateChangeEmailToken, cancellationToken);
 
-        if (changeEmailToken == null)
-        {
-            return this.NotFound();
-        }
-
         return this.Ok(changeEmailToken);
     }
 
@@ -636,11 +603,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         var confirmEmailToken = await this.identityRepository
             .GenerateConfirmEmailTokenAsync(generateConfirmEmailToken, cancellationToken);
-
-        if (confirmEmailToken == null)
-        {
-            return this.NotFound();
-        }
 
         return this.Ok(confirmEmailToken);
     }
@@ -698,11 +660,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var changeEmailToken = await this.identityRepository
             .GenerateChangePhoneNumberTokenAsync(generateChangePhoneToken, cancellationToken);
 
-        if (changeEmailToken == null)
-        {
-            return this.NotFound();
-        }
-
         return this.Ok(changeEmailToken);
     }
 
@@ -757,11 +714,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var confirmEmailToken = await this.identityRepository
             .GenerateConfirmPhoneNumberTokenAsync(generateConfirmPhoneToken, cancellationToken);
 
-        if (confirmEmailToken == null)
-        {
-            return this.NotFound();
-        }
-
         return this.Ok(confirmEmailToken);
     }
 
@@ -788,11 +740,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         var customPurposeToken = await this.identityRepository
             .GenerateCustomPurposeTokenAsync(confirmEmail, cancellationToken);
-
-        if (customPurposeToken == null)
-        {
-            return this.NotFound();
-        }
 
         return this.Ok(customPurposeToken);
     }
@@ -1048,11 +995,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
                 ProviderKey = externalProviderLogInData.Id
             }, cancellationToken);
 
-        if (userLoginInfo == null)
-        {
-            return this.NotFound();
-        }
-
         var externalLogin = new ExternalLogin
         {
             Key = userLoginInfo.ProviderKey,
@@ -1103,11 +1045,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
                 ProviderKey = externalProviderLogInData.Id
             }, cancellationToken);
 
-        if (userLoginInfo == null)
-        {
-            return this.NotFound();
-        }
-
         var externalLogin = new ExternalLogin
         {
             Key = userLoginInfo.ProviderKey,
@@ -1157,11 +1094,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
                 LoginProvider = externalProviderLogInData.ExternalToken.Name,
                 ProviderKey = externalProviderLogInData.Id
             }, cancellationToken);
-
-        if (userLoginInfo == null)
-        {
-            return this.NotFound();
-        }
 
         var externalLogin = new ExternalLogin
         {
@@ -1231,13 +1163,10 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var identityUserRefreshTokens = await this.identityRepository
             .GetRefreshTokens(userId, cancellationToken);
 
-        if (identityUserRefreshTokens == null)
-        {
-            return this.NotFound();
-        }
-
         return this.Ok(identityUserRefreshTokens);
     }
+
+    // BUG: Delete RefreshToken
 
     #endregion
 
@@ -1268,11 +1197,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var identityApiKeys = await this.identityRepository
             .GetApiKeysAsync(userId, cancellationToken);
 
-        if (identityApiKeys == null)
-        {
-            return this.NotFound();
-        }
-
         return this.Ok(identityApiKeys);
     }
 
@@ -1302,11 +1226,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
 
         var identityApiKey = this.identityRepository
             .CreateApiKeyAsync(createApiKey, out var apiKey);
-
-        if (identityApiKey == null)
-        {
-            return this.NotFound();
-        }
 
         var identityApiKeyCreated = new IdentityApiKeyCreated<TIdentity>
         {
@@ -1416,11 +1335,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var roles = await this.identityRepository
             .GetRolesAsync(cancellationToken);
 
-        if (roles == null)
-        {
-            return this.NotFound();
-        }
-
         return this.Ok(roles);
     }
 
@@ -1440,7 +1354,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<IdentityRole<Guid>>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<IdentityRole<Guid>>), (int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -1450,12 +1364,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         var identityRole = await this.identityRepository
             .CreateRoleAsync(assignRole.Name, cancellationToken);
 
-        if (identityRole == null)
-        {
-            return this.NotFound();
-        }
-
-        return this.Ok(identityRole);
+        return this.Created("roles/create", identityRole);
     }
 
     /// <summary>
@@ -1595,15 +1504,10 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> GetRoleClaimsAsync([FromRoute][Required] TIdentity roleId, CancellationToken cancellationToken = default)
     {
-        var userRoleClaims = await this.identityRepository
+        var roleClaims = await this.identityRepository
             .GetRoleClaimsAsync(roleId, cancellationToken);
 
-        if (userRoleClaims == null)
-        {
-            return this.NotFound();
-        }
-
-        return this.Ok(userRoleClaims);
+        return this.Ok(roleClaims);
     }
 
     /// <summary>
@@ -1719,11 +1623,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     {
         var userClaims = await this.identityRepository
             .GetUserClaimsAsync(userId, cancellationToken);
-
-        if (userClaims == null)
-        {
-            return this.NotFound();
-        }
 
         return this.Ok(userClaims);
     }

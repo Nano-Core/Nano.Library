@@ -10,9 +10,9 @@ namespace Nano.App.Api.Identity.Authentication;
 /// <inheritdoc />
 public class AuthExternalRepository : IAuthExternalRepository
 {
-    private readonly IAuthExternalFacebookRepository facebookRepository;
-    private readonly IAuthExternalGoogleRepository googleRepository;
-    private readonly IAuthExternalMicrosoftRepository microsoftRepository;
+    private readonly IAuthExternalFacebookRepository? facebookRepository;
+    private readonly IAuthExternalGoogleRepository? googleRepository;
+    private readonly IAuthExternalMicrosoftRepository? microsoftRepository;
 
     /// <summary>
     /// 
@@ -20,7 +20,7 @@ public class AuthExternalRepository : IAuthExternalRepository
     /// <param name="facebookRepository"></param>
     /// <param name="googleRepository"></param>
     /// <param name="microsoftRepository"></param>
-    public AuthExternalRepository(IAuthExternalFacebookRepository facebookRepository = null, IAuthExternalGoogleRepository googleRepository = null, IAuthExternalMicrosoftRepository microsoftRepository = null)
+    public AuthExternalRepository(IAuthExternalFacebookRepository? facebookRepository = null, IAuthExternalGoogleRepository? googleRepository = null, IAuthExternalMicrosoftRepository? microsoftRepository = null)
     {
         this.facebookRepository = facebookRepository;
         this.googleRepository = googleRepository;
@@ -33,40 +33,41 @@ public class AuthExternalRepository : IAuthExternalRepository
     {
         ArgumentNullException.ThrowIfNull(provider);
 
-        if (provider is ExternalLoginProviderFacebook facebookProvider)
+        switch (provider)
         {
-            if (this.facebookRepository == null)
+            case ExternalLoginProviderFacebook facebookProvider:
             {
-                throw new NullReferenceException(nameof(this.facebookRepository));
+                if (this.facebookRepository == null)
+                {
+                    throw new NullReferenceException(nameof(this.facebookRepository));
+                }
+
+                return this.facebookRepository
+                    .Authenticate(facebookProvider, cancellationToken);
             }
-
-            return this.facebookRepository
-                .Authenticate(facebookProvider, cancellationToken);
-        }
-
-        if (provider is ExternalLoginProviderGoogle googleProvider)
-        {
-            if (this.googleRepository == null)
+            case ExternalLoginProviderGoogle googleProvider:
             {
-                throw new NullReferenceException(nameof(this.googleRepository));
+                if (this.googleRepository == null)
+                {
+                    throw new NullReferenceException(nameof(this.googleRepository));
+                }
+
+                return this.googleRepository
+                    .Authenticate(googleProvider, cancellationToken);
             }
-
-            return this.googleRepository
-                .Authenticate(googleProvider, cancellationToken);
-        }
-
-        if (provider is ExternalLoginProviderMicrosoft microsoftProvider)
-        {
-            if (this.microsoftRepository == null)
+            case ExternalLoginProviderMicrosoft microsoftProvider:
             {
-                throw new NullReferenceException(nameof(this.microsoftRepository));
+                if (this.microsoftRepository == null)
+                {
+                    throw new NullReferenceException(nameof(this.microsoftRepository));
+                }
+
+                return this.microsoftRepository
+                    .Authenticate(microsoftProvider, cancellationToken);
             }
-
-            return this.microsoftRepository
-                .Authenticate(microsoftProvider, cancellationToken);
+            default:
+                throw new UnauthorizedException();
         }
-
-        throw new UnauthorizedException();
     }
 
     /// <inheritdoc />

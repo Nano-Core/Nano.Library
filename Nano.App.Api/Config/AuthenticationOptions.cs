@@ -8,5 +8,5 @@ public class AuthenticationOptions
     /// <summary>
     /// Jwt Options.
     /// </summary>
-    public virtual JwtAuthenticationOptions Jwt { get; set; }
+    public virtual JwtAuthenticationOptions? Jwt { get; set; }
 }

@@ -79,12 +79,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             var identityUser = await this.userManager
                 .FindByNameAsync(signIn.Username);
 
-            if (identityUser == null)
-            {
-                throw new UnauthorizedException($"The user: {signIn.Username} was not found or is deactivated.");
-            }
-
-            return identityUser;
+            return identityUser ?? throw new UnauthorizedException($"The user: {signIn.Username} was not found or is deactivated.");
         }
 
         if (result.IsLockedOut)
@@ -166,11 +161,11 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     #region Sign Up
 
     /// <inheritdoc />
-    public virtual async Task<PasswordOptions> GetPaswordOptionsAsync(CancellationToken cancellationToken = default)
+    public virtual async Task<PasswordOptions?> GetPaswordOptionsAsync(CancellationToken cancellationToken = default)
     {
         if (this.options.CurrentValue.Identity == null)
         {
-            return new PasswordOptions();
+            return null;
         }
 
         return await Task.FromResult(this.options.CurrentValue.Identity.Password);
@@ -294,12 +289,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         var identityUser = await this.userManager
             .GetIdentityUserAsync(id, cancellationToken);
 
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        return identityUser;
+        return identityUser ?? throw new NullReferenceException(nameof(identityUser));
     }
 
     /// <inheritdoc />
@@ -1091,12 +1081,9 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         var isValid = CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(base64Hash), Encoding.UTF8.GetBytes(identityApiKey.Hash));
 
-        if (!isValid)
-        {
-            return null;
-        }
-
-        return identityApiKey;
+        return isValid
+            ? identityApiKey
+            : null;
     }
 
     /// <inheritdoc />

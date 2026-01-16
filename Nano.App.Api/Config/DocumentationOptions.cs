@@ -11,7 +11,7 @@ public class DocumentationOptions
     /// <summary>
     /// Csp Nonce.
     /// </summary>
-    public virtual string CspNonce { get; set; }
+    public virtual string? CspNonce { get; set; }
 
     /// <summary>
     /// Use Default Version.
@@ -22,20 +22,20 @@ public class DocumentationOptions
     /// <summary>
     /// Description.
     /// </summary>
-    public virtual string Description { get; set; }
+    public virtual string? Description { get; set; }
 
     /// <summary>
     /// Terms Of Service.
     /// </summary>
-    public virtual string TermsOfService { get; set; }
+    public virtual string? TermsOfService { get; set; }
 
     /// <summary>
     /// Contact.
     /// </summary>
-    public virtual OpenApiContact Contact { get; set; }
+    public virtual OpenApiContact? Contact { get; set; }
 
     /// <summary>
     /// License.
     /// </summary>
-    public virtual OpenApiLicense License { get; set; }
+    public virtual OpenApiLicense? License { get; set; }
 }

@@ -20,26 +20,26 @@ public class GeometryConverterIgnoreCase : GeometryConverter
 
         var token = JToken.Load(reader);
 
-        if (token.Type == JTokenType.Object)
+        if (token.Type != JTokenType.Object)
         {
-            var obj = (JObject)token;
-
-            if (objectType.IsSubclassOf(typeof(Geometry)))
-            {
-                RenameProperty(obj, "Type", "type");
-                RenameProperty(obj, "Coordinates", "coordinates");
-                RenameProperty(obj, "Geometries", "geometries");
-            }
-
-            var jsonReader = new JTokenReader(obj);
-
-            jsonReader
-                .Read();
-
-            return base.ReadJson(jsonReader, objectType, existingValue, serializer);
+            throw new JsonSerializationException("Expected object");
         }
 
-        throw new JsonSerializationException("Expected object");
+        var obj = (JObject)token;
+
+        if (objectType.IsSubclassOf(typeof(Geometry)))
+        {
+            RenameProperty(obj, "Type", "type");
+            RenameProperty(obj, "Coordinates", "coordinates");
+            RenameProperty(obj, "Geometries", "geometries");
+        }
+
+        var jsonReader = new JTokenReader(obj);
+
+        jsonReader
+            .Read();
+
+        return base.ReadJson(jsonReader, objectType, existingValue, serializer);
     }
 
     private static void RenameProperty(JObject @object, string from, string to)
@@ -48,12 +48,14 @@ public class GeometryConverterIgnoreCase : GeometryConverter
         ArgumentNullException.ThrowIfNull(from);
         ArgumentNullException.ThrowIfNull(to);
 
-        if (@object.TryGetValue(from, StringComparison.OrdinalIgnoreCase, out var value))
+        if (!@object.TryGetValue(from, StringComparison.OrdinalIgnoreCase, out var value))
         {
-            @object
-                .Remove(from);
-
-            @object[to] = value;
+            return;
         }
+
+        @object
+            .Remove(from);
+
+        @object[to] = value;
     }
 }

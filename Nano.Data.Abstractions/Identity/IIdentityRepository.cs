@@ -82,7 +82,7 @@ public interface IIdentityRepository<TIdentity>
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="IdentityUser{TIdentity}"/>.</returns>
-    Task<PasswordOptions> GetPaswordOptionsAsync(CancellationToken cancellationToken = default);
+    Task<PasswordOptions?> GetPaswordOptionsAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Sign-Up a new user.

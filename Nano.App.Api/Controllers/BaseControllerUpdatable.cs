@@ -27,19 +27,13 @@ namespace Nano.App.Api.Controllers;
 /// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> implementation.</typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.EDITOR)]
 public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
-    where TRepository : IRepository
+    where TRepository : class, IRepository
     where TEntity : class, IEntityIdentity<TIdentity>, IEntityUpdatable
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseControllerUpdatable(ILogger logger, TRepository repository)
-        : this(logger, repository, null)
-    {
-    }
-
-    /// <inheritdoc />
-    protected BaseControllerUpdatable(ILogger logger, TRepository repository, IEventing eventing)
+    protected BaseControllerUpdatable(ILogger logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }
@@ -67,18 +61,13 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
     {
-        entity = await this.Repository
+        var entityEdited = await this.Repository
             .UpdateAsync(entity, cancellationToken);
-
-        if (entity == null)
-        {
-            return this.NotFound();
-        }
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
 
-        return this.Ok(entity);
+        return this.Ok(entityEdited);
     }
 
     /// <summary>
@@ -96,19 +85,19 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     [Route("edit/get")]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.Created)]
+    [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> EditAndGetAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
     {
-        entity = await this.Repository
+        var entityEdited = await this.Repository
             .UpdateAndGetAsync<TEntity, TIdentity>(entity, cancellationToken);
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
 
-        return this.Ok(entity);
+        return this.Ok(entityEdited);
     }
 
     /// <summary>
@@ -134,11 +123,6 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     {
         await this.Repository
             .UpdateManyAsync(entities, cancellationToken);
-
-        if (entities == null)
-        {
-            return this.NotFound();
-        }
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);

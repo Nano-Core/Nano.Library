@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
             .GetSection(name);
 
         options = section
-            .Get<TSection>() ?? throw new InvalidOperationException($"Configuration section '{name}' could not be loaded."); ;
+            .Get<TSection>() ?? throw new InvalidOperationException($"Configuration section '{name}' could not be loaded.");
 
         var optionsBuilder = services
             .AddOptions<TSection>();

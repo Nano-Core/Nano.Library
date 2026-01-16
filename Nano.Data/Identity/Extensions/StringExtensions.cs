@@ -24,12 +24,9 @@ public static class StringExtensions
         var jsonToken = handler
             .ReadToken(accessToken);
 
-        if (jsonToken is not JwtSecurityToken jwtSecurityToken)
-        {
-            throw new NullReferenceException(nameof(jwtSecurityToken));
-        }
-
-        return jwtSecurityToken;
+        return jsonToken is not JwtSecurityToken jwtSecurityToken
+            ? throw new NullReferenceException(nameof(jwtSecurityToken))
+            : jwtSecurityToken;
     }
 
     /// <summary>

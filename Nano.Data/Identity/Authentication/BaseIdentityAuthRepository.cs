@@ -6,13 +6,13 @@ using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Exceptions;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Identity.Models;
-using Nano.Data.Abstractions.Models.Identity;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace Nano.Data.Identity.Authentication;
 
@@ -75,14 +75,9 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
                 Claims = claims
             });
 
-        var refreshToken = logIn.IsRefreshable
+        accessToken.RefreshToken = logIn.IsRefreshable
             ? await this.CreateRefreshToken(identityUser, logIn.AppId)
             : null;
-
-        if (refreshToken != null)
-        {
-            accessToken.RefreshToken = refreshToken;
-        }
 
         return accessToken;
     }
@@ -103,11 +98,6 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
                 IsRememberMe = logInExternalDirect.IsRememberMe
             }, cancellationToken);
 
-        if (identityUser == null)
-        {
-            throw new UnauthorizedException();
-        }
-
         var claims = await this.identityRepository
             .GetAllClaims(identityUser, logInExternalDirect.TransientRoles, logInExternalDirect.TransientClaims, cancellationToken);
 
@@ -122,12 +112,9 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
                 ExternalToken = logInExternalDirect.ExternalLogInData.ExternalToken
             });
 
-        if (logInExternalDirect.IsRefreshable)
-        {
-            var refreshToken = await this.CreateRefreshToken(identityUser, logInExternalDirect.AppId);
-
-            accessToken.RefreshToken = refreshToken;
-        }
+        accessToken.RefreshToken = logInExternalDirect.IsRefreshable
+            ? await this.CreateRefreshToken(identityUser, logInExternalDirect.AppId)
+            : null;
 
         return accessToken;
     }
@@ -196,6 +183,9 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
             throw new UnauthorizedException($"The refresh token of user: {identityUser.UserName} is expired.");
         }
 
+        this.authJwtRepository
+            .ValidateTokenForRefresh(logInRefresh.Token);
+
         var claims = await this.identityRepository
             .GetAllClaims(identityUser, logInRefresh.TransientRoles, logInRefresh.TransientClaims, cancellationToken);
 
@@ -223,9 +213,6 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
             }
         }
 
-        this.authJwtRepository
-            .ValidateTokenForRefresh(logInRefresh.Token);
-
         var accessToken = this.authJwtRepository
             .GenerateJwtToken(new GenerateJwtToken
             {
@@ -236,11 +223,6 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
                 ExternalToken = externalLoginTokenData,
                 Claims = claims
             });
-
-        if (accessToken == null)
-        {
-            throw new UnauthorizedException();
-        }
 
         accessToken.RefreshToken = await this.CreateRefreshToken(identityUser, appId);
 
@@ -255,7 +237,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     }
 
 
-    private async Task<RefreshToken> CreateRefreshToken(IdentityUserEx<TIdentity> identityUser, string? appId = null)
+    private async Task<RefreshToken> CreateRefreshToken(IdentityUser<TIdentity> identityUser, string? appId = null)
     {
         ArgumentNullException.ThrowIfNull(identityUser);
 

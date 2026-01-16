@@ -25,6 +25,11 @@ public class MvcEntityContractResolver : DefaultEntityContractResolver
         var property = base.CreateProperty(member, memberSerialization);
         var propertyType = property.PropertyType;
 
+        if (propertyType == null)
+        {
+            throw new NullReferenceException(nameof(propertyType));
+        }
+
         SerializeOnlyIncludedProperties(member, propertyType, ref property);
 
         return property;
@@ -39,15 +44,14 @@ public class MvcEntityContractResolver : DefaultEntityContractResolver
         ArgumentNullException.ThrowIfNull(propertyType);
         ArgumentNullException.ThrowIfNull(property);
 
-        if (propertyType.IsTypeOf(typeof(IEntity)) || (propertyType.IsGenericType && propertyType.GenericTypeArguments[0].IsTypeOf(typeof(IEntity))))
+        if (!propertyType.IsTypeOf(typeof(IEntity)) && (!propertyType.IsGenericType || !propertyType.GenericTypeArguments[0].IsTypeOf(typeof(IEntity))))
         {
-            var includeAnnotation = member
-                .GetCustomAttribute<IncludeAttribute>();
-
-            if (includeAnnotation == null)
-            {
-                property.ShouldSerialize = _ => false;
-            }
+            return;
         }
+
+        var includeAnnotation = member
+            .GetCustomAttribute<IncludeAttribute>();
+
+        property.ShouldSerialize = _ => includeAnnotation != null;
     }
 }

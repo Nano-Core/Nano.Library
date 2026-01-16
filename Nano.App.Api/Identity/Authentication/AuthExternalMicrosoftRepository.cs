@@ -41,7 +41,7 @@ public class AuthExternalMicrosoftRepository : IAuthExternalMicrosoftRepository
         var tokenHandler = new JwtSecurityTokenHandler();
 
         string accessToken;
-        string refreshToken;
+        string? refreshToken;
 
         switch (provider)
         {
@@ -53,38 +53,38 @@ public class AuthExternalMicrosoftRepository : IAuthExternalMicrosoftRepository
                 httpRequestMessage.RequestUri = new Uri($"https://login.microsoftonline.com/{options.TenantId}/oauth2/v2.0/token");
 
                 using var formContent = new MultipartFormDataContent();
+
+                formContent.Add(new StringContent(options.ClientId), "client_id");
+                formContent.Add(new StringContent(options.ClientSecret), "client_secret");
+                formContent.Add(new StringContent("authorization_code"), "grant_type");
+                formContent.Add(new StringContent(authCodeLogin.Code), "code");
+                formContent.Add(new StringContent(authCodeLogin.CodeVerifier), "code_verifier");
+                formContent.Add(new StringContent(authCodeLogin.RedirectUri), "redirect_uri");
+                formContent.Add(new StringContent(options.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
+
+                httpRequestMessage.Content = formContent;
+
+                var httpResponse = await httpClient
+                    .SendAsync(httpRequestMessage, cancellationToken);
+
+                var stringContent = await httpResponse.Content
+                    .ReadAsStringAsync(cancellationToken);
+
+                var content = JsonConvert.DeserializeObject<JObject>(stringContent);
+
+                var error = content?["error"]?.ToString();
+                var errorDescription = content?["error"]?.ToString() ?? "Unknown";
+
+                if (error != null)
                 {
-                    formContent.Add(new StringContent(options.ClientId), "client_id");
-                    formContent.Add(new StringContent(options.ClientSecret), "client_secret");
-                    formContent.Add(new StringContent("authorization_code"), "grant_type");
-                    formContent.Add(new StringContent(authCodeLogin.Code), "code");
-                    formContent.Add(new StringContent(authCodeLogin.CodeVerifier), "code_verifier");
-                    formContent.Add(new StringContent(authCodeLogin.RedirectUri), "redirect_uri");
-                    formContent.Add(new StringContent(options.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
-
-                    httpRequestMessage.Content = formContent;
-
-                    var httpResponse = await httpClient
-                        .SendAsync(httpRequestMessage, cancellationToken);
-
-                    var stringContent = await httpResponse.Content
-                        .ReadAsStringAsync(cancellationToken);
-
-                    var content = JsonConvert.DeserializeObject<JObject>(stringContent);
-
-                    var error = (string)content?["error"];
-                    var errorDescription = (string)content?["error"];
-
-                    if (error != null)
-                    {
-                        throw new InvalidOperationException($"{error}: {errorDescription}");
-                    }
-
-                    accessToken = (string)content?["access_token"];
-                    refreshToken = (string)content?["refresh_token"];
+                    throw new InvalidOperationException($"{error}: {errorDescription}");
                 }
-            }
+
+                accessToken = content?["access_token"]?.ToString() ?? throw new NullReferenceException(nameof(accessToken));
+                refreshToken = content["refresh_token"]?.ToString();
+
                 break;
+            }
 
             default:
                 throw new NotSupportedException(provider.GetType().Name);
@@ -93,9 +93,32 @@ public class AuthExternalMicrosoftRepository : IAuthExternalMicrosoftRepository
         var jwtToken = tokenHandler
             .ReadJwtToken(accessToken);
 
-        var id = jwtToken?.Payload.Where(x => x.Key == "oid").Select(x => x.Value?.ToString()).FirstOrDefault();
-        var name = jwtToken?.Payload.Where(x => x.Key == "name").Select(x => x.Value?.ToString()).FirstOrDefault();
-        var email = jwtToken?.Payload.Where(x => x.Key == "upn").Select(x => x.Value?.ToString()).FirstOrDefault();
+        var id = jwtToken?.Payload
+            .Where(x => x.Key == "oid").Select(x => x.Value?.ToString())
+            .FirstOrDefault();
+
+        if (id == null)
+        {
+            throw new NullReferenceException(nameof(id));
+        }
+
+        var name = jwtToken?.Payload
+            .Where(x => x.Key == "name").Select(x => x.Value?.ToString())
+            .FirstOrDefault();
+
+        if (name == null)
+        {
+            throw new NullReferenceException(nameof(id));
+        }
+
+        var email = jwtToken?.Payload
+            .Where(x => x.Key == "upn").Select(x => x.Value?.ToString())
+            .FirstOrDefault();
+
+        if (email == null)
+        {
+            throw new NullReferenceException(nameof(id));
+        }
 
         return new ExternalLogInData
         {
@@ -139,16 +162,22 @@ public class AuthExternalMicrosoftRepository : IAuthExternalMicrosoftRepository
 
         var content = JsonConvert.DeserializeObject<JObject>(stringContent);
 
-        var error = (string)content?["error"];
-        var errorDescription = (string)content?["error"];
+        var error = content?["error"]?.ToString();
+        var errorDescription = content?["error"]?.ToString() ?? "Unknown";
 
         if (error != null)
         {
             throw new UnauthorizedException($"{error}: {errorDescription}");
         }
 
-        var accessToken = (string)content?["access_token"];
-        var refreshToken = (string)content?["refresh_token"];
+        var accessToken = content?["access_token"]?.ToString();
+
+        if (accessToken == null)
+        {
+            throw new NullReferenceException(nameof(accessToken));
+        }
+
+        var refreshToken = content?["refresh_token"]?.ToString();
 
         return new ExternalLoginTokenData
         {
