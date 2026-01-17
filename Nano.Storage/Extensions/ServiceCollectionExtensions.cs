@@ -34,9 +34,6 @@ public static class ServiceCollectionExtensions
         services
             .AddNanoConfigSection<StorageOptions>(StorageOptions.SectionName, out var options);
 
-        // BUG: Doesn't become null??? hmmm, what can I do. It's per design it seems. 
-        // This could be several places
-
         if (options is null)
         {
             throw new InvalidOperationException($"Configuration section '{StorageOptions.SectionName}' could not be loaded.");

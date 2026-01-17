@@ -31,6 +31,9 @@ public class AzureFileshareProvider : IStorageProvider
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
 
+        // BUG: Doesn't become null??? hmmm, what can I do. It's per design it seems. 
+        // This could be several places
+
         if (options.HealthCheck == null)
         {
             return;
