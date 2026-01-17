@@ -34,6 +34,7 @@ public static class ServiceCollectionExtensions
     /// <typeparam name="TContext">The <see cref="DbContext"/> implementation.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
+    /// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data</remarks>
     public static IServiceCollection AddNanoData<TProvider, TContext>(this IServiceCollection services)
         where TProvider : IDataProvider
         where TContext : DefaultDbContext
@@ -57,6 +58,7 @@ public static class ServiceCollectionExtensions
     /// <typeparam name="TIdentity">The identity type.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
+    /// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data</remarks>
     public static IServiceCollection AddNanoData<TProvider, TContext, TIdentity>(this IServiceCollection services)
         where TProvider : IDataProvider
         where TContext : BaseDbContext<TIdentity>

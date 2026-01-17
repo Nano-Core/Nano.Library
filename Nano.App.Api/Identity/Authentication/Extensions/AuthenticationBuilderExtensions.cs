@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Nano.App.Api.Config;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
-using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.App.Api.Identity.Authentication.Extensions;
 

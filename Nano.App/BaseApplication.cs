@@ -6,9 +6,6 @@ namespace Nano.App;
 // BUG: Should we make a BackgroundJob option, like we did in ....
 // and auto resolve just one of the consumers dependencies using IServiceScopeFactory and resolving each of that dependencies
 
-// BUG: 000: Add links to documentation and examples readme from triple slash. E.g AddNanoData<>() should link to Nano.Data Readme and related examples / Usages
-// BUG: 000: Go through Required / MaxLength / Etc for Entity models and request models - all the way through all layers
-
 /// <summary>
 /// Base Application (abstract).
 /// </summary>

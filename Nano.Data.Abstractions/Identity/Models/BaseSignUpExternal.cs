@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 
@@ -38,5 +39,6 @@ public abstract class BaseSignUpExternal<TProvider, TUser, TIdentity> : BaseSign
     /// <summary>
     /// Login External.
     /// </summary>
-    public TProvider Provider { get; set; } = new();
+    [Required]
+    public virtual TProvider Provider { get; set; } = new();
 }

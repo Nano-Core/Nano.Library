@@ -430,7 +430,7 @@ internal static class ServiceCollectionExtensions
 
         services
             .AddHealthChecks()
-            .AddCheck<StartupHealthCheck>("startup");
+            .AddCheck<StartupHealthCheck>("self");
 
         if (options == null)
         {
@@ -440,7 +440,7 @@ internal static class ServiceCollectionExtensions
         services
             .AddHealthChecksUI(x =>
             {
-                x.AddHealthCheckEndpoint(applicationName.ToLower(), $"http://localhost:{port ?? 80}/healthz"); // BUG: 000: TEST: Is Localhost okay here??? hmmm, I don't like the Port, and how we pass it to the method
+                x.AddHealthCheckEndpoint(applicationName.ToLower(), $"http://localhost:{port ?? 80}/healthz");
 
                 x.SetApiMaxActiveRequests(1);
                 x.SetEvaluationTimeInSeconds(options.EvaluationInterval);

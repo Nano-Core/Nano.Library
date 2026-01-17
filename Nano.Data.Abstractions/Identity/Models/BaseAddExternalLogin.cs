@@ -22,5 +22,6 @@ public abstract class BaseAddExternalLogin<TProvider, TIdentity>
     /// <summary>
     /// Provider.
     /// </summary>
+    [Required]
     public TProvider Provider { get; set; } = new();
 }

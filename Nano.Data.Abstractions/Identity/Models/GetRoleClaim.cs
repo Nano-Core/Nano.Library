@@ -23,5 +23,6 @@ public class GetRoleClaim<TIdentity>
     /// Claim Type.
     /// </summary>
     [Required]
+    [MaxLength(256)]
     public virtual string ClaimType { get; set; } = null!;
 }

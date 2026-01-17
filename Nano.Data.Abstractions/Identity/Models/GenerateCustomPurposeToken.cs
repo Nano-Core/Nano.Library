@@ -22,5 +22,6 @@ public class GenerateCustomPurposeToken<TIdentity>
     /// <summary>
     /// Purpose.
     /// </summary>
+    [MaxLength(256)]
     public virtual string Purpose { get; set; } = null!;
 }

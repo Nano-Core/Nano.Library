@@ -2,6 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Data.Abstractions.Models;
+using Nano.Data.Consts;
 
 namespace Nano.Data.Mappings;
 
@@ -16,7 +17,7 @@ public class DefaultAuditEntryPropertyMapping : DefaultEntityMapping<DefaultAudi
         base.Map(builder);
 
         builder
-            .ToTable("__EFAuditProperties");
+            .ToTable(TableNames.AUDIT_PROPERTIES);
 
         builder
             .HasOne(x => x.Parent)

@@ -29,5 +29,6 @@ public class ChangePhoneNumberToken<TIdentity>
     /// New Phone Number.
     /// </summary>
     [Required]
+    [MaxLength(20)]
     public virtual string NewPhoneNumber { get; set; } = null!;
 }

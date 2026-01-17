@@ -12,3 +12,5 @@ Add custom sections
 ## Registration
 
 
+## Naming Conventions
+IMPORTANT: Controllers must be named the same as their entity pluralized, e.g. MyEntity and MyEntitysController.

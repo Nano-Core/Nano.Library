@@ -11,11 +11,11 @@ public class ResponseCompressionOptions
     /// 
     /// </summary>
     [Required]
-    public virtual bool UseGzip { get; set; } = false;
+    public virtual bool UseGzip { get; set; } = true;
 
     /// <summary>
     /// 
     /// </summary>
     [Required]
-    public virtual bool UseBrotli { get; set; } = false;
+    public virtual bool UseBrotli { get; set; } = true;
 }

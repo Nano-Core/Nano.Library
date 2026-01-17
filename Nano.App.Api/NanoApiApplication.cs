@@ -23,6 +23,7 @@ namespace Nano.App.Api;
 /// <summary>
 /// 
 /// </summary>
+/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api</remarks>
 public sealed class NanoApiApplication : BaseApplication<WebApplication, WebApplicationBuilder>, IApplication
 {
     private NanoApiApplication(WebApplicationBuilder builder)
@@ -85,7 +86,7 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
             .AddNanoResponseCompression(webOptions.ResponseCompression)
             .AddNanoRequestOptions()
             .AddNanoRequestIdentifier()
-            .AddNanoFormOptions(webOptions.MultipartLimits)
+            .AddNanoFormOptions(webOptions.Hosting.MultipartLimits)
             .AddNanoMvc()
             .AddNanoDocumentation(webOptions.Documentation)
             .AddNanoHealthChecking(applicationName, webOptions.Hosting.Ports.FirstOrDefault(), webOptions.HealthCheck);

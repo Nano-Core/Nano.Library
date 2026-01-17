@@ -14,12 +14,14 @@ public abstract class BaseSignUp
     /// Roles.
     /// Additional Roles to add to the user, besides the default roles in the configuration.
     /// </summary>
+    [Required]
     public virtual IEnumerable<string> Roles { get; set; } = new List<string>();
 
     /// <summary>
     /// Claims.
     /// Additonal claims to add to the user.
     /// </summary>
+    [Required]
     public virtual IDictionary<string, string> Claims { get; set; } = new Dictionary<string, string>();
 }
 

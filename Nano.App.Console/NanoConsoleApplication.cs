@@ -15,6 +15,7 @@ namespace Nano.App.Console;
 /// <summary>
 /// 
 /// </summary>
+/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console</remarks>
 public sealed class NanoConsoleApplication : BaseApplication<IHost, HostApplicationBuilder>, IApplication
 {
     private NanoConsoleApplication(HostApplicationBuilder builder)

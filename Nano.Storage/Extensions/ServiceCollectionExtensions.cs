@@ -18,19 +18,13 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The <see cref="IServiceCollection"/> to which storage services are added.</param>
     /// <returns>The same <see cref="IServiceCollection"/> instance to allow fluent configuration.</returns>
     /// <remarks>
-    /// This method:
-    /// <list type="bullet">
-    ///   <item>
-    ///     <description>Loads <see cref="StorageOptions"/> from configuration.</description>
-    ///   </item>
-    ///   <item>
-    ///     <description>Instantiates <typeparamref name="TProvider"/> and invokes <see cref="IStorageProvider.Configure"/>.</description>
-    ///   </item>
-    ///   <item>
-    ///     <description>Registers <see cref="IStorageProvider"/> and <see cref="IPathProvider"/> in the dependency injection container.</description>
-    ///   </item>
-    /// </list>
+    ///     <list type="bullet">
+    ///         <item>Loads <see cref="StorageOptions"/> from configuration.</item>
+    ///         <item>Instantiates <typeparamref name="TProvider"/> and invokes <see cref="IStorageProvider.Configure"/>.</item>
+    ///         <item>Registers <see cref="IStorageProvider"/> and <see cref="IPathProvider"/> in the dependency injection container.</item>
+    ///     </list>
     /// </remarks>
+    /// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage</remarks>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is <c>null</c>.</exception>
     public static IServiceCollection AddNanoStorage<TProvider>(this IServiceCollection services)
         where TProvider : IStorageProvider
@@ -39,6 +33,9 @@ public static class ServiceCollectionExtensions
 
         services
             .AddNanoConfigSection<StorageOptions>(StorageOptions.SectionName, out var options);
+
+        // BUG: Doesn't become null??? hmmm, what can I do. It's per design it seems. 
+        // This could be several places
 
         if (options is null)
         {

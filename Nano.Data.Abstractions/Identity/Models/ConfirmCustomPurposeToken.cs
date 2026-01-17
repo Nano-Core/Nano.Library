@@ -29,5 +29,6 @@ public class ConfirmCustomPurposeToken<TIdentity>
     /// Purpose.
     /// </summary>
     [Required]
+    [MaxLength(256)]
     public virtual string Purpose { get; set; } = null!;
 }

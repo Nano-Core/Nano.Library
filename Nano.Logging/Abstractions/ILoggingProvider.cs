@@ -7,6 +7,7 @@ namespace Nano.Logging.Abstractions;
 /// Represents a logging provider for the application.
 /// Implementations define how logging is configured and integrated into the service collection.
 /// </summary>
+/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging</remarks>
 public interface ILoggingProvider
 {
     /// <summary>

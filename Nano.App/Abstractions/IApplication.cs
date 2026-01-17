@@ -6,6 +6,7 @@ namespace Nano.App.Abstractions;
 /// <summary>
 /// Application.
 /// </summary>
+/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App</remarks>
 public interface IApplication
 {
     /// <summary>

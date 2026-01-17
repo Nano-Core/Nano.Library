@@ -4,7 +4,7 @@ using System;
 
 namespace Nano.Storage.Abstractions;
 
-// BUG: 000: Local Storage Provider (but, AccountName and AccountKey are Required)
+// BUG: Local Storage Provider (but, AccountName and AccountKey are Required)
 // Move the auth part to a nullable compound
 // It's also strange that we actually need a local provider for development and a Cloud one for cloud. Try figure that out
 
@@ -15,6 +15,7 @@ namespace Nano.Storage.Abstractions;
 ///     Implementations are responsible for registering all required services (such as clients, health checks, and path providers)
 ///     into the dependency injection container based on the supplied <see cref="StorageOptions"/>.
 /// </remarks>
+/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage</remarks>
 public interface IStorageProvider
 {
     /// <summary>

@@ -1,4 +1,4 @@
-﻿namespace Nano.Data.Identity.Consts;
+﻿namespace Nano.Data.Consts;
 
 internal static class TableNames
 {
@@ -13,4 +13,7 @@ internal static class TableNames
     internal const string IDENTITY_DATA_PROTECTION_KEYS = "__EFDataProtectionKeys";
     internal const string IDENTITY_USER_CHANGE_DATA = "__EFAuthUserChangeData";
     internal const string IDENTITY_USER_REFRESH_TOKEN = "__EFAuthUserRefreshToken";
+
+    internal const string AUDIT = "__EFAudit";
+    internal const string AUDIT_PROPERTIES = "__EFAuditProperties";
 }

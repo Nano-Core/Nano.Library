@@ -11,5 +11,6 @@ public class GenerateResetPasswordToken
     /// Username.
     /// </summary>
     [Required]
+    [MaxLength(256)]
     public virtual string Username { get; set; } = null!;
 }

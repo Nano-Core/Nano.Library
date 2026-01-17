@@ -48,11 +48,6 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        // BUG: This could be wrong, we don't know that the controller name is the same as TUSer.
-        // - Either document the model naming convention
-        // - or maybe better always have the route "identity"? But that is strange cause when interacting with the controller normally
-        //   (e.g. get user, update user, etc) then "identity" route is unnatural
-        // BUT: it's also like that for the normal controllers. Check that as well.
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
         return this.InvokeAsync<GetPasswordOptionsRequest, PasswordOptions>(request, cancellationToken);

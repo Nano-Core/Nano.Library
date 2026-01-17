@@ -2,7 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Data.Abstractions.Models.Identity;
-using Nano.Data.Identity.Consts;
+using Nano.Data.Consts;
 using Nano.Data.Mappings;
 
 namespace Nano.Data.Identity.Mappings;

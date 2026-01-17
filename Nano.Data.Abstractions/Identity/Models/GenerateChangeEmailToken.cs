@@ -24,5 +24,6 @@ public class GenerateChangeEmailToken<TIdentity>
     /// </summary>
     [Required]
     [EmailAddress]
+    [MaxLength(256)]
     public virtual string NewEmailAddress { get; set; } = null!;
 }

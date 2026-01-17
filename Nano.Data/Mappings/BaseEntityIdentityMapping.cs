@@ -17,6 +17,7 @@ public abstract class BaseEntityIdentityMapping<TEntity, TIdentity> : BaseEntity
         builder
             .HasKey(y => y.Id);
 
+
         builder
             .Property(x => x.Id)
             .ValueGeneratedOnAdd()

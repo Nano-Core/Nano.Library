@@ -10,6 +10,7 @@ namespace Nano.Data.Abstractions;
 /// Data Provider interface.
 /// Defines the provider used for data context in the application.
 /// </summary>
+/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data</remarks>
 public interface IDataProvider
 {
     /// <summary>
