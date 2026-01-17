@@ -14,7 +14,7 @@ namespace Nano.Data.SqLite;
 public class SqliteProvider : IDataProvider
 {
     /// <inheritdoc />
-    public virtual void Configure(DbContextOptionsBuilder builder, DataOptions options)
+    public static void Configure(DbContextOptionsBuilder builder, DataOptions options)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(options);
@@ -35,17 +35,17 @@ public class SqliteProvider : IDataProvider
     }
 
     /// <inheritdoc />
-    public virtual void Configure(IServiceCollection services, DataOptions options)
+    public static void Configure(IServiceCollection services, DataOptions options)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
 
-        if (!options.UseHealthCheck)
+        if (options.HealthCheck == null)
         {
             return;
         }
 
-        var failureStatus = options.UnhealthyStatus
+        var failureStatus = options.HealthCheck.UnhealthyStatus
             .GetHealthStatus();
 
         services

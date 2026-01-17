@@ -12,7 +12,7 @@ namespace Nano.Data.InMemory;
 public class InMemoryProvider : IDataProvider
 {
     /// <inheritdoc />
-    public virtual void Configure(DbContextOptionsBuilder builder, DataOptions options)
+    public static void Configure(DbContextOptionsBuilder builder, DataOptions options)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(options);
@@ -22,7 +22,7 @@ public class InMemoryProvider : IDataProvider
     }
 
     /// <inheritdoc />
-    public virtual void Configure(IServiceCollection services, DataOptions options)
+    public static void Configure(IServiceCollection services, DataOptions options)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);

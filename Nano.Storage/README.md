@@ -67,22 +67,23 @@ template
 ## Configuration
 The ```Storage``` section in the configuration defines the storage provider and related settings used by the application.
 
-| Setting             | Type   | Default     | Description                                                                                                           |
-| ------------------- | ------ | ----------- | --------------------------------------------------------------------------------------------------------------------- |
-|  `AccountName`      | string | null        | The account or tenant identifier used to authenticate with the storage provider.                                      |
-|  `AccountKey`       | string | null        | The secret, key, or credential used to authenticate with the storage provider.                                        |
-|  `ShareName`        | string | null        | The logical container, share, or bucket name used for file storage.                                                   |
-|  `UseHealthCheck`   | bool   | null        | A value indicating whether storage health checks should be registered.  _Only relevant for_ ```NanoWebApplication```  |
-|  `UnhealthyStatus`  | enum   | Unhealthy   | The health status reported when the storage provider is unavailable. _Only relevant for_ ```NanoWebApplication```     |
+| Setting                         | Type   | Default     | Description                                                                                                           |
+| ------------------------------- | ------ | ----------- | --------------------------------------------------------------------------------------------------------------------- |
+|  `AccountName`                  | string | null        | The account or tenant identifier used to authenticate with the storage provider.                                      |
+|  `AccountKey`                   | string | null        | The secret, key, or credential used to authenticate with the storage provider.                                        |
+|  `ShareName`                    | string | null        | The logical container, share, or bucket name used for file storage.                                                   |
+|  `HealthCheck`                  |        | null        | Storage health check. _Only relevant for_ ```NanoWebApplication```.                                                   |
+|  `HealthCheck.UnhealthyStatus`  | enum   | Unhealthy   | The health status reported when the storage provider is unavailable. _Only relevant for_ ```NanoWebApplication```.    |
 
 ```json
-  "Storage": {
-    "AccountName": null,
-    "AccountKey": null,
-    "ShareName": null,
-    "UseHealthCheck": true,
+"Storage": {
+  "AccountName": null,
+  "AccountKey": null,
+  "ShareName": null,
+  "HealthCheck": {
     "UnhealthyStatus": "Unhealthy"
   }
+}
 ```
 
 ## Storage Providers

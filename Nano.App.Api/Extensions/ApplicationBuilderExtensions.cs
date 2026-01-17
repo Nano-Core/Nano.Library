@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +14,16 @@ using Nano.App.Api.Extensions.Const;
 using Nano.App.Api.Mvc.Extensions;
 using Nano.App.Api.Mvc.Middleware;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using Nano.App.Api.Mvc.Documentation.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
-using HealthCheckOptions = Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions;
+using ForwardedHeadersOptions = Nano.App.Api.Config.ForwardedHeadersOptions;
+using SessionOptions = Nano.App.Api.Config.SessionOptions;
 
 namespace Nano.App.Api.Extensions;
 
@@ -39,12 +39,11 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoHttpCorsPolicy(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
+    internal static IApplicationBuilder UseNanoHttpCorsPolicy(this IApplicationBuilder applicationBuilder, CorsOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        if (apiOptions.HttpPolicyHeaders.Cors == null)
+        if (options == null)
         {
             return applicationBuilder;
         }
@@ -54,9 +53,9 @@ internal static class ApplicationBuilderExtensions
             .Use((context, next) =>
             {
                 context.Response
-                    .AddCrossOriginEmbedderPolicyHeader(apiOptions.HttpPolicyHeaders.Cors.Origin.EmbedderPolicy)
-                    .AddCrossOriginOpenerPolicyHeader(apiOptions.HttpPolicyHeaders.Cors.Origin.OpenerPolicy)
-                    .AddCrossOriginResourcePolicyHeader(apiOptions.HttpPolicyHeaders.Cors.Origin.ResourcePolicy);
+                    .AddCrossOriginEmbedderPolicyHeader(options.Origin.EmbedderPolicy)
+                    .AddCrossOriginOpenerPolicyHeader(options.Origin.OpenerPolicy)
+                    .AddCrossOriginResourcePolicyHeader(options.Origin.ResourcePolicy);
 
                 return next();
             });
@@ -64,27 +63,26 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoHttpXForwardedHeaders(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
+    internal static IApplicationBuilder UseNanoHttpXForwardedHeaders(this IApplicationBuilder applicationBuilder, ForwardedHeadersOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
 
-        ArgumentNullException.ThrowIfNull(apiOptions);
-
-        if (apiOptions.Hosting.UseForwardedHeaders)
+        if (options == null)
         {
-            applicationBuilder
-                .UseForwardedHeaders();
+            return applicationBuilder;
         }
+
+        applicationBuilder
+            .UseForwardedHeaders();
 
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoHttpXRobotsTagHeaders(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
+    internal static IApplicationBuilder UseNanoHttpXRobotsTagHeaders(this IApplicationBuilder applicationBuilder, RobotsOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        if (apiOptions.HttpPolicyHeaders.Robots == null)
+        if (options == null)
         {
             return applicationBuilder;
         }
@@ -93,7 +91,7 @@ internal static class ApplicationBuilderExtensions
             .Use((context, next) =>
             {
                 context.Response
-                    .AddXRobotsHeader(apiOptions.HttpPolicyHeaders.Robots);
+                    .AddXRobotsHeader(options);
 
                 return next();
             });
@@ -101,16 +99,20 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoHttpXFrameOptionsPolicyHeader(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
+    internal static IApplicationBuilder UseNanoHttpXFrameOptionsPolicyHeader(this IApplicationBuilder applicationBuilder, XFrameOptionsOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
-        ArgumentNullException.ThrowIfNull(apiOptions);
+
+        if (options == null)
+        {
+            return applicationBuilder;
+        }
 
         applicationBuilder
             .Use((context, next) =>
             {
                 context.Response
-                    .AddFrameOptionsPolicyHeader(apiOptions.HttpPolicyHeaders.FrameOptionsPolicyHeader);
+                    .AddFrameOptionsPolicyHeader(options.XFrameOptionsPolicyHeader);
 
                 return next();
             });
@@ -118,15 +120,19 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoHttpXXssProtectionPolicyHeader(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
+    internal static IApplicationBuilder UseNanoHttpXXssProtectionPolicyHeader(this IApplicationBuilder applicationBuilder, XXssProtectionOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
-        ArgumentNullException.ThrowIfNull(apiOptions);
+
+        if (options == null)
+        {
+            return applicationBuilder;
+        }
 
         applicationBuilder
             .UseSecurityHeaders(x =>
             {
-                switch (apiOptions.HttpPolicyHeaders.XssProtectionPolicyHeader)
+                switch (options.XssProtectionPolicyHeader)
                 {
                     case XXssProtectionPolicyBlockMode.FilterEnabled:
                         x.AddXssProtectionEnabled();
@@ -145,19 +151,23 @@ internal static class ApplicationBuilderExtensions
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(apiOptions.HttpPolicyHeaders.XssProtectionPolicyHeader), apiOptions.HttpPolicyHeaders.XssProtectionPolicyHeader, "Argument is out of range.");
+                        throw new ArgumentOutOfRangeException(nameof(options.XssProtectionPolicyHeader), options.XssProtectionPolicyHeader, "Argument is out of range.");
                 }
             });
 
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoHttpContentTypeOptionsPolicyHeader(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
+    internal static IApplicationBuilder UseNanoHttpContentTypeOptionsPolicyHeader(this IApplicationBuilder applicationBuilder, ContentTypeOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        if (apiOptions.HttpPolicyHeaders.UseContentTypeOptionsNoSniff)
+        if (options == null)
+        {
+            return applicationBuilder;
+        }
+
+        if (options.NoSniff)
         {
             applicationBuilder
                 .Use((context, next) =>
@@ -172,15 +182,19 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoHttpReferrerPolicyHeader(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
+    internal static IApplicationBuilder UseNanoHttpReferrerPolicyHeader(this IApplicationBuilder applicationBuilder, ReferrerPolicyOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
-        ArgumentNullException.ThrowIfNull(apiOptions);
+
+        if (options == null)
+        {
+            return applicationBuilder;
+        }
 
         applicationBuilder
             .UseSecurityHeaders(x =>
             {
-                switch (apiOptions.HttpPolicyHeaders.ReferrerPolicyHeader)
+                switch (options.ReferrerPolicyHeader)
                 {
                     case ReferrerPolicy.NoReferrer:
                         x.AddReferrerPolicyNoReferrer();
@@ -219,19 +233,18 @@ internal static class ApplicationBuilderExtensions
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(apiOptions.HttpPolicyHeaders.ReferrerPolicyHeader), apiOptions.HttpPolicyHeaders.ReferrerPolicyHeader, "Argument out of range.");
+                        throw new ArgumentOutOfRangeException(nameof(options.ReferrerPolicyHeader), options.ReferrerPolicyHeader, "Argument out of range.");
                 }
             });
 
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoHttpStrictTransportSecurityPolicyHeader(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
+    internal static IApplicationBuilder UseNanoHttpStrictTransportSecurityPolicyHeader(this IApplicationBuilder applicationBuilder, HstsOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        if (apiOptions.HttpPolicyHeaders.Hsts == null)
+        if (options == null)
         {
             return applicationBuilder;
         }
@@ -242,49 +255,48 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoHttpContentSecurityPolicyHeader(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
+    internal static IApplicationBuilder UseNanoHttpContentSecurityPolicyHeader(this IApplicationBuilder applicationBuilder, CspOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        if (apiOptions.HttpPolicyHeaders.Csp == null)
+        if (options == null)
         {
             return applicationBuilder;
         }
 
-        if (apiOptions.HttpPolicyHeaders.Csp.ReportOnly)
+        if (options.ReportOnly)
         {
             applicationBuilder
                 .UseSecurityHeaders(new HeaderPolicyCollection()
                     .AddContentSecurityPolicyReportOnly(x =>
                     {
-                        if (apiOptions.HttpPolicyHeaders.Csp.UpgradeInsecureRequests)
+                        if (options.UpgradeInsecureRequests)
                         {
                             x.AddUpgradeInsecureRequests();
                         }
 
-                        if (apiOptions.HttpPolicyHeaders.Csp.BlockAllMixedContent)
+                        if (options.BlockAllMixedContent)
                         {
                             x.AddBlockAllMixedContent();
                         }
 
-                        x.UseCspReportUris(apiOptions.HttpPolicyHeaders.Csp.ReportUris);
-                        x.UseCspDefaults(apiOptions.HttpPolicyHeaders.Csp.Defaults);
-                        x.UseCspStyles(apiOptions.HttpPolicyHeaders.Csp.Styles);
-                        x.UseCspScripts(apiOptions.HttpPolicyHeaders.Csp.Scripts);
-                        x.UseCspObjects(apiOptions.HttpPolicyHeaders.Csp.Objects);
-                        x.UseCspImages(apiOptions.HttpPolicyHeaders.Csp.Images);
-                        x.UseCspMedia(apiOptions.HttpPolicyHeaders.Csp.Media);
-                        x.UseCspFrames(apiOptions.HttpPolicyHeaders.Csp.Frames);
-                        x.UseCspFrameAncestors(apiOptions.HttpPolicyHeaders.Csp.FrameAncestors);
-                        x.UseCspFonts(apiOptions.HttpPolicyHeaders.Csp.Fonts);
-                        x.UseCspConnections(apiOptions.HttpPolicyHeaders.Csp.Connections);
-                        x.UseCspBaseUris(apiOptions.HttpPolicyHeaders.Csp.BaseUris);
-                        x.UseCspChildren(apiOptions.HttpPolicyHeaders.Csp.Children);
-                        x.UseCspForms(apiOptions.HttpPolicyHeaders.Csp.Forms);
-                        x.UseCspManifests(apiOptions.HttpPolicyHeaders.Csp.Manifests);
-                        x.UseCspWorkers(apiOptions.HttpPolicyHeaders.Csp.Workers);
-                        x.UseCspSandbox(apiOptions.HttpPolicyHeaders.Csp.Sandbox);
+                        x.UseCspReportUris(options.ReportUris);
+                        x.UseCspDefaults(options.Defaults);
+                        x.UseCspStyles(options.Styles);
+                        x.UseCspScripts(options.Scripts);
+                        x.UseCspObjects(options.Objects);
+                        x.UseCspImages(options.Images);
+                        x.UseCspMedia(options.Media);
+                        x.UseCspFrames(options.Frames);
+                        x.UseCspFrameAncestors(options.FrameAncestors);
+                        x.UseCspFonts(options.Fonts);
+                        x.UseCspConnections(options.Connections);
+                        x.UseCspBaseUris(options.BaseUris);
+                        x.UseCspChildren(options.Children);
+                        x.UseCspForms(options.Forms);
+                        x.UseCspManifests(options.Manifests);
+                        x.UseCspWorkers(options.Workers);
+                        x.UseCspSandbox(options.Sandbox);
                     }));
         }
         else
@@ -293,33 +305,33 @@ internal static class ApplicationBuilderExtensions
                 .UseSecurityHeaders(new HeaderPolicyCollection()
                     .AddContentSecurityPolicy(x =>
                     {
-                        if (apiOptions.HttpPolicyHeaders.Csp.UpgradeInsecureRequests)
+                        if (options.UpgradeInsecureRequests)
                         {
                             x.AddUpgradeInsecureRequests();
                         }
 
-                        if (apiOptions.HttpPolicyHeaders.Csp.BlockAllMixedContent)
+                        if (options.BlockAllMixedContent)
                         {
                             x.AddBlockAllMixedContent();
                         }
 
-                        x.UseCspReportUris(apiOptions.HttpPolicyHeaders.Csp.ReportUris);
-                        x.UseCspDefaults(apiOptions.HttpPolicyHeaders.Csp.Defaults);
-                        x.UseCspStyles(apiOptions.HttpPolicyHeaders.Csp.Styles);
-                        x.UseCspScripts(apiOptions.HttpPolicyHeaders.Csp.Scripts);
-                        x.UseCspObjects(apiOptions.HttpPolicyHeaders.Csp.Objects);
-                        x.UseCspImages(apiOptions.HttpPolicyHeaders.Csp.Images);
-                        x.UseCspMedia(apiOptions.HttpPolicyHeaders.Csp.Media);
-                        x.UseCspFrames(apiOptions.HttpPolicyHeaders.Csp.Frames);
-                        x.UseCspFrameAncestors(apiOptions.HttpPolicyHeaders.Csp.FrameAncestors);
-                        x.UseCspFonts(apiOptions.HttpPolicyHeaders.Csp.Fonts);
-                        x.UseCspConnections(apiOptions.HttpPolicyHeaders.Csp.Connections);
-                        x.UseCspBaseUris(apiOptions.HttpPolicyHeaders.Csp.BaseUris);
-                        x.UseCspChildren(apiOptions.HttpPolicyHeaders.Csp.Children);
-                        x.UseCspForms(apiOptions.HttpPolicyHeaders.Csp.Forms);
-                        x.UseCspManifests(apiOptions.HttpPolicyHeaders.Csp.Manifests);
-                        x.UseCspWorkers(apiOptions.HttpPolicyHeaders.Csp.Workers);
-                        x.UseCspSandbox(apiOptions.HttpPolicyHeaders.Csp.Sandbox);
+                        x.UseCspReportUris(options.ReportUris);
+                        x.UseCspDefaults(options.Defaults);
+                        x.UseCspStyles(options.Styles);
+                        x.UseCspScripts(options.Scripts);
+                        x.UseCspObjects(options.Objects);
+                        x.UseCspImages(options.Images);
+                        x.UseCspMedia(options.Media);
+                        x.UseCspFrames(options.Frames);
+                        x.UseCspFrameAncestors(options.FrameAncestors);
+                        x.UseCspFonts(options.Fonts);
+                        x.UseCspConnections(options.Connections);
+                        x.UseCspBaseUris(options.BaseUris);
+                        x.UseCspChildren(options.Children);
+                        x.UseCspForms(options.Forms);
+                        x.UseCspManifests(options.Manifests);
+                        x.UseCspWorkers(options.Workers);
+                        x.UseCspSandbox(options.Sandbox);
                     }));
         }
 
@@ -327,7 +339,7 @@ internal static class ApplicationBuilderExtensions
             .Use((context, next) =>
             {
                 context.Response
-                    .AddPermissionsPolicyHeader(apiOptions.HttpPolicyHeaders.Csp.PermissionsPolicy);
+                    .AddPermissionsPolicyHeader(options.PermissionsPolicy);
 
                 return next();
             });
@@ -335,12 +347,11 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoSession(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
+    internal static IApplicationBuilder UseNanoSession(this IApplicationBuilder applicationBuilder, SessionOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        if (apiOptions.Session == null)
+        if (options == null)
         {
             return applicationBuilder;
         }
@@ -371,12 +382,11 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoRequestVirusScan(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
+    internal static IApplicationBuilder UseNanoRequestVirusScan(this IApplicationBuilder applicationBuilder, VirusScanOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        if (apiOptions.VirusScan == null)
+        if (options == null)
         {
             return applicationBuilder;
         }
@@ -417,57 +427,53 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoResponseCompression(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
+    internal static IApplicationBuilder UseNanoResponseCompression(this IApplicationBuilder applicationBuilder, ResponseCompressionOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        if (apiOptions.Hosting.UseResponseCompression)
+        if (options == null)
         {
-            applicationBuilder
-                .UseResponseCompression();
+            return applicationBuilder;
         }
+
+        applicationBuilder
+            .UseResponseCompression();
 
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoResponseCaching(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
+    internal static IApplicationBuilder UseNanoResponseCaching(this IApplicationBuilder applicationBuilder, ResponseCacheOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
-        ArgumentNullException.ThrowIfNull(apiOptions);
+
+        if (options == null)
+        {
+            return applicationBuilder;
+        }
 
         applicationBuilder
             .Use((context, next) =>
             {
-                if (apiOptions.ResponseCache == null)
+                context.Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
                 {
-                    context.Response.Headers[HeaderNames.CacheControl] = "no-cache, no-store, must-revalidate";
-                    context.Response.Headers[HeaderNames.Pragma] = "no-cache";
-                    context.Response.Headers[HeaderNames.Expires] = "0";
-                }
-                else
+                    Public = true,
+                    MaxAge = options.MaxAge
+                };
+
+                var existingVary = context.Response.Headers[HeaderNames.Vary].ToString();
+                var varyHeaders = new List<string>(existingVary.Split(',', StringSplitOptions.RemoveEmptyEntries))
                 {
-                    context.Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
-                    {
-                        Public = true,
-                        MaxAge = apiOptions.ResponseCache.MaxAge
-                    };
+                    HeaderNames.Authorization,
+                    HeaderNames.AcceptEncoding,
+                    HeaderNames.AcceptLanguage,
+                    RequestTimeZoneHeaderProvider.Headerkey
+                };
+                context.Response.Headers[HeaderNames.Vary] = string.Join(", ", varyHeaders.Distinct());
 
-                    var existingVary = context.Response.Headers[HeaderNames.Vary].ToString();
-                    var varyHeaders = new List<string>(existingVary.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        HeaderNames.Authorization,
-                        HeaderNames.AcceptEncoding,
-                        HeaderNames.AcceptLanguage,
-                        RequestTimeZoneHeaderProvider.Headerkey
-                    };
-                    context.Response.Headers[HeaderNames.Vary] = string.Join(", ", varyHeaders.Distinct());
+                var responseCachingFeature = context.Features
+                    .Get<IResponseCachingFeature>();
 
-                    var responseCachingFeature = context.Features
-                        .Get<IResponseCachingFeature>();
-
-                    responseCachingFeature?.VaryByQueryKeys = ["*"];
-                }
+                responseCachingFeature?.VaryByQueryKeys = ["*"];
 
                 return next();
             });
@@ -475,96 +481,72 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoDocumentataion(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions, string environment)
+    internal static IApplicationBuilder UseNanoDocumentataion(this IApplicationBuilder applicationBuilder, IWebHostEnvironment webHostEnvironment, string version = "1.0.0", DocumentationOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
-        ArgumentNullException.ThrowIfNull(apiOptions);
-        ArgumentNullException.ThrowIfNull(environment);
+        ArgumentNullException.ThrowIfNull(webHostEnvironment);
 
-        if (apiOptions.Documentation != null)
-        {
-            applicationBuilder
-                .UseSwagger(x =>
-                {
-                    x.RouteTemplate = "docs/{documentName}/swagger.json";
-                })
-                .UseSwaggerUI(x =>
-                {
-                    var apiVersionDescriptionProvider = applicationBuilder.ApplicationServices
-                        .GetRequiredService<IApiVersionDescriptionProvider>();
-
-                    foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
-                    {
-                        var defaultVersion = apiOptions.Version
-                            .ParseVersion();
-
-                        var defaultApiVersion = new ApiVersion(defaultVersion.Major, defaultVersion.Minor);
-
-                        var defaultVersionText = apiOptions.Documentation.UseDefaultVersion && description.ApiVersion == defaultApiVersion
-                            ? " (Default)"
-                            : string.Empty;
-
-                        x.SwaggerEndpoint($"{description.GroupName}/swagger.json", $"{nameof(Nano)} - {apiOptions.Name} {description.ApiVersion}{defaultVersionText} ({environment})");
-                    }
-
-                    x.RoutePrefix = "docs";
-                    x.DocumentTitle = $"{nameof(Nano)} - {apiOptions.Name} Docs ({environment})";
-
-                    x.EnableFilter();
-                    x.EnableDeepLinking();
-                    x.EnableValidator(null);
-                    x.ShowExtensions();
-                    x.DisplayOperationId();
-                    x.DisplayRequestDuration();
-                    x.MaxDisplayedTags(-1);
-                    x.DefaultModelExpandDepth(2);
-                    x.DefaultModelsExpandDepth(1);
-                    x.DefaultModelRendering(ModelRendering.Example);
-                    x.DocExpansion(DocExpansion.None);
-
-                    if (apiOptions.Documentation.CspNonce == null)
-                    {
-                        return;
-                    }
-
-                    var originalIndexStreamFactory = x.IndexStream;
-
-                    x.IndexStream = () =>
-                    {
-                        using var originalStream = originalIndexStreamFactory();
-                        using var originalStreamReader = new StreamReader(originalStream);
-
-                        var originalIndexHtmlContents = originalStreamReader
-                            .ReadToEnd();
-
-                        const string PATTERN = "<(script|style)([^>]*)>";
-                        var replacement = $"<$1$2 nonce=\"{apiOptions.Documentation.CspNonce}\">";
-                        var nonceEnabledIndexHtmlContents = Regex.Replace(originalIndexHtmlContents, PATTERN, replacement, RegexOptions.IgnoreCase);
-
-                        var bytes = Encoding.UTF8
-                            .GetBytes(nonceEnabledIndexHtmlContents);
-
-                        return new MemoryStream(bytes);
-                    };
-                });
-        }
-
-        return applicationBuilder;
-    }
-
-    internal static IApplicationBuilder UseNanoHealthChecks(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions, string environment)
-    {
-        ArgumentNullException.ThrowIfNull(applicationBuilder);
-        ArgumentNullException.ThrowIfNull(apiOptions);
-        ArgumentNullException.ThrowIfNull(environment);
-
-        if (apiOptions.HealthCheck == null)
+        if (options == null)
         {
             return applicationBuilder;
         }
 
         applicationBuilder
-            .UseHealthChecks(HealthzCheckUris.Path, new HealthCheckOptions
+            .UseSwagger(x =>
+            {
+                x.RouteTemplate = "docs/{documentName}/swagger.json";
+            })
+            .UseSwaggerUI(x =>
+            {
+                var apiVersionDescriptionProvider = applicationBuilder.ApplicationServices
+                    .GetRequiredService<IApiVersionDescriptionProvider>();
+
+                foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+                {
+                    var defaultVersion = version
+                        .ParseVersion();
+
+                    var defaultApiVersion = new ApiVersion(defaultVersion.Major, defaultVersion.Minor);
+
+                    var defaultVersionText = options.UseDefaultVersion && description.ApiVersion == defaultApiVersion
+                        ? " (Default)"
+                        : string.Empty;
+
+                    x.SwaggerEndpoint($"{description.GroupName}/swagger.json", $"{nameof(Nano)} - {webHostEnvironment.ApplicationName} {description.ApiVersion}{defaultVersionText} ({webHostEnvironment.EnvironmentName})");
+                }
+
+                x.RoutePrefix = "docs";
+                x.DocumentTitle = $"{nameof(Nano)} - {webHostEnvironment.ApplicationName} Docs ({webHostEnvironment.EnvironmentName})";
+
+                x.EnableFilter();
+                x.EnableDeepLinking();
+                x.EnableValidator(null);
+                x.ShowExtensions();
+                x.DisplayOperationId();
+                x.DisplayRequestDuration();
+                x.MaxDisplayedTags(-1);
+                x.DefaultModelExpandDepth(2);
+                x.DefaultModelsExpandDepth(1);
+                x.DefaultModelRendering(ModelRendering.Example);
+                x.DocExpansion(DocExpansion.None);
+                x.UseCspNonce(options.CspNonce);
+            });
+
+        return applicationBuilder;
+    }
+
+    internal static IApplicationBuilder UseNanoHealthChecks(this IApplicationBuilder applicationBuilder, IWebHostEnvironment webHostEnvironment, string version = "1.0.0", HealthCheckOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(webHostEnvironment);
+
+        if (options == null)
+        {
+            return applicationBuilder;
+        }
+
+        applicationBuilder
+            .UseHealthChecks(HealthzCheckUris.Path, new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
             {
                 Predicate = _ => true,
                 AllowCachingResponses = true,
@@ -574,7 +556,7 @@ internal static class ApplicationBuilderExtensions
         applicationBuilder
             .UseHealthChecksUI(x =>
             {
-                x.PageTitle = $"{nameof(Nano)} - {apiOptions.Name} Healthz v{apiOptions.Version} ({environment})";
+                x.PageTitle = $"{nameof(Nano)} - {webHostEnvironment.ApplicationName} Healthz v{version} ({webHostEnvironment.EnvironmentName})";
                 x.UIPath = HealthzCheckUris.UiPath;
                 x.ApiPath = HealthzCheckUris.ApiPath;
                 x.ResourcesPath = HealthzCheckUris.RexPath;

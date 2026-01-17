@@ -32,7 +32,7 @@ public static class ServiceCollectionExtensions
     ///     </list>
     /// </remarks>
     public static IServiceCollection AddNanoEventing<TProvider>(this IServiceCollection services)
-        where TProvider : class, IEventingProvider, new()
+        where TProvider : IEventingProvider
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -44,15 +44,10 @@ public static class ServiceCollectionExtensions
             throw new InvalidOperationException($"Configuration section '{EventingOptions.SectionName}' could not be loaded.");
         }
 
-        var provider = Activator.CreateInstance<TProvider>();
-        provider
-            .Configure(services, options);
+        TProvider.Configure(services, options);
 
         services
-            .AddSingleton<IEventingProvider>(provider)
-            .AddEventingHandlers();
-
-        services
+            .AddEventingHandlers()
             .AddScoped<IRegisterEventHandlersTask, RegisterEventHandlersTask>();
 
         return services;

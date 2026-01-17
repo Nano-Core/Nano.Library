@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using Nano.App.Api.Config.Enums;
-
 namespace Nano.App.Api.Config;
 
 /// <summary>
@@ -9,29 +6,24 @@ namespace Nano.App.Api.Config;
 public class HttpPolicyHeaderOptions
 {
     /// <summary>
-    /// Use Content Type Options.
-    /// Added X-Content-Type Options header.
+    /// 
     /// </summary>
-    [Required]
-    public virtual bool UseContentTypeOptionsNoSniff { get; set; } = true;
+    public virtual ContentTypeOptions? ContentType { get; set; }
 
     /// <summary>
-    /// Use Referrer Policy Header.
+    /// 
     /// </summary>
-    [Required]
-    public virtual ReferrerPolicy ReferrerPolicyHeader { get; set; } = ReferrerPolicy.Disabled;
+    public virtual ReferrerPolicyOptions? ReferrerPolicy { get; set; }
 
     /// <summary>
-    /// Use Frame Options Policy Header.
+    /// 
     /// </summary>
-    [Required]
-    public virtual XFrameOptionsPolicy FrameOptionsPolicyHeader { get; set; } = XFrameOptionsPolicy.Disabled;
+    public virtual XFrameOptionsOptions? XFrameOptions { get; set; }
 
     /// <summary>
-    /// Use Xss Protection Policy Header.
+    /// 
     /// </summary>
-    [Required]
-    public virtual XXssProtectionPolicyBlockMode XssProtectionPolicyHeader { get; set; } = XXssProtectionPolicyBlockMode.Disabled;
+    public virtual XXssProtectionOptions? XXssProtection { get; set; }
 
     /// <summary>
     /// Csp.
@@ -55,4 +47,9 @@ public class HttpPolicyHeaderOptions
     /// Settings for robots (search engines) behavior.
     /// </summary>
     public virtual RobotsOptions? Robots { get; set; }
+
+    /// <summary>
+    /// Enables forwarded headers, when application is behind a proxy.
+    /// </summary>
+    public virtual ForwardedHeadersOptions? ForwardedHeaders { get; set; }
 }

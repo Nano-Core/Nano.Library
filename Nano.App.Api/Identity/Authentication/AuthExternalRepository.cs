@@ -1,9 +1,10 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Exceptions;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Nano.Data.Abstractions.Identity.Authentication.Consts;
 
 namespace Nano.App.Api.Identity.Authentication;
 
@@ -82,7 +83,7 @@ public class AuthExternalRepository : IAuthExternalRepository
             throw new UnauthorizedException();
         }
 
-        if (this.facebookRepository != null && logInExternalRefresh.ProviderName == "Facebook")
+        if (this.facebookRepository != null && logInExternalRefresh.ProviderName == ExternalLogInProviderNames.FACEBOOK)
         {
             return await this.facebookRepository
                 .AuthenticateRefresh(new LogInExternalRefreshFacebook
@@ -91,7 +92,7 @@ public class AuthExternalRepository : IAuthExternalRepository
                 }, cancellationToken);
         }
 
-        if (this.googleRepository != null && logInExternalRefresh.ProviderName == "Google")
+        if (this.googleRepository != null && logInExternalRefresh.ProviderName == ExternalLogInProviderNames.GOOGLE)
         {
             return await this.googleRepository
                 .AuthenticateRefresh(new LogInExternalRefreshGoogle
@@ -100,7 +101,7 @@ public class AuthExternalRepository : IAuthExternalRepository
                 }, cancellationToken);
         }
 
-        if (this.microsoftRepository != null && logInExternalRefresh.ProviderName == "Microsoft")
+        if (this.microsoftRepository != null && logInExternalRefresh.ProviderName == ExternalLogInProviderNames.MICROSOFT)
         {
             return await this.microsoftRepository
                 .AuthenticateRefresh(new LogInExternalRefreshMicrosoft

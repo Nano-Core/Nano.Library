@@ -4,6 +4,8 @@ using Nano.Data.Abstractions.Config;
 
 namespace Nano.Data.Abstractions;
 
+// TODO: Data: Postgres Provider
+
 /// <summary>
 /// Data Provider interface.
 /// Defines the provider used for data context in the application.
@@ -15,12 +17,12 @@ public interface IDataProvider
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <param name="options">The <see cref="DataOptions"/>.</param>
-    void Configure(IServiceCollection services, DataOptions options);
+    static abstract void Configure(IServiceCollection services, DataOptions options);
 
     /// <summary>
     /// Configures the <see cref="IDataProvider"/>.
     /// </summary>
     /// <param name="builder">The <see cref="DbContextOptionsBuilder"/>.</param>
     /// <param name="options">The <see cref="DataOptions"/>.</param>
-    void Configure(DbContextOptionsBuilder builder, DataOptions options);
+    static abstract void Configure(DbContextOptionsBuilder builder, DataOptions options);
 }

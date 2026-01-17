@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Nano.App.Api.Config;
 using Nano.Data.Abstractions.Identity.Authentication;
+using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.App.Api.Identity.Authentication;
@@ -51,7 +52,7 @@ public class AuthExternalGoogleRepository : IAuthExternalGoogleRepository
                     Email = payload.Email,
                     ExternalToken =
                     {
-                        Name = "Google",
+                        Name = ExternalLogInProviderNames.GOOGLE,
                         Token = implicitLogin.AccessToken
                     }
                 };

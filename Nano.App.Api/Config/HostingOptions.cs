@@ -33,20 +33,6 @@ public class HostingOptions
     public virtual bool UseHttpsRequired { get; set; } = false;
 
     /// <summary>
-    /// Use Forwarded Headers.
-    /// Enables forwarded headers, when application is behind a proxy.
-    /// </summary>
-    [Required]
-    public virtual bool UseForwardedHeaders { get; set; } = true;
-
-    /// <summary>
-    /// Use Response Compression.
-    /// Enables middleware for dynamic compression of http responses.
-    /// </summary>
-    [Required]
-    public virtual bool UseResponseCompression { get; set; } = true;
-
-    /// <summary>
     /// Expose Errors.
     /// </summary>
     [Required]
@@ -68,4 +54,9 @@ public class HostingOptions
     /// Certificate (ssl)
     /// </summary>
     public virtual CertificateOptions? Certificate { get; set; }
+
+    /// <summary>
+    /// Upload.
+    /// </summary>
+    public virtual MultipartLimitsOptions? MultipartLimits { get; set; }
 }

@@ -958,6 +958,22 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
     }
 
     /// <inheritdoc />
+    public virtual async Task<IEnumerable<IdentityUserRefreshToken<TIdentity>>> GetActiveRefreshTokens(TIdentity userId, CancellationToken cancellationToken = default)
+    {
+        await Task.CompletedTask;
+
+        var identityUserToken = this.dbContext
+            .Set<IdentityUserRefreshToken<TIdentity>>()
+            .Where(x =>
+                x.IdentityUserId.Equals(userId) &&
+                x.ExpireAt >= DateTimeOffset.UtcNow)
+            .AsNoTracking();
+
+        return identityUserToken;
+    }
+
+
+    /// <inheritdoc />
     public virtual async Task<IdentityUserRefreshToken<TIdentity>> CreateRefreshToken(TIdentity userId, RefreshToken refreshToken, string appId)
     {
         ArgumentNullException.ThrowIfNull(refreshToken);
@@ -988,6 +1004,25 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             .SaveChangesAsync();
 
         return identityUserToken;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task DeleteRefreshTokenAsync(TIdentity id, CancellationToken cancellationToken = default)
+    {
+        var identityUserRefreshToken = await this.dbContext
+            .Set<IdentityUserRefreshToken<TIdentity>>()
+            .FirstOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
+
+        if (identityUserRefreshToken == null)
+        {
+            return;
+        }
+
+        this.dbContext
+            .Remove(identityUserRefreshToken);
+
+        await this.dbContext
+            .SaveChangesAsync(cancellationToken);
     }
 
     #endregion

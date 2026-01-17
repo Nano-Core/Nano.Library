@@ -1,20 +1,18 @@
 using System;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Nano.App.Abstractions;
 
 namespace Nano.App;
-
-// BUG: 000: Add TenantId to IdentityUserEx (nullable)
-// BUG: 000: How can I force providers to be parameterless constructor
 
 // BUG: Should we make a BackgroundJob option, like we did in ....
 // and auto resolve just one of the consumers dependencies using IServiceScopeFactory and resolving each of that dependencies
 
+// BUG: 000: Add links to documentation and examples readme from triple slash. E.g AddNanoData<>() should link to Nano.Data Readme and related examples / Usages
+// BUG: 000: Go through Required / MaxLength / Etc for Entity models and request models - all the way through all layers
+
 /// <summary>
 /// Base Application (abstract).
 /// </summary>
-public abstract class BaseApplication<THost, THostBuilder> : IApplication
+public abstract class BaseApplication<THost, THostBuilder>
     where THost : class, IHost
     where THostBuilder : IHostApplicationBuilder
 {
@@ -36,22 +34,6 @@ public abstract class BaseApplication<THost, THostBuilder> : IApplication
     {
         this.applicationBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
     }
-
-    /// <summary>
-    /// Allows consumers to register application services.
-    /// </summary>
-    public virtual IApplication ConfigureServices(Action<IServiceCollection> configure)
-    {
-        configure(applicationBuilder.Services);
-
-        return this;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    public abstract IApplication Build();
 
     /// <summary>
     /// 

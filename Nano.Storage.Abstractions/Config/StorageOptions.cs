@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Nano.Common.Mvc.HealthChecks.Enums;
+﻿using Nano.Common.Config;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Storage.Abstractions.Config;
 
@@ -43,18 +43,7 @@ public class StorageOptions
     public virtual string ShareName { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets a value indicating whether storage health checks should be registered.
+    /// Options for configuring health-checks.
     /// </summary>
-    /// <remarks>
-    ///     When enabled, the configured storage provider may register a health check that validates connectivity and availability of the storage provider.
-    /// </remarks>
-    public virtual bool UseHealthCheck { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets the health status reported when the storage provider is unavailable.
-    /// </summary>
-    /// <remarks>
-    /// This value controls the severity level reported by storage health checks when failures are detected.
-    /// </remarks>
-    public virtual HealthStatusLevel UnhealthyStatus { get; set; } = HealthStatusLevel.Unhealthy;
+    public virtual HealthCheckOptions? HealthCheck { get; set; }
 }

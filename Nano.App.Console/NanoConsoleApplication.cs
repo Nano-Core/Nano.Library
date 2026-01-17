@@ -1,18 +1,21 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nano.App.Abstractions;
 using Nano.App.Console.Config;
 using Nano.App.Console.Extensions;
 using Nano.App.Extensions;
+using Nano.Common.Config;
 using System;
 using System.IO;
 using System.Reflection;
-using Nano.Common.Config;
 
 namespace Nano.App.Console;
 
-/// <inheritdoc />
-public sealed class NanoConsoleApplication : BaseApplication<IHost, HostApplicationBuilder>
+/// <summary>
+/// 
+/// </summary>
+public sealed class NanoConsoleApplication : BaseApplication<IHost, HostApplicationBuilder>, IApplication
 {
     private NanoConsoleApplication(HostApplicationBuilder builder)
         : base(builder)
@@ -20,17 +23,28 @@ public sealed class NanoConsoleApplication : BaseApplication<IHost, HostApplicat
     }
 
     /// <summary>
+    /// Allows consumers to register application services.
+    /// </summary>
+    public IApplication ConfigureServices(Action<IServiceCollection> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(applicationBuilder.Services);
+
+        return this;
+    }
+
+    /// <summary>
     /// Creates a <see cref="IHostBuilder"/>.
     /// </summary>
     /// <param name="args">The command-line args, if any.</param>
     /// <returns>The <see cref="IHostBuilder"/>.</returns>
-    public static NanoConsoleApplication ConfigureApp(params string[] args)
+    public static IApplication ConfigureApp(params string[] args)
     {
         var root = Directory.GetCurrentDirectory();
         var config = ConfigManager.BuildConfiguration(args);
         var applicationName = Assembly.GetEntryAssembly()?.GetName().Name;
         var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Development";
-
 
         var applicationOptions = new HostApplicationBuilderSettings
         {
@@ -53,8 +67,8 @@ public sealed class NanoConsoleApplication : BaseApplication<IHost, HostApplicat
         return new NanoConsoleApplication(builder);
     }
 
-    /// <inheritdoc />
-    public override IApplication Build()
+    /// <inheritdoc cref="IApplication" />
+    public IApplication Build()
     {
         this.application = this.applicationBuilder
             .Build();

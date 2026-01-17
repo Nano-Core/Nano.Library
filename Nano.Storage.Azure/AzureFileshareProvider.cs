@@ -22,21 +22,21 @@ public class AzureFileshareProvider : IStorageProvider
     /// <param name="services">The <see cref="IServiceCollection"/> to which storage-related services are added.</param>
     /// <param name="options">The non-null <see cref="StorageOptions"/> used to control provider behavior.</param>
     /// <remarks>
-    ///     If <see cref="StorageOptions.UseHealthCheck"/> is <c>false</c>, no health-check services
+    ///     If <see cref="StorageOptions.HealthCheck"/> is <c>null</c>, no health-check services
     ///     are registered and the method returns without side effects.
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> or <paramref name="options"/> is <c>null</c>.</exception>
-    public virtual void Configure(IServiceCollection services, StorageOptions options)
+    public static void Configure(IServiceCollection services, StorageOptions options)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
 
-        if (!options.UseHealthCheck)
+        if (options.HealthCheck == null)
         {
             return;
         }
 
-        var failureStatus = options.UnhealthyStatus
+        var failureStatus = options.HealthCheck.UnhealthyStatus
             .GetHealthStatus();
 
         services

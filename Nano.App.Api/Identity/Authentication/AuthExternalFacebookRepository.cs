@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.Api.Config;
 using Nano.Data.Abstractions.Identity.Authentication;
+using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Exceptions;
 using Newtonsoft.Json;
@@ -82,7 +83,7 @@ public class AuthExternalFacebookRepository : IAuthExternalFacebookRepository
 
                 externalLoginData?.ExternalToken = new ExternalLoginTokenData
                 {
-                    Name = "Facebook",
+                    Name = ExternalLogInProviderNames.FACEBOOK,
                     Token = implicitLogin.AccessToken
                 };
 

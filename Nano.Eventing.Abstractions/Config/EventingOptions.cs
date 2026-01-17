@@ -1,6 +1,6 @@
-using Nano.Common.Mvc.HealthChecks.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
+using Nano.Common.Config;
 
 namespace Nano.Eventing.Abstractions.Config;
 
@@ -74,35 +74,8 @@ public class EventingOptions
     [Required]
     public virtual ushort PrefetchCount { get; set; } = 50;
 
-    // BUG: 000: Merge into HealthCheckOptions (Eventing, Storage, Data, ApiClient, more?)
-    ///// <summary>
-    /////
-    ///// </summary>
-    //public virtual HealthCheckOptions? HealthCheck { get; set; }
-    ///// <summary>
-    /////
-    ///// </summary>
-    //public class HealthCheckOptions
-    //{
-    //    /// <summary>
-    //    /// Health status level to report when the eventing service is detected as unhealthy.
-    //    /// Default is <see cref="HealthStatusLevel.Unhealthy"/>.
-    //    /// </summary>
-    //    [Required]
-    //    public virtual HealthStatusLevel UnhealthyStatus { get; set; } = HealthStatusLevel.Unhealthy;
-    //}
-
     /// <summary>
-    /// Indicates whether to register a health check for the eventing service.
-    /// Default is true.
+    /// Options for configuring health-checks.
     /// </summary>
-    [Required]
-    public virtual bool UseHealthCheck { get; set; } = true;
-
-    /// <summary>
-    /// Health status level to report when the eventing service is detected as unhealthy.
-    /// Default is <see cref="HealthStatusLevel.Unhealthy"/>.
-    /// </summary>
-    [Required]
-    public virtual HealthStatusLevel UnhealthyStatus { get; set; } = HealthStatusLevel.Unhealthy;
+    public virtual HealthCheckOptions? HealthCheck { get; set; }
 }

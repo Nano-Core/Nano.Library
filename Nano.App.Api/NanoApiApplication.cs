@@ -1,9 +1,9 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,7 +23,7 @@ namespace Nano.App.Api;
 /// <summary>
 /// 
 /// </summary>
-public sealed class NanoApiApplication : BaseApplication<WebApplication, WebApplicationBuilder>
+public sealed class NanoApiApplication : BaseApplication<WebApplication, WebApplicationBuilder>, IApplication
 {
     private NanoApiApplication(WebApplicationBuilder builder)
         : base(builder)
@@ -31,16 +31,28 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
     }
 
     /// <summary>
+    /// Allows consumers to register application services.
+    /// </summary>
+    public IApplication ConfigureServices(Action<IServiceCollection> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(applicationBuilder.Services);
+
+        return this;
+    }
+
+    /// <summary>
     /// Entry point used by consumers.
     /// </summary>
     /// <param name="args"></param>
     /// <returns></returns>
-    public static NanoApiApplication ConfigureApp(params string[] args)
+    public static IApplication ConfigureApp(params string[] args)
     {
         var root = Directory.GetCurrentDirectory();
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Development;
-        var applicationName = Assembly.GetEntryAssembly()?.GetName().Name;
         var config = ConfigManager.BuildConfiguration(args);
+        var applicationName = config["Name"] ?? Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
 
         var applicationOptions = new WebApplicationOptions
         {
@@ -57,36 +69,29 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
 
         applicationBuilder.Services
             .AddNanoApp<ApiOptions>(config, out var webOptions)
-            .AddNanoExceptionHandling(webOptions)
-            .AddNanoCors(webOptions)
-            .AddNanoForwardedHeaders(webOptions)
-            .AddNanoHsts(webOptions)
-            .AddNanoCookies(webOptions)
-            .AddNanoSession(webOptions)
-            .AddNanoResponseCaching(webOptions)
-            .AddNanoVersioning(webOptions)
+            .AddNanoExceptionHandling()
+            .AddNanoCors(webOptions.HttpPolicyHeaders.Cors)
+            .AddNanoForwardedHeaders(webOptions.HttpPolicyHeaders.ForwardedHeaders)
+            .AddNanoHsts(webOptions.HttpPolicyHeaders.Hsts)
+            .AddNanoCookies()
+            .AddNanoSession(webOptions.Session)
+            .AddNanoResponseCaching(webOptions.ResponseCache)
+            .AddNanoVersioning(webOptions.Version, webOptions.Documentation?.UseDefaultVersion)
             .AddNanoIdentityAuthentication(webOptions.Identity?.Authentication)
             .AddNanoIdentityAuthorization()
-            .AddNanoRequestLocalization(webOptions)
-            .AddNanoRequestTimeZone(webOptions)
-            .AddNanoVirusScan(webOptions)
-            .AddNanoResponseCompression(webOptions)
-            .AddNanoRequestOptions(webOptions)
-            .AddNanoRequestIdentifier(webOptions)
-            .AddNanoFormOptions(webOptions)
-            .AddNanoMvc(webOptions)
-            .AddNanoDocumentation(webOptions)
-            .AddNanoHealthChecking(webOptions);
+            .AddNanoRequestLocalization()
+            .AddNanoRequestTimeZone(webOptions.DefaultTimeZone)
+            .AddNanoVirusScan(webOptions.VirusScan)
+            .AddNanoResponseCompression(webOptions.ResponseCompression)
+            .AddNanoRequestOptions()
+            .AddNanoRequestIdentifier()
+            .AddNanoFormOptions(webOptions.MultipartLimits)
+            .AddNanoMvc()
+            .AddNanoDocumentation(webOptions.Documentation)
+            .AddNanoHealthChecking(applicationName, webOptions.Hosting.Ports.FirstOrDefault(), webOptions.HealthCheck);
 
         applicationBuilder.WebHost
-            .UseKestrel(x =>
-            {
-                x.AddServerHeader = false;
-                x.Limits.MaxRequestBodySize = null;
-                x.Limits.MaxResponseBufferSize = null;
-
-                ConfigurePorts(x, webOptions);
-            })
+            .UseNanoKestrel(webOptions)
             .CaptureStartupErrors(true)
             .UseShutdownTimeout(TimeSpan.FromSeconds(webOptions.ShutdownTimeout));
 
@@ -94,38 +99,38 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
     }
 
     /// <inheritdoc />
-    public override IApplication Build()
+    public IApplication Build()
     {
         this.application = this.applicationBuilder
             .Build();
 
-        var webOptions = this.application.Services
+        var options = this.application.Services
             .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
         this.application
             .UseNanoExceptionHandling()
-            .UseNanoHttpCorsPolicy(webOptions.CurrentValue)
-            .UseNanoHttpXForwardedHeaders(webOptions.CurrentValue)
-            .UseNanoHttpXRobotsTagHeaders(webOptions.CurrentValue)
-            .UseNanoHttpXFrameOptionsPolicyHeader(webOptions.CurrentValue)
-            .UseNanoHttpXXssProtectionPolicyHeader(webOptions.CurrentValue)
-            .UseNanoHttpContentTypeOptionsPolicyHeader(webOptions.CurrentValue)
-            .UseNanoHttpReferrerPolicyHeader(webOptions.CurrentValue)
-            .UseNanoHttpStrictTransportSecurityPolicyHeader(webOptions.CurrentValue)
-            .UseNanoHttpContentSecurityPolicyHeader(webOptions.CurrentValue)
+            .UseNanoHttpCorsPolicy(options.CurrentValue.HttpPolicyHeaders.Cors)
+            .UseNanoHttpXForwardedHeaders(options.CurrentValue.HttpPolicyHeaders.ForwardedHeaders)
+            .UseNanoHttpXRobotsTagHeaders(options.CurrentValue.HttpPolicyHeaders.Robots)
+            .UseNanoHttpXFrameOptionsPolicyHeader(options.CurrentValue.HttpPolicyHeaders.XFrameOptions)
+            .UseNanoHttpXXssProtectionPolicyHeader(options.CurrentValue.HttpPolicyHeaders.XXssProtection)
+            .UseNanoHttpContentTypeOptionsPolicyHeader(options.CurrentValue.HttpPolicyHeaders.ContentType)
+            .UseNanoHttpReferrerPolicyHeader(options.CurrentValue.HttpPolicyHeaders.ReferrerPolicy)
+            .UseNanoHttpStrictTransportSecurityPolicyHeader(options.CurrentValue.HttpPolicyHeaders.Hsts)
+            .UseNanoHttpContentSecurityPolicyHeader(options.CurrentValue.HttpPolicyHeaders.Csp)
             .UseStaticFiles()
             .UseCookiePolicy()
             .UseRouting()
             .UseAuthentication()
             .UseAuthorization()
-            .UseNanoSession(webOptions.CurrentValue)
+            .UseNanoSession(options.CurrentValue.Session)
             .UseNanoRequestOptions()
             .UseNanoRequestIdentifier()
-            .UseNanoRequestVirusScan(webOptions.CurrentValue)
-            .UseNanoRequestLocalization(webOptions.CurrentValue)
+            .UseNanoRequestVirusScan(options.CurrentValue.VirusScan)
+            .UseNanoRequestLocalization(options.CurrentValue)
             .UseNanoRequestTimeZone()
-            .UseNanoResponseCompression(webOptions.CurrentValue)
-            .UseNanoResponseCaching(webOptions.CurrentValue)
+            .UseNanoResponseCompression(options.CurrentValue.ResponseCompression)
+            .UseNanoResponseCaching(options.CurrentValue.ResponseCache)
             .UseEndpoints(x =>
             {
                 x.MapControllers();
@@ -141,8 +146,8 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
 
                 return next();
             })
-            .UseNanoDocumentataion(webOptions.CurrentValue, this.application.Environment.EnvironmentName)
-            .UseNanoHealthChecks(webOptions.CurrentValue, this.application.Environment.EnvironmentName);
+            .UseNanoDocumentataion(this.application.Environment, options.CurrentValue.Version, options.CurrentValue.Documentation)
+            .UseNanoHealthChecks(this.application.Environment, options.CurrentValue.Version, options.CurrentValue.HealthCheck);
 
         this.application
             .UseEventHandlers()
@@ -150,34 +155,5 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
             .UseNanoDbMigrations();
 
         return this;
-    }
-
-
-    private static void ConfigurePorts(KestrelServerOptions kestrel, ApiOptions apiOptions)
-    {
-        ArgumentNullException.ThrowIfNull(kestrel);
-        ArgumentNullException.ThrowIfNull(apiOptions);
-
-        foreach (var port in apiOptions.Hosting.Ports)
-        {
-            kestrel.ListenAnyIP(port, listen =>
-            {
-                listen.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
-            });
-        }
-
-        foreach (var port in apiOptions.Hosting.PortsHttps)
-        {
-            kestrel.ListenAnyIP(port, listen =>
-            {
-                listen.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
-
-                var cert = apiOptions.Hosting.Certificate;
-                if (cert != null && File.Exists(cert.Path))
-                {
-                    listen.UseHttps(cert.Path, cert.Password);
-                }
-            });
-        }
     }
 }

@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
     /// <returns>The same <see cref="IServiceCollection"/> instance for chaining.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="services"/> is <c>null</c>.</exception>
     public static IServiceCollection AddNanoLogging<TProvider>(this IServiceCollection services)
-        where TProvider : class, ILoggingProvider, new()
+        where TProvider : ILoggingProvider
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -37,12 +37,9 @@ public static class ServiceCollectionExtensions
             throw new InvalidOperationException($"Configuration section '{LoggingOptions.SectionName}' could not be loaded.");
         }
 
-        var provider = Activator.CreateInstance<TProvider>();
-        provider
-            .Configure(services, options);
+        TProvider.Configure(services, options);
 
         services
-            .AddSingleton<ILoggingProvider>(provider)
             .AddSingleton(x =>
             {
                 var loggerFactory = x

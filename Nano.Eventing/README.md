@@ -46,19 +46,19 @@ Launch the message broker matching the provider chosen.
 ## Configuration
 The ```Eventing``` section in the configuration defines the eventing provider and related settings used by the application.
 
-| Setting             | Type     | Default     | Description                                                                                                                     |
-| ------------------- | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
-|  `Host`             | string   | null        | The hostname or IP address of the event broker or messaging server.                                                             |
-|  `VHost`            | string   | /           | The virtual host or namespace on the broker to connect to, if applicable.                                                       |
-|  `Username`         | string   | null        | Username for authenticating with the broker.                                                                                    |
-|  `Password`         | string   | null        | Password for authenticating with the broker.                                                                                    |
-|  `Port`             | ushort   | 5672        | Port to connect to on the broker.                                                                                               |
-|  `Timeout`          | TimeSpan | 00:00:30    | Connection timeout for the broker, in seconds.                                                                                  |
-|  `UseSsl`           | bool     | false       | Indicates whether to use SSL/TLS when connecting to the broker.                                                                 |
-|  `Heartbeat`        | ushort   | 60          | Heartbeat or keep-alive interval in seconds to maintain the connection. Set to zero to disable heartbeat/keep-alive.            |
-|  `PrefetchCount`    | ushort   | 50          | Prefetch count for consuming messages. Controls how many messages can be fetched at once for processing.                        |
-|  `UseHealthCheck`   | bool     | true        | Indicates whether to register a health check for the eventing service. _Only relevant for_ ```NanoWebApplication```             |
-|  `UnhealthyStatus`  | enum     | Unhealthy   | Health status level to report when the eventing service is detected as unhealthy. _Only relevant for_ ```NanoWebApplication```  |
+| Setting                         | Type     | Default     | Description                                                                                                                     |
+| ------------------------------- | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
+|  `Host`                         | string   | null        | The hostname or IP address of the event broker or messaging server.                                                             |
+|  `VHost`                        | string   | /           | The virtual host or namespace on the broker to connect to, if applicable.                                                       |
+|  `Username`                     | string   | null        | Username for authenticating with the broker.                                                                                    |
+|  `Password`                     | string   | null        | Password for authenticating with the broker.                                                                                    |
+|  `Port`                         | ushort   | 5672        | Port to connect to on the broker.                                                                                               |
+|  `Timeout`                      | TimeSpan | 00:00:30    | Connection timeout for the broker, in seconds.                                                                                  |
+|  `UseSsl`                       | bool     | false       | Indicates whether to use SSL/TLS when connecting to the broker.                                                                 |
+|  `Heartbeat`                    | ushort   | 60          | Heartbeat or keep-alive interval in seconds to maintain the connection. Set to zero to disable heartbeat/keep-alive.            |
+|  `PrefetchCount`                | ushort   | 50          | Prefetch count for consuming messages. Controls how many messages can be fetched at once for processing.                        |
+|  `HealthCheck`                  |          | null        | Eventing health check. _Only relevant for_ ```NanoWebApplication```.                                                            |
+|  `HealthCheck.UnhealthyStatus`  | enum     | Unhealthy   | Health status level to report when the eventing provider is unavailable. _Only relevant for_ ```NanoWebApplication```.          |
 
 ```json
 "Eventing": {
@@ -71,8 +71,9 @@ The ```Eventing``` section in the configuration defines the eventing provider an
   "UseSsl": false,
   "Heartbeat": 60,
   "PrefetchCount": 50,
-  "UseHealthCheck": true,
-  "UnhealthyStatus": "Unhealthy"
+  "HealthCheck": {
+    "UnhealthyStatus": "Unhealthy"
+  }
 }
 ```
  

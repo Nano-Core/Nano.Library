@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is <c>null</c>.</exception>
     public static IServiceCollection AddNanoStorage<TProvider>(this IServiceCollection services)
-        where TProvider : class, IStorageProvider, new()
+        where TProvider : IStorageProvider
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -45,12 +45,9 @@ public static class ServiceCollectionExtensions
             throw new InvalidOperationException($"Configuration section '{StorageOptions.SectionName}' could not be loaded.");
         }
 
-        var provider = Activator.CreateInstance<TProvider>();
-        provider
-            .Configure(services, options);
+        TProvider.Configure(services, options);
 
         services
-            .AddSingleton<IStorageProvider>(provider)
             .AddSingleton<IPathProvider, PathProvider>();
 
         return services;

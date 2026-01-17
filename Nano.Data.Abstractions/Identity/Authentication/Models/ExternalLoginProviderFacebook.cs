@@ -1,4 +1,6 @@
-﻿namespace Nano.Data.Abstractions.Identity.Authentication.Models;
+﻿using Nano.Data.Abstractions.Identity.Authentication.Consts;
+
+namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
 /// External Login Provider Facebook.
@@ -8,6 +10,6 @@ public class ExternalLoginProviderFacebook : ExternalLoginProviderImplicit
     /// <inheritdoc />
     public ExternalLoginProviderFacebook()
     {
-        this.Name = "Facebook";
+        this.Name = ExternalLogInProviderNames.FACEBOOK;
     }
 }

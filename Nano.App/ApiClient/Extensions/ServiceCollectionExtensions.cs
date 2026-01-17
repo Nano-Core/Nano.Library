@@ -83,9 +83,9 @@ internal static class ServiceCollectionExtensions
                     return apiClient ?? throw new NullReferenceException(nameof(apiClient));
                 });
 
-            if (!hosts.Contains(options.Host) && options.UseHealthCheck)
+            if (!hosts.Contains(options.Host) && options.HealthCheck != null)
             {
-                var failureStatus = options.UnhealthyStatus
+                var failureStatus = options.HealthCheck.UnhealthyStatus
                     .GetHealthStatus();
 
                 services.AddHealthChecks()

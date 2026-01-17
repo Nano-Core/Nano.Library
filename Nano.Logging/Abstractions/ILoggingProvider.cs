@@ -15,5 +15,5 @@ public interface ILoggingProvider
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to register logging services with.</param>
     /// <param name="options">Configuration options that control the logging behavior.</param>
-    void Configure(IServiceCollection services, LoggingOptions options);
+    static abstract void Configure(IServiceCollection services, LoggingOptions options);
 }

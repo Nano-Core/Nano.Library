@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection AddNanoData<TProvider, TContext>(this IServiceCollection services)
-        where TProvider : class, IDataProvider, new()
+        where TProvider : IDataProvider
         where TContext : DefaultDbContext
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -58,7 +58,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection AddNanoData<TProvider, TContext, TIdentity>(this IServiceCollection services)
-        where TProvider : class, IDataProvider, new()
+        where TProvider : IDataProvider
         where TContext : BaseDbContext<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
@@ -74,16 +74,13 @@ public static class ServiceCollectionExtensions
 
         EntityFrameworkManager.IsCommunity = true;
 
-        var provider = new TProvider();
-        provider
-            .Configure(services, options);
+        TProvider.Configure(services, options);
 
         services
-            .AddSingleton<IDataProvider>(provider)
-            .AddContext<TContext>(options)
-            .AddIdentity<TContext, TIdentity>(options.Identity)
-            .AddAudit(options)
-            .AddCache(options.Cache);
+            .AddContext<TProvider, TContext>(options)
+            .AddAudit(options.UseAudit)
+            .AddCache(options.Cache)
+            .AddIdentity<TContext, TIdentity>(options.Identity);
 
         services
             .AddScoped<TContext>()
@@ -106,7 +103,8 @@ public static class ServiceCollectionExtensions
     }
 
 
-    private static IServiceCollection AddContext<TContext>(this IServiceCollection services, DataOptions options)
+    private static IServiceCollection AddContext<TProvider, TContext>(this IServiceCollection services, DataOptions options)
+        where TProvider : IDataProvider
         where TContext : DbContext
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -120,9 +118,7 @@ public static class ServiceCollectionExtensions
                     builder
                         .AddDataContext(provider, options);
 
-                    provider
-                        .GetRequiredService<IDataProvider>()
-                        .Configure(builder, options);
+                    TProvider.Configure(builder, options);
                 });
         }
         else
@@ -133,73 +129,70 @@ public static class ServiceCollectionExtensions
                     builder
                         .AddDataContext(provider, options);
 
-                    provider
-                        .GetRequiredService<IDataProvider>()
-                        .Configure(builder, options);
+                    TProvider.Configure(builder, options);
                 });
         }
 
         return services;
     }
-    private static IServiceCollection AddAudit(this IServiceCollection services, DataOptions options)
+    private static IServiceCollection AddAudit(this IServiceCollection services, bool useAudit = false)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(options);
 
-        if (options.UseAudit)
-        {
-            AuditManager.DefaultConfiguration.UseUtcDateTime = true;
-            AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
-            AuditManager.DefaultConfiguration.IncludeProperty<IEntityAuditable>();
-            AuditManager.DefaultConfiguration.IncludeDataAnnotation();
-            AuditManager.DefaultConfiguration.Exclude<IEntityAuditableNegated>();
-            AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
-            AuditManager.DefaultConfiguration.AutoSavePreAction = (dbContext, audit) =>
-            {
-                var httpContextAccessor = dbContext
-                    .GetService<IHttpContextAccessor>();
-
-                var requestId = httpContextAccessor.HttpContext?.TraceIdentifier;
-
-                var createdBy = httpContextAccessor.HttpContext?
-                    .GetJwtUserId()?
-                    .ToString();
-
-                var auditEntries = audit.Entries
-                    .Where(x => x.AuditEntryID == 0)
-                    .Select(x =>
-                    {
-                        return new DefaultAuditEntry
-                        {
-                            CreatedBy = createdBy ?? x.CreatedBy,
-                            EntitySetName = x.EntitySetName,
-                            EntityTypeName = x.EntityTypeName,
-                            State = (int)x.State,
-                            StateName = x.StateName,
-                            RequestId = requestId,
-                            Properties = x.Properties
-                                .Select(y => new DefaultAuditEntryProperty
-                                {
-                                    PropertyName = y.PropertyName,
-                                    RelationName = y.RelationName,
-                                    NewValue = y.NewValueFormatted,
-                                    OldValue = y.OldValueFormatted
-                                })
-                                .ToArray()
-                        };
-                    });
-
-                dbContext
-                    .Set<DefaultAuditEntry>()
-                    .AddRange(auditEntries);
-            };
-            AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsDeleted > 0L);
-        }
-        else
+        if (!useAudit)
         {
             AuditManager.DefaultConfiguration.Exclude(_ => true);
             AuditManager.DefaultConfiguration.AutoSavePreAction = null;
+
+            return services;
         }
+
+        AuditManager.DefaultConfiguration.UseUtcDateTime = true;
+        AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
+        AuditManager.DefaultConfiguration.IncludeProperty<IEntityAuditable>();
+        AuditManager.DefaultConfiguration.IncludeDataAnnotation();
+        AuditManager.DefaultConfiguration.Exclude<IEntityAuditableNegated>();
+        AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
+        AuditManager.DefaultConfiguration.AutoSavePreAction = (dbContext, audit) =>
+        {
+            var httpContextAccessor = dbContext
+                .GetService<IHttpContextAccessor>();
+
+            var requestId = httpContextAccessor.HttpContext?.TraceIdentifier;
+
+            var createdBy = httpContextAccessor.HttpContext?
+                .GetJwtUserId()?
+                .ToString();
+
+            var auditEntries = audit.Entries
+                .Where(x => x.AuditEntryID == 0)
+                .Select(x =>
+                {
+                    return new DefaultAuditEntry
+                    {
+                        CreatedBy = createdBy ?? x.CreatedBy,
+                        EntitySetName = x.EntitySetName,
+                        EntityTypeName = x.EntityTypeName,
+                        State = (int)x.State,
+                        StateName = x.StateName,
+                        RequestId = requestId,
+                        Properties = x.Properties
+                            .Select(y => new DefaultAuditEntryProperty
+                            {
+                                PropertyName = y.PropertyName,
+                                RelationName = y.RelationName,
+                                NewValue = y.NewValueFormatted,
+                                OldValue = y.OldValueFormatted
+                            })
+                            .ToArray()
+                    };
+                });
+
+            dbContext
+                .Set<DefaultAuditEntry>()
+                .AddRange(auditEntries);
+        };
+        AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsDeleted > 0L);
 
         return services;
     }
@@ -219,7 +212,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddEFSecondLevelCache(x => x
-                .SkipCachingCommands(y => y.ToLower().Contains("__ef"))
+                .SkipCachingCommands(y => y.ToLower().Contains("__ef", StringComparison.Ordinal))
                 .CacheAllQueriesExceptContainingTypes(cacheExpirationMode, options.ExpirationTimeout)
                 .CacheAllQueriesExceptContainingTableNames(cacheExpirationMode, options.ExpirationTimeout, options.IgnoredTableNames)
                 .UseMemoryCacheProvider()

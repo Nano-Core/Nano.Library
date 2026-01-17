@@ -36,7 +36,7 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
     {
         ArgumentNullException.ThrowIfNull(controller);
 
-        // BUG: 000: We need to remove some methods from identitycontroller: api-keys
+        // BUG: 000: TEST: We need to remove some methods from identitycontroller: api-keys
         // but how can we know which controller is derived from BaseidentityController. reflection?
         // we also need to detect overrides of DefaultAuthController / BaseAuthController and AuditController
 

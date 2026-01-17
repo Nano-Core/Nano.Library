@@ -19,5 +19,5 @@ public interface IEventingProvider
     ///     This method should register any necessary services, connections, or middleware
     ///     required by the specific eventing provider implementation.
     /// </remarks>
-    void Configure(IServiceCollection services, EventingOptions options);
+    static abstract void Configure(IServiceCollection services, EventingOptions options);
 }

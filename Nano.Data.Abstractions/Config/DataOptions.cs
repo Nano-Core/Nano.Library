@@ -1,6 +1,6 @@
 using Nano.Data.Abstractions.Config.Enums;
 using System.ComponentModel.DataAnnotations;
-using Nano.Common.Mvc.HealthChecks.Enums;
+using Nano.Common.Config;
 
 namespace Nano.Data.Abstractions.Config;
 
@@ -40,12 +40,6 @@ public class DataOptions
     /// </summary>
     [Required]
     public virtual int QueryIncludeDepth { get; set; } = 4;
-
-    /// <summary>
-    /// Use Audit.
-    /// </summary>
-    [Required]
-    public virtual bool UseAudit { get; set; } = false;
 
     /// <summary>
     /// Use Auto Save.
@@ -90,22 +84,15 @@ public class DataOptions
     public virtual bool UseConnectionPooling { get; set; } = false;
 
     /// <summary>
+    /// Audit.
+    /// </summary>
+    public virtual bool UseAudit { get; set; } = false;
+
+    /// <summary>
     /// Use Query Split Behavior.
     /// </summary>
     [Required]
     public virtual QuerySplitBehavior UseQuerySplittingBehavior { get; set; } = QuerySplitBehavior.SingleQuery;
-
-    /// <summary>
-    /// Use Health Check.
-    /// </summary>
-    [Required]
-    public virtual bool UseHealthCheck { get; set; } = true;
-
-    /// <summary>
-    /// Unhealthy Status.
-    /// </summary>
-    [Required]
-    public virtual HealthStatusLevel UnhealthyStatus { get; set; } = HealthStatusLevel.Unhealthy;
 
     /// <summary>
     /// Default Collation.
@@ -127,4 +114,9 @@ public class DataOptions
     /// Identity.
     /// </summary>
     public virtual IdentityOptions? Identity { get; set; }
+
+    /// <summary>
+    /// Options for configuring health-checks.
+    /// </summary>
+    public virtual HealthCheckOptions? HealthCheck { get; set; }
 }

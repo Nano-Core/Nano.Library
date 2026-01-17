@@ -1,9 +1,9 @@
 using System;
 using System.Globalization;
-using System.Linq;
 using DynamicExpression.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Nano.App.Api.Config;
 using Nano.App.Api.Mvc.Extensions;
@@ -19,22 +20,22 @@ using Nano.App.Api.Mvc.HealthChecks;
 using Nano.App.Api.Mvc.Middleware;
 using Nano.App.Api.Mvc.Options;
 using Nano.App.Api.Mvc.Serialization.Json;
+using Nano.Common.Mvc.HealthChecks.Extensions;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
+using ForwardedHeadersOptions = Nano.App.Api.Config.ForwardedHeadersOptions;
+using ResponseCompressionOptions = Nano.App.Api.Config.ResponseCompressionOptions;
+using SessionOptions = Nano.App.Api.Config.SessionOptions;
 
 namespace Nano.App.Api.Extensions;
 
-// BUG: 000: Make options classes for UseAudit (just emtpty) and Also check ApiOptions (e.g. Session, Cookies)
-// also all the UseHealthCheck???
-
 internal static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddNanoExceptionHandling(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoExceptionHandling(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddScoped<ExceptionHandlingMiddleware>();
@@ -42,12 +43,11 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoCors(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoCors(this IServiceCollection services, CorsOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        if (apiOptions.HttpPolicyHeaders.Cors == null)
+        if (options == null)
         {
             return services;
         }
@@ -57,35 +57,35 @@ internal static class ServiceCollectionExtensions
             {
                 x.AddPolicy(x.DefaultPolicyName, y =>
                 {
-                    if (apiOptions.HttpPolicyHeaders.Cors.AllowedOrigins.Any())
-                    {
-                        y.WithOrigins(apiOptions.HttpPolicyHeaders.Cors.AllowedOrigins);
-                        y.SetIsOriginAllowedToAllowWildcardSubdomains();
-                    }
-                    else
+                    if (options.AllowedOrigins.Length == 0)
                     {
                         y.SetIsOriginAllowed(_ => true);
                     }
-
-                    if (apiOptions.HttpPolicyHeaders.Cors.AllowedHeaders.Any())
-                    {
-                        y.WithHeaders(apiOptions.HttpPolicyHeaders.Cors.AllowedHeaders);
-                    }
                     else
+                    {
+                        y.WithOrigins(options.AllowedOrigins);
+                        y.SetIsOriginAllowedToAllowWildcardSubdomains();
+                    }
+
+                    if (options.AllowedHeaders.Length == 0)
                     {
                         y.AllowAnyHeader();
                     }
-
-                    if (apiOptions.HttpPolicyHeaders.Cors.AllowedMethods.Any())
-                    {
-                        y.WithMethods(apiOptions.HttpPolicyHeaders.Cors.AllowedMethods);
-                    }
                     else
+                    {
+                        y.WithHeaders(options.AllowedHeaders);
+                    }
+
+                    if (options.AllowedMethods.Length == 0)
                     {
                         y.AllowAnyMethod();
                     }
+                    else
+                    {
+                        y.WithMethods(options.AllowedMethods);
+                    }
 
-                    if (apiOptions.HttpPolicyHeaders.Cors.AllowCredentials)
+                    if (options.AllowCredentials)
                     {
                         y.AllowCredentials();
                     }
@@ -101,26 +101,31 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoForwardedHeaders(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoForwardedHeaders(this IServiceCollection services, ForwardedHeadersOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
+
+        if (options == null)
+        {
+            return services;
+        }
 
         services
-            .Configure<ForwardedHeadersOptions>(x =>
+            .Configure<Microsoft.AspNetCore.Builder.ForwardedHeadersOptions>(x =>
             {
+                x.AllowedHosts = ["*"];
+                x.ForwardLimit = 1;
                 x.ForwardedHeaders = ForwardedHeaders.All;
             });
 
         return services;
     }
 
-    internal static IServiceCollection AddNanoHsts(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoHsts(this IServiceCollection services, HstsOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        if (apiOptions.HttpPolicyHeaders.Hsts == null)
+        if (options == null)
         {
             return services;
         }
@@ -128,39 +133,36 @@ internal static class ServiceCollectionExtensions
         services
             .AddHsts(x =>
             {
-                x.IncludeSubDomains = apiOptions.HttpPolicyHeaders.Hsts.IncludeSubdomains;
+                x.IncludeSubDomains = options.IncludeSubdomains;
 
-                if (apiOptions.HttpPolicyHeaders.Hsts.IncludeSubdomains)
+                if (options is { IncludeSubdomains: true, MaxAge: not null })
                 {
-                    if (apiOptions.HttpPolicyHeaders.Hsts.MaxAge.HasValue)
-                    {
-                        const int MAX_WEEKS = 18;
-                        var weeks = apiOptions.HttpPolicyHeaders.Hsts.MaxAge.Value.TotalDays / 7;
+                    const int MAX_WEEKS = 18;
+                    var weeks = options.MaxAge.Value.TotalDays / 7;
 
-                        if (apiOptions.HttpPolicyHeaders.Hsts.UsePreload && weeks >= MAX_WEEKS)
-                        {
-                            x.Preload = true;
-                        }
+                    if (options.UsePreload && weeks >= MAX_WEEKS)
+                    {
+                        x.Preload = true;
                     }
                 }
 
-                if (apiOptions.HttpPolicyHeaders.Hsts.MaxAge.HasValue)
+                if (options.MaxAge.HasValue)
                 {
-                    x.MaxAge = apiOptions.HttpPolicyHeaders.Hsts.MaxAge.Value;
+                    x.MaxAge = options.MaxAge.Value;
                 }
             });
 
         return services;
     }
 
-    internal static IServiceCollection AddNanoCookies(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoCookies(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddCookiePolicy(x =>
             {
+                x.HttpOnly = HttpOnlyPolicy.None;
                 x.Secure = CookieSecurePolicy.Always;
                 x.MinimumSameSitePolicy = SameSiteMode.Strict;
             });
@@ -168,12 +170,11 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoSession(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoSession(this IServiceCollection services, SessionOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        if (apiOptions.Session == null)
+        if (options == null)
         {
             return services;
         }
@@ -181,18 +182,17 @@ internal static class ServiceCollectionExtensions
         services
             .AddSession(x =>
             {
-                x.IdleTimeout = apiOptions.Session.Timeout;
+                x.IdleTimeout = options.Timeout;
             });
 
         return services;
     }
 
-    internal static IServiceCollection AddNanoResponseCaching(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoResponseCaching(this IServiceCollection services, ResponseCacheOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        if (apiOptions.ResponseCache == null)
+        if (options == null)
         {
             return services;
         }
@@ -201,30 +201,28 @@ internal static class ServiceCollectionExtensions
             .AddResponseCaching(x =>
             {
                 x.UseCaseSensitivePaths = false;
-                x.SizeLimit = apiOptions.ResponseCache.MaxSize * 1024;
-                x.MaximumBodySize = apiOptions.ResponseCache.MaxBodySize * 1024;
+                x.SizeLimit = options.MaxSize * 1024;
+                x.MaximumBodySize = options.MaxBodySize * 1024;
             });
 
         return services;
     }
 
-    internal static IServiceCollection AddNanoVersioning(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoVersioning(this IServiceCollection services, string version = "1.0.0", bool? useDefaultVersion = false)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        var version = apiOptions.Version
+        var parsedVersion = version
             .ParseVersion();
 
-        var apiVersion = new ApiVersion(version.Major, version.Minor);
+        var apiVersion = new ApiVersion(parsedVersion.Major, parsedVersion.Minor);
 
         services
             .AddApiVersioning(x =>
             {
                 x.ReportApiVersions = true;
 
-                // BUG: 000: Why defined here and below.
-                if (apiOptions.Documentation?.UseDefaultVersion ?? false)
+                if (useDefaultVersion ?? false)
                 {
                     x.DefaultApiVersion = apiVersion;
                     x.AssumeDefaultVersionWhenUnspecified = true;
@@ -235,13 +233,12 @@ internal static class ServiceCollectionExtensions
                     new QueryStringApiVersionReader("api-version"),
                     new HeaderApiVersionReader("Api-Version"));
             })
-            // BUG: 000: Maybe this should be moved to Documentation.
             .AddVersionedApiExplorer(x =>
             {
                 x.GroupNameFormat = "'v'VV";
                 x.SubstituteApiVersionInUrl = true;
 
-                if (apiOptions.Documentation?.UseDefaultVersion ?? false)
+                if (useDefaultVersion ?? false)
                 {
                     x.DefaultApiVersion = apiVersion;
                     x.AssumeDefaultVersionWhenUnspecified = true;
@@ -251,10 +248,9 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoRequestLocalization(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoRequestLocalization(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddLocalization();
@@ -262,15 +258,14 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoRequestTimeZone(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoRequestTimeZone(this IServiceCollection services, string defaultTimeZone)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddRequestTimeZone(x =>
             {
-                x.Id = apiOptions.DefaultTimeZone;
+                x.Id = defaultTimeZone;
                 x.EnableRequestToUtc = true;
                 x.EnableResponseToLocal = true;
                 x.JsonSerializerType = JsonSerializerType.Newtonsoft;
@@ -279,51 +274,63 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoVirusScan(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoVirusScan(this IServiceCollection services, VirusScanOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        if (apiOptions.VirusScan == null)
+        if (options == null)
         {
             return services;
         }
 
+        var failureStatus = options.HealthCheck?.UnhealthyStatus
+            .GetHealthStatus() ?? HealthStatus.Unhealthy;
+
         services
             .AddRequestVirusScan(x =>
             {
-                x.Host = apiOptions.VirusScan.Host;
-                x.Port = apiOptions.VirusScan.Port;
-                x.UseHealthCheck = apiOptions.VirusScan.UseHealthCheck;
+                x.Host = options.Host;
+                x.Port = options.Port;
+                x.UseHealthCheck = options.HealthCheck != null;
+                x.HealthCheckFailureStatus = failureStatus;
             });
 
         return services;
     }
 
-    internal static IServiceCollection AddNanoResponseCompression(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoResponseCompression(this IServiceCollection services, ResponseCompressionOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
+
+        if (options == null)
+        {
+            return services;
+        }
 
         services
             .AddResponseCompression(x =>
             {
                 x.EnableForHttps = true;
 
-                x.Providers
-                    .Add<GzipCompressionProvider>();
+                if (options.UseGzip)
+                {
+                    x.Providers
+                        .Add<GzipCompressionProvider>();
+                }
 
-                x.Providers
-                    .Add<BrotliCompressionProvider>();
+                if (options.UseBrotli)
+                {
+                    x.Providers
+                        .Add<BrotliCompressionProvider>();
+                }
             });
 
         return services;
     }
 
-    internal static IServiceCollection AddNanoRequestOptions(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoRequestOptions(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddScoped<HttpRequestOptionsMiddleware>();
@@ -331,10 +338,9 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoRequestIdentifier(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoRequestIdentifier(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddScoped<HttpRequestIdentifierMiddleware>();
@@ -342,26 +348,24 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoFormOptions(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoFormOptions(this IServiceCollection services, MultipartLimitsOptions? options)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .Configure<FormOptions>(x =>
             {
-                x.ValueLengthLimit = int.MaxValue;
-                x.MultipartBodyLengthLimit = int.MaxValue;
-                x.MultipartHeadersLengthLimit = int.MaxValue;
+                x.MultipartBodyLengthLimit = options?.MaxUploadBytes ?? int.MaxValue;
+                x.MultipartBoundaryLengthLimit = 256;
+                x.MultipartHeadersLengthLimit = 64 * 1024;
             });
 
         return services;
     }
 
-    internal static IServiceCollection AddNanoMvc(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoMvc(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddRouting(x =>
@@ -391,12 +395,11 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoDocumentation(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoDocumentation(this IServiceCollection services, DocumentationOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        if (apiOptions.Documentation == null)
+        if (options == null)
         {
             return services;
         }
@@ -410,10 +413,10 @@ internal static class ServiceCollectionExtensions
                 var apiVersionDescriptionProvider = x
                     .GetRequiredService<IApiVersionDescriptionProvider>();
 
-                var options = x
+                var webOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                return new ConfigureSwaggerOptions(options, authenticationSchemeProvider, apiVersionDescriptionProvider);
+                return new ConfigureSwaggerOptions(webOptions, authenticationSchemeProvider, apiVersionDescriptionProvider);
             })
             .AddSwaggerGen()
             .AddSwaggerGenNewtonsoftSupport();
@@ -421,16 +424,15 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoHealthChecking(this IServiceCollection services, ApiOptions apiOptions)
+    internal static IServiceCollection AddNanoHealthChecking(this IServiceCollection services, string applicationName, int? port, HealthCheckOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
         services
             .AddHealthChecks()
             .AddCheck<StartupHealthCheck>("startup");
 
-        if (apiOptions.HealthCheck == null)
+        if (options == null)
         {
             return services;
         }
@@ -438,17 +440,14 @@ internal static class ServiceCollectionExtensions
         services
             .AddHealthChecksUI(x =>
             {
-                var port = apiOptions.Hosting.Ports
-                    .FirstOrDefault();
-
-                x.AddHealthCheckEndpoint(apiOptions.Name.ToLower(), $"http://localhost:{port}/healthz");
+                x.AddHealthCheckEndpoint(applicationName.ToLower(), $"http://localhost:{port ?? 80}/healthz"); // BUG: 000: TEST: Is Localhost okay here??? hmmm, I don't like the Port, and how we pass it to the method
 
                 x.SetApiMaxActiveRequests(1);
-                x.SetEvaluationTimeInSeconds(apiOptions.HealthCheck.EvaluationInterval);
-                x.SetMinimumSecondsBetweenFailureNotifications(apiOptions.HealthCheck.FailureNotificationInterval);
-                x.MaximumHistoryEntriesPerEndpoint(apiOptions.HealthCheck.MaximumHistoryEntriesPerEndpoint);
+                x.SetEvaluationTimeInSeconds(options.EvaluationInterval);
+                x.SetMinimumSecondsBetweenFailureNotifications(options.FailureNotificationInterval);
+                x.MaximumHistoryEntriesPerEndpoint(options.MaximumHistoryEntriesPerEndpoint);
 
-                foreach (var webHook in apiOptions.HealthCheck.WebHooks)
+                foreach (var webHook in options.WebHooks)
                 {
                     x.AddWebhookNotification(webHook.Name, webHook.Uri, webHook.Payload ?? "");
                 }

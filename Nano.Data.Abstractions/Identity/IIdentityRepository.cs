@@ -325,10 +325,26 @@ public interface IIdentityRepository<TIdentity>
     /// 
     /// </summary>
     /// <param name="userId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<IEnumerable<IdentityUserRefreshToken<TIdentity>>> GetActiveRefreshTokens(TIdentity userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userId"></param>
     /// <param name="refreshToken"></param>
     /// <param name="appId"></param>
     /// <returns></returns>
     Task<IdentityUserRefreshToken<TIdentity>> CreateRefreshToken(TIdentity userId, RefreshToken refreshToken, string appId);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task DeleteRefreshTokenAsync(TIdentity id, CancellationToken cancellationToken = default);
 
     #endregion
 

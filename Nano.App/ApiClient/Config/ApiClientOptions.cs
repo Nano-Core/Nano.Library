@@ -1,6 +1,6 @@
 ﻿using System;
 using Nano.App.Config;
-using Nano.Common.Mvc.HealthChecks.Enums;
+using Nano.Common.Config;
 
 namespace Nano.App.ApiClient.Config;
 
@@ -35,17 +35,12 @@ public class ApiClientOptions
     public virtual TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
 
     /// <summary>
-    /// Use Health Check.
-    /// </summary>
-    public virtual bool UseHealthCheck { get; set; } = true;
-
-    /// <summary>
-    /// Unhealthy Status.
-    /// </summary>
-    public virtual HealthStatusLevel UnhealthyStatus { get; set; } = HealthStatusLevel.Unhealthy;
-
-    /// <summary>
     /// LogIn.
     /// </summary>
     public virtual LogInRootOptions? LogIn { get; set; }
+
+    /// <summary>
+    /// Health Check.
+    /// </summary>
+    public virtual HealthCheckOptions? HealthCheck { get; set; }
 }

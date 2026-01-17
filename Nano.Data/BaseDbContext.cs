@@ -72,7 +72,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     {
         ArgumentNullException.ThrowIfNull(entity);
 
-        var isAuditEnabled = this.options.CurrentValue.UseAudit;
+        var isAuditEnabled = this.options.CurrentValue.Audit != null;
 
         var publishAnnotation = entity
             .GetType()
@@ -111,7 +111,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     {
         ArgumentNullException.ThrowIfNull(entity);
 
-        var isAuditEnabled = this.options.CurrentValue.UseAudit;
+        var isAuditEnabled = this.options.CurrentValue.Audit != null;
 
         var publishAnnotation = entity
             .GetType()
@@ -149,7 +149,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     {
         ArgumentNullException.ThrowIfNull(entities);
 
-        var isAuditEnabled = this.options.CurrentValue.UseAudit;
+        var isAuditEnabled = this.options.CurrentValue.Audit != null;
 
         var firstEntity = entities
             .First();

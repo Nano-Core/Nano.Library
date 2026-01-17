@@ -23,4 +23,11 @@ public interface IApplication
     /// 
     /// </summary>
     public void Run();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="args"></param>
+    /// <returns></returns>
+    static abstract IApplication ConfigureApp(params string[] args);
 }

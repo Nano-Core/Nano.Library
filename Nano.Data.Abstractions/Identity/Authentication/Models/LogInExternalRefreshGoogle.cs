@@ -1,3 +1,5 @@
+using Nano.Data.Abstractions.Identity.Authentication.Consts;
+
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
@@ -8,6 +10,6 @@ public class LogInExternalRefreshGoogle : LogInExternalRefresh
     /// <inheritdoc />
     public LogInExternalRefreshGoogle()
     {
-        this.ProviderName = "Google";
+        this.ProviderName = ExternalLogInProviderNames.GOOGLE;
     }
 }

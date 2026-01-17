@@ -21,7 +21,7 @@ namespace Nano.Eventing.RabbitMq;
 public class RabbitMqProvider : IEventingProvider
 {
     /// <inheritdoc />
-    public virtual void Configure(IServiceCollection services, EventingOptions options)
+    public static void Configure(IServiceCollection services, EventingOptions options)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);

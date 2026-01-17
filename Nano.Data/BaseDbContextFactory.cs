@@ -32,13 +32,7 @@ public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbC
             throw new NullReferenceException(nameof(options));
         }
 
-        if (Activator.CreateInstance(typeof(TProvider)) is not TProvider dataProvider)
-        {
-            throw new NullReferenceException(nameof(dataProvider));
-        }
-
-        dataProvider
-            .Configure(builder, options);
+        TProvider.Configure(builder, options);
 
         var optionsMonitor = new StaticOptionsMonitor<DataOptions>(options);
 

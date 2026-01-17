@@ -1,15 +1,16 @@
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using Nano.App.Api.Config;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Nano.Data.Abstractions.Identity.Authentication.Consts;
 
 namespace Nano.App.Api.Identity.Authentication;
 
@@ -127,7 +128,7 @@ public class AuthExternalMicrosoftRepository : IAuthExternalMicrosoftRepository
             Email = email,
             ExternalToken =
             {
-                Name = "Microsoft",
+                Name = ExternalLogInProviderNames.MICROSOFT,
                 Token = accessToken,
                 RefreshToken = refreshToken
             }

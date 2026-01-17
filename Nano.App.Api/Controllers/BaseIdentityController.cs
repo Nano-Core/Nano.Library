@@ -1166,7 +1166,58 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         return this.Ok(identityUserRefreshTokens);
     }
 
-    // BUG: 000: Delete RefreshToken
+    /// <summary>
+    /// Gets active refresh tokens of a user.
+    /// </summary>
+    /// <param name="userId">The user id.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The refresh tokens.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpGet]
+    [Route("refresh-tokens/active/{userId}")]
+    [ProducesResponseType(typeof(IEnumerable<IdentityUserRefreshToken<Guid>>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> GetActiveRefreshTokensAsync([FromRoute][Required] TIdentity userId, CancellationToken cancellationToken = default)
+    {
+        var identityUserRefreshTokens = await this.identityRepository
+            .GetActiveRefreshTokens(userId, cancellationToken);
+
+        return this.Ok(identityUserRefreshTokens);
+    }
+
+    /// <summary>
+    /// Delete Refresh Token.
+    /// </summary>
+    /// <param name="refreshTokenId">The refresh token id.</param>
+    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Ok.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occured.</response>
+    [HttpDelete]
+    [Route("refresh-tokens/delete/{refreshTokenId}")]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> DeleteRefreshTokenAsync([FromRoute][Required] TIdentity refreshTokenId, CancellationToken cancellationToken = default)
+    {
+        await this.identityRepository
+            .DeleteRefreshTokenAsync(refreshTokenId, cancellationToken);
+
+        return this.Ok();
+    }
 
     #endregion
 

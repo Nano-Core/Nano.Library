@@ -23,7 +23,7 @@ public static class ServiceCollectionExtensions
     ///     This method registers:
     ///     - EasyNetQ as the RabbitMQ client.
     ///     - <see cref="IEventing"/> as <see cref="RabbitMqEventing"/>.
-    ///     - Optional health checks if <see cref="EventingOptions.UseHealthCheck"/> is true.
+    ///     - Optional health checks if <see cref="EventingOptions.HealthCheck"/> is <c>not null</c>.
     ///     It also configures JSON serialization using Newtonsoft.Json with default serializer settings.
     /// </remarks>
     public static IServiceCollection AddEasyNetQEventing(this IServiceCollection services, EventingOptions options)
@@ -54,12 +54,12 @@ public static class ServiceCollectionExtensions
         services
             .AddScoped<IEventing, RabbitMqEventing>();
 
-        if (!options.UseHealthCheck)
+        if (options.HealthCheck == null)
         {
             return services;
         }
 
-        var failureStatus = options.UnhealthyStatus
+        var failureStatus = options.HealthCheck.UnhealthyStatus
             .GetHealthStatus();
 
         services

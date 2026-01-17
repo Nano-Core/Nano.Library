@@ -48,7 +48,7 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        // BUG: 000: This could be wrong, we don't know that the controller name is the same as TUSer.
+        // BUG: This could be wrong, we don't know that the controller name is the same as TUSer.
         // - Either document the model naming convention
         // - or maybe better always have the route "identity"? But that is strange cause when interacting with the controller normally
         //   (e.g. get user, update user, etc) then "identity" route is unnatural
@@ -465,6 +465,36 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
         request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
         return await this.InvokeAsync<GetRefreshTokensRequest<TIdentity>, IEnumerable<RefreshToken>>(request, cancellationToken) ?? [];
+    }
+
+    /// <summary>
+    /// Get User Active Refresh Tokens Async.
+    /// </summary>
+    /// <param name="request">The <see cref="GetActiveRefreshTokensRequest{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The refresh tokens.</returns>
+    public virtual async Task<IEnumerable<RefreshToken>> GetUserActiveRefreshTokensAsync(GetActiveRefreshTokensRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return await this.InvokeAsync<GetActiveRefreshTokensRequest<TIdentity>, IEnumerable<RefreshToken>>(request, cancellationToken) ?? [];
+    }
+
+    /// <summary>
+    /// Delete User Refresh Token Async.
+    /// </summary>
+    /// <param name="request">The <see cref="RemoveExternalLoginRequest{TIdentity}"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>Void.</returns>
+    public virtual Task DeleteUserRefreshTokenAsync(DeleteUserRefreshTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+
+        return this.InvokeAsync(request, cancellationToken);
     }
 
     #endregion

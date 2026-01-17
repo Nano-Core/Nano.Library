@@ -1,4 +1,6 @@
-﻿namespace Nano.Data.Abstractions.Identity.Authentication.Models;
+﻿using Nano.Data.Abstractions.Identity.Authentication.Consts;
+
+namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
 /// External Login Provider Microsoft.
@@ -8,6 +10,6 @@ public class ExternalLoginProviderMicrosoft : ExternalLoginProviderAuthCode
     /// <inheritdoc />
     public ExternalLoginProviderMicrosoft()
     {
-        this.Name = "Microsoft";
+        this.Name = ExternalLogInProviderNames.MICROSOFT;
     }
 }

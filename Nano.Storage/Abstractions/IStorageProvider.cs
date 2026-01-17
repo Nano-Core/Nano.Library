@@ -4,7 +4,7 @@ using System;
 
 namespace Nano.Storage.Abstractions;
 
-// BUG: Local Storage Provider (but, AccountName and AccountKey are Required)
+// BUG: 000: Local Storage Provider (but, AccountName and AccountKey are Required)
 // Move the auth part to a nullable compound
 // It's also strange that we actually need a local provider for development and a Cloud one for cloud. Try figure that out
 
@@ -27,5 +27,5 @@ public interface IStorageProvider
     ///     The method should only add services to <paramref name="services"/> and must not build or resolve a service provider.
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> or <paramref name="options"/> is <c>null</c>.</exception>
-    void Configure(IServiceCollection services, StorageOptions options);
+    static abstract void Configure(IServiceCollection services, StorageOptions options);
 }

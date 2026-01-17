@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Nano.App.Api.Config;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.App.Api.Identity.Authentication.Extensions;
 
@@ -68,38 +69,14 @@ public static class AuthenticationBuilderExtensions
                     }
                 };
             })
-            .AddExternalLoginGoogle(options.ExternalLogins.Google)
             .AddExternalLoginFacebook(options.ExternalLogins.Facebook)
+            .AddExternalLoginGoogle(options.ExternalLogins.Google)
             .AddExternalLoginMicrosoft(options.ExternalLogins.Microsoft);
 
         return builder;
     }
 
 
-    private static AuthenticationBuilder AddExternalLoginGoogle(this AuthenticationBuilder builder, GoogleOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        if (options == null)
-        {
-            return builder;
-        }
-
-        builder
-            .AddGoogle("Google", x =>
-            {
-                x.ClientId = options.ClientId;
-                x.ClientSecret = options.ClientSecret;
-
-                foreach (var scope in options.Scopes)
-                {
-                    x.Scope
-                        .Add(scope);
-                }
-            });
-
-        return builder;
-    }
     private static AuthenticationBuilder AddExternalLoginFacebook(this AuthenticationBuilder builder, FacebookOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
@@ -110,10 +87,34 @@ public static class AuthenticationBuilderExtensions
         }
 
         builder
-            .AddFacebook("Facebook", x =>
+            .AddFacebook(ExternalLogInProviderNames.FACEBOOK, x =>
             {
                 x.AppId = options.AppId;
                 x.AppSecret = options.AppSecret;
+
+                foreach (var scope in options.Scopes)
+                {
+                    x.Scope
+                        .Add(scope);
+                }
+            });
+
+        return builder;
+    }
+    private static AuthenticationBuilder AddExternalLoginGoogle(this AuthenticationBuilder builder, GoogleOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        if (options == null)
+        {
+            return builder;
+        }
+
+        builder
+            .AddGoogle(ExternalLogInProviderNames.GOOGLE, x =>
+            {
+                x.ClientId = options.ClientId;
+                x.ClientSecret = options.ClientSecret;
 
                 foreach (var scope in options.Scopes)
                 {
@@ -134,7 +135,7 @@ public static class AuthenticationBuilderExtensions
         }
 
         builder
-            .AddMicrosoftAccount("Microsoft", x =>
+            .AddMicrosoftAccount(ExternalLogInProviderNames.MICROSOFT, x =>
             {
                 x.ClientId = options.ClientId;
                 x.ClientSecret = options.ClientSecret;

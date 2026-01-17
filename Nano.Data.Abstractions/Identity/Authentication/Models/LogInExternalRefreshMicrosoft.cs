@@ -1,3 +1,5 @@
+using Nano.Data.Abstractions.Identity.Authentication.Consts;
+
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
@@ -8,6 +10,6 @@ public class LogInExternalRefreshMicrosoft : LogInExternalRefresh
     /// <inheritdoc />
     public LogInExternalRefreshMicrosoft()
     {
-        this.ProviderName = "Microsoft";
+        this.ProviderName = ExternalLogInProviderNames.MICROSOFT;
     }
 }

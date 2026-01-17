@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using Nano.App.Config;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.App.Api.Config;
 
@@ -42,6 +42,11 @@ public class ApiOptions : BaseAppOptions
     /// Options for caching responses.
     /// </summary>
     public virtual ResponseCacheOptions? ResponseCache { get; set; }
+
+    /// <summary>
+    /// Enables middleware for dynamic compression of http responses.
+    /// </summary>
+    public virtual ResponseCompressionOptions? ResponseCompression { get; set; }
 
     /// <summary>
     /// Session.

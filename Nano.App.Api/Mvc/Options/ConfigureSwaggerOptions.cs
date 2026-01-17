@@ -23,7 +23,6 @@ namespace Nano.App.Api.Mvc.Options;
 /// </summary>
 public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 {
-    //private static readonly Regex curlyBracketsRegex = new(@"\{([^}]+)\}", RegexOptions.Compiled);
     private static readonly string[] xmlEmbeddedResources =
     [
         "Nano.App.Web.Mvc.Documentation..xmldoc.Nano.App.xml",

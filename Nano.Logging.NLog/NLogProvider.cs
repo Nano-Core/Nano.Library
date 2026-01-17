@@ -25,7 +25,7 @@ public class NLogProvider : ILoggingProvider
     /// <param name="services">The <see cref="IServiceCollection"/> to register NLog services with.</param>
     /// <param name="options">The <see cref="LoggingOptions"/> controlling log levels and overrides.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="services"/> or <paramref name="options"/> is <c>null</c>.</exception>
-    public virtual void Configure(IServiceCollection services, LoggingOptions options)
+    public static void Configure(IServiceCollection services, LoggingOptions options)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);

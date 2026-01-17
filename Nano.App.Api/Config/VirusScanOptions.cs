@@ -20,8 +20,7 @@ public class VirusScanOptions
     public virtual int Port { get; set; } = 3310;
 
     /// <summary>
-    /// Use Health Check.
+    /// Options for configuring health-checks.
     /// </summary>
-    [Required]
-    public virtual bool UseHealthCheck { get; set; } = true;
+    public virtual Common.Config.HealthCheckOptions? HealthCheck { get; set; }
 }
