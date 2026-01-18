@@ -3,9 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 using Nano.Storage.Abstractions;
 using Nano.Storage.Abstractions.Config;
-using Nano.Storage.LocalFileSystem.HealthChecks;
+using Nano.Storage.LocalShare.HealthChecks;
 
-namespace Nano.Storage.LocalFileSystem;
+namespace Nano.Storage.LocalShare;
 
 /// <summary>
 /// Storage provider for local file system–backed storage.

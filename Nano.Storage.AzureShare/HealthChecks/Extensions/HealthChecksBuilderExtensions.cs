@@ -6,11 +6,11 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Nano.Storage.Abstractions.Config;
 
-namespace Nano.Storage.AzureFileShare.HealthChecks.Extensions;
+namespace Nano.Storage.AzureShare.HealthChecks.Extensions;
 
 internal static class HealthChecksBuilderExtensions
 {
-    private const string NAME = "azurefileshare";
+    private const string NAME = "azure-fileshare";
 
     internal static IHealthChecksBuilder AddAzureFileshareStorage(this IHealthChecksBuilder builder, HealthStatus? failureStatus = null, IEnumerable<string>? tags = null, TimeSpan? timeout = null)
     {

@@ -52,6 +52,6 @@ public sealed class SqlServerProvider : IDataProvider
 
         services
             .AddHealthChecks()
-            .AddSqlServer(options.ConnectionString, failureStatus: failureStatus);
+            .AddSqlServer(options.ConnectionString, name: "sqlserver", failureStatus: failureStatus);
     }
 }

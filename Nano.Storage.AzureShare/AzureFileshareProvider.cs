@@ -3,9 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 using Nano.Storage.Abstractions;
 using Nano.Storage.Abstractions.Config;
-using Nano.Storage.AzureFileShare.HealthChecks.Extensions;
+using Nano.Storage.AzureShare.HealthChecks.Extensions;
 
-namespace Nano.Storage.AzureFileShare;
+namespace Nano.Storage.AzureShare;
 
 /// <summary>
 /// Nano Storage provider implementation for Azure File Shares.

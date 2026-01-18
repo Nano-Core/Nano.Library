@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Nano.Storage.Abstractions;
 
-namespace Nano.Storage.LocalFileSystem.HealthChecks;
+namespace Nano.Storage.LocalShare.HealthChecks;
 
 /// <summary>
 /// Health check that validates access to a local file system–backed storage location.

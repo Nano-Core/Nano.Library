@@ -7,7 +7,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Nano.Storage.Abstractions.Config;
 
-namespace Nano.Storage.AzureFileShare.HealthChecks;
+namespace Nano.Storage.AzureShare.HealthChecks;
 
 /// <summary>
 /// Performs a health check against an Azure File Share to verify its availability.

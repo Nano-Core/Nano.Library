@@ -57,6 +57,6 @@ public sealed class MySqlProvider : IDataProvider
 
         services
             .AddHealthChecks()
-            .AddMySql(options.ConnectionString, failureStatus: failureStatus);
+            .AddMySql(options.ConnectionString, name: "mysql", failureStatus: failureStatus);
     }
 }

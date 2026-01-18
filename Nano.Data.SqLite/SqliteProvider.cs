@@ -50,6 +50,6 @@ public sealed class SqliteProvider : IDataProvider
 
         services
             .AddHealthChecks()
-            .AddSqlite(options.ConnectionString, failureStatus: failureStatus);
+            .AddSqlite(options.ConnectionString, name: "sqlite", failureStatus: failureStatus);
     }
 }
