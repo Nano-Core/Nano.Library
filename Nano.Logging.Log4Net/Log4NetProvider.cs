@@ -14,7 +14,7 @@ namespace Nano.Logging.Log4Net;
 /// <summary>
 /// A logging provider that configures log4net as the application's logging framework.
 /// </summary>
-public class Log4NetProvider : ILoggingProvider
+public sealed class Log4NetProvider : ILoggingProvider
 {
     /// <summary>
     /// Configures log4net logging for the application using the provided <see cref="LoggingOptions"/>.

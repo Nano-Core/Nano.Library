@@ -1,9 +1,8 @@
-using System;
-using System.Globalization;
 using DynamicExpression.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -22,6 +21,8 @@ using Nano.App.Api.Mvc.Options;
 using Nano.App.Api.Mvc.Serialization.Json;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
+using System.Globalization;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
@@ -208,7 +209,7 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoVersioning(this IServiceCollection services, string version = "1.0.0", bool? useDefaultVersion = false)
+    internal static IServiceCollection AddNanoVersioning(this IServiceCollection services, string version = "1.0.0.0", bool? useDefaultVersion = false)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -407,6 +408,9 @@ internal static class ServiceCollectionExtensions
         services
             .AddTransient<IConfigureOptions<SwaggerGenOptions>>(x =>
             {
+                var webHostEnvironment = x
+                    .GetRequiredService<IWebHostEnvironment>();
+
                 var authenticationSchemeProvider = x
                     .GetRequiredService<IAuthenticationSchemeProvider>();
 
@@ -416,7 +420,7 @@ internal static class ServiceCollectionExtensions
                 var webOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                return new ConfigureSwaggerOptions(webOptions, authenticationSchemeProvider, apiVersionDescriptionProvider);
+                return new ConfigureSwaggerOptions(webOptions, webHostEnvironment, authenticationSchemeProvider, apiVersionDescriptionProvider);
             })
             .AddSwaggerGen()
             .AddSwaggerGenNewtonsoftSupport();
@@ -428,14 +432,14 @@ internal static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services
-            .AddHealthChecks()
-            .AddCheck<StartupHealthCheck>("self");
-
         if (options == null)
         {
             return services;
         }
+
+        services
+            .AddHealthChecks()
+            .AddCheck<StartupHealthCheck>("self");
 
         services
             .AddHealthChecksUI(x =>

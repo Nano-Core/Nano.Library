@@ -12,7 +12,7 @@ using Nano.Data.Abstractions.Identity.Consts;
 namespace Nano.Data;
 
 /// <inheritdoc />
-public class DbMigrationTask<TIdentity> : IDbMigrationTask
+public sealed class DbMigrationTask<TIdentity> : IDbMigrationTask
     where TIdentity : IEquatable<TIdentity>
 {
     private readonly ILogger logger;
@@ -36,7 +36,7 @@ public class DbMigrationTask<TIdentity> : IDbMigrationTask
     }
 
     /// <inheritdoc />
-    public virtual async Task MigrateAndSeedAsync(CancellationToken cancellationToken = default)
+    public async Task MigrateAndSeedAsync(CancellationToken cancellationToken = default)
     {
         await this.EnsureCreatedAsync(cancellationToken);
         await this.EnsureMigratedAsync(cancellationToken);

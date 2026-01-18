@@ -9,7 +9,7 @@ namespace Nano.Data.InMemory;
 /// <summary>
 /// In Memory Data Provider.
 /// </summary>
-public class InMemoryProvider : IDataProvider
+public sealed class InMemoryProvider : IDataProvider
 {
     /// <inheritdoc />
     public static void Configure(DbContextOptionsBuilder builder, DataOptions options)

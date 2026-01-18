@@ -11,7 +11,7 @@ namespace Nano.Data.SqlServer;
 /// <summary>
 /// Sql Server Data Provider.
 /// </summary>
-public class SqlServerProvider : IDataProvider
+public sealed class SqlServerProvider : IDataProvider
 {
     /// <inheritdoc />
     public static void Configure(DbContextOptionsBuilder builder, DataOptions options)

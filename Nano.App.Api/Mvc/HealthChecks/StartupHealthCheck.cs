@@ -7,7 +7,7 @@ using Nano.App.StartUp;
 namespace Nano.App.Api.Mvc.HealthChecks;
 
 /// <inheritdoc />
-public class StartupHealthCheck : IHealthCheck
+public sealed class StartupHealthCheck : IHealthCheck
 {
     private readonly StartupTaskContext taskContext;
 
@@ -21,7 +21,7 @@ public class StartupHealthCheck : IHealthCheck
     }
 
     /// <inheritdoc />
-    public virtual Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(context);
 

@@ -3,9 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 using Nano.Storage.Abstractions;
 using Nano.Storage.Abstractions.Config;
-using Nano.Storage.Azure.HealthChecks.Extensions;
+using Nano.Storage.AzureFileShare.HealthChecks.Extensions;
 
-namespace Nano.Storage.Azure;
+namespace Nano.Storage.AzureFileShare;
 
 /// <summary>
 /// Nano Storage provider implementation for Azure File Shares.
@@ -14,7 +14,7 @@ namespace Nano.Storage.Azure;
 ///     This Nano provider registers Azure File Share–related services based on the supplied <see cref="StorageOptions"/>.
 ///     When health checks are enabled, it adds an Azure File Share health check to the application's health check pipeline.
 /// </remarks>
-public class AzureFileshareProvider : IStorageProvider
+public sealed class AzureFileshareProvider : IStorageProvider
 {
     /// <summary>
     /// Configures services required for Azure File Share storage.
@@ -30,9 +30,6 @@ public class AzureFileshareProvider : IStorageProvider
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
-
-        // BUG: Doesn't become null??? hmmm, what can I do. It's per design it seems. 
-        // This could be several places
 
         if (options.HealthCheck == null)
         {

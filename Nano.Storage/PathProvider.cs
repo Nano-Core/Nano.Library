@@ -10,18 +10,18 @@ namespace Nano.Storage;
 /// Default implementation of <see cref="IPathProvider"/> that provides filesystem paths based on the configured <see cref="StorageOptions"/>.
 /// </summary>
 /// <remarks>
-///     The <see cref="RootDir"/> represents the absolute base directory for storage operations and is derived from the configured logical container or share name in <see cref="StorageOptions"/>.
-///     The <see cref="TempDir"/> provides a system-specific temporary directory for transient files such as uploads or processing artifacts.
+///     The <see cref="Root"/> represents the absolute base directory for storage operations and is derived from the configured logical container or share name in <see cref="StorageOptions"/>.
+///     The <see cref="Tmp"/> provides a system-specific temporary directory for transient files such as uploads or processing artifacts.
 /// </remarks>
 public class PathProvider : IPathProvider
 {
     private readonly IOptionsMonitor<StorageOptions> options;
 
     /// <inheritdoc />
-    public virtual string RootDir => Path.Combine("/mnt", this.options.CurrentValue.ShareName);
+    public virtual string Root => Path.Combine("/mnt", this.options.CurrentValue.ShareName);
 
     /// <inheritdoc />
-    public virtual string TempDir => Path.GetTempPath();
+    public virtual string Tmp => Path.GetTempPath();
 
     /// <summary>
     /// Initializes a new instance of <see cref="PathProvider"/>.

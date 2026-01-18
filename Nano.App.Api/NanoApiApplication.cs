@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +11,8 @@ using Nano.App.Abstractions;
 using Nano.App.Api.Config;
 using Nano.App.Api.Extensions;
 using Nano.App.Api.Identity.Authentication.Extensions;
+using Nano.App.Config;
+using Nano.App.Consts;
 using Nano.App.Extensions;
 using Nano.Common.Config;
 using Nano.Data.Abstractions.Eventing.Extensions;
@@ -52,8 +53,8 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
     {
         var root = Directory.GetCurrentDirectory();
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Development;
-        var config = ConfigManager.BuildConfiguration(args);
-        var applicationName = config["Name"] ?? Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
+        var config = ConfigManager.BuildConfiguration(environment, args);
+        var applicationName = config[nameof(BaseAppOptions.Name)] ?? AppDefaults.DEFAULT_APP_NAME;
 
         var applicationOptions = new WebApplicationOptions
         {
@@ -148,7 +149,7 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
                 return next();
             })
             .UseNanoDocumentataion(this.application.Environment, options.CurrentValue.Version, options.CurrentValue.Documentation)
-            .UseNanoHealthChecks(this.application.Environment, options.CurrentValue.Version, options.CurrentValue.HealthCheck);
+            .UseNanoHealthChecks(this.application.Environment, options.CurrentValue.HealthCheck);
 
         this.application
             .UseEventHandlers()

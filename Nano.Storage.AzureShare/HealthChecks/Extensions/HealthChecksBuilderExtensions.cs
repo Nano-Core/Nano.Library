@@ -6,7 +6,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Nano.Storage.Abstractions.Config;
 
-namespace Nano.Storage.Azure.HealthChecks.Extensions;
+namespace Nano.Storage.AzureFileShare.HealthChecks.Extensions;
 
 internal static class HealthChecksBuilderExtensions
 {

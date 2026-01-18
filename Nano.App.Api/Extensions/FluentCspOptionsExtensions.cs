@@ -5,7 +5,7 @@ using Nano.App.Api.Config;
 
 namespace Nano.App.Api.Extensions;
 
-// BUG: Csp Directives  (everything is commented out
+// BUG: Csp Directives  (everything is commented out)
 // navigate-to,
 // prefetch-src,
 // require-trusted-types-for,

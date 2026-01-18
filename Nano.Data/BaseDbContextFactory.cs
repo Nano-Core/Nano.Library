@@ -1,11 +1,12 @@
-using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Nano.Common.Config;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Config;
+using System;
 
 namespace Nano.Data;
 
@@ -17,7 +18,7 @@ public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbC
     /// <inheritdoc />
     public virtual TContext CreateDbContext(string[] args)
     {
-        var configuration = ConfigManager.BuildConfiguration();
+        var configuration = ConfigManager.BuildConfiguration(Environments.Development);
 
         var builder = new DbContextOptionsBuilder<TContext>();
 

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Nano.Storage.Abstractions.Config;
 
-namespace Nano.Storage.Azure.HealthChecks;
+namespace Nano.Storage.AzureFileShare.HealthChecks;
 
 /// <summary>
 /// Performs a health check against an Azure File Share to verify its availability.
@@ -16,7 +16,7 @@ namespace Nano.Storage.Azure.HealthChecks;
 ///     The health check verifies that the configured Azure File Share exists and is reachable. Configuration is resolved from <see cref="StorageOptions"/>
 ///     using <see cref="IOptionsMonitor{TOptions}"/>. A cached <see cref="ShareClient"/> instance is reused across executions.
 /// </remarks>
-public class AzureFileshareStorageHealthCheck : IHealthCheck
+public sealed class AzureFileshareStorageHealthCheck : IHealthCheck
 {
     private readonly IOptionsMonitor<StorageOptions> options;
     private readonly ShareClientOptions? clientOptions;
@@ -88,6 +88,11 @@ public class AzureFileshareStorageHealthCheck : IHealthCheck
     }
     private string GetConnectionString()
     {
-        return $"DefaultEndpointsProtocol=https;AccountName={this.options.CurrentValue.AccountName};AccountKey={this.options.CurrentValue.AccountKey};EndpointSuffix=core.windows.net";
+        if (this.options.CurrentValue.Account == null)
+        {
+            throw new NullReferenceException(nameof(this.options.CurrentValue.Account));
+        }
+
+        return $"DefaultEndpointsProtocol=https;AccountName={this.options.CurrentValue.Account.Id};AccountKey={this.options.CurrentValue.Account.Secret};EndpointSuffix=core.windows.net";
     }
 }

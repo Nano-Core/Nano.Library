@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.XPath;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -31,6 +32,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     ];
 
     private readonly IOptionsMonitor<ApiOptions> webOptions;
+    private readonly IWebHostEnvironment webHostEnvironment; 
     private readonly IAuthenticationSchemeProvider authenticationSchemeProvider;
     private readonly IApiVersionDescriptionProvider apiVersionDescriptionProvider;
 
@@ -38,12 +40,14 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     /// 
     /// </summary>
     /// <param name="webOptions"></param>
+    /// <param name="webHostEnvironment"></param>
     /// <param name="authenticationSchemeProvider"></param>
     /// <param name="apiVersionDescriptionProvider"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> webOptions, IAuthenticationSchemeProvider authenticationSchemeProvider, IApiVersionDescriptionProvider apiVersionDescriptionProvider)
+    public ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> webOptions, IWebHostEnvironment webHostEnvironment, IAuthenticationSchemeProvider authenticationSchemeProvider, IApiVersionDescriptionProvider apiVersionDescriptionProvider)
     {
         this.webOptions = webOptions ?? throw new ArgumentNullException(nameof(webOptions));
+        this.webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
         this.authenticationSchemeProvider = authenticationSchemeProvider ?? throw new ArgumentNullException(nameof(authenticationSchemeProvider));
         this.apiVersionDescriptionProvider = apiVersionDescriptionProvider ?? throw new ArgumentNullException(nameof(apiVersionDescriptionProvider));
     }
@@ -55,7 +59,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 
         this.ConfigureApiInfos(options);
         this.ConfigureSecurityDefinitions(options);
-        ConfigureDocumentationSources(options);
+        this.ConfigureDocumentationSources(options);
 
         options
             .IgnoreObsoleteActions();
@@ -121,7 +125,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
         {
             var openApiInfo = new OpenApiInfo
             {
-                Title = this.webOptions.CurrentValue.Name,
+                Title = this.webHostEnvironment.ApplicationName,
                 Description = this.webOptions.CurrentValue.Documentation.Description,
                 Version = apiVersionDescription.ApiVersion.ToString()
             };
@@ -191,47 +195,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
                 .AddSecurityDefinition("ApiKey", apiKeySecurityScheme);
         }
     }
-
-    private static bool IsCSharpXmlDoc(string path)
-    {
-        try
-        {
-            using var stream = File.OpenRead(path);
-
-            using var reader = XmlReader.Create(stream, new XmlReaderSettings
-            {
-                DtdProcessing = DtdProcessing.Ignore,
-                IgnoreComments = true,
-                IgnoreWhitespace = true
-            });
-
-            reader
-                .MoveToContent();
-
-            if (!reader.IsStartElement("doc"))
-            {
-                return false;
-            }
-
-            reader
-                .ReadStartElement("doc");
-
-            while (reader.Read())
-            {
-                if (reader is { NodeType: XmlNodeType.Element, Name: "members" })
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-    private static void ConfigureDocumentationSources(SwaggerGenOptions options)
+    private void ConfigureDocumentationSources(SwaggerGenOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
 
@@ -272,6 +236,46 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 
             options
                 .IncludeXmlComments(file, true);
+        }
+    }
+
+    private static bool IsCSharpXmlDoc(string path)
+    {
+        try
+        {
+            using var stream = File.OpenRead(path);
+
+            using var reader = XmlReader.Create(stream, new XmlReaderSettings
+            {
+                DtdProcessing = DtdProcessing.Ignore,
+                IgnoreComments = true,
+                IgnoreWhitespace = true
+            });
+
+            reader
+                .MoveToContent();
+
+            if (!reader.IsStartElement("doc"))
+            {
+                return false;
+            }
+
+            reader
+                .ReadStartElement("doc");
+
+            while (reader.Read())
+            {
+                if (reader is { NodeType: XmlNodeType.Element, Name: "members" })
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        catch
+        {
+            return false;
         }
     }
 }

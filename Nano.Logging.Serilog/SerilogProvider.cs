@@ -10,7 +10,7 @@ namespace Nano.Logging.Serilog;
 /// <summary>
 /// A logging provider that configures Serilog as the application's logging framework.
 /// </summary>
-public class SerilogProvider : ILoggingProvider
+public sealed class SerilogProvider : ILoggingProvider
 {
     /// <summary>
     /// Configures Serilog logging for the application using the provided <see cref="LoggingOptions"/>.

@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<ItemGroup>
+		<ProjectReference Include="..\Nano.App.Api\Nano.App.Api.csproj" />
 		<ProjectReference Include="..\Nano.App.Console\Nano.App.Console.csproj" />
 		<ProjectReference Include="..\Nano.App\Nano.App.csproj" />
 		<ProjectReference Include="..\Nano.Common\Nano.Common.csproj" />
@@ -20,7 +21,9 @@
 		<ProjectReference Include="..\Nano.Logging.Serilog\Nano.Logging.Serilog.csproj" />
 		<ProjectReference Include="..\Nano.Logging\Nano.Logging.csproj" />
 		<ProjectReference Include="..\Nano.Storage.Abstractions\Nano.Storage.Abstractions.csproj" />
+		<ProjectReference Include="..\Nano.Storage.AzureShare\Nano.Storage.AzureShare.csproj" />
 		<ProjectReference Include="..\Nano.Storage.Azure\Nano.Storage.Azure.csproj" />
+		<ProjectReference Include="..\Nano.Storage.LocalShare\Nano.Storage.LocalShare.csproj" />
 		<ProjectReference Include="..\Nano.Storage\Nano.Storage.csproj" />
 	</ItemGroup>
 

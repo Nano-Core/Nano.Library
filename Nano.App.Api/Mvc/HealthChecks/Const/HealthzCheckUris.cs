@@ -1,4 +1,4 @@
-namespace Nano.App.Api.Extensions.Const;
+namespace Nano.App.Api.Mvc.HealthChecks.Const;
 
 /// <summary>
 /// Healthz Check Uris.

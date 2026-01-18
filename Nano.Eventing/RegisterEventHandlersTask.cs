@@ -12,7 +12,7 @@ namespace Nano.Eventing;
 /// <summary>
 /// Default implementation of <see cref="IRegisterEventHandlersTask"/>.
 /// </summary>
-public class RegisterEventHandlersTask : IRegisterEventHandlersTask
+public sealed class RegisterEventHandlersTask : IRegisterEventHandlersTask
 {
     private readonly IEventing eventing;
 
@@ -26,7 +26,7 @@ public class RegisterEventHandlersTask : IRegisterEventHandlersTask
     }
 
     /// <inheritdoc />
-    public virtual async Task RegisterEventHandlers(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
+    public async Task RegisterEventHandlers(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
 

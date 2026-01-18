@@ -13,7 +13,7 @@ using Nano.Eventing.Abstractions;
 namespace Nano.Data.Eventing;
 
 /// <inheritdoc />
-public class RegisterEntityEventHandlersTask : IRegisterEntityEventHandlersTask
+public sealed class RegisterEntityEventHandlersTask : IRegisterEntityEventHandlersTask
 {
     private readonly DbContext dbContext;
     private readonly IEventing eventing;
@@ -31,7 +31,7 @@ public class RegisterEntityEventHandlersTask : IRegisterEntityEventHandlersTask
     }
 
     /// <inheritdoc />
-    public virtual async Task RegisterEntityEventHandlers(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
+    public async Task RegisterEntityEventHandlers(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
 

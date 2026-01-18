@@ -12,7 +12,7 @@ namespace Nano.Data.MySql;
 /// <summary>
 /// MySql Data Provider.
 /// </summary>
-public class MySqlProvider : IDataProvider
+public sealed class MySqlProvider : IDataProvider
 {
     /// <inheritdoc />
     public static void Configure(DbContextOptionsBuilder builder, DataOptions options)

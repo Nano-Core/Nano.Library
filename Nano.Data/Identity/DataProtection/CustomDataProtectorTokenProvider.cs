@@ -9,7 +9,7 @@ namespace Nano.Data.Identity.DataProtection;
 /// Custom Data Protector Token Provider.
 /// </summary>
 /// <typeparam name="TUser"></typeparam>
-public class CustomDataProtectorTokenProvider<TUser> : DataProtectorTokenProvider<TUser>
+public sealed class CustomDataProtectorTokenProvider<TUser> : DataProtectorTokenProvider<TUser>
     where TUser : class
 {
     /// <summary>

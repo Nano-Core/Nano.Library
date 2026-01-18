@@ -10,7 +10,7 @@ using Newtonsoft.Json.Serialization;
 namespace Nano.App.Api.Mvc.Serialization.Json;
 
 /// <inheritdoc />
-public class MvcEntityContractResolver : DefaultEntityContractResolver
+public sealed class MvcEntityContractResolver : DefaultEntityContractResolver
 {
     /// <summary>
     /// Create a property.

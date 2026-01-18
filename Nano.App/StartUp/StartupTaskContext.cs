@@ -5,19 +5,19 @@ namespace Nano.App.StartUp;
 /// <summary>
 /// Startup Task Context.
 /// </summary>
-public class StartupTaskContext
+public sealed class StartupTaskContext
 {
     private int count;
 
     /// <summary>
     /// Is Complete.
     /// </summary>
-    public virtual bool IsDone => this.count == 0;
+    public bool IsDone => this.count == 0;
 
     /// <summary>
     /// Increment.
     /// </summary>
-    public virtual void Increment()
+    public void Increment()
     {
         Interlocked.Increment(ref this.count);
     }
@@ -25,7 +25,7 @@ public class StartupTaskContext
     /// <summary>
     /// Decrement.
     /// </summary>
-    public virtual void Decrement()
+    public void Decrement()
     {
         Interlocked.Decrement(ref this.count);
     }

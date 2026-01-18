@@ -12,7 +12,7 @@ namespace Nano.Data.Eventing;
 /// <summary>
 /// Entity Event Handler.
 /// </summary>
-public class EntityEventHandler<TIdentity> : IEventingHandler<EntityEvent>
+public sealed class EntityEventHandler<TIdentity> : IEventingHandler<EntityEvent>
     where TIdentity : IEquatable<TIdentity>
 {
     private readonly BaseDbContext<TIdentity> dbContext;
@@ -30,7 +30,7 @@ public class EntityEventHandler<TIdentity> : IEventingHandler<EntityEvent>
     }
 
     /// <inheritdoc />
-    public virtual async Task CallbackAsync(EntityEvent @event, bool isRetrying)
+    public async Task CallbackAsync(EntityEvent @event, bool isRetrying)
     {
         ArgumentNullException.ThrowIfNull(@event);
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Nano.App.ApiClient.Config;
+using Nano.App.Consts;
 
 namespace Nano.App.Config;
 
@@ -15,13 +16,7 @@ public abstract class BaseAppOptions
     /// Name.
     /// </summary>
     [Required]
-    public virtual string Name { get; set; } = "Application";
-
-    /// <summary>
-    /// Entry Point.
-    /// </summary>
-    [Required]
-    public virtual string EntryPoint { get; set; } = null!;
+    public virtual string Name { get; set; } = AppDefaults.DEFAULT_APP_NAME;
 
     /// <summary>
     /// Version.

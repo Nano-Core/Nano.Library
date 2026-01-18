@@ -4,9 +4,7 @@ using System;
 
 namespace Nano.Storage.Abstractions;
 
-// BUG: Local Storage Provider (but, AccountName and AccountKey are Required)
-// Move the auth part to a nullable compound
-// It's also strange that we actually need a local provider for development and a Cloud one for cloud. Try figure that out
+// TODO: PROVIDER: Azure Blob Storage Storage Provider
 
 /// <summary>
 /// Defines a storage provider used to configure file storage services for the Nano application.

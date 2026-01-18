@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Nano.App.Api.Config;
 using Nano.App.Api.Config.Enums;
-using Nano.App.Api.Extensions.Const;
 using Nano.App.Api.Mvc.Extensions;
 using Nano.App.Api.Mvc.Middleware;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -19,6 +18,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Nano.App.Api.Mvc.Documentation.Extensions;
+using Nano.App.Api.Mvc.HealthChecks.Const;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
@@ -481,7 +481,7 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoDocumentataion(this IApplicationBuilder applicationBuilder, IWebHostEnvironment webHostEnvironment, string version = "1.0.0", DocumentationOptions? options = null)
+    internal static IApplicationBuilder UseNanoDocumentataion(this IApplicationBuilder applicationBuilder, IWebHostEnvironment webHostEnvironment, string version = "1.0.0.0", DocumentationOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
         ArgumentNullException.ThrowIfNull(webHostEnvironment);
@@ -535,7 +535,7 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoHealthChecks(this IApplicationBuilder applicationBuilder, IWebHostEnvironment webHostEnvironment, string version = "1.0.0", HealthCheckOptions? options = null)
+    internal static IApplicationBuilder UseNanoHealthChecks(this IApplicationBuilder applicationBuilder, IWebHostEnvironment webHostEnvironment, HealthCheckOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
         ArgumentNullException.ThrowIfNull(webHostEnvironment);
@@ -556,7 +556,7 @@ internal static class ApplicationBuilderExtensions
         applicationBuilder
             .UseHealthChecksUI(x =>
             {
-                x.PageTitle = $"{nameof(Nano)} - {webHostEnvironment.ApplicationName} Healthz v{version} ({webHostEnvironment.EnvironmentName})";
+                x.PageTitle = $"{nameof(Nano)} - {webHostEnvironment.ApplicationName} Healthz ({webHostEnvironment.EnvironmentName})";
                 x.UIPath = HealthzCheckUris.UiPath;
                 x.ApiPath = HealthzCheckUris.ApiPath;
                 x.ResourcesPath = HealthzCheckUris.RexPath;

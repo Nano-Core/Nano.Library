@@ -11,7 +11,7 @@ namespace Nano.Data.SqLite;
 /// <summary>
 /// Sql Lite Data Provider.
 /// </summary>
-public class SqliteProvider : IDataProvider
+public sealed class SqliteProvider : IDataProvider
 {
     /// <inheritdoc />
     public static void Configure(DbContextOptionsBuilder builder, DataOptions options)

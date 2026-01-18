@@ -16,7 +16,7 @@ namespace Nano.Eventing.RabbitMq;
 ///     and invokes <see cref="IEventingHandler{TMessage}"/> callbacks when messages are received.
 /// </para>
 /// </summary>
-public class RabbitMqEventing : IEventing
+public sealed class RabbitMqEventing : IEventing
 {
     private const string QUEUE_TYPE = "quorum";
 
@@ -32,7 +32,7 @@ public class RabbitMqEventing : IEventing
     }
 
     /// <inheritdoc />
-    public virtual async Task PublishAsync<TMessage>(TMessage body, string routing = "", CancellationToken cancellationToken = default)
+    public async Task PublishAsync<TMessage>(TMessage body, string routing = "", CancellationToken cancellationToken = default)
         where TMessage : class
     {
         ArgumentNullException.ThrowIfNull(body);
@@ -49,7 +49,7 @@ public class RabbitMqEventing : IEventing
     }
 
     /// <inheritdoc />
-    public virtual async Task SubscribeAsync<TMessage>(IEventingHandler<TMessage> eventHandler, string routing = "", ushort? prefetchCount = null, CancellationToken cancellationToken = default)
+    public async Task SubscribeAsync<TMessage>(IEventingHandler<TMessage> eventHandler, string routing = "", ushort? prefetchCount = null, CancellationToken cancellationToken = default)
         where TMessage : class
     {
         ArgumentNullException.ThrowIfNull(eventHandler);

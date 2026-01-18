@@ -69,9 +69,10 @@ The ```Storage``` section in the configuration defines the storage provider and 
 
 | Setting                         | Type   | Default     | Description                                                                                                           |
 | ------------------------------- | ------ | ----------- | --------------------------------------------------------------------------------------------------------------------- |
-|  `AccountName`                  | string | null        | The account or tenant identifier used to authenticate with the storage provider.                                      |
-|  `AccountKey`                   | string | null        | The secret, key, or credential used to authenticate with the storage provider.                                        |
 |  `ShareName`                    | string | null        | The logical container, share, or bucket name used for file storage.                                                   |
+|  `Account`                      |        | null        | The account of the storage provider.                                                                                  |
+|  `Account.Id`                   | string | null        | The account id, username or tenant identifier used to authenticate with the storage provider.                         |
+|  `Account.Secret`               | string | null        | The secret, key, password or credential used to authenticate with the storage provider.                               |
 |  `HealthCheck`                  |        | null        | Storage health check. _Only relevant for_ ```NanoWebApplication```.                                                   |
 |  `HealthCheck.UnhealthyStatus`  | enum   | Unhealthy   | The health status reported when the storage provider is unavailable. _Only relevant for_ ```NanoWebApplication```.    |
 

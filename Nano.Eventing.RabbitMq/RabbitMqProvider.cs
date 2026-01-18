@@ -18,7 +18,7 @@ namespace Nano.Eventing.RabbitMq;
 /// </list>
 /// </para>
 /// </summary>
-public class RabbitMqProvider : IEventingProvider
+public abstract class RabbitMqProvider : IEventingProvider
 {
     /// <inheritdoc />
     public static void Configure(IServiceCollection services, EventingOptions options)

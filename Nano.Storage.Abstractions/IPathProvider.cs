@@ -15,7 +15,7 @@ public interface IPathProvider
     /// <remarks>
     ///     This path represents the base directory under which all storage operations should occur.
     /// </remarks>
-    string RootDir { get; }
+    string Root { get; }
 
     /// <summary>
     /// Gets the absolute directory used for temporary file storage.
@@ -23,5 +23,5 @@ public interface IPathProvider
     /// <remarks>
     ///     This directory may be located outside the storage share and is intended for transient files such as uploads, processing artifacts, or buffering.
     /// </remarks>
-    string TempDir { get; }
+    string Tmp { get; }
 }
