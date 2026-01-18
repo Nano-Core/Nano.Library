@@ -3,9 +3,6 @@ using System;
 
 namespace Nano.App;
 
-// BUG: Should we make a BackgroundJob option, like we did in ....
-// and auto resolve just one of the consumers dependencies using IServiceScopeFactory and resolving each of that dependencies
-
 /// <summary>
 /// Base Application (abstract).
 /// </summary>

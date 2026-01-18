@@ -1,8 +1,6 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.Common.Config;
-using Nano.Common.Config.Extensions;
 
 namespace Nano.App.Config.Extensions;
 

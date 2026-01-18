@@ -32,7 +32,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     ];
 
     private readonly IOptionsMonitor<ApiOptions> webOptions;
-    private readonly IWebHostEnvironment webHostEnvironment; 
+    private readonly IWebHostEnvironment webHostEnvironment;
     private readonly IAuthenticationSchemeProvider authenticationSchemeProvider;
     private readonly IApiVersionDescriptionProvider apiVersionDescriptionProvider;
 
