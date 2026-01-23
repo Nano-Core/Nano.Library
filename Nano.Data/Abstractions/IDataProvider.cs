@@ -4,8 +4,6 @@ using Nano.Data.Abstractions.Config;
 
 namespace Nano.Data.Abstractions;
 
-// TODO: PROVIDER: Data: Postgres Provider
-
 /// <summary>
 /// Data Provider interface.
 /// Defines the provider used for data context in the application.

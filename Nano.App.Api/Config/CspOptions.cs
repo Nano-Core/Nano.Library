@@ -14,36 +14,52 @@ public class CspOptions
     public virtual bool ReportOnly { get; set; } = false;
 
     /// <summary>
-    /// Block All Mixed Content.
-    /// </summary>
-    [Required]
-    public virtual bool BlockAllMixedContent { get; set; } = false;
-
-    /// <summary>
     /// Upgrade Insecure Requests.
     /// </summary>
     [Required]
     public virtual bool UpgradeInsecureRequests { get; set; } = false;
 
     /// <summary>
-    /// Trusted Types.
+    /// Report To.
     /// </summary>
-    public virtual CspDirectiveTrustedTypes? TrustedTypes { get; set; }
+    public virtual CspReportToOptions? ReportTo { get; set; }
 
     /// <summary>
     /// Defaults.
+    /// https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/default-src
     /// </summary>
     public virtual CspDirective? Defaults { get; set; }
 
     /// <summary>
     /// Styles.
+    /// https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/style-src
     /// </summary>
     public virtual CspDirectiveStyles? Styles { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public virtual CspDirectiveStyles? StylesAttr { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public virtual CspDirectiveStyles? StylesElem { get; set; }
 
     /// <summary>
     /// Scripts.
     /// </summary>
     public virtual CspDirectiveScripts? Scripts { get; set; }
+    
+    /// <summary>
+    /// Scripts.
+    /// </summary>
+    public virtual CspDirectiveScripts? ScriptsAttr { get; set; }
+
+    /// <summary>
+    /// Scripts.
+    /// </summary>
+    public virtual CspDirectiveScripts? ScriptsElem { get; set; }
 
     /// <summary>
     /// Objects.
@@ -64,6 +80,11 @@ public class CspOptions
     /// Frames.
     /// </summary>
     public virtual CspDirective? Frames { get; set; }
+
+    /// <summary>
+    /// Fenced Frames.
+    /// </summary>
+    public virtual CspDirective? FencedFrames { get; set; }
 
     /// <summary>
     /// Frame Ancestors.
@@ -106,6 +127,11 @@ public class CspOptions
     public virtual CspDirective? Workers { get; set; }
 
     /// <summary>
+    /// Trusted Types.
+    /// </summary>
+    public virtual CspDirectiveTrustedTypes? TrustedTypes { get; set; }
+
+    /// <summary>
     /// Sandbox.
     /// </summary>
     public virtual CspDirectiveSandbox? Sandbox { get; set; }
@@ -114,12 +140,6 @@ public class CspOptions
     /// Permissions Policy.
     /// </summary>
     public virtual CspDirectivePermissionsPolicy? PermissionsPolicy { get; set; }
-
-    /// <summary>
-    /// Report Uris.
-    /// </summary>
-    [Required]
-    public virtual string[] ReportUris { get; set; } = [];
 
 
     /// <summary>
@@ -151,30 +171,80 @@ public class CspOptions
     }
 
     /// <summary>
-    /// Csp Directive Scripts.
+    /// CSP Directive Scripts (script-src).
     /// </summary>
     public class CspDirectiveScripts : CspDirective
     {
         /// <summary>
-        /// Is None.
-        /// Adds the 'unsafe-eval' source.
-        /// </summary>
-        [Required]
-        public virtual bool IsUnsafeEval { get; set; } = false;
-
-        /// <summary>
-        /// Is None.
         /// Adds the 'unsafe-inline' source.
         /// </summary>
         [Required]
         public virtual bool IsUnsafeInline { get; set; } = false;
 
         /// <summary>
-        /// Is None.
+        /// Adds the 'unsafe-eval' source.
+        /// </summary>
+        [Required]
+        public virtual bool IsUnsafeEval { get; set; } = false;
+
+        /// <summary>
+        /// Adds the 'wasm-unsafe-eval' source.
+        /// </summary>
+        [Required]
+        public virtual bool IsUnsafeWasmEval { get; set; } = false;
+
+        /// <summary>
         /// Adds the 'strict-dynamic' source.
         /// </summary>
         [Required]
         public virtual bool StrictDynamic { get; set; } = false;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Required]
+        public virtual bool IsUnsafeHashes { get; set; } = false;
+
+        /// <summary>
+        /// Adds 'unsafe-hashed-attributes' source.
+        /// </summary>
+        [Required]
+        public virtual bool UnsafeHashedAttributes { get; set; } = false;
+
+        /// <summary>
+        /// Adds 'unsafe-allow-redirects' source.
+        /// </summary>
+        [Required]
+        public virtual bool UnsafeAllowRedirects { get; set; } = false;
+
+        /// <summary>
+        /// Trusted Types enforcement for script.
+        /// </summary>
+        [Required]
+        public virtual bool RequireTrustedTypes { get; set; } = false;
+
+        /// <summary>
+        /// Nonce values to allow specific inline scripts.
+        /// </summary>
+        public virtual string[] Nonces { get; set; } = [];
+
+        /// <summary>
+        /// SHA hashes to allow specific script content.
+        /// Example: 'sha256-abc123...'
+        /// </summary>
+        public virtual string[] Hashes { get; set; } = [];
+
+        /// <summary>
+        /// Enables 'report-sample' for CSP violation reporting.
+        /// </summary>
+        [Required]
+        public virtual bool ReportSample { get; set; } = false;
+
+        /// <summary>
+        ///
+        /// </summary>
+        [Required]
+        public virtual bool RequireSri { get; set; } = false;
     }
 
     /// <summary>
@@ -183,23 +253,130 @@ public class CspOptions
     public class CspDirectiveStyles : CspDirective
     {
         /// <summary>
-        /// Is None.
-        /// Adds the 'unsafe-inline' source.
+        /// Allows inline styles ('unsafe-inline').
+        /// Strongly discouraged unless unavoidable.
         /// </summary>
         [Required]
         public virtual bool IsUnsafeInline { get; set; } = false;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Required]
+        public virtual bool IsUnsafeHashes { get; set; } = false;
+
+        /// <summary>
+        /// A concrete nonce value to emit as 'nonce-{value}'.
+        /// Mutually exclusive with IncludeNoncePlaceholder.
+        /// </summary>
+        public virtual string[] Nonces { get; init; } = [];
+
+        /// <summary>
+        /// Hashes for inline styles (e.g. sha256-abc...).
+        /// Values must already be prefixed with sha256-/sha384-/sha512-.
+        /// </summary>
+        [Required]
+        public virtual string[] Hashes { get; init; } = [];
+
+        /// <summary>
+        /// Trusted Types enforcement for styles.
+        /// </summary>
+        [Required]
+        public virtual bool RequireTrustedTypes { get; set; } = false;
+
+        /// <summary>
+        ///
+        /// </summary>
+        [Required]
+        public virtual bool RequireSri { get; set; } = false;
+    }
+
+    /// <summary>
+    /// CSP Directive for element- or attribute-specific sources.
+    /// Can be used for script-src-attr, script-src-elem, style-src-attr, style-src-elem.
+    /// </summary>
+    public class CspDirectiveElement : CspDirective
+    {
+        /// <summary>
+        /// Allows unsafe-inline content (inline styles or attributes, inline scripts for attributes).
+        /// Only relevant for -attr directives and inline styles/scripts.
+        /// </summary>
+        [Required]
+        public virtual bool IsUnsafeInline { get; set; } = false;
+
+        /// <summary>
+        /// Multiple nonce values for inline content.
+        /// </summary>
+        public virtual string[] Nonces { get; set; } = [];
+
+        /// <summary>
+        /// Precomputed hashes (sha256/384/512) for inline content.
+        /// Must include the prefix: 'sha256-', 'sha384-', 'sha512-'.
+        /// </summary>
+        [Required]
+        public virtual string[] Hashes { get; init; } = [];
     }
 
     /// <summary>
     /// Csp Directive Trusted Types.
     /// </summary>
-    public class CspDirectiveTrustedTypes;
+    public class CspDirectiveTrustedTypes
+    {
+        /// <summary>
+        /// Is None.
+        /// Adds the 'none' source.
+        /// All other sources are ignored.
+        /// </summary>
+        [Required]
+        public virtual bool IsNone { get; set; } = false;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Required]
+        public virtual bool AllowDuplicates { get; set; } = false;
+
+        /// <summary>
+        /// The names of the Trusted Types policies to allow.
+        /// </summary>
+        [Required]
+        public virtual string[] Policies { get; set; } = [];
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class CspReportToOptions
+    {
+        /// <summary>
+        /// Reporting group name referenced by CSP.
+        /// </summary>
+        [Required]
+        public virtual string Group { get; set; } = "csp-reports";
+
+        /// <summary>
+        /// Max age in seconds.
+        /// </summary>
+        [Required]
+        public virtual int MaxAge { get; set; } = 10886400;
+
+        /// <summary>
+        /// One or more report endpoints.
+        /// </summary>
+        [Required]
+        public virtual string[] Endpoints { get; set; } = [];
+    }
 
     /// <summary>
     /// Csp Directive Sandbox.
     /// </summary>
     public class CspDirectiveSandbox
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual bool AllowDownloads { get; set; } = false;
+
         /// <summary>
         /// Allow Forms.
         /// Allows the page to submit forms. If this keyword is not used, this operation is not allowed.
@@ -267,12 +444,29 @@ public class CspOptions
         public virtual bool AllowScripts { get; set; } = false;
 
         /// <summary>
+        /// 
+        /// </summary>
+        public virtual bool AllowStorageAccessByUserActivation { get; set; } = false;
+
+        /// <summary>
         /// Allow Top Navigation.
         /// Allows the page to navigate (load) content to the top-level browsing context.
         /// If this keyword is not used, this operation is not allowed.
         /// </summary>
         [Required]
         public virtual bool AllowTopNavigation { get; set; } = false;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Required]
+        public virtual bool AllowTopNavigationByUserActivation { get; set; } = false;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Required]
+        public virtual bool AllowTopNavigationToCustomProtocols { get; set; } = false;
     }
 
     /// <summary>

@@ -9,8 +9,13 @@ namespace Nano.App.Api.Config;
 public class XXssProtectionOptions
 {
     /// <summary>
+    /// 
+    /// </summary>
+    public virtual string? ReportingUrl { get; set; }
+
+    /// <summary>
     /// Use Xss Protection Policy Header.
     /// </summary>
     [Required]
-    public virtual XXssProtectionPolicyBlockMode XssProtectionPolicyHeader { get; set; } = XXssProtectionPolicyBlockMode.Disabled;
+    public virtual XXssProtectionPolicyBlockMode XssProtectionPolicyHeader { get; set; } = XXssProtectionPolicyBlockMode.FilterDisabled;
 }

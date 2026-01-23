@@ -1,4 +1,4 @@
-namespace Nano.App.Consts;
+namespace Nano.App.Api.Mvc.Documentation.Consts;
 
 internal static class AppDefaults
 {

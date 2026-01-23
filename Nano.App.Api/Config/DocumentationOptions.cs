@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.OpenApi;
+using Nano.App.Api.Mvc.Documentation.Consts;
 
 namespace Nano.App.Api.Config;
 
@@ -9,15 +10,10 @@ namespace Nano.App.Api.Config;
 public class DocumentationOptions
 {
     /// <summary>
-    /// Csp Nonce.
-    /// </summary>
-    public virtual string? CspNonce { get; set; }
-
-    /// <summary>
-    /// Use Default Version.
+    /// Name.
     /// </summary>
     [Required]
-    public virtual bool UseDefaultVersion { get; set; } = true;
+    public virtual string Name { get; set; } = AppDefaults.DEFAULT_APP_NAME;
 
     /// <summary>
     /// Description.
@@ -38,4 +34,15 @@ public class DocumentationOptions
     /// License.
     /// </summary>
     public virtual OpenApiLicense? License { get; set; }
+
+    /// <summary>
+    /// Csp Nonce.
+    /// </summary>
+    public virtual string? CspNonce { get; set; }
+
+    /// <summary>
+    /// Use Default Version.
+    /// </summary>
+    [Required]
+    public virtual bool UseDefaultVersion { get; set; } = true;
 }

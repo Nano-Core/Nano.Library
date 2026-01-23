@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Nano.App.Api.Config;
 using Nano.App.Api.Controllers;
 using Nano.App.Api.Extensions;
+using Nano.App.Api.Mvc.Extensions;
 using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Config;
 

@@ -2,14 +2,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nano.App.Abstractions;
-using Nano.App.Config;
 using Nano.App.Console.Config;
 using Nano.App.Console.Extensions;
-using Nano.App.Consts;
 using Nano.App.Extensions;
 using Nano.Common.Config;
 using System;
 using System.IO;
+using System.Reflection;
 
 namespace Nano.App.Console;
 
@@ -45,8 +44,9 @@ public sealed class NanoConsoleApplication : BaseApplication<IHost, HostApplicat
     {
         var root = Directory.GetCurrentDirectory();
         var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Development;
-        var config = ConfigManager.BuildConfiguration(environment, args);
-        var applicationName = config[nameof(BaseAppOptions.Name)] ?? AppDefaults.DEFAULT_APP_NAME;
+        var entryAssembly = Assembly.GetEntryAssembly();
+        var config = ConfigManager.BuildConfiguration(environment, entryAssembly, args);
+        var applicationName = Assembly.GetEntryAssembly()?.GetName().Name;
 
         var applicationOptions = new HostApplicationBuilderSettings
         {

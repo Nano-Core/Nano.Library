@@ -972,7 +972,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
         return identityUserToken;
     }
 
-
     /// <inheritdoc />
     public virtual async Task<IdentityUserRefreshToken<TIdentity>> CreateRefreshToken(TIdentity userId, RefreshToken refreshToken, string appId)
     {

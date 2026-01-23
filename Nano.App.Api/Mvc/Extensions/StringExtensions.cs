@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.App.Api.Extensions;
+namespace Nano.App.Api.Mvc.Extensions;
 
 internal static class StringExtensions
 {

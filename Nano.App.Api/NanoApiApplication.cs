@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -11,13 +8,15 @@ using Nano.App.Abstractions;
 using Nano.App.Api.Config;
 using Nano.App.Api.Extensions;
 using Nano.App.Api.Identity.Authentication.Extensions;
-using Nano.App.Config;
-using Nano.App.Consts;
 using Nano.App.Extensions;
 using Nano.Common.Config;
 using Nano.Data.Abstractions.Eventing.Extensions;
 using Nano.Data.Abstractions.Extensions;
 using Nano.Eventing.Abstractions.Extensions;
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace Nano.App.Api;
 
@@ -53,8 +52,9 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
     {
         var root = Directory.GetCurrentDirectory();
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Development;
-        var config = ConfigManager.BuildConfiguration(environment, args);
-        var applicationName = config[nameof(BaseAppOptions.Name)] ?? AppDefaults.DEFAULT_APP_NAME;
+        var entryAssembly = Assembly.GetEntryAssembly();
+        var config = ConfigManager.BuildConfiguration(environment, entryAssembly, args);
+        var applicationName = entryAssembly?.GetName().Name;
 
         var applicationOptions = new WebApplicationOptions
         {
@@ -90,7 +90,7 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
             .AddNanoFormOptions(webOptions.Hosting.MultipartLimits)
             .AddNanoMvc()
             .AddNanoDocumentation(webOptions.Documentation)
-            .AddNanoHealthChecking(applicationName, webOptions.Hosting.Ports.FirstOrDefault(), webOptions.HealthCheck);
+            .AddNanoHealthChecking(webOptions.Hosting.Ports.FirstOrDefault(), webOptions.HealthCheck);
 
         applicationBuilder.WebHost
             .UseNanoKestrel(webOptions)

@@ -58,12 +58,41 @@ internal static class ServiceCollectionExtensions
             .AddDataProtection()
             .PersistKeysToDbContext<TContext>();
 
-        // BUG: How to only register IIdentityAuthRepository if Web.Identity.Authentication.Jwt is configured.
         services
-            .AddScoped<IIdentityAuthRepository, DefaultIdentityAuthRepository>()
-            .AddScoped<IIdentityAuthRepository<TIdentity>, DefaultIdentityAuthRepository<TIdentity>>()
             .AddScoped<IIdentityRepository, DefaultIdentityRepository>()
             .AddScoped<IIdentityRepository<TIdentity>, DefaultIdentityRepository<TIdentity>>();
+
+        services
+            .AddIdentityAuthRepository<IIdentityAuthRepository, DefaultIdentityAuthRepository>()
+            .AddIdentityAuthRepository<IIdentityAuthRepository<TIdentity>, DefaultIdentityAuthRepository<TIdentity>>();
+
+        return services;
+    }
+
+
+    private static IServiceCollection AddIdentityAuthRepository<TService, TImplementation>(this IServiceCollection services)
+        where TService : class
+        where TImplementation : TService
+    {
+        services
+            .AddScoped<TService>(x =>
+            {
+                var authJwtRepository = x
+                    .GetService<IAuthJwtRepository>();
+
+                if (authJwtRepository is null)
+                {
+                    var serviceTypeName = typeof(TImplementation).ToString();
+                    var implementationTypeName = typeof(IAuthJwtRepository).ToString();
+
+                    throw new InvalidOperationException($"Unable to resolve service for type '{serviceTypeName}' while attempting to activate  '{implementationTypeName}'. Ensure App:Identity:Authentication:Jwt is configured.");
+                }
+
+                var identityRepository = x
+                    .GetRequiredService<IIdentityRepository>();
+
+                return ActivatorUtilities.CreateInstance<TImplementation>(x, identityRepository, authJwtRepository);
+            });
 
         return services;
     }

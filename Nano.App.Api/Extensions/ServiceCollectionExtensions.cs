@@ -2,7 +2,6 @@ using DynamicExpression.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -408,9 +407,6 @@ internal static class ServiceCollectionExtensions
         services
             .AddTransient<IConfigureOptions<SwaggerGenOptions>>(x =>
             {
-                var webHostEnvironment = x
-                    .GetRequiredService<IWebHostEnvironment>();
-
                 var authenticationSchemeProvider = x
                     .GetRequiredService<IAuthenticationSchemeProvider>();
 
@@ -420,7 +416,7 @@ internal static class ServiceCollectionExtensions
                 var webOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                return new ConfigureSwaggerOptions(webOptions, webHostEnvironment, authenticationSchemeProvider, apiVersionDescriptionProvider);
+                return new ConfigureSwaggerOptions(webOptions, authenticationSchemeProvider, apiVersionDescriptionProvider);
             })
             .AddSwaggerGen()
             .AddSwaggerGenNewtonsoftSupport();
@@ -428,7 +424,7 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoHealthChecking(this IServiceCollection services, string applicationName, int? port, HealthCheckOptions? options = null)
+    internal static IServiceCollection AddNanoHealthChecking(this IServiceCollection services, int? port, HealthCheckOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -439,12 +435,12 @@ internal static class ServiceCollectionExtensions
 
         services
             .AddHealthChecks()
-            .AddCheck<StartupHealthCheck>("self");
+            .AddCheck<StartupHealthCheck>("startup");
 
         services
             .AddHealthChecksUI(x =>
             {
-                x.AddHealthCheckEndpoint(applicationName.ToLower(), $"http://localhost:{port ?? 80}/healthz");
+                x.AddHealthCheckEndpoint("app", $"http://localhost:{port ?? 80}/healthz");
 
                 x.SetApiMaxActiveRequests(1);
                 x.SetEvaluationTimeInSeconds(options.EvaluationInterval);

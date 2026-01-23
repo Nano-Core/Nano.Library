@@ -1,17 +1,26 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
+using Nano.App.Api.Config;
+using Nano.App.Api.Config.Enums;
+using Nano.App.Api.Mvc.Csp;
+using Nano.App.Api.Mvc.Csp.Extensions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Http;
-using Nano.App.Api.Config;
-using Nano.App.Api.Config.Enums;
 
-namespace Nano.App.Api.Extensions;
+namespace Nano.App.Api.Mvc.Extensions;
 
 internal static class HttpResponseExtensions
 {
-    internal static HttpResponse AddCrossOriginEmbedderPolicyHeader(this HttpResponse httpResponse, CrossOriginEmbedderPolicy? crossOriginEmbedderPolicy)
+    internal static HttpResponse AddCrossOriginEmbedderPolicyHeader(this HttpResponse httpResponse, CrossOriginEmbedderPolicy? crossOriginEmbedderPolicy = null)
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
+
+        if (crossOriginEmbedderPolicy == null)
+        {
+            return httpResponse;
+        }
 
         switch (crossOriginEmbedderPolicy)
         {
@@ -30,9 +39,6 @@ internal static class HttpResponseExtensions
                     .TryAdd("Cross-Origin-Embedder-Policy", "credentialless");
                 break;
 
-            case null:
-                break;
-
             default:
                 throw new ArgumentOutOfRangeException(nameof(crossOriginEmbedderPolicy), crossOriginEmbedderPolicy, "Argument out of range.");
         }
@@ -40,9 +46,14 @@ internal static class HttpResponseExtensions
         return httpResponse;
     }
 
-    internal static HttpResponse AddCrossOriginOpenerPolicyHeader(this HttpResponse httpResponse, CrossOriginOpenerPolicy? crossOriginOpenerPolicy)
+    internal static HttpResponse AddCrossOriginOpenerPolicyHeader(this HttpResponse httpResponse, CrossOriginOpenerPolicy? crossOriginOpenerPolicy = null)
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
+
+        if (crossOriginOpenerPolicy == null)
+        {
+            return httpResponse;
+        }
 
         switch (crossOriginOpenerPolicy)
         {
@@ -61,9 +72,6 @@ internal static class HttpResponseExtensions
                     .TryAdd("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
                 break;
 
-            case null:
-                break;
-
             default:
                 throw new ArgumentOutOfRangeException(nameof(crossOriginOpenerPolicy), crossOriginOpenerPolicy, "Argument out of range.");
         }
@@ -71,9 +79,14 @@ internal static class HttpResponseExtensions
         return httpResponse;
     }
 
-    internal static HttpResponse AddCrossOriginResourcePolicyHeader(this HttpResponse httpResponse, CrossOriginResourcePolicy? crossOriginResourcePolicy)
+    internal static HttpResponse AddCrossOriginResourcePolicyHeader(this HttpResponse httpResponse, CrossOriginResourcePolicy? crossOriginResourcePolicy = null)
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
+
+        if (crossOriginResourcePolicy == null)
+        {
+            return httpResponse;
+        }
 
         switch (crossOriginResourcePolicy)
         {
@@ -92,9 +105,6 @@ internal static class HttpResponseExtensions
                     .TryAdd("Cross-Origin-Resource-Policy", "cross-origin");
                 break;
 
-            case null:
-                break;
-
             default:
                 throw new ArgumentOutOfRangeException(nameof(crossOriginResourcePolicy), crossOriginResourcePolicy, "Argument out of range.");
         }
@@ -102,9 +112,14 @@ internal static class HttpResponseExtensions
         return httpResponse;
     }
 
-    internal static HttpResponse AddXRobotsHeader(this HttpResponse httpResponse, RobotsOptions options)
+    internal static HttpResponse AddXRobotsHeader(this HttpResponse httpResponse, RobotsOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
+
+        if (options == null)
+        {
+            return httpResponse;
+        }
 
         var directives = new List<string>();
 
@@ -159,13 +174,18 @@ internal static class HttpResponseExtensions
         return httpResponse;
     }
 
-    internal static HttpResponse AddFrameOptionsPolicyHeader(this HttpResponse httpResponse, XFrameOptionsPolicy? frameOptionsPolicy)
+    internal static HttpResponse AddXFrameOptionsPolicyHeader(this HttpResponse httpResponse, XFrameOptionsPolicy? xframeOptionsPolicy = null)
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
 
+        if (xframeOptionsPolicy == null)
+        {
+            return httpResponse;
+        }
+
         const string KEY = "X-Frame-Options";
 
-        switch (frameOptionsPolicy)
+        switch (xframeOptionsPolicy)
         {
             case XFrameOptionsPolicy.Deny:
                 httpResponse.Headers
@@ -181,23 +201,155 @@ internal static class HttpResponseExtensions
                 break;
 
             default:
-                throw new ArgumentOutOfRangeException(nameof(frameOptionsPolicy), frameOptionsPolicy, "Argument out of range.");
+                throw new ArgumentOutOfRangeException(nameof(xframeOptionsPolicy), xframeOptionsPolicy, "Argument out of range.");
         }
 
         return httpResponse;
     }
 
-    internal static HttpResponse AddContentTypeOptionsNoSniffHeader(this HttpResponse httpResponse)
+    internal static HttpResponse AddContentTypeOptionsHeader(this HttpResponse httpResponse, ContentTypeOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
 
-        httpResponse.Headers
-            .TryAdd("X-Content-Type-Options", "nosniff");
+        if (options == null)
+        {
+            return httpResponse;
+        }
+
+        if (options.NoSniff)
+        {
+            httpResponse.Headers
+                .TryAdd(HeaderNames.XContentTypeOptions, "nosniff");
+        }
 
         return httpResponse;
     }
 
-    internal static HttpResponse AddPermissionsPolicyHeader(this HttpResponse httpResponse, CspOptions.CspDirectivePermissionsPolicy? cspDirectivePermissionsPolicy = null)
+    internal static HttpResponse AddReferrerPolicyHeader(this HttpResponse httpResponse, ReferrerPolicyOptions? options)
+    {
+        ArgumentNullException.ThrowIfNull(httpResponse);
+
+        if (options == null)
+        {
+            return httpResponse;
+        }
+
+        var headerValue = options.ReferrerPolicyHeader switch
+        {
+            ReferrerPolicy.NoReferrer => "no-referrer",
+            ReferrerPolicy.NoReferrerWhenDowngrade => "no-referrer-when-downgrade",
+            ReferrerPolicy.SameOrigin => "same-origin",
+            ReferrerPolicy.Origin => "origin",
+            ReferrerPolicy.StrictOrigin => "strict-origin",
+            ReferrerPolicy.OriginWhenCrossOrigin => "origin-when-cross-origin",
+            ReferrerPolicy.StrictOriginWhenCrossOrigin => "strict-origin-when-cross-origin",
+            ReferrerPolicy.UnsafeUrl => "unsafe-url",
+            ReferrerPolicy.Disabled => "",
+            _ => throw new ArgumentOutOfRangeException(nameof(options.ReferrerPolicyHeader), options.ReferrerPolicyHeader, "Argument out of range.")
+        };
+
+        httpResponse.Headers
+            .TryAdd("Referrer-Policy", headerValue);
+
+        return httpResponse;
+    }
+
+    internal static HttpResponse AddXXssProtectionPolicyHeader(this HttpResponse httpResponse, XXssProtectionOptions? options)
+    {
+        ArgumentNullException.ThrowIfNull(httpResponse);
+
+        if (options == null)
+        {
+            return httpResponse;
+        }
+
+        var headerValue = options.XssProtectionPolicyHeader switch
+        {
+            XXssProtectionPolicyBlockMode.FilterEnabled => "1",
+            XXssProtectionPolicyBlockMode.FilterDisabled => "0",
+            XXssProtectionPolicyBlockMode.FilterEnabledBlockMode => "1; mode=block",
+            XXssProtectionPolicyBlockMode.ProtectionReport => $"1; report={options.ReportingUrl}",
+            _ => throw new ArgumentOutOfRangeException(nameof(options.XssProtectionPolicyHeader), options.XssProtectionPolicyHeader, "Argument is out of range.")
+        };
+
+        httpResponse.Headers
+            .TryAdd(HeaderNames.XXSSProtection, headerValue);
+
+        return httpResponse;
+    }
+
+    internal static HttpResponse AddContentSecurityPolicyHeader(this HttpResponse httpResponse, CspOptions? options)
+    {
+        ArgumentNullException.ThrowIfNull(httpResponse);
+
+        if (options == null)
+        {
+            return httpResponse;
+        }
+
+        var builder = new CspBuilder();
+
+        builder
+            .UseUpgradeInsecureRequests(options)
+            .UseCspReportTo(options.ReportTo)
+            .UseCspDefault(options.Defaults)
+            .UseCspStyle(options.Styles)
+            .UseCspScript(options.Scripts)
+            .UseCspObject(options.Objects)
+            .UseCspImage(options.Images)
+            .UseCspMedia(options.Media)
+            .UseCspFrame(options.Frames)
+            .UseCspFencedFrame(options.FencedFrames)
+            .UseCspFrameAncestor(options.FrameAncestors)
+            .UseCspFont(options.Fonts)
+            .UseCspConnection(options.Connections)
+            .UseCspBaseUri(options.BaseUris)
+            .UseCspChildren(options.Children)
+            .UseCspForm(options.Forms)
+            .UseCspManifest(options.Manifests)
+            .UseCspWorker(options.Workers)
+            .UseTrustedTypes(options.TrustedTypes)
+            .UseCspSandbox(options.Sandbox);
+
+        var headerValue = builder
+            .Build();
+
+        var headerName = options.ReportOnly
+            ? HeaderNames.ContentSecurityPolicyReportOnly
+            : HeaderNames.ContentSecurityPolicy;
+
+        httpResponse.Headers
+            .TryAdd(headerName, headerValue);
+
+        return httpResponse;
+    }
+
+    internal static HttpResponse AddContentSecurityPolicyReportToHeader(this HttpResponse httpResponse, CspOptions.CspReportToOptions? options)
+    {
+        ArgumentNullException.ThrowIfNull(httpResponse);
+
+        if (options == null)
+        {
+            return httpResponse;
+        }
+
+        var reportTo = new
+        {
+            group = options.Group,
+            max_age = options.MaxAge,
+            endpoints = options.Endpoints
+                .Select(x => new
+                {
+                    url = x
+                })
+        };
+
+        httpResponse.Headers["Report-To"] = JsonConvert.SerializeObject(reportTo);
+
+        return httpResponse;
+    }
+
+    internal static HttpResponse AddContentSecurityPolicyPermissionsHeader(this HttpResponse httpResponse, CspOptions.CspDirectivePermissionsPolicy? cspDirectivePermissionsPolicy = null)
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
 

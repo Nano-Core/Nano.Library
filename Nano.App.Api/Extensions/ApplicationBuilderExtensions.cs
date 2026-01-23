@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Nano.App.Api.Config;
-using Nano.App.Api.Config.Enums;
 using Nano.App.Api.Mvc.Extensions;
 using Nano.App.Api.Mvc.Middleware;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -112,7 +111,7 @@ internal static class ApplicationBuilderExtensions
             .Use((context, next) =>
             {
                 context.Response
-                    .AddFrameOptionsPolicyHeader(options.XFrameOptionsPolicyHeader);
+                    .AddXFrameOptionsPolicyHeader(options.XFrameOptionsPolicyHeader);
 
                 return next();
             });
@@ -130,29 +129,12 @@ internal static class ApplicationBuilderExtensions
         }
 
         applicationBuilder
-            .UseSecurityHeaders(x =>
+            .Use((context, next) =>
             {
-                switch (options.XssProtectionPolicyHeader)
-                {
-                    case XXssProtectionPolicyBlockMode.FilterEnabled:
-                        x.AddXssProtectionEnabled();
-                        break;
+                context.Response
+                    .AddXXssProtectionPolicyHeader(options);
 
-                    case XXssProtectionPolicyBlockMode.FilterDisabled:
-                        x.AddXssProtectionDisabled();
-                        break;
-
-                    case XXssProtectionPolicyBlockMode.FilterEnabledBlockMode:
-                        x.AddXssProtectionBlock();
-                        break;
-
-                    case XXssProtectionPolicyBlockMode.Disabled:
-                        x.AddXssProtectionDisabled();
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(options.XssProtectionPolicyHeader), options.XssProtectionPolicyHeader, "Argument is out of range.");
-                }
+                return next();
             });
 
         return applicationBuilder;
@@ -167,17 +149,14 @@ internal static class ApplicationBuilderExtensions
             return applicationBuilder;
         }
 
-        if (options.NoSniff)
-        {
-            applicationBuilder
-                .Use((context, next) =>
-                {
-                    context.Response
-                        .AddContentTypeOptionsNoSniffHeader();
+        applicationBuilder
+            .Use((context, next) =>
+            {
+                context.Response
+                    .AddContentTypeOptionsHeader(options);
 
-                    return next();
-                });
-        }
+                return next();
+            });
 
         return applicationBuilder;
     }
@@ -192,49 +171,12 @@ internal static class ApplicationBuilderExtensions
         }
 
         applicationBuilder
-            .UseSecurityHeaders(x =>
+            .Use((context, next) =>
             {
-                switch (options.ReferrerPolicyHeader)
-                {
-                    case ReferrerPolicy.NoReferrer:
-                        x.AddReferrerPolicyNoReferrer();
-                        break;
+                context.Response
+                    .AddReferrerPolicyHeader(options);
 
-                    case ReferrerPolicy.NoReferrerWhenDowngrade:
-                        x.AddReferrerPolicyNoReferrerWhenDowngrade();
-                        break;
-
-                    case ReferrerPolicy.SameOrigin:
-                        x.AddReferrerPolicySameOrigin();
-                        break;
-
-                    case ReferrerPolicy.Origin:
-                        x.AddReferrerPolicyOrigin();
-                        break;
-
-                    case ReferrerPolicy.StrictOrigin:
-                        x.AddReferrerPolicyStrictOrigin();
-                        break;
-
-                    case ReferrerPolicy.OriginWhenCrossOrigin:
-                        x.AddReferrerPolicyOriginWhenCrossOrigin();
-                        break;
-
-                    case ReferrerPolicy.StrictOriginWhenCrossOrigin:
-                        x.AddReferrerPolicyStrictOriginWhenCrossOrigin();
-                        break;
-
-                    case ReferrerPolicy.UnsafeUrl:
-                        x.AddReferrerPolicyUnsafeUrl();
-                        break;
-
-                    case ReferrerPolicy.Disabled:
-                        x.AddReferrerPolicyNone();
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(options.ReferrerPolicyHeader), options.ReferrerPolicyHeader, "Argument out of range.");
-                }
+                return next();
             });
 
         return applicationBuilder;
@@ -264,85 +206,38 @@ internal static class ApplicationBuilderExtensions
             return applicationBuilder;
         }
 
-        if (options.ReportOnly)
-        {
-            applicationBuilder
-                .UseSecurityHeaders(new HeaderPolicyCollection()
-                    .AddContentSecurityPolicyReportOnly(x =>
-                    {
-                        if (options.UpgradeInsecureRequests)
-                        {
-                            x.AddUpgradeInsecureRequests();
-                        }
-
-                        if (options.BlockAllMixedContent)
-                        {
-                            x.AddBlockAllMixedContent();
-                        }
-
-                        x.UseCspReportUris(options.ReportUris);
-                        x.UseCspDefaults(options.Defaults);
-                        x.UseCspStyles(options.Styles);
-                        x.UseCspScripts(options.Scripts);
-                        x.UseCspObjects(options.Objects);
-                        x.UseCspImages(options.Images);
-                        x.UseCspMedia(options.Media);
-                        x.UseCspFrames(options.Frames);
-                        x.UseCspFrameAncestors(options.FrameAncestors);
-                        x.UseCspFonts(options.Fonts);
-                        x.UseCspConnections(options.Connections);
-                        x.UseCspBaseUris(options.BaseUris);
-                        x.UseCspChildren(options.Children);
-                        x.UseCspForms(options.Forms);
-                        x.UseCspManifests(options.Manifests);
-                        x.UseCspWorkers(options.Workers);
-                        x.UseCspSandbox(options.Sandbox);
-                    }));
-        }
-        else
-        {
-            applicationBuilder
-                .UseSecurityHeaders(new HeaderPolicyCollection()
-                    .AddContentSecurityPolicy(x =>
-                    {
-                        if (options.UpgradeInsecureRequests)
-                        {
-                            x.AddUpgradeInsecureRequests();
-                        }
-
-                        if (options.BlockAllMixedContent)
-                        {
-                            x.AddBlockAllMixedContent();
-                        }
-
-                        x.UseCspReportUris(options.ReportUris);
-                        x.UseCspDefaults(options.Defaults);
-                        x.UseCspStyles(options.Styles);
-                        x.UseCspScripts(options.Scripts);
-                        x.UseCspObjects(options.Objects);
-                        x.UseCspImages(options.Images);
-                        x.UseCspMedia(options.Media);
-                        x.UseCspFrames(options.Frames);
-                        x.UseCspFrameAncestors(options.FrameAncestors);
-                        x.UseCspFonts(options.Fonts);
-                        x.UseCspConnections(options.Connections);
-                        x.UseCspBaseUris(options.BaseUris);
-                        x.UseCspChildren(options.Children);
-                        x.UseCspForms(options.Forms);
-                        x.UseCspManifests(options.Manifests);
-                        x.UseCspWorkers(options.Workers);
-                        x.UseCspSandbox(options.Sandbox);
-                    }));
-        }
-
         applicationBuilder
             .Use((context, next) =>
             {
                 context.Response
-                    .AddPermissionsPolicyHeader(options.PermissionsPolicy);
+                    .AddContentSecurityPolicyHeader(options);
 
                 return next();
             });
+
+        if (options.PermissionsPolicy != null)
+        {
+            applicationBuilder
+                .Use((context, next) =>
+                {
+                    context.Response
+                        .AddContentSecurityPolicyPermissionsHeader(options.PermissionsPolicy);
+
+                    return next();
+                });
+        }
+
+        if (options.ReportTo != null)
+        {
+            applicationBuilder
+                .Use((context, next) =>
+                {
+                    context.Response
+                        .AddContentSecurityPolicyReportToHeader(options.ReportTo);
+
+                    return next();
+                });
+        }
 
         return applicationBuilder;
     }
@@ -512,11 +407,11 @@ internal static class ApplicationBuilderExtensions
                         ? " (Default)"
                         : string.Empty;
 
-                    x.SwaggerEndpoint($"{description.GroupName}/swagger.json", $"{nameof(Nano)} - {webHostEnvironment.ApplicationName} {description.ApiVersion}{defaultVersionText} ({webHostEnvironment.EnvironmentName})");
+                    x.SwaggerEndpoint($"{description.GroupName}/swagger.json", $"{options.Name} {description.ApiVersion}{defaultVersionText} ({webHostEnvironment.EnvironmentName})");
                 }
 
                 x.RoutePrefix = "docs";
-                x.DocumentTitle = $"{nameof(Nano)} - {webHostEnvironment.ApplicationName} Docs ({webHostEnvironment.EnvironmentName})";
+                x.DocumentTitle = $"Docs ({webHostEnvironment.EnvironmentName})";
 
                 x.EnableFilter();
                 x.EnableDeepLinking();
@@ -550,13 +445,13 @@ internal static class ApplicationBuilderExtensions
             {
                 Predicate = _ => true,
                 AllowCachingResponses = true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponseNoExceptionDetails
             });
 
         applicationBuilder
             .UseHealthChecksUI(x =>
             {
-                x.PageTitle = $"{nameof(Nano)} - {webHostEnvironment.ApplicationName} Healthz ({webHostEnvironment.EnvironmentName})";
+                x.PageTitle = $"Healthz ({webHostEnvironment.EnvironmentName})";
                 x.UIPath = HealthzCheckUris.UiPath;
                 x.ApiPath = HealthzCheckUris.ApiPath;
                 x.ResourcesPath = HealthzCheckUris.RexPath;

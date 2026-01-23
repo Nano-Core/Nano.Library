@@ -4,7 +4,6 @@ using System.Linq;
 using System.Xml;
 using System.Xml.XPath;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -32,7 +31,6 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     ];
 
     private readonly IOptionsMonitor<ApiOptions> webOptions;
-    private readonly IWebHostEnvironment webHostEnvironment;
     private readonly IAuthenticationSchemeProvider authenticationSchemeProvider;
     private readonly IApiVersionDescriptionProvider apiVersionDescriptionProvider;
 
@@ -40,14 +38,12 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     /// 
     /// </summary>
     /// <param name="webOptions"></param>
-    /// <param name="webHostEnvironment"></param>
     /// <param name="authenticationSchemeProvider"></param>
     /// <param name="apiVersionDescriptionProvider"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> webOptions, IWebHostEnvironment webHostEnvironment, IAuthenticationSchemeProvider authenticationSchemeProvider, IApiVersionDescriptionProvider apiVersionDescriptionProvider)
+    public ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> webOptions, IAuthenticationSchemeProvider authenticationSchemeProvider, IApiVersionDescriptionProvider apiVersionDescriptionProvider)
     {
         this.webOptions = webOptions ?? throw new ArgumentNullException(nameof(webOptions));
-        this.webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
         this.authenticationSchemeProvider = authenticationSchemeProvider ?? throw new ArgumentNullException(nameof(authenticationSchemeProvider));
         this.apiVersionDescriptionProvider = apiVersionDescriptionProvider ?? throw new ArgumentNullException(nameof(apiVersionDescriptionProvider));
     }
@@ -125,7 +121,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
         {
             var openApiInfo = new OpenApiInfo
             {
-                Title = this.webHostEnvironment.ApplicationName,
+                Title = this.webOptions.CurrentValue.Documentation.Name,
                 Description = this.webOptions.CurrentValue.Documentation.Description,
                 Version = apiVersionDescription.ApiVersion.ToString()
             };

@@ -18,14 +18,15 @@ public static class ConfigManager
     /// 
     /// </summary>
     /// <param name="environment"></param>
+    /// <param name="entryAssembly"></param>
     /// <param name="args"></param>
     /// <returns></returns>
-    public static IConfiguration BuildConfiguration(string environment, params string[] args)
+    /// <exception cref="NullReferenceException"></exception>
+    public static IConfiguration BuildConfiguration(string environment, Assembly? entryAssembly = null, params string[] args)
     {
         ArgumentNullException.ThrowIfNull(environment);
 
         var path = Directory.GetCurrentDirectory();
-        var entryAssembly = Assembly.GetEntryAssembly();
         var stream = ConfigManager.LoadConfigurationStream(path, environment);
 
         if (entryAssembly == null)
