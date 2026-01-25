@@ -2,14 +2,8 @@
 
 namespace Nano.App.Api.Mvc.Serialization.Json;
 
-/// <summary>
-/// Serializer Settings.
-/// </summary>
-public static class SerializerSettings
+internal static class SerializerSettings
 {
-    /// <summary>
-    /// Get Json Serializer Settings.
-    /// </summary>
     internal static JsonSerializerSettings GetMVcJsonSerializerSettings()
     {
         var serializerSettings = Common.Serialization.Json.SerializerSettings.GetDefault();

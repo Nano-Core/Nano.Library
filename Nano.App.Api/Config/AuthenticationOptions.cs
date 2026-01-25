@@ -1,12 +1,12 @@
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Authentication Options.
+/// Options for authentication configuration.
 /// </summary>
 public class AuthenticationOptions
 {
     /// <summary>
-    /// Jwt Options.
+    /// JWT authentication options.
     /// </summary>
     public virtual JwtAuthenticationOptions? Jwt { get; set; }
 }

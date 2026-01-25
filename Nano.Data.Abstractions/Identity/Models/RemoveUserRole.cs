@@ -7,20 +7,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class RemoveUserRole : RemoveUserRole<Guid>;
 
 /// <summary>
-/// Remove Role.
+/// Represents a request to remove a role from a user.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class RemoveUserRole<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// The identifier of the user.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// Role Name.
+    /// The name of the role to remove.
     /// </summary>
     [Required]
     [MaxLength(256)]

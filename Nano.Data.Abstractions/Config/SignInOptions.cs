@@ -3,18 +3,20 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Config;
 
 /// <summary>
-/// Sign-In Options (nested class).
+/// Options for sign-in requirements.
 /// </summary>
 public class SignInOptions
 {
     /// <summary>
-    /// Require Confirmed Email-
+    /// Gets or sets a value indicating whether users must have a confirmed email to sign in.
+    /// Defaults to <c>false</c>.
     /// </summary>
     [Required]
     public virtual bool RequireConfirmedEmail { get; set; } = false;
 
     /// <summary>
-    /// Require Confirmed PhoneNumber.
+    /// Gets or sets a value indicating whether users must have a confirmed phone number to sign in.
+    /// Defaults to <c>false</c>.
     /// </summary>
     [Required]
     public virtual bool RequireConfirmedPhoneNumber { get; set; } = false;

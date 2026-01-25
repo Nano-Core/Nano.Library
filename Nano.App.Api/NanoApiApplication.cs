@@ -21,9 +21,9 @@ using System.Reflection;
 namespace Nano.App.Api;
 
 /// <summary>
-/// 
+/// Represents a Nano web API application.
 /// </summary>
-/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api</remarks>
+/// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api">Nano Api Application</see></remarks>
 public sealed class NanoApiApplication : BaseApplication<WebApplication, WebApplicationBuilder>, IApplication
 {
     private NanoApiApplication(WebApplicationBuilder builder)
@@ -32,8 +32,11 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
     }
 
     /// <summary>
-    /// Allows consumers to register application services.
+    /// Allows consumers to register services for the API application.
     /// </summary>
+    /// <param name="configure">A delegate to configure <see cref="IServiceCollection"/>.</param>
+    /// <returns>The current <see cref="IApplication"/> instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="configure"/> is null.</exception>
     public IApplication ConfigureServices(Action<IServiceCollection> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -44,10 +47,10 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
     }
 
     /// <summary>
-    /// Entry point used by consumers.
+    /// Creates and configures the API application with default Nano services, middleware, and web options.
     /// </summary>
-    /// <param name="args"></param>
-    /// <returns></returns>
+    /// <param name="args">Command-line arguments passed to the application.</param>
+    /// <returns>A configured <see cref="IApplication"/> instance.</returns>
     public static IApplication ConfigureApp(params string[] args)
     {
         var root = Directory.GetCurrentDirectory();
@@ -70,37 +73,40 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
             .AddConfiguration(config);
 
         applicationBuilder.Services
-            .AddNanoApp<ApiOptions>(config, out var webOptions)
+            .AddNanoApp<ApiOptions>(config, out var apiOptions)
             .AddNanoExceptionHandling()
-            .AddNanoCors(webOptions.HttpPolicyHeaders.Cors)
-            .AddNanoForwardedHeaders(webOptions.HttpPolicyHeaders.ForwardedHeaders)
-            .AddNanoHsts(webOptions.HttpPolicyHeaders.Hsts)
+            .AddNanoCors(apiOptions.HttpPolicyHeaders.Cors)
+            .AddNanoForwardedHeaders(apiOptions.HttpPolicyHeaders.ForwardedHeaders)
+            .AddNanoHsts(apiOptions.HttpPolicyHeaders.Hsts)
             .AddNanoCookies()
-            .AddNanoSession(webOptions.Session)
-            .AddNanoResponseCaching(webOptions.ResponseCache)
-            .AddNanoVersioning(webOptions.Version, webOptions.Documentation?.UseDefaultVersion)
-            .AddNanoIdentityAuthentication(webOptions.Identity?.Authentication)
+            .AddNanoSession(apiOptions.Session)
+            .AddNanoResponseCaching(apiOptions.ResponseCache)
+            .AddNanoVersioning(apiOptions.Version, apiOptions.Documentation?.UseDefaultVersion)
+            .AddNanoIdentityAuthentication(apiOptions.Identity?.Authentication)
             .AddNanoIdentityAuthorization()
             .AddNanoRequestLocalization()
-            .AddNanoRequestTimeZone(webOptions.DefaultTimeZone)
-            .AddNanoVirusScan(webOptions.VirusScan)
-            .AddNanoResponseCompression(webOptions.ResponseCompression)
+            .AddNanoRequestTimeZone(apiOptions.DefaultTimeZone)
+            .AddNanoVirusScan(apiOptions.VirusScan)
+            .AddNanoResponseCompression(apiOptions.ResponseCompression)
             .AddNanoRequestOptions()
             .AddNanoRequestIdentifier()
-            .AddNanoFormOptions(webOptions.Hosting.MultipartLimits)
+            .AddNanoFormOptions(apiOptions.Hosting.MultipartLimits)
             .AddNanoMvc()
-            .AddNanoDocumentation(webOptions.Documentation)
-            .AddNanoHealthChecking(webOptions.Hosting.Ports.FirstOrDefault(), webOptions.HealthCheck);
+            .AddNanoDocumentation(apiOptions.Documentation)
+            .AddNanoHealthChecking(apiOptions.Hosting.Ports.FirstOrDefault(), apiOptions.HealthCheck);
 
         applicationBuilder.WebHost
-            .UseNanoKestrel(webOptions)
+            .UseNanoKestrel(apiOptions)
             .CaptureStartupErrors(true)
-            .UseShutdownTimeout(TimeSpan.FromSeconds(webOptions.ShutdownTimeout));
+            .UseShutdownTimeout(TimeSpan.FromSeconds(apiOptions.ShutdownTimeout));
 
         return new NanoApiApplication(applicationBuilder);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Builds the API application, registers middleware, routing, and health checks.
+    /// </summary>
+    /// <returns>The current <see cref="IApplication"/> instance.</returns>
     public IApplication Build()
     {
         this.application = this.applicationBuilder

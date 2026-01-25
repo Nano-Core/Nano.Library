@@ -5,21 +5,28 @@ using Microsoft.Extensions.Hosting;
 
 namespace Nano.App.StartUp;
 
-/// <inheritdoc />
+/// <summary>
+/// Base class for implementing hosted startup tasks.
+/// Startup tasks automatically track their progress using <see cref="StartupTaskContext"/>.
+/// </summary>
 public abstract class BaseStartupTask : IHostedService
 {
     private readonly StartupTaskContext startupTaskContext;
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of the <see cref="BaseStartupTask"/> class.
     /// </summary>
-    /// <param name="startupTaskContext">The <see cref="StartupTaskContext"/>.</param>
+    /// <param name="startupTaskContext">The <see cref="StartupTaskContext"/> used to track task completion.</param>
     protected BaseStartupTask(StartupTaskContext startupTaskContext)
     {
         this.startupTaskContext = startupTaskContext ?? throw new ArgumentNullException(nameof(startupTaskContext));
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Starts the hosted task and increments the <see cref="StartupTaskContext"/> counter.
+    /// </summary>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A <see cref="Task"/> that completes when startup begins.</returns>
     public Task StartAsync(CancellationToken cancellationToken)
     {
         this.startupTaskContext
@@ -28,7 +35,11 @@ public abstract class BaseStartupTask : IHostedService
         return this.OnStartAsync(cancellationToken);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Stops the hosted task and decrements the <see cref="StartupTaskContext"/> counter when complete.
+    /// </summary>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A <see cref="Task"/> that completes when the task stops.</returns>
     public async Task StopAsync(CancellationToken cancellationToken)
     {
         try
@@ -44,17 +55,19 @@ public abstract class BaseStartupTask : IHostedService
     }
 
     /// <summary>
-    /// 
+    /// Called when the startup task begins execution.
+    /// Implement this method with the task's startup logic.
     /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A <see cref="Task"/> representing the startup operation.</returns>
     protected abstract Task OnStartAsync(CancellationToken cancellationToken);
 
     /// <summary>
-    /// 
+    /// Called when the startup task stops execution.
+    /// Override this method to implement cleanup logic if needed.
     /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A <see cref="Task"/> representing the stop operation.</returns>
     protected virtual Task OnStopAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;

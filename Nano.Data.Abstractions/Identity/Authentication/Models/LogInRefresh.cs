@@ -2,34 +2,31 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
-
 /// <summary>
-/// Log In Refresh.
+/// Represents a request to refresh an access token.
 /// </summary>
 public class LogInRefresh
 {
     /// <summary>
-    /// Token.
+    /// The expired or soon-to-expire access token.
     /// </summary>
     [Required]
     public virtual string Token { get; set; } = null!;
 
     /// <summary>
-    /// Refresh Token.
+    /// The refresh token used to issue a new access token.
     /// </summary>
     [Required]
     public virtual string RefreshToken { get; set; } = null!;
 
     /// <summary>
-    /// Transient Roles.
-    /// Non persisted roles, that is added to the jwt-token when logging in.
+    /// Non-persisted roles added to the issued JWT during refresh.
     /// </summary>
     [Required]
     public virtual IEnumerable<string> TransientRoles { get; set; } = [];
 
     /// <summary>
-    /// Transient Claims.
-    /// Non persisted claims, that is added to the jwt-token when logging in.
+    /// Non-persisted claims added to the issued JWT during refresh.
     /// </summary>
     [Required]
     public virtual IDictionary<string, string> TransientClaims { get; set; } = new Dictionary<string, string>();

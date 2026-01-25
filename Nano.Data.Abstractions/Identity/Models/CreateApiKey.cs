@@ -7,27 +7,27 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class CreateApiKey : CreateApiKey<Guid>;
 
 /// <summary>
-/// Create Api Key.
+/// Represents a request to create an API key for a user.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class CreateApiKey<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// The identifier of the user for whom the API key is created.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// Name.
+    /// The name of the API key.
     /// </summary>
     [Required]
     [MaxLength(256)]
     public virtual string Name { get; set; } = null!;
 
     /// <summary>
-    /// Expire At.
+    /// The optional expiration date of the API key.
     /// </summary>
     public virtual DateTimeOffset? ExpireAt { get; set; }
 }

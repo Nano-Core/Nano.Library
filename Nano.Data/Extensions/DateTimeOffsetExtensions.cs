@@ -2,10 +2,7 @@ using System;
 
 namespace Nano.Data.Extensions;
 
-/// <summary>
-/// DateTimeOffset Extensions.
-/// </summary>
-public static class DateTimeOffsetExtensions
+internal static class DateTimeOffsetExtensions
 {
     private static readonly DateTime epoch = new(1970, 1, 1, 0, 0, 0);
 

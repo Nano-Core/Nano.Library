@@ -9,9 +9,13 @@ using Nano.Common.Mvc.HealthChecks.Extensions;
 namespace Nano.Data.SqLite;
 
 /// <summary>
-/// Sql Lite Data Provider.
+/// SQLite data provider.
 /// </summary>
-public sealed class SqliteProvider : IDataProvider
+/// <remarks>
+///     Intended for local development, lightweight deployments, and embedded database scenarios.
+///     Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqLite
+/// </remarks>
+public sealed class SqLiteProvider : IDataProvider
 {
     /// <inheritdoc />
     public static void Configure(DbContextOptionsBuilder builder, DataOptions options)
@@ -25,7 +29,7 @@ public sealed class SqliteProvider : IDataProvider
         builder
             .UseSqlite(connectionString, x =>
             {
-                var querySplittingBehavior = options.UseQuerySplittingBehavior
+                var querySplittingBehavior = options.QuerySplittingBehavior
                     .GetQuerySplittingBehavior();
 
                 x.MaxBatchSize(batchSize);

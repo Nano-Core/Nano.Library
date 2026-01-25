@@ -1,22 +1,22 @@
-using System;
 using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Entities.Abstractions;
+using System;
 
 namespace Nano.Data.Mappings.Extensions;
 
 /// <summary>
-/// Entity Type Builder Extensions.
+/// Provides extension methods for <see cref="EntityTypeBuilder{TEntity}"/> to register entity lifecycle event triggers.
+/// These triggers allow executing custom logic before or after insert, update, and delete operations on entities.
 /// </summary>
 public static class EntityTypeBuilderExtensions
 {
     /// <summary>
-    /// Adds an inserted event trigger to the model.
-    /// The passed <paramref name="action"/> will be invoked, after the entity of type <typeparamref name="TEntity"/> is inserted.
+    /// Registers a callback to be executed **after** a <typeparamref name="TEntity"/> is inserted into the database.
     /// </summary>
-    /// <typeparam name="TEntity">the type of entity.</typeparam>
-    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
-    /// <param name="action">The <see cref="Action"/> invoked.</param>
+    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntityCreatable"/>.</typeparam>
+    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.</param>
+    /// <param name="action">The callback action invoked after the insert operation.</param>
     public static void OnInserted<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IInsertedEntry<TEntity>> action)
         where TEntity : class, IEntityCreatable
     {
@@ -26,12 +26,11 @@ public static class EntityTypeBuilderExtensions
     }
 
     /// <summary>
-    /// Adds an inserting event trigger to the model.
-    /// The passed <paramref name="action"/> will be invoked, before the entity of type <typeparamref name="TEntity"/> is inserted.
+    /// Registers a callback to be executed **before** a <typeparamref name="TEntity"/> is inserted into the database.
     /// </summary>
-    /// <typeparam name="TEntity">the type of entity.</typeparam>
-    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
-    /// <param name="action">The <see cref="Action"/> invoked.</param>
+    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntityCreatable"/>.</typeparam>
+    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.</param>
+    /// <param name="action">The callback action invoked before the insert operation.</param>
     public static void OnInserting<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IInsertingEntry<TEntity>> action)
         where TEntity : class, IEntityCreatable
     {
@@ -41,12 +40,11 @@ public static class EntityTypeBuilderExtensions
     }
 
     /// <summary>
-    /// Adds an updated event trigger to the model.
-    /// The passed <paramref name="action"/> will be invoked, after the entity of type <typeparamref name="TEntity"/> is updated.
+    /// Registers a callback to be executed **after** a <typeparamref name="TEntity"/> is updated in the database.
     /// </summary>
-    /// <typeparam name="TEntity">the type of entity.</typeparam>
-    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
-    /// <param name="action">The <see cref="Action"/> invoked.</param>
+    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntityUpdatable"/>.</typeparam>
+    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.</param>
+    /// <param name="action">The callback action invoked after the update operation.</param>
     public static void OnUpdated<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IUpdatedEntry<TEntity>> action)
         where TEntity : class, IEntityUpdatable
     {
@@ -56,12 +54,11 @@ public static class EntityTypeBuilderExtensions
     }
 
     /// <summary>
-    /// Adds an updating event trigger to the model.
-    /// The passed <paramref name="action"/> will be invoked, before the entity of type <typeparamref name="TEntity"/> is updated.
+    /// Registers a callback to be executed **before** a <typeparamref name="TEntity"/> is updated in the database.
     /// </summary>
-    /// <typeparam name="TEntity">the type of entity.</typeparam>
-    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
-    /// <param name="action">The <see cref="Action"/> invoked.</param>
+    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntityUpdatable"/>.</typeparam>
+    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.</param>
+    /// <param name="action">The callback action invoked before the update operation.</param>
     public static void OnUpdating<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IUpdatingEntry<TEntity>> action)
         where TEntity : class, IEntityUpdatable
     {
@@ -71,12 +68,11 @@ public static class EntityTypeBuilderExtensions
     }
 
     /// <summary>
-    /// Adds a deleted event trigger to the model.
-    /// The passed <paramref name="action"/> will be invoked, after the entity of type <typeparamref name="TEntity"/> is deleted.
+    /// Registers a callback to be executed **after** a <typeparamref name="TEntity"/> is soft-deleted from the database.
     /// </summary>
-    /// <typeparam name="TEntity">the type of entity.</typeparam>
-    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
-    /// <param name="action">The <see cref="Action"/> invoked.</param>
+    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntityDeletableSoft"/>.</typeparam>
+    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.</param>
+    /// <param name="action">The callback action invoked after the delete operation.</param>
     public static void OnDeleted<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IDeletedEntry<TEntity>> action)
         where TEntity : class, IEntityDeletableSoft
     {
@@ -86,12 +82,11 @@ public static class EntityTypeBuilderExtensions
     }
 
     /// <summary>
-    /// Adds an deleted event trigger to the model.
-    /// The passed <paramref name="action"/> will be invoked, before the entity of type <typeparamref name="TEntity"/> is deleted.
+    /// Registers a callback to be executed **before** a <typeparamref name="TEntity"/> is soft-deleted from the database.
     /// </summary>
-    /// <typeparam name="TEntity">the type of entity.</typeparam>
-    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
-    /// <param name="action">The <see cref="Action"/> invoked.</param>
+    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntityDeletableSoft"/>.</typeparam>
+    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.</param>
+    /// <param name="action">The callback action invoked before the delete operation.</param>
     public static void OnDeleting<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IDeletingEntry<TEntity>> action)
         where TEntity : class, IEntityDeletableSoft
     {

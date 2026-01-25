@@ -5,43 +5,43 @@ using Nano.App.Api.Mvc.Documentation.Consts;
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Documentation Options.
+/// Options for API documentation (Swagger/OpenAPI).
 /// </summary>
 public class DocumentationOptions
 {
     /// <summary>
-    /// Name.
+    /// Name of the application or API.
     /// </summary>
     [Required]
     public virtual string Name { get; set; } = AppDefaults.DEFAULT_APP_NAME;
 
     /// <summary>
-    /// Description.
+    /// Description of the application or API.
     /// </summary>
     public virtual string? Description { get; set; }
 
     /// <summary>
-    /// Terms Of Service.
+    /// URL or text for terms of service.
     /// </summary>
     public virtual string? TermsOfService { get; set; }
 
     /// <summary>
-    /// Contact.
+    /// Contact information for the API.
     /// </summary>
     public virtual OpenApiContact? Contact { get; set; }
 
     /// <summary>
-    /// License.
+    /// License information for the API.
     /// </summary>
     public virtual OpenApiLicense? License { get; set; }
 
     /// <summary>
-    /// Csp Nonce.
+    /// Optional Content Security Policy nonce.
     /// </summary>
     public virtual string? CspNonce { get; set; }
 
     /// <summary>
-    /// Use Default Version.
+    /// Use default API version if true.
     /// </summary>
     [Required]
     public virtual bool UseDefaultVersion { get; set; } = true;

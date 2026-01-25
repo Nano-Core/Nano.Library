@@ -3,19 +3,19 @@
 namespace Nano.App.Config;
 
 /// <summary>
-/// Log In Root Options.
+/// Credentials used to enable a transient root-level login.
 /// </summary>
 public class LogInRootOptions
 {
     /// <summary>
-    /// Username.
+    /// The username used for authentication.
     /// </summary>
     [Required]
     [MaxLength(256)]
     public virtual string Username { get; set; } = null!;
 
     /// <summary>
-    /// Password.
+    /// The password used for authentication.
     /// </summary>
     [Required]
     [MaxLength(256)]

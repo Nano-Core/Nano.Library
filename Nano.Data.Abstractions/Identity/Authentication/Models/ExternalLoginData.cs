@@ -3,32 +3,32 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// External Log In Data.
+/// External login user data resolved from an authentication provider.
 /// </summary>
 public class ExternalLogInData
 {
     /// <summary>
-    /// Id.
+    /// The unique identifier of the external user.
     /// </summary>
     [Required]
     public virtual string Id { get; set; } = null!;
 
     /// <summary>
-    /// Name.
+    /// The display name of the external user.
     /// </summary>
     [Required]
     [MaxLength(256)]
     public virtual string Name { get; set; } = null!;
 
     /// <summary>
-    /// Email.
+    /// The email address of the external user.
     /// </summary>
     [Required]
     [MaxLength(256)]
     public virtual string Email { get; set; } = null!;
 
     /// <summary>
-    /// External Token.
+    /// The authentication tokens associated with the external login.
     /// </summary>
     public virtual ExternalLoginTokenData ExternalToken { get; set; } = new();
 }

@@ -4,13 +4,13 @@ using Nano.Common.Mvc.HealthChecks.Enums;
 namespace Nano.Common.Config;
 
 /// <summary>
-///
+/// Options for configuring health checks in the application.
 /// </summary>
 public class HealthCheckOptions
 {
     /// <summary>
-    /// Health status level to report when the eventing service is detected as unhealthy.
-    /// Default is <see cref="HealthStatusLevel.Unhealthy"/>.
+    /// Gets or sets the health status level to report when a monitored service is detected as unhealthy.
+    /// Defaults to <see cref="HealthStatusLevel.Unhealthy"/>.
     /// </summary>
     [Required]
     public virtual HealthStatusLevel UnhealthyStatus { get; set; } = HealthStatusLevel.Unhealthy;

@@ -5,42 +5,42 @@ using System.Security.Claims;
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// Access Token Data.
+/// Represents a request to generate a JWT token.
 /// </summary>
 public class GenerateJwtToken
 {
     /// <summary>
-    /// Id.
+    /// The unique identifier of the generated token.
     /// </summary>
     public virtual string Id { get; set; } = Guid.NewGuid().ToString();
 
     /// <summary>
-    /// App Id.
+    /// The application identifier associated with the token.
     /// </summary>
     public virtual string? AppId { get; set; }
 
     /// <summary>
-    /// User Id.
+    /// The user identifier associated with the token.
     /// </summary>
     public virtual string? UserId { get; set; }
 
     /// <summary>
-    /// User Name.
+    /// The username associated with the token.
     /// </summary>
     public virtual string? UserName { get; set; }
 
     /// <summary>
-    /// User Email.
+    /// The email address associated with the token.
     /// </summary>
     public virtual string? UserEmail { get; set; }
 
     /// <summary>
-    /// External Token.
+    /// External authentication token data, if applicable.
     /// </summary>
     public virtual ExternalLoginTokenData? ExternalToken { get; set; }
 
     /// <summary>
-    /// Claims.
+    /// The claims included in the generated JWT.
     /// </summary>
     public virtual IEnumerable<Claim> Claims { get; set; } = [];
 }

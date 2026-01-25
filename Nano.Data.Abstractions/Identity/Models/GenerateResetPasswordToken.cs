@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
-/// Generate Reset Password Token.
+/// Represents a request to generate a reset password token for a user by username.
 /// </summary>
 public class GenerateResetPasswordToken
 {
     /// <summary>
-    /// Username.
+    /// The username of the user for whom the reset token will be generated.
     /// </summary>
     [Required]
     [MaxLength(256)]

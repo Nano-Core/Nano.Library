@@ -6,17 +6,19 @@ using System.Text;
 namespace Nano.Common.Extensions;
 
 /// <summary>
-/// Type Extensions.
+/// Provides extension methods for the <see cref="Type"/> class to inspect type hierarchy,
+/// determine simplicity, and generate friendly type names.
 /// </summary>
 public static class TypeExtensions
 {
     /// <summary>
-    /// Gets whehter the passed <paramref name="type"/> derives or implements the passed <paramref name="baseType"/>.
-    /// All base classes and interfaces are inspected.
+    /// Determines whether the specified <paramref name="type"/> derives from or implements the specified <paramref name="baseType"/>.
+    /// All base classes and interfaces are inspected, including generic definitions.
     /// </summary>
-    /// <param name="type">The <see cref="Type"/> from which to determine, if the passed <paramref name="baseType"/> is parent.</param>
-    /// <param name="baseType">The <see cref="Type"/> that be inherited or implemented by the passed <paramref name="type"/>.</param>
-    /// <returns>True or false, depending on whehter the <paramref name="type"/> implements or derives from <paramref name="baseType"/>.</returns>
+    /// <param name="type">The <see cref="Type"/> to check.</param>
+    /// <param name="baseType">The <see cref="Type"/> that may be a base class or interface.</param>
+    /// <returns><c>true</c> if <paramref name="type"/> implements or derives from <paramref name="baseType"/>; otherwise, <c>false</c>.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="type"/> or <paramref name="baseType"/> is null.</exception>
     public static bool IsTypeOf(this Type type, Type baseType)
     {
         ArgumentNullException.ThrowIfNull(type);
@@ -30,38 +32,47 @@ public static class TypeExtensions
     }
 
     /// <summary>
-    /// Is Simple.
-    /// Checks if the <see cref="Type"/> is simple.
+    /// Determines whether the <see cref="Type"/> is a simple type.
+    /// Simple types include primitives, enums, strings, <see cref="Guid"/>, <see cref="TimeSpan"/>, date/time types, and nullable versions.
     /// </summary>
-    /// <param name="type">The <see cref="Type"/>.</param>
-    /// <returns>Boolean indicating if the type is simple.</returns>
+    /// <param name="type">The <see cref="Type"/> to check.</param>
+    /// <returns><c>true</c> if the type is simple; otherwise, <c>false</c>.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="type"/> is null.</exception>
     public static bool IsSimple(this Type type)
     {
-        ArgumentNullException.ThrowIfNull(type);
+        while (true)
+        {
+            ArgumentNullException.ThrowIfNull(type);
 
-        return type.IsPrimitive
-               || type.IsEnum
-               || type == typeof(string)
-               || type == typeof(Guid)
-               || type == typeof(Guid?)
-               || type == typeof(TimeSpan)
-               || type == typeof(TimeSpan?)
-               || type == typeof(TimeOnly)
-               || type == typeof(TimeOnly?)
-               || type == typeof(DateOnly)
-               || type == typeof(DateOnly?)
-               || type == typeof(DateTime)
-               || type == typeof(DateTime?)
-               || type == typeof(DateTimeOffset)
-               || type == typeof(DateTimeOffset?)
-               || type == typeof(Nullable<>);
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                var underlyingType = Nullable.GetUnderlyingType(type);
+
+                type = underlyingType ?? throw new NullReferenceException(nameof(underlyingType));
+
+                continue;
+            }
+
+            return
+                type.IsPrimitive ||
+                type.IsEnum ||
+                type == typeof(string) ||
+                type == typeof(Guid) ||
+                type == typeof(TimeSpan) ||
+                type == typeof(TimeOnly) ||
+                type == typeof(DateOnly) ||
+                type == typeof(DateTime) ||
+                type == typeof(DateTimeOffset);
+        }
     }
 
     /// <summary>
-    /// Gets a friendly display name for the <see cref="Type"/>.
+    /// Gets a friendly display name for the <see cref="Type"/>, including generic type arguments.
     /// </summary>
-    /// <param name="type">The <see cref="Type"/> from which to get all parent types.</param>
-    /// <returns>A friendly display name.</returns>
+    /// <param name="type">The <see cref="Type"/> for which to generate a friendly name.</param>
+    /// <returns>A readable type name with generic parameters if applicable.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="type"/> is null.</exception>
+    /// <exception cref="NullReferenceException">Thrown if the friendly name could not be generated.</exception>
     public static string GetFriendlyName(this Type type)
     {
         ArgumentNullException.ThrowIfNull(type);

@@ -7,20 +7,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class GetClaim : GetClaim<Guid>;
 
 /// <summary>
-/// Get Claim.
+/// Represents a request to get a specific claim for a user.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class GetClaim<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// The identifier of the user.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// Claim Type.
+    /// The type of claim to retrieve.
     /// </summary>
     [Required]
     [MaxLength(256)]

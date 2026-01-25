@@ -10,18 +10,9 @@ using Nano.Data.Abstractions.Identity.Authentication.Models;
 namespace Nano.App.Api.Identity.Authentication;
 
 /// <inheritdoc />
-public class AuthExternalGoogleRepository : IAuthExternalGoogleRepository
+public class AuthExternalGoogleRepository(GoogleOptions options) : IAuthExternalGoogleRepository
 {
-    private readonly GoogleOptions options;
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="options"></param>
-    public AuthExternalGoogleRepository(GoogleOptions options)
-    {
-        this.options = options ?? throw new ArgumentNullException(nameof(options));
-    }
+    private readonly GoogleOptions options = options ?? throw new ArgumentNullException(nameof(options));
 
     /// <inheritdoc />
     public virtual async Task<ExternalLogInData> Authenticate(ExternalLoginProviderGoogle provider, CancellationToken cancellationToken = default)

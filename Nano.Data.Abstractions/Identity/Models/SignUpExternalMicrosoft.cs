@@ -1,18 +1,21 @@
-﻿using System;
+﻿using Nano.Data.Abstractions.Entities.Abstractions;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
+using System;
 
 namespace Nano.Data.Abstractions.Identity.Models;
 
-/// <inheritdoc />
+/// <summary>
+/// Sign up a user using Microsoft as an external login provider with authorization code flow (default identity type is Guid).
+/// </summary>
+/// <typeparam name="TUser">The user type.</typeparam>
 public class SignUpExternalMicrosoft<TUser> : SignUpExternalAuthCode<ExternalLoginProviderMicrosoft, TUser>
     where TUser : IEntityUser<Guid>, new();
 
 /// <summary>
-/// Sign Up External Microsoft.
+/// Sign up a user using Microsoft as an external login provider with authorization code flow.
 /// </summary>
-/// <typeparam name="TUser"></typeparam>
-/// <typeparam name="TIdentity"></typeparam>
+/// <typeparam name="TUser">The user type.</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class SignUpExternalMicrosoft<TUser, TIdentity> : SignUpExternalAuthCode<ExternalLoginProviderMicrosoft, TUser, TIdentity>
     where TUser : IEntityUser<TIdentity>, new()
     where TIdentity : IEquatable<TIdentity>;

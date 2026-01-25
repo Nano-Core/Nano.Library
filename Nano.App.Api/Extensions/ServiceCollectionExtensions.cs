@@ -413,10 +413,10 @@ internal static class ServiceCollectionExtensions
                 var apiVersionDescriptionProvider = x
                     .GetRequiredService<IApiVersionDescriptionProvider>();
 
-                var webOptions = x
+                var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                return new ConfigureSwaggerOptions(webOptions, authenticationSchemeProvider, apiVersionDescriptionProvider);
+                return new ConfigureSwaggerOptions(apiOptions, authenticationSchemeProvider, apiVersionDescriptionProvider);
             })
             .AddSwaggerGen()
             .AddSwaggerGenNewtonsoftSupport();

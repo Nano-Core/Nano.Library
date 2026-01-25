@@ -11,7 +11,7 @@ namespace Nano.Eventing.Abstractions;
 ///     resolves them from the DI container, and subscribes them to the configured <see cref="IEventing"/> instance.
 /// </para>
 /// </summary>
-public interface IRegisterEventHandlersTask
+internal interface IRegisterEventHandlersTask
 {
     /// <summary>
     /// Registers all event handlers from the service provider.

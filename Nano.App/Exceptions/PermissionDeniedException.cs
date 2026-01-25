@@ -3,6 +3,6 @@ using System;
 namespace Nano.App.Exceptions;
 
 /// <summary>
-/// Permission Denied Exception.
+/// Represents an exception thrown when a permission check fails.
 /// </summary>
 public class PermissionDeniedException : Exception;

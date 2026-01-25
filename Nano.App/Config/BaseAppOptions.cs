@@ -5,26 +5,28 @@ using Nano.App.ApiClient.Config;
 namespace Nano.App.Config;
 
 /// <summary>
-/// Base App Options (abstract).
+/// Base application configuration options.
+/// Serves as the root options object for Nano-based applications.
 /// </summary>
 public abstract class BaseAppOptions
 {
     internal static string SectionName => "App";
 
     /// <summary>
-    /// Version.
+    /// Application version identifier.
+    /// Used for diagnostics, documentation, and versioning metadata.
     /// </summary>
     [Required]
     public virtual string Version { get; set; } = "1.0.0.0";
 
     /// <summary>
-    /// Cultures.
+    /// Culture and localization settings for the application.
     /// </summary>
     [Required]
     public virtual CultureOptions Cultures { get; set; } = new();
 
     /// <summary>
-    /// Apis.
+    /// Named Nano API client configurations available to the application.
     /// </summary>
     [Required]
     public virtual IDictionary<string, ApiClientOptions> Apis { get; set; } = new Dictionary<string, ApiClientOptions>();

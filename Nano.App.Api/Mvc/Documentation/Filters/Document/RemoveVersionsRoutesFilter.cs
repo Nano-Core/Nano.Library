@@ -9,33 +9,38 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace Nano.App.Api.Mvc.Documentation.Filters.Document;
 
 /// <summary>
-/// Remove Default Version Routes Filter.
+/// Swagger filter that removes routes corresponding to the default API version.
+/// Useful to prevent duplicate or unnecessary default version endpoints in the Swagger documentation.
 /// </summary>
 public class RemoveVersionsRoutesFilter : IDocumentFilter
 {
-    private readonly IOptionsMonitor<ApiOptions> webOptions;
+    private readonly IOptionsMonitor<ApiOptions> apiOptions;
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of the <see cref="RemoveVersionsRoutesFilter"/> class.
     /// </summary>
-    /// <param name="webOptions">The <see cref="IOptionsMonitor{ApiOptions}"/>.</param>
-    public RemoveVersionsRoutesFilter(IOptionsMonitor<ApiOptions> webOptions)
+    /// <param name="apiOptions">The <see cref="IOptionsMonitor{ApiOptions}"/> containing API version and documentation settings.</param>
+    public RemoveVersionsRoutesFilter(IOptionsMonitor<ApiOptions> apiOptions)
     {
-        this.webOptions = webOptions ?? throw new ArgumentNullException(nameof(webOptions));
+        this.apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Applies the filter to remove Swagger paths for the default API version based on configuration.
+    /// </summary>
+    /// <param name="swaggerDoc">The <see cref="OpenApiDocument"/> representing the Swagger documentation.</param>
+    /// <param name="context">The <see cref="DocumentFilterContext"/> providing API descriptions.</param>
     public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
     {
         ArgumentNullException.ThrowIfNull(swaggerDoc);
         ArgumentNullException.ThrowIfNull(context);
 
-        if (this.webOptions.CurrentValue.Documentation == null)
+        if (this.apiOptions.CurrentValue.Documentation == null)
         {
             return;
         }
 
-        var version = this.webOptions.CurrentValue.Version
+        var version = this.apiOptions.CurrentValue.Version
             .ParseVersion();
 
         var defaultVersion = new ApiVersion(version.Major, version.Minor);
@@ -49,9 +54,9 @@ public class RemoveVersionsRoutesFilter : IDocumentFilter
                 continue;
             }
 
-            var baseRoute = $"{this.webOptions.CurrentValue.Hosting.Root}/{currentDocumentName.Replace(".0", string.Empty)}";
+            var baseRoute = $"{this.apiOptions.CurrentValue.Hosting.Root}/{currentDocumentName.Replace(".0", string.Empty)}";
 
-            if (this.webOptions.CurrentValue.Documentation.UseDefaultVersion && currentDocumentName == defaultDocumentName)
+            if (this.apiOptions.CurrentValue.Documentation.UseDefaultVersion && currentDocumentName == defaultDocumentName)
             {
                 if (apiDescription.RelativePath.StartsWith(baseRoute, StringComparison.Ordinal))
                 {

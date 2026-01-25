@@ -4,40 +4,40 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// Access Token.
+/// Represents an issued access token.
 /// </summary>
 public class AccessToken
 {
     /// <summary>
-    /// App Id.
+    /// The application identifier associated with the token.
     /// </summary>
     [MaxLength(256)]
-    public string? AppId { get; set; }
+    public virtual string? AppId { get; set; }
 
     /// <summary>
-    /// User Id.
+    /// The user identifier associated with the token.
     /// </summary>
-    public string? UserId { get; set; }
+    public virtual string? UserId { get; set; }
 
     /// <summary>
-    /// Token.
-    /// </summary>
-    [Required]
-    public string Token { get; set; } = null!;
-
-    /// <summary>
-    /// Expire At.
+    /// The serialized access token value.
     /// </summary>
     [Required]
-    public DateTimeOffset ExpireAt { get; set; }
+    public virtual string Token { get; set; } = null!;
 
     /// <summary>
-    /// Is Expired.
+    /// The UTC date and time at which the token expires.
     /// </summary>
-    public bool IsExpired => this.ExpireAt <= DateTimeOffset.UtcNow;
+    [Required]
+    public virtual DateTimeOffset ExpireAt { get; set; } = DateTimeOffset.UtcNow;
 
     /// <summary>
-    /// Refresh Token.
+    /// Indicates whether the token has expired.
     /// </summary>
-    public RefreshToken? RefreshToken { get; set; }
+    public virtual bool IsExpired => this.ExpireAt <= DateTimeOffset.UtcNow;
+
+    /// <summary>
+    /// The refresh token associated with this access token, if available.
+    /// </summary>
+    public virtual RefreshToken? RefreshToken { get; set; }
 }

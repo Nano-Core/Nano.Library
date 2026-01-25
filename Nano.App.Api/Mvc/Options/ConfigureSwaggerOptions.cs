@@ -19,7 +19,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace Nano.App.Api.Mvc.Options;
 
 /// <summary>
-/// Configure Swagger Options.
+/// Configures Swagger generation options including API documentation, security definitions, and XML comments.
 /// </summary>
 public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 {
@@ -30,25 +30,28 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
         "Nano.App.Web.Mvc.Documentation..xmldoc.Nano.Data.Abstractions.xml"
     ];
 
-    private readonly IOptionsMonitor<ApiOptions> webOptions;
+    private readonly IOptionsMonitor<ApiOptions> apiOptions;
     private readonly IAuthenticationSchemeProvider authenticationSchemeProvider;
     private readonly IApiVersionDescriptionProvider apiVersionDescriptionProvider;
 
     /// <summary>
-    /// 
+    /// Initializes a new instance of the <see cref="ConfigureSwaggerOptions"/> class.
     /// </summary>
-    /// <param name="webOptions"></param>
-    /// <param name="authenticationSchemeProvider"></param>
-    /// <param name="apiVersionDescriptionProvider"></param>
-    /// <exception cref="ArgumentNullException"></exception>
-    public ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> webOptions, IAuthenticationSchemeProvider authenticationSchemeProvider, IApiVersionDescriptionProvider apiVersionDescriptionProvider)
+    /// <param name="apiOptions">The <see cref="IOptionsMonitor{ApiOptions}"/> for API configuration.</param>
+    /// <param name="authenticationSchemeProvider">The <see cref="IAuthenticationSchemeProvider"/> to retrieve authentication schemes.</param>
+    /// <param name="apiVersionDescriptionProvider">The <see cref="IApiVersionDescriptionProvider"/> for API version information.</param>
+    /// <exception cref="ArgumentNullException">Thrown if any of the parameters are null.</exception>
+    public ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> apiOptions, IAuthenticationSchemeProvider authenticationSchemeProvider, IApiVersionDescriptionProvider apiVersionDescriptionProvider)
     {
-        this.webOptions = webOptions ?? throw new ArgumentNullException(nameof(webOptions));
+        this.apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
         this.authenticationSchemeProvider = authenticationSchemeProvider ?? throw new ArgumentNullException(nameof(authenticationSchemeProvider));
         this.apiVersionDescriptionProvider = apiVersionDescriptionProvider ?? throw new ArgumentNullException(nameof(apiVersionDescriptionProvider));
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Configures the <see cref="SwaggerGenOptions"/> including API info, security definitions, schema and document filters.
+    /// </summary>
+    /// <param name="options">The <see cref="SwaggerGenOptions"/> to configure.</param>
     public void Configure(SwaggerGenOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
@@ -86,9 +89,9 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
                     return null;
                 }
 
-                if (id.StartsWith(this.webOptions.CurrentValue.Hosting.Root, StringComparison.Ordinal))
+                if (id.StartsWith(this.apiOptions.CurrentValue.Hosting.Root, StringComparison.Ordinal))
                 {
-                    id = id[this.webOptions.CurrentValue.Hosting.Root.Length..];
+                    id = id[this.apiOptions.CurrentValue.Hosting.Root.Length..];
                 }
 
                 id = Regexes.CurlyBrackets()
@@ -112,7 +115,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        if (this.webOptions.CurrentValue.Documentation == null)
+        if (this.apiOptions.CurrentValue.Documentation == null)
         {
             return;
         }
@@ -121,24 +124,24 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
         {
             var openApiInfo = new OpenApiInfo
             {
-                Title = this.webOptions.CurrentValue.Documentation.Name,
-                Description = this.webOptions.CurrentValue.Documentation.Description,
+                Title = this.apiOptions.CurrentValue.Documentation.Name,
+                Description = this.apiOptions.CurrentValue.Documentation.Description,
                 Version = apiVersionDescription.ApiVersion.ToString()
             };
 
-            if (this.webOptions.CurrentValue.Documentation.Contact != null)
+            if (this.apiOptions.CurrentValue.Documentation.Contact != null)
             {
-                openApiInfo.Contact = this.webOptions.CurrentValue.Documentation.Contact;
+                openApiInfo.Contact = this.apiOptions.CurrentValue.Documentation.Contact;
             }
 
-            if (this.webOptions.CurrentValue.Documentation.License != null)
+            if (this.apiOptions.CurrentValue.Documentation.License != null)
             {
-                openApiInfo.License = this.webOptions.CurrentValue.Documentation.License;
+                openApiInfo.License = this.apiOptions.CurrentValue.Documentation.License;
             }
 
-            if (!string.IsNullOrEmpty(this.webOptions.CurrentValue.Documentation.TermsOfService))
+            if (!string.IsNullOrEmpty(this.apiOptions.CurrentValue.Documentation.TermsOfService))
             {
-                openApiInfo.TermsOfService = new Uri(this.webOptions.CurrentValue.Documentation.TermsOfService);
+                openApiInfo.TermsOfService = new Uri(this.apiOptions.CurrentValue.Documentation.TermsOfService);
             }
 
             if (apiVersionDescription.IsDeprecated)
@@ -195,12 +198,14 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     {
         ArgumentNullException.ThrowIfNull(options);
 
+        // BUG: Is .xmldoc embedded files still needed?
+
         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
             var manifestResourceNames = assembly
                 .GetManifestResourceNames();
 
-            foreach (var resourceName in xmlEmbeddedResources)
+            foreach (var resourceName in ConfigureSwaggerOptions.xmlEmbeddedResources)
             {
                 var contains = manifestResourceNames
                     .Contains(resourceName);

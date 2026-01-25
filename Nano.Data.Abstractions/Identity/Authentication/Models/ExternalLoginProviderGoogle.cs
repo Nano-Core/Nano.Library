@@ -3,7 +3,7 @@
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// External Login Provider Google.
+/// External login provider using Google authentication.
 /// </summary>
 public class ExternalLoginProviderGoogle : ExternalLoginProviderImplicit
 {

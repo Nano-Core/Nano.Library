@@ -3,22 +3,22 @@ using Nano.App.Api.Config.Enums;
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Cors Origin Options.
+/// Options for configuring CORS origins.
 /// </summary>
 public class CorsOriginOptions
 {
     /// <summary>
-    /// Embedder Policy.
+    /// Cross-Origin Embedder Policy.
     /// </summary>
     public virtual CrossOriginEmbedderPolicy? EmbedderPolicy { get; set; }
 
     /// <summary>
-    /// Opener Policy.
+    /// Cross-Origin Opener Policy.
     /// </summary>
     public virtual CrossOriginOpenerPolicy? OpenerPolicy { get; set; }
 
     /// <summary>
-    /// Resource Policy.
+    /// Cross-Origin Resource Policy.
     /// </summary>
     public virtual CrossOriginResourcePolicy? ResourcePolicy { get; set; }
 }

@@ -88,7 +88,7 @@ The ```Storage``` section in the configuration defines the storage provider and 
 ```
 
 ## Storage Providers
-Storage providers integrate shared storage into your application and provide easy access to mapped directories.  
+Storage providers integrate shared storage into your Nano application and provide easy access to mapped directories.  
 
 All storage providers implement the `IStorageProvider` interface. 
 This interface is responsible for handling all configuration and setup required for the storage provider.  
@@ -100,7 +100,8 @@ To implement a new storage provider:
 3. Register your provider in the application using `AddNanoStorage<MyProvider>()`.
 
 The following storage providers are currently supported:
-* [Azure.Storage.Azure](https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Storage.Azure)
+* [Nano.Storage.Azure](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Azure)
+* [Nano.Storage.Local](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Local)
 
 ## Examples
 See examples of Nano applications with storage registered here:

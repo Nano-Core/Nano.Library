@@ -6,11 +6,14 @@ using Nano.App.ApiClient.Consts;
 namespace Nano.App.Api.Mvc.Conventions;
 
 /// <summary>
-/// Produces Json Convention.
+/// Convention to ensure that all actions produce JSON responses.
 /// </summary>
 public class ProducesJsonConvention : IActionModelConvention
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Applies the JSON response convention to the given action.
+    /// </summary>
+    /// <param name="action">The <see cref="ActionModel"/> to apply the convention to.</param>
     public void Apply(ActionModel action)
     {
         var producesAttribute = action.Attributes

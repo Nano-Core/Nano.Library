@@ -5,15 +5,15 @@ using Nano.App.Api.Mvc.ModelBinders;
 namespace Nano.App.Api.Annotations;
 
 /// <summary>
-/// From Form Body.
-/// Using a specialized <see cref="JsonFormModelBinder"/>, that allows json post with a form.
-/// Use when both files and json body are needed for parameters to a controller action.
+/// Indicates that a parameter should be bound from the request's form body as JSON.
+/// Supports scenarios where both files and JSON data are sent in the same request.
 /// </summary>
 [AttributeUsage(AttributeTargets.Parameter)]
 public class FromFormBody : ModelBinderAttribute
 {
     /// <summary>
-    /// Constructor
+    /// Initializes a new instance of the <see cref="FromFormBody"/> attribute.
+    /// Sets the binder type to <see cref="JsonFormModelBinder"/>.
     /// </summary>
     public FromFormBody()
     {

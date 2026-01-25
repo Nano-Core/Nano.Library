@@ -7,11 +7,20 @@ using Newtonsoft.Json.Linq;
 namespace Nano.Common.Serialization.Json.Converters;
 
 /// <summary>
-/// Geometry Converter Ignore Case.
+/// A <see cref="GeometryConverter"/> that ignores case when reading JSON properties for geometries.
 /// </summary>
-public class GeometryConverterIgnoreCase : GeometryConverter
+internal class GeometryConverterIgnoreCase : GeometryConverter
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Reads JSON into a <see cref="Geometry"/> object, renaming properties to match expected casing.
+    /// </summary>
+    /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
+    /// <param name="objectType">The type of object to create.</param>
+    /// <param name="existingValue">The existing value of the object being read.</param>
+    /// <param name="serializer">The <see cref="JsonSerializer"/> used for deserialization.</param>
+    /// <returns>The deserialized geometry object.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="reader"/>, <paramref name="objectType"/>, or <paramref name="serializer"/> is null.</exception>
+    /// <exception cref="JsonSerializationException">Thrown if the JSON token is not an object.</exception>
     public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
     {
         ArgumentNullException.ThrowIfNull(reader);
@@ -41,6 +50,7 @@ public class GeometryConverterIgnoreCase : GeometryConverter
 
         return base.ReadJson(jsonReader, objectType, existingValue, serializer);
     }
+
 
     private static void RenameProperty(JObject @object, string from, string to)
     {

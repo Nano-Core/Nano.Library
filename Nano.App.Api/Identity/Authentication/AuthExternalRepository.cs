@@ -16,11 +16,11 @@ public class AuthExternalRepository : IAuthExternalRepository
     private readonly IAuthExternalMicrosoftRepository? microsoftRepository;
 
     /// <summary>
-    /// 
+    /// Initializes a new instance of the <see cref="AuthExternalRepository"/> class.
     /// </summary>
-    /// <param name="facebookRepository"></param>
-    /// <param name="googleRepository"></param>
-    /// <param name="microsoftRepository"></param>
+    /// <param name="facebookRepository">Optional Facebook authentication repository.</param>
+    /// <param name="googleRepository">Optional Google authentication repository.</param>
+    /// <param name="microsoftRepository">Optional Microsoft authentication repository.</param>
     public AuthExternalRepository(IAuthExternalFacebookRepository? facebookRepository = null, IAuthExternalGoogleRepository? googleRepository = null, IAuthExternalMicrosoftRepository? microsoftRepository = null)
     {
         this.facebookRepository = facebookRepository;

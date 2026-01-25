@@ -8,20 +8,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class GenerateChangePhoneToken : GenerateChangePhoneToken<Guid>;
 
 /// <summary>
-/// Generate Change Phone Token.
+/// Represents a request to generate a change phone number token for a user.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class GenerateChangePhoneToken<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User id.
+    /// The identifier of the user requesting the phone number change.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// New Phone Number.
+    /// The new phone number to be associated with the user.
     /// </summary>
     [Required]
     [InternationalPhone]

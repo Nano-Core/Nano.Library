@@ -3,19 +3,19 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// Log In.
+/// Represents a username and password login request.
 /// </summary>
 public class LogIn : BaseLogIn
 {
     /// <summary>
-    /// Username.
+    /// The username used for authentication.
     /// </summary>
     [Required]
     [MaxLength(256)]
     public virtual string Username { get; set; } = null!;
 
     /// <summary>
-    /// Password.
+    /// The password used for authentication.
     /// </summary>
     [Required]
     [MaxLength(256)]

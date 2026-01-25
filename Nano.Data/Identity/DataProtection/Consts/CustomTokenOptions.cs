@@ -1,12 +1,6 @@
 ﻿namespace Nano.Data.Identity.DataProtection.Consts;
 
-/// <summary>
-/// Custom Token Options.
-/// </summary>
-public static class CustomTokenOptions
+internal static class CustomTokenOptions
 {
-    /// <summary>
-    /// Custom Token Provider.
-    /// </summary>
-    public const string CUSTOM_DATA_PROTECTOR_TOKEN_PROVIDER = "CustomDataProtectorTokenProvider";
+    internal const string CUSTOM_DATA_PROTECTOR_TOKEN_PROVIDER = "CustomDataProtectorTokenProvider";
 }

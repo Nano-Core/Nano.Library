@@ -1,12 +1,12 @@
 namespace Nano.Data.Abstractions.Config;
 
 /// <summary>
-/// Authentication Options.
+/// Options for general authentication configuration.
 /// </summary>
 public class AuthenticationOptions
 {
     /// <summary>
-    /// Api Key.
+    /// Gets or sets the API key authentication options.
     /// </summary>
     public virtual ApiKeyAuthenticationOptions? ApiKey { get; set; }
 }

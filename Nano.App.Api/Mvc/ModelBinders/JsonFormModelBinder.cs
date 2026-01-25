@@ -11,14 +11,15 @@ using Newtonsoft.Json;
 namespace Nano.App.Api.Mvc.ModelBinders;
 
 /// <summary>
-/// Json Form binder.
+/// Model binder that binds JSON data from form values to model types.
 /// </summary>
 public class JsonFormModelBinder : IModelBinder
 {
     /// <summary>
-    /// Deserializes the json value and binds it to its type.
+    /// Deserializes the JSON value from the form and binds it to the specified model type.
+    /// Also performs validation for properties and fields using <see cref="ValidationAttribute"/>.
     /// </summary>
-    /// <param name="bindingContext">The <see cref="ModelBindingContext"/>.</param>
+    /// <param name="bindingContext">The <see cref="ModelBindingContext"/> providing model binding information.</param>
     public async Task BindModelAsync(ModelBindingContext bindingContext)
     {
         ArgumentNullException.ThrowIfNull(bindingContext);

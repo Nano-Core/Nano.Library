@@ -4,12 +4,12 @@ using Nano.App.Api.Config.Enums;
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// 
+/// Options for configuring X-Frame-Options headers.
 /// </summary>
 public class XFrameOptionsOptions
 {
     /// <summary>
-    /// Use XFrame Options Policy Header.
+    /// Specifies the X-Frame-Options policy header value.
     /// </summary>
     [Required]
     public virtual XFrameOptionsPolicy XFrameOptionsPolicyHeader { get; set; } = XFrameOptionsPolicy.Disabled;

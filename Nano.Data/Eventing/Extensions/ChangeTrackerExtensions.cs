@@ -5,10 +5,10 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Nano.Common.Extensions;
+using Nano.Data.Abstractions.Entities;
+using Nano.Data.Abstractions.Entities.Abstractions;
 using Nano.Data.Abstractions.Eventing.Annotations;
 using Nano.Data.Abstractions.Eventing.Models;
-using Nano.Data.Abstractions.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Eventing.Extensions;
 

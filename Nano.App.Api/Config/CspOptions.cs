@@ -3,348 +3,339 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Csp Options.
+/// Options for configuring Content Security Policy (CSP) headers.
 /// </summary>
 public class CspOptions
 {
     /// <summary>
-    /// Report Only.
+    /// If true, the CSP will be enforced in report-only mode.
+    /// Violations will be reported but not blocked.
     /// </summary>
     [Required]
     public virtual bool ReportOnly { get; set; } = false;
 
     /// <summary>
-    /// Upgrade Insecure Requests.
+    /// If true, instructs the browser to upgrade all HTTP requests to HTTPS automatically.
     /// </summary>
     [Required]
     public virtual bool UpgradeInsecureRequests { get; set; } = false;
 
     /// <summary>
-    /// Report To.
+    /// CSP Report-To header configuration.
+    /// Specifies where CSP violation reports are sent.
     /// </summary>
     public virtual CspReportToOptions? ReportTo { get; set; }
 
     /// <summary>
-    /// Defaults.
-    /// https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/default-src
+    /// Default directive (default-src) for all unspecified content types.
     /// </summary>
     public virtual CspDirective? Defaults { get; set; }
 
     /// <summary>
-    /// Styles.
-    /// https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/style-src
+    /// Controls allowed sources for stylesheets (style-src).
     /// </summary>
     public virtual CspDirectiveStyles? Styles { get; set; }
 
     /// <summary>
-    /// 
+    /// Controls allowed sources for inline style attributes (style-src-attr).
     /// </summary>
     public virtual CspDirectiveStyles? StylesAttr { get; set; }
 
     /// <summary>
-    /// 
+    /// Controls allowed sources for style elements (style-src-elem).
     /// </summary>
     public virtual CspDirectiveStyles? StylesElem { get; set; }
 
     /// <summary>
-    /// Scripts.
+    /// Controls allowed sources for scripts (script-src).
     /// </summary>
     public virtual CspDirectiveScripts? Scripts { get; set; }
-    
+
     /// <summary>
-    /// Scripts.
+    /// Controls allowed sources for inline script attributes (script-src-attr).
     /// </summary>
     public virtual CspDirectiveScripts? ScriptsAttr { get; set; }
 
     /// <summary>
-    /// Scripts.
+    /// Controls allowed sources for script elements (script-src-elem).
     /// </summary>
     public virtual CspDirectiveScripts? ScriptsElem { get; set; }
 
     /// <summary>
-    /// Objects.
+    /// Controls allowed sources for object elements (object-src).
     /// </summary>
     public virtual CspDirective? Objects { get; set; }
 
     /// <summary>
-    /// Images.
+    /// Controls allowed sources for images (img-src).
     /// </summary>
     public virtual CspDirective? Images { get; set; }
 
     /// <summary>
-    /// Media.
+    /// Controls allowed sources for audio and video elements (media-src).
     /// </summary>
     public virtual CspDirective? Media { get; set; }
 
     /// <summary>
-    /// Frames.
+    /// Controls allowed sources for frames and iframes (frame-src).
     /// </summary>
     public virtual CspDirective? Frames { get; set; }
 
     /// <summary>
-    /// Fenced Frames.
+    /// Controls allowed sources for fenced frames (fenced-frame-src).
     /// </summary>
     public virtual CspDirective? FencedFrames { get; set; }
 
     /// <summary>
-    /// Frame Ancestors.
+    /// Controls which sources can embed this document (frame-ancestors).
     /// </summary>
     public virtual CspDirective? FrameAncestors { get; set; }
 
     /// <summary>
-    /// Fonts.
+    /// Controls allowed sources for fonts (font-src).
     /// </summary>
     public virtual CspDirective? Fonts { get; set; }
 
     /// <summary>
-    /// Connections.
+    /// Controls allowed URLs for fetch, XHR, WebSocket, EventSource (connect-src).
     /// </summary>
     public virtual CspDirective? Connections { get; set; }
 
     /// <summary>
-    /// Base Uri's.
+    /// Controls allowed base URLs for the document (base-uri).
     /// </summary>
     public virtual CspDirective? BaseUris { get; set; }
 
     /// <summary>
-    /// Children.
+    /// Controls allowed sources for nested browsing contexts (child-src).
     /// </summary>
     public virtual CspDirective? Children { get; set; }
 
     /// <summary>
-    /// Forms.
+    /// Controls allowed URLs for form submissions (form-action).
     /// </summary>
     public virtual CspDirective? Forms { get; set; }
 
     /// <summary>
-    /// Manifests.
+    /// Controls allowed sources for web app manifests (manifest-src).
     /// </summary>
     public virtual CspDirective? Manifests { get; set; }
 
     /// <summary>
-    /// Workers.
+    /// Controls allowed sources for web workers, service workers, and shared workers (worker-src).
     /// </summary>
     public virtual CspDirective? Workers { get; set; }
 
     /// <summary>
-    /// Trusted Types.
+    /// Restricts which Trusted Types policies are allowed to create DOM objects.
     /// </summary>
     public virtual CspDirectiveTrustedTypes? TrustedTypes { get; set; }
 
     /// <summary>
-    /// Sandbox.
+    /// Restricts features of a page when embedded in an iframe (sandbox).
     /// </summary>
     public virtual CspDirectiveSandbox? Sandbox { get; set; }
 
     /// <summary>
-    /// Permissions Policy.
+    /// Controls access to powerful browser features (permissions-policy).
     /// </summary>
     public virtual CspDirectivePermissionsPolicy? PermissionsPolicy { get; set; }
 
+    #region Nested Classes
 
     /// <summary>
-    /// Csp Directive.
+    /// Represents a generic CSP directive (e.g., default-src, img-src, connect-src).
     /// </summary>
     public class CspDirective
     {
         /// <summary>
-        /// Is None.
-        /// Adds the 'none' source.
-        /// All other sources are ignored.
+        /// If true, only 'none' is allowed. All other sources are ignored.
         /// </summary>
         [Required]
         public virtual bool IsNone { get; set; } = false;
 
         /// <summary>
-        /// Is Self.
-        /// Adds the 'self' source.
+        /// If true, 'self' is allowed as a source.
         /// </summary>
         [Required]
         public virtual bool IsSelf { get; set; } = false;
 
         /// <summary>
-        /// Sources.
-        /// Adds the array of custom sources.
+        /// Custom sources for the directive.
         /// </summary>
         [Required]
         public virtual string[] Sources { get; set; } = [];
     }
 
     /// <summary>
-    /// CSP Directive Scripts (script-src).
+    /// Represents script-specific CSP directive (script-src).
     /// </summary>
     public class CspDirectiveScripts : CspDirective
     {
         /// <summary>
-        /// Adds the 'unsafe-inline' source.
+        /// Allows inline scripts ('unsafe-inline').
         /// </summary>
         [Required]
         public virtual bool IsUnsafeInline { get; set; } = false;
 
         /// <summary>
-        /// Adds the 'unsafe-eval' source.
+        /// Allows eval() and similar constructs ('unsafe-eval').
         /// </summary>
         [Required]
         public virtual bool IsUnsafeEval { get; set; } = false;
 
         /// <summary>
-        /// Adds the 'wasm-unsafe-eval' source.
+        /// Allows WebAssembly unsafe evaluation ('wasm-unsafe-eval').
         /// </summary>
         [Required]
         public virtual bool IsUnsafeWasmEval { get; set; } = false;
 
         /// <summary>
-        /// Adds the 'strict-dynamic' source.
+        /// Enables 'strict-dynamic' behavior for script execution.
         /// </summary>
         [Required]
         public virtual bool StrictDynamic { get; set; } = false;
 
         /// <summary>
-        /// 
+        /// Allows unsafe hashes for inline scripts.
         /// </summary>
         [Required]
         public virtual bool IsUnsafeHashes { get; set; } = false;
 
         /// <summary>
-        /// Adds 'unsafe-hashed-attributes' source.
+        /// Allows unsafe hashed attributes ('unsafe-hashed-attributes').
         /// </summary>
         [Required]
         public virtual bool UnsafeHashedAttributes { get; set; } = false;
 
         /// <summary>
-        /// Adds 'unsafe-allow-redirects' source.
+        /// Allows redirects from unsafe sources ('unsafe-allow-redirects').
         /// </summary>
         [Required]
         public virtual bool UnsafeAllowRedirects { get; set; } = false;
 
         /// <summary>
-        /// Trusted Types enforcement for script.
+        /// Requires Trusted Types for script execution.
         /// </summary>
         [Required]
         public virtual bool RequireTrustedTypes { get; set; } = false;
 
         /// <summary>
-        /// Nonce values to allow specific inline scripts.
+        /// Specific nonces to allow inline scripts.
         /// </summary>
         public virtual string[] Nonces { get; set; } = [];
 
         /// <summary>
-        /// SHA hashes to allow specific script content.
-        /// Example: 'sha256-abc123...'
+        /// SHA hashes to allow inline script content.
+        /// Must be prefixed with 'sha256-', 'sha384-', or 'sha512-'.
         /// </summary>
         public virtual string[] Hashes { get; set; } = [];
 
         /// <summary>
-        /// Enables 'report-sample' for CSP violation reporting.
+        /// If true, enables 'report-sample' in CSP violation reports.
         /// </summary>
         [Required]
         public virtual bool ReportSample { get; set; } = false;
 
         /// <summary>
-        ///
+        /// Requires Subresource Integrity (SRI) for scripts.
         /// </summary>
         [Required]
         public virtual bool RequireSri { get; set; } = false;
     }
 
     /// <summary>
-    /// Csp Directive Styles.
+    /// Represents style-specific CSP directive (style-src).
     /// </summary>
     public class CspDirectiveStyles : CspDirective
     {
         /// <summary>
         /// Allows inline styles ('unsafe-inline').
-        /// Strongly discouraged unless unavoidable.
         /// </summary>
         [Required]
         public virtual bool IsUnsafeInline { get; set; } = false;
 
         /// <summary>
-        /// 
+        /// Allows unsafe hashes for inline styles.
         /// </summary>
         [Required]
         public virtual bool IsUnsafeHashes { get; set; } = false;
 
         /// <summary>
-        /// A concrete nonce value to emit as 'nonce-{value}'.
-        /// Mutually exclusive with IncludeNoncePlaceholder.
+        /// Nonces to allow specific inline styles.
         /// </summary>
         public virtual string[] Nonces { get; init; } = [];
 
         /// <summary>
-        /// Hashes for inline styles (e.g. sha256-abc...).
-        /// Values must already be prefixed with sha256-/sha384-/sha512-.
+        /// SHA hashes to allow specific inline styles.
+        /// Must be prefixed with 'sha256-', 'sha384-', or 'sha512-'.
         /// </summary>
         [Required]
         public virtual string[] Hashes { get; init; } = [];
 
         /// <summary>
-        /// Trusted Types enforcement for styles.
+        /// Requires Trusted Types for styles.
         /// </summary>
         [Required]
         public virtual bool RequireTrustedTypes { get; set; } = false;
 
         /// <summary>
-        ///
+        /// Requires Subresource Integrity (SRI) for styles.
         /// </summary>
         [Required]
         public virtual bool RequireSri { get; set; } = false;
     }
 
     /// <summary>
-    /// CSP Directive for element- or attribute-specific sources.
-    /// Can be used for script-src-attr, script-src-elem, style-src-attr, style-src-elem.
+    /// CSP directive for element- or attribute-specific sources.
+    /// Used for script-src-attr, script-src-elem, style-src-attr, style-src-elem.
     /// </summary>
     public class CspDirectiveElement : CspDirective
     {
         /// <summary>
-        /// Allows unsafe-inline content (inline styles or attributes, inline scripts for attributes).
-        /// Only relevant for -attr directives and inline styles/scripts.
+        /// Allows inline content (attributes or inline styles/scripts).
         /// </summary>
         [Required]
         public virtual bool IsUnsafeInline { get; set; } = false;
 
         /// <summary>
-        /// Multiple nonce values for inline content.
+        /// Nonces to allow inline element content.
         /// </summary>
         public virtual string[] Nonces { get; set; } = [];
 
         /// <summary>
         /// Precomputed hashes (sha256/384/512) for inline content.
-        /// Must include the prefix: 'sha256-', 'sha384-', 'sha512-'.
         /// </summary>
         [Required]
         public virtual string[] Hashes { get; init; } = [];
     }
 
     /// <summary>
-    /// Csp Directive Trusted Types.
+    /// Controls which Trusted Types policies are allowed.
     /// </summary>
     public class CspDirectiveTrustedTypes
     {
         /// <summary>
-        /// Is None.
-        /// Adds the 'none' source.
-        /// All other sources are ignored.
+        /// If true, only 'none' is allowed. All other policies are ignored.
         /// </summary>
         [Required]
         public virtual bool IsNone { get; set; } = false;
 
         /// <summary>
-        /// 
+        /// If true, duplicate policy names are allowed.
         /// </summary>
         [Required]
         public virtual bool AllowDuplicates { get; set; } = false;
 
         /// <summary>
-        /// The names of the Trusted Types policies to allow.
+        /// List of allowed Trusted Types policy names.
         /// </summary>
         [Required]
         public virtual string[] Policies { get; set; } = [];
     }
 
     /// <summary>
-    /// 
+    /// CSP Report-To configuration for sending violation reports.
     /// </summary>
     public class CspReportToOptions
     {
@@ -355,115 +346,102 @@ public class CspOptions
         public virtual string Group { get; set; } = "csp-reports";
 
         /// <summary>
-        /// Max age in seconds.
+        /// Max age (seconds) for the report group.
         /// </summary>
         [Required]
         public virtual int MaxAge { get; set; } = 10886400;
 
         /// <summary>
-        /// One or more report endpoints.
+        /// URLs to receive CSP reports.
         /// </summary>
         [Required]
         public virtual string[] Endpoints { get; set; } = [];
     }
 
     /// <summary>
-    /// Csp Directive Sandbox.
+    /// Sandbox directive configuration.
+    /// Restricts iframe capabilities.
     /// </summary>
     public class CspDirectiveSandbox
     {
         /// <summary>
-        /// 
+        /// Allows downloads in the sandbox.
         /// </summary>
         public virtual bool AllowDownloads { get; set; } = false;
 
         /// <summary>
-        /// Allow Forms.
-        /// Allows the page to submit forms. If this keyword is not used, this operation is not allowed.
+        /// Allows form submissions from the sandboxed page.
         /// </summary>
         [Required]
         public virtual bool AllowForms { get; set; } = false;
 
         /// <summary>
-        /// Allow Modals.
-        /// Allows the page to open modal windows.
+        /// Allows opening modal windows.
         /// </summary>
         [Required]
         public virtual bool AllowModals { get; set; } = false;
 
         /// <summary>
-        /// Allow Orientation Lock.
-        /// Allows the page to disable the ability to lock the screen orientation.
+        /// Allows disabling screen orientation lock.
         /// </summary>
         [Required]
         public virtual bool AllowOrientationLock { get; set; } = false;
 
         /// <summary>
-        /// Allow Pointer Lock.
-        /// Allows the page to use the Pointer Lock API.
+        /// Allows usage of Pointer Lock API.
         /// </summary>
         [Required]
         public virtual bool AllowPointerLock { get; set; } = false;
 
         /// <summary>
-        /// Allow Popups.
-        /// Allows popups (like from window.open, target= "_blank", showModalDialog). If this keyword is not used, that functionality will silently fail.
+        /// Allows popups (window.open, target=_blank).
         /// </summary>
         [Required]
         public virtual bool AllowPopups { get; set; } = false;
 
         /// <summary>
-        /// Allow Popups To Escape Sandbox.
-        /// Allows a sandboxed document to open new windows without forcing the sandboxing flags upon them.
-        /// This will allow, for example, a third-party advertisement to be safely sandboxed without forcing the same restrictions upon a landing page.
+        /// Allows popups to escape sandbox restrictions.
         /// </summary>
         [Required]
         public virtual bool AllowPopupsToEscapeSandbox { get; set; } = false;
 
         /// <summary>
-        /// Allow Presentation.
-        /// Allows embedders to have control over whether an iframe can start a presentation session.
+        /// Allows initiating presentations from the sandboxed page.
         /// </summary>
         [Required]
         public virtual bool AllowPresentation { get; set; } = false;
 
         /// <summary>
-        /// Allow Same Origin.
-        /// Allows the content to be treated as being from its normal origin.
-        /// If this keyword is not used, the embedded content is treated as being from a unique origin.
+        /// Allows same-origin access from sandboxed content.
         /// </summary>
         [Required]
         public virtual bool AllowSameOrigin { get; set; } = false;
 
         /// <summary>
-        /// Allow Scripts.
-        /// Allows the page to run scripts (but not create pop-up windows).
-        /// If this keyword is not used, this operation is not allowed.
+        /// Allows execution of scripts.
         /// </summary>
         [Required]
         public virtual bool AllowScripts { get; set; } = false;
 
         /// <summary>
-        /// 
+        /// Allows storage access via user activation.
         /// </summary>
         public virtual bool AllowStorageAccessByUserActivation { get; set; } = false;
 
         /// <summary>
-        /// Allow Top Navigation.
-        /// Allows the page to navigate (load) content to the top-level browsing context.
-        /// If this keyword is not used, this operation is not allowed.
+        /// Allows top-level navigation.
         /// </summary>
         [Required]
         public virtual bool AllowTopNavigation { get; set; } = false;
 
         /// <summary>
-        /// 
+        /// Allows top-level navigation via user activation.
         /// </summary>
         [Required]
         public virtual bool AllowTopNavigationByUserActivation { get; set; } = false;
 
         /// <summary>
-        /// 
+        /// Allows navigation to custom protocols.
         /// </summary>
         [Required]
         public virtual bool AllowTopNavigationToCustomProtocols { get; set; } = false;
@@ -850,4 +828,6 @@ public class CspOptions
         /// </summary>
         public class CspDirectivePermissionsPolicyXrSpatialTracking : CspDirective;
     }
+
+    #endregion
 }

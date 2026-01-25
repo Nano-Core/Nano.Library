@@ -3,12 +3,12 @@
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// External Login  Provider Implicit.
+/// External login provider using an implicit authentication flow.
 /// </summary>
 public class ExternalLoginProviderImplicit : BaseLogInExternalProvider
 {
     /// <summary>
-    /// Access Token.
+    /// The access token issued by the external provider.
     /// </summary>
     [Required]
     public virtual string AccessToken { get; set; } = null!;

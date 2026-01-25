@@ -13,7 +13,7 @@ using Nano.Eventing.Abstractions;
 namespace Nano.Data.Eventing;
 
 /// <inheritdoc />
-public sealed class RegisterEntityEventHandlersTask : IRegisterEntityEventHandlersTask
+internal sealed class RegisterEntityEventHandlersTask : IRegisterEntityEventHandlersTask
 {
     private readonly DbContext dbContext;
     private readonly IEventing eventing;

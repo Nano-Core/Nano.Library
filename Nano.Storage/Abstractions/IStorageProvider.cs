@@ -4,8 +4,6 @@ using System;
 
 namespace Nano.Storage.Abstractions;
 
-// TODO: PROVIDER: Azure Blob Storage Storage Provider
-
 /// <summary>
 /// Defines a storage provider used to configure file storage services for the Nano application.
 /// </summary>

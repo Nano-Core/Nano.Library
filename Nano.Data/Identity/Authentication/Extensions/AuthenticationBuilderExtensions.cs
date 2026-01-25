@@ -5,10 +5,7 @@ using Nano.Data.Abstractions.Identity.Authentication.Consts;
 
 namespace Nano.Data.Identity.Authentication.Extensions;
 
-/// <summary>
-/// Service Collection Extensions.
-/// </summary>
-public static class AuthenticationBuilderExtensions
+internal static class AuthenticationBuilderExtensions
 {
     internal static AuthenticationBuilder AddApiKeyAuthentication<TIdentity>(this AuthenticationBuilder builder, ApiKeyAuthenticationOptions? options)
         where TIdentity : IEquatable<TIdentity>

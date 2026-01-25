@@ -5,42 +5,44 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Config;
 
 /// <summary>
-/// Memory Cache.
+/// Options for configuring the in-memory cache behavior.
 /// </summary>
 public class CacheOptions
 {
     /// <summary>
-    /// Max Entries.
-    /// The maximum number of cache entries.
+    /// Gets or sets the maximum number of cache entries allowed.
+    /// Defaults to <c>5000</c>.
     /// </summary>
     [Required]
     public virtual long? MaxEntries { get; set; } = 5000;
 
     /// <summary>
-    /// Expiration Timoeout.
-    /// The number of seconds before a cache entry expires.
+    /// Gets or sets the expiration timeout for each cache entry.
+    /// This is the duration after which a cached item will expire.
+    /// Defaults to <c>5 minutes</c>.
     /// </summary>
     [Required]
     public virtual TimeSpan ExpirationTimeout { get; set; } = TimeSpan.FromMinutes(5);
 
     /// <summary>
-    /// Expiration Scan Frequency.
-    /// The expiration scan interval in seconds.
+    /// Gets or sets the interval at which the cache will scan for expired items.
+    /// Defaults to <c>1 minute</c>.
     /// </summary>
     [Required]
     public virtual TimeSpan ExpirationScanFrequency { get; set; } = TimeSpan.FromMinutes(1);
 
     /// <summary>
-    /// Expiration Mode.
-    /// The mode for cache expiration. Absolute or Sliding.
+    /// Gets or sets the expiration mode for cached items.
+    /// Can be <see cref="CacheExpireMode.Absolute"/> or <see cref="CacheExpireMode.Sliding"/>.
+    /// Defaults to <see cref="CacheExpireMode.Sliding"/>.
     /// </summary>
     [Required]
     public virtual CacheExpireMode ExpirationMode { get; set; } = CacheExpireMode.Sliding;
 
     /// <summary>
-    /// Ignored Table Names.
-    /// The table names that is ignored from the cache.
+    /// Gets or sets the names of database tables that should be ignored by the cache.
+    /// Defaults to an empty array.
     /// </summary>
     [Required]
-    public virtual string[] IgnoredTableNames { get; set; } = [];
+    public virtual string[] IgnoredTableNames { get; set; } = Array.Empty<string>();
 }

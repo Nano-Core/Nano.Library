@@ -22,7 +22,7 @@ internal static class CspBuilderExtensions
 
         return builder;
     }
-  
+
     internal static CspBuilder UseCspReportTo(this CspBuilder builder, CspOptions.CspReportToOptions? cspDirective = null)
     {
         ArgumentNullException.ThrowIfNull(builder);

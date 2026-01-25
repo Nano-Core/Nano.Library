@@ -4,35 +4,37 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Config;
 
 /// <summary>
-/// User Options (nested class).
+/// Options for user-specific settings.
 /// </summary>
 public class UserOptions
 {
     /// <summary>
-    /// Is Unique Email Address Required.
+    /// Gets or sets a value indicating whether each user must have a unique email address.
+    /// Defaults to <c>true</c>.
     /// </summary>
     [Required]
     public virtual bool IsUniqueEmailAddressRequired { get; set; } = true;
 
     /// <summary>
-    /// Is Unique Phone Number Required.
+    /// Gets or sets a value indicating whether each user must have a unique phone number.
+    /// Defaults to <c>false</c>.
     /// </summary>
     [Required]
     public virtual bool IsUniquePhoneNumberRequired { get; set; } = false;
 
     /// <summary>
-    /// Allowed User Name Characters.
-    /// Defaults to abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+
+    /// Gets or sets the allowed characters for usernames.
+    /// Defaults to "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+".
     /// </summary>
     public virtual string AllowedUserNameCharacters { get; set; } = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
 
     /// <summary>
-    /// Default Roles.
+    /// Gets or sets the default roles assigned to a new user.
     /// </summary>
     [Required]
     public virtual string[] DefaultRoles { get; set; } =
-    [
+    {
         BuiltInUserRoles.READER,
         BuiltInUserRoles.WRITER
-    ];
+    };
 }

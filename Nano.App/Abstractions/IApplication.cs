@@ -4,31 +4,38 @@ using System;
 namespace Nano.App.Abstractions;
 
 /// <summary>
-/// Application.
+/// Defines the contract for a Nano application.
+/// Provides a fluent lifecycle for configuring services, building, and running the application.
 /// </summary>
-/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App</remarks>
+/// <remarks>
+/// Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App">Nano Application</see>
+/// </remarks>
 public interface IApplication
 {
     /// <summary>
     /// Allows consumers to register application services.
     /// </summary>
+    /// <param name="configure">A delegate used to register services.</param>
+    /// <returns>The current <see cref="IApplication"/> instance.</returns>
     public IApplication ConfigureServices(Action<IServiceCollection> configure);
 
     /// <summary>
-    /// 
+    /// Builds the application and finalizes configuration.
+    /// Must be called before <see cref="Run"/>.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The current <see cref="IApplication"/> instance.</returns>
     public IApplication Build();
 
     /// <summary>
-    /// 
+    /// Runs the application and blocks until shutdown.
     /// </summary>
     public void Run();
 
     /// <summary>
-    /// 
+    /// Creates and configures a new application instance.
+    /// Acts as the entry point for application setup.
     /// </summary>
-    /// <param name="args"></param>
-    /// <returns></returns>
+    /// <param name="args">Optional command-line arguments.</param>
+    /// <returns>A configured <see cref="IApplication"/> instance.</returns>
     static abstract IApplication ConfigureApp(params string[] args);
 }

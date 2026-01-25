@@ -3,9 +3,6 @@ using System.Threading.Tasks;
 
 namespace Nano.Eventing.Abstractions;
 
-// TODO: PROVIDER: Eventing: Kafra Provider
-// TODO: PROVIDER: Eventing: Azure Service Bus Provider
-
 /// <summary>
 /// Represents a generic eventing service for publishing and subscribing to messages.
 /// <para>

@@ -4,14 +4,17 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Common.Annotations;
 
 /// <summary>
-/// 
+/// Validates that a string property, field, or parameter contains a valid URL.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter)]
 public sealed class UrlAttribute : ValidationAttribute
 {
     private readonly UriKind uriKind;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UrlAttribute"/> class.
+    /// </summary>
+    /// <param name="uriKind">Specifies the type of URI to validate. Defaults to <see cref="UriKind.Absolute"/>.</param>
     public UrlAttribute(UriKind uriKind = UriKind.Absolute)
     {
         this.uriKind = uriKind;

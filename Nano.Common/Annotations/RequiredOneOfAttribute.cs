@@ -6,14 +6,18 @@ using System.Reflection;
 namespace Nano.Common.Annotations;
 
 /// <summary>
-/// Required One Of Attribute.
+/// Validates that at least one of the specified properties, including the decorated property, has a non-null value.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
 public class RequiredOneOfAttribute : ValidationAttribute
 {
     private readonly string[] otherProperties;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RequiredOneOfAttribute"/> class.
+    /// </summary>
+    /// <param name="otherProperties">An array of property names that should be checked alongside the decorated property.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="otherProperties"/> is null.</exception>
     public RequiredOneOfAttribute(params string[] otherProperties)
     {
         this.otherProperties = otherProperties ?? throw new ArgumentNullException(nameof(otherProperties));

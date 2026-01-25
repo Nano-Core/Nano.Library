@@ -7,14 +7,14 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class GenerateConfirmPhoneToken : GenerateConfirmPhoneToken<Guid>;
 
 /// <summary>
-/// Generate Confirm Phone Number Token.
+/// Represents a request to generate a phone number confirmation token for a user.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class GenerateConfirmPhoneToken<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// The identifier of the user for whom the phone confirmation token is generated.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;

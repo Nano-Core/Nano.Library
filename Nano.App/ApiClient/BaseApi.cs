@@ -14,7 +14,6 @@ using Nano.Common.Serialization.Json;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Exceptions;
 using Nano.Data.Abstractions.Identity.Extensions;
-using Nano.Data.Abstractions.Models.Abstractions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -25,6 +24,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.Data.Abstractions.Entities.Abstractions;
 using Vivet.AspNetCore.RequestTimeZone;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 

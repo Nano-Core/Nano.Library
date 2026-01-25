@@ -15,21 +15,42 @@ using Nano.Data.Abstractions.Identity.Consts;
 namespace Nano.Data.Identity.Authentication;
 
 /// <summary>
-/// Api Key Authentication Handler.
+/// Handles API key authentication for requests.
+/// Validates the API key provided in the request headers and creates a <see cref="ClaimsPrincipal"/>
+/// if the API key and associated user are valid.
 /// </summary>
+/// <typeparam name="TIdentity">The type of the identity key, e.g., <see cref="Guid"/> or <see cref="string"/>.</typeparam>
 public class ApiKeyAuthenticationHandler<TIdentity> : AuthenticationHandler<AuthenticationSchemeOptions>
     where TIdentity : IEquatable<TIdentity>
 {
     private readonly IIdentityRepository<TIdentity> identityRepository;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of <see cref="ApiKeyAuthenticationHandler{TIdentity}"/>.
+    /// </summary>
+    /// <param name="loggerFactory">The logger factory used to create loggers.</param>
+    /// <param name="options">The authentication scheme options.</param>
+    /// <param name="encoder">The URL encoder.</param>
+    /// <param name="identityManager">The identity repository used to validate API keys and retrieve users.</param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="identityManager"/> is null.</exception>
     public ApiKeyAuthenticationHandler(ILoggerFactory loggerFactory, IOptionsMonitor<AuthenticationSchemeOptions> options, UrlEncoder encoder, IIdentityRepository<TIdentity> identityManager)
         : base(options, loggerFactory, encoder)
     {
         this.identityRepository = identityManager ?? throw new ArgumentNullException(nameof(identityManager));
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Handles the authentication process for an incoming HTTP request.
+    /// </summary>
+    /// <returns>
+    /// An <see cref="AuthenticateResult"/> indicating success, failure, or no result.
+    /// <list type="bullet">
+    /// <item>If the API key header is missing, returns <see cref="AuthenticateResult.NoResult"/>.</item>
+    /// <item>If the API key is invalid, returns <see cref="AuthenticateResult.Fail(string)"/>.</item>
+    /// <item>If the associated user is not found, returns <see cref="AuthenticateResult.Fail(string)"/>.</item>
+    /// <item>If the API key and user are valid, returns <see cref="AuthenticateResult.Success"/> with a <see cref="ClaimsPrincipal"/>.</item>
+    /// </list>
+    /// </returns>
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var success = this.Request.Headers

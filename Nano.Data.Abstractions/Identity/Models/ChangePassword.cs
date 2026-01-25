@@ -7,37 +7,37 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class ChangePassword : ChangePassword<Guid>;
 
 /// <summary>
-/// Change Password.
+/// Represents a request to change a user's password.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class ChangePassword<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// The identifier of the user whose password is being changed.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// Old Password.
+    /// The user's current password.
     /// </summary>
     [Required]
     [MaxLength(256)]
     public virtual string OldPassword { get; set; } = null!;
 
     /// <summary>
-    /// New Password.
+    /// The user's new password.
     /// </summary>
     [Required]
     [MaxLength(256)]
     public virtual string NewPassword { get; set; } = null!;
 
     /// <summary>
-    /// Confirm New Passowrd.
+    /// Confirmation of the new password. Must match <see cref="NewPassword"/>.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    [Compare("NewPassword")]
+    [Compare(nameof(NewPassword))]
     public virtual string ConfirmNewPassword { get; set; } = null!;
 }

@@ -1,32 +1,38 @@
 using System.Collections.Generic;
 using DynamicExpression;
+using Nano.Data.Abstractions.Entities;
 
 namespace Nano.App.Api.Controllers.Models;
 
-/// <inheritdoc />
+/// <summary>
+/// Query criteria specifically for audit entries, extending <see cref="DefaultQueryCriteria"/>.
+/// </summary>
 public class AuditEntryQueryCriteria : DefaultQueryCriteria
 {
     /// <summary>
-    /// Created By.
+    /// Filter by the creator of the audit entry.
     /// </summary>
     public virtual string? CreatedBy { get; set; }
 
     /// <summary>
-    /// Entity Type Name.
+    /// Filter by the entity type name of the audited entity.
     /// </summary>
     public virtual string? EntityTypeName { get; set; }
 
     /// <summary>
-    /// State.
+    /// Filter by the state of the audited entity.
     /// </summary>
     public virtual string? State { get; set; }
 
     /// <summary>
-    /// Request Id.
+    /// Filter by the request identifier associated with the audit entry.
     /// </summary>
     public virtual string? RequestId { get; set; }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Builds the list of <see cref="CriteriaExpression"/> instances including audit-specific filters.
+    /// </summary>
+    /// <returns>A list of <see cref="CriteriaExpression"/> representing the query conditions.</returns>
     public override IList<CriteriaExpression> GetExpressions()
     {
         var expressions = base.GetExpressions();
@@ -35,22 +41,26 @@ public class AuditEntryQueryCriteria : DefaultQueryCriteria
 
         if (this.CreatedBy != null)
         {
-            expression.Equal("CreatedBy", this.CreatedBy);
+            expression
+                .Equal(nameof(DefaultAuditEntry.CreatedBy), this.CreatedBy);
         }
 
         if (this.EntityTypeName != null)
         {
-            expression.Equal("EntityTypeName", this.EntityTypeName);
+            expression
+                .Equal(nameof(DefaultAuditEntry.EntityTypeName), this.EntityTypeName);
         }
 
         if (this.State != null)
         {
-            expression.Equal("State", this.State);
+            expression
+                .Equal(nameof(DefaultAuditEntry.State), this.State);
         }
 
         if (this.RequestId != null)
         {
-            expression.Equal("RequestId", this.RequestId);
+            expression
+                .Equal(nameof(DefaultAuditEntry.RequestId), this.RequestId);
         }
 
         expressions

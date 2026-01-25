@@ -15,21 +15,11 @@ using Nano.Data.Abstractions.Identity.Authentication.Consts;
 namespace Nano.App.Api.Identity.Authentication;
 
 /// <inheritdoc />
-public class AuthExternalMicrosoftRepository : IAuthExternalMicrosoftRepository
+public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClient httpClient)
+    : IAuthExternalMicrosoftRepository
 {
-    private readonly MicrosoftOptions options;
-    private readonly HttpClient httpClient;
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="options"></param>
-    /// <param name="httpClient"></param>
-    public AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClient httpClient)
-    {
-        this.options = options ?? throw new ArgumentNullException(nameof(options));
-        this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-    }
+    private readonly MicrosoftOptions options = options ?? throw new ArgumentNullException(nameof(options));
+    private readonly HttpClient httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
     /// <inheritdoc />
     public virtual async Task<ExternalLogInData> Authenticate(ExternalLoginProviderMicrosoft provider, CancellationToken cancellationToken = default)

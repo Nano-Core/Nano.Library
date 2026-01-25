@@ -20,7 +20,8 @@ using Nano.Data.Abstractions.Identity.Consts;
 namespace Nano.App.Api.Controllers;
 
 /// <summary>
-/// Auth Controller.
+/// Base controller for authentication-related operations.
+/// Handles login, logout, token refresh, and external authentication.
 /// </summary>
 [Route(ControllerRoutes.AUTH_CONTROLLER_ROUTE)]
 [Route($"v{{v:apiVersion}}/{ControllerRoutes.AUTH_CONTROLLER_ROUTE}")]
@@ -34,13 +35,13 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     private readonly IAuthExternalRepository? authExternalRepository;
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of the <see cref="BaseAuthController{TIdentity}"/> class.
     /// </summary>
-    /// <param name="logger">The <see cref="ILogger"/>.</param>
-    /// <param name="identityAuthRepository"></param>
-    /// <param name="authTransientRepository"></param>
-    /// <param name="authRootRepository"></param>
-    /// <param name="authExternalRepository"></param>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="identityAuthRepository">Repository for identity-based authentication.</param>
+    /// <param name="authTransientRepository">Repository for transient authentication.</param>
+    /// <param name="authRootRepository">Repository for root authentication.</param>
+    /// <param name="authExternalRepository">Repository for external authentication.</param>
     protected BaseAuthController(ILogger logger, IIdentityAuthRepository<TIdentity>? identityAuthRepository = null, IAuthTransientRepository? authTransientRepository = null, IAuthRootRepository? authRootRepository = null, IAuthExternalRepository? authExternalRepository = null)
         : base(logger)
     {
@@ -54,17 +55,16 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     #region Login
 
     /// <summary>
-    /// Authenticates and signs in a user.
-    /// On success a jwt-token is created and returned, for use with auhtorization.
+    /// Authenticates a user and generates an access token (JWT) for authorization.
     /// </summary>
-    /// <param name="logIn">The login model.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="logIn">The login credentials.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The generated <see cref="AccessToken"/>.</returns>
+    /// <response code="200">Authentication succeeded and token returned.</response>
+    /// <response code="400">Invalid request data.</response>
+    /// <response code="401">Authentication failed.</response>
+    /// <response code="404">User not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("login")]
     [AllowAnonymous]
@@ -88,18 +88,18 @@ public abstract class BaseAuthController<TIdentity> : BaseController
         return this.Ok(accessToken);
     }
 
+
     /// <summary>
-    /// Authenticates and signs in the root user from configuration.
-    /// On success a jwt-token is created and returned, for use with auhtorization.
+    /// Authenticates the root user from configuration and returns an access token.
     /// </summary>
-    /// <param name="logInRoot">The login model.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="logInRoot">The root login credentials.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The generated <see cref="AccessToken"/>.</returns>
+    /// <response code="200">Authentication succeeded and token returned.</response>
+    /// <response code="400">Invalid request data.</response>
+    /// <response code="401">Authentication failed.</response>
+    /// <response code="404">Root user not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("login/root")]
     [AllowAnonymous]
@@ -124,16 +124,16 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Sign-in a user, from data received from a separate authentication.
+    /// Signs in a user via external authentication data.
     /// </summary>
-    /// <param name="logInExternalDirect">The external login direct.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="logInExternalDirect">The external login credentials.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The generated <see cref="AccessToken"/>.</returns>
+    /// <response code="200">Authentication succeeded and token returned.</response>
+    /// <response code="400">Invalid request data.</response>
+    /// <response code="401">Authentication failed.</response>
+    /// <response code="404">User not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("login/external/direct")]
     [AllowAnonymous]
@@ -158,16 +158,16 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Sign-in a user, from data received from a separate authentication.
+    /// Signs in a transient user via external authentication data.
     /// </summary>
-    /// <param name="logInExternalDirect">The external login direct.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="logInExternalDirect">The external login credentials.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The generated <see cref="AccessToken"/>.</returns>
+    /// <response code="200">Authentication succeeded and token returned.</response>
+    /// <response code="400">Invalid request data.</response>
+    /// <response code="401">Authentication failed.</response>
+    /// <response code="404">User not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("login/external/direct/transient")]
     [AllowAnonymous]
@@ -192,16 +192,16 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Sign-in a user, from external Google authentication using auth-code flow.
+    /// Signs in a user via external Google authentication.
     /// </summary>
-    /// <param name="logInExternal">The external login.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="logInExternal">The external login credentials.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The generated <see cref="AccessToken"/>.</returns>
+    /// <response code="200">Authentication succeeded and token returned.</response>
+    /// <response code="400">Invalid request data.</response>
+    /// <response code="401">Authentication failed.</response>
+    /// <response code="404">User not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("login/external/google")]
     [AllowAnonymous]
@@ -226,16 +226,16 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Sign-in a user transient, from external Google authentication using auth-code flow.
+    /// Signs in a transient user via external Google authentication.
     /// </summary>
-    /// <param name="logInExternal">The external login.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="logInExternal">The external login credentials.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The generated <see cref="AccessToken"/>.</returns>
+    /// <response code="200">Authentication succeeded and token returned.</response>
+    /// <response code="400">Invalid request data.</response>
+    /// <response code="401">Authentication failed.</response>
+    /// <response code="404">User not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("login/external/google/transient")]
     [AllowAnonymous]
@@ -260,16 +260,16 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Sign-in a user transient, from external Facebook authentication using auth-code flow.
+    /// Signs in a user via external Facebook authentication.
     /// </summary>
-    /// <param name="logInExternal">The external login.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="logInExternal">The external login credentials.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The generated <see cref="AccessToken"/>.</returns>
+    /// <response code="200">Authentication succeeded and token returned.</response>
+    /// <response code="400">Invalid request data.</response>
+    /// <response code="401">Authentication failed.</response>
+    /// <response code="404">User not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("login/external/facebook")]
     [AllowAnonymous]
@@ -294,16 +294,16 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Sign-in a user transient, from external Facebook authentication using auth-code flow.
+    /// Signs in a transient user via external Facebook authentication.
     /// </summary>
-    /// <param name="logInExternal">The external login.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="logInExternal">The external login credentials.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The generated <see cref="AccessToken"/>.</returns>
+    /// <response code="200">Authentication succeeded and token returned.</response>
+    /// <response code="400">Invalid request data.</response>
+    /// <response code="401">Authentication failed.</response>
+    /// <response code="404">User not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("login/external/facebook/transient")]
     [AllowAnonymous]
@@ -328,16 +328,16 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Sign-in a user, from external Microsoft authentication using auth-code flow.
+    /// Signs in a user via external Microsoft authentication using the auth-code flow.
     /// </summary>
-    /// <param name="logInExternal">The external login.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="logInExternal">The external login credentials.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The generated <see cref="AccessToken"/>.</returns>
+    /// <response code="200">Authentication succeeded and token returned.</response>
+    /// <response code="400">Invalid request data.</response>
+    /// <response code="401">Authentication failed.</response>
+    /// <response code="404">User not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("login/external/microsoft")]
     [AllowAnonymous]
@@ -362,16 +362,16 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Sign-in a user transient, from external Microsoft authentication using auth-code flow.
+    /// Signs in a transient user via external Microsoft authentication using the auth-code flow.
     /// </summary>
-    /// <param name="logInExternal">The external login.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="logInExternal">The external login credentials.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The generated <see cref="AccessToken"/>.</returns>
+    /// <response code="200">Authentication succeeded and token returned.</response>
+    /// <response code="400">Invalid request data.</response>
+    /// <response code="401">Authentication failed.</response>
+    /// <response code="404">User not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("login/external/microsoft/transient")]
     [AllowAnonymous]
@@ -396,16 +396,16 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Refreshes a user's token.
+    /// Refreshes an existing access token for a user.
     /// </summary>
-    /// <param name="logInRefresh">The login refresh.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="logInRefresh">The refresh token request.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The refreshed <see cref="AccessToken"/>.</returns>
+    /// <response code="200">Token refreshed successfully.</response>
+    /// <response code="400">Invalid request data.</response>
+    /// <response code="401">Authentication failed.</response>
+    /// <response code="404">User not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("login/refresh")]
     [AllowAnonymous]
@@ -430,14 +430,14 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Logs out the user.
+    /// Logs out the current user and clears external authentication cookies.
     /// </summary>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>Returns HTTP 200 on success.</returns>
+    /// <response code="200">Logout succeeded.</response>
+    /// <response code="400">Invalid request.</response>
+    /// <response code="401">User not authenticated.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("logout")]
     [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -466,15 +466,14 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     #region External Data
 
     /// <summary>
-    /// Gets all the configured external authentication schemes.
-    /// E.g. Google, Facebook, etc.
+    /// Retrieves all configured external authentication schemes, e.g., Google, Facebook.
     /// </summary>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The external authentication schemes.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>A collection of external authentication providers.</returns>
+    /// <response code="200">External providers returned successfully.</response>
+    /// <response code="400">Invalid request.</response>
+    /// <response code="404">No external providers found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpGet]
     [Route("external/schemes")]
     [AllowAnonymous]
@@ -522,15 +521,15 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Get external login data from an external Google authentication provider.
+    /// Retrieves external login data from Google authentication provider.
     /// </summary>
-    /// <param name="externalLoginProvider">The external login provider.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The external login data.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="externalLoginProvider">Google authentication provider info.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The <see cref="ExternalLogInData"/>.</returns>
+    /// <response code="200">Data retrieved successfully.</response>
+    /// <response code="400">Invalid request.</response>
+    /// <response code="404">Data not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("external/google/data")]
     [AllowAnonymous]
@@ -554,15 +553,15 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Get external login data from an external Facebook authentication provider.
+    /// Retrieves external login data from Facebook authentication provider.
     /// </summary>
-    /// <param name="externalLoginProvider">The external login provider.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The external login data.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="externalLoginProvider">Facebook authentication provider info.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The <see cref="ExternalLogInData"/>.</returns>
+    /// <response code="200">Data retrieved successfully.</response>
+    /// <response code="400">Invalid request.</response>
+    /// <response code="404">Data not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("external/facebook/data")]
     [AllowAnonymous]
@@ -586,15 +585,15 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Get external login data from an external Microsoft authentication provider.
+    /// Retrieves external login data from Microsoft authentication provider.
     /// </summary>
-    /// <param name="externalLoginProvider">The external login provider.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The external login data.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
+    /// <param name="externalLoginProvider">Microsoft authentication provider info.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The <see cref="ExternalLogInData"/>.</returns>
+    /// <response code="200">Data retrieved successfully.</response>
+    /// <response code="400">Invalid request.</response>
+    /// <response code="404">Data not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("external/microsoft/data")]
     [AllowAnonymous]

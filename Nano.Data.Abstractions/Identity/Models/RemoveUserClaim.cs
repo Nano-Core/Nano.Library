@@ -7,20 +7,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class RemoveUserClaim : RemoveUserClaim<Guid>;
 
 /// <summary>
-/// Remove Claim.
+/// Represents a request to remove a claim from a user.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class RemoveUserClaim<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// The identifier of the user.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// Claim Type.
+    /// The claim type to remove.
     /// </summary>
     [Required]
     [MaxLength(256)]

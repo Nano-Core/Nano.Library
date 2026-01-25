@@ -9,19 +9,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.ApiClient.Consts;
 using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Entities.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
-using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 
 namespace Nano.App.Api.Controllers;
 
 /// <summary>
-/// Base abstract <see cref="Controller"/>, implementing  methods for instances of <typeparamref name="TEntity"/>.
+/// Controller providing delete operations.
 /// </summary>
-/// <typeparam name="TRepository">The <see cref="IRepository"/> inheriting from <see cref="BaseControllerReadOnly{TRepository,TEntity,TIdentity,TCriteria}"/>.</typeparam>
-/// <typeparam name="TEntity">The <see cref="IEntity"/> model the <see cref="IRepository"/> operates with.</typeparam>
-/// <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
-/// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> implementation.</typeparam>
+/// <typeparam name="TRepository">The repository implementing <see cref="IRepository"/> used for data access.</typeparam>
+/// <typeparam name="TEntity">The entity type implementing <see cref="IEntity"/> handled by this controller.</typeparam>
+/// <typeparam name="TIdentity">The identifier type of <typeparamref name="TEntity"/>.</typeparam>
+/// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.DELETER)]
 public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : class, IRepository
@@ -36,16 +36,16 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
     }
 
     /// <summary>
-    /// Delete the model with the passed identifier.
+    /// Deletes a single entity by its identifier.
     /// </summary>
-    /// <param name="id">The identifier of the model to delete.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="id">The identifier of the entity to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <response code="200">Entity deleted.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Entity not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [HttpDelete]
     [Route("delete/{id}")]
@@ -66,16 +66,16 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
     }
 
     /// <summary>
-    /// Delete the models with the passed identifiers.
+    /// Deletes multiple entities by their identifiers.
     /// </summary>
-    /// <param name="ids">The identifiers of the models to delete.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="ids">The identifiers of the entities to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <response code="200">Entities deleted.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Entities not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [HttpDelete]
     [Route("delete/many")]
@@ -97,16 +97,16 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
     }
 
     /// <summary>
-    /// Delete the models with the passed identifiers bulk.
+    /// Deletes multiple entities by their identifiers in bulk.
     /// </summary>
-    /// <param name="ids">The identifiers of the models to delete.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="ids">The identifiers of the entities to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <response code="200">Entities deleted.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Entities not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [HttpDelete]
     [Route("delete/many/bulk")]
@@ -125,15 +125,15 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
     }
 
     /// <summary>
-    /// Deletes the models matching the passed 'select' criteria.
+    /// Deletes entities matching the specified criteria.
     /// </summary>
-    /// <param name="select">The crtieria for selecting models to delete.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="select">The criteria for selecting entities to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <response code="200">Entities deleted.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [HttpDelete]
     [Route("delete/query")]

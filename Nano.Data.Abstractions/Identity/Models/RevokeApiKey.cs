@@ -7,20 +7,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class RevokeApiKey : RevokeApiKey<Guid>;
 
 /// <summary>
-/// Remove Claim.
+/// Represents a request to revoke an API key.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class RevokeApiKey<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Id.
+    /// The identifier of the API key to revoke.
     /// </summary>
     [Required]
     public virtual TIdentity Id { get; set; } = default!;
 
     /// <summary>
-    /// Revoke At.
+    /// The optional timestamp when the API key is revoked.
     /// </summary>
     public virtual DateTimeOffset? RevokeAt { get; set; }
 }

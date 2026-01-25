@@ -5,7 +5,6 @@ using Microsoft.Extensions.Options;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Identity.DataProtection.Consts;
 using Nano.Data.Identity.Extensions;
 using Nano.Data.Identity.Helpers;
@@ -17,44 +16,27 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.Data.Abstractions.Entities.Abstractions;
+using Nano.Data.Abstractions.Entities.Identity;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Exceptions;
 using Nano.Data.Abstractions.Identity.Extensions;
-using Nano.Data.Abstractions.Models.Identity;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Identity;
 
 // TODO: API-KEY: IdentityApiKey Roles and Claims (don't inherit from IdentityUser)
 
-/// <summary>
-/// Base Identity Repository.
-/// </summary>
-public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TIdentity>
+/// <inheritdoc />
+public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, SignInManager<IdentityUserEx<TIdentity>> signInManager, UserManager<IdentityUserEx<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
+    : IIdentityRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
-    private readonly IOptionsMonitor<DataOptions> options;
-    private readonly BaseDbContext<TIdentity> dbContext;
-    private readonly SignInManager<IdentityUserEx<TIdentity>> signInManager;
-    private readonly UserManager<IdentityUserEx<TIdentity>> userManager;
-    private readonly RoleManager<IdentityRole<TIdentity>> roleManager;
-
-    /// <summary>
-    /// The user authenticates and on success recieves a jwt token for use with auhtorization.
-    /// </summary>
-    /// <param name="options">The <see cref="IOptionsMonitor{DataOptions}"/>.</param>
-    /// <param name="dbContext">The <see cref="SignInManager{T}"/>.</param>
-    /// <param name="signInManager">The <see cref="SignInManager{T}"/>.</param>
-    /// <param name="userManager">The <see cref="UserManager{T}"/>.</param>
-    /// <param name="roleManager">The <see cref="RoleManager{T}"/></param>
-    protected BaseIdentityRepository(IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, SignInManager<IdentityUserEx<TIdentity>> signInManager, UserManager<IdentityUserEx<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
-    {
-        this.options = options ?? throw new ArgumentNullException(nameof(options));
-        this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        this.signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
-        this.userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
-        this.roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
-    }
+    private readonly IOptionsMonitor<DataOptions> options = options ?? throw new ArgumentNullException(nameof(options));
+    private readonly BaseDbContext<TIdentity> dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+    private readonly SignInManager<IdentityUserEx<TIdentity>> signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+    private readonly UserManager<IdentityUserEx<TIdentity>> userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+    private readonly RoleManager<IdentityRole<TIdentity>> roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
 
 
     #region Login
@@ -1060,7 +1042,7 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             throw new NullReferenceException(nameof(identityUser));
         }
 
-        apiKey = PasswordGenerator.Generate(new Microsoft.AspNetCore.Identity.PasswordOptions { RequiredLength = 48 });
+        apiKey = SecurePasswordGenerator.Generate(new Microsoft.AspNetCore.Identity.PasswordOptions { RequiredLength = 48 });
 
         var secret = this.options.CurrentValue.Identity?.Authentication.ApiKey?.Secret;
 
@@ -1168,6 +1150,235 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
             .SaveChangesAsync(cancellationToken);
 
         return identityApiKey;
+    }
+
+    #endregion
+
+
+    #region Claims
+
+    /// <inheritdoc />
+    public virtual async Task<IList<Claim>> GetAllClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? transientRoles = null, IDictionary<string, string>? transientClaims = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(identityUser);
+
+        transientRoles ??= new List<string>();
+        transientClaims ??= new Dictionary<string, string>();
+
+        var userClaims = await this.userManager
+            .GetClaimsAsync(identityUser);
+
+        var query = from userRole in this.dbContext.Set<IdentityUserRole<TIdentity>>()
+            join role in this.dbContext.Set<IdentityRole<TIdentity>>() on userRole.RoleId equals role.Id
+            where userRole.UserId.Equals(identityUser.Id)
+            select new
+            {
+                role.Id,
+                role.Name
+            };
+
+        var roles = await query
+            .ToListAsync(cancellationToken);
+
+        var roleClaims = await this.dbContext
+            .Set<IdentityRoleClaim<TIdentity>>()
+            .Where(x => roles
+                .Select(y => y.Id).Contains(x.RoleId))
+            .Select(x => new Claim(x.ClaimType!, x.ClaimValue ?? ""))
+            .ToListAsync(cancellationToken);
+
+        var rolesAsClaims = roles
+            .Select(x => new Claim(ClaimTypes.Role, x.Name))
+            .Concat(transientRoles.Select(x => new Claim(ClaimTypes.Role, x)));
+
+        var claims = userClaims
+            .Union(roleClaims)
+            .Union(rolesAsClaims)
+            .Union(transientClaims
+                .Select(x => new Claim(x.Key, x.Value)))
+            .ToList();
+
+        return claims;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<Claim?> GetUserClaimAsync(GetClaim<TIdentity> getClaim, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(getClaim);
+
+        var claims = await this.GetUserClaimsAsync(getClaim.UserId, cancellationToken);
+
+        return claims
+            .FirstOrDefault(x => x.Type == getClaim.ClaimType);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(TIdentity userId, CancellationToken cancellationToken = default)
+    {
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(userId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NullReferenceException(nameof(identityUser));
+        }
+
+        return await this.GetUserClaimsAsync(identityUser, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(identityUser);
+
+        return await this.userManager
+            .GetClaimsAsync(identityUser);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IdentityUserClaim<TIdentity>> AssignUserClaimAsync(AssignUserClaim<TIdentity> assignUserClaim, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(assignUserClaim);
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(assignUserClaim.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NullReferenceException(nameof(identityUser));
+        }
+
+        var userClaim = new IdentityUserClaim<TIdentity>
+        {
+            ClaimType = assignUserClaim.ClaimType,
+            ClaimValue = assignUserClaim.ClaimValue
+        };
+
+        var claim = userClaim
+            .ToClaim();
+
+        var result = await this.userManager
+            .AddClaimAsync(identityUser, claim);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+
+        return userClaim;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IdentityUserClaim<TIdentity>> ReplaceUserClaimAsync(ReplaceUserClaim<TIdentity> replaceUserClaim, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(replaceUserClaim);
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(replaceUserClaim.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NullReferenceException(nameof(identityUser));
+        }
+
+        var existingClaim = (await this.GetUserClaimsAsync(identityUser, cancellationToken))
+            .FirstOrDefault(x => x.Type == replaceUserClaim.ClaimType);
+
+        if (existingClaim == null)
+        {
+            throw new NullReferenceException(nameof(existingClaim));
+        }
+
+        var newClaim = new IdentityUserClaim<TIdentity>
+        {
+            ClaimType = replaceUserClaim.ClaimType,
+            ClaimValue = replaceUserClaim.NewClaimValue
+        };
+
+        var claim = newClaim
+            .ToClaim();
+
+        var result = await this.userManager
+            .ReplaceClaimAsync(identityUser, existingClaim, claim);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+
+        return newClaim;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IdentityUserClaim<TIdentity>> AssignOrReplaceUserClaimAsync(AssignOrReplaceClaim<TIdentity> assignOrReplaceClaim, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(assignOrReplaceClaim);
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(assignOrReplaceClaim.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NullReferenceException(nameof(identityUser));
+        }
+
+        var existingClaim = (await this.GetUserClaimsAsync(identityUser, cancellationToken))
+            .FirstOrDefault(x => x.Type == assignOrReplaceClaim.ClaimType);
+
+        var newClaim = new IdentityUserClaim<TIdentity>
+        {
+            ClaimType = assignOrReplaceClaim.ClaimType,
+            ClaimValue = assignOrReplaceClaim.ClaimValue
+        };
+
+        var claim = newClaim
+            .ToClaim();
+
+        var result = existingClaim == null
+            ? await this.userManager
+                .AddClaimAsync(identityUser, claim)
+            : await this.userManager
+                .ReplaceClaimAsync(identityUser, existingClaim, claim);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+
+        return newClaim;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task RemoveUserClaimAsync(RemoveUserClaim<TIdentity> removeUserClaim, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(removeUserClaim);
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(removeUserClaim.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NullReferenceException(nameof(identityUser));
+        }
+
+        var claims = await this.userManager
+            .GetClaimsAsync(identityUser);
+
+        var claim = claims
+            .FirstOrDefault(x => x.Type == removeUserClaim.ClaimType);
+
+        if (claim == null)
+        {
+            throw new NullReferenceException(nameof(claim));
+        }
+
+        var result = await this.userManager
+            .RemoveClaimAsync(identityUser, claim);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
     }
 
     #endregion
@@ -1477,235 +1688,6 @@ public abstract class BaseIdentityRepository<TIdentity> : IIdentityRepository<TI
 
         var result = await this.roleManager
             .RemoveClaimAsync(identityRole, claim);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-    }
-
-    #endregion
-
-
-    #region Claims
-
-    /// <inheritdoc />
-    public virtual async Task<IList<Claim>> GetAllClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? transientRoles = null, IDictionary<string, string>? transientClaims = null, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(identityUser);
-
-        transientRoles ??= new List<string>();
-        transientClaims ??= new Dictionary<string, string>();
-
-        var userClaims = await this.userManager
-            .GetClaimsAsync(identityUser);
-
-        var query = from userRole in this.dbContext.Set<IdentityUserRole<TIdentity>>()
-            join role in this.dbContext.Set<IdentityRole<TIdentity>>() on userRole.RoleId equals role.Id
-            where userRole.UserId.Equals(identityUser.Id)
-            select new
-            {
-                role.Id,
-                role.Name
-            };
-
-        var roles = await query
-            .ToListAsync(cancellationToken);
-
-        var roleClaims = await this.dbContext
-            .Set<IdentityRoleClaim<TIdentity>>()
-            .Where(x => roles
-                .Select(y => y.Id).Contains(x.RoleId))
-            .Select(x => new Claim(x.ClaimType!, x.ClaimValue ?? ""))
-            .ToListAsync(cancellationToken);
-
-        var rolesAsClaims = roles
-            .Select(x => new Claim(ClaimTypes.Role, x.Name))
-            .Concat(transientRoles.Select(x => new Claim(ClaimTypes.Role, x)));
-
-        var claims = userClaims
-            .Union(roleClaims)
-            .Union(rolesAsClaims)
-            .Union(transientClaims
-                .Select(x => new Claim(x.Key, x.Value)))
-            .ToList();
-
-        return claims;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<Claim?> GetUserClaimAsync(GetClaim<TIdentity> getClaim, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(getClaim);
-
-        var claims = await this.GetUserClaimsAsync(getClaim.UserId, cancellationToken);
-
-        return claims
-            .FirstOrDefault(x => x.Type == getClaim.ClaimType);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(TIdentity userId, CancellationToken cancellationToken = default)
-    {
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(userId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        return await this.GetUserClaimsAsync(identityUser, cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(identityUser);
-
-        return await this.userManager
-            .GetClaimsAsync(identityUser);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IdentityUserClaim<TIdentity>> AssignUserClaimAsync(AssignUserClaim<TIdentity> assignUserClaim, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(assignUserClaim);
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(assignUserClaim.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        var userClaim = new IdentityUserClaim<TIdentity>
-        {
-            ClaimType = assignUserClaim.ClaimType,
-            ClaimValue = assignUserClaim.ClaimValue
-        };
-
-        var claim = userClaim
-            .ToClaim();
-
-        var result = await this.userManager
-            .AddClaimAsync(identityUser, claim);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-
-        return userClaim;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IdentityUserClaim<TIdentity>> ReplaceUserClaimAsync(ReplaceUserClaim<TIdentity> replaceUserClaim, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(replaceUserClaim);
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(replaceUserClaim.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        var existingClaim = (await this.GetUserClaimsAsync(identityUser, cancellationToken))
-            .FirstOrDefault(x => x.Type == replaceUserClaim.ClaimType);
-
-        if (existingClaim == null)
-        {
-            throw new NullReferenceException(nameof(existingClaim));
-        }
-
-        var newClaim = new IdentityUserClaim<TIdentity>
-        {
-            ClaimType = replaceUserClaim.ClaimType,
-            ClaimValue = replaceUserClaim.NewClaimValue
-        };
-
-        var claim = newClaim
-            .ToClaim();
-
-        var result = await this.userManager
-            .ReplaceClaimAsync(identityUser, existingClaim, claim);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-
-        return newClaim;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IdentityUserClaim<TIdentity>> AssignOrReplaceUserClaimAsync(AssignOrReplaceClaim<TIdentity> assignOrReplaceClaim, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(assignOrReplaceClaim);
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(assignOrReplaceClaim.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        var existingClaim = (await this.GetUserClaimsAsync(identityUser, cancellationToken))
-            .FirstOrDefault(x => x.Type == assignOrReplaceClaim.ClaimType);
-
-        var newClaim = new IdentityUserClaim<TIdentity>
-        {
-            ClaimType = assignOrReplaceClaim.ClaimType,
-            ClaimValue = assignOrReplaceClaim.ClaimValue
-        };
-
-        var claim = newClaim
-            .ToClaim();
-
-        var result = existingClaim == null
-            ? await this.userManager
-                .AddClaimAsync(identityUser, claim)
-            : await this.userManager
-                .ReplaceClaimAsync(identityUser, existingClaim, claim);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-
-        return newClaim;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task RemoveUserClaimAsync(RemoveUserClaim<TIdentity> removeUserClaim, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(removeUserClaim);
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(removeUserClaim.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        var claims = await this.userManager
-            .GetClaimsAsync(identityUser);
-
-        var claim = claims
-            .FirstOrDefault(x => x.Type == removeUserClaim.ClaimType);
-
-        if (claim == null)
-        {
-            throw new NullReferenceException(nameof(claim));
-        }
-
-        var result = await this.userManager
-            .RemoveClaimAsync(identityUser, claim);
 
         if (!result.Succeeded)
         {

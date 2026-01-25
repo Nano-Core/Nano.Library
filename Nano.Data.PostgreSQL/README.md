@@ -3,3 +3,29 @@
 [![NuGet](https://img.shields.io/nuget/dt/Nano.Data.PostgreSQL.svg)](https://www.nuget.org/packages/Nano.Data.PostgreSQL/)
 [![NuGet](https://img.shields.io/nuget/v/Nano.Data.PostgreSQL.svg)](https://www.nuget.org/packages/Nano.Data.PostgreSQL/)
 
+> PostgreSQL data access provider for Nano applications._
+
+*** 
+
+## Table of Contents
+* [Summary](#summary)
+* [Registration](#registration)
+* [Dependencies](#dependencies)
+
+## Summary
+Data Provider implementation for PostgreSQL data access.  
+Read more about storage here: [Nano.Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)
+
+## Registration
+The PostgreSQL data provider must be registered as dependencies.  
+```csharp
+    .ConfigureServices(x =>
+    {
+        x.AddNanoData<PostgreSqlProvider>();
+    })
+```
+
+## Dependencies
+* https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Sql
+
+***

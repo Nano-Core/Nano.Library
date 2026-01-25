@@ -5,14 +5,15 @@ using System.Linq;
 namespace Nano.Common.Helpers;
 
 /// <summary>
-/// Types Helper
+/// Provides helper methods for working with <see cref="Type"/> objects across loaded assemblies.
 /// </summary>
 public static class TypesHelper
 {
     /// <summary>
-    /// Get All Types.
+    /// Gets all types from all loaded assemblies in the current <see cref="AppDomain"/>,
+    /// excluding assemblies whose names start with "Microsoft".
     /// </summary>
-    /// <returns>A collection of types.</returns>
+    /// <returns>A collection of <see cref="Type"/> objects.</returns>
     public static IEnumerable<Type> GetAllTypes()
     {
         return AppDomain.CurrentDomain

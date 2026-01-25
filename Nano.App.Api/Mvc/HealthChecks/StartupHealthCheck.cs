@@ -6,21 +6,28 @@ using Nano.App.StartUp;
 
 namespace Nano.App.Api.Mvc.HealthChecks;
 
-/// <inheritdoc />
-public sealed class StartupHealthCheck : IHealthCheck
+internal sealed class StartupHealthCheck : IHealthCheck
 {
     private readonly StartupTaskContext taskContext;
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of the <see cref="StartupHealthCheck"/> class.
     /// </summary>
-    /// <param name="taskContext">The <see cref="StartupTaskContext"/>.</param>
+    /// <param name="taskContext">The <see cref="StartupTaskContext"/> that tracks the startup task completion.</param>
     public StartupHealthCheck(StartupTaskContext taskContext)
     {
         this.taskContext = taskContext ?? throw new ArgumentNullException(nameof(taskContext));
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Checks the health of the application based on the completion status of startup tasks.
+    /// </summary>
+    /// <param name="context">The <see cref="HealthCheckContext"/> provided by the health check system.</param>
+    /// <param name="cancellationToken">A <see cref="CancellationToken"/> that can be used to cancel the health check.</param>
+    /// <returns>
+    ///     A <see cref="Task{HealthCheckResult}"/> representing the result of the health check.
+    ///     Returns <see cref="HealthCheckResult.Healthy"/> if all startup tasks are completed; otherwise, <see cref="HealthCheckResult.Unhealthy"/>.
+    /// </returns>
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(context);

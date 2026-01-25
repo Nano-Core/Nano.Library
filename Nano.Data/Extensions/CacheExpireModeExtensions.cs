@@ -4,10 +4,7 @@ using Nano.Data.Abstractions.Config.Enums;
 
 namespace Nano.Data.Extensions;
 
-/// <summary>
-/// Cache Expire Mode Extensions.
-/// </summary>
-public static class CacheExpireModeExtensions
+internal static class CacheExpireModeExtensions
 {
     internal static CacheExpirationMode GetCacheExpirationMode(this CacheExpireMode querySplitBehavior)
     {

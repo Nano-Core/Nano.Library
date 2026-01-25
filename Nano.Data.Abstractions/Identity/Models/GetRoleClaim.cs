@@ -7,20 +7,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class GetRoleClaim : GetRoleClaim<Guid>;
 
 /// <summary>
-/// Get Role Claim.
+/// Represents a request to get a claim for a role.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class GetRoleClaim<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Role Id.
+    /// The identifier of the role.
     /// </summary>
     [Required]
     public virtual TIdentity RoleId { get; set; } = default!;
 
     /// <summary>
-    /// Claim Type.
+    /// The type of claim to retrieve.
     /// </summary>
     [Required]
     [MaxLength(256)]

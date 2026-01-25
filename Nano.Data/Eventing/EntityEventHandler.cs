@@ -3,31 +3,24 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Nano.Common.Extensions;
+using Nano.Data.Abstractions.Entities.Abstractions;
 using Nano.Data.Abstractions.Eventing.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 
 namespace Nano.Data.Eventing;
 
 /// <summary>
-/// Entity Event Handler.
+/// Handles <see cref="EntityEvent"/> instances by applying the events to the database context of type <see cref="BaseDbContext{TIdentity}"/>.
 /// </summary>
-public sealed class EntityEventHandler<TIdentity> : IEventingHandler<EntityEvent>
+/// <typeparam name="TIdentity">The type of the entity identity. Must implement <see cref="IEquatable{T}"/>.</typeparam>
+/// <param name="dbContext">The <see cref="BaseDbContext{TIdentity}"/> used to apply entity events.</param>
+public sealed class EntityEventHandler<TIdentity>(BaseDbContext<TIdentity> dbContext) : IEventingHandler<EntityEvent>
     where TIdentity : IEquatable<TIdentity>
 {
-    private readonly BaseDbContext<TIdentity> dbContext;
+    private readonly BaseDbContext<TIdentity> dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
     /// <inheritdoc />
     public ushort? OverridePrefetchCount { get; set; }
-
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    /// <param name="dbContext">The <see cref="BaseDbContext{TIdentity}"/>.</param>
-    public EntityEventHandler(BaseDbContext<TIdentity> dbContext)
-    {
-        this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-    }
 
     /// <inheritdoc />
     public async Task CallbackAsync(EntityEvent @event, bool isRetrying)

@@ -4,27 +4,23 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Hsts Options
+/// Options for HTTP Strict Transport Security (HSTS).
 /// </summary>
 public class HstsOptions
 {
     /// <summary>
-    /// Max Age.
-    /// The maximum age.
+    /// Maximum age for HSTS.
     /// </summary>
     public virtual TimeSpan? MaxAge { get; set; }
 
     /// <summary>
-    /// Use Preload.
-    /// Adds the preload directive, defaults to false.
-    /// Max-age must be at least 18 weeks, and includeSubdomains must be enabled to use the preload directive.
+    /// Enable or disable the preload directive.
     /// </summary>
     [Required]
     public virtual bool UsePreload { get; set; } = false;
 
     /// <summary>
-    /// Include Subdomains.
-    /// Adds includeSubDomains in the header, defaults to false
+    /// Include subdomains in HSTS policy.
     /// </summary>
     [Required]
     public virtual bool IncludeSubdomains { get; set; } = false;

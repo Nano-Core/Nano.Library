@@ -4,55 +4,53 @@ using Nano.App.Config;
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Jwt Options (nested class)
+/// Options for JWT authentication.
 /// </summary>
 public class JwtAuthenticationOptions
 {
     /// <summary>
-    /// Issuer.
+    /// JWT issuer.
     /// </summary>
     [Required]
     public virtual string Issuer { get; set; } = "issuer";
 
     /// <summary>
-    /// Audience.
+    /// JWT audience.
     /// </summary>
     [Required]
     public virtual string Audience { get; set; } = "audience";
 
     /// <summary>
-    /// Public Key.
-    /// Base64 encoded.
+    /// Base64-encoded public key.
     /// </summary>
     [Required]
     public virtual string PublicKey { get; set; } = null!;
 
     /// <summary>
-    /// Private Key.
-    /// Base64 encoded.
+    /// Base64-encoded private key.
     /// </summary>
     [Required]
     public virtual string PrivateKey { get; set; } = null!;
 
     /// <summary>
-    /// Expiration In Minutes.
+    /// Expiration in minutes for the access token.
     /// </summary>
     [Required]
     public virtual int ExpirationInMinutes { get; set; } = 60;
 
     /// <summary>
-    /// Refresh Expiration In Hours.
+    /// Expiration in hours for the refresh token.
     /// </summary>
     [Required]
     public virtual int RefreshExpirationInHours { get; set; } = 72;
 
     /// <summary>
-    /// Log In Root Options.
+    /// Optional root login options.
     /// </summary>
     public virtual LogInRootOptions? RootLogin { get; set; }
 
     /// <summary>
-    /// External Logins.
+    /// External login options.
     /// </summary>
     [Required]
     public virtual ExternalLoginOptions ExternalLogins { get; set; } = new();

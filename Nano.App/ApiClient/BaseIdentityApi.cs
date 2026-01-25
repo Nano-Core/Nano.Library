@@ -5,8 +5,6 @@ using Nano.App.ApiClient.Models.Identity;
 using Nano.App.ApiClient.Requests.Identity;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Data.Abstractions.Models.Identity;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -14,6 +12,8 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Nano.Data.Abstractions.Entities.Abstractions;
+using Nano.Data.Abstractions.Entities.Identity;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.App.ApiClient;

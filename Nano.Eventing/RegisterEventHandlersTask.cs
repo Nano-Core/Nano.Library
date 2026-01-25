@@ -9,21 +9,9 @@ using System.Threading.Tasks;
 
 namespace Nano.Eventing;
 
-/// <summary>
-/// Default implementation of <see cref="IRegisterEventHandlersTask"/>.
-/// </summary>
-public sealed class RegisterEventHandlersTask : IRegisterEventHandlersTask
+internal sealed class RegisterEventHandlersTask(IEventing eventing) : IRegisterEventHandlersTask
 {
-    private readonly IEventing eventing;
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="RegisterEventHandlersTask"/>.
-    /// </summary>
-    /// <param name="eventing">The <see cref="IEventing"/> instance used to subscribe handlers.</param>
-    public RegisterEventHandlersTask(IEventing eventing)
-    {
-        this.eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
-    }
+    private readonly IEventing eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
 
     /// <inheritdoc />
     public async Task RegisterEventHandlers(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)

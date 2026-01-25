@@ -1,6 +1,6 @@
 ﻿namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// Log In External.
+/// Base type for all external login requests.
 /// </summary>
 public class LogInExternal : BaseLogIn;

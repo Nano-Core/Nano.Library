@@ -7,11 +7,15 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace Nano.App.Api.Mvc.Documentation.Filters.Schema;
 
 /// <summary>
-/// Enums Filter.
+/// Swagger schema filter that replaces enum values with string representations based on <see cref="EnumMemberAttribute"/>.
 /// </summary>
 public class EnumsFilter : ISchemaFilter
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Applies the schema filter to convert enum values to strings in the OpenAPI documentation.
+    /// </summary>
+    /// <param name="schema">The <see cref="IOpenApiSchema"/> to modify.</param>
+    /// <param name="context">The <see cref="SchemaFilterContext"/> providing type information.</param>
     public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
     {
         if (!context.Type.IsEnum)

@@ -3,18 +3,18 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// Log In External Refresh.
+/// Represents a refresh request for an external authentication provider.
 /// </summary>
 public class LogInExternalRefresh
 {
     /// <summary>
-    /// Provider Name.
+    /// The name of the external authentication provider.
     /// </summary>
     [Required]
     public string ProviderName { get; set; } = null!;
 
     /// <summary>
-    /// Refresh Token.
+    /// The refresh token issued by the external provider.
     /// </summary>
     [Required]
     public virtual string RefreshToken { get; set; } = null!;

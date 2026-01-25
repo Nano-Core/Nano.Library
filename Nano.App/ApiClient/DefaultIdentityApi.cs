@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Options;
 using Nano.App.ApiClient.Config;
-using Nano.Data.Abstractions.Models.Abstractions;
 using System;
 using System.Net.Http;
 using Microsoft.AspNetCore.Http;
+using Nano.Data.Abstractions.Entities.Abstractions;
 
 namespace Nano.App.ApiClient;
 

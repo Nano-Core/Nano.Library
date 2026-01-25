@@ -3,7 +3,7 @@ using System;
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// 
+/// Options for multipart upload limits.
 /// </summary>
 public class MultipartLimitsOptions
 {

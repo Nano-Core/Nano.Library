@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Entities.Abstractions;
 
 namespace Nano.App.ApiClient.Requests;
 

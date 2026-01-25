@@ -7,20 +7,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class SetUsername : SetUsername<Guid>;
 
 /// <summary>
-/// Set Username.
+/// Represents a request to update a user's username.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class SetUsername<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// The identifier of the user whose username is being updated.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// New Username.
+    /// The new username to assign to the user.
     /// </summary>
     [Required]
     [MaxLength(256)]

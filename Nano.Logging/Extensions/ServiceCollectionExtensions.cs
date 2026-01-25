@@ -7,10 +7,6 @@ using Nano.Common.Config.Extensions;
 
 namespace Nano.Logging.Extensions;
 
-// TODO: Logging and Observability and Telemetry (OpenTelemetry - https://opentelemetry.io/docs)
-// - Logging with OpenTelemetry + Serilog
-// - IHostApplicationBuilder.Metrics(IMetricsBuilder)
-
 /// <summary>
 /// Provides extension methods for <see cref="IServiceCollection"/> to register Nano services.
 /// </summary>

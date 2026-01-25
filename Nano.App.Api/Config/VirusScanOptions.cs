@@ -3,24 +3,24 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Virus Scan Options.
+/// Options for configuring virus scanning.
 /// </summary>
 public class VirusScanOptions
 {
     /// <summary>
-    /// Host.
+    /// Hostname of the virus scanning service.
     /// </summary>
     [Required]
     public virtual string Host { get; set; } = "clamav";
 
     /// <summary>
-    /// Port.
+    /// Port of the virus scanning service.
     /// </summary>
     [Required]
     public virtual int Port { get; set; } = 3310;
 
     /// <summary>
-    /// Options for configuring health-checks.
+    /// Health check configuration for the virus scanning service.
     /// </summary>
     public virtual Common.Config.HealthCheckOptions? HealthCheck { get; set; }
 }

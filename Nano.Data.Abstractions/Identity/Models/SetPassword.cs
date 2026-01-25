@@ -7,20 +7,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class SetPassword : SetPassword<Guid>;
 
 /// <summary>
-/// Set Password.
+/// Represents a request to set a new password for a user.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class SetPassword<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// The identifier of the user whose password is being set.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// New Password.
+    /// The new password to assign to the user.
     /// </summary>
     [Required]
     [MaxLength(256)]

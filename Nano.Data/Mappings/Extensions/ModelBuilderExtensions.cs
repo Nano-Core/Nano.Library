@@ -2,22 +2,23 @@ using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Nano.Common.Extensions;
-using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Entities.Abstractions;
 
 namespace Nano.Data.Mappings.Extensions;
 
 /// <summary>
-/// Model Builder Extensions.
+/// Provides extension methods for <see cref="ModelBuilder"/> to register entity mappings.
 /// </summary>
 public static class ModelBuilderExtensions
 {
     /// <summary>
-    /// Adds a mapping for the type <typeparamref name="TEntity"/> using the <typeparamref name="TMapping"/> implementation.
+    /// Adds a mapping for <typeparamref name="TEntity"/> using <typeparamref name="TMapping"/> implementation.
+    /// Also updates unique and soft-delete-aware indexes.
     /// </summary>
-    /// <typeparam name="TEntity">The <see cref="IEntity"/>.</typeparam>
-    /// <typeparam name="TMapping">The <see cref="BaseEntityMapping{TEntity}"/>.</typeparam>
-    /// <param name="builder">The <see cref="ModelBuilder"/>.</param>
-    /// <returns>The <see cref="ModelBuilder"/>.</returns>
+    /// <typeparam name="TEntity">The entity type implementing <see cref="IEntity"/>.</typeparam>
+    /// <typeparam name="TMapping">The mapping type inheriting <see cref="BaseEntityMapping{TEntity}"/>.</typeparam>
+    /// <param name="builder">The EF Core <see cref="ModelBuilder"/>.</param>
+    /// <returns>The same <see cref="ModelBuilder"/> instance for chaining.</returns>
     public static ModelBuilder AddMapping<TEntity, TMapping>(this ModelBuilder builder)
         where TEntity : class, IEntity
         where TMapping : BaseEntityMapping<TEntity>, new()

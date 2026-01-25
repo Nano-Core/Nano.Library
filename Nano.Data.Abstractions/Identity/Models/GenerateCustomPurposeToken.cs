@@ -1,3 +1,4 @@
+using Nano.Common.Annotations;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -7,20 +8,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class GenerateCustomPurposeToken : GenerateCustomPurposeToken<Guid>;
 
 /// <summary>
-/// Generate Custom Token.
+/// Represents a request to generate a custom-purpose token for a user.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class GenerateCustomPurposeToken<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User id.
+    /// The identifier of the user for whom the token is generated.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// Purpose.
+    /// The purpose for which the token is generated.
     /// </summary>
     [MaxLength(256)]
     public virtual string Purpose { get; set; } = null!;

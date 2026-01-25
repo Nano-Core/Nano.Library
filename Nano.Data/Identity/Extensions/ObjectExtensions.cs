@@ -3,10 +3,7 @@ using System.ComponentModel;
 
 namespace Nano.Data.Identity.Extensions;
 
-/// <summary>
-/// Object Extensions.
-/// </summary>
-public static class ObjectExtensions
+internal static class ObjectExtensions
 {
     internal static T Parse<T>(this object @object)
     {

@@ -6,15 +6,15 @@ using Nano.Data.Abstractions.Identity.Consts;
 namespace Nano.Data.Abstractions.Identity.Extensions;
 
 /// <summary>
-/// Http Context Extensions.
+/// Provides extension methods for <see cref="HttpContext"/> to extract JWT claims and tokens.
 /// </summary>
 public static class HttpContextExtensions
 {
     /// <summary>
-    /// Get Jwt App Id.
+    /// Gets the App Id claim from the JWT token in the HTTP context.
     /// </summary>
-    /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
-    /// <returns>The app id.</returns>
+    /// <param name="httpContext">The current HTTP context.</param>
+    /// <returns>The App Id as a string, or null if not present.</returns>
     public static string? GetJwtAppId(this HttpContext httpContext)
     {
         ArgumentNullException.ThrowIfNull(httpContext);
@@ -24,10 +24,10 @@ public static class HttpContextExtensions
     }
 
     /// <summary>
-    /// Get Jwt User Name.
+    /// Gets the user name claim ("name") from the JWT token in the HTTP context.
     /// </summary>
-    /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
-    /// <returns>The user name.</returns>
+    /// <param name="httpContext">The current HTTP context.</param>
+    /// <returns>The user name as a string, or null if not present.</returns>
     public static string? GetJwtUserName(this HttpContext httpContext)
     {
         ArgumentNullException.ThrowIfNull(httpContext);
@@ -37,10 +37,10 @@ public static class HttpContextExtensions
     }
 
     /// <summary>
-    /// Get Jwt User Email.
+    /// Gets the email claim from the JWT token in the HTTP context.
     /// </summary>
-    /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
-    /// <returns>The email.</returns>
+    /// <param name="httpContext">The current HTTP context.</param>
+    /// <returns>The email as a string, or null if not present.</returns>
     public static string? GetJwtUserEmail(this HttpContext httpContext)
     {
         ArgumentNullException.ThrowIfNull(httpContext);
@@ -50,10 +50,10 @@ public static class HttpContextExtensions
     }
 
     /// <summary>
-    /// Get Jwt User Id.
+    /// Gets the user identifier ("sub") claim from the JWT token in the HTTP context as a <see cref="Guid"/>.
     /// </summary>
-    /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
-    /// <returns>The user id.</returns>
+    /// <param name="httpContext">The current HTTP context.</param>
+    /// <returns>The user identifier as a <see cref="Guid"/> if present and valid; otherwise, null.</returns>
     public static Guid? GetJwtUserId(this HttpContext httpContext)
     {
         ArgumentNullException.ThrowIfNull(httpContext);
@@ -74,10 +74,10 @@ public static class HttpContextExtensions
     }
 
     /// <summary>
-    /// Get Jwt Token.
+    /// Retrieves the JWT token from the Authorization header of the HTTP request.
     /// </summary>
-    /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
-    /// <returns>The token.</returns>
+    /// <param name="httpContext">The current HTTP context.</param>
+    /// <returns>The JWT token string, or null if not present or invalid.</returns>
     public static string? GetJwtToken(this HttpContext httpContext)
     {
         ArgumentNullException.ThrowIfNull(httpContext);
@@ -104,11 +104,11 @@ public static class HttpContextExtensions
     }
 
     /// <summary>
-    /// Get Jwt Claim Value.
+    /// Retrieves the value of a specific claim from the JWT token in the HTTP context.
     /// </summary>
-    /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
-    /// <param name="claimType">The claim type.</param>
-    /// <returns>The email.</returns>
+    /// <param name="httpContext">The current HTTP context.</param>
+    /// <param name="claimType">The claim type to retrieve.</param>
+    /// <returns>The claim value as a string, or null if the claim or token is not present.</returns>
     public static string? GetJwtClaimValue(this HttpContext httpContext, string claimType)
     {
         ArgumentNullException.ThrowIfNull(httpContext);

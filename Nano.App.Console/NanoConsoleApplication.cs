@@ -13,9 +13,10 @@ using System.Reflection;
 namespace Nano.App.Console;
 
 /// <summary>
-/// 
+/// Represents a Nano console application designed to run as a background service or cron job.
+/// Provides an entry point for configuring services and running console-based Nano applications.
 /// </summary>
-/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console</remarks>
+/// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console">Nano Console Application</see></remarks>
 public sealed class NanoConsoleApplication : BaseApplication<IHost, HostApplicationBuilder>, IApplication
 {
     private NanoConsoleApplication(HostApplicationBuilder builder)
@@ -24,8 +25,11 @@ public sealed class NanoConsoleApplication : BaseApplication<IHost, HostApplicat
     }
 
     /// <summary>
-    /// Allows consumers to register application services.
+    /// Allows consumers to register services for the application.
     /// </summary>
+    /// <param name="configure">A delegate to configure <see cref="IServiceCollection"/>.</param>
+    /// <returns>The current <see cref="IApplication"/> instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="configure"/> is null.</exception>
     public IApplication ConfigureServices(Action<IServiceCollection> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -36,10 +40,10 @@ public sealed class NanoConsoleApplication : BaseApplication<IHost, HostApplicat
     }
 
     /// <summary>
-    /// Creates a <see cref="IHostBuilder"/>.
+    /// Creates and configures the console application with default Nano services and options.
     /// </summary>
-    /// <param name="args">The command-line args, if any.</param>
-    /// <returns>The <see cref="IHostBuilder"/>.</returns>
+    /// <param name="args">Command-line arguments passed to the application.</param>
+    /// <returns>A configured <see cref="IApplication"/> instance.</returns>
     public static IApplication ConfigureApp(params string[] args)
     {
         var root = Directory.GetCurrentDirectory();
@@ -69,7 +73,10 @@ public sealed class NanoConsoleApplication : BaseApplication<IHost, HostApplicat
         return new NanoConsoleApplication(builder);
     }
 
-    /// <inheritdoc cref="IApplication" />
+    /// <summary>
+    /// Builds the application and prepares it for execution.
+    /// </summary>
+    /// <returns>The current <see cref="IApplication"/> instance.</returns>
     public IApplication Build()
     {
         this.application = this.applicationBuilder

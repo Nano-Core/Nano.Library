@@ -1,14 +1,14 @@
 ﻿namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// Base LogIn External (abstract).
+/// Base class for external login requests.
 /// </summary>
-/// <typeparam name="TProvider">The provider type.</typeparam>
+/// <typeparam name="TProvider">The external provider type.</typeparam>
 public abstract class BaseLogInExternal<TProvider> : LogInExternal
     where TProvider : BaseLogInExternalProvider, new()
 {
     /// <summary>
-    /// Provider.
+    /// The external authentication provider.
     /// </summary>
-    public TProvider Provider { get; set; } = new();
+    public virtual TProvider Provider { get; set; } = new();
 }

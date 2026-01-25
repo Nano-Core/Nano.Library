@@ -10,8 +10,12 @@ using Nano.Data.Extensions;
 namespace Nano.Data.MySql;
 
 /// <summary>
-/// MySql Data Provider.
+/// MySQL data provider using Pomelo.EntityFrameworkCore.MySql.
 /// </summary>
+/// <remarks>
+///     Supports retry policies, batching, spatial data via NetTopologySuite, query splitting behavior, and optional health checks.
+///     Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.MySql
+/// </remarks>
 public sealed class MySqlProvider : IDataProvider
 {
     /// <inheritdoc />
@@ -31,7 +35,7 @@ public sealed class MySqlProvider : IDataProvider
         builder
             .UseMySql(connection, serverVersion, x =>
             {
-                var querySplittingBehavior = options.UseQuerySplittingBehavior
+                var querySplittingBehavior = options.QuerySplittingBehavior
                     .GetQuerySplittingBehavior();
 
                 x.MaxBatchSize(batchSize);

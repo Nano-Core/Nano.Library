@@ -3,24 +3,24 @@
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// External Login Provider Auth Code.
+/// External login provider using the authorization code flow.
 /// </summary>
 public class ExternalLoginProviderAuthCode : BaseLogInExternalProvider
 {
     /// <summary>
-    /// Code.
+    /// The authorization code returned by the external provider.
     /// </summary>
     [Required]
     public virtual string Code { get; set; } = null!;
 
     /// <summary>
-    /// Code Verifier.
+    /// The PKCE code verifier associated with the authorization code.
     /// </summary>
     [Required]
     public virtual string CodeVerifier { get; set; } = null!;
 
     /// <summary>
-    /// Redirect Uri.
+    /// The redirect URI used during the authentication flow.
     /// </summary>
     [Required]
     public virtual string RedirectUri { get; set; } = null!;

@@ -11,20 +11,20 @@ using Microsoft.Extensions.Logging;
 using Nano.App.ApiClient.Consts;
 using Nano.App.ApiClient.Requests.Models;
 using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Entities;
+using Nano.Data.Abstractions.Entities.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
-using Nano.Data.Abstractions.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 
 namespace Nano.App.Api.Controllers;
 
 /// <summary>
-/// Base abstract <see cref="Controller"/>, implementing  methods for instances of <typeparamref name="TEntity"/>.
+/// Controller providing writable operations (Create, Edit, Delete).
 /// </summary>
-/// <typeparam name="TRepository">The <see cref="IRepository"/> inheriting from <see cref="BaseControllerReadOnly{TRepository,TEntity,TIdentity,TCriteria}"/>.</typeparam>
-/// <typeparam name="TEntity">The <see cref="IEntity"/> model the <see cref="IRepository"/> operates with.</typeparam>
-/// <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
-/// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> implementation.</typeparam>
+/// <typeparam name="TRepository">The repository implementing <see cref="IRepository"/> used for data access.</typeparam>
+/// <typeparam name="TEntity">The entity type implementing <see cref="IEntity"/> handled by this controller.</typeparam>
+/// <typeparam name="TIdentity">The identifier type of <typeparamref name="TEntity"/>.</typeparam>
+/// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER)]
 public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : class, IRepository
@@ -39,15 +39,15 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Create the passed model.
+    /// Creates a single model instance.
     /// </summary>
-    /// <param name="entity">The model to create.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The created model.</returns>
-    /// <response code="201">Created.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <param name="entity">The entity to create.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The created entity.</returns>
+    /// <response code="201">Entity created.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("create")]
     [Consumes(HttpContentType.JSON)]
@@ -68,15 +68,15 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Create the passed model, and reload.
+    /// Creates a single model instance and retrieves it with included navigations.
     /// </summary>
-    /// <param name="entity">The model to create.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The created model.</returns>
-    /// <response code="201">Created.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <param name="entity">The entity to create.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The created entity with included navigations.</returns>
+    /// <response code="201">Entity created.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("create/get")]
     [Consumes(HttpContentType.JSON)]
@@ -97,15 +97,15 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Creates the passed models.
+    /// Creates multiple model instances.
     /// </summary>
-    /// <param name="entities">The models to create.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="entities">The entities to create.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Void.</returns>
-    /// <response code="201">Created.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <response code="201">Entities created.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("create/many")]
     [Consumes(HttpContentType.JSON)]
@@ -125,15 +125,15 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Creates the passed models bulk.
+    /// Creates multiple model instances in bulk.
     /// </summary>
-    /// <param name="entities">The models to create.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="entities">The entities to create.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Void.</returns>
     /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("create/many/bulk")]
     [Consumes(HttpContentType.JSON)]
@@ -150,16 +150,16 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Edit the passed model.
+    /// Edits a single model instance.
     /// </summary>
-    /// <param name="entity">The model to edit.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The edited model.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <param name="entity">The entity to edit.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The edited entity.</returns>
+    /// <response code="200">Entity updated.</response>
+    /// <response code="404">Entity not found.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPut]
     [HttpPost]
     [Route("edit")]
@@ -182,15 +182,15 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Edit the passed model, and reload.
+    /// Edits a single model instance and retrieves it with included navigations.
     /// </summary>
-    /// <param name="entity">The model to edit.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The edited model.</returns>
-    /// <response code="201">Created.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <param name="entity">The entity to edit.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The edited entity.</returns>
+    /// <response code="201">Entity updated.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPut]
     [HttpPost]
     [Route("edit/get")]
@@ -212,15 +212,15 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Edits the passed models.
+    /// Edits multiple model instances.
     /// </summary>
-    /// <param name="entities">The models to edit.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="entities">The entities to edit.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <response code="200">Entities updated.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPut]
     [HttpPost]
     [Route("edit/many")]
@@ -242,15 +242,15 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Edits the passed models bulk.
+    /// Edits multiple model instances in bulk.
     /// </summary>
-    /// <param name="entities">The models to edit.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="entities">The entities to edit.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <response code="200">Entities updated.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPut]
     [HttpPost]
     [Route("edit/many/bulk")]
@@ -269,15 +269,15 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Edit the models matching the passed criteria.
+    /// Edits entities that match the specified criteria.
     /// </summary>
-    /// <param name="query">The query for selecting models to update properties.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="query">The update query containing criteria and property updates.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <response code="200">Entities updated.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPut]
     [HttpPost]
     [Route("edit/query")]
@@ -298,16 +298,16 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Delete the model with the passed identifier.
+    /// Deletes a single entity by its identifier.
     /// </summary>
-    /// <param name="id">The identifier of the model to delete.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="id">The identifier of the entity to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <response code="200">Entity deleted.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Entity not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [HttpDelete]
     [Route("delete/{id}")]
@@ -328,16 +328,16 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Delete the models with the passed identifiers.
+    /// Deletes multiple entities by their identifiers.
     /// </summary>
-    /// <param name="ids">The identifiers of the models to delete.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="ids">The identifiers of the entities to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <response code="200">Entities deleted.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Entities not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [HttpDelete]
     [Route("delete/many")]
@@ -359,16 +359,16 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Delete the models with the passed identifiers bulk.
+    /// Deletes multiple entities by their identifiers in bulk.
     /// </summary>
-    /// <param name="ids">The identifiers of the models to delete.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="ids">The identifiers of the entities to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <response code="200">Entities deleted.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Entities not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [HttpDelete]
     [Route("delete/many/bulk")]
@@ -387,15 +387,15 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Deletes the models matching the passed 'select' criteria.
+    /// Deletes entities matching the specified criteria.
     /// </summary>
-    /// <param name="select">The crtieria for selecting models to delete.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="select">The criteria for selecting entities to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <response code="200">Entities deleted.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [HttpDelete]
     [Route("delete/query")]

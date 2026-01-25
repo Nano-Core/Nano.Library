@@ -1,55 +1,52 @@
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Http Policy Header Options.
+/// Options for HTTP policy headers.
 /// </summary>
 public class HttpPolicyHeaderOptions
 {
     /// <summary>
-    /// 
+    /// Content-Type header options.
     /// </summary>
     public virtual ContentTypeOptions? ContentType { get; set; }
 
     /// <summary>
-    /// 
+    /// Referrer-Policy header options.
     /// </summary>
     public virtual ReferrerPolicyOptions? ReferrerPolicy { get; set; }
 
     /// <summary>
-    /// 
+    /// X-Frame-Options header options.
     /// </summary>
     public virtual XFrameOptionsOptions? XFrameOptions { get; set; }
 
     /// <summary>
-    /// 
+    /// X-XSS-Protection header options.
     /// </summary>
     public virtual XXssProtectionOptions? XXssProtection { get; set; }
 
     /// <summary>
-    /// Csp.
-    /// Settings for Content-Security-Policy.
+    /// Content-Security-Policy options.
     /// </summary>
     public virtual CspOptions? Csp { get; set; }
 
     /// <summary>
-    /// Cors.
+    /// CORS configuration options.
     /// </summary>
     public virtual CorsOptions? Cors { get; set; }
 
     /// <summary>
-    /// Hsts.
-    /// Settings for Strict-Transport-Security.
+    /// HSTS configuration options.
     /// </summary>
     public virtual HstsOptions? Hsts { get; set; }
 
     /// <summary>
-    /// Robots.
-    /// Settings for robots (search engines) behavior.
+    /// Robots meta tag options.
     /// </summary>
     public virtual RobotsOptions? Robots { get; set; }
 
     /// <summary>
-    /// Enables forwarded headers, when application is behind a proxy.
+    /// Forwarded headers configuration.
     /// </summary>
     public virtual ForwardedHeadersOptions? ForwardedHeaders { get; set; }
 }

@@ -8,8 +8,6 @@ using Microsoft.Extensions.Options;
 using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Eventing.Models;
-using Nano.Data.Abstractions.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Extensions;
 using Nano.Eventing.Abstractions;
 using System;
@@ -21,8 +19,10 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.Data.Abstractions.Entities;
+using Nano.Data.Abstractions.Entities.Abstractions;
+using Nano.Data.Abstractions.Entities.Identity;
 using Nano.Data.Abstractions.Eventing.Annotations;
-using Nano.Data.Abstractions.Models.Identity;
 using Nano.Data.Eventing.Extensions;
 using Nano.Data.Identity.Extensions;
 using Nano.Data.Mappings;
@@ -31,14 +31,16 @@ using Z.EntityFramework.Plus;
 
 namespace Nano.Data;
 
-// BUG: Entity Event Map (Important)
+// TODO: Entity Event Map (Important)
 // 1. Make a map of Publish Attributes and their property names.
 // 2. When SaveChanges then check if any property names are affected (e.g. User.IdentityUser.Email is changed, then User needs to be fetched and published)
 
+// TODO: Test if we can make a Db context base class without identity, to avoid creating the tables - or maybe we can control not creating them in another way
+
 /// <summary>
-/// Base Db Context (abstract).
+/// Base DbContext for identity and application data, with support for auditing, soft deletion, and entity events.
 /// </summary>
-/// <typeparam name="TIdentity">The identity type.</typeparam>
+/// <typeparam name="TIdentity">The type used for the identity (e.g., Guid, int, string).</typeparam>
 public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserEx<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserToken<TIdentity>>, IDataProtectionKeyContext
     where TIdentity : IEquatable<TIdentity>
 {
@@ -48,10 +50,17 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     private readonly IOptionsMonitor<DataOptions> options;
     private readonly IEventing? eventing;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets or sets the DbSet for data protection keys.
+    /// </summary>
     public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; protected set; }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BaseDbContext{TIdentity}"/> class.
+    /// </summary>
+    /// <param name="contextOptions">The <see cref="DbContextOptions"/>.</param>
+    /// <param name="options">The <see cref="DataOptions"/> monitor.</param>
+    /// <param name="eventing">Optional eventing service for publishing entity events.</param>
     protected BaseDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> options, IEventing? eventing = null)
         : base(contextOptions)
     {
@@ -67,7 +76,11 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         // ReSharper restore VirtualMemberCallInConstructor
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Updates an entity in the context.
+    /// </summary>
+    /// <param name="entity">The entity to update.</param>
+    /// <returns>The <see cref="EntityEntry"/> representing the entity.</returns>
     public override EntityEntry Update(object entity)
     {
         ArgumentNullException.ThrowIfNull(entity);
@@ -105,7 +118,12 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         return base.Update(entity);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Updates a typed entity in the context.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type.</typeparam>
+    /// <param name="entity">The entity to update.</param>
+    /// <returns>The <see cref="EntityEntry{TEntity}"/> representing the entity.</returns>
     public override EntityEntry<TEntity> Update<TEntity>(TEntity entity)
         where TEntity : class
     {
@@ -144,7 +162,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         return base.Update(entity);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Updates a range of entities in the context.
+    /// </summary>
+    /// <param name="entities">The entities to update.</param>
     public override void UpdateRange(params object[] entities)
     {
         ArgumentNullException.ThrowIfNull(entities);
@@ -192,11 +213,11 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     }
 
     /// <summary>
-    /// Adds or updates (if exists) the entity.
+    /// Adds a new entity or updates it if it already exists in the context.
     /// </summary>
-    /// <typeparam name="TEntity">The type of <paramref name="entity"/>.</typeparam>
-    /// <param name="entity">The <see cref="object"/> of type <typeparamref name="TEntity"/>.</param>
-    /// <returns>A <see cref="EntityEntry"/>.</returns>
+    /// <typeparam name="TEntity">The type of the entity.</typeparam>
+    /// <param name="entity">The entity to add or update.</param>
+    /// <returns>The <see cref="EntityEntry{TEntity}"/> for the entity.</returns>
     public virtual EntityEntry<TEntity> AddOrUpdate<TEntity>(TEntity entity)
         where TEntity : class
     {
@@ -225,11 +246,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     }
 
     /// <summary>
-    /// Adds or updates (if exists) the entities.
+    /// Adds or updates multiple entities in the context.
     /// </summary>
-    /// <typeparam name="TEntity">The type of <paramref name="entities"/>.</typeparam>
-    /// <param name="entities">The <see cref="object"/>'s of type <typeparamref name="TEntity"/>.</param>
-    /// <returns>A <see cref="EntityEntry{TEntity}"/>.</returns>
+    /// <typeparam name="TEntity">The type of the entities.</typeparam>
+    /// <param name="entities">The entities to add or update.</param>
     public virtual void AddOrUpdateMany<TEntity>(IEnumerable<TEntity> entities)
         where TEntity : class
     {
@@ -241,7 +261,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Saves all changes made in the context to the database with auditing and entity event support.
+    /// </summary>
+    /// <returns>The number of state entries written to the database.</returns>
     public override int SaveChanges()
     {
         var audit = new Audit();
@@ -269,7 +292,11 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         return rowAffecteds;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Asynchronously saves all changes made in the context to the database with auditing and entity event support.
+    /// </summary>
+    /// <param name="cancellationToken">A <see cref="CancellationToken"/> for cancelling the operation.</param>
+    /// <returns>The number of state entries written to the database.</returns>
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var audit = new Audit();
@@ -313,7 +340,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Configures the model for the context including identity mapping, auditing, and default collation.
+    /// </summary>
+    /// <param name="modelBuilder">The <see cref="ModelBuilder"/>.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
@@ -331,6 +361,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
             .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()
             .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>();
     }
+
 
     private void PreSaveEntityEvents()
     {

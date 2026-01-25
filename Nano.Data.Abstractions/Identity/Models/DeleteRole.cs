@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
-/// Delete Role.
+/// Represents a request to delete a role.
 /// </summary>
 public class DeleteRole
 {
     /// <summary>
-    /// Name.
+    /// The name of the role to delete.
     /// </summary>
     [Required]
     [MaxLength(256)]

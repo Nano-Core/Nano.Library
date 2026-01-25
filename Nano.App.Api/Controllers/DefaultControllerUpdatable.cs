@@ -2,7 +2,7 @@ using System;
 using DynamicExpression.Interfaces;
 using Microsoft.Extensions.Logging;
 using Nano.Data.Abstractions;
-using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Entities.Abstractions;
 using Nano.Eventing.Abstractions;
 
 namespace Nano.App.Api.Controllers;

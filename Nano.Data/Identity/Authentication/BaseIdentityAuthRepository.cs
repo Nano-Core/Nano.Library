@@ -25,11 +25,12 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     private readonly IAuthExternalRepository? authExternalRepository;
 
     /// <summary>
-    /// The user authenticates and on success recieves a jwt token for use with auhtorization.
+    /// Constructor.
     /// </summary>
-    /// <param name="identityRepository"></param>
-    /// <param name="authJwtRepository"></param>
-    /// <param name="authExternalRepository"></param>
+    /// <param name="identityRepository">The repository for accessing identity data.</param>
+    /// <param name="authJwtRepository">The repository for creating JWT tokens.</param>
+    /// <param name="authExternalRepository">Optional external authentication repository (e.g., Google, Facebook, Microsoft).</param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="identityRepository"/> or <paramref name="authJwtRepository"/> is null.</exception>
     protected BaseIdentityAuthRepository(IIdentityRepository<TIdentity> identityRepository, IAuthJwtRepository authJwtRepository, IAuthExternalRepository? authExternalRepository = null)
     {
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));

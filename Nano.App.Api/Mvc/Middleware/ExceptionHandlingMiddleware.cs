@@ -21,33 +21,34 @@ using Vivet.AspNetCore.RequestVirusScan.Exceptions;
 
 namespace Nano.App.Api.Mvc.Middleware;
 
-/// <inheritdoc />
-public class ExceptionHandlingMiddleware : IMiddleware
+/// <summary>
+/// Middleware to handle exceptions globally, log them, and return structured <see cref="ProblemDetails"/> responses.
+/// Supports various custom exceptions, translation, and UX-specific error handling.
+/// </summary>
+public sealed class ExceptionHandlingMiddleware : IMiddleware
 {
     private const string MESSAGE_TEMPLATE = "{protocol} {method} {pathAndqueryString} {statusCode} in {elapsed:0.0000} ms. (Id={id})";
 
-    /// <summary>
-    /// Logger.
-    /// </summary>
-    protected virtual ILogger Logger { get; }
+    private ILogger Logger { get; }
+    private IOptionsMonitor<ApiOptions> ApiOptions { get; }
 
     /// <summary>
-    /// Web Options.
+    /// Initializes a new instance of the <see cref="ExceptionHandlingMiddleware"/> class.
     /// </summary>
-    protected virtual IOptionsMonitor<ApiOptions> WebOptions { get; }
-
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    /// <param name="logger">the <see cref="ILogger"/></param>
-    /// <param name="webOptions">The <see cref="IOptionsMonitor{ApiOptions}"/>.</param>
-    public ExceptionHandlingMiddleware(ILogger logger, IOptionsMonitor<ApiOptions> webOptions)
+    /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
+    /// <param name="apiOptions">The <see cref="IOptionsMonitor{ApiOptions}"/> containing API configuration.</param>
+    public ExceptionHandlingMiddleware(ILogger logger, IOptionsMonitor<ApiOptions> apiOptions)
     {
         this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        this.WebOptions = webOptions ?? throw new ArgumentNullException(nameof(webOptions));
+        this.ApiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Invokes the middleware to handle exceptions, log request information, and write structured problem details responses.
+    /// </summary>
+    /// <param name="httpContext">The <see cref="HttpContext"/> for the current request.</param>
+    /// <param name="next">The next <see cref="RequestDelegate"/> in the pipeline.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
     {
         ArgumentNullException.ThrowIfNull(httpContext);
@@ -172,7 +173,7 @@ public class ExceptionHandlingMiddleware : IMiddleware
                         break;
 
                     default:
-                        if (!this.WebOptions.CurrentValue.Hosting.ExposeErrors)
+                        if (!this.ApiOptions.CurrentValue.Hosting.ExposeErrors)
                         {
                             problemDetails.Detail = null;
 

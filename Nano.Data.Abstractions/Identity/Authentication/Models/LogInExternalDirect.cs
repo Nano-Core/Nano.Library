@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// Log In External Direct.
+/// External login request using externally supplied user data.
 /// </summary>
 public class LogInExternalDirect : LogInExternal
 {
     /// <summary>
-    /// External LogIn Data.
+    /// The external user data used to complete the login.
     /// </summary>
     [Required]
     public virtual ExternalLogInData ExternalLogInData { get; set; } = new();

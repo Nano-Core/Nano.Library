@@ -8,17 +8,18 @@ using Nano.Data.Abstractions.Config.Enums;
 namespace Nano.Data.Extensions;
 
 /// <summary>
-/// Queryable Extensions.
+/// Provides extension methods for <see cref="IQueryable{T}"/> to include related entities marked with the <see cref="IncludeAttribute"/>.
 /// </summary>
 public static class QueryableExtensions
 {
     /// <summary>
-    /// Includes all model associations in the query, which has the <see cref="IncludeAttribute"/> defined.
+    /// Recursively includes all navigation properties of <typeparamref name="T"/> that have the <see cref="IncludeAttribute"/> applied.
     /// </summary>
-    /// <typeparam name="T">The type of the queryable.</typeparam>
-    /// <param name="queryable">The <see cref="IQueryable{T}"/>.</param>
-    /// <param name="maxDepth">The max include indention.</param>
-    /// <returns>The <see cref="IQueryable{T}"/>.</returns>
+    /// <typeparam name="T">The type of entity in the queryable.</typeparam>
+    /// <param name="queryable">The <see cref="IQueryable{T}"/> to include navigations for.</param>
+    /// <param name="maxDepth">The maximum recursion depth for including nested properties.</param>
+    /// <returns>An <see cref="IQueryable{T}"/> with all annotated navigations included.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="queryable"/> is <c>null</c>.</exception>
     public static IQueryable<T> IncludeAnnotations<T>(this IQueryable<T> queryable, int maxDepth)
         where T : class
     {
@@ -28,15 +29,6 @@ public static class QueryableExtensions
             .IncludeAnnotations(typeof(T), string.Empty, maxDepth);
     }
 
-    /// <summary>
-    /// Includes all model associations in the query, which has the <see cref="IncludeAttribute"/> defined.
-    /// </summary>
-    /// <typeparam name="T">The type of the queryable.</typeparam>
-    /// <param name="queryable">The <see cref="IQueryable{T}"/>.</param>
-    /// <param name="type">The <see cref="Type"/> of entity to include from.</param>
-    /// <param name="name">The name of the property navigation.</param>
-    /// <param name="depth">The current depth, when including nested navigation properties.</param>
-    /// <returns>The <see cref="IQueryable{T}"/>.</returns>
     internal static IQueryable<T> IncludeAnnotations<T>(this IQueryable<T> queryable, Type type, string name, int depth)
         where T : class
     {

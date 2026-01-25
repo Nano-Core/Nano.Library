@@ -5,23 +5,22 @@ using Nano.Data.Abstractions.Config;
 namespace Nano.Data.Abstractions;
 
 /// <summary>
-/// Data Provider interface.
-/// Defines the provider used for data context in the application.
+/// Defines a data provider used to configure the application's data access layer.
 /// </summary>
 /// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data</remarks>
 public interface IDataProvider
 {
     /// <summary>
-    /// Configures the <see cref="IDataProvider"/>.
+    /// Configures provider-specific services.
     /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <param name="options">The <see cref="DataOptions"/>.</param>
+    /// <param name="services">The application's <see cref="IServiceCollection"/>.</param>
+    /// <param name="options">The configured <see cref="DataOptions"/> for the provider.</param>
     static abstract void Configure(IServiceCollection services, DataOptions options);
 
     /// <summary>
-    /// Configures the <see cref="IDataProvider"/>.
+    /// Configures Entity Framework Core database options for the provider.
     /// </summary>
-    /// <param name="builder">The <see cref="DbContextOptionsBuilder"/>.</param>
-    /// <param name="options">The <see cref="DataOptions"/>.</param>
+    /// <param name="builder">The <see cref="DbContextOptionsBuilder"/> used to configure the DbContext.</param>
+    /// <param name="options">The configured <see cref="DataOptions"/> for the provider.</param>
     static abstract void Configure(DbContextOptionsBuilder builder, DataOptions options);
 }

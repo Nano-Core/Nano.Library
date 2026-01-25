@@ -3,36 +3,36 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Cors Options.
+/// Options for configuring CORS.
 /// </summary>
 public class CorsOptions
 {
     /// <summary>
-    /// Allowed Origins.
+    /// Allowed origins.
     /// </summary>
     [Required]
     public virtual string[] AllowedOrigins { get; set; } = [];
 
     /// <summary>
-    /// Allowed Headers.
+    /// Allowed HTTP headers.
     /// </summary>
     [Required]
     public virtual string[] AllowedHeaders { get; set; } = [];
 
     /// <summary>
-    /// Allowed methods.
+    /// Allowed HTTP methods.
     /// </summary>
     [Required]
     public virtual string[] AllowedMethods { get; set; } = [];
 
     /// <summary>
-    /// Allow Credentials.
+    /// Indicates whether credentials are allowed.
     /// </summary>
     [Required]
     public virtual bool AllowCredentials { get; set; } = true;
 
     /// <summary>
-    /// Origin.
+    /// Origin-specific CORS policies.
     /// </summary>
     [Required]
     public virtual CorsOriginOptions Origin { get; set; } = new();

@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Nano.Data.Abstractions.Models.Identity;
+using Nano.Data.Abstractions.Entities.Identity;
 
 namespace Nano.Data.Identity.Extensions;
 

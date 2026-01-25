@@ -14,37 +14,43 @@ using Microsoft.Extensions.Logging;
 using Nano.App.ApiClient.Consts;
 using Nano.App.ApiClient.Models.Identity;
 using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Entities;
+using Nano.Data.Abstractions.Entities.Abstractions;
+using Nano.Data.Abstractions.Entities.Identity;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Models;
-using Nano.Data.Abstractions.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Data.Abstractions.Models.Identity;
 using Nano.Eventing.Abstractions;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.App.Api.Controllers;
 
 /// <summary>
-/// 
+/// Identity controller providing identity-related endpoints.
 /// </summary>
-/// <typeparam name="TRepository"></typeparam>
-/// <typeparam name="TEntity"></typeparam>
-/// <typeparam name="TIdentity"></typeparam>
-/// <typeparam name="TCriteria"></typeparam>
+/// <typeparam name="TRepository">The repository type.</typeparam>
+/// <typeparam name="TEntity">The entity type.</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
+/// <typeparam name="TCriteria">The query criteria type.</typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.IDENTITY)]
 public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : class, IRepository
-    where TEntity : class, IEntityUser<TIdentity>, IEntityCreatable, IEntityUpdatable, IEntityDeletable, IEntityIdentity<TIdentity>, new()
+    where TEntity : class, IEntityUser<TIdentity>, IEntityUpdatable, IEntityDeletable, IEntityIdentity<TIdentity>, new()
     where TIdentity : IEquatable<TIdentity>
     where TCriteria : class, IQueryCriteria, new()
 {
     private readonly IIdentityRepository<TIdentity> identityRepository;
     private readonly IAuthExternalRepository? authExternalRepository;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BaseIdentityController{TRepository,TEntity,TIdentity,TCriteria}"/> class.
+    /// </summary>
+    /// <param name="logger">The <see cref="ILogger"/>.</param>
+    /// <param name="repository">The <see cref="IRepository"/>.</param>
+    /// <param name="identityRepository">The <see cref="IIdentityRepository{TIdentity}"/>.</param>
+    /// <param name="authExternalRepository">The optional <see cref="IAuthExternalRepository"/>.</param>
     protected BaseIdentityController(ILogger logger, TRepository repository, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository? authExternalRepository = null)
         : base(logger, repository)
     {
@@ -52,7 +58,14 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         this.authExternalRepository = authExternalRepository;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BaseIdentityController{TRepository,TEntity,TIdentity,TCriteria}"/> class with eventing support.
+    /// </summary>
+    /// <param name="logger">The <see cref="ILogger"/>.</param>
+    /// <param name="repository">The <see cref="IRepository"/>.</param>
+    /// <param name="eventing">The <see cref="IEventing"/>.</param>
+    /// <param name="identityRepository">The <see cref="IIdentityRepository{TIdentity}"/>.</param>
+    /// <param name="authExternalRepository">The optional <see cref="IAuthExternalRepository"/>.</param>
     protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository? authExternalRepository = null)
         : base(logger, repository, eventing)
     {
@@ -64,14 +77,15 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     #region Sign Up
 
     /// <summary>
-    /// Gets the password options.
+    /// Retrieves the configured password options.
     /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The password options.</returns>
     /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpGet]
     [Route("password/options")]
     [AllowAnonymous]
@@ -95,14 +109,15 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Is Email Address Taken.
+    /// Determines whether an email address is already in use.
     /// </summary>
-    /// <returns>Whether the email address is already taken.</returns>
+    /// <param name="emailAddress">The email address to check.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Whether the email address is taken.</returns>
     /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpGet]
     [Route("email/is-taken")]
     [AllowAnonymous]
@@ -126,14 +141,15 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Is Phone Number Taken.
+    /// Determines whether a phone number is already in use.
     /// </summary>
-    /// <returns>Whether the phone number is already taken.</returns>
+    /// <param name="phoneNumber">The phone number to check.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Whether the phone number is taken.</returns>
     /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpGet]
     [Route("phone/is-taken")]
     [AllowAnonymous]
@@ -157,14 +173,14 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Sign-up a new user.
+    /// Registers a new user.
     /// </summary>
-    /// <param name="signUp">The signup request.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="signUp">The sign-up request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The created user.</returns>
     /// <response code="201">Created.</response>
     /// <response code="400">Bad Request.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("signup")]
     [AllowAnonymous]
@@ -183,12 +199,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Sign-up a user based on external login data directly.
-    /// This can be used when the external provider is verified separately, and the data is passed instead of retrieved from the external provider.
+    /// Registers a new user using externally provided login data.
     /// </summary>
-    /// <param name="signUpExternal">The signup external direct.</param>
+    /// <param name="signUpExternal">The external sign-up request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
+    /// <returns>The created user.</returns>
     /// <response code="201">Created.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="500">Error occurred.</response>
@@ -221,11 +236,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Sign-up a user based on external Google logIn provider.
+    /// Registers a new user using an external Google login provider.
     /// </summary>
-    /// <param name="signUpExternal">The signup external.</param>
+    /// <param name="signUpExternal">The external Google sign-up request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
+    /// <returns>The created user.</returns>
     /// <response code="201">Created.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="500">Error occurred.</response>
@@ -265,11 +280,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Sign-up a user based on external Facebook logIn provider.
+    /// Registers a new user using an external Facebook login provider.
     /// </summary>
-    /// <param name="signUpExternal">The signup external.</param>
+    /// <param name="signUpExternal">The external Facebook sign-up request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
+    /// <returns>The created user.</returns>
     /// <response code="201">Created.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="500">Error occurred.</response>
@@ -309,11 +324,11 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Sign-up a user based on external Microsoft logIn provider.
+    /// Registers a new user using an external Microsoft login provider.
     /// </summary>
-    /// <param name="signUpExternal">The signup external.</param>
+    /// <param name="signUpExternal">The external Microsoft sign-up request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The access token.</returns>
+    /// <returns>The created user.</returns>
     /// <response code="201">Created.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="500">Error occurred.</response>
@@ -358,16 +373,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     #region User
 
     /// <summary>
-    /// Sets the emailAddress of a user.
+    /// Sets the username of a user.
     /// </summary>
-    /// <param name="setUsername">The set username.</param>
+    /// <param name="setUsername">The username update request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
+    /// <returns>No content.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("username/set")]
     [Consumes(HttpContentType.JSON)]
@@ -386,17 +401,17 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
 
     /// <summary>
     /// Sets the password of a user.
-    /// Only use to set a password for a user without one.
-    /// Users authenticated with external logIn providers, doesn't initially have a password.
+    /// Only use this operation to assign a password to a user that does not already have one.
+    /// Users authenticated through external login providers do not initially have a password.
     /// </summary>
-    /// <param name="setPassword">The set password.</param>
+    /// <param name="setPassword">The password assignment request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
+    /// <returns>No content.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("password/set")]
     [Consumes(HttpContentType.JSON)]
@@ -414,16 +429,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Changes the password of a user.
+    /// Changes the password of an existing user.
     /// </summary>
-    /// <param name="changePassword">The change password.</param>
+    /// <param name="changePassword">The password change request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
+    /// <returns>No content.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("password/change")]
     [Consumes(HttpContentType.JSON)]
@@ -441,15 +456,15 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Resets the password of a user.
+    /// Resets the password of a user using a reset token.
     /// </summary>
-    /// <param name="resetPassword">The reset password.</param>
+    /// <param name="resetPassword">The password reset request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
+    /// <returns>No content.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("password/reset")]
     [AllowAnonymous]
@@ -467,16 +482,15 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Get the password reset token, used to change the password of a user.
+    /// Generates a password reset token used to reset a user's password.
     /// </summary>
-    /// <param name="generateResetPasswordToken">The generate reset password token.</param>
+    /// <param name="generateResetPasswordToken">The reset password token generation request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The reset password token.</returns>
+    /// <returns>The password reset token.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("password/reset/token")]
     [AllowAnonymous]
@@ -497,17 +511,19 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Changes the email of a user.
+    /// Changes the email address of a user.
     /// </summary>
-    /// <param name="changeEmail">The change email.</param>
-    /// <param name="setUsername">Set username.</param>
+    /// <param name="changeEmail">The email change request.</param>
+    /// <param name="setUsername">
+    /// Indicates whether the username should also be updated to match the new email address.
+    /// </param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
+    /// <returns>No content.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("email/change")]
     [Consumes(HttpContentType.JSON)]
@@ -525,16 +541,15 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Get the change email token, used to change the email address of a user.
+    /// Generates an email change token used to change a user's email address.
     /// </summary>
-    /// <param name="generateChangeEmailToken">The genereate change email token.</param>
+    /// <param name="generateChangeEmailToken">The email change token generation request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The change email token.</returns>
+    /// <returns>The email change token.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("email/change/token")]
     [Consumes(HttpContentType.JSON)]
@@ -556,13 +571,13 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <summary>
     /// Confirms the email address of a user.
     /// </summary>
-    /// <param name="confirmEmail">The confirm email.</param>
+    /// <param name="confirmEmail">The email confirmation request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
+    /// <returns>No content.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("email/confirm")]
     [Consumes(HttpContentType.JSON)]
@@ -579,16 +594,15 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Get the confirm email token, used to confirm the email address of a user.
+    /// Generates an email confirmation token used to confirm a user's email address.
     /// </summary>
-    /// <param name="generateConfirmEmailToken">The generate confirm email token.</param>
+    /// <param name="generateConfirmEmailToken">The email confirmation token generation request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The confirm email token.</returns>
+    /// <returns>The email confirmation token.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("email/confirm/token")]
     [Consumes(HttpContentType.JSON)]
@@ -610,14 +624,14 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <summary>
     /// Changes the phone number of a user.
     /// </summary>
-    /// <param name="changePhoneNumber">The change phone number.</param>
+    /// <param name="changePhoneNumber">The phone number change request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
+    /// <returns>No content.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("phone/change")]
     [Consumes(HttpContentType.JSON)]
@@ -635,16 +649,15 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Gets the change phone number token, used to change the phone number of a user.
+    /// Generates a phone number change token used to change a user's phone number.
     /// </summary>
-    /// <param name="generateChangePhoneToken">The generate change phone token.</param>
+    /// <param name="generateChangePhoneToken">The phone number change token generation request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The change phone number token.</returns>
+    /// <returns>The phone number change token.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("phone/change/token")]
     [Consumes(HttpContentType.JSON)]
@@ -666,13 +679,13 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <summary>
     /// Confirms the phone number of a user.
     /// </summary>
-    /// <param name="confirmPhoneNumber">The confirm phone number.</param>
+    /// <param name="confirmPhoneNumber">The phone number confirmation request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
+    /// <returns>No content.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("phone/confirm")]
     [Consumes(HttpContentType.JSON)]
@@ -689,16 +702,15 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Gets the confirm phone number token, used to confirm the phone number of a user.
+    /// Generates a phone number confirmation token used to confirm a user's phone number.
     /// </summary>
-    /// <param name="generateConfirmPhoneToken">The generate confirm phoneNumber token.</param>
+    /// <param name="generateConfirmPhoneToken">The phone number confirmation token generation request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The confirm phone token.</returns>
+    /// <returns>The phone number confirmation token.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("phone/confirm/token")]
     [Consumes(HttpContentType.JSON)]
@@ -718,15 +730,15 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Confirms a cstuom purpose token of a user.
+    /// Generates a custom-purpose token for a user.
     /// </summary>
-    /// <param name="confirmEmail">The custom purpose token.</param>
+    /// <param name="confirmEmail">The custom-purpose token generation request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The custom purpose token.</returns>
+    /// <returns>The custom-purpose token.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("token/custom-purpose")]
     [Consumes(HttpContentType.JSON)]
@@ -745,16 +757,15 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Generates a cstuom purpose token of a user.
+    /// Confirms a previously generated custom-purpose token for a user.
     /// </summary>
-    /// <param name="confirmCustomPurpose">The generate confirm email token.</param>
+    /// <param name="confirmCustomPurpose">The custom-purpose token confirmation request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
+    /// <returns>No content.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("token/custom-purpose/confirm")]
     [Consumes(HttpContentType.JSON)]
@@ -772,16 +783,14 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Activate the model with the passed identifier.
+    /// Activates the user with the specified identifier.
     /// </summary>
-    /// <param name="id">The identifier of the model to delete.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
+    /// <param name="id">The identifier of the user to activate.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>No content.</returns>
+    /// <response code="200">Success.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("activate/{id}")]
     [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -801,16 +810,14 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Deactivate the model with the passed identifier.
+    /// Deactivates the user with the specified identifier.
     /// </summary>
-    /// <param name="id">The identifier of the model to delete.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
+    /// <param name="id">The identifier of the user to deactivate.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>No content.</returns>
+    /// <response code="200">Success.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [HttpDelete]
     [Route("deactivate/{id}")]
@@ -831,16 +838,14 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Delete the model with the passed identifier.
+    /// Deletes the user with the specified identifier.
     /// </summary>
-    /// <param name="id">The identifier of the model to delete.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
+    /// <param name="id">The identifier of the user to delete.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>No content.</returns>
+    /// <response code="200">Success.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [HttpDelete]
     [Route("delete/{id}")]
@@ -869,16 +874,14 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Delete the models with the passed identifiers.
+    /// Deletes multiple users with the specified identifiers.
     /// </summary>
-    /// <param name="ids">The identifiers of the models to delete.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
+    /// <param name="ids">The identifiers of the users to delete.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>No content.</returns>
+    /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [HttpDelete]
     [Route("delete/many")]
@@ -916,16 +919,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     #region External Logins
 
     /// <summary>
-    /// Get External Logins for a user.
+    /// Retrieves the external login providers associated with a user.
     /// </summary>
-    /// <param name="userId">The user id.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The external logins.</returns>
-    /// <response code="200">Ok.</response>
+    /// <param name="userId">The identifier of the user.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>The collection of external logins.</returns>
+    /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpGet]
     [Route("external-logins/{userId}")]
     [Produces(HttpContentType.JSON)]
@@ -959,16 +962,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Add Google external login for a user.
+    /// Adds a Google external login to a user account.
     /// </summary>
-    /// <param name="addExternalLogin">The external login</param>
+    /// <param name="addExternalLogin">The request containing Google external login data.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
+    /// <returns>The added external login.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("external-logins/add/google")]
     [Consumes(HttpContentType.JSON)]
@@ -1009,16 +1012,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Add Facebook external login for a user.
+    /// Adds a Microsoft external login to a user account.
     /// </summary>
-    /// <param name="addExternalLogin">The external login</param>
+    /// <param name="addExternalLogin">The request containing Microsoft external login data.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
+    /// <returns>The added external login.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("external-logins/add/facebook")]
     [Consumes(HttpContentType.JSON)]
@@ -1059,16 +1062,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Add Microsoft external login for a user.
+    /// Adds a Microsoft external login to a user account.
     /// </summary>
-    /// <param name="addExternalLogin">The external login</param>
+    /// <param name="addExternalLogin">The request containing Microsoft external login data.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
+    /// <returns>The added external login.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [Route("external-logins/add/microsoft")]
     [Consumes(HttpContentType.JSON)]
@@ -1109,16 +1112,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Removes an external login for a user.
+    /// Removes an external login from a user account.
     /// </summary>
-    /// <param name="removeExternalLogin">The remove external login request.</param>
+    /// <param name="removeExternalLogin">The request identifying the external login to remove.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
+    /// <returns>No content.</returns>
     /// <response code="200">Success.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Error occurred.</response>
     [HttpPost]
     [HttpDelete]
     [Route("external-logins/remove")]
@@ -1141,16 +1144,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     #region Refresh Tokens
 
     /// <summary>
-    /// Gets refresh tokens of a user.
+    /// Retrieves all refresh tokens associated with a specific user.
     /// </summary>
-    /// <param name="userId">The user id.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The refresh tokens.</returns>
-    /// <response code="200">Success.</response>
+    /// <param name="userId">The identifier of the user.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>A collection of refresh tokens.</returns>
+    /// <response code="200">Success. Returns the refresh tokens.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Not Found. The user does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpGet]
     [Route("refresh-tokens/{userId}")]
     [ProducesResponseType(typeof(IEnumerable<IdentityUserRefreshToken<Guid>>), (int)HttpStatusCode.OK)]
@@ -1167,16 +1170,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Gets active refresh tokens of a user.
+    /// Retrieves all active (non-revoked) refresh tokens for a specific user.
     /// </summary>
-    /// <param name="userId">The user id.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The refresh tokens.</returns>
-    /// <response code="200">Success.</response>
+    /// <param name="userId">The identifier of the user.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>A collection of active refresh tokens.</returns>
+    /// <response code="200">Success. Returns the active refresh tokens.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Not Found. The user does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpGet]
     [Route("refresh-tokens/active/{userId}")]
     [ProducesResponseType(typeof(IEnumerable<IdentityUserRefreshToken<Guid>>), (int)HttpStatusCode.OK)]
@@ -1193,16 +1196,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Delete Refresh Token.
+    /// Deletes a specific refresh token by its identifier.
     /// </summary>
-    /// <param name="refreshTokenId">The refresh token id.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
+    /// <param name="refreshTokenId">The identifier of the refresh token to delete.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>No content.</returns>
+    /// <response code="200">Success. The refresh token was deleted.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Not Found. The refresh token does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpDelete]
     [Route("refresh-tokens/delete/{refreshTokenId}")]
     [Produces(HttpContentType.JSON)]
@@ -1225,16 +1228,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     #region Api Keys
 
     /// <summary>
-    /// Get Api Keys.
+    /// Retrieves all API keys associated with a specific user.
     /// </summary>
-    /// <param name="userId">The user id.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The api keys.</returns>
-    /// <response code="200">Ok.</response>
+    /// <param name="userId">The identifier of the user.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>A collection of API keys for the user.</returns>
+    /// <response code="200">Success. Returns the API keys.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Not Found. The user does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpGet]
     [Route("api-keys/{userId}")]
     [Produces(HttpContentType.JSON)]
@@ -1252,16 +1255,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Create Api Key.
+    /// Creates a new API key for a user.
     /// </summary>
-    /// <param name="createApiKey">The create api key.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The create api key response.</returns>
-    /// <response code="201">Created.</response>
+    /// <param name="createApiKey">The API key creation request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>The created API key along with its unencrypted hash.</returns>
+    /// <response code="201">Created. Returns the created API key.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Not Found. The user does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
     [Route("api-keys/create")]
     [Consumes(HttpContentType.JSON)]
@@ -1288,16 +1291,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Edit Api Key.
+    /// Edits an existing API key.
     /// </summary>
-    /// <param name="editApiKey">The edit api key.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The identity api key.</returns>
-    /// <response code="200">Ok.</response>
+    /// <param name="editApiKey">The API key edit request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>The updated API key.</returns>
+    /// <response code="200">Success. Returns the updated API key.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Not Found. The API key does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpPut]
     [HttpPost]
     [Route("api-keys/edit")]
@@ -1322,17 +1325,17 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Revoke Api Key.
+    /// Revokes a specific API key, optionally at a future date.
     /// </summary>
-    /// <param name="apiKeyId">The api key id.</param>
-    /// <param name="revokeAt">The date time when the api key will be revoked.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The identity api key.</returns>
-    /// <response code="200">Ok.</response>
+    /// <param name="apiKeyId">The identifier of the API key to revoke.</param>
+    /// <param name="revokeAt">The optional date and time when the API key will be revoked.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>The revoked API key.</returns>
+    /// <response code="200">Success. Returns the revoked API key.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Not Found. The API key does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpDelete]
     [Route("api-keys/revoke/{apiKeyId}")]
     [Produces(HttpContentType.JSON)]
@@ -1361,18 +1364,134 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     #endregion
 
 
+    #region Claims
+
+    /// <summary>
+    /// Retrieves all claims assigned to a specific user.
+    /// </summary>
+    /// <param name="userId">The identifier of the user.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>A collection of <see cref="Claim"/> objects for the user.</returns>
+    /// <response code="200">Success. Returns the user's claims.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found. The user does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
+    [HttpGet]
+    [Route("claims/{userId}")]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IEnumerable<Claim>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> GetClaimsAsync([FromRoute][Required] TIdentity userId, CancellationToken cancellationToken = default)
+    {
+        var userClaims = await this.identityRepository
+            .GetUserClaimsAsync(userId, cancellationToken);
+
+        return this.Ok(userClaims);
+    }
+
+    /// <summary>
+    /// Assigns a new claim to a user.
+    /// </summary>
+    /// <param name="assignUserClaim">The claim assignment request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Success. The claim was assigned.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found. The user does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
+    [HttpPost]
+    [Route("claims/assign")]
+    [Consumes(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> AssignClaimAsync([FromBody][Required] AssignUserClaim<TIdentity> assignUserClaim, CancellationToken cancellationToken = default)
+    {
+        await this.identityRepository
+            .AssignUserClaimAsync(assignUserClaim, cancellationToken);
+
+        return this.Ok();
+    }
+
+    /// <summary>
+    /// Removes a claim from a user.
+    /// </summary>
+    /// <param name="removeUserClaim">The claim removal request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Success. The claim was removed.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found. The claim or user does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
+    [HttpPost]
+    [HttpDelete]
+    [Route("claims/remove")]
+    [Consumes(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> RemoveClaimAsync([FromBody][Required] RemoveUserClaim<TIdentity> removeUserClaim, CancellationToken cancellationToken = default)
+    {
+        await this.identityRepository
+            .RemoveUserClaimAsync(removeUserClaim, cancellationToken);
+
+        return this.Ok();
+    }
+
+    /// <summary>
+    /// Replaces an existing claim of a user with a new claim.
+    /// </summary>
+    /// <param name="replaceUserClaim">The claim replacement request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Success. The claim was replaced.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found. The claim or user does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
+    [HttpPut]
+    [Route("claims/replace")]
+    [Consumes(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> ReplaceClaimAsync([FromBody][Required] ReplaceUserClaim<TIdentity> replaceUserClaim, CancellationToken cancellationToken = default)
+    {
+        await this.identityRepository
+            .ReplaceUserClaimAsync(replaceUserClaim, cancellationToken);
+
+        return this.Ok();
+    }
+
+    // BUG: Endpoint: Assign or replace claim?
+
+    #endregion
+
+
     #region Roles
 
     /// <summary>
-    /// Gets roles.
+    /// Retrieves all roles in the system.
     /// </summary>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The roles.</returns>
-    /// <response code="200">Success.</response>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>A collection of <see cref="IdentityRole{Guid}"/> objects.</returns>
+    /// <response code="200">Success. Returns the list of roles.</response>
     /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
+    /// <response code="401">Unauthorized. User is not allowed to view roles.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpGet]
     [Route("roles")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
@@ -1390,16 +1509,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Create a role.
+    /// Creates a new role.
     /// </summary>
-    /// <param name="assignRole">The create role.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The role.</returns>
-    /// <response code="200">Success.</response>
+    /// <param name="assignRole">The role creation request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>The created <see cref="IdentityRole{Guid}"/>.</returns>
+    /// <response code="201">Created. Returns the newly created role.</response>
     /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
+    /// <response code="401">Unauthorized. User is not allowed to create roles.</response>
     /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
     [Route("roles/create")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
@@ -1419,16 +1538,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Delete a role.
+    /// Deletes a role from the system.
     /// </summary>
-    /// <param name="removeRole">The delete role.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="removeRole">The role deletion request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Success.</response>
+    /// <response code="200">Success. The role was deleted.</response>
     /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="401">Unauthorized. User is not allowed to delete roles.</response>
+    /// <response code="404">Not Found. The role does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
     [HttpDelete]
     [Route("roles/delete")]
@@ -1448,16 +1567,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Gets roles of a user.
+    /// Retrieves all roles assigned to a specific user.
     /// </summary>
-    /// <param name="userId">The user id.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The roles.</returns>
-    /// <response code="200">Success.</response>
+    /// <param name="userId">The identifier of the user.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>A collection of role names assigned to the user.</returns>
+    /// <response code="200">Success. Returns the user's roles.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Not Found. The user does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpGet]
     [Route("roles/{userId}")]
     [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
@@ -1474,16 +1593,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Assign a role to a user.
+    /// Assigns a role to a user.
     /// </summary>
-    /// <param name="assignUserRole">The assign role.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="assignUserRole">The user role assignment request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Success.</response>
+    /// <response code="200">Success. The role was assigned to the user.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Not Found. The user or role does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
     [Route("roles/user/assign")]
     [Consumes(HttpContentType.JSON)]
@@ -1501,16 +1620,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Remove a role from a user.
+    /// Removes a role from a user.
     /// </summary>
-    /// <param name="removeUserRole">The remove role.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="removeUserRole">The user role removal request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Success.</response>
+    /// <response code="200">Success. The role was removed from the user.</response>
     /// <response code="400">Bad Request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="404">Not Found. The user or role does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
     [HttpDelete]
     [Route("roles/user/remove")]
@@ -1528,22 +1647,24 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         return this.Ok();
     }
 
+    // BUG: Endpoint: Assign or replace role?
+
     #endregion
 
 
     #region Role Claims
 
     /// <summary>
-    /// Gets claims of a role.
+    /// Retrieves all claims associated with a specific role.
     /// </summary>
-    /// <param name="roleId">The role id.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The role claims.</returns>
-    /// <response code="200">Success.</response>
+    /// <param name="roleId">The identifier of the role.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>A collection of <see cref="Claim"/> objects for the role.</returns>
+    /// <response code="200">Success. Returns the list of claims for the role.</response>
     /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="401">Unauthorized. User is not allowed to view role claims.</response>
+    /// <response code="404">Not Found. The role does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpGet]
     [Route("roles/claims/{roleId}")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
@@ -1562,16 +1683,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Assign a claim to a role.
+    /// Assigns a claim to a role.
     /// </summary>
-    /// <param name="assignRoleClaim">The assign role claim.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="assignRoleClaim">The role claim assignment request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Success.</response>
+    /// <response code="200">Success. The claim was assigned to the role.</response>
     /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="401">Unauthorized. User is not allowed to assign role claims.</response>
+    /// <response code="404">Not Found. The role does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
     [Route("roles/claims/assign")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
@@ -1590,16 +1711,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Remove a claim from a role.
+    /// Removes a claim from a role.
     /// </summary>
-    /// <param name="removeClaim">The remove role claim.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="removeClaim">The role claim removal request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Success.</response>
+    /// <response code="200">Success. The claim was removed from the role.</response>
     /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="401">Unauthorized. User is not allowed to remove role claims.</response>
+    /// <response code="404">Not Found. The role or claim does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
     [HttpDelete]
     [Route("roles/claims/remove")]
@@ -1619,16 +1740,16 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Replace a claim of a role.
+    /// Replaces a claim of a role with a new claim.
     /// </summary>
-    /// <param name="replaceClaim">The replace role claim.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="replaceClaim">The role claim replacement request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Success.</response>
+    /// <response code="200">Success. The claim was replaced for the role.</response>
     /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="401">Unauthorized. User is not allowed to replace role claims.</response>
+    /// <response code="404">Not Found. The role or claim does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
     [HttpPut]
     [Route("roles/claims/replace")]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
@@ -1646,119 +1767,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         return this.Ok();
     }
 
-    #endregion
-
-
-    #region Claims
-
-    /// <summary>
-    /// Gets claims of a user.
-    /// </summary>
-    /// <param name="userId">The user id.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The claims.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
-    [HttpGet]
-    [Route("claims/{userId}")]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<Claim>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> GetClaimsAsync([FromRoute][Required] TIdentity userId, CancellationToken cancellationToken = default)
-    {
-        var userClaims = await this.identityRepository
-            .GetUserClaimsAsync(userId, cancellationToken);
-
-        return this.Ok(userClaims);
-    }
-
-    /// <summary>
-    /// Assign a claim to a user.
-    /// </summary>
-    /// <param name="assignUserClaim">The assign claim.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
-    [HttpPost]
-    [Route("claims/assign")]
-    [Consumes(HttpContentType.JSON)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> AssignClaimAsync([FromBody][Required] AssignUserClaim<TIdentity> assignUserClaim, CancellationToken cancellationToken = default)
-    {
-        await this.identityRepository
-            .AssignUserClaimAsync(assignUserClaim, cancellationToken);
-
-        return this.Ok();
-    }
-
-    /// <summary>
-    /// Remove a claim from a user.
-    /// </summary>
-    /// <param name="removeUserClaim">The remove claim.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
-    [HttpPost]
-    [HttpDelete]
-    [Route("claims/remove")]
-    [Consumes(HttpContentType.JSON)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> RemoveClaimAsync([FromBody][Required] RemoveUserClaim<TIdentity> removeUserClaim, CancellationToken cancellationToken = default)
-    {
-        await this.identityRepository
-            .RemoveUserClaimAsync(removeUserClaim, cancellationToken);
-
-        return this.Ok();
-    }
-
-    /// <summary>
-    /// Replace a claim to a user.
-    /// </summary>
-    /// <param name="replaceUserClaim">The replace claim.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Void.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
-    [HttpPut]
-    [Route("claims/replace")]
-    [Consumes(HttpContentType.JSON)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> ReplaceClaimAsync([FromBody][Required] ReplaceUserClaim<TIdentity> replaceUserClaim, CancellationToken cancellationToken = default)
-    {
-        await this.identityRepository
-            .ReplaceUserClaimAsync(replaceUserClaim, cancellationToken);
-
-        return this.Ok();
-    }
+    // BUG: Endpoint: Assign or replace role claim?
 
     #endregion
 }

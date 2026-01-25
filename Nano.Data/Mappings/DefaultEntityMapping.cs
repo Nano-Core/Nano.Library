@@ -2,11 +2,15 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Entities;
 
 namespace Nano.Data.Mappings;
 
-/// <inheritdoc />
+/// <summary>
+/// Default mapping for <see cref="DefaultEntity{Guid}"/>.
+/// Configures soft delete filter, CreatedAt, IsDeleted, and indexes.
+/// </summary>
+/// <typeparam name="TEntity">The entity type inheriting <see cref="DefaultEntity{Guid}"/>.</typeparam>
 public class DefaultEntityMapping<TEntity> : BaseEntityIdentityMapping<TEntity, Guid>
     where TEntity : DefaultEntity<Guid>
 {

@@ -7,8 +7,12 @@ using System;
 namespace Nano.Data.InMemory;
 
 /// <summary>
-/// In Memory Data Provider.
+/// In-memory data provider intended for testing and lightweight scenarios.
 /// </summary>
+/// <remarks>
+///     This provider uses Entity Framework Core's in-memory database and does not register additional services such as health checks.
+///     Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.InMemory
+/// </remarks>
 public sealed class InMemoryProvider : IDataProvider
 {
     /// <inheritdoc />

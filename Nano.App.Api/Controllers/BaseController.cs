@@ -10,7 +10,7 @@ using Nano.Eventing.Abstractions;
 namespace Nano.App.Api.Controllers;
 
 /// <summary>
-/// Base controller.
+/// Base API controller that provides common properties and behaviors for all derived controllers.
 /// </summary>
 [ApiController]
 [Route("[controller]")]
@@ -19,29 +19,29 @@ namespace Nano.App.Api.Controllers;
 public abstract class BaseController : Controller
 {
     /// <summary>
-    /// Logger.
+    /// Logger instance for logging messages within the controller.
     /// </summary>
     protected virtual ILogger Logger { get; }
 
     /// <summary>
-    /// User Id.
+    /// Gets the current authenticated user's Id from JWT claims.
     /// </summary>
     public virtual Guid? UserId => this.HttpContext.GetJwtUserId();
 
     /// <summary>
-    /// User Name.
+    /// Gets the current authenticated user's name from JWT claims.
     /// </summary>
     public virtual string? UserName => this.HttpContext.GetJwtUserName();
 
     /// <summary>
-    /// User Email.
+    /// Gets the current authenticated user's email from JWT claims.
     /// </summary>
     public virtual string? UserEmail => this.HttpContext.GetJwtUserEmail();
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of the <see cref="BaseController"/> class.
     /// </summary>
-    /// <param name="logger">The <see cref="ILogger"/>.</param>
+    /// <param name="logger">The <see cref="ILogger"/> used for logging within the controller.</param>
     protected BaseController(ILogger logger)
     {
         this.Logger = logger;
@@ -49,28 +49,28 @@ public abstract class BaseController : Controller
 }
 
 /// <summary>
-/// Base generic controller.
+/// Base generic API controller that provides repository and eventing support.
 /// </summary>
-/// <typeparam name="TRepository">The <see cref="IRepository"/>.</typeparam>
+/// <typeparam name="TRepository">The type of repository implementing <see cref="IRepository"/>.</typeparam>
 public abstract class BaseController<TRepository> : BaseController
     where TRepository : class, IRepository
 {
     /// <summary>
-    /// Repository.
+    /// Repository used for data access operations within the controller.
     /// </summary>
     protected virtual TRepository Repository { get; }
 
     /// <summary>
-    /// Eventing.
+    /// Optional eventing interface for publishing domain events.
     /// </summary>
     protected virtual IEventing? Eventing { get; }
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of the <see cref="BaseController{TRepository}"/> class.
     /// </summary>
-    /// <param name="logger">The <see cref="ILogger"/>.</param>
-    /// <param name="repository">The <see cref="IRepository"/>.</param>
-    /// <param name="eventing">The <see cref="IEventing"/>.</param>
+    /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
+    /// <param name="repository">The repository implementing <see cref="IRepository"/>.</param>
+    /// <param name="eventing">Optional <see cref="IEventing"/> for publishing events.</param>
     protected BaseController(ILogger logger, TRepository repository, IEventing? eventing = null)
         : base(logger)
     {

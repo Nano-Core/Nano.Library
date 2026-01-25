@@ -4,68 +4,65 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Web Options.
+/// API application options.
 /// </summary>
 public class ApiOptions : BaseAppOptions
 {
     /// <summary>
-    /// Default Time Zone.
+    /// Default time zone for the application.
     /// </summary>
     [Required]
     public virtual string DefaultTimeZone { get; set; } = "UTC";
 
     /// <summary>
-    /// Shutdown Timeout.
-    /// The number of seconds the application waits after receiving a SIGTERM signal, before shutting down.
+    /// Number of seconds to wait after a SIGTERM signal before shutting down.
     /// </summary>
     public virtual int ShutdownTimeout { get; set; } = 10;
 
     /// <summary>
-    /// Hosting.
+    /// Hosting options.
     /// </summary>
     [Required]
     public virtual HostingOptions Hosting { get; set; } = new();
 
     /// <summary>
-    /// Hosting.
+    /// HTTP policy header options.
     /// </summary>
     [Required]
     public virtual HttpPolicyHeaderOptions HttpPolicyHeaders { get; set; } = new();
 
     /// <summary>
-    /// Authentication Options.
+    /// Identity configuration options.
     /// </summary>
     public virtual IdentityOptions? Identity { get; set; }
 
     /// <summary>
-    /// Response Cache.
-    /// Options for caching responses.
+    /// Response caching options.
     /// </summary>
     public virtual ResponseCacheOptions? ResponseCache { get; set; }
 
     /// <summary>
-    /// Enables middleware for dynamic compression of http responses.
+    /// Response compression options.
     /// </summary>
     public virtual ResponseCompressionOptions? ResponseCompression { get; set; }
 
     /// <summary>
-    /// Session.
-    /// Settings for session behavior.
+    /// Session management options.
     /// </summary>
     public virtual SessionOptions? Session { get; set; }
 
     /// <summary>
-    /// Virus Scan.
+    /// Virus scanning options.
     /// </summary>
     public virtual VirusScanOptions? VirusScan { get; set; }
 
     /// <summary>
-    /// Health-Check.
+    /// Health-check configuration options.
     /// </summary>
     public virtual HealthCheckOptions? HealthCheck { get; set; }
 
     /// <summary>
-    /// Documentation.
+    /// API documentation options.
     /// </summary>
     public virtual DocumentationOptions? Documentation { get; set; }
 }

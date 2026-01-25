@@ -7,21 +7,29 @@ using Microsoft.AspNetCore.Http;
 
 namespace Nano.App.Api.Mvc.Middleware;
 
-/// <inheritdoc />
-public class HttpRequestOptionsMiddleware : IMiddleware
+/// <summary>
+/// Middleware to handle HTTP OPTIONS requests, typically used for CORS preflight requests.
+/// Sets the appropriate CORS headers and returns a 200 OK response without invoking the next middleware.
+/// </summary>
+public sealed class HttpRequestOptionsMiddleware : IMiddleware
 {
     private readonly ICorsPolicyProvider corsOptions;
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of the <see cref="HttpRequestOptionsMiddleware"/> class.
     /// </summary>
-    /// <param name="corsOptions">The <see cref="ICorsPolicyProvider"/>.</param>
+    /// <param name="corsOptions">The <see cref="ICorsPolicyProvider"/> used to obtain CORS policies.</param>
     public HttpRequestOptionsMiddleware(ICorsPolicyProvider corsOptions)
     {
         this.corsOptions = corsOptions ?? throw new ArgumentNullException(nameof(corsOptions));
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Invokes the middleware to handle OPTIONS requests and apply CORS headers.
+    /// </summary>
+    /// <param name="httpContext">The <see cref="HttpContext"/> for the current request.</param>
+    /// <param name="next">The next <see cref="RequestDelegate"/> in the pipeline.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public async Task InvokeAsync(HttpContext httpContext, RequestDelegate next)
     {
         ArgumentNullException.ThrowIfNull(httpContext);
@@ -37,7 +45,7 @@ public class HttpRequestOptionsMiddleware : IMiddleware
 
             if (corsPolicy == null)
             {
-                throw new NullReferenceException(nameof(corsPolicy));
+                return;
             }
 
             headers

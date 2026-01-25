@@ -146,10 +146,10 @@ internal static class ServiceCollectionExtensions
         services
             .AddScoped<IAuthJwtRepository>(x =>
             {
-                var webOptions = x
+                var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                var jwtAuthenticationOptions = webOptions.CurrentValue.Identity?.Authentication.Jwt;
+                var jwtAuthenticationOptions = apiOptions.CurrentValue.Identity?.Authentication.Jwt;
 
                 return jwtAuthenticationOptions == null
                     ? throw new NullReferenceException(nameof(jwtAuthenticationOptions))
@@ -170,10 +170,10 @@ internal static class ServiceCollectionExtensions
         services
             .AddScoped<IAuthRootRepository>(x =>
             {
-                var webOptions = x
+                var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                var logInRootOptions = webOptions.CurrentValue.Identity?.Authentication.Jwt?.RootLogin;
+                var logInRootOptions = apiOptions.CurrentValue.Identity?.Authentication.Jwt?.RootLogin;
 
                 if (logInRootOptions == null)
                 {
@@ -200,10 +200,10 @@ internal static class ServiceCollectionExtensions
         services
             .AddScoped<IAuthTransientRepository>(x =>
             {
-                var webOptions = x
+                var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                var externalLoginsOptions = webOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins;
+                var externalLoginsOptions = apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins;
 
                 if (externalLoginsOptions == null)
                 {
@@ -266,10 +266,10 @@ internal static class ServiceCollectionExtensions
         services
             .AddScoped<IAuthExternalFacebookRepository>(x =>
             {
-                var webOptions = x
+                var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                var facebookOptions = webOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Facebook;
+                var facebookOptions = apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Facebook;
 
                 if (facebookOptions == null)
                 {
@@ -299,10 +299,10 @@ internal static class ServiceCollectionExtensions
         services
             .AddScoped<IAuthExternalGoogleRepository>(x =>
             {
-                var webOptions = x
+                var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                var googleOptions = webOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Google;
+                var googleOptions = apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Google;
 
                 return googleOptions == null ? throw new NullReferenceException(nameof(googleOptions)) : new AuthExternalGoogleRepository(googleOptions);
             });
@@ -324,10 +324,10 @@ internal static class ServiceCollectionExtensions
         services
             .AddScoped<IAuthExternalMicrosoftRepository>(x =>
             {
-                var webOptions = x
+                var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                var microsoftOptions = webOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Microsoft;
+                var microsoftOptions = apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Microsoft;
 
                 if (microsoftOptions == null)
                 {

@@ -4,12 +4,12 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
-/// Base Sign In (abstract).
+/// Base type for sign-in requests.
 /// </summary>
 public abstract class BaseSignIn
 {
     /// <summary>
-    /// Is Remember Me.
+    /// Indicates whether the sign-in should be persisted across sessions.
     /// </summary>
     [Required]
     [DefaultValue(false)]

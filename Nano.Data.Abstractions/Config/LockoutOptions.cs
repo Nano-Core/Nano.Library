@@ -4,24 +4,27 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Config;
 
 /// <summary>
-/// Lockout Options (nested class).
+/// Options for account lockout policies.
 /// </summary>
 public class LockoutOptions
 {
     /// <summary>
-    /// Allowed For New Users.
+    /// Gets or sets a value indicating whether lockout is allowed for new users.
+    /// Defaults to <c>true</c>.
     /// </summary>
     [Required]
     public virtual bool AllowedForNewUsers { get; set; } = true;
 
     /// <summary>
-    /// Max Failed Access Attempts.
+    /// Gets or sets the maximum number of failed access attempts before a user is locked out.
+    /// Defaults to <c>3</c>.
     /// </summary>
     [Required]
     public virtual int MaxFailedAccessAttempts { get; set; } = 3;
 
     /// <summary>
-    /// Default Lockout TimeSpan.
+    /// Gets or sets the default lockout duration for a user.
+    /// Defaults to <c>30 minutes</c>.
     /// </summary>
     [Required]
     public virtual TimeSpan DefaultLockoutTimeSpan { get; set; } = TimeSpan.FromMinutes(30);

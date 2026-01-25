@@ -3,24 +3,24 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Facebook Options.
+/// Options for Facebook external login.
 /// </summary>
 public class FacebookOptions
 {
     /// <summary>
-    /// App Id.
+    /// Facebook App Id.
     /// </summary>
     [Required]
     public virtual string AppId { get; set; } = null!;
 
     /// <summary>
-    /// App Secret.
+    /// Facebook App Secret.
     /// </summary>
     [Required]
     public virtual string AppSecret { get; set; } = null!;
 
     /// <summary>
-    /// Scopes.
+    /// OAuth Scopes.
     /// </summary>
     [Required]
     public virtual string[] Scopes { get; set; } = [];

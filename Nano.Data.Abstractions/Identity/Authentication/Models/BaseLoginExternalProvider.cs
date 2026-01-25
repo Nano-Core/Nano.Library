@@ -3,12 +3,12 @@
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// Base LogIn External Provider (abstract).
+/// Base class for external login providers.
 /// </summary>
 public abstract class BaseLogInExternalProvider
 {
     /// <summary>
-    /// Name.
+    /// The unique name of the external provider.
     /// </summary>
     [Required]
     internal string Name { get; set; } = null!;

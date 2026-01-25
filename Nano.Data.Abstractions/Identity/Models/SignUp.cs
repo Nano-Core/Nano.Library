@@ -1,55 +1,52 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Nano.Common.Annotations;
-using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Entities.Abstractions;
 
 namespace Nano.Data.Abstractions.Identity.Models;
 
-/// <summary>
-/// Sign Up.
-/// </summary>
-/// <typeparam name="TUser">The user type.</typeparam>
+/// <inheritdoc />
 public class SignUp<TUser> : SignUp<TUser, Guid>
     where TUser : IEntityUser<Guid>;
 
 /// <summary>
-/// Sign Up.
+/// Represents a request to sign up a new user.
 /// </summary>
 /// <typeparam name="TUser">The user type.</typeparam>
-/// <typeparam name="TIdentity">The identity type.</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class SignUp<TUser, TIdentity> : BaseSignUp<TUser, TIdentity>
     where TUser : IEntityUser<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Email.
+    /// The user's email address.
     /// </summary>
     [Required]
     [EmailAddress]
     public virtual string EmailAddress { get; set; } = null!;
 
     /// <summary>
-    /// Phone Number.
+    /// The user's phone number (optional, international format supported).
     /// </summary>
     [InternationalPhone]
     public virtual string? PhoneNumber { get; set; }
 
     /// <summary>
-    /// Username.
+    /// The user's chosen username.
     /// </summary>
     [Required]
     [MaxLength(256)]
     public virtual string Username { get; set; } = null!;
 
     /// <summary>
-    /// Password.
+    /// The user's password.
     /// </summary>
     [Required]
     [MaxLength(256)]
     public virtual string Password { get; set; } = null!;
 
     /// <summary>
-    /// Confirm Password.
+    /// Confirmation of the user's password. Must match <see cref="Password"/>.
     /// </summary>
     [Required]
     [MaxLength(256)]

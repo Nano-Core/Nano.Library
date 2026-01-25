@@ -15,18 +15,9 @@ using Nano.Data.Abstractions.Identity.Exceptions;
 namespace Nano.App.Api.Identity.Authentication;
 
 /// <inheritdoc />
-public class AuthJwtRepository : IAuthJwtRepository
+public class AuthJwtRepository(JwtAuthenticationOptions options) : IAuthJwtRepository
 {
-    private readonly JwtAuthenticationOptions options;
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="options"></param>
-    public AuthJwtRepository(JwtAuthenticationOptions options)
-    {
-        this.options = options ?? throw new ArgumentNullException(nameof(options));
-    }
+    private readonly JwtAuthenticationOptions options = options ?? throw new ArgumentNullException(nameof(options));
 
     /// <inheritdoc />
     public virtual AccessToken GenerateJwtToken(GenerateJwtToken generateJwtToken)

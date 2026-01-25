@@ -3,19 +3,20 @@ using System.Threading;
 namespace Nano.App.StartUp;
 
 /// <summary>
-/// Startup Task Context.
+/// Tracks the progress and completion status of startup tasks.
 /// </summary>
 public sealed class StartupTaskContext
 {
     private int count;
 
     /// <summary>
-    /// Is Complete.
+    /// Gets a value indicating whether all tracked startup tasks have completed.
     /// </summary>
     public bool IsDone => this.count == 0;
 
     /// <summary>
-    /// Increment.
+    /// Increments the count of active startup tasks.
+        /// Call this when a new startup task begins.
     /// </summary>
     public void Increment()
     {
@@ -23,7 +24,8 @@ public sealed class StartupTaskContext
     }
 
     /// <summary>
-    /// Decrement.
+    /// Decrements the count of active startup tasks.
+    /// Call this when a startup task completes.
     /// </summary>
     public void Decrement()
     {

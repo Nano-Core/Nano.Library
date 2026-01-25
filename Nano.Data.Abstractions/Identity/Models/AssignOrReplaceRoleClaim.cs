@@ -7,27 +7,27 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class AddOrReplaceRoleClaim : ReplaceUserClaim<Guid>;
 
 /// <summary>
-/// Add Or Replace Role Claim.
+/// Represents a request to add or replace a claim on a role.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class AssignOrReplaceRoleClaim<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Role Id.
+    /// The identifier of the role whose claim should be added or replaced.
     /// </summary>
     [Required]
     public virtual TIdentity RoleId { get; set; } = default!;
 
     /// <summary>
-    /// Claim Type.
+    /// The claim type to add or replace.
     /// </summary>
     [Required]
     [MaxLength(256)]
     public virtual string ClaimType { get; set; } = null!;
 
     /// <summary>
-    /// Claim Value.
+    /// The claim value to add or replace.
     /// </summary>
     [Required]
     public virtual string ClaimValue { get; set; } = null!;

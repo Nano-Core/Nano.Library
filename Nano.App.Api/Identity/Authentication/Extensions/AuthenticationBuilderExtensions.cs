@@ -10,10 +10,7 @@ using Nano.Data.Abstractions.Identity.Authentication.Consts;
 
 namespace Nano.App.Api.Identity.Authentication.Extensions;
 
-/// <summary>
-/// Service Collection Extensions.
-/// </summary>
-public static class AuthenticationBuilderExtensions
+internal static class AuthenticationBuilderExtensions
 {
     internal static AuthenticationBuilder AddJwtAuthentication(this AuthenticationBuilder builder, JwtAuthenticationOptions? options = null)
     {

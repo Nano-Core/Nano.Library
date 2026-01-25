@@ -10,14 +10,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.ApiClient.Consts;
 using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Entities;
+using Nano.Data.Abstractions.Entities.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
-using Nano.Data.Abstractions.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 
 namespace Nano.App.Api.Controllers;
 
-/// <inheritdoc />
+/// <summary>
+/// Controller providing read-only operations.
+/// </summary>
+/// <typeparam name="TRepository">The repository implementing <see cref="IRepository"/> used by this controller.</typeparam>
+/// <typeparam name="TEntity">The entity type managed by the repository.</typeparam>
+/// <typeparam name="TIdentity">The type of the entity's identifier.</typeparam>
+/// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR + "," + BuiltInUserRoles.EDITOR + "," + BuiltInUserRoles.DELETER + "," + BuiltInUserRoles.READER)]
 public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria> : BaseController<TRepository>
     where TRepository : class, IRepository
@@ -25,24 +31,29 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BaseControllerReadOnly{TRepository,TEntity,TIdentity,TCriteria}"/> class.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="repository">The repository instance.</param>
+    /// <param name="eventing">Optional eventing service.</param>
     protected BaseControllerReadOnly(ILogger logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }
 
     /// <summary>
-    /// Gets all models.
+    /// Gets all entities matching the specified query.
     /// </summary>
-    /// <param name="query">The query.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>the models, matching the passed query.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <param name="query">The query used to filter entities.</param>
+    /// <param name="includeDepth">Optional include depth for related entities.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of entities matching the query.</returns>
+    /// <response code="200">Entities retrieved successfully.</response>
+    /// <response code="400">Invalid query parameters.</response>
+    /// <response code="401">Unauthorized access.</response>
+    /// <response code="404">No entities found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpGet]
     [Route("index")]
     [Produces(HttpContentType.JSON)]
@@ -70,17 +81,17 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Gets all models.
+    /// Gets all entities matching the specified query via POST.
     /// </summary>
-    /// <param name="query">The query.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>the models, matching the passed query.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <param name="query">The query used to filter entities.</param>
+    /// <param name="includeDepth">Optional include depth for related entities.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of entities matching the query.</returns>
+    /// <response code="200">Entities retrieved successfully.</response>
+    /// <response code="400">Invalid query parameters.</response>
+    /// <response code="401">Unauthorized access.</response>
+    /// <response code="404">No entities found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("index")]
     [Consumes(HttpContentType.JSON)]
@@ -109,17 +120,17 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Gets the model.
+    /// Gets a single entity by its identifier.
     /// </summary>
-    /// <param name="id">The identifier, that uniquely identifies the model.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The model.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <param name="id">The identifier of the entity.</param>
+    /// <param name="includeDepth">Optional include depth for related entities.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The entity matching the identifier.</returns>
+    /// <response code="200">Entity retrieved successfully.</response>
+    /// <response code="400">Invalid identifier.</response>
+    /// <response code="401">Unauthorized access.</response>
+    /// <response code="404">Entity not found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpGet]
     [Route("details/{id}")]
     [Produces(HttpContentType.JSON)]
@@ -152,17 +163,17 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Gets the models.
+    /// Gets multiple entities by their identifiers.
     /// </summary>
-    /// <param name="ids">The identifiers, that uniquely identifies the models.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The models.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <param name="ids">The identifiers of the entities.</param>
+    /// <param name="includeDepth">Optional include depth for related entities.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The entities matching the identifiers.</returns>
+    /// <response code="200">Entities retrieved successfully.</response>
+    /// <response code="400">Invalid identifiers.</response>
+    /// <response code="401">Unauthorized access.</response>
+    /// <response code="404">No entities found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpGet]
     [Route("details/many")]
     [Produces(HttpContentType.JSON)]
@@ -190,17 +201,17 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Gets the models.
+    /// Gets multiple entities by their identifiers.
     /// </summary>
-    /// <param name="ids">The identifiers, that uniquely identifies the models.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The models.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <param name="ids">The identifiers of the entities.</param>
+    /// <param name="includeDepth">Optional include depth for related entities.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The entities matching the identifiers.</returns>
+    /// <response code="200">Entities retrieved successfully.</response>
+    /// <response code="400">Invalid identifiers.</response>
+    /// <response code="401">Unauthorized access.</response>
+    /// <response code="404">No entities found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("details/many")]
     [Consumes(HttpContentType.JSON)]
@@ -229,17 +240,17 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Query models.
+    /// Queries entities matching the specified <typeparamref name="TCriteria"/>.
     /// </summary>
-    /// <param name="query">The query model, containing filters used in the query.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The models.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <param name="query">The query model containing filters and criteria.</param>
+    /// <param name="includeDepth">Optional include depth for related entities.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of entities matching the criteria.</returns>
+    /// <response code="200">Entities retrieved successfully.</response>
+    /// <response code="400">Invalid query parameters.</response>
+    /// <response code="401">Unauthorized access.</response>
+    /// <response code="404">No entities found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpGet]
     [Route("query")]
     [Produces(HttpContentType.JSON)]
@@ -267,17 +278,17 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Query models.
+    /// Queries entities matching the specified <typeparamref name="TCriteria"/> via POST.
     /// </summary>
-    /// <param name="query">The query model, containing filters used in the query.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The models.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <param name="query">The query model containing filters and criteria.</param>
+    /// <param name="includeDepth">Optional include depth for related entities.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of entities matching the criteria.</returns>
+    /// <response code="200">Entities retrieved successfully.</response>
+    /// <response code="400">Invalid query parameters.</response>
+    /// <response code="401">Unauthorized access.</response>
+    /// <response code="404">No entities found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("query")]
     [Consumes(HttpContentType.JSON)]
@@ -305,18 +316,19 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
         return this.Ok(results);
     }
 
+
     /// <summary>
-    /// Query the first mathcing entity.
+    /// Retrieves the first entity matching the specified <typeparamref name="TCriteria"/>.
     /// </summary>
-    /// <param name="query">The query model, containing filters used in the query.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The model.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <param name="query">The query model containing filters and criteria.</param>
+    /// <param name="includeDepth">Optional include depth for related entities.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The first entity matching the criteria.</returns>
+    /// <response code="200">Entity retrieved successfully.</response>
+    /// <response code="400">Invalid query parameters.</response>
+    /// <response code="401">Unauthorized access.</response>
+    /// <response code="404">No entity found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpGet]
     [Route("query/first")]
     [Produces(HttpContentType.JSON)]
@@ -349,17 +361,17 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Query the first mathcing entity.
+    /// Retrieves the first entity matching the specified <typeparamref name="TCriteria"/> via POST.
     /// </summary>
-    /// <param name="query">The query model, containing filters used in the query.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The model.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <param name="query">The query model containing filters and criteria.</param>
+    /// <param name="includeDepth">Optional include depth for related entities.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The first entity matching the criteria.</returns>
+    /// <response code="200">Entity retrieved successfully.</response>
+    /// <response code="400">Invalid query parameters.</response>
+    /// <response code="401">Unauthorized access.</response>
+    /// <response code="404">No entity found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("query/first")]
     [Consumes(HttpContentType.JSON)]
@@ -393,16 +405,16 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Gets the number of models (Count).
+    /// Gets the total count of entities matching the specified <typeparamref name="TCriteria"/>.
     /// </summary>
-    /// <param name="criteria">The criteria model, containing filters used in the criteria.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The count of models.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <param name="criteria">The criteria model containing filters.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The number of entities matching the criteria.</returns>
+    /// <response code="200">Count retrieved successfully.</response>
+    /// <response code="400">Invalid criteria parameters.</response>
+    /// <response code="401">Unauthorized access.</response>
+    /// <response code="404">No entities found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpGet]
     [Route("query/count")]
     [Produces(HttpContentType.JSON)]
@@ -420,16 +432,16 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Gets the number of models (Count).
+    /// Gets the total count of entities matching the specified <typeparamref name="TCriteria"/> via POST.
     /// </summary>
-    /// <param name="criteria">The criteria model, containing filters used in the criteria.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The count of models.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occured.</response>
+    /// <param name="criteria">The criteria model containing filters.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The number of entities matching the criteria.</returns>
+    /// <response code="200">Count retrieved successfully.</response>
+    /// <response code="400">Invalid criteria parameters.</response>
+    /// <response code="401">Unauthorized access.</response>
+    /// <response code="404">No entities found.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("query/count")]
     [Consumes(HttpContentType.JSON)]

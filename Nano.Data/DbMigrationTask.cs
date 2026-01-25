@@ -11,8 +11,7 @@ using Nano.Data.Abstractions.Identity.Consts;
 
 namespace Nano.Data;
 
-/// <inheritdoc />
-public sealed class DbMigrationTask<TIdentity> : IDbMigrationTask
+internal sealed class DbMigrationTask<TIdentity> : IDbMigrationTask
     where TIdentity : IEquatable<TIdentity>
 {
     private readonly ILogger logger;
@@ -20,14 +19,7 @@ public sealed class DbMigrationTask<TIdentity> : IDbMigrationTask
     private readonly BaseDbContext<TIdentity> dbContext;
     private readonly RoleManager<IdentityRole<TIdentity>>? roleManager;
 
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    /// <param name="logger">The <see cref="ILogger"/>.</param>
-    /// <param name="options">The <see cref="IOptionsMonitor{DataOptions}"/></param>
-    /// <param name="dbContext">The <see cref="BaseDbContext{TIdentity}"/>.</param>
-    /// <param name="roleManager">The <see cref="RoleManager{T}"/></param>
-    public DbMigrationTask(ILogger logger, IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, RoleManager<IdentityRole<TIdentity>>? roleManager = null)
+    internal DbMigrationTask(ILogger logger, IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, RoleManager<IdentityRole<TIdentity>>? roleManager = null)
     {
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this.options = options ?? throw new ArgumentNullException(nameof(options));
@@ -35,7 +27,6 @@ public sealed class DbMigrationTask<TIdentity> : IDbMigrationTask
         this.roleManager = roleManager;
     }
 
-    /// <inheritdoc />
     public async Task MigrateAndSeedAsync(CancellationToken cancellationToken = default)
     {
         await this.EnsureCreatedAsync(cancellationToken);
@@ -72,7 +63,7 @@ public sealed class DbMigrationTask<TIdentity> : IDbMigrationTask
     }
     private async Task EnsureIdentityAsync(CancellationToken cancellationToken = default)
     {
-        if (this.roleManager == null)
+        if (roleManager == null)
         {
             return;
         }
@@ -93,7 +84,7 @@ public sealed class DbMigrationTask<TIdentity> : IDbMigrationTask
 
         foreach (var role in roles)
         {
-            var exists = await this.roleManager
+            var exists = await roleManager
                 .RoleExistsAsync(role);
 
             if (exists)
@@ -103,7 +94,7 @@ public sealed class DbMigrationTask<TIdentity> : IDbMigrationTask
 
             var identityRole = new IdentityRole<TIdentity>(role);
 
-            await this.roleManager
+            await roleManager
                 .CreateAsync(identityRole);
         }
 

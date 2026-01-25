@@ -10,20 +10,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.ApiClient.Consts;
 using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Entities;
+using Nano.Data.Abstractions.Entities.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
-using Nano.Data.Abstractions.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 
 namespace Nano.App.Api.Controllers;
 
 /// <summary>
-/// Base abstract <see cref="Controller"/>, implementing  methods for instances of <typeparamref name="TEntity"/>.
+/// Controller providing create operations.
 /// </summary>
-/// <typeparam name="TRepository">The <see cref="IRepository"/> inheriting from <see cref="BaseControllerReadOnly{TRepository,TEntity,TIdentity,TCriteria}"/>.</typeparam>
-/// <typeparam name="TEntity">The <see cref="IEntity"/> model the <see cref="IRepository"/> operates with.</typeparam>
-/// <typeparam name="TIdentity">The Identifier type of <typeparamref name="TEntity"/>.</typeparam>
-/// <typeparam name="TCriteria">The <see cref="IQueryCriteria"/> implementation.</typeparam>
+/// <typeparam name="TRepository">The repository implementing <see cref="IRepository"/> used for data access.</typeparam>
+/// <typeparam name="TEntity">The entity type implementing <see cref="IEntity"/> handled by this controller.</typeparam>
+/// <typeparam name="TIdentity">The identifier type of <typeparamref name="TEntity"/>.</typeparam>
+/// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR)]
 public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : class, IRepository
@@ -38,15 +38,15 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     }
 
     /// <summary>
-    /// Create the passed model.
+    /// Creates a single model instance.
     /// </summary>
-    /// <param name="entity">The model to create.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The created model.</returns>
-    /// <response code="201">Created.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <param name="entity">The entity to create.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The created entity.</returns>
+    /// <response code="201">Entity created.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("create")]
     [Consumes(HttpContentType.JSON)]
@@ -67,15 +67,15 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     }
 
     /// <summary>
-    /// Create the passed model, and reload.
+    /// Creates a single model instance and retrieves it with included navigations.
     /// </summary>
-    /// <param name="entity">The model to create.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
-    /// <returns>The created model.</returns>
-    /// <response code="201">Created.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <param name="entity">The entity to create.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The created entity with included navigations.</returns>
+    /// <response code="201">Entity created.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("create/get")]
     [Consumes(HttpContentType.JSON)]
@@ -96,15 +96,15 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     }
 
     /// <summary>
-    /// Creates the passed models.
+    /// Creates multiple model instances.
     /// </summary>
-    /// <param name="entities">The models to create.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="entities">The entities to create.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Void.</returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <response code="201">Entities created.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("create/many")]
     [Consumes(HttpContentType.JSON)]
@@ -124,15 +124,15 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     }
 
     /// <summary>
-    /// Creates the passed models bulk.
+    /// Creates multiple model instances in bulk.
     /// </summary>
-    /// <param name="entities">The models to create.</param>
-    /// <param name="cancellationToken">The token used when request is cancelled.</param>
+    /// <param name="entities">The entities to create.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Void.</returns>
     /// <response code="200">Ok.</response>
-    /// <response code="400">Bad Request.</response>
+    /// <response code="400">Bad request.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="500">Error occured.</response>
+    /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route("create/many/bulk")]
     [Consumes(HttpContentType.JSON)]

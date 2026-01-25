@@ -7,20 +7,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class ResetPasswordToken : ResetPasswordToken<Guid>;
 
 /// <summary>
-/// Reset Password Token.
+/// Represents a request to reset a user's password using a token.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class ResetPasswordToken<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// The identifier of the user whose password is being reset.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// Token.
+    /// The token used to authorize the password reset.
     /// </summary>
     [Required]
     public virtual string Token { get; set; } = null!;

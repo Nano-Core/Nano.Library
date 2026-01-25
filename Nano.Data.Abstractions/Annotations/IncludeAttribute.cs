@@ -4,20 +4,21 @@ using Nano.Data.Abstractions.Config.Enums;
 namespace Nano.Data.Abstractions.Annotations;
 
 /// <summary>
-/// Include Attribute.
+/// Indicates that a navigation property should be automatically included in queries.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
 public class IncludeAttribute : Attribute
 {
     /// <summary>
-    /// Query Split Behavior.
+    /// Gets or sets the query splitting behavior for this property.
+    /// Defaults to <see cref="QuerySplitBehavior.SingleQuery"/>.
     /// </summary>
     public QuerySplitBehavior QuerySplitBehavior { get; set; }
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of the <see cref="IncludeAttribute"/> class.
     /// </summary>
-    /// <param name="querySplitBehavior">The <see cref="Config.Enums.QuerySplitBehavior"/>.</param>
+    /// <param name="querySplitBehavior">The <see cref="QuerySplitBehavior"/> to use for this property. Defaults to <see cref="QuerySplitBehavior.SingleQuery"/>.</param>
     public IncludeAttribute(QuerySplitBehavior querySplitBehavior = QuerySplitBehavior.SingleQuery)
     {
         this.QuerySplitBehavior = querySplitBehavior;

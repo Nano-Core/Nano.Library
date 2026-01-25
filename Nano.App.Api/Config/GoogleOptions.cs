@@ -3,24 +3,24 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Google Options.
+/// Options for Google external login.
 /// </summary>
 public class GoogleOptions
 {
     /// <summary>
-    /// Client Id.
+    /// OAuth Client Id.
     /// </summary>
     [Required]
     public virtual string ClientId { get; set; } = null!;
 
     /// <summary>
-    /// Client Secret.
+    /// OAuth Client Secret.
     /// </summary>
     [Required]
     public virtual string ClientSecret { get; set; } = null!;
 
     /// <summary>
-    /// Scopes.
+    /// OAuth Scopes.
     /// </summary>
     [Required]
     public virtual string[] Scopes { get; set; } = [];

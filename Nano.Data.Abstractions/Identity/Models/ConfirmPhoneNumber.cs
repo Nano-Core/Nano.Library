@@ -7,20 +7,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class ConfirmPhoneNumber : ConfirmPhoneNumber<Guid>;
 
 /// <summary>
-/// Confirm Phone Number.
+/// Represents a request to confirm a user's phone number.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class ConfirmPhoneNumber<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// The identifier of the user whose phone number is being confirmed.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// Token.
+    /// The token used to confirm the user's phone number.
     /// </summary>
     [Required]
     public virtual string Token { get; set; } = null!;

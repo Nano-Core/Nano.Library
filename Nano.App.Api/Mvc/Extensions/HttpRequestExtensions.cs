@@ -5,16 +5,16 @@ using Microsoft.AspNetCore.Http;
 namespace Nano.App.Api.Mvc.Extensions;
 
 /// <summary>
-/// Http Request Extensions.
+/// Extension methods for <see cref="HttpRequest"/> to retrieve additional request information.
 /// </summary>
 public static class HttpRequestExtensions
 {
     /// <summary>
-    /// Get Remote IP-Address.
-    /// From 'X-Forwarded-For' header
+    /// Retrieves the remote IP address of the client making the request.
+    /// Checks the 'X-Forwarded-For' header for proxied requests.
     /// </summary>
-    /// <param name="httpRequest">The <see cref="HttpRequest"/>.</param>
-    /// <returns>The remote ip-address.</returns>
+    /// <param name="httpRequest">The <see cref="HttpRequest"/> instance.</param>
+    /// <returns>The remote IP address as a string if available; otherwise, <c>null</c>. Returns the IPv4 address if the original IP is mapped to IPv6.</returns>
     public static string? GetRemoteIpAddress(this HttpRequest httpRequest)
     {
         ArgumentNullException.ThrowIfNull(httpRequest);

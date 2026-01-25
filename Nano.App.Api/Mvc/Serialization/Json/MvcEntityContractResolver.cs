@@ -3,14 +3,13 @@ using System.Reflection;
 using Nano.Common.Extensions;
 using Nano.Common.Serialization.Json;
 using Nano.Data.Abstractions.Annotations;
-using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Entities.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace Nano.App.Api.Mvc.Serialization.Json;
 
-/// <inheritdoc />
-public sealed class MvcEntityContractResolver : DefaultEntityContractResolver
+internal sealed class MvcEntityContractResolver : DefaultEntityContractResolver
 {
     /// <summary>
     /// Create a property.

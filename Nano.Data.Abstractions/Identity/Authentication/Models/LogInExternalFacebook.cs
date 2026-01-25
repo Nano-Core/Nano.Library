@@ -1,6 +1,6 @@
 ﻿namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// Log In External Facebook.
+/// External login request using Facebook authentication.
 /// </summary>
 public class LogInExternalFacebook : LogInExternalImplicit<ExternalLoginProviderFacebook>;

@@ -20,11 +20,11 @@ public class AuthTransientRepository : IAuthTransientRepository
     private readonly IAuthExternalRepository? authExternalRepository;
 
     /// <summary>
-    /// 
+    /// Initializes a new instance of the <see cref="AuthTransientRepository"/> class.
     /// </summary>
-    /// <param name="options"></param>
-    /// <param name="authJwtRepository"></param>
-    /// <param name="authExternalRepository"></param>
+    /// <param name="options">The external login options used to configure the repository. Cannot be null.</param>
+    /// <param name="authJwtRepository">The JWT authentication repository used for token management. Cannot be null.</param>
+    /// <param name="authExternalRepository">An optional external authentication repository. Can be null if not required.</param>
     public AuthTransientRepository(ExternalLoginOptions options, IAuthJwtRepository authJwtRepository, IAuthExternalRepository? authExternalRepository = null)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));

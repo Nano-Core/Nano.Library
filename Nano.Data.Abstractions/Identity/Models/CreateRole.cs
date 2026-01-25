@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
-/// Create Role.
+/// Represents a request to create a role.
 /// </summary>
 public class CreateRole
 {
     /// <summary>
-    /// Role Name.
+    /// The name of the role to create.
     /// </summary>
     [Required]
     [MaxLength(256)]

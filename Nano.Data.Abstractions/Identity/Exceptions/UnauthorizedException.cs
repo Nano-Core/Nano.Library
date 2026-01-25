@@ -3,16 +3,21 @@
 namespace Nano.Data.Abstractions.Identity.Exceptions;
 
 /// <summary>
-/// Unauthorized Exception.
+/// Represents an exception that is thrown when a user is unauthorized to perform an action.
 /// </summary>
 public class UnauthorizedException : Exception
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UnauthorizedException"/> class.
+    /// </summary>
     public UnauthorizedException()
     {
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UnauthorizedException"/> class with a specified error message.
+    /// </summary>
+    /// <param name="message">The message that describes the error.</param>
     public UnauthorizedException(string message)
         : base(message)
     {

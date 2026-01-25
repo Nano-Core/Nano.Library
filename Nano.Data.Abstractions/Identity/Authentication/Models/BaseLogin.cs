@@ -3,20 +3,19 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
-
 /// <summary>
-/// Base LogIn (abstract).
+/// Base class for login requests.
 /// </summary>
 public abstract class BaseLogIn
 {
     /// <summary>
-    /// App Id.
+    /// The application identifier associated with the login request.
     /// </summary>
     [MaxLength(256)]
     public virtual string? AppId { get; set; }
 
     /// <summary>
-    /// Is Remember Me.
+    /// Indicates whether the login should be persisted across sessions.
     /// Not relevant for transient logins.
     /// </summary>
     [Required]
@@ -24,7 +23,7 @@ public abstract class BaseLogIn
     public virtual bool IsRememberMe { get; set; } = false;
 
     /// <summary>
-    /// Is Refreshable.
+    /// Indicates whether the login supports token refresh.
     /// Not relevant for transient logins.
     /// </summary>
     [Required]
@@ -32,15 +31,13 @@ public abstract class BaseLogIn
     public virtual bool IsRefreshable { get; set; } = false;
 
     /// <summary>
-    /// Transient Roles.
-    /// Non persisted roles, that is added to the jwt-token when logging in.
+    /// Non-persisted roles added to the issued JWT during login.
     /// </summary>
     [Required]
     public virtual IEnumerable<string> TransientRoles { get; set; } = [];
 
     /// <summary>
-    /// Transient Claims.
-    /// Non persisted claims, that is added to the jwt-token when logging in.
+    /// Non-persisted claims added to the issued JWT during login.
     /// </summary>
     [Required]
     public virtual IDictionary<string, string> TransientClaims { get; set; } = new Dictionary<string, string>();

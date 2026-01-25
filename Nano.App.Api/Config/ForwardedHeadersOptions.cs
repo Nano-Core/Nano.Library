@@ -1,6 +1,6 @@
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Forwarded Header Options.
+/// Options for forwarded headers (used when behind a proxy).
 /// </summary>
 public class ForwardedHeadersOptions;

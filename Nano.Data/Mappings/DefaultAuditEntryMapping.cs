@@ -1,12 +1,15 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Entities;
 using Nano.Data.Consts;
 
 namespace Nano.Data.Mappings;
 
-/// <inheritdoc />
+/// <summary>
+/// Default mapping for <see cref="DefaultAuditEntry"/>.
+/// Configures table, properties, indexes, and relationships.
+/// </summary>
 public class DefaultAuditEntryMapping : DefaultEntityMapping<DefaultAuditEntry>
 {
     /// <inheritdoc />

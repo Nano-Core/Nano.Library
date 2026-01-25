@@ -1,14 +1,16 @@
+using System;
+
 namespace Nano.App.Exceptions;
 
 /// <summary>
-/// Bad Request Exception.
+/// Represents a bad request error.
 /// </summary>
-public class BadRequestException : TranslationException
+public class BadRequestException : Exception
 {
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of the <see cref="BadRequestException"/> class with a specified error message.
     /// </summary>
-    /// <param name="message">The message.</param>
+    /// <param name="message">A message describing the bad request.</param>
     public BadRequestException(string message)
         : base(message)
     {

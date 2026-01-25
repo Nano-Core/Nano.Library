@@ -9,32 +9,31 @@ using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Eventing;
 using Nano.Data.Abstractions.Eventing.Models;
 using Nano.Data.Abstractions.Identity.Extensions;
-using Nano.Data.Abstractions.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Eventing;
 using Nano.Data.Identity.Authentication.Extensions;
 using Nano.Data.Identity.Extensions;
 using Nano.Eventing.Abstractions;
 using System;
 using System.Linq;
+using Nano.Data.Abstractions.Entities;
+using Nano.Data.Abstractions.Entities.Abstractions;
 using Z.EntityFramework.Extensions;
 using Z.EntityFramework.Plus;
 
 namespace Nano.Data.Extensions;
 
 /// <summary>
-/// Service Collection Extensions.
+/// Provides extension methods for registering Nano Library data providers and related services in an <see cref="IServiceCollection"/>.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds data provider for <see cref="DbContext"/> to the <see cref="IServiceCollection"/>.
+    /// Adds a data provider and <see cref="DbContext"/> to the service collection, using <see cref="Guid"/> as the default identity type.
     /// </summary>
-    /// <typeparam name="TProvider">The <see cref="IDataProvider"/> implementation.</typeparam>
-    /// <typeparam name="TContext">The <see cref="DbContext"/> implementation.</typeparam>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    /// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data</remarks>
+    /// <typeparam name="TProvider">The <see cref="IDataProvider"/> implementation to use.</typeparam>
+    /// <typeparam name="TContext">The <see cref="DbContext"/> implementation to register.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/> to configure.</param>
+    /// <returns>The <see cref="IServiceCollection"/> for chaining.</returns>
     public static IServiceCollection AddNanoData<TProvider, TContext>(this IServiceCollection services)
         where TProvider : IDataProvider
         where TContext : DefaultDbContext
@@ -51,14 +50,14 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds data provider for <see cref="DbContext"/> to the <see cref="IServiceCollection"/>.
+    /// Adds a data provider and <see cref="DbContext"/> to the service collection, using a custom identity type.
     /// </summary>
-    /// <typeparam name="TProvider">The <see cref="IDataProvider"/> implementation.</typeparam>
-    /// <typeparam name="TContext">The <see cref="DbContext"/> implementation.</typeparam>
-    /// <typeparam name="TIdentity">The identity type.</typeparam>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    /// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data</remarks>
+    /// <typeparam name="TProvider">The <see cref="IDataProvider"/> implementation to use.</typeparam>
+    /// <typeparam name="TContext">The <see cref="DbContext"/> implementation to register.</typeparam>
+    /// <typeparam name="TIdentity">The type of the identity key for entities.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/> to configure.</param>
+    /// <returns>The <see cref="IServiceCollection"/> for chaining.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the <see cref="DataOptions"/> configuration section cannot be loaded.</exception>
     public static IServiceCollection AddNanoData<TProvider, TContext, TIdentity>(this IServiceCollection services)
         where TProvider : IDataProvider
         where TContext : BaseDbContext<TIdentity>
@@ -112,10 +111,10 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
 
-        if (options.UseConnectionPooling)
+        if (options.ConnectionPool == null)
         {
             services
-                .AddDbContextPool<TContext>((provider, builder) =>
+                .AddDbContext<TContext>((provider, builder) =>
                 {
                     builder
                         .AddDataContext(provider, options);
@@ -126,13 +125,13 @@ public static class ServiceCollectionExtensions
         else
         {
             services
-                .AddDbContext<TContext>((provider, builder) =>
+                .AddDbContextPool<TContext>((provider, builder) =>
                 {
                     builder
                         .AddDataContext(provider, options);
 
                     TProvider.Configure(builder, options);
-                });
+                }, options.ConnectionPool.PoolSize);
         }
 
         return services;

@@ -5,7 +5,7 @@ using PhoneNumbers;
 namespace Nano.Common.Annotations;
 
 /// <summary>
-/// International Phone Attribute.
+/// Validates that a string property contains a valid international phone number.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
 public class InternationalPhoneAttribute : ValidationAttribute

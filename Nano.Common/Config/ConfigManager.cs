@@ -8,20 +8,23 @@ using System.Text;
 namespace Nano.Common.Config;
 
 /// <summary>
-/// Config Manager.
+/// Provides centralized access to the application <see cref="IConfiguration"/> and handles building it
+/// from JSON files, environment variables, command-line arguments, and user secrets.
 /// </summary>
 public static class ConfigManager
 {
     internal static IConfiguration Configuration { get; set; } = null!;
 
     /// <summary>
-    /// 
+    /// Builds the application <see cref="IConfiguration"/> by loading configuration
+    /// from JSON files, environment variables, command-line arguments, and user secrets.
     /// </summary>
-    /// <param name="environment"></param>
-    /// <param name="entryAssembly"></param>
-    /// <param name="args"></param>
-    /// <returns></returns>
-    /// <exception cref="NullReferenceException"></exception>
+    /// <param name="environment">The environment name (e.g., "Development", "Production") used to load environment-specific configuration.</param>
+    /// <param name="entryAssembly">The entry <see cref="Assembly"/> used for loading user secrets. Must not be null.</param>
+    /// <param name="args">Optional command-line arguments to include in the configuration.</param>
+    /// <returns>The fully built <see cref="IConfiguration"/> instance. Also sets <see cref="ConfigManager.Configuration"/>.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="environment"/> is null.</exception>
+    /// <exception cref="NullReferenceException">Thrown if <paramref name="entryAssembly"/> is null.</exception>
     public static IConfiguration BuildConfiguration(string environment, Assembly? entryAssembly = null, params string[] args)
     {
         ArgumentNullException.ThrowIfNull(environment);
@@ -78,23 +81,21 @@ public static class ConfigManager
         {
             var overrideValue = property.Value;
 
-            // Explicit `"key": null` → remove from base
             if (overrideValue.Type == JTokenType.Null)
             {
-                baseJson.Remove(property.Name);
+                baseJson
+                    .Remove(property.Name);
+
                 continue;
             }
 
-            // Nested object → recurse
-            if (overrideValue is JObject overrideObj &&
-                baseJson[property.Name] is JObject baseObj)
+            if (overrideValue is JObject overrideObj && baseJson[property.Name] is JObject baseObj)
             {
                 RemoveNulls(baseObj, overrideObj);
+
                 continue;
             }
 
-            // Any other value (arrays, primitives, objects)
-            // → replace using deep clone
             baseJson[property.Name] = overrideValue.DeepClone();
         }
     }

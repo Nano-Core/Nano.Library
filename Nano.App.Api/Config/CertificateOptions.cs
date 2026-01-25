@@ -3,18 +3,18 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Certificate Options.
+/// Options for SSL certificates.
 /// </summary>
 public class CertificateOptions
 {
     /// <summary>
-    /// Path.
+    /// File path to the certificate.
     /// </summary>
     [Required]
     public virtual string Path { get; set; } = null!;
 
     /// <summary>
-    /// Password
+    /// Password for the certificate.
     /// </summary>
     [Required]
     public virtual string Password { get; set; } = null!;

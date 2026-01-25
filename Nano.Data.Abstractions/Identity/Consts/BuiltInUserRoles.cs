@@ -1,42 +1,42 @@
 namespace Nano.Data.Abstractions.Identity.Consts;
 
 /// <summary>
-/// Built-In User Roles.
+/// Defines built-in user roles for identity management and authorization.
 /// </summary>
 public static class BuiltInUserRoles
 {
     /// <summary>
-    /// Reader.
+    /// Role for read-only access.
     /// </summary>
     public const string READER = "reader";
 
     /// <summary>
-    /// Creator.
+    /// Role for creating content.
     /// </summary>
     public const string CREATOR = "creator";
 
     /// <summary>
-    /// Editor.
+    /// Role for editing content.
     /// </summary>
     public const string EDITOR = "editor";
 
     /// <summary>
-    /// Deleter.
+    /// Role for deleting content.
     /// </summary>
     public const string DELETER = "deleter";
 
     /// <summary>
-    /// Writer.
+    /// Role for writing content.
     /// </summary>
     public const string WRITER = "writer";
 
     /// <summary>
-    /// Identity.
+    /// Role for identity management (alias for reader).
     /// </summary>
     public const string IDENTITY = "reader";
 
     /// <summary>
-    /// Administrator.
+    /// Role for full administrative access.
     /// </summary>
     public const string ADMINISTRATOR = "administrator";
 }

@@ -7,20 +7,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class RemoveRoleClaim : RemoveRoleClaim<Guid>;
 
 /// <summary>
-/// Remove Role Claim.
+/// Represents a request to remove a claim from a role.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class RemoveRoleClaim<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Role Id.
+    /// The identifier of the role.
     /// </summary>
     [Required]
     public virtual TIdentity RoleId { get; set; } = default!;
 
     /// <summary>
-    /// Claim Type.
+    /// The claim type to remove.
     /// </summary>
     [Required]
     [MaxLength(256)]

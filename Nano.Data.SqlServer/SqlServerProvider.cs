@@ -9,8 +9,12 @@ using Nano.Common.Mvc.HealthChecks.Extensions;
 namespace Nano.Data.SqlServer;
 
 /// <summary>
-/// Sql Server Data Provider.
+/// SQL Server data provider.
 /// </summary>
+/// <remarks>
+///     Supports retry policies, batching, spatial data via NetTopologySuite, query splitting behavior, and optional health checks.
+///     Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqlServer
+/// </remarks>
 public sealed class SqlServerProvider : IDataProvider
 {
     /// <inheritdoc />
@@ -26,7 +30,7 @@ public sealed class SqlServerProvider : IDataProvider
         builder
             .UseSqlServer(connectionString, x =>
             {
-                var querySplittingBehavior = options.UseQuerySplittingBehavior
+                var querySplittingBehavior = options.QuerySplittingBehavior
                     .GetQuerySplittingBehavior();
 
                 x.MaxBatchSize(batchSize);

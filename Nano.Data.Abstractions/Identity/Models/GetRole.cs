@@ -7,20 +7,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class GetRole : GetRole<Guid>;
 
 /// <summary>
-/// Get Role.
+/// Represents a request to get a role assigned to a user.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class GetRole<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// The identifier of the user.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// Role Name.
+    /// The name of the role to retrieve.
     /// </summary>
     [Required]
     [MaxLength(256)]

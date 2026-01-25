@@ -9,8 +9,12 @@ using Nano.Data.Extensions;
 namespace Nano.Data.PostgreSQL;
 
 /// <summary>
-/// PostgreSQL Data Provider.
+/// PostgreSQL data provider using Npgsql.
 /// </summary>
+/// <remarks>
+///     Supports retry policies, batching, spatial data via NetTopologySuite, query splitting behavior, and optional health checks.
+///     Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.PostgreSQL
+/// </remarks>
 public sealed class PostgresProvider : IDataProvider
 {
     /// <inheritdoc />
@@ -26,7 +30,7 @@ public sealed class PostgresProvider : IDataProvider
         builder
             .UseNpgsql(connectionString, x =>
             {
-                var querySplittingBehavior = options.UseQuerySplittingBehavior
+                var querySplittingBehavior = options.QuerySplittingBehavior
                     .GetQuerySplittingBehavior();
 
                 x.MaxBatchSize(batchSize);

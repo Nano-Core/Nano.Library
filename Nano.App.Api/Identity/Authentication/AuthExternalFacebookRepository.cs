@@ -12,21 +12,11 @@ using Newtonsoft.Json;
 namespace Nano.App.Api.Identity.Authentication;
 
 /// <inheritdoc />
-public class AuthExternalFacebookRepository : IAuthExternalFacebookRepository
+public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient httpClient)
+    : IAuthExternalFacebookRepository
 {
-    private readonly FacebookOptions options;
-    private readonly HttpClient httpClient;
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="options"></param>
-    /// <param name="httpClient"></param>
-    public AuthExternalFacebookRepository(FacebookOptions options, HttpClient httpClient)
-    {
-        this.options = options ?? throw new ArgumentNullException(nameof(options));
-        this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-    }
+    private readonly FacebookOptions options = options ?? throw new ArgumentNullException(nameof(options));
+    private readonly HttpClient httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
     /// <inheritdoc />
     public virtual async Task<ExternalLogInData> Authenticate(ExternalLoginProviderFacebook provider, CancellationToken cancellationToken = default)

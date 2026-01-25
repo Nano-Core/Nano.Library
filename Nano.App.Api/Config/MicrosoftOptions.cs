@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Microsoft Options.
+/// Options for Microsoft authentication.
 /// </summary>
 public class MicrosoftOptions
 {
@@ -26,7 +26,7 @@ public class MicrosoftOptions
     public virtual string ClientSecret { get; set; } = null!;
 
     /// <summary>
-    /// Scopes.
+    /// OAuth scopes.
     /// </summary>
     [Required]
     public virtual string[] Scopes { get; set; } = [];

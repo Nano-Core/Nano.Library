@@ -6,15 +6,20 @@ using Newtonsoft.Json.Serialization;
 
 namespace Nano.Common.Serialization.Json;
 
-/// <inheritdoc />
+/// <summary>
+/// A <see cref="DefaultContractResolver"/> that customizes JSON serialization for entities,
+/// including support for serializing only non-empty enumerable properties.
+/// </summary>
 public class DefaultEntityContractResolver : DefaultContractResolver
 {
     /// <summary>
-    /// Create a property.
+    /// Creates a <see cref="JsonProperty"/> for the given <paramref name="member"/> and configures serialization rules, including non-empty enumerable handling.
     /// </summary>
-    /// <param name="member">The <see cref="MemberInfo"/>.</param>
-    /// <param name="memberSerialization">The <see cref="MemberSerialization"/>.</param>
-    /// <returns>The <see cref="JsonProperty"/>.</returns>
+    /// <param name="member">The <see cref="MemberInfo"/> representing the property or field.</param>
+    /// <param name="memberSerialization">The <see cref="MemberSerialization"/> mode.</param>
+    /// <returns>The configured <see cref="JsonProperty"/>.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="member"/> is null.</exception>
+    /// <exception cref="NullReferenceException">Thrown if the property type could not be determined.</exception>
     protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
     {
         ArgumentNullException.ThrowIfNull(member);
@@ -33,11 +38,12 @@ public class DefaultEntityContractResolver : DefaultContractResolver
     }
 
     /// <summary>
-    /// Serialize Only Non Empty Enumerables.
+    /// Configures a <see cref="JsonProperty"/> to serialize only if its enumerable value is non-empty.
     /// </summary>
-    /// <param name="member">The <see cref="MemberInfo"/>.</param>
-    /// <param name="propertyType">The <see cref="Type"/>.</param>
-    /// <param name="property">The <see cref="JsonProperty"/>.</param>
+    /// <param name="member">The <see cref="MemberInfo"/> representing the property or field.</param>
+    /// <param name="propertyType">The <see cref="Type"/> of the property.</param>
+    /// <param name="property">The <see cref="JsonProperty"/> to configure.</param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="member"/>, <paramref name="propertyType"/>, or <paramref name="property"/> is null.</exception>
     protected void SerializeOnlyNonEmptyEnumerables(MemberInfo member, Type propertyType, ref JsonProperty property)
     {
         ArgumentNullException.ThrowIfNull(member);

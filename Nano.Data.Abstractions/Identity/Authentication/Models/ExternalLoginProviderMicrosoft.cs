@@ -3,7 +3,7 @@
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// External Login Provider Microsoft.
+/// External login provider using Microsoft authentication.
 /// </summary>
 public class ExternalLoginProviderMicrosoft : ExternalLoginProviderAuthCode
 {

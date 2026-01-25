@@ -7,20 +7,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class RemoveExternalLogin : RemoveExternalLogin<Guid>;
 
 /// <summary>
-/// Remove External Login.
+/// Represents a request to remove an external login from a user account.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class RemoveExternalLogin<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// The identifier of the user.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// External Provider.
+    /// The external provider login to remove.
     /// </summary>
     [Required]
     public virtual ExternalProvider ExternalProvider { get; set; } = new();

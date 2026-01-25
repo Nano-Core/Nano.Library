@@ -7,20 +7,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class GenerateChangeEmailToken : GenerateChangeEmailToken<Guid>;
 
 /// <summary>
-/// Generate Change Email Token.
+/// Represents a request to generate a change email token for a user.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class GenerateChangeEmailToken<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User id.
+    /// The identifier of the user requesting the email change.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// New Email Address.
+    /// The new email address to be associated with the user.
     /// </summary>
     [Required]
     [EmailAddress]

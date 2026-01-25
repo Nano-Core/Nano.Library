@@ -10,12 +10,21 @@ using System;
 
 namespace Nano.Data;
 
-/// <inheritdoc />
+/// <summary>
+/// Base factory for creating <see cref="DbContext"/> instances at design-time for migrations.
+/// </summary>
+/// <typeparam name="TProvider">The type of <see cref="IDataProvider"/> used to configure the context.</typeparam>
+/// <typeparam name="TContext">The type of <see cref="DbContext"/> to create.</typeparam>
 public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbContextFactory<TContext>
     where TProvider : class, IDataProvider
     where TContext : DbContext
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Creates a new instance of the <typeparamref name="TContext"/> <see cref="DbContext"/> with configured options.
+    /// </summary>
+    /// <param name="args">Optional arguments passed by the design-time tools.</param>
+    /// <returns>An instance of <typeparamref name="TContext"/>.</returns>
+    /// <exception cref="NullReferenceException">Thrown if the <see cref="DataOptions"/> or the created <typeparamref name="TContext"/> instance is null.</exception>
     public virtual TContext CreateDbContext(string[] args)
     {
         var configuration = ConfigManager.BuildConfiguration(Environments.Development);

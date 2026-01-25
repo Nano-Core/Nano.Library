@@ -36,8 +36,6 @@
 	  <ProjectReference Include="..\..\Nano.Logging.Serilog\Nano.Logging.Serilog.csproj" />
 	  <ProjectReference Include="..\..\Nano.Logging\Nano.Logging.csproj" />
 	  <ProjectReference Include="..\..\Nano.Storage.Abstractions\Nano.Storage.Abstractions.csproj" />
-	  <ProjectReference Include="..\..\Nano.Storage.AzureShare\Nano.Storage.AzureShare.csproj" />
-	  <ProjectReference Include="..\..\Nano.Storage.LocalShare\Nano.Storage.LocalShare.csproj" />
 	  <ProjectReference Include="..\..\Nano.Storage\Nano.Storage.csproj" />
 	  <ProjectReference Include="..\..\NanoCore\NanoCore.csproj" />
 	</ItemGroup>

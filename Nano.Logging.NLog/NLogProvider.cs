@@ -13,6 +13,7 @@ namespace Nano.Logging.NLog;
 /// <summary>
 /// A logging provider that configures NLog as the application's logging framework.
 /// </summary>
+/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.NLog</remarks>
 public sealed class NLogProvider : ILoggingProvider
 {
     /// <summary>

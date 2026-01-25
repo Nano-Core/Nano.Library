@@ -5,16 +5,16 @@ using Nano.Common.Mvc.HealthChecks.Enums;
 namespace Nano.Common.Mvc.HealthChecks.Extensions;
 
 /// <summary>
-/// Health Status Level Extensions.
+/// Extension methods for <see cref="HealthStatusLevel"/> to map to <see cref="HealthStatus"/>.
 /// </summary>
 public static class HealthStatusLevelExtensions
 {
     /// <summary>
-    /// 
+    /// Maps a <see cref="HealthStatusLevel"/> value to a corresponding <see cref="HealthStatus"/> value.
     /// </summary>
-    /// <param name="healthStatusLevel"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    /// <param name="healthStatusLevel">The <see cref="HealthStatusLevel"/> to convert.</param>
+    /// <returns>The corresponding <see cref="HealthStatus"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="healthStatusLevel"/> has a value not defined in <see cref="HealthStatusLevel"/>.</exception>
     public static HealthStatus GetHealthStatus(this HealthStatusLevel healthStatusLevel)
     {
         return healthStatusLevel switch

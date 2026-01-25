@@ -1,6 +1,6 @@
 ﻿namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// Log In External Microsoft.
+/// External login request using Microsoft authentication and authorization code flow.
 /// </summary>
 public class LogInExternalMicrosoft : LogInExternalAuthCode<ExternalLoginProviderMicrosoft>;

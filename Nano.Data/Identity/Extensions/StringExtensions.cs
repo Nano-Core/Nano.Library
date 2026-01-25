@@ -5,17 +5,9 @@ using System.Text;
 
 namespace Nano.Data.Identity.Extensions;
 
-/// <summary>
-/// String Extensions.
-/// </summary>
-public static class StringExtensions
+internal static class StringExtensions
 {
-    /// <summary>
-    /// Gets the <see cref="JwtSecurityToken"/> from a string access token.
-    /// </summary>
-    /// <param name="accessToken">The access token (jwt).</param>
-    /// <returns>The <see cref="JwtSecurityToken"/>.</returns>
-    public static JwtSecurityToken GetJwtSecurityToken(this string accessToken)
+    internal static JwtSecurityToken GetJwtSecurityToken(this string accessToken)
     {
         ArgumentNullException.ThrowIfNull(accessToken);
 
@@ -29,13 +21,7 @@ public static class StringExtensions
             : jwtSecurityToken;
     }
 
-    /// <summary>
-    /// Hmac Encrypt.
-    /// </summary>
-    /// <param name="apiKey">The unencrtpted generated api-key.</param>
-    /// <param name="hmacSecret">The hmac secret</param>
-    /// <returns>The encrypted base 64 api-key.</returns>
-    public static string HmacEncrypt(this string apiKey, string hmacSecret)
+    internal static string HmacEncrypt(this string apiKey, string hmacSecret)
     {
         ArgumentNullException.ThrowIfNull(apiKey);
         ArgumentNullException.ThrowIfNull(hmacSecret);

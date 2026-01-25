@@ -7,20 +7,20 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class EditApiKey : EditApiKey<Guid>;
 
 /// <summary>
-/// Remove Claim.
+/// Represents a request to edit an API key.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class EditApiKey<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Id.
+    /// The identifier of the API key to edit.
     /// </summary>
     [Required]
     public virtual TIdentity Id { get; set; } = default!;
 
     /// <summary>
-    /// Name.
+    /// The updated name for the API key.
     /// </summary>
     [Required]
     [MaxLength(256)]

@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Options;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
-using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Entities.Abstractions;
 using Nano.Data.Extensions;
 
 namespace Nano.Data;
@@ -27,10 +27,10 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     private readonly TContext dbContext;
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of the <see cref="BaseRepository{TContext, TIdentity}"/> class.
     /// </summary>
-    /// <param name="options">The <see cref="IOptionsMonitor{DataOptions}"/></param>
-    /// <param name="context">The <see cref="DbContext"/>.</param>
+    /// <param name="options">The <see cref="IOptionsMonitor{DataOptions}"/> used to access repository configuration.</param>
+    /// <param name="context">The database context.</param>
     protected BaseRepository(IOptionsMonitor<DataOptions> options, TContext context)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));
@@ -196,6 +196,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     /// <inheritdoc />
     public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(IEnumerable<TKey> keys, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TKey>
+        where TKey : IEquatable<TKey>
     {
         ArgumentNullException.ThrowIfNull(keys);
 
@@ -207,6 +208,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     /// <inheritdoc />
     public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(IEnumerable<TKey> keys, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TKey>
+        where TKey : IEquatable<TKey>
     {
         ArgumentNullException.ThrowIfNull(keys);
 
@@ -1003,11 +1005,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         GC.SuppressFinalize(this);
     }
 
-    /// <summary>
-    /// Dispose(bool).
-    /// Override in derived classes as needed.
-    /// </summary>
-    /// <param name="disposing"></param>
+    /// <inheritdoc cref="IDisposable" />
     protected virtual void Dispose(bool disposing)
     {
         if (!disposing)

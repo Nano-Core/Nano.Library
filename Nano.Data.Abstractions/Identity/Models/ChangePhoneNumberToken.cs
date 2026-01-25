@@ -7,26 +7,26 @@ namespace Nano.Data.Abstractions.Identity.Models;
 public class ChangePhoneNumberToken : ChangePhoneNumberToken<Guid>;
 
 /// <summary>
-/// Change Phone Number Token
+/// Represents a request to change a user's phone number using a confirmation token.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
 public class ChangePhoneNumberToken<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// User Id.
+    /// The identifier of the user whose phone number is being changed.
     /// </summary>
     [Required]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// Token.
+    /// The token used to authorize the phone number change.
     /// </summary>
     [Required]
     public virtual string Token { get; set; } = null!;
 
     /// <summary>
-    /// New Phone Number.
+    /// The new phone number to assign to the user.
     /// </summary>
     [Required]
     [MaxLength(20)]

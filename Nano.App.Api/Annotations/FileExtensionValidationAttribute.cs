@@ -8,13 +8,16 @@ using Microsoft.AspNetCore.Http;
 namespace Nano.App.Api.Annotations;
 
 /// <summary>
-/// File Extension Validation Attribute.
+/// Validates the file extension(s) of uploaded files.
 /// </summary>
 public class FileExtensionValidationAttribute : ValidationAttribute
 {
     private readonly IEnumerable<string> allowedExtensions;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FileExtensionValidationAttribute"/> class.
+    /// </summary>
+    /// <param name="allowedExtensions">The list of allowed file extensions (including the dot, e.g., ".jpg").</param>
     public FileExtensionValidationAttribute(params string[] allowedExtensions)
     {
         this.allowedExtensions = allowedExtensions ?? throw new ArgumentNullException(nameof(allowedExtensions));

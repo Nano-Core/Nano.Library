@@ -1,37 +1,37 @@
 namespace Nano.Data.Abstractions.Identity.Consts;
 
 /// <summary>
-/// Claim Types Extended.
+/// Provides additional claim type constants for JWT and identity management.
 /// </summary>
 public static class ClaimTypesExtended
 {
     /// <summary>
-    /// App Id.
+    /// Claim type for the application identifier.
     /// </summary>
     public static string AppId => "app_id";
 
     /// <summary>
-    /// External Provider Name.
+    /// Claim type for the external provider name.
     /// </summary>
     public static string ExternalProviderName => "external_provider_name";
 
     /// <summary>
-    /// External Provider Token.
+    /// Claim type for the external provider token.
     /// </summary>
     public static string ExternalProviderToken => "external_provider_token";
 
     /// <summary>
-    /// External Provider Refresh Token.
+    /// Claim type for the external provider refresh token.
     /// </summary>
     public static string ExternalProviderRefreshToken => "external_provider_refresh_token";
 
     /// <summary>
-    /// Api Key Id.
+    /// Claim type for the API key identifier.
     /// </summary>
     public static string ApiKeyId => "ApiKeyId";
 
     /// <summary>
-    /// Api Key Name.
+    /// Claim type for the API key name.
     /// </summary>
     public static string ApiKeyName => "ApiKeyName";
 }

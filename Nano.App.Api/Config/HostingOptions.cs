@@ -3,60 +3,59 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Hosting Options.
+/// Options for hosting configuration.
 /// </summary>
 public class HostingOptions
 {
     /// <summary>
-    /// Root.
+    /// Root path for the application.
     /// </summary>
     [Required]
     public virtual string Root { get; set; } = "api";
 
     /// <summary>
-    /// Ports.
+    /// List of ports for HTTP.
     /// </summary>
     [Required]
     public virtual int[] Ports { get; set; } = [];
 
     /// <summary>
-    /// Ports Https.
+    /// List of ports for HTTPS.
     /// </summary>
     [Required]
     public virtual int[] PortsHttps { get; set; } = [];
 
     /// <summary>
-    /// Use Https Redirect.
-    /// Forces https for all requests.
+    /// Enforce HTTPS redirect for all requests.
     /// </summary>
     [Required]
     public virtual bool UseHttpsRequired { get; set; } = false;
 
     /// <summary>
-    /// Expose Errors.
+    /// Expose detailed errors.
     /// </summary>
     [Required]
     public virtual bool ExposeErrors { get; set; } = false;
 
     /// <summary>
-    /// Expose Auth Controller.
+    /// Expose authentication controller.
     /// </summary>
     [Required]
     public virtual bool ExposeAuthController { get; set; } = true;
 
     /// <summary>
-    /// Expose Audit Controller.
+    /// Expose audit controller.
     /// </summary>
     [Required]
     public virtual bool ExposeAuditController { get; set; } = true;
 
     /// <summary>
-    /// Certificate (ssl)
+    /// SSL certificate configuration.
     /// </summary>
     public virtual CertificateOptions? Certificate { get; set; }
 
     /// <summary>
-    /// Upload.
+    /// Multipart upload limits.
     /// </summary>
     public virtual MultipartLimitsOptions? MultipartLimits { get; set; }
 }
