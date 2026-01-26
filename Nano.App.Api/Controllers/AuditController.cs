@@ -13,8 +13,8 @@ namespace Nano.App.Api.Controllers;
 /// 
 /// </summary>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
-public abstract class AuditController<TIdenity> : BaseControllerReadOnly<IRepository, AuditEntry<TIdenity>, TIdenity, AuditEntryQueryCriteria>
-    where TIdenity : IEquatable<TIdenity>
+public abstract class AuditController<TIdentity> : BaseControllerReadOnly<IRepository, AuditEntry<TIdentity>, TIdentity, AuditEntryQueryCriteria>
+    where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// 
