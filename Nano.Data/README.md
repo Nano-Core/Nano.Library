@@ -255,7 +255,12 @@ When adding only the raw entity is returned from IRepository, and not included c
 _Name_ is the name of the migration, _project_ is the project where the ```DbContext``` implementation is located and where the migration script will be saved to. Last, the _environment_ is the configuration to use, and it's important the connection-string in the settings file of the environment is valid, otherwise an error occurs and the migration fails.
 
 ## Audit
-When audit is enabled in the data section of the configuration, changes to all entities deriving from ```IEntity``` will be tracked. Auditting happens automatically and is executed asynchronously, to avoid impacting the response time.  
+Audit->Propertes has INCLUDE.
+The user needs to know the AuditEntry<TIdentity> (and the AuditEntryProperty<TIdentity>) to get them through api-client. Maybe this needs to be some place else, in Api docs??
+
+
+When audit is enabled in the data section of the configuration, changes to all entities deriving from ```IEntity``` will be tracked. 
+Auditting happens automatically and is executed asynchronously, to avoid impacting the response time.  
 
 Two additional tables are created in the database for audit data storage. 
 * ```__EFAudit```
@@ -412,7 +417,7 @@ The contract between the publisher and the subscriber is the type ```EntityEvent
 [Subscribe]
 public class MyEntity : DefaultEntity
 {
-    [Phone]
+    [InternationalPhone]
     public virtual string PhoneNumber { get; set; }
 }
 ```

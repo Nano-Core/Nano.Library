@@ -5,18 +5,9 @@ using System.Threading.Tasks;
 
 namespace Nano.App.ApiClient.Extensions;
 
-/// <summary>
-/// Stream Extensions.
-/// </summary>
-public static class StreamExtensions
+internal static class StreamExtensions
 {
-    /// <summary>
-    /// Reads all bytes in the <see cref="Stream"/> and returns the content as byte array.
-    /// </summary>
-    /// <param name="stream">The <see cref="Stream"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The content as byte array.</returns>
-    public static async Task<byte[]> ReadAllBytesAsync(this Stream stream, CancellationToken cancellationToken = default)
+    internal static async Task<byte[]> ReadAllBytesAsync(this Stream stream, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(stream);
 

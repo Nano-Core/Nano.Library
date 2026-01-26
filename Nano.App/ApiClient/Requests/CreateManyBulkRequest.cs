@@ -1,12 +1,12 @@
 ﻿namespace Nano.App.ApiClient.Requests;
 
 /// <summary>
-/// Create Many Bulk Request.
+/// Represents a bulk request to create many entities.
 /// </summary>
 public class CreateManyBulkRequest : CreateManyRequest
 {
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="CreateManyBulkRequest"/>.
     /// </summary>
     public CreateManyBulkRequest()
     {

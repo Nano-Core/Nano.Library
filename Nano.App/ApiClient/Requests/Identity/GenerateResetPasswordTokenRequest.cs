@@ -2,21 +2,28 @@
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
-/// <inheritdoc />
+/// <summary>
+/// Request to generate a reset password token.
+/// </summary>
 public class GenerateResetPasswordTokenRequest : BaseRequestPost
 {
     /// <summary>
-    /// Reset Password Token.
+    /// The reset password token information.
     /// </summary>
     public virtual GenerateResetPasswordToken ResetPasswordToken { get; set; } = new();
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of <see cref="GenerateResetPasswordTokenRequest"/>.
+    /// Sets the action to "password/reset/token".
+    /// </summary>
     public GenerateResetPasswordTokenRequest()
     {
         this.Action = "password/reset/token";
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the request body containing the reset password token.
+    /// </summary>
     public override object GetBody()
     {
         return this.ResetPasswordToken;

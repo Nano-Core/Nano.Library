@@ -1,7 +1,7 @@
 using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Nano.Data.Abstractions.Entities.Abstractions;
 using System;
+using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Mappings.Extensions;
 

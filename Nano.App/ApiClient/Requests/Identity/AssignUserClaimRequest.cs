@@ -6,22 +6,30 @@ namespace Nano.App.ApiClient.Requests.Identity;
 /// <inheritdoc />
 public class AssignUserClaimRequest : AssignUserClaimRequest<Guid>;
 
-/// <inheritdoc />
+/// <summary>
+/// Request to assign a claim to a user.
+/// </summary>
+/// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
 public class AssignUserClaimRequest<TIdentity> : BaseRequestPost
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Assign Claim.
+    /// The user claim assignment information.
     /// </summary>
     public virtual AssignUserClaim<TIdentity> AssignUserClaim { get; set; } = new();
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of <see cref="AssignUserClaimRequest{TIdentity}"/>.
+    /// Sets the action to "claims/assign".
+    /// </summary>
     public AssignUserClaimRequest()
     {
         this.Action = "claims/assign";
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the request body containing the claim assignment information.
+    /// </summary>
     public override object GetBody()
     {
         return this.AssignUserClaim;

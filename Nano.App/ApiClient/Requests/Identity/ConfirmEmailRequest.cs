@@ -6,22 +6,30 @@ namespace Nano.App.ApiClient.Requests.Identity;
 /// <inheritdoc />
 public class ConfirmEmailRequest : ConfirmEmailRequest<Guid>;
 
-/// <inheritdoc />
+/// <summary>
+/// Request to confirm a user's email address.
+/// </summary>
+/// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
 public class ConfirmEmailRequest<TIdentity> : BaseRequestPost
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Confirm Email.
+    /// The confirm email token information.
     /// </summary>
     public virtual ConfirmEmail<TIdentity> ConfirmEmail { get; set; } = new();
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of <see cref="ConfirmEmailRequest{TIdentity}"/>.
+    /// Sets the action to "email/confirm".
+    /// </summary>
     public ConfirmEmailRequest()
     {
         this.Action = "email/confirm";
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the request body containing the confirm email token.
+    /// </summary>
     public override object GetBody()
     {
         return this.ConfirmEmail;

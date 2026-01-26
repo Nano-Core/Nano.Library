@@ -28,7 +28,7 @@ public interface IAuthTransientRepository
     /// </summary>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>
-    ///     A task that represents the asynchronous operation. 
+    ///     A task that represents the asynchronous operation.
     ///     The task result contains a collection of <see cref="ExternalLoginProvider"/> representing each available provider.
     /// </returns>
     Task<IEnumerable<ExternalLoginProvider>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default);
@@ -39,7 +39,7 @@ public interface IAuthTransientRepository
     /// <param name="externalLogInData">The external login information, including user details, claims, and roles.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>
-    ///     A task that represents the asynchronous operation. 
+    ///     A task that represents the asynchronous operation.
     ///     The task result contains an <see cref="AccessToken"/> for the authenticated external user.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="externalLogInData"/> is null.</exception>

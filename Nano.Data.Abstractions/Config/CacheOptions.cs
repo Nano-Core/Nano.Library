@@ -44,5 +44,5 @@ public class CacheOptions
     /// Defaults to an empty array.
     /// </summary>
     [Required]
-    public virtual string[] IgnoredTableNames { get; set; } = Array.Empty<string>();
+    public virtual string[] IgnoredTableNames { get; set; } = [];
 }

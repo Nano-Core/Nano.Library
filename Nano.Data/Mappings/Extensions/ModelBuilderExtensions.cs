@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Nano.Common.Extensions;
-using Nano.Data.Abstractions.Entities.Abstractions;
+using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Mappings.Extensions;
 

@@ -4,22 +4,22 @@ using DynamicExpression.Interfaces;
 namespace Nano.App.ApiClient.Requests;
 
 /// <summary>
-/// Index Request.
+/// Represents a request to index entities using a query.
 /// </summary>
 public class IndexRequest : BaseRequestPost
 {
     /// <summary>
-    /// Query.
+    /// The query defining entities to index.
     /// </summary>
     public virtual IQuery Query { get; set; } = new Query();
 
     /// <summary>
-    /// Include Depth.
+    /// Optional depth for including related entities.
     /// </summary>
     public virtual int? IncludeDepth { get; set; }
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="IndexRequest"/>.
     /// </summary>
     public IndexRequest()
     {

@@ -33,8 +33,8 @@ public class UserOptions
     /// </summary>
     [Required]
     public virtual string[] DefaultRoles { get; set; } =
-    {
+    [
         BuiltInUserRoles.READER,
         BuiltInUserRoles.WRITER
-    };
+    ];
 }

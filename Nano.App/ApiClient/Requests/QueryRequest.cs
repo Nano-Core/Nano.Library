@@ -4,24 +4,24 @@ using DynamicExpression.Interfaces;
 namespace Nano.App.ApiClient.Requests;
 
 /// <summary>
-/// Query Request.
+/// Represents a request to query data with specified criteria.
 /// </summary>
-/// <typeparam name="TCriteria">The type of <see cref="IQueryCriteria"/>.</typeparam>
+/// <typeparam name="TCriteria">The type of <see cref="IQueryCriteria"/> used for filtering.</typeparam>
 public class QueryRequest<TCriteria> : BaseRequestPost
     where TCriteria : IQueryCriteria, new()
 {
     /// <summary>
-    /// Query.
+    /// The query object containing criteria and options.
     /// </summary>
     public virtual IQuery<TCriteria> Query { get; set; } = new Query<TCriteria>();
 
     /// <summary>
-    /// Include Depth.
+    /// Optional depth for including related entities.
     /// </summary>
     public virtual int? IncludeDepth { get; set; }
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="QueryRequest{TCriteria}"/>.
     /// </summary>
     public QueryRequest()
     {

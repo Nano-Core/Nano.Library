@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Nano.App.Api.Config;
 using Nano.App.Api.Mvc.Conventions;
-using Nano.App.ApiClient.Consts;
+using Nano.Common.Consts;
 using Nano.Data.Abstractions.Config;
 
 namespace Nano.App.Api.Mvc.Options;

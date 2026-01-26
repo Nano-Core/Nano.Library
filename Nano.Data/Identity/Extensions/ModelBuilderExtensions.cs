@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Nano.Data.Mappings.Extensions;
 using System;
 using Microsoft.AspNetCore.Identity;
-using Nano.Data.Abstractions.Entities.Identity;
+using Nano.Data.Abstractions.Models.Identity;
 using Nano.Data.Consts;
 using Nano.Data.Mappings.Identity;
 using IdentityOptions = Nano.Data.Abstractions.Config.IdentityOptions;

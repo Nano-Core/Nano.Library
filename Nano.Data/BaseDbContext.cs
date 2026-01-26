@@ -19,10 +19,10 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Entities;
-using Nano.Data.Abstractions.Entities.Abstractions;
-using Nano.Data.Abstractions.Entities.Identity;
 using Nano.Data.Abstractions.Eventing.Annotations;
+using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Models.Identity;
 using Nano.Data.Eventing.Extensions;
 using Nano.Data.Identity.Extensions;
 using Nano.Data.Mappings;
@@ -358,8 +358,8 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
 
         modelBuilder
             .MapIdentity<TIdentity>(this.options.CurrentValue.Identity)
-            .AddMapping<DefaultAuditEntry, DefaultAuditEntryMapping>()
-            .AddMapping<DefaultAuditEntryProperty, DefaultAuditEntryPropertyMapping>();
+            .AddMapping<AuditEntry<TIdentity>, AuditEntryMapping<TIdentity>>()
+            .AddMapping<AuditEntryProperty<TIdentity>, AuditEntryPropertyMapping<TIdentity>>();
     }
 
 

@@ -163,7 +163,7 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
         ArgumentNullException.ThrowIfNull(controller);
 
         var isAuditController = controller.ControllerType
-            .IsTypeOf(typeof(AuditController));
+            .IsTypeOf(typeof(AuditController<>));
 
         if (!isAuditController)
         {

@@ -1,4 +1,3 @@
-using Nano.Common.Annotations;
 using System;
 using System.ComponentModel.DataAnnotations;
 

@@ -2,10 +2,14 @@
 
 namespace Nano.App.ApiClient.Requests.Auth;
 
-/// <inheritdoc />
+/// <summary>
+/// Represents a request to retrieve all configured external login schemes.
+/// </summary>
 public class GetExternalSchemesRequest : BaseRequestGet
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of <see cref="GetExternalSchemesRequest"/> with action and controller set.
+    /// </summary>
     public GetExternalSchemesRequest()
     {
         this.Action = "external/schemes";

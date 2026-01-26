@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Nano.App.ApiClient.Config;
-using Nano.App.ApiClient.Consts;
 using Nano.App.Config;
 using Nano.Common.Extensions;
 using Nano.Common.Helpers;
@@ -11,6 +10,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
+using Nano.Common.Consts;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 
 namespace Nano.App.ApiClient.Extensions;

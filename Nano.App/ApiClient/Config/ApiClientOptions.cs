@@ -5,42 +5,47 @@ using Nano.Common.Config;
 namespace Nano.App.ApiClient.Config;
 
 /// <summary>
-/// Api Options.
+/// Represents configuration options for the API client.
 /// </summary>
 public class ApiClientOptions
 {
     /// <summary>
-    /// Host.
+    /// The API host address.
+    /// Default is "localhost".
     /// </summary>
     public virtual string Host { get; set; } = "localhost";
 
     /// <summary>
-    /// Root.
+    /// The root path for the API endpoints.
+    /// Default is "api".
     /// </summary>
     public virtual string Root { get; set; } = "api";
 
     /// <summary>
-    /// Port.
+    /// The port to connect to on the host.
+    /// Default is 80.
     /// </summary>
     public virtual int Port { get; set; } = 80;
 
     /// <summary>
-    /// Use Ssl.
+    /// Indicates whether to use SSL (HTTPS) for the connection.
+    /// Default is false.
     /// </summary>
     public virtual bool UseSsl { get; set; } = false;
 
     /// <summary>
-    /// Timeout In Seconds.
+    /// The request timeout duration.
+    /// Default is 30 seconds.
     /// </summary>
     public virtual TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
 
     /// <summary>
-    /// LogIn.
+    /// Optional login configuration for authentication.
     /// </summary>
     public virtual LogInRootOptions? LogIn { get; set; }
 
     /// <summary>
-    /// Health Check.
+    /// Optional health check configuration for the API client.
     /// </summary>
     public virtual HealthCheckOptions? HealthCheck { get; set; }
 }

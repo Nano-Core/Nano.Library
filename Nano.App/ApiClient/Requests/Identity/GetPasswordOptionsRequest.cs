@@ -1,9 +1,13 @@
 ﻿namespace Nano.App.ApiClient.Requests.Identity;
 
-/// <inheritdoc />
+/// <summary>
+/// Represents a request to retrieve password policy and options.
+/// </summary>
 public class GetPasswordOptionsRequest : BaseRequestGet
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of <see cref="GetPasswordOptionsRequest"/> with action set.
+    /// </summary>
     public GetPasswordOptionsRequest()
     {
         this.Action = "password/options";

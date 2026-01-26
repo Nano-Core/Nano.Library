@@ -7,22 +7,23 @@ namespace Nano.App.ApiClient.Requests;
 public class DetailsManyRequest : DetailsManyRequest<Guid>;
 
 /// <summary>
-/// Details Many Request.
+/// Represents a request to get details of multiple entities.
 /// </summary>
+/// <typeparam name="TIdentity">The type of the entity identifiers.</typeparam>
 public class DetailsManyRequest<TIdentity> : BaseRequestPost
 {
     /// <summary>
-    /// Ids.
+    /// The IDs of the entities.
     /// </summary>
     public virtual ICollection<TIdentity> Ids { get; set; } = [];
 
     /// <summary>
-    /// Include Depth.
+    /// Optional depth for including related entities.
     /// </summary>
     public virtual int? IncludeDepth { get; set; }
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="DetailsManyRequest{TIdentity}"/>.
     /// </summary>
     public DetailsManyRequest()
     {

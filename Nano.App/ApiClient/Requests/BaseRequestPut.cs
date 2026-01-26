@@ -1,6 +1,6 @@
 ﻿namespace Nano.App.ApiClient.Requests;
 
 /// <summary>
-/// Base Request Post.
+/// Represents a base class for PUT requests.
 /// </summary>
 public abstract class BaseRequestPut : BaseRequestPost;

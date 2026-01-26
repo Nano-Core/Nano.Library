@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Nano.Data.Abstractions.Entities.Abstractions;
+using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.ApiClient.Requests;
 
 /// <summary>
-/// Update Many Request.
+/// Represents a request to update multiple entities at once.
 /// </summary>
 public class EditManyRequest : BaseRequestPut
 {
     /// <summary>
-    /// Entities.
+    /// The entities to update.
     /// </summary>
     [Required]
     public virtual IEnumerable<IEntityUpdatable> Entities { get; set; } = [];
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="EditManyRequest"/>.
     /// </summary>
     public EditManyRequest()
     {

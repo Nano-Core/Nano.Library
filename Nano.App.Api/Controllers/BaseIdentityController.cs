@@ -11,17 +11,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Nano.App.ApiClient.Consts;
-using Nano.App.ApiClient.Models.Identity;
+using Nano.Common.Annotations;
+using Nano.Common.Consts;
 using Nano.Data.Abstractions;
-using Nano.Data.Abstractions.Entities;
-using Nano.Data.Abstractions.Entities.Abstractions;
-using Nano.Data.Abstractions.Entities.Identity;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Models.Identity;
 using Nano.Eventing.Abstractions;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
@@ -129,13 +129,8 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> IsEmailAddressTakenAsync([FromQuery][Required]string emailAddress, CancellationToken cancellationToken = default)
     {
-        var isEmailAddressTaken = await this.identityRepository
+        var response = await this.identityRepository
             .IsEmailAddressTakenAsync(emailAddress, cancellationToken);
-
-        var response = new IsEmailAddressTaken
-        {
-            IsTaken = isEmailAddressTaken
-        };
 
         return this.Ok(response);
     }
@@ -159,15 +154,10 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> IsPhoneNumberTakenAsync([FromQuery][Required]string phoneNumber, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> IsPhoneNumberTakenAsync([FromQuery][Required][InternationalPhone]string phoneNumber, CancellationToken cancellationToken = default)
     {
-        var isPhoneNumberTaken = await this.identityRepository
+        var response = await this.identityRepository
             .IsPhoneNumberTakenAsync(phoneNumber, cancellationToken);
-
-        var response = new IsPhoneNumberTaken
-        {
-            IsTaken = isPhoneNumberTaken
-        };
 
         return this.Ok(response);
     }
@@ -1421,34 +1411,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Removes a claim from a user.
-    /// </summary>
-    /// <param name="removeUserClaim">The claim removal request.</param>
-    /// <param name="cancellationToken">The token used to cancel the request.</param>
-    /// <returns>Void.</returns>
-    /// <response code="200">Success. The claim was removed.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found. The claim or user does not exist.</response>
-    /// <response code="500">An error occurred while processing the request.</response>
-    [HttpPost]
-    [HttpDelete]
-    [Route("claims/remove")]
-    [Consumes(HttpContentType.JSON)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> RemoveClaimAsync([FromBody][Required] RemoveUserClaim<TIdentity> removeUserClaim, CancellationToken cancellationToken = default)
-    {
-        await this.identityRepository
-            .RemoveUserClaimAsync(removeUserClaim, cancellationToken);
-
-        return this.Ok();
-    }
-
-    /// <summary>
     /// Replaces an existing claim of a user with a new claim.
     /// </summary>
     /// <param name="replaceUserClaim">The claim replacement request.</param>
@@ -1475,7 +1437,60 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         return this.Ok();
     }
 
-    // BUG: Endpoint: Assign or replace claim?
+    /// <summary>
+    /// Assigns or replaces an existing claim of a user with a new claim.
+    /// </summary>
+    /// <param name="assignOrReplaceUserClaim">The claim assign or replacement request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Success. The claim was assigned or replaced.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found. The claim or user does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
+    [HttpPut]
+    [Route("claims/assign-or-replace")]
+    [Consumes(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> AssignOrReplaceClaimAsync([FromBody][Required]AssignOrReplaceUserClaim<TIdentity> assignOrReplaceUserClaim, CancellationToken cancellationToken = default)
+    {
+        await this.identityRepository
+            .AssignOrReplaceUserClaimAsync(assignOrReplaceUserClaim, cancellationToken);
+
+        return this.Ok();
+    }
+
+    /// <summary>
+    /// Removes a claim from a user.
+    /// </summary>
+    /// <param name="removeUserClaim">The claim removal request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Success. The claim was removed.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found. The claim or user does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
+    [HttpPost]
+    [HttpDelete]
+    [Route("claims/remove")]
+    [Consumes(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> RemoveClaimAsync([FromBody][Required] RemoveUserClaim<TIdentity> removeUserClaim, CancellationToken cancellationToken = default)
+    {
+        await this.identityRepository
+            .RemoveUserClaimAsync(removeUserClaim, cancellationToken);
+
+        return this.Ok();
+    }
 
     #endregion
 
@@ -1647,8 +1662,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         return this.Ok();
     }
 
-    // BUG: Endpoint: Assign or replace role?
-
     #endregion
 
 
@@ -1711,35 +1724,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Removes a claim from a role.
-    /// </summary>
-    /// <param name="removeClaim">The role claim removal request.</param>
-    /// <param name="cancellationToken">The token used to cancel the request.</param>
-    /// <returns>Void.</returns>
-    /// <response code="200">Success. The claim was removed from the role.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized. User is not allowed to remove role claims.</response>
-    /// <response code="404">Not Found. The role or claim does not exist.</response>
-    /// <response code="500">An error occurred while processing the request.</response>
-    [HttpPost]
-    [HttpDelete]
-    [Route("roles/claims/remove")]
-    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
-    [Consumes(HttpContentType.JSON)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> RemoveRoleClaimAsync([FromBody][Required] RemoveRoleClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default)
-    {
-        await this.identityRepository
-            .RemoveRoleClaimAsync(removeClaim, cancellationToken);
-
-        return this.Ok();
-    }
-
-    /// <summary>
     /// Replaces a claim of a role with a new claim.
     /// </summary>
     /// <param name="replaceClaim">The role claim replacement request.</param>
@@ -1767,7 +1751,62 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         return this.Ok();
     }
 
-    // BUG: Endpoint: Assign or replace role claim?
+    /// <summary>
+    /// Assigns or Replaces a claim of a role with a new claim.
+    /// </summary>
+    /// <param name="replaceClaim">The role claim assignment or replacement request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Success. The claim was assigned or replaced for the role.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized. User is not allowed to replace role claims.</response>
+    /// <response code="404">Not Found. The role or claim does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
+    [HttpPut]
+    [Route("roles/claims/assign-or-replace")]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
+    [Consumes(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> AssignOrReplaceRoleClaimAsync([FromBody][Required] AssignOrReplaceRoleClaim<TIdentity> replaceClaim, CancellationToken cancellationToken = default)
+    {
+        await this.identityRepository
+            .AssignOrReplaceRoleClaimAsync(replaceClaim, cancellationToken);
+
+        return this.Ok();
+    }
+
+    /// <summary>
+    /// Removes a claim from a role.
+    /// </summary>
+    /// <param name="removeClaim">The role claim removal request.</param>
+    /// <param name="cancellationToken">The token used to cancel the request.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Success. The claim was removed from the role.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized. User is not allowed to remove role claims.</response>
+    /// <response code="404">Not Found. The role or claim does not exist.</response>
+    /// <response code="500">An error occurred while processing the request.</response>
+    [HttpPost]
+    [HttpDelete]
+    [Route("roles/claims/remove")]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
+    [Consumes(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> RemoveRoleClaimAsync([FromBody][Required] RemoveRoleClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default)
+    {
+        await this.identityRepository
+            .RemoveRoleClaimAsync(removeClaim, cancellationToken);
+
+        return this.Ok();
+    }
 
     #endregion
 }

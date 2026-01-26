@@ -7,7 +7,7 @@ using DynamicExpression.Entities;
 using DynamicExpression.Enums;
 using DynamicExpression.Interfaces;
 using Nano.Data.Abstractions.Annotations;
-using Nano.Data.Abstractions.Entities.Abstractions;
+using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Abstractions;
 

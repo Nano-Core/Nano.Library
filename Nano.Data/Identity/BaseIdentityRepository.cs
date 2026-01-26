@@ -16,11 +16,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Entities.Abstractions;
-using Nano.Data.Abstractions.Entities.Identity;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Exceptions;
 using Nano.Data.Abstractions.Identity.Extensions;
+using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Models.Identity;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Identity;
@@ -154,25 +154,31 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     }
 
     /// <inheritdoc />
-    public virtual async Task<bool> IsPhoneNumberTakenAsync(string phoneNumber, CancellationToken cancellationToken = default)
+    public virtual async Task<IsPhoneNumberTaken> IsPhoneNumberTakenAsync(string phoneNumber, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(phoneNumber);
 
         var existingIdentityUser = await this.userManager
             .FindByPhoneNumberAsync(phoneNumber);
 
-        return existingIdentityUser != null;
+        return new IsPhoneNumberTaken
+        {
+            IsTaken = existingIdentityUser != null
+        };
     }
 
     /// <inheritdoc />
-    public virtual async Task<bool> IsEmailAddressTakenAsync(string emailAddress, CancellationToken cancellationToken = default)
+    public virtual async Task<IsEmailAddressTaken> IsEmailAddressTakenAsync(string emailAddress, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(emailAddress);
 
         var existingIdentityUser = await this.userManager
             .FindByEmailAsync(emailAddress);
 
-        return existingIdentityUser != null;
+        return new IsEmailAddressTaken
+        {
+            IsTaken = existingIdentityUser != null
+        };
     }
 
     /// <inheritdoc />
@@ -1310,12 +1316,12 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     }
 
     /// <inheritdoc />
-    public virtual async Task<IdentityUserClaim<TIdentity>> AssignOrReplaceUserClaimAsync(AssignOrReplaceClaim<TIdentity> assignOrReplaceClaim, CancellationToken cancellationToken = default)
+    public virtual async Task<IdentityUserClaim<TIdentity>> AssignOrReplaceUserClaimAsync(AssignOrReplaceUserClaim<TIdentity> assignOrReplaceUserClaim, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(assignOrReplaceClaim);
+        ArgumentNullException.ThrowIfNull(assignOrReplaceUserClaim);
 
         var identityUser = await this.userManager
-            .GetIdentityUserAsync(assignOrReplaceClaim.UserId, cancellationToken);
+            .GetIdentityUserAsync(assignOrReplaceUserClaim.UserId, cancellationToken);
 
         if (identityUser == null)
         {
@@ -1323,12 +1329,12 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         }
 
         var existingClaim = (await this.GetUserClaimsAsync(identityUser, cancellationToken))
-            .FirstOrDefault(x => x.Type == assignOrReplaceClaim.ClaimType);
+            .FirstOrDefault(x => x.Type == assignOrReplaceUserClaim.ClaimType);
 
         var newClaim = new IdentityUserClaim<TIdentity>
         {
-            ClaimType = assignOrReplaceClaim.ClaimType,
-            ClaimValue = assignOrReplaceClaim.ClaimValue
+            ClaimType = assignOrReplaceUserClaim.ClaimType,
+            ClaimValue = assignOrReplaceUserClaim.ClaimValue
         };
 
         var claim = newClaim

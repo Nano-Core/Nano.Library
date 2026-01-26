@@ -6,21 +6,22 @@ using System.Reflection;
 namespace Nano.Common.Annotations;
 
 /// <summary>
-/// Validates that at least one of the specified properties, including the decorated property, has a non-null value.
+/// Validates that at least one of the specified members, including the decorated member,
+/// has a non-null value. Works with properties, fields, and parameters.
 /// </summary>
-[AttributeUsage(AttributeTargets.Property)]
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter)]
 public class RequiredOneOfAttribute : ValidationAttribute
 {
-    private readonly string[] otherProperties;
+    private readonly string[] otherMembers;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RequiredOneOfAttribute"/> class.
     /// </summary>
-    /// <param name="otherProperties">An array of property names that should be checked alongside the decorated property.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="otherProperties"/> is null.</exception>
-    public RequiredOneOfAttribute(params string[] otherProperties)
+    /// <param name="otherMembers">An array of member names (properties or fields) that should be checked alongside the decorated member.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="otherMembers"/> is null.</exception>
+    public RequiredOneOfAttribute(params string[] otherMembers)
     {
-        this.otherProperties = otherProperties ?? throw new ArgumentNullException(nameof(otherProperties));
+        this.otherMembers = otherMembers ?? throw new ArgumentNullException(nameof(otherMembers));
     }
 
     /// <inheritdoc />
@@ -31,27 +32,48 @@ public class RequiredOneOfAttribute : ValidationAttribute
             return ValidationResult.Success;
         }
 
-        foreach (var propertyName in this.otherProperties)
+        var type = validationContext.ObjectType;
+        var instance = validationContext.ObjectInstance;
+
+        foreach (var memberName in this.otherMembers)
         {
-            var property = validationContext.ObjectType
-                .GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+            var property = type
+                .GetProperty(memberName, BindingFlags.Public | BindingFlags.Instance);
 
-            if (property == null)
+            if (property != null)
             {
-                throw new NullReferenceException(nameof(property));
+                var propertyValue = property
+                    .GetValue(instance);
+
+                if (propertyValue != null)
+                {
+                    return ValidationResult.Success;
+                }
+
+                continue;
             }
 
-            var propertyValue = property
-                .GetValue(validationContext.ObjectInstance);
+            var field = type
+                .GetField(memberName, BindingFlags.Public | BindingFlags.Instance);
 
-            if (propertyValue != null)
+            if (field != null)
             {
-                return ValidationResult.Success;
+                var fieldValue = field
+                    .GetValue(instance);
+
+                if (fieldValue != null)
+                {
+                    return ValidationResult.Success;
+                }
+
+                continue;
             }
+
+            throw new NullReferenceException($"Member '{memberName}' not found on type '{type.FullName}'.");
         }
 
-        var allProperties = this.otherProperties.Append(validationContext.MemberName);
-
-        return new ValidationResult(ErrorMessage ?? $"At least one of the properties ({string.Join(", ", allProperties)}) must be set.");
+        var allMembers = this.otherMembers
+            .Append(validationContext.MemberName);
+        return new ValidationResult(this.ErrorMessage ?? $"At least one of the members ({string.Join(", ", allMembers)}) must be set.");
     }
 }

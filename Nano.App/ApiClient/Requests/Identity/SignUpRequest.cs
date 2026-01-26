@@ -1,6 +1,6 @@
 ﻿using System;
-using Nano.Data.Abstractions.Entities.Abstractions;
 using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -8,23 +8,31 @@ namespace Nano.App.ApiClient.Requests.Identity;
 public class SignUpRequest<TUser> : SignUpRequest<TUser, Guid>
     where TUser : IEntityUser<Guid>;
 
-/// <inheritdoc />
+/// <summary>
+/// Represents a request to sign up a new user.
+/// </summary>
+/// <typeparam name="TUser">The type of the user entity.</typeparam>
+/// <typeparam name="TIdentity">The type of the user identifier.</typeparam>
 public class SignUpRequest<TUser, TIdentity> : BaseRequestPost
     where TUser : IEntityUser<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Sign Up.
+    /// Contains the sign-up information for the user.
     /// </summary>
     public virtual SignUp<TUser, TIdentity> SignUp { get; set; } = new();
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of <see cref="SignUpRequest{TUser, TIdentity}"/> with action set.
+    /// </summary>
     public SignUpRequest()
     {
         this.Action = "signup";
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the body of the request containing the sign-up information.
+    /// </summary>
     public override object GetBody()
     {
         return this.SignUp;

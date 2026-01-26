@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace Nano.App.Exceptions;
+namespace Nano.App.Api.Exceptions;
 
 /// <summary>
 /// Represents an error where the exception message is translated according to the <see cref="CultureInfo.CurrentCulture"/>.

@@ -1,12 +1,12 @@
 ﻿namespace Nano.App.ApiClient.Requests;
 
 /// <summary>
-/// Update Many Bulk Request.
+/// Represents a bulk request to update many entities.
 /// </summary>
 public class EditManyBulkRequest : EditManyRequest
 {
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="EditManyBulkRequest"/>.
     /// </summary>
     public EditManyBulkRequest()
     {

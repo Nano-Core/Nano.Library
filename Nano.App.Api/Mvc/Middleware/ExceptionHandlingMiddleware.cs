@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nano.App.Api.Config;
+using Nano.App.Api.Exceptions;
 using Nano.App.Api.Mvc.HealthChecks.Const;
 using Nano.App.ApiClient.Consts;
 using Nano.App.Exceptions;

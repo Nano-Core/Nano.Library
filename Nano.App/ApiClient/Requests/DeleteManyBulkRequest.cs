@@ -6,12 +6,13 @@ namespace Nano.App.ApiClient.Requests;
 public class DeleteManyBulkRequest : DeleteManyBulkRequest<Guid>;
 
 /// <summary>
-/// Delete Many Bulk Request.
+/// Represents a bulk request to delete many entities by their IDs.
 /// </summary>
+/// <typeparam name="TIdentity">The type of the entity identifiers.</typeparam>
 public class DeleteManyBulkRequest<TIdentity> : DeleteManyRequest<TIdentity>
 {
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="DeleteManyBulkRequest{TIdentity}"/>.
     /// </summary>
     public DeleteManyBulkRequest()
     {

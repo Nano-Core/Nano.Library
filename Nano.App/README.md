@@ -6,7 +6,6 @@
 
 
 
-FromFormBody!!!
 
 
 
@@ -40,9 +39,6 @@ The implementation isn't much different from the regular approach, when building
 A few abstractions and interfaces are used to control an application. This resembles the ```startup.cs``` class you would normally implement in .Net core, but includes much more. The interface ```IApplication``` defines an application. When building the ```WebHost``` of the application, the interface is injected as dependency, resolving to the type implemented in your application. The abstract class ```BaseApplication```, implements ```IApplication```, and most importantly, it contains a static method ```ConfigureApp<TApplication>(...)```, that is responsible for initializing and configuring the application.  
 
 Nano comes with a concrete ```DefaultApplication``` implementation, deriving directly from ```BaseApplication```. That is in most cases sufficient, avoiding having to implement a custom implementation.    
-
-##### Object Model Diagram
-![Applications](https://raw.githubusercontent.com/wiki/Nano-Core/Nano.Library/Images/Applications.png)  
 
 *** 
 
@@ -240,18 +236,6 @@ Last, register the dependency in ```Program.Main()```, passing section name.
 })
 ```
 
-***
-
-### Injected Services
-When building the configuration, dependencies related to the different sections as well as any custom sections are configured and initialized.  
-
-##### Dependencies:  
-* ```MyOptions```
-* ```IOptions<MyOptions>```
-
-For a full list of services and dependencies, see [[Injected Dependencies]]
-
-***
 
 
 
@@ -273,10 +257,6 @@ For a full list of services and dependencies, see [[Injected Dependencies]]
 
 
 
-
-
-
-$${\color{red}NEEDS-UPDATE}$$
 
 ### Table of Contents
 * [Summary](#summary)

@@ -5,25 +5,27 @@ using System.IO;
 namespace Nano.App.ApiClient.Models;
 
 /// <summary>
-/// Named Stream.
+/// Represents a named stream with an associated name and underlying <see cref="Stream"/>.
+/// Implements <see cref="IDisposable"/> to ensure the stream is properly disposed.
 /// </summary>
-public class NamedStream : IDisposable
+public sealed class NamedStream : IDisposable
 {
     /// <summary>
-    /// Name.
+    /// The name of the stream.
+    /// Only the file name part of the path is stored.
     /// </summary>
     [Required]
-    public virtual string Name
+    public string Name
     {
         get;
         set => field = Path.GetFileName(value);
     } = null!;
 
     /// <summary>
-    /// Stream.
+    /// The underlying <see cref="Stream"/> associated with this named stream.
     /// </summary>
     [Required]
-    public virtual Stream Stream { get; set; } = null!;
+    public Stream Stream { get; set; } = null!;
 
     /// <inheritdoc />
     public void Dispose()

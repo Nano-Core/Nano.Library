@@ -24,9 +24,13 @@ namespace Nano.App.Api;
 /// Represents a Nano web API application.
 /// </summary>
 /// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api">Nano Api Application</see></remarks>
-public sealed class NanoApiApplication : BaseApplication<WebApplication, WebApplicationBuilder>, IApplication
+public class NanoApiApplication : BaseApplication<WebApplication, WebApplicationBuilder>, IApplication
 {
-    private NanoApiApplication(WebApplicationBuilder builder)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="builder"></param>
+    protected NanoApiApplication(WebApplicationBuilder builder)
         : base(builder)
     {
     }
@@ -37,11 +41,11 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
     /// <param name="configure">A delegate to configure <see cref="IServiceCollection"/>.</param>
     /// <returns>The current <see cref="IApplication"/> instance for chaining.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="configure"/> is null.</exception>
-    public IApplication ConfigureServices(Action<IServiceCollection> configure)
+    public virtual IApplication ConfigureServices(Action<IServiceCollection> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
 
-        configure(applicationBuilder.Services);
+        configure(this.applicationBuilder.Services);
 
         return this;
     }
@@ -53,27 +57,10 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
     /// <returns>A configured <see cref="IApplication"/> instance.</returns>
     public static IApplication ConfigureApp(params string[] args)
     {
-        var root = Directory.GetCurrentDirectory();
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Development;
-        var entryAssembly = Assembly.GetEntryAssembly();
-        var config = ConfigManager.BuildConfiguration(environment, entryAssembly, args);
-        var applicationName = entryAssembly?.GetName().Name;
-
-        var applicationOptions = new WebApplicationOptions
-        {
-            Args = args,
-            ApplicationName = applicationName,
-            EnvironmentName = environment,
-            ContentRootPath = root
-        };
-
-        var applicationBuilder = WebApplication.CreateBuilder(applicationOptions);
-
-        applicationBuilder.Configuration
-            .AddConfiguration(config);
+        var applicationBuilder = CreateBuilder(args);
 
         applicationBuilder.Services
-            .AddNanoApp<ApiOptions>(config, out var apiOptions)
+            .AddNanoApp<ApiOptions>(applicationBuilder.Configuration, out var apiOptions)
             .AddNanoExceptionHandling()
             .AddNanoCors(apiOptions.HttpPolicyHeaders.Cors)
             .AddNanoForwardedHeaders(apiOptions.HttpPolicyHeaders.ForwardedHeaders)
@@ -163,5 +150,43 @@ public sealed class NanoApiApplication : BaseApplication<WebApplication, WebAppl
             .UseNanoDbMigrations();
 
         return this;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="args"></param>
+    /// <returns></returns>
+    protected static WebApplicationBuilder CreateBuilder(string[] args)
+    {
+        var root = Directory.GetCurrentDirectory();
+        var environment =
+            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+            ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+            ?? Environments.Development;
+
+        var entryAssembly = Assembly.GetEntryAssembly();
+        var config = ConfigManager.BuildConfiguration(environment, entryAssembly, args);
+        var applicationName = entryAssembly?.GetName().Name;
+
+        // BUG
+        var webRootPath = /*webOptions.WebRootPath ??*/ "wwwroot";
+
+        var options = new WebApplicationOptions
+        {
+            Args = args,
+            ApplicationName = applicationName,
+            EnvironmentName = environment,
+            ContentRootPath = root,
+            WebRootPath = webRootPath
+        };
+
+        var builder = WebApplication
+            .CreateBuilder(options);
+
+        builder.Configuration
+            .AddConfiguration(config);
+
+        return builder;
     }
 }

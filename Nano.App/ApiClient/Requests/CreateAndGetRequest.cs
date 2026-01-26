@@ -1,21 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Nano.Data.Abstractions.Entities.Abstractions;
+using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.ApiClient.Requests;
 
 /// <summary>
-/// Create And Get Request.
+/// Represents a request to create an entity and retrieve it.
 /// </summary>
 public class CreateAndGetRequest : BaseRequestPost
 {
     /// <summary>
-    /// Entity.
+    /// The entity to create.
     /// </summary>
     [Required]
     public virtual IEntityCreatable Entity { get; set; } = null!;
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="CreateAndGetRequest"/>.
     /// </summary>
     public CreateAndGetRequest()
     {

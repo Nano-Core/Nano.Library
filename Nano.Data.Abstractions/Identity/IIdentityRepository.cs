@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Entities.Abstractions;
-using Nano.Data.Abstractions.Entities.Identity;
 using Nano.Data.Abstractions.Identity.Exceptions;
+using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Models.Identity;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Abstractions.Identity;
@@ -70,7 +70,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="emailAddress">The email address to check.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>True if the email address is already taken; otherwise, false.</returns>
-    Task<bool> IsEmailAddressTakenAsync(string emailAddress, CancellationToken cancellationToken = default);
+    Task<IsEmailAddressTaken> IsEmailAddressTakenAsync(string emailAddress, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Checks whether the specified phone number is already registered.
@@ -78,7 +78,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="phoneNumber">The phone number to check.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>True if the phone number is already taken; otherwise, false.</returns>
-    Task<bool> IsPhoneNumberTakenAsync(string phoneNumber, CancellationToken cancellationToken = default);
+    Task<IsPhoneNumberTaken> IsPhoneNumberTakenAsync(string phoneNumber, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves the password configuration options for the identity system, if available.
@@ -535,12 +535,12 @@ public interface IIdentityRepository<TIdentity>
     /// <summary>
     /// Assigns a claim to a user, or replaces it if it already exists.
     /// </summary>
-    /// <param name="assignOrReplaceClaim">The claim details to assign or replace.</param>
+    /// <param name="assignOrReplaceUserClaim">The claim details to assign or replace.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The resulting <see cref="IdentityUserClaim{TIdentity}"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="assignOrReplaceClaim"/> is <c>null</c>.</exception>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="assignOrReplaceUserClaim"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user does not exist.</exception>
-    Task<IdentityUserClaim<TIdentity>> AssignOrReplaceUserClaimAsync(AssignOrReplaceClaim<TIdentity> assignOrReplaceClaim, CancellationToken cancellationToken = default);
+    Task<IdentityUserClaim<TIdentity>> AssignOrReplaceUserClaimAsync(AssignOrReplaceUserClaim<TIdentity> assignOrReplaceUserClaim, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Removes a claim from a user.

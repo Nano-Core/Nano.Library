@@ -1,21 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Nano.Data.Abstractions.Entities.Abstractions;
+using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.ApiClient.Requests;
 
 /// <summary>
-/// Edit Request.
+/// Represents a request to edit a single entity.
 /// </summary>
 public class EditRequest : BaseRequestPut
 {
     /// <summary>
-    /// Entity.
+    /// The entity to update.
     /// </summary>
     [Required]
     public virtual IEntityUpdatable Entity { get; set; } = null!;
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="EditRequest"/>.
     /// </summary>
     public EditRequest()
     {

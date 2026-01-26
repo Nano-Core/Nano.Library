@@ -1,6 +1,6 @@
 using System;
 
-namespace Nano.App.Exceptions;
+namespace Nano.App.Api.Exceptions;
 
 /// <summary>
 /// Represents an exception with a specific code or identifier.

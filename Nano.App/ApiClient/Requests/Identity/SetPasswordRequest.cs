@@ -3,21 +3,27 @@ using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
-/// <inheritdoc />
+/// <summary>
+/// Represents a request to set a user's password.
+/// </summary>
 public class SetPasswordRequest : BaseRequestPost
 {
     /// <summary>
-    /// Set Password.
+    /// Contains the password information to set.
     /// </summary>
     public virtual SetPassword<Guid> SetPassword { get; set; } = new();
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of <see cref="SetPasswordRequest"/> with action set.
+    /// </summary>
     public SetPasswordRequest()
     {
         this.Action = "password/set";
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the body of the request containing the password data.
+    /// </summary>
     public override object GetBody()
     {
         return this.SetPassword;

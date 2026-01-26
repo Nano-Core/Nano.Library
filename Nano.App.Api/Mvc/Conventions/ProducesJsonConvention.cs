@@ -1,7 +1,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Nano.App.ApiClient.Consts;
+using Nano.Common.Consts;
 
 namespace Nano.App.Api.Mvc.Conventions;
 

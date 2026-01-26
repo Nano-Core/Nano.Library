@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Options;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
-using Nano.Data.Abstractions.Entities.Abstractions;
+using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Extensions;
 
 namespace Nano.Data;

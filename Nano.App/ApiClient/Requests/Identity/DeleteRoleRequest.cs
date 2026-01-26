@@ -2,21 +2,28 @@
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
-/// <inheritdoc />
+/// <summary>
+/// Request to delete a role.
+/// </summary>
 public class DeleteRoleRequest : BaseRequestDelete
 {
     /// <summary>
-    /// Delete Role.
+    /// The role information to delete.
     /// </summary>
     public virtual DeleteRole DeleteRole { get; set; } = new();
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of <see cref="DeleteRoleRequest"/>.
+    /// Sets the action to "roles/delete".
+    /// </summary>
     public DeleteRoleRequest()
     {
         this.Action = "roles/delete";
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the request body containing the role to delete.
+    /// </summary>
     public override object GetBody()
     {
         return this.DeleteRole;

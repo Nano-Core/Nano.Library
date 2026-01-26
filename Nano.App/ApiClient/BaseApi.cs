@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Nano.App.ApiClient.Config;
-using Nano.App.ApiClient.Consts;
 using Nano.App.ApiClient.Extensions;
 using Nano.App.ApiClient.Models;
-using Nano.App.ApiClient.Models.Identity;
 using Nano.App.ApiClient.Requests;
 using Nano.App.ApiClient.Requests.Auth;
 using Nano.App.Exceptions;
@@ -24,7 +22,9 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Entities.Abstractions;
+using Nano.App.ApiClient.Models.Auth;
+using Nano.Common.Consts;
+using Nano.Data.Abstractions.Models.Abstractions;
 using Vivet.AspNetCore.RequestTimeZone;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 
@@ -368,8 +368,11 @@ public abstract class BaseApi
         var root = this.apiOptions.CurrentValue.Root.EndsWith("/", StringComparison.Ordinal)
             ? this.apiOptions.CurrentValue.Root[..^1]
             : this.apiOptions.CurrentValue.Root;
+
+        // BUG: To Annotations
         var controller = string.IsNullOrEmpty(request.Controller) ? null : $"{request.Controller}/";
         var action = string.IsNullOrEmpty(request.Action) ? null : $"{request.Action}/";
+
         var route = request.GetRoute();
         var queryString = request.GetQuerystring();
         var uri = $"{protocol}{host}:{port}/{root}/{controller}{action}{route}?{queryString}";

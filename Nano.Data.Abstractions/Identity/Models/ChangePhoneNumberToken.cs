@@ -1,3 +1,4 @@
+using Nano.Common.Annotations;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -30,5 +31,6 @@ public class ChangePhoneNumberToken<TIdentity>
     /// </summary>
     [Required]
     [MaxLength(20)]
+    [InternationalPhone]
     public virtual string NewPhoneNumber { get; set; } = null!;
 }

@@ -1,15 +1,17 @@
-﻿using Nano.App.ApiClient.Consts;
-using Nano.Data.Abstractions.Identity.Authentication.Models;
+﻿using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.App.ApiClient.Requests.Auth;
 
-/// <inheritdoc />
+/// <summary>
+/// Represents a request to log in using an external Microsoft account.
+/// </summary>
 public class LogInExternalMicrosoftRequest : BaseLogInExternalRequest<LogInExternalMicrosoft>
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of <see cref="LogInExternalMicrosoftRequest"/> with action and controller set.
+    /// </summary>
     public LogInExternalMicrosoftRequest()
     {
         this.Action = "login/external/microsoft";
-        this.Controller = ControllerRoutes.AUTH_CONTROLLER_ROUTE;
     }
 }

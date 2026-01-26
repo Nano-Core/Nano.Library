@@ -6,22 +6,30 @@ namespace Nano.App.ApiClient.Requests.Identity;
 /// <inheritdoc />
 public class ConfirmPhoneRequest : ConfirmPhoneRequest<Guid>;
 
-/// <inheritdoc />
+/// <summary>
+/// Request to confirm a user's phone number.
+/// </summary>
+/// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
 public class ConfirmPhoneRequest<TIdentity> : BaseRequestPost
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Confirm Phone.
+    /// The confirm phone token information.
     /// </summary>
     public virtual ConfirmPhoneNumber<TIdentity> ConfirmPhone { get; set; } = new();
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of <see cref="ConfirmPhoneRequest{TIdentity}"/>.
+    /// Sets the action to "phone/confirm".
+    /// </summary>
     public ConfirmPhoneRequest()
     {
         this.Action = "phone/confirm";
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the request body containing the confirm phone token.
+    /// </summary>
     public override object GetBody()
     {
         return this.ConfirmPhone;

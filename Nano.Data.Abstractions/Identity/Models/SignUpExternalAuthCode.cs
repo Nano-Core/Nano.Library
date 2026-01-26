@@ -1,6 +1,6 @@
 ﻿using System;
-using Nano.Data.Abstractions.Entities.Abstractions;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Abstractions.Identity.Models;
 

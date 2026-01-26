@@ -8,18 +8,19 @@ namespace Nano.App.ApiClient.Requests;
 public class DeleteManyRequest : DeleteManyRequest<Guid>;
 
 /// <summary>
-/// Delete Many Request.
+/// Represents a request to delete multiple entities by their IDs.
 /// </summary>
+/// <typeparam name="TIdentity">The type of the entity identifiers.</typeparam>
 public class DeleteManyRequest<TIdentity> : BaseRequestDelete
 {
     /// <summary>
-    /// Ids.
+    /// The IDs of the entities to delete.
     /// </summary>
     [Required]
     public virtual IEnumerable<TIdentity> Ids { get; set; } = [];
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="DeleteManyRequest{TIdentity}"/>.
     /// </summary>
     public DeleteManyRequest()
     {

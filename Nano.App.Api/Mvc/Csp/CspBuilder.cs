@@ -56,7 +56,7 @@ internal sealed class CspBuilder
         var parts = new List<string>();
 
         var collection = this.directives
-            .Where(d => d.Value == null || (d.Value.Count > 0))
+            .Where(d => d.Value == null || d.Value.Count > 0)
             .Select(x => x.Value == null
                 ? x.Key
                 : $"{x.Key} {string.Join(" ", x.Value)}");

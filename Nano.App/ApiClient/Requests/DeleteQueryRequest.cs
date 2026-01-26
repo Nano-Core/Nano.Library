@@ -3,19 +3,19 @@
 namespace Nano.App.ApiClient.Requests;
 
 /// <summary>
-/// Delete Many Query Request.
+/// Represents a request to delete multiple entities matching a query.
 /// </summary>
-/// <typeparam name="TCriteria">The type of <see cref="IQueryCriteria"/>.</typeparam>
+/// <typeparam name="TCriteria">The type of <see cref="IQueryCriteria"/> used for filtering.</typeparam>
 public class DeleteQueryRequest<TCriteria> : BaseRequestDelete
     where TCriteria : IQueryCriteria, new()
 {
     /// <summary>
-    /// Query Criteria.
+    /// The query criteria defining which entities to delete.
     /// </summary>
     public virtual TCriteria Criteria { get; set; } = new();
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="DeleteQueryRequest{TCriteria}"/>.
     /// </summary>
     public DeleteQueryRequest()
     {

@@ -1,12 +1,12 @@
 ﻿namespace Nano.App.ApiClient.Requests;
 
 /// <summary>
-/// Base Request Post.
+/// Represents a base class for POST requests.
 /// </summary>
 public abstract class BaseRequestPost : BaseRequest
 {
     /// <summary>
-    /// Get Body.
+    /// Gets the body of the request.
     /// </summary>
     public abstract object? GetBody();
 }

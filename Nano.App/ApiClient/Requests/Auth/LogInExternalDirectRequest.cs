@@ -1,15 +1,17 @@
-﻿using Nano.App.ApiClient.Consts;
-using Nano.Data.Abstractions.Identity.Authentication.Models;
+﻿using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.App.ApiClient.Requests.Auth;
 
-/// <inheritdoc />
+/// <summary>
+/// Represents a request to log in using an external direct account.
+/// </summary>
 public class LogInExternalDirectRequest : BaseLogInExternalRequest<LogInExternalDirect>
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of <see cref="LogInExternalDirectRequest"/> with action and controller set.
+    /// </summary>
     public LogInExternalDirectRequest()
     {
         this.Action = "login/external/direct";
-        this.Controller = ControllerRoutes.AUTH_CONTROLLER_ROUTE;
     }
 }

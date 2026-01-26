@@ -5,42 +5,36 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json.Serialization;
-using Nano.App.ApiClient.Requests.Attributes;
+using Nano.App.ApiClient.Requests.Annotations;
 using Nano.Common.Extensions;
 
 namespace Nano.App.ApiClient.Requests;
 
 /// <summary>
-/// Base request (abstract).
+/// Represents the base request class for all HTTP requests.
 /// </summary>
 public abstract class BaseRequest
 {
     /// <summary>
-    /// Jwt Token Override.
-    /// Used to override the Jwt-Token for the specific request.
+    /// Optional JWT token to override the default authentication token for this request.
     /// </summary>
     [JsonIgnore]
     public virtual string? JwtTokenOverride { get; set; }
 
     /// <summary>
-    /// Controller.
+    /// The action or controller endpoint for the request.
     /// </summary>
     [Required]
     [JsonIgnore]
     protected internal string Action { get; set; } = null!;
 
     /// <summary>
-    /// Controller.
+    /// Optional controller name for the request.
     /// </summary>
     [JsonIgnore]
     protected internal string? Controller { get; set; }
 
-    /// <summary>
-    /// Get Route.
-    /// Get the route parameters of the request, defined by properties having <see cref="RouteAttribute"/>.
-    /// </summary>
-    /// <returns>The route as string.</returns>
-    public virtual string GetRoute()
+    internal virtual string GetRoute()
     {
         var parameters = this
             .GetType()
@@ -66,12 +60,7 @@ public abstract class BaseRequest
             .Aggregate(string.Empty, (current, x) => current + $"{x}/");
     }
 
-    /// <summary>
-    /// Get Headers.
-    /// Get the header parameters of the request, defined by properties having <see cref="RouteAttribute"/>.
-    /// </summary>
-    /// <returns>The route as string.</returns>
-    public virtual IEnumerable<KeyValuePair<string, string>> GetHeaders()
+    internal virtual IEnumerable<KeyValuePair<string, string>> GetHeaders()
     {
         var parameters = this
             .GetType()
@@ -98,12 +87,7 @@ public abstract class BaseRequest
         return parameters;
     }
 
-    /// <summary>
-    /// Get Querystring.
-    /// Get the querystring parameters of the request, defined by properties having <see cref="QueryAttribute"/>.
-    /// </summary>
-    /// <returns>The querystring as string.</returns>
-    public virtual string GetQuerystring()
+    internal virtual string GetQuerystring()
     {
         var querystring = this.GetQuerystringRecursive(this);
 
@@ -111,6 +95,7 @@ public abstract class BaseRequest
             ? querystring[..^1]
             : querystring;
     }
+
 
     private string GetQuerystringRecursive(object value, string parentName = "")
     {

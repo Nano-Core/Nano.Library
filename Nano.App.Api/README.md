@@ -4,6 +4,8 @@
 [![NuGet](https://img.shields.io/nuget/v/Nano.App.Api.svg)](https://www.nuget.org/packages/Nano.App.Api/)
 
 
+FromFormBody!!!
+
 ## Configuration
 Nano Api config
 Add custom sections

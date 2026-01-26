@@ -3,8 +3,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Nano.Common.Extensions;
-using Nano.Data.Abstractions.Entities.Abstractions;
 using Nano.Data.Abstractions.Eventing.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 
 namespace Nano.Data.Eventing;

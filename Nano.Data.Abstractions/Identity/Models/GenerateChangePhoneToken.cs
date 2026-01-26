@@ -24,6 +24,7 @@ public class GenerateChangePhoneToken<TIdentity>
     /// The new phone number to be associated with the user.
     /// </summary>
     [Required]
+    [MaxLength(20)]
     [InternationalPhone]
     public virtual string NewPhoneNumber { get; set; } = null!;
 }

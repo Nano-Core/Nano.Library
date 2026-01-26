@@ -15,8 +15,8 @@ using Nano.Data.Identity.Extensions;
 using Nano.Eventing.Abstractions;
 using System;
 using System.Linq;
-using Nano.Data.Abstractions.Entities;
-using Nano.Data.Abstractions.Entities.Abstractions;
+using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
 using Z.EntityFramework.Extensions;
 using Z.EntityFramework.Plus;
 
@@ -79,7 +79,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddContext<TProvider, TContext>(options)
-            .AddAudit(options.UseAudit)
+            .AddAudit<TIdentity>(options.UseAudit)
             .AddCache(options.Cache)
             .AddIdentity<TContext, TIdentity>(options.Identity);
 
@@ -136,7 +136,8 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    private static IServiceCollection AddAudit(this IServiceCollection services, bool useAudit = false)
+    private static IServiceCollection AddAudit<TIdentity>(this IServiceCollection services, bool useAudit = false)
+        where TIdentity : IEquatable<TIdentity>
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -169,7 +170,7 @@ public static class ServiceCollectionExtensions
                 .Where(x => x.AuditEntryID == 0)
                 .Select(x =>
                 {
-                    return new DefaultAuditEntry
+                    return new AuditEntry<TIdentity>
                     {
                         CreatedBy = createdBy ?? x.CreatedBy,
                         EntitySetName = x.EntitySetName,
@@ -178,7 +179,7 @@ public static class ServiceCollectionExtensions
                         StateName = x.StateName,
                         RequestId = requestId,
                         Properties = x.Properties
-                            .Select(y => new DefaultAuditEntryProperty
+                            .Select(y => new AuditEntryProperty<TIdentity>
                             {
                                 PropertyName = y.PropertyName,
                                 RelationName = y.RelationName,
@@ -190,7 +191,7 @@ public static class ServiceCollectionExtensions
                 });
 
             dbContext
-                .Set<DefaultAuditEntry>()
+                .Set<AuditEntry<TIdentity>>()
                 .AddRange(auditEntries);
         };
         AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsDeleted > 0L);

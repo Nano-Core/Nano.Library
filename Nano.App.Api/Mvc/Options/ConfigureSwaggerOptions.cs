@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using System.Xml.XPath;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,13 +22,6 @@ namespace Nano.App.Api.Mvc.Options;
 /// </summary>
 public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 {
-    private static readonly string[] xmlEmbeddedResources =
-    [
-        "Nano.App.Web.Mvc.Documentation..xmldoc.Nano.App.xml",
-        "Nano.App.Web.Mvc.Documentation..xmldoc.Nano.App.Web.xml",
-        "Nano.App.Web.Mvc.Documentation..xmldoc.Nano.Data.Abstractions.xml"
-    ];
-
     private readonly IOptionsMonitor<ApiOptions> apiOptions;
     private readonly IAuthenticationSchemeProvider authenticationSchemeProvider;
     private readonly IApiVersionDescriptionProvider apiVersionDescriptionProvider;
@@ -198,43 +190,8 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        // BUG: Is .xmldoc embedded files still needed?
-
-        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        foreach (var file in Directory.EnumerateFiles(AppContext.BaseDirectory, "*.xml", SearchOption.TopDirectoryOnly).Where(IsCSharpXmlDoc))
         {
-            var manifestResourceNames = assembly
-                .GetManifestResourceNames();
-
-            foreach (var resourceName in ConfigureSwaggerOptions.xmlEmbeddedResources)
-            {
-                var contains = manifestResourceNames
-                    .Contains(resourceName);
-
-                if (!contains)
-                {
-                    continue;
-                }
-
-                var stream = assembly
-                    .GetManifestResourceStream(resourceName);
-
-                if (stream == null)
-                {
-                    continue;
-                }
-
-                options
-                    .IncludeXmlComments(() => new XPathDocument(stream));
-            }
-        }
-
-        foreach (var file in Directory.EnumerateFiles(AppContext.BaseDirectory, "*.xml", SearchOption.TopDirectoryOnly))
-        {
-            if (!IsCSharpXmlDoc(file))
-            {
-                continue;
-            }
-
             options
                 .IncludeXmlComments(file, true);
         }

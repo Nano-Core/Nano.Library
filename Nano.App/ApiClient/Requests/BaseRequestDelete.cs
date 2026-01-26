@@ -1,12 +1,12 @@
 ﻿namespace Nano.App.ApiClient.Requests;
 
 /// <summary>
-/// Base Request Delete.
+/// Represents a base class for DELETE requests.
 /// </summary>
 public abstract class BaseRequestDelete : BaseRequest
 {
     /// <summary>
-    /// Get Body.
+    /// Gets the body of the request.
     /// </summary>
     public abstract object? GetBody();
 }

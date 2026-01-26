@@ -6,27 +6,17 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Nano.App.ApiClient.Consts;
 using Nano.App.ApiClient.Models;
-using Nano.App.ApiClient.Requests.Types;
+using Nano.App.ApiClient.Requests.Models;
+using Nano.Common.Consts;
 using Nano.Common.Extensions;
 using Nano.Common.Serialization.Json;
 using Newtonsoft.Json;
 
 namespace Nano.App.ApiClient.Extensions;
 
-/// <summary>
-/// Multipart Form Data Content Extensions.
-/// </summary>
 internal static class MultipartFormDataContentExtensions
 {
-    /// <summary>
-    /// Add For Item.
-    /// </summary>
-    /// <param name="formContent">The <see cref="MultipartFormDataContent"/>.</param>
-    /// <param name="formItem">The <see cref="FormItem"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
     internal static async Task AddFormItem(this MultipartFormDataContent formContent, FormItem formItem, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(formContent);

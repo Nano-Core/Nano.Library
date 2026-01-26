@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using DynamicExpression;
-using Nano.Data.Abstractions.Entities;
+using Nano.Data.Abstractions.Models;
 
 namespace Nano.App.Api.Controllers.Models;
 
@@ -42,25 +42,25 @@ public class AuditEntryQueryCriteria : DefaultQueryCriteria
         if (this.CreatedBy != null)
         {
             expression
-                .Equal(nameof(DefaultAuditEntry.CreatedBy), this.CreatedBy);
+                .Equal(nameof(AuditEntry<>.CreatedBy), this.CreatedBy);
         }
 
         if (this.EntityTypeName != null)
         {
             expression
-                .Equal(nameof(DefaultAuditEntry.EntityTypeName), this.EntityTypeName);
+                .Equal(nameof(AuditEntry<>.EntityTypeName), this.EntityTypeName);
         }
 
         if (this.State != null)
         {
             expression
-                .Equal(nameof(DefaultAuditEntry.State), this.State);
+                .Equal(nameof(AuditEntry<>.State), this.State);
         }
 
         if (this.RequestId != null)
         {
             expression
-                .Equal(nameof(DefaultAuditEntry.RequestId), this.RequestId);
+                .Equal(nameof(AuditEntry<>.RequestId), this.RequestId);
         }
 
         expressions

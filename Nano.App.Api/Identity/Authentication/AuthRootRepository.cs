@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Nano.App.Api.Identity.Authentication.Abstractions;
-using Nano.App.ApiClient.Models.Identity;
+using Nano.App.ApiClient.Models.Auth;
 using Nano.App.Config;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;

@@ -1,5 +1,5 @@
 ﻿using System;
-using Nano.App.ApiClient.Requests.Attributes;
+using Nano.App.ApiClient.Requests.Annotations;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -7,18 +7,19 @@ namespace Nano.App.ApiClient.Requests.Identity;
 public class GetUserRolesRequest : GetUserRolesRequest<Guid>;
 
 /// <summary>
-/// Get User Roles Request.
+/// Represents a request to retrieve the roles assigned to a specific user.
 /// </summary>
+/// <typeparam name="TIdentity">The type of the user identifier.</typeparam>
 public class GetUserRolesRequest<TIdentity> : BaseRequestGet
 {
     /// <summary>
-    /// User Id.
+    /// The user identifier.
     /// </summary>
     [Route(Order = 0)]
     public virtual TIdentity UserId { get; set; } = default!;
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="GetUserRolesRequest{TIdentity}"/> with action set.
     /// </summary>
     public GetUserRolesRequest()
     {

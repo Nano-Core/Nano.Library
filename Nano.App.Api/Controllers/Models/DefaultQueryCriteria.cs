@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DynamicExpression;
-using Nano.Data.Abstractions.Entities;
+using Nano.Data.Abstractions.Models;
 
 namespace Nano.App.Api.Controllers.Models;
 

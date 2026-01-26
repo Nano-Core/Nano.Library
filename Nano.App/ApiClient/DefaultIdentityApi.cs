@@ -3,7 +3,7 @@ using Nano.App.ApiClient.Config;
 using System;
 using System.Net.Http;
 using Microsoft.AspNetCore.Http;
-using Nano.Data.Abstractions.Entities.Abstractions;
+using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.ApiClient;
 

@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nano.App.StartUp;
 
@@ -8,15 +9,20 @@ namespace Nano.App.StartUp;
 public sealed class StartupTaskContext
 {
     private int count;
+    private readonly TaskCompletionSource<object?> completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+    /// <summary>
+    /// Gets a task that completes when all startup tasks have finished.
+    /// </summary>
+    public Task Completion => this.completion.Task;
 
     /// <summary>
     /// Gets a value indicating whether all tracked startup tasks have completed.
     /// </summary>
-    public bool IsDone => this.count == 0;
+    public bool IsDone => Volatile.Read(ref this.count) == 0;
 
     /// <summary>
-    /// Increments the count of active startup tasks.
-        /// Call this when a new startup task begins.
+    /// Call when a startup task begins.
     /// </summary>
     public void Increment()
     {
@@ -24,11 +30,14 @@ public sealed class StartupTaskContext
     }
 
     /// <summary>
-    /// Decrements the count of active startup tasks.
-    /// Call this when a startup task completes.
+    /// Call when a startup task completes.
     /// </summary>
     public void Decrement()
     {
-        Interlocked.Decrement(ref this.count);
+        if (Interlocked.Decrement(ref this.count) == 0)
+        {
+            this.completion
+                .TrySetResult(null);
+        }
     }
 }

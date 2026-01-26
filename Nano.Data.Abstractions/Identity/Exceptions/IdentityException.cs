@@ -2,7 +2,6 @@ using System;
 
 namespace Nano.Data.Abstractions.Identity.Exceptions;
 
-
 /// <summary>
 /// Represents an exception that is thrown for identity-related errors.
 /// </summary>
