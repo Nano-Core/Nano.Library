@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.ApiClient.Requests.Auth.Models;
@@ -35,9 +34,10 @@ public abstract class BaseApi
     private readonly HttpClient httpClient;
 
     /// <summary>
-    /// 
+    /// The httpcontext accessor.
+    /// Use to acecss headers and jwt token to pass through the api-client request.
     /// </summary>
-    protected readonly IHttpContextAccessor httpContextAccessor;
+    protected internal readonly IHttpContextAccessor httpContextAccessor;
 
     /// <summary>
     /// Constructor.
@@ -327,8 +327,6 @@ public abstract class BaseApi
             throw;
         }
     }
-
-    // BUG: I don't think we need these. We should always throw a ProblemDetailsException
     private static BadRequestException GetBadRequestException(string content)
     {
         ArgumentNullException.ThrowIfNull(content);

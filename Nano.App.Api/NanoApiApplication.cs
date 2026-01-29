@@ -60,32 +60,32 @@ public class NanoApiApplication : BaseApplication<WebApplication, WebApplication
         var applicationBuilder = CreateBuilder(args);
 
         applicationBuilder.Services
-            .AddNanoApp<ApiOptions>(applicationBuilder.Configuration, out var apiOptions)
+            .AddNanoApp<ApiOptions>(applicationBuilder.Configuration, out var options)
             .AddNanoExceptionHandling()
-            .AddNanoCors(apiOptions.HttpPolicyHeaders.Cors)
-            .AddNanoForwardedHeaders(apiOptions.HttpPolicyHeaders.ForwardedHeaders)
-            .AddNanoHsts(apiOptions.HttpPolicyHeaders.Hsts)
+            .AddNanoCors(options.HttpPolicyHeaders.Cors)
+            .AddNanoForwardedHeaders(options.HttpPolicyHeaders.ForwardedHeaders)
+            .AddNanoHsts(options.HttpPolicyHeaders.Hsts)
             .AddNanoCookies()
-            .AddNanoSession(apiOptions.Session)
-            .AddNanoResponseCaching(apiOptions.ResponseCache)
-            .AddNanoVersioning(apiOptions.Version, apiOptions.Documentation?.UseDefaultVersion)
-            .AddNanoIdentityAuthentication(apiOptions.Identity?.Authentication)
+            .AddNanoSession(options.Session)
+            .AddNanoResponseCaching(options.ResponseCache)
+            .AddNanoVersioning(options.Version, options.Documentation?.UseDefaultVersion)
+            .AddNanoIdentityAuthentication(options.Identity?.Authentication)
             .AddNanoIdentityAuthorization()
             .AddNanoRequestLocalization()
-            .AddNanoRequestTimeZone(apiOptions.DefaultTimeZone)
-            .AddNanoVirusScan(apiOptions.VirusScan)
-            .AddNanoResponseCompression(apiOptions.ResponseCompression)
+            .AddNanoRequestTimeZone(options.DefaultTimeZone)
+            .AddNanoVirusScan(options.VirusScan)
+            .AddNanoResponseCompression(options.ResponseCompression)
             .AddNanoRequestOptions()
             .AddNanoRequestIdentifier()
-            .AddNanoFormOptions(apiOptions.Hosting.MultipartLimits)
+            .AddNanoFormOptions(options.Hosting.MultipartLimits)
             .AddNanoMvc()
-            .AddNanoDocumentation(apiOptions.Documentation)
-            .AddNanoHealthChecking(apiOptions.Hosting.Ports.FirstOrDefault(), apiOptions.HealthCheck);
+            .AddNanoDocumentation(options.Documentation)
+            .AddNanoHealthChecking(options.Hosting.Ports.FirstOrDefault(), options.HealthCheck);
 
         applicationBuilder.WebHost
-            .UseNanoKestrel(apiOptions)
+            .UseNanoKestrel(options)
             .CaptureStartupErrors(true)
-            .UseShutdownTimeout(TimeSpan.FromSeconds(apiOptions.ShutdownTimeout));
+            .UseShutdownTimeout(TimeSpan.FromSeconds(options.ShutdownTimeout));
 
         return new NanoApiApplication(applicationBuilder);
     }
@@ -160,25 +160,18 @@ public class NanoApiApplication : BaseApplication<WebApplication, WebApplication
     protected static WebApplicationBuilder CreateBuilder(string[] args)
     {
         var root = Directory.GetCurrentDirectory();
-        var environment =
-            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
-            ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
-            ?? Environments.Development;
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Development;
 
         var entryAssembly = Assembly.GetEntryAssembly();
         var config = ConfigManager.BuildConfiguration(environment, entryAssembly, args);
         var applicationName = entryAssembly?.GetName().Name;
-
-        // BUG: Web Application
-        var webRootPath = /*webOptions.WebRootPath ??*/ "wwwroot";
 
         var options = new WebApplicationOptions
         {
             Args = args,
             ApplicationName = applicationName,
             EnvironmentName = environment,
-            ContentRootPath = root,
-            WebRootPath = webRootPath
+            ContentRootPath = root
         };
 
         var builder = WebApplication
