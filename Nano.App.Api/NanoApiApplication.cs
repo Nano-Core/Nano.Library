@@ -169,7 +169,7 @@ public class NanoApiApplication : BaseApplication<WebApplication, WebApplication
         var config = ConfigManager.BuildConfiguration(environment, entryAssembly, args);
         var applicationName = entryAssembly?.GetName().Name;
 
-        // BUG
+        // BUG: Web Application
         var webRootPath = /*webOptions.WebRootPath ??*/ "wwwroot";
 
         var options = new WebApplicationOptions

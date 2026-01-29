@@ -1,5 +1,9 @@
-﻿using System;
-using Nano.Data.Abstractions.Identity.Models;
+﻿using Nano.Data.Abstractions.Identity.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,27 +14,14 @@ public class ReplaceUserClaimRequest : ReplaceUserClaimRequest<Guid>;
 /// Represents a request to replace a user's claim.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the user identifier.</typeparam>
-public class ReplaceUserClaimRequest<TIdentity> : BaseRequestPut
+[PutAction(ActionRoutes.IDENTITY_CLAIMS_REPLACE)]
+public class ReplaceUserClaimRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// Contains the user claim replacement information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual ReplaceUserClaim<TIdentity> ReplaceUserClaim { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="ReplaceUserClaimRequest{TIdentity}"/> with action set.
-    /// </summary>
-    public ReplaceUserClaimRequest()
-    {
-        this.Action = "claims/replace";
-    }
-
-    /// <summary>
-    /// Gets the body of the request containing the claim replacement data.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.ReplaceUserClaim;
-    }
 }

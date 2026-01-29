@@ -1,5 +1,9 @@
-﻿using System;
-using Nano.Data.Abstractions.Identity.Models;
+﻿using Nano.Data.Abstractions.Identity.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,28 +14,14 @@ public class ConfirmPhoneRequest : ConfirmPhoneRequest<Guid>;
 /// Request to confirm a user's phone number.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-public class ConfirmPhoneRequest<TIdentity> : BaseRequestPost
+[PostAction(ActionRoutes.IDENTITY_PHONE_CONFIRM)]
+public class ConfirmPhoneRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// The confirm phone token information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual ConfirmPhoneNumber<TIdentity> ConfirmPhone { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="ConfirmPhoneRequest{TIdentity}"/>.
-    /// Sets the action to "phone/confirm".
-    /// </summary>
-    public ConfirmPhoneRequest()
-    {
-        this.Action = "phone/confirm";
-    }
-
-    /// <summary>
-    /// Gets the request body containing the confirm phone token.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.ConfirmPhone;
-    }
 }

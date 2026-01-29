@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 using Nano.Data.Abstractions.Identity.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,28 +14,14 @@ public class AssignOrReplaceRoleClaimRequest : AssignOrReplaceRoleClaimRequest<G
 /// Request to assign or replace a claim for a role.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the role identifier.</typeparam>
-public class AssignOrReplaceRoleClaimRequest<TIdentity> : BaseRequestPut
+[PutAction(ActionRoutes.IDENTITY_ROLES_CLAIMS_ASSIGN_OR_REPLACE)]
+public class AssignOrReplaceRoleClaimRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// The role claim assignment or replacement information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual AssignOrReplaceRoleClaim<TIdentity> AssignOrReplaceRoleClaim { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="AssignOrReplaceRoleClaimRequest{TIdentity}"/>.
-    /// Sets the action to "roles/claims/assign-or-replace".
-    /// </summary>
-    public AssignOrReplaceRoleClaimRequest()
-    {
-        this.Action = "roles/claims/assign-or-replace";
-    }
-
-    /// <summary>
-    /// Gets the request body containing the role claim assignment or replacement information.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.AssignOrReplaceRoleClaim;
-    }
 }

@@ -1,17 +1,18 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Nano.App.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nano.App.Api.Controllers;
 
@@ -48,7 +49,7 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [HttpDelete]
-    [Route("delete/{id}")]
+    [Route(ActionRoutes.DELETE)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -78,7 +79,7 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [HttpDelete]
-    [Route("delete/many")]
+    [Route(ActionRoutes.DELETE_MANY)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -109,7 +110,7 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [HttpDelete]
-    [Route("delete/many/bulk")]
+    [Route(ActionRoutes.DELETE_MANY_BULK)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -136,7 +137,7 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [HttpDelete]
-    [Route("delete/query")]
+    [Route(ActionRoutes.DELETE_QUERY)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]

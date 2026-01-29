@@ -1,5 +1,8 @@
 ﻿using System;
-using Nano.App.ApiClient.Requests.Annotations;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,20 +13,13 @@ public class GetActiveRefreshTokensRequest : GetActiveRefreshTokensRequest<Guid>
 /// Request to retrieve active refresh tokens for a user.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-public class GetActiveRefreshTokensRequest<TIdentity> : BaseRequestGet
+[GetAction(ActionRoutes.IDENTITY_REFRESH_TOKENS_ACTIVE)]
+public class GetActiveRefreshTokensRequest<TIdentity> : BaseRequest
 {
     /// <summary>
     /// The identifier of the user.
     /// </summary>
+    [Required]
     [Route(Order = 0)]
     public virtual TIdentity UserId { get; set; } = default!;
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="GetActiveRefreshTokensRequest{TIdentity}"/>.
-    /// Sets the action to "refresh-tokens/active".
-    /// </summary>
-    public GetActiveRefreshTokensRequest()
-    {
-        this.Action = "refresh-tokens/active";
-    }
 }

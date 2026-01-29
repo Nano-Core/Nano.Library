@@ -202,7 +202,8 @@ internal static class MultipartFormDataContentExtensions
         ArgumentNullException.ThrowIfNull(value);
         ArgumentNullException.ThrowIfNull(name);
 
-        var isSimple = value.GetType()
+        var isSimple = value
+            .GetType()
             .IsSimple();
 
         var content = !isSimple

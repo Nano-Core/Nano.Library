@@ -1,15 +1,10 @@
-﻿namespace Nano.App.ApiClient.Requests.Identity;
+﻿using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
+
+namespace Nano.App.ApiClient.Requests.Identity;
 
 /// <summary>
 /// Represents a request to retrieve password policy and options.
 /// </summary>
-public class GetPasswordOptionsRequest : BaseRequestGet
-{
-    /// <summary>
-    /// Initializes a new instance of <see cref="GetPasswordOptionsRequest"/> with action set.
-    /// </summary>
-    public GetPasswordOptionsRequest()
-    {
-        this.Action = "password/options";
-    }
-}
+[GetAction(ActionRoutes.IDENTITY_PASSWORD_OPTIONS)]
+public class GetPasswordOptionsRequest : BaseRequest;

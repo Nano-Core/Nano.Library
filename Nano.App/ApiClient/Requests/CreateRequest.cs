@@ -1,4 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.ApiClient.Requests;
@@ -6,25 +9,13 @@ namespace Nano.App.ApiClient.Requests;
 /// <summary>
 /// Represents a request to create a single entity.
 /// </summary>
-public class CreateRequest : BaseRequestPost
+[PostAction(ActionRoutes.CREATE)]
+public class CreateRequest : BaseRequest
 {
     /// <summary>
     /// The entity to create.
     /// </summary>
     [Required]
+    [Body]
     public virtual IEntityCreatable Entity { get; set; } = null!;
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="CreateRequest"/>.
-    /// </summary>
-    public CreateRequest()
-    {
-        this.Action = "create";
-    }
-
-    /// <inheritdoc />
-    public override object GetBody()
-    {
-        return this.Entity;
-    }
 }

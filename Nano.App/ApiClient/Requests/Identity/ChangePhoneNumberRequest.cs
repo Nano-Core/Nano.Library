@@ -1,5 +1,9 @@
-﻿using System;
-using Nano.Data.Abstractions.Identity.Models;
+﻿using Nano.Data.Abstractions.Identity.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,28 +14,14 @@ public class ChangePhoneRequest : ChangePhoneRequest<Guid>;
 /// Request to change a user's phone number.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-public class ChangePhoneRequest<TIdentity> : BaseRequestPost
+[PostAction(ActionRoutes.IDENTITY_PHONE_CHANGE)]
+public class ChangePhoneRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// The change phone token information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual ChangePhoneNumber<TIdentity> ChangePhone { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="ChangePhoneRequest{TIdentity}"/>.
-    /// Sets the action to "phone/change".
-    /// </summary>
-    public ChangePhoneRequest()
-    {
-        this.Action = "phone/change";
-    }
-
-    /// <summary>
-    /// Gets the request body containing the change phone token.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.ChangePhone;
-    }
 }

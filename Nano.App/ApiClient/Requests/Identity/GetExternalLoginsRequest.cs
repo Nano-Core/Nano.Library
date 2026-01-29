@@ -1,5 +1,8 @@
 ﻿using System;
-using Nano.App.ApiClient.Requests.Annotations;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,20 +13,13 @@ public class GetExternalLoginsRequest : GetExternalLoginsRequest<Guid>;
 /// Request to get external login providers for a user.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-public class GetExternalLoginsRequest<TIdentity> : BaseRequestGet
+[GetAction(ActionRoutes.IDENTITY_EXTERNAL_LOGINS)]
+public class GetExternalLoginsRequest<TIdentity> : BaseRequest
 {
     /// <summary>
     /// The identifier of the user.
     /// </summary>
+    [Required]
     [Route(Order = 0)]
     public virtual TIdentity UserId { get; set; } = default!;
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="GetExternalLoginsRequest"/>.
-    /// Sets the action to "external-logins".
-    /// </summary>
-    public GetExternalLoginsRequest()
-    {
-        this.Action = "external-logins";
-    }
 }

@@ -9,13 +9,13 @@ namespace Nano.App.Api.Annotations;
 /// Supports scenarios where both files and JSON data are sent in the same request.
 /// </summary>
 [AttributeUsage(AttributeTargets.Parameter)]
-public class FromFormBody : ModelBinderAttribute
+public class FromFormBodyAttribute : ModelBinderAttribute
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="FromFormBody"/> attribute.
+    /// Initializes a new instance of the <see cref="FromFormBodyAttribute"/> attribute.
     /// Sets the binder type to <see cref="JsonFormModelBinder"/>.
     /// </summary>
-    public FromFormBody()
+    public FromFormBodyAttribute()
     {
         this.BinderType = typeof(JsonFormModelBinder);
     }

@@ -8,6 +8,7 @@ using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Nano.App.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
@@ -55,7 +56,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="404">No entities found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpGet]
-    [Route("index")]
+    [Route(ActionRoutes.INDEX)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -93,7 +94,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="404">No entities found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("index")]
+    [Route(ActionRoutes.INDEX)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
@@ -132,7 +133,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Entity not found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpGet]
-    [Route("details/{id}")]
+    [Route(ActionRoutes.DETAILS)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -175,7 +176,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="404">No entities found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpGet]
-    [Route("details/many")]
+    [Route(ActionRoutes.DETAILS_MANY)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -213,7 +214,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="404">No entities found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("details/many")]
+    [Route(ActionRoutes.DETAILS_MANY)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
@@ -252,7 +253,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="404">No entities found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpGet]
-    [Route("query")]
+    [Route(ActionRoutes.QUERY)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<DefaultEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -290,7 +291,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="404">No entities found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("query")]
+    [Route(ActionRoutes.QUERY)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -330,7 +331,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="404">No entity found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpGet]
-    [Route("query/first")]
+    [Route(ActionRoutes.QUERY_FIRST)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -373,7 +374,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="404">No entity found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("query/first")]
+    [Route(ActionRoutes.QUERY_FIRST)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -416,7 +417,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="404">No entities found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpGet]
-    [Route("query/count")]
+    [Route(ActionRoutes.QUERY_COUNT)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -443,7 +444,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <response code="404">No entities found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("query/count")]
+    [Route(ActionRoutes.QUERY_COUNT)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]

@@ -1,5 +1,9 @@
-﻿using System;
-using Nano.Data.Abstractions.Identity.Models;
+﻿using Nano.Data.Abstractions.Identity.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,28 +14,14 @@ public class AssignUserClaimRequest : AssignUserClaimRequest<Guid>;
 /// Request to assign a claim to a user.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-public class AssignUserClaimRequest<TIdentity> : BaseRequestPost
+[PostAction(ActionRoutes.IDENTITY_CLAIMS_ASSIGN)]
+public class AssignUserClaimRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// The user claim assignment information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual AssignUserClaim<TIdentity> AssignUserClaim { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="AssignUserClaimRequest{TIdentity}"/>.
-    /// Sets the action to "claims/assign".
-    /// </summary>
-    public AssignUserClaimRequest()
-    {
-        this.Action = "claims/assign";
-    }
-
-    /// <summary>
-    /// Gets the request body containing the claim assignment information.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.AssignUserClaim;
-    }
 }

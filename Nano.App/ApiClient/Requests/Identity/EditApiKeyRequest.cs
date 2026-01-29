@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Nano.Data.Abstractions.Identity.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
-using Nano.App.ApiClient.Requests.Annotations;
-using Nano.Data.Abstractions.Identity.Models;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -12,36 +14,14 @@ public class EditApiKeyRequest : EditApiKeyRequest<Guid>;
 /// Request to edit an API key for a user.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-public class EditApiKeyRequest<TIdentity> : BaseRequestPut
+[PutAction(ActionRoutes.IDENTITY_API_KEYS_EDIT)]
+public class EditApiKeyRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
-    /// <summary>
-    /// The identifier of the API key.
-    /// </summary>
-    [Required]
-    [Route]
-    public virtual TIdentity Id { get; set; } = default!;
-
     /// <summary>
     /// The API key edit information.
     /// </summary>
     [Required]
+    [Body]
     public virtual EditApiKey EditApiKey { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="EditApiKeyRequest{TIdentity}"/>.
-    /// Sets the action to "api-keys/edit".
-    /// </summary>
-    public EditApiKeyRequest()
-    {
-        this.Action = "api-keys/edit";
-    }
-
-    /// <summary>
-    /// Gets the request body containing the API key edit information.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.EditApiKey;
-    }
 }

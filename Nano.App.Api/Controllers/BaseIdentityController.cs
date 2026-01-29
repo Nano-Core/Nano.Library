@@ -1,16 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Nano.App.Consts;
 using Nano.Common.Annotations;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
@@ -23,6 +16,14 @@ using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Abstractions.Models.Identity;
 using Nano.Eventing.Abstractions;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Net;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.App.Api.Controllers;
@@ -87,7 +88,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="400">Bad Request.</response>
     /// <response code="500">Error occurred.</response>
     [HttpGet]
-    [Route("password/options")]
+    [Route(ActionRoutes.IDENTITY_PASSWORD_OPTIONS)]
     [AllowAnonymous]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(PasswordOptions), (int)HttpStatusCode.OK)]
@@ -119,7 +120,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="400">Bad Request.</response>
     /// <response code="500">Error occurred.</response>
     [HttpGet]
-    [Route("email/is-taken")]
+    [Route(ActionRoutes.IDENTITY_EMAIL_IS_TAKEN)]
     [AllowAnonymous]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IsEmailAddressTaken), (int)HttpStatusCode.OK)]
@@ -146,7 +147,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="400">Bad Request.</response>
     /// <response code="500">Error occurred.</response>
     [HttpGet]
-    [Route("phone/is-taken")]
+    [Route(ActionRoutes.IDENTITY_PHONE_IS_TAKEN)]
     [AllowAnonymous]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IsPhoneNumberTaken), (int)HttpStatusCode.OK)]
@@ -172,7 +173,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="400">Bad Request.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("signup")]
+    [Route(ActionRoutes.IDENTITY_SIGNUP)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -198,7 +199,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="400">Bad Request.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("signup/external/direct")]
+    [Route(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_DIRECT)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -226,50 +227,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
-    /// Registers a new user using an external Google login provider.
-    /// </summary>
-    /// <param name="signUpExternal">The external Google sign-up request.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The created user.</returns>
-    /// <response code="201">Created.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="500">Error occurred.</response>
-    [HttpPost]
-    [Route("signup/external/google")]
-    [AllowAnonymous]
-    [Consumes(HttpContentType.JSON)]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(DefaultEntityUser), (int)HttpStatusCode.Created)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> SignUpExternalGoogleAsync([FromBody][Required] SignUpExternalGoogle<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
-    {
-        if (authExternalRepository == null)
-        {
-            throw new NullReferenceException(nameof(this.authExternalRepository));
-        }
-
-        var externalProviderLogInData = await this.authExternalRepository
-            .AuthenticateAsync(signUpExternal.Provider, cancellationToken);
-
-        var user = await this.identityRepository
-            .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
-            {
-                User = signUpExternal.User,
-                Email = externalProviderLogInData.Email,
-                ExternalProvider =
-                {
-                    LoginProvider = externalProviderLogInData.ExternalToken.Name,
-                    ProviderKey = externalProviderLogInData.Id
-                },
-                Roles = signUpExternal.Roles,
-                Claims = signUpExternal.Claims
-            }, cancellationToken);
-
-        return this.Created("signup/external/google", user);
-    }
-
-    /// <summary>
     /// Registers a new user using an external Facebook login provider.
     /// </summary>
     /// <param name="signUpExternal">The external Facebook sign-up request.</param>
@@ -279,7 +236,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="400">Bad Request.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("signup/external/facebook")]
+    [Route(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_FACEBOOK)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -314,6 +271,50 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
+    /// Registers a new user using an external Google login provider.
+    /// </summary>
+    /// <param name="signUpExternal">The external Google sign-up request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The created user.</returns>
+    /// <response code="201">Created.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="500">Error occurred.</response>
+    [HttpPost]
+    [Route(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_GOOGLE)]
+    [AllowAnonymous]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(DefaultEntityUser), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> SignUpExternalGoogleAsync([FromBody][Required] SignUpExternalGoogle<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
+    {
+        if (authExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.authExternalRepository));
+        }
+
+        var externalProviderLogInData = await this.authExternalRepository
+            .AuthenticateAsync(signUpExternal.Provider, cancellationToken);
+
+        var user = await this.identityRepository
+            .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
+            {
+                User = signUpExternal.User,
+                Email = externalProviderLogInData.Email,
+                ExternalProvider =
+                {
+                    LoginProvider = externalProviderLogInData.ExternalToken.Name,
+                    ProviderKey = externalProviderLogInData.Id
+                },
+                Roles = signUpExternal.Roles,
+                Claims = signUpExternal.Claims
+            }, cancellationToken);
+
+        return this.Created("signup/external/google", user);
+    }
+
+    /// <summary>
     /// Registers a new user using an external Microsoft login provider.
     /// </summary>
     /// <param name="signUpExternal">The external Microsoft sign-up request.</param>
@@ -323,7 +324,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="400">Bad Request.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("signup/external/microsoft")]
+    [Route(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_MICROSOFT)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -374,7 +375,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("username/set")]
+    [Route(ActionRoutes.IDENTITY_USERNAME_SET)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -403,7 +404,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("password/set")]
+    [Route(ActionRoutes.IDENTITY_PASSWORD_SET)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -430,7 +431,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("password/change")]
+    [Route(ActionRoutes.IDENTITY_PASSWORD_CHANGE)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -456,7 +457,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("password/reset")]
+    [Route(ActionRoutes.IDENTITY_PASSWORD_RESET)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -482,7 +483,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("password/reset/token")]
+    [Route(ActionRoutes.IDENTITY_PASSWORD_RESET_TOKEN)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -515,7 +516,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("email/change")]
+    [Route(ActionRoutes.IDENTITY_EMAIL_CHANGE)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -541,7 +542,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("email/change/token")]
+    [Route(ActionRoutes.IDENTITY_EMAIL_CHANGE_TOKEN)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(ChangeEmailToken), (int)HttpStatusCode.OK)]
@@ -569,7 +570,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("email/confirm")]
+    [Route(ActionRoutes.IDENTITY_EMAIL_CONFIRM)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -594,7 +595,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("email/confirm/token")]
+    [Route(ActionRoutes.IDENTITY_EMAIL_CONFIRM_TOKEN)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(ConfirmEmailToken), (int)HttpStatusCode.OK)]
@@ -623,7 +624,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("phone/change")]
+    [Route(ActionRoutes.IDENTITY_PHONE_CHANGE)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -649,7 +650,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("phone/change/token")]
+    [Route(ActionRoutes.IDENTITY_PHONE_CHANGE_TOKEN)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(ChangePhoneNumberToken), (int)HttpStatusCode.OK)]
@@ -677,7 +678,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("phone/confirm")]
+    [Route(ActionRoutes.IDENTITY_PHONE_CONFIRM)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -702,7 +703,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("phone/confirm/token")]
+    [Route(ActionRoutes.IDENTITY_PHONE_CONFIRM_TOKEN)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(ConfirmPhoneNumberToken), (int)HttpStatusCode.OK)]
@@ -730,7 +731,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("token/custom-purpose")]
+    [Route(ActionRoutes.IDENTITY_CUSTOM_PURPOSE_CONFIRM)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(ConfirmCustomPurposeToken), (int)HttpStatusCode.OK)]
@@ -757,7 +758,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("token/custom-purpose/confirm")]
+    [Route(ActionRoutes.IDENTITY_CUSTOM_PURPOSE_CONFIRM_TOKEN)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -782,7 +783,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("activate/{id}")]
+    [Route(ActionRoutes.IDENTITY_ACTIVATE)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -810,7 +811,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occurred.</response>
     [HttpPost]
     [HttpDelete]
-    [Route("deactivate/{id}")]
+    [Route(ActionRoutes.IDENTITY_DEACTIVATE)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -838,7 +839,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occurred.</response>
     [HttpPost]
     [HttpDelete]
-    [Route("delete/{id}")]
+    [Route(ActionRoutes.DELETE)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -874,7 +875,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occurred.</response>
     [HttpPost]
     [HttpDelete]
-    [Route("delete/many")]
+    [Route(ActionRoutes.DELETE_MANY)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -920,7 +921,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpGet]
-    [Route("external-logins/{userId}")]
+    [Route(ActionRoutes.IDENTITY_EXTERNAL_LOGINS)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<ExternalLogin>), (int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -952,6 +953,56 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     }
 
     /// <summary>
+    /// Adds a Microsoft external login to a user account.
+    /// </summary>
+    /// <param name="addExternalLogin">The request containing Microsoft external login data.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The added external login.</returns>
+    /// <response code="200">Success.</response>
+    /// <response code="400">Bad Request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Not Found.</response>
+    /// <response code="500">Error occurred.</response>
+    [HttpPost]
+    [Route(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_ADD_FACEBOOK)]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IEnumerable<ExternalLogin>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> AddExternalLoginFacebookAsync([FromBody][Required] AddExternalLoginFacebook<TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
+    {
+        if (this.authExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.authExternalRepository));
+        }
+
+        var externalProviderLogInData = await this.authExternalRepository
+            .AuthenticateAsync(addExternalLogin.Provider, cancellationToken);
+
+        var userLoginInfo = await this.identityRepository
+            .AddExternalLoginAsync(addExternalLogin.UserId, new ExternalProvider
+            {
+                LoginProvider = externalProviderLogInData.ExternalToken.Name,
+                ProviderKey = externalProviderLogInData.Id
+            }, cancellationToken);
+
+        var externalLogin = new ExternalLogin
+        {
+            Key = userLoginInfo.ProviderKey,
+            Provider = new ExternalLoginProvider
+            {
+                Name = userLoginInfo.LoginProvider,
+                DisplayName = userLoginInfo.ProviderDisplayName
+            }
+        };
+
+        return this.Ok(externalLogin);
+    }
+
+    /// <summary>
     /// Adds a Google external login to a user account.
     /// </summary>
     /// <param name="addExternalLogin">The request containing Google external login data.</param>
@@ -963,7 +1014,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("external-logins/add/google")]
+    [Route(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_ADD_GOOGLE)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<ExternalLogin>), (int)HttpStatusCode.OK)]
@@ -1013,57 +1064,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">Error occurred.</response>
     [HttpPost]
-    [Route("external-logins/add/facebook")]
-    [Consumes(HttpContentType.JSON)]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<ExternalLogin>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> AddExternalLoginFacebookAsync([FromBody][Required] AddExternalLoginFacebook<TIdentity> addExternalLogin, CancellationToken cancellationToken = default)
-    {
-        if (this.authExternalRepository == null)
-        {
-            throw new NullReferenceException(nameof(this.authExternalRepository));
-        }
-
-        var externalProviderLogInData = await this.authExternalRepository
-            .AuthenticateAsync(addExternalLogin.Provider, cancellationToken);
-
-        var userLoginInfo = await this.identityRepository
-            .AddExternalLoginAsync(addExternalLogin.UserId, new ExternalProvider
-            {
-                LoginProvider = externalProviderLogInData.ExternalToken.Name,
-                ProviderKey = externalProviderLogInData.Id
-            }, cancellationToken);
-
-        var externalLogin = new ExternalLogin
-        {
-            Key = userLoginInfo.ProviderKey,
-            Provider = new ExternalLoginProvider
-            {
-                Name = userLoginInfo.LoginProvider,
-                DisplayName = userLoginInfo.ProviderDisplayName
-            }
-        };
-
-        return this.Ok(externalLogin);
-    }
-
-    /// <summary>
-    /// Adds a Microsoft external login to a user account.
-    /// </summary>
-    /// <param name="addExternalLogin">The request containing Microsoft external login data.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The added external login.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
-    [HttpPost]
-    [Route("external-logins/add/microsoft")]
+    [Route(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_ADD_MICROSOFT)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<ExternalLogin>), (int)HttpStatusCode.OK)]
@@ -1114,7 +1115,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occurred.</response>
     [HttpPost]
     [HttpDelete]
-    [Route("external-logins/remove")]
+    [Route(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_REMOVE)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -1145,7 +1146,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The user does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpGet]
-    [Route("refresh-tokens/{userId}")]
+    [Route(ActionRoutes.IDENTITY_REFRESH_TOKENS)]
     [ProducesResponseType(typeof(IEnumerable<IdentityUserRefreshToken<Guid>>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -1171,7 +1172,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The user does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpGet]
-    [Route("refresh-tokens/active/{userId}")]
+    [Route(ActionRoutes.IDENTITY_REFRESH_TOKENS_ACTIVE)]
     [ProducesResponseType(typeof(IEnumerable<IdentityUserRefreshToken<Guid>>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -1197,7 +1198,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The refresh token does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpDelete]
-    [Route("refresh-tokens/delete/{refreshTokenId}")]
+    [Route(ActionRoutes.IDENTITY_REFRESH_TOKENS_DELETE)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1229,7 +1230,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The user does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpGet]
-    [Route("api-keys/{userId}")]
+    [Route(ActionRoutes.IDENTITY_API_KEYS)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<IdentityApiKey<Guid>>), (int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1256,7 +1257,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The user does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
-    [Route("api-keys/create")]
+    [Route(ActionRoutes.IDENTITY_API_KEYS_CREATE)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IdentityApiKeyCreated<Guid>), (int)HttpStatusCode.Created)]
@@ -1293,7 +1294,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpPut]
     [HttpPost]
-    [Route("api-keys/edit")]
+    [Route(ActionRoutes.IDENTITY_API_KEYS_EDIT)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IdentityApiKey<Guid>), (int)HttpStatusCode.OK)]
@@ -1327,7 +1328,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The API key does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpDelete]
-    [Route("api-keys/revoke/{apiKeyId}")]
+    [Route(ActionRoutes.IDENTITY_API_KEYS_REVOKE)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IdentityApiKey<Guid>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1368,7 +1369,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The user does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpGet]
-    [Route("claims/{userId}")]
+    [Route(ActionRoutes.IDENTITY_CLAIMS)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<Claim>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1395,7 +1396,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The user does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
-    [Route("claims/assign")]
+    [Route(ActionRoutes.IDENTITY_CLAIMS_ASSIGN)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1422,7 +1423,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The claim or user does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpPut]
-    [Route("claims/replace")]
+    [Route(ActionRoutes.IDENTITY_CLAIMS_REPLACE)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1449,7 +1450,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The claim or user does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpPut]
-    [Route("claims/assign-or-replace")]
+    [Route(ActionRoutes.IDENTITY_CLAIMS_ASSIGN_OR_REPLACE)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1477,7 +1478,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
     [HttpDelete]
-    [Route("claims/remove")]
+    [Route(ActionRoutes.IDENTITY_CLAIMS_REMOVE)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1508,7 +1509,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpGet]
-    [Route("roles")]
+    [Route(ActionRoutes.IDENTITY_ROLES)]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [ProducesResponseType(typeof(IEnumerable<IdentityRole<Guid>>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1535,7 +1536,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
-    [Route("roles/create")]
+    [Route(ActionRoutes.IDENTITY_ROLES_CREATE)]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -1565,7 +1566,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
     [HttpDelete]
-    [Route("roles/delete")]
+    [Route(ActionRoutes.IDENTITY_ROLES_DELETE)]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -1593,7 +1594,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The user does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpGet]
-    [Route("roles/{userId}")]
+    [Route(ActionRoutes.IDENTITY_ROLES_USER)]
     [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -1619,7 +1620,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The user or role does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
-    [Route("roles/user/assign")]
+    [Route(ActionRoutes.IDENTITY_ROLES_USER_ASSIGN)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1647,7 +1648,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
     [HttpDelete]
-    [Route("roles/user/remove")]
+    [Route(ActionRoutes.IDENTITY_ROLES_USER_REMOVE)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -1679,7 +1680,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The role does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpGet]
-    [Route("roles/claims/{roleId}")]
+    [Route(ActionRoutes.IDENTITY_ROLES_CLAIMS)]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<Claim>), (int)HttpStatusCode.OK)]
@@ -1707,7 +1708,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The role does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
-    [Route("roles/claims/assign")]
+    [Route(ActionRoutes.IDENTITY_ROLES_CLAIMS_ASSIGN)]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -1735,7 +1736,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The role or claim does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpPut]
-    [Route("roles/claims/replace")]
+    [Route(ActionRoutes.IDENTITY_ROLES_CLAIMS_REPLACE)]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -1763,7 +1764,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="404">Not Found. The role or claim does not exist.</response>
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpPut]
-    [Route("roles/claims/assign-or-replace")]
+    [Route(ActionRoutes.IDENTITY_ROLES_CLAIMS_ASSIGN_OR_REPLACE)]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -1792,7 +1793,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">An error occurred while processing the request.</response>
     [HttpPost]
     [HttpDelete]
-    [Route("roles/claims/remove")]
+    [Route(ActionRoutes.IDENTITY_ROLES_CLAIMS_REMOVE)]
     [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]

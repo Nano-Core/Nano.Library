@@ -1,5 +1,9 @@
-﻿using System;
-using Nano.Data.Abstractions.Identity.Models;
+﻿using Nano.Data.Abstractions.Identity.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,28 +14,14 @@ public class GenerateConfirmEmailTokenRequest : GenerateConfirmEmailTokenRequest
 /// Request to generate a confirm email token for a user.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-public class GenerateConfirmEmailTokenRequest<TIdentity> : BaseRequestPost
+[PostAction(ActionRoutes.IDENTITY_EMAIL_CONFIRM_TOKEN)]
+public class GenerateConfirmEmailTokenRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// The confirm email token information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual GenerateConfirmEmailToken<TIdentity> ConfirmEmailToken { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="GenerateConfirmEmailTokenRequest{TIdentity}"/>.
-    /// Sets the action to "email/confirm/token".
-    /// </summary>
-    public GenerateConfirmEmailTokenRequest()
-    {
-        this.Action = "email/confirm/token";
-    }
-
-    /// <summary>
-    /// Gets the request body containing the confirm email token.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.ConfirmEmailToken;
-    }
 }

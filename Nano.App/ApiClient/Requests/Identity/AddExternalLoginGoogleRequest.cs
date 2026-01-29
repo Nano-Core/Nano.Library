@@ -1,4 +1,5 @@
-﻿using Nano.App.ApiClient.Requests.Auth;
+﻿using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.App.ApiClient.Requests.Identity;
@@ -6,14 +7,5 @@ namespace Nano.App.ApiClient.Requests.Identity;
 /// <summary>
 /// Request to add an external Google login.
 /// </summary>
-public class AddExternalLoginGoogleRequest : BaseLogInExternalRequest<LogInExternalGoogle>
-{
-    /// <summary>
-    /// Initializes a new instance of <see cref="AddExternalLoginGoogleRequest"/>.
-    /// Sets the action to "external-logins/add/google".
-    /// </summary>
-    public AddExternalLoginGoogleRequest()
-    {
-        this.Action = "external-logins/add/google";
-    }
-}
+[PostAction(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_ADD_GOOGLE)]
+public class AddExternalLoginGoogleRequest : BaseAddExternalLoginRequest<LogInExternalGoogle>;

@@ -1,4 +1,8 @@
-﻿using DynamicExpression.Interfaces;
+﻿using System.ComponentModel.DataAnnotations;
+using DynamicExpression.Interfaces;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests;
 
@@ -6,25 +10,14 @@ namespace Nano.App.ApiClient.Requests;
 /// Represents a request to delete multiple entities matching a query.
 /// </summary>
 /// <typeparam name="TCriteria">The type of <see cref="IQueryCriteria"/> used for filtering.</typeparam>
-public class DeleteQueryRequest<TCriteria> : BaseRequestDelete
+[DeleteAction(ActionRoutes.DELETE_QUERY)]
+public class DeleteQueryRequest<TCriteria> : BaseRequest
     where TCriteria : IQueryCriteria, new()
 {
     /// <summary>
     /// The query criteria defining which entities to delete.
     /// </summary>
+    [Required]
+    [Body]
     public virtual TCriteria Criteria { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="DeleteQueryRequest{TCriteria}"/>.
-    /// </summary>
-    public DeleteQueryRequest()
-    {
-        this.Action = "delete/query";
-    }
-
-    /// <inheritdoc />
-    public override object GetBody()
-    {
-        return this.Criteria;
-    }
 }

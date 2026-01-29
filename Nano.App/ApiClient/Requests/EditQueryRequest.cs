@@ -1,5 +1,9 @@
-﻿using DynamicExpression.Interfaces;
+﻿using System.ComponentModel.DataAnnotations;
+using DynamicExpression.Interfaces;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
 using Nano.App.ApiClient.Requests.Models;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests;
 
@@ -7,25 +11,14 @@ namespace Nano.App.ApiClient.Requests;
 /// Represents a request to update entities matching a query.
 /// </summary>
 /// <typeparam name="TCriteria">The type of <see cref="IQueryCriteria"/> used for filtering.</typeparam>
-public class EditQueryRequest<TCriteria> : BaseRequestPut
+[PutAction(ActionRoutes.EDIT_QUERY)]
+public class EditQueryRequest<TCriteria> : BaseRequest
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <summary>
     /// The query defining which entities to update.
     /// </summary>
+    [Required]
+    [Body]
     public virtual UpdateQuery<TCriteria> Query { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="EditQueryRequest{TCriteria}"/>.
-    /// </summary>
-    public EditQueryRequest()
-    {
-        this.Action = "edit/query";
-    }
-
-    /// <inheritdoc />
-    public override object GetBody()
-    {
-        return this.Query;
-    }
 }

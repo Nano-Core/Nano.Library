@@ -1,31 +1,22 @@
-﻿using System;
-using Nano.Data.Abstractions.Identity.Models;
+﻿using Nano.Data.Abstractions.Identity.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
 /// <summary>
 /// Represents a request to set a user's password.
 /// </summary>
-public class SetPasswordRequest : BaseRequestPost
+[PostAction(ActionRoutes.IDENTITY_PASSWORD_SET)]
+public class SetPasswordRequest : BaseRequest
 {
     /// <summary>
     /// Contains the password information to set.
     /// </summary>
+    [Required]
+    [Body]
     public virtual SetPassword<Guid> SetPassword { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="SetPasswordRequest"/> with action set.
-    /// </summary>
-    public SetPasswordRequest()
-    {
-        this.Action = "password/set";
-    }
-
-    /// <summary>
-    /// Gets the body of the request containing the password data.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.SetPassword;
-    }
 }

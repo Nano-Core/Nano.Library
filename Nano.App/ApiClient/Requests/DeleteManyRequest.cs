@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests;
 
@@ -11,25 +14,13 @@ public class DeleteManyRequest : DeleteManyRequest<Guid>;
 /// Represents a request to delete multiple entities by their IDs.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the entity identifiers.</typeparam>
-public class DeleteManyRequest<TIdentity> : BaseRequestDelete
+[DeleteAction(ActionRoutes.DELETE_MANY)]
+public class DeleteManyRequest<TIdentity> : BaseRequest
 {
     /// <summary>
     /// The IDs of the entities to delete.
     /// </summary>
     [Required]
+    [Body]
     public virtual IEnumerable<TIdentity> Ids { get; set; } = [];
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="DeleteManyRequest{TIdentity}"/>.
-    /// </summary>
-    public DeleteManyRequest()
-    {
-        this.Action = "delete/many";
-    }
-
-    /// <inheritdoc />
-    public override object GetBody()
-    {
-        return this.Ids;
-    }
 }

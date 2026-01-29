@@ -1,5 +1,9 @@
-﻿using System;
-using Nano.Data.Abstractions.Identity.Models;
+﻿using Nano.Data.Abstractions.Identity.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,28 +14,14 @@ public class ChangePasswordRequest : ChangePasswordRequest<Guid>;
 /// Request to change a user's password.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-public class ChangePasswordRequest<TIdentity> : BaseRequestPost
+[PostAction(ActionRoutes.IDENTITY_PASSWORD_CHANGE)]
+public class ChangePasswordRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// The change password token information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual ChangePassword<TIdentity> ChangePassword { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="ChangePasswordRequest{TIdentity}"/>.
-    /// Sets the action to "password/change".
-    /// </summary>
-    public ChangePasswordRequest()
-    {
-        this.Action = "password/change";
-    }
-
-    /// <summary>
-    /// Gets the request body containing the change password token.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.ChangePassword;
-    }
 }

@@ -1,5 +1,9 @@
-﻿using DynamicExpression.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+using DynamicExpression.Entities;
 using DynamicExpression.Interfaces;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests;
 
@@ -7,30 +11,20 @@ namespace Nano.App.ApiClient.Requests;
 /// Represents a request to query data with specified criteria.
 /// </summary>
 /// <typeparam name="TCriteria">The type of <see cref="IQueryCriteria"/> used for filtering.</typeparam>
-public class QueryRequest<TCriteria> : BaseRequestPost
+[PostAction(ActionRoutes.QUERY)]
+public class QueryRequest<TCriteria> : BaseRequest
     where TCriteria : IQueryCriteria, new()
 {
     /// <summary>
     /// The query object containing criteria and options.
     /// </summary>
+    [Required]
+    [Body]
     public virtual IQuery<TCriteria> Query { get; set; } = new Query<TCriteria>();
 
     /// <summary>
     /// Optional depth for including related entities.
     /// </summary>
+    [Query]
     public virtual int? IncludeDepth { get; set; }
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="QueryRequest{TCriteria}"/>.
-    /// </summary>
-    public QueryRequest()
-    {
-        this.Action = "query";
-    }
-
-    /// <inheritdoc />
-    public override object GetBody()
-    {
-        return this.Query;
-    }
 }

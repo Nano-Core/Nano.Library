@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 using Nano.Data.Abstractions.Identity.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,28 +14,14 @@ public class AssignRoleClaimRequest : AssignRoleClaimRequest<Guid>;
 /// Request to assign a claim to a role.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the role identifier.</typeparam>
-public class AssignRoleClaimRequest<TIdentity> : BaseRequestPost
+[PostAction(ActionRoutes.IDENTITY_ROLES_CLAIMS_ASSIGN)]
+public class AssignRoleClaimRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// The role claim assignment information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual AssignRoleClaim<TIdentity> AssignRoleClaim { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="AssignRoleClaimRequest{TIdentity}"/>.
-    /// Sets the action to "roles/claims/assign".
-    /// </summary>
-    public AssignRoleClaimRequest()
-    {
-        this.Action = "roles/claims/assign";
-    }
-
-    /// <summary>
-    /// Gets the request body containing the role claim assignment information.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.AssignRoleClaim;
-    }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using Nano.App.ApiClient.Requests.Annotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests;
 
@@ -11,7 +13,8 @@ public class DeleteRequest : DeleteRequest<Guid>;
 /// Represents a request to delete an entity by ID.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the entity identifier.</typeparam>
-public class DeleteRequest<TIdentity> : BaseRequestDelete
+[DeleteAction(ActionRoutes.DELETE)]
+public class DeleteRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
@@ -20,18 +23,4 @@ public class DeleteRequest<TIdentity> : BaseRequestDelete
     [Required]
     [Route(Order = 0)]
     public virtual TIdentity Id { get; set; } = default!;
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="DeleteRequest{TIdentity}"/>.
-    /// </summary>
-    public DeleteRequest()
-    {
-        this.Action = "delete";
-    }
-
-    /// <inheritdoc />
-    public override object? GetBody()
-    {
-        return null;
-    }
 }

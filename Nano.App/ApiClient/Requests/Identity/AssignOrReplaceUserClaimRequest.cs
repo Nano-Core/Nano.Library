@@ -1,5 +1,9 @@
 ﻿using Nano.Data.Abstractions.Identity.Models;
 using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,28 +14,14 @@ public class AssignOrReplaceUserClaimRequest : AssignOrReplaceUserClaimRequest<G
 /// Request to assign or replace a claim for a user.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-public class AssignOrReplaceUserClaimRequest<TIdentity> : BaseRequestPut
+[PutAction(ActionRoutes.IDENTITY_CLAIMS_ASSIGN_OR_REPLACE)]
+public class AssignOrReplaceUserClaimRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// The claim assignment or replacement information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual AssignOrReplaceUserClaim<TIdentity> AssignOrReplaceUserClaim { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="AssignOrReplaceUserClaimRequest{TIdentity}"/>.
-    /// Sets the action to "claims/assign-or-replace".
-    /// </summary>
-    public AssignOrReplaceUserClaimRequest()
-    {
-        this.Action = "claims/assign-or-replace";
-    }
-
-    /// <summary>
-    /// Gets the request body containing the claim assignment or replacement information.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.AssignOrReplaceUserClaim;
-    }
 }

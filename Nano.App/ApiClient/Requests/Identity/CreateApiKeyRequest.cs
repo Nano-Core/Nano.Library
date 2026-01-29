@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Nano.Data.Abstractions.Identity.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
-using Nano.Data.Abstractions.Identity.Models;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -11,29 +14,14 @@ public class CreateApiKeyRequest : CreateApiKeyRequest<Guid>;
 /// Request to create an API key for a user.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-public class CreateApiKeyRequest<TIdentity> : BaseRequestPost
+[PostAction(ActionRoutes.IDENTITY_API_KEYS_CREATE)]
+public class CreateApiKeyRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// The API key information to create.
     /// </summary>
     [Required]
+    [Body]
     public virtual CreateApiKey<TIdentity> CreateApiKey { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="CreateApiKeyRequest{TIdentity}"/>.
-    /// Sets the action to "api-keys/create".
-    /// </summary>
-    public CreateApiKeyRequest()
-    {
-        this.Action = "api-keys/create";
-    }
-
-    /// <summary>
-    /// Gets the request body containing the API key to create.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.CreateApiKey;
-    }
 }

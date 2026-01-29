@@ -1,12 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Nano.App.ApiClient.Requests.Annotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
 /// <summary>
 /// Represents a request to check if an email address is already taken.
 /// </summary>
-public class IsEmailAddressTakenRequest : BaseRequestGet
+[GetAction(ActionRoutes.IDENTITY_EMAIL_IS_TAKEN)]
+public class IsEmailAddressTakenRequest : BaseRequest
 {
     /// <summary>
     /// The email address to check.
@@ -14,12 +17,4 @@ public class IsEmailAddressTakenRequest : BaseRequestGet
     [Required]
     [Query]
     public virtual string EmailAddress { get; set; } = null!;
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="IsEmailAddressTakenRequest"/> with action set.
-    /// </summary>
-    public IsEmailAddressTakenRequest()
-    {
-        this.Action = "email/is-taken";
-    }
 }

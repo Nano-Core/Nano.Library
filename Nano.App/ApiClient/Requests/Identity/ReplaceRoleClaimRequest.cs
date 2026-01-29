@@ -1,5 +1,9 @@
-﻿using System;
-using Nano.Data.Abstractions.Identity.Models;
+﻿using Nano.Data.Abstractions.Identity.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,27 +14,14 @@ public class ReplaceRoleClaimRequest : ReplaceRoleClaimRequest<Guid>;
 /// Represents a request to replace a role's claim.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the role identifier.</typeparam>
-public class ReplaceRoleClaimRequest<TIdentity> : BaseRequestPut
+[PutAction(ActionRoutes.IDENTITY_ROLES_CLAIMS_REPLACE)]
+public class ReplaceRoleClaimRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// Contains the role claim replacement information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual ReplaceRoleClaim<TIdentity> ReplaceRoleClaim { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="ReplaceRoleClaimRequest{TIdentity}"/> with action set.
-    /// </summary>
-    public ReplaceRoleClaimRequest()
-    {
-        this.Action = "roles/claims/replace";
-    }
-
-    /// <summary>
-    /// Gets the body of the request containing the role claim replacement data.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.ReplaceRoleClaim;
-    }
 }

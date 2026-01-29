@@ -1,5 +1,9 @@
-﻿using System;
-using Nano.Data.Abstractions.Identity.Models;
+﻿using Nano.Data.Abstractions.Identity.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,28 +14,14 @@ public class GenerateCustomPurposeTokenRequest : GenerateCustomPurposeTokenReque
 /// Request to generate a custom purpose token for a user.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-public class GenerateCustomPurposeTokenRequest<TIdentity> : BaseRequestPost
+[PostAction(ActionRoutes.IDENTITY_CUSTOM_PURPOSE_CONFIRM_TOKEN)]
+public class GenerateCustomPurposeTokenRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// The custom purpose token information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual GenerateCustomPurposeToken<TIdentity> CustomPurposeToken { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="GenerateCustomPurposeTokenRequest{TIdentity}"/>.
-    /// Sets the action to "token/custom-purpose".
-    /// </summary>
-    public GenerateCustomPurposeTokenRequest()
-    {
-        this.Action = "token/custom-purpose";
-    }
-
-    /// <summary>
-    /// Gets the request body containing the custom purpose token.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.CustomPurposeToken;
-    }
 }

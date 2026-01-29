@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.Api.Identity.Authentication.Abstractions;
-using Nano.App.ApiClient.Consts;
-using Nano.App.ApiClient.Models.Auth;
+using Nano.App.ApiClient.Requests.Auth.Models;
+using Nano.App.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
@@ -67,7 +67,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="404">User not found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("login")]
+    [Route(ActionRoutes.AUTH_LOGIN)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -89,7 +89,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
         return this.Ok(accessToken);
     }
 
-
     /// <summary>
     /// Authenticates the root user from configuration and returns an access token.
     /// </summary>
@@ -102,7 +101,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="404">Root user not found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("login/root")]
+    [Route(ActionRoutes.AUTH_LOGIN_ROOT)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -136,7 +135,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="404">User not found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("login/external/direct")]
+    [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_DIRECT)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -170,7 +169,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="404">User not found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("login/external/direct/transient")]
+    [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_DIRECT_TRANSIENT)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -193,74 +192,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Signs in a user via external Google authentication.
-    /// </summary>
-    /// <param name="logInExternal">The external login credentials.</param>
-    /// <param name="cancellationToken">Token to cancel the request.</param>
-    /// <returns>The generated <see cref="AccessToken"/>.</returns>
-    /// <response code="200">Authentication succeeded and token returned.</response>
-    /// <response code="400">Invalid request data.</response>
-    /// <response code="401">Authentication failed.</response>
-    /// <response code="404">User not found.</response>
-    /// <response code="500">Internal server error.</response>
-    [HttpPost]
-    [Route("login/external/google")]
-    [AllowAnonymous]
-    [Consumes(HttpContentType.JSON)]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> LogInExternalGoogleAsync([FromBody][Required] LogInExternalGoogle logInExternal, CancellationToken cancellationToken = default)
-    {
-        if (this.identityAuthRepository == null)
-        {
-            throw new NullReferenceException(nameof(this.identityAuthRepository));
-        }
-
-        var accessToken = await this.identityAuthRepository
-            .LogInExternalAsync(logInExternal, cancellationToken);
-
-        return this.Ok(accessToken);
-    }
-
-    /// <summary>
-    /// Signs in a transient user via external Google authentication.
-    /// </summary>
-    /// <param name="logInExternal">The external login credentials.</param>
-    /// <param name="cancellationToken">Token to cancel the request.</param>
-    /// <returns>The generated <see cref="AccessToken"/>.</returns>
-    /// <response code="200">Authentication succeeded and token returned.</response>
-    /// <response code="400">Invalid request data.</response>
-    /// <response code="401">Authentication failed.</response>
-    /// <response code="404">User not found.</response>
-    /// <response code="500">Internal server error.</response>
-    [HttpPost]
-    [Route("login/external/google/transient")]
-    [AllowAnonymous]
-    [Consumes(HttpContentType.JSON)]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> LogInExternalGoogleTransientAsync([FromBody][Required] LogInExternalGoogle logInExternal, CancellationToken cancellationToken = default)
-    {
-        if (this.authTransientRepository == null)
-        {
-            throw new NullReferenceException(nameof(this.authTransientRepository));
-        }
-
-        var accessToken = await this.authTransientRepository
-            .LogInExternalAsync(logInExternal, cancellationToken);
-
-        return this.Ok(accessToken);
-    }
-
-    /// <summary>
     /// Signs in a user via external Facebook authentication.
     /// </summary>
     /// <param name="logInExternal">The external login credentials.</param>
@@ -272,7 +203,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="404">User not found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("login/external/facebook")]
+    [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_FACEBOOK)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -306,7 +237,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="404">User not found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("login/external/facebook/transient")]
+    [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_FACEBOOK_TRANSIENT)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -316,6 +247,74 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> LogInExternalFacebookTransientAsync([FromBody][Required] LogInExternalFacebook logInExternal, CancellationToken cancellationToken = default)
+    {
+        if (this.authTransientRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.authTransientRepository));
+        }
+
+        var accessToken = await this.authTransientRepository
+            .LogInExternalAsync(logInExternal, cancellationToken);
+
+        return this.Ok(accessToken);
+    }
+
+    /// <summary>
+    /// Signs in a user via external Google authentication.
+    /// </summary>
+    /// <param name="logInExternal">The external login credentials.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The generated <see cref="AccessToken"/>.</returns>
+    /// <response code="200">Authentication succeeded and token returned.</response>
+    /// <response code="400">Invalid request data.</response>
+    /// <response code="401">Authentication failed.</response>
+    /// <response code="404">User not found.</response>
+    /// <response code="500">Internal server error.</response>
+    [HttpPost]
+    [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_GOOGLE)]
+    [AllowAnonymous]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> LogInExternalGoogleAsync([FromBody][Required] LogInExternalGoogle logInExternal, CancellationToken cancellationToken = default)
+    {
+        if (this.identityAuthRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.identityAuthRepository));
+        }
+
+        var accessToken = await this.identityAuthRepository
+            .LogInExternalAsync(logInExternal, cancellationToken);
+
+        return this.Ok(accessToken);
+    }
+
+    /// <summary>
+    /// Signs in a transient user via external Google authentication.
+    /// </summary>
+    /// <param name="logInExternal">The external login credentials.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The generated <see cref="AccessToken"/>.</returns>
+    /// <response code="200">Authentication succeeded and token returned.</response>
+    /// <response code="400">Invalid request data.</response>
+    /// <response code="401">Authentication failed.</response>
+    /// <response code="404">User not found.</response>
+    /// <response code="500">Internal server error.</response>
+    [HttpPost]
+    [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_GOOGLE_TRANSIENT)]
+    [AllowAnonymous]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> LogInExternalGoogleTransientAsync([FromBody][Required] LogInExternalGoogle logInExternal, CancellationToken cancellationToken = default)
     {
         if (this.authTransientRepository == null)
         {
@@ -340,7 +339,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="404">User not found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("login/external/microsoft")]
+    [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_MICROSOFT)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -374,7 +373,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="404">User not found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("login/external/microsoft/transient")]
+    [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_MICROSOFT_TRANSIENT)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -408,7 +407,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="404">User not found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("login/refresh")]
+    [Route(ActionRoutes.AUTH_LOGIN_REFRESH)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -440,7 +439,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="401">User not authenticated.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("logout")]
+    [Route(ActionRoutes.AUTH_LOGOUT)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -476,7 +475,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="404">No external providers found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpGet]
-    [Route("external/schemes")]
+    [Route(ActionRoutes.AUTH_EXTERNAL_SCHEMES)]
     [AllowAnonymous]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<ExternalLoginProvider>), (int)HttpStatusCode.OK)]
@@ -522,9 +521,9 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Retrieves external login data from Google authentication provider.
+    /// Retrieves external login data from Facebook authentication provider.
     /// </summary>
-    /// <param name="externalLoginProvider">Google authentication provider info.</param>
+    /// <param name="externalLoginProvider">Facebook authentication provider info.</param>
     /// <param name="cancellationToken">Token to cancel the request.</param>
     /// <returns>The <see cref="ExternalLogInData"/>.</returns>
     /// <response code="200">Data retrieved successfully.</response>
@@ -532,7 +531,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="404">Data not found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("external/google/data")]
+    [Route(ActionRoutes.AUTH_EXTERNAL_FACEBOOK_DATA)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -540,7 +539,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> GetExternalLoginDataGoogleAsync([FromBody][Required] ExternalLoginProviderGoogle externalLoginProvider, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> GetExternalLoginDataFaceBookAsync([FromBody][Required] ExternalLoginProviderFacebook externalLoginProvider, CancellationToken cancellationToken = default)
     {
         if (this.authExternalRepository == null)
         {
@@ -554,9 +553,9 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     }
 
     /// <summary>
-    /// Retrieves external login data from Facebook authentication provider.
+    /// Retrieves external login data from Google authentication provider.
     /// </summary>
-    /// <param name="externalLoginProvider">Facebook authentication provider info.</param>
+    /// <param name="externalLoginProvider">Google authentication provider info.</param>
     /// <param name="cancellationToken">Token to cancel the request.</param>
     /// <returns>The <see cref="ExternalLogInData"/>.</returns>
     /// <response code="200">Data retrieved successfully.</response>
@@ -564,7 +563,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="404">Data not found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("external/facebook/data")]
+    [Route(ActionRoutes.AUTH_EXTERNAL_GOOGLE_DATA)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
@@ -572,7 +571,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> GetExternalLoginDataFaceBookAsync([FromBody][Required] ExternalLoginProviderFacebook externalLoginProvider, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> GetExternalLoginDataGoogleAsync([FromBody][Required] ExternalLoginProviderGoogle externalLoginProvider, CancellationToken cancellationToken = default)
     {
         if (this.authExternalRepository == null)
         {
@@ -596,7 +595,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="404">Data not found.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("external/microsoft/data")]
+    [Route(ActionRoutes.AUTH_EXTERNAL_MICROSOFT_DATA)]
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]

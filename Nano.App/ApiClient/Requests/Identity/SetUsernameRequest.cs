@@ -1,4 +1,8 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.App.ApiClient.Requests.Identity;
@@ -10,27 +14,14 @@ public class SetUsernameRequest : SetUsernameRequest<Guid>;
 /// Represents a request to set a user's username.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the user identifier.</typeparam>
-public class SetUsernameRequest<TIdentity> : BaseRequestPost
+[PostAction(ActionRoutes.IDENTITY_USERNAME_SET)]
+public class SetUsernameRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Contains the username information to set.
+    /// Contains the username to set.
     /// </summary>
+    [Required]
+    [Body]
     public virtual SetUsername<TIdentity> SetUsername { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="SetUsernameRequest{TIdentity}"/> with action set.
-    /// </summary>
-    public SetUsernameRequest()
-    {
-        this.Action = "username/set";
-    }
-
-    /// <summary>
-    /// Gets the body of the request containing the username data.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.SetUsername;
-    }
 }

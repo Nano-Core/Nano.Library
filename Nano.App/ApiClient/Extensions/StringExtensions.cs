@@ -20,4 +20,33 @@ internal static class StringExtensions
 
         return @string;
     }
+
+    internal static string SmartFormat(this string template, params object[] values)
+    {
+        ArgumentNullException.ThrowIfNull(template);
+
+        var result = template;
+        foreach (var value in values)
+        {
+            var start = result
+                .IndexOf('{');
+
+            if (start < 0)
+            {
+                break;
+            }
+
+            var end = result
+                .IndexOf('}', start);
+
+            if (end < 0)
+            {
+                break;
+            }
+
+            result = result[..start] + value + result[(end + 1)..];
+        }
+
+        return result;
+    }
 }

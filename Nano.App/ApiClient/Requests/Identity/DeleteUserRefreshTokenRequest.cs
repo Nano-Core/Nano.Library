@@ -1,5 +1,7 @@
 ﻿using System;
-using Nano.App.ApiClient.Requests.Annotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,7 +12,8 @@ public class DeleteUserRefreshTokenRequest : DeleteUserRefreshTokenRequest<Guid>
 /// Request to delete a user's refresh token.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-public class DeleteUserRefreshTokenRequest<TIdentity> : BaseRequestDelete
+[DeleteAction(ActionRoutes.IDENTITY_REFRESH_TOKENS_DELETE)]
+public class DeleteUserRefreshTokenRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
@@ -18,21 +21,4 @@ public class DeleteUserRefreshTokenRequest<TIdentity> : BaseRequestDelete
     /// </summary>
     [Route(Order = 0)]
     public virtual TIdentity RefreshTokenId { get; set; } = default!;
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="DeleteUserRefreshTokenRequest{TIdentity}"/>.
-    /// Sets the action to "refresh-tokens/delete".
-    /// </summary>
-    public DeleteUserRefreshTokenRequest()
-    {
-        this.Action = "refresh-tokens/delete";
-    }
-
-    /// <summary>
-    /// Gets the request body. Always returns null for delete requests.
-    /// </summary>
-    public override object? GetBody()
-    {
-        return null;
-    }
 }

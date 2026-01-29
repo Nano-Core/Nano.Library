@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Nano.App.ApiClient.Config;
 using Nano.App.ApiClient.Requests.Auth;
@@ -20,8 +19,8 @@ public abstract class BaseAuthApi<TIdentity> : BaseApi<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseAuthApi(IOptionsMonitor<ApiClientOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
-        : base(apiOptions, httpClient, httpContextAccessor)
+    protected BaseAuthApi(ApiClientOptions apiClientOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        : base(apiClientOptions, httpClient, httpContextAccessor)
     {
     }
 

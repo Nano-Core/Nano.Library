@@ -2,7 +2,7 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.Api.Identity.Authentication.Abstractions;
-using Nano.App.ApiClient.Consts;
+using Nano.App.Consts;
 using Nano.Data.Abstractions.Identity.Authentication;
 
 namespace Nano.App.Api.Controllers;

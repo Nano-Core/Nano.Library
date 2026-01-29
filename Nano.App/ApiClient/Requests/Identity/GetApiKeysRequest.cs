@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using Nano.App.ApiClient.Requests.Annotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -11,7 +13,8 @@ public class GetApiKeysRequest : GetApiKeysRequest<Guid>;
 /// Request to retrieve API keys for a user.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-public class GetApiKeysRequest<TIdentity> : BaseRequestGet
+[GetAction(ActionRoutes.IDENTITY_API_KEYS)]
+public class GetApiKeysRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
@@ -20,13 +23,4 @@ public class GetApiKeysRequest<TIdentity> : BaseRequestGet
     [Required]
     [Route(Order = 0)]
     public virtual TIdentity UserId { get; set; } = default!;
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="GetApiKeysRequest{TIdentity}"/>.
-    /// Sets the action to "api-keys".
-    /// </summary>
-    public GetApiKeysRequest()
-    {
-        this.Action = "api-keys";
-    }
 }

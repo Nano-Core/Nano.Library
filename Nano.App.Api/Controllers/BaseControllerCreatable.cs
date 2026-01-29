@@ -1,19 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Nano.App.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nano.App.Api.Controllers;
 
@@ -48,7 +49,7 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     /// <response code="401">Unauthorized.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("create")]
+    [Route(ActionRoutes.CREATE)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.Created)]
@@ -77,7 +78,7 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     /// <response code="401">Unauthorized.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("create/get")]
+    [Route(ActionRoutes.CREATE_GET)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.Created)]
@@ -106,7 +107,7 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     /// <response code="401">Unauthorized.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("create/many")]
+    [Route(ActionRoutes.CREATE_MANY)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -134,7 +135,7 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     /// <response code="401">Unauthorized.</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost]
-    [Route("create/many/bulk")]
+    [Route(ActionRoutes.CREATE_MANY_BULK)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]

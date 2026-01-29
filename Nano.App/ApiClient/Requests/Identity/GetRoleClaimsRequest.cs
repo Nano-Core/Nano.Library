@@ -1,5 +1,8 @@
 ﻿using System;
-using Nano.App.ApiClient.Requests.Annotations;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,19 +13,13 @@ public class GetRoleClaimsRequest : GetRoleClaimsRequest<Guid>;
 /// Represents a request to retrieve claims assigned to a specific role.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the role identifier.</typeparam>
-public class GetRoleClaimsRequest<TIdentity> : BaseRequestGet
+[GetAction(ActionRoutes.IDENTITY_ROLES_CLAIMS)]
+public class GetRoleClaimsRequest<TIdentity> : BaseRequest
 {
     /// <summary>
     /// The role identifier.
     /// </summary>
+    [Required]
     [Route(Order = 0)]
     public virtual TIdentity RoleId { get; set; } = default!;
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="GetRoleClaimsRequest{TIdentity}"/> with action set.
-    /// </summary>
-    public GetRoleClaimsRequest()
-    {
-        this.Action = "roles/claims";
-    }
 }

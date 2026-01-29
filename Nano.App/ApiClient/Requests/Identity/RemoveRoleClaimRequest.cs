@@ -1,5 +1,9 @@
-﻿using System;
-using Nano.Data.Abstractions.Identity.Models;
+﻿using Nano.Data.Abstractions.Identity.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,27 +14,14 @@ public class RemoveRoleClaimRequest : RemoveRoleClaimRequest<Guid>;
 /// Represents a request to remove a role's claim.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the role identifier.</typeparam>
-public class RemoveRoleClaimRequest<TIdentity> : BaseRequestPost
+[DeleteAction(ActionRoutes.IDENTITY_ROLES_CLAIMS_REMOVE)]
+public class RemoveRoleClaimRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// Contains the role claim removal information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual RemoveUserClaim<TIdentity> RemoveRoleClaim { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="RemoveRoleClaimRequest{TIdentity}"/> with action set.
-    /// </summary>
-    public RemoveRoleClaimRequest()
-    {
-        this.Action = "roles/claims/remove";
-    }
-
-    /// <summary>
-    /// Gets the body of the request containing the role claim removal data.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.RemoveRoleClaim;
-    }
 }

@@ -1,4 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.ApiClient.Requests;
@@ -6,25 +9,13 @@ namespace Nano.App.ApiClient.Requests;
 /// <summary>
 /// Represents a request to edit an entity and retrieve it.
 /// </summary>
-public class EditAndGetRequest : BaseRequestPut
+[PutAction(ActionRoutes.EDIT_GET)]
+public class EditAndGetRequest : BaseRequest
 {
     /// <summary>
     /// The entity to update.
     /// </summary>
     [Required]
+    [Body]
     public virtual IEntityUpdatable Entity { get; set; } = null!;
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="EditAndGetRequest"/>.
-    /// </summary>
-    public EditAndGetRequest()
-    {
-        this.Action = "edit/get";
-    }
-
-    /// <inheritdoc />
-    public override object GetBody()
-    {
-        return this.Entity;
-    }
 }

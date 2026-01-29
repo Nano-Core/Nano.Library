@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using Nano.App.ApiClient.Config;
 using System;
 using System.Net.Http;
@@ -12,8 +11,8 @@ namespace Nano.App.ApiClient;
 public class DefaultApi : BaseApi<Guid>
 {
     /// <inheritdoc />
-    public DefaultApi(IOptionsMonitor<ApiClientOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
-        : base(apiOptions, httpClient, httpContextAccessor)
+    public DefaultApi(ApiClientOptions apiClientOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        : base(apiClientOptions, httpClient, httpContextAccessor)
     {
     }
 }

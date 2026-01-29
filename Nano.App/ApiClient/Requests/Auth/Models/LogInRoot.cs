@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Nano.App.ApiClient.Models.Auth;
+namespace Nano.App.ApiClient.Requests.Auth.Models;
 
 /// <summary>
 /// Represents the credentials required for logging in as root.

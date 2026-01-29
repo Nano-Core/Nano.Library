@@ -1,5 +1,9 @@
-﻿using System;
-using Nano.Data.Abstractions.Identity.Models;
+﻿using Nano.Data.Abstractions.Identity.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,28 +14,14 @@ public class AssignUserRoleRequest : AssignUserRoleRequest<Guid>;
 /// Request to assign a role to a user.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-public class AssignUserRoleRequest<TIdentity> : BaseRequestPost
+[PostAction(ActionRoutes.IDENTITY_ROLES_USER_ASSIGN)]
+public class AssignUserRoleRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// The role assignment information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual AssignUserRole<TIdentity> AssignUserRole { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="AssignUserRoleRequest{TIdentity}"/>.
-    /// Sets the action to "roles/user/assign".
-    /// </summary>
-    public AssignUserRoleRequest()
-    {
-        this.Action = "roles/user/assign";
-    }
-
-    /// <summary>
-    /// Gets the request body containing the role assignment information.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.AssignUserRole;
-    }
 }

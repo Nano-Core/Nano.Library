@@ -1,4 +1,4 @@
-﻿namespace Nano.App.ApiClient.Consts;
+﻿namespace Nano.App.Consts;
 
 internal class ControllerRoutes
 {

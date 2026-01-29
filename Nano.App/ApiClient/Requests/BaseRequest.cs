@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Nano.Common.Extensions;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Text.Json.Serialization;
-using Nano.App.ApiClient.Requests.Annotations;
-using Nano.Common.Extensions;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.ApiClient.Models;
 
 namespace Nano.App.ApiClient.Requests;
 
@@ -22,42 +24,19 @@ public abstract class BaseRequest
     public virtual string? JwtTokenOverride { get; set; }
 
     /// <summary>
-    /// The action or controller endpoint for the request.
-    /// </summary>
-    [Required]
-    [JsonIgnore]
-    protected internal string Action { get; set; } = null!;
-
-    /// <summary>
     /// Optional controller name for the request.
     /// </summary>
     [JsonIgnore]
     protected internal string? Controller { get; set; }
 
-    internal virtual string GetRoute()
+    internal HttpMethod GetMethod()
     {
-        var parameters = this
+        var httpMethod = this
             .GetType()
-            .GetProperties()
-            .Select(x =>
-            {
-                var property = x;
-                var attribute = x.GetCustomAttribute<RouteAttribute>();
+            .GetCustomAttribute<ActionAttribute>()?
+            .Method;
 
-                return (property, attribute);
-            })
-            .Where(x => x.attribute != null)
-            .OrderBy(x => x.attribute!.Order)
-            .Select(x =>
-            {
-                var value = x.property
-                    .GetValue(this);
-
-                return value ?? string.Empty;
-            });
-
-        return parameters
-            .Aggregate(string.Empty, (current, x) => current + $"{x}/");
+        return httpMethod ?? throw new NullReferenceException(nameof(httpMethod));
     }
 
     internal virtual IEnumerable<KeyValuePair<string, string>> GetHeaders()
@@ -87,6 +66,39 @@ public abstract class BaseRequest
         return parameters;
     }
 
+    internal virtual string GetAction()
+    {
+        var action = this
+            .GetType()
+            .GetCustomAttribute<ActionAttribute>()?
+            .ActionTemplate;
+
+        return action ?? throw new NullReferenceException(nameof(action));
+    }
+
+    internal virtual IEnumerable<object> GetRouteParameters()
+    {
+        return this
+            .GetType()
+            .GetProperties()
+            .Select(x =>
+            {
+                var property = x;
+                var attribute = x.GetCustomAttribute<RouteAttribute>();
+
+                return (property, attribute);
+            })
+            .Where(x => x.attribute != null)
+            .OrderBy(x => x.attribute!.Order)
+            .Select(x =>
+            {
+                var value = x.property
+                    .GetValue(this);
+
+                return value ?? string.Empty;
+            });
+    }
+
     internal virtual string GetQuerystring()
     {
         var querystring = this.GetQuerystringRecursive(this);
@@ -94,6 +106,34 @@ public abstract class BaseRequest
         return querystring.EndsWith('&')
             ? querystring[..^1]
             : querystring;
+    }
+
+    internal virtual object? GetBody()
+    {
+        return this
+            .GetType()
+            .GetProperties()
+            .Where(x => x.GetCustomAttribute<BodyAttribute>() != null)
+            .Select(x => x.GetValue(this))
+            .FirstOrDefault();
+    }
+
+    internal virtual IEnumerable<FormItem> GetForm()
+    {
+        return this
+            .GetType()
+            .GetProperties()
+            .Where(x => x.GetCustomAttribute<FormAttribute>() != null)
+            .Select(x =>
+            {
+                var value = x.GetValue(this);
+
+                return new FormItem
+                {
+                    Name = x.Name,
+                    Value = value
+                };
+            });
     }
 
 

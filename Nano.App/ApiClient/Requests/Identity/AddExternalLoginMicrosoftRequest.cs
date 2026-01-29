@@ -1,4 +1,5 @@
-﻿using Nano.App.ApiClient.Requests.Auth;
+﻿using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.App.ApiClient.Requests.Identity;
@@ -6,14 +7,5 @@ namespace Nano.App.ApiClient.Requests.Identity;
 /// <summary>
 /// Request to add an external Microsoft login.
 /// </summary>
-public class AddExternalLoginMicrosoftRequest : BaseLogInExternalRequest<LogInExternalMicrosoft>
-{
-    /// <summary>
-    /// Initializes a new instance of <see cref="AddExternalLoginMicrosoftRequest"/>.
-    /// Sets the action to "external-logins/add/microsoft".
-    /// </summary>
-    public AddExternalLoginMicrosoftRequest()
-    {
-        this.Action = "external-logins/add/microsoft";
-    }
-}
+[PostAction(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_ADD_MICROSOFT)]
+public class AddExternalLoginMicrosoftRequest : BaseAddExternalLoginRequest<LogInExternalMicrosoft>;

@@ -1,17 +1,11 @@
-﻿using Nano.Data.Abstractions.Identity.Authentication.Models;
+﻿using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.App.ApiClient.Requests.Auth;
 
 /// <summary>
 /// Represents a request to log in using an external Facebook account.
 /// </summary>
-public class LogInExternalFacebookRequest : BaseLogInExternalRequest<LogInExternalFacebook>
-{
-    /// <summary>
-    /// Initializes a new instance of <see cref="LogInExternalFacebookRequest"/> with action and controller set.
-    /// </summary>
-    public LogInExternalFacebookRequest()
-    {
-        this.Action = "login/external/facebook";
-    }
-}
+[PostAction(ActionRoutes.AUTH_LOGIN_EXTERNAL_FACEBOOK)]
+public class LogInExternalFacebookRequest : BaseLogInExternalRequest<LogInExternalFacebook>;

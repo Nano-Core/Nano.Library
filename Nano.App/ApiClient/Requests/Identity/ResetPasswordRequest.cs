@@ -1,5 +1,9 @@
-﻿using System;
-using Nano.Data.Abstractions.Identity.Models;
+﻿using Nano.Data.Abstractions.Identity.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -10,27 +14,14 @@ public class ResetPasswordRequest : ResetPasswordRequest<Guid>;
 /// Represents a request to reset a user's password.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the user identifier.</typeparam>
-public class ResetPasswordRequest<TIdentity> : BaseRequestPost
+[PostAction(ActionRoutes.IDENTITY_PASSWORD_RESET)]
+public class ResetPasswordRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// Contains the reset password information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual ResetPassword<TIdentity> ResetPassword { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="ResetPasswordRequest{TIdentity}"/> with action set.
-    /// </summary>
-    public ResetPasswordRequest()
-    {
-        this.Action = "password/reset";
-    }
-
-    /// <summary>
-    /// Gets the body of the request containing the reset password data.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.ResetPassword;
-    }
 }

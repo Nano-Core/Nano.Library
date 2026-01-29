@@ -1,32 +1,21 @@
-﻿using Nano.App.ApiClient.Consts;
-using Nano.App.ApiClient.Models.Auth;
+﻿using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.ApiClient.Requests.Auth.Models;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Auth;
 
 /// <summary>
 /// Represents a request to log in as a root user.
 /// </summary>
-public class LogInRootRequest : BaseRequestPost
+[PostAction(ActionRoutes.AUTH_LOGIN_ROOT)]
+public class LogInRootRequest : BaseAuthRequest
 {
     /// <summary>
     /// Contains the login details for root login.
     /// </summary>
+    [Body]
+    [Required]
     public virtual LogInRoot LogInRoot { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="LogInRootRequest"/> with action and controller set.
-    /// </summary>
-    public LogInRootRequest()
-    {
-        this.Action = "login/root";
-        this.Controller = ControllerRoutes.AUTH_CONTROLLER_ROUTE;
-    }
-
-    /// <summary>
-    /// Gets the body of the request containing the root login details.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.LogInRoot;
-    }
 }

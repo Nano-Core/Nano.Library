@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using Nano.App.ApiClient.Requests.Annotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
@@ -11,7 +13,8 @@ public class RevokeApiKeyRequest : RevokeApiKeyRequest<Guid>;
 /// Represents a request to revoke an API key.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the API key identifier.</typeparam>
-public class RevokeApiKeyRequest<TIdentity> : BaseRequestDelete
+[DeleteAction(ActionRoutes.IDENTITY_API_KEYS_REVOKE)]
+public class RevokeApiKeyRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
@@ -26,20 +29,4 @@ public class RevokeApiKeyRequest<TIdentity> : BaseRequestDelete
     /// </summary>
     [Query]
     public virtual DateTimeOffset? RevokeAt { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="RevokeApiKeyRequest{TIdentity}"/> with action set.
-    /// </summary>
-    public RevokeApiKeyRequest()
-    {
-        this.Action = "api-keys/revoke";
-    }
-
-    /// <summary>
-    /// Gets the body of the request. Always null for delete requests.
-    /// </summary>
-    public override object? GetBody()
-    {
-        return null;
-    }
 }

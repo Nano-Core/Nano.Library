@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Nano.App.ApiClient.Requests.Models;
+namespace Nano.App.ApiClient.Models;
 
 /// <summary>
 /// Represents a single item in a form submission.

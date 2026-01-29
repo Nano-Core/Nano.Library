@@ -1,4 +1,8 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
+using Nano.App.ApiClient.Annotations.Actions;
+using Nano.App.Consts;
 using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.App.ApiClient.Requests.Identity;
@@ -10,27 +14,14 @@ public class RemoveUserClaimRequest : RemoveUserClaimRequest<Guid>;
 /// Represents a request to remove a user's claim.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the user identifier.</typeparam>
-public class RemoveUserClaimRequest<TIdentity> : BaseRequestPost
+[PostAction(ActionRoutes.IDENTITY_CLAIMS_REMOVE)]
+public class RemoveUserClaimRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// Contains the user claim removal information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual RemoveUserClaim<TIdentity> RemoveUserClaim { get; set; } = new();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="RemoveUserClaimRequest{TIdentity}"/> with action set.
-    /// </summary>
-    public RemoveUserClaimRequest()
-    {
-        this.Action = "claims/remove";
-    }
-
-    /// <summary>
-    /// Gets the body of the request containing the user claim removal data.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.RemoveUserClaim;
-    }
 }

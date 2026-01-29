@@ -1,20 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.ApiClient.Requests.Models;
+using Nano.App.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nano.App.Api.Controllers;
 
@@ -51,7 +52,7 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     /// <response code="500">Internal server error.</response>
     [HttpPut]
     [HttpPost]
-    [Route("edit")]
+    [Route(ActionRoutes.EDIT)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.OK)]
@@ -82,7 +83,7 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     /// <response code="500">Internal server error.</response>
     [HttpPut]
     [HttpPost]
-    [Route("edit/get")]
+    [Route(ActionRoutes.EDIT_GET)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(DefaultEntity), (int)HttpStatusCode.OK)]
@@ -112,7 +113,7 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     /// <response code="500">Internal server error.</response>
     [HttpPut]
     [HttpPost]
-    [Route("edit/many")]
+    [Route(ActionRoutes.EDIT_MANY)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -142,7 +143,7 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     /// <response code="500">Internal server error.</response>
     [HttpPut]
     [HttpPost]
-    [Route("edit/many/bulk")]
+    [Route(ActionRoutes.EDIT_MANY_BULK)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -169,7 +170,7 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     /// <response code="500">Internal server error.</response>
     [HttpPut]
     [HttpPost]
-    [Route("edit/query")]
+    [Route(ActionRoutes.EDIT_QUERY)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]

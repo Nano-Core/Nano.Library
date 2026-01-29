@@ -1,9 +1,11 @@
 ﻿using Nano.Data.Abstractions.Identity.Models;
+using System.ComponentModel.DataAnnotations;
+using Nano.App.ApiClient.Annotations;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 
 /// <inheritdoc />
-public abstract class BaseSignUpExternalRequest : BaseRequestPost;
+public abstract class BaseSignUpExternalRequest : BaseRequest;
 
 /// <summary>
 /// Base request for signing up a user via an external provider.
@@ -15,13 +17,7 @@ public abstract class BaseSignUpExternalRequest<TSignUp> : BaseSignUpExternalReq
     /// <summary>
     /// The external sign-up information.
     /// </summary>
+    [Required]
+    [Body]
     public virtual TSignUp SignUpExternal { get; set; } = new();
-
-    /// <summary>
-    /// Gets the request body containing the external sign-up information.
-    /// </summary>
-    public override object GetBody()
-    {
-        return this.SignUpExternal;
-    }
 }

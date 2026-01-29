@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using Nano.App.ApiClient.Config;
 using Nano.App.ApiClient.Requests.Identity;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
@@ -30,8 +29,8 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     protected static string IdentityController => $"{typeof(TUser).Name.ToLower()}s";
 
     /// <inheritdoc />
-    protected BaseIdentityApi(IOptionsMonitor<ApiClientOptions> apiOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
-        : base(apiOptions, httpClient, httpContextAccessor)
+    protected BaseIdentityApi(ApiClientOptions apiClientOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        : base(apiClientOptions, httpClient, httpContextAccessor)
     {
     }
 
@@ -348,10 +347,10 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     /// <summary>
     /// Verify Custom Token Async.
     /// </summary>
-    /// <param name="request">The <see cref="VerifyCustomTokenRequest{TIdentity}"/>.</param>
+    /// <param name="request">The <see cref="ConfirmCustomPurposeRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    public virtual Task ConfirmCustomPurposeTokenAsync(VerifyCustomTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    public virtual Task ConfirmCustomPurposeTokenAsync(ConfirmCustomPurposeRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
