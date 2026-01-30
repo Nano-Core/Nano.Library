@@ -13,6 +13,7 @@ internal static class KestrelServerOptionsExtensions
         ArgumentNullException.ThrowIfNull(kestrel);
         ArgumentNullException.ThrowIfNull(apiOptions);
 
+        kestrel.AddServerHeader = false;
         kestrel.Limits.MaxRequestBodySize = apiOptions.Hosting.MultipartLimits?.MaxUploadBytes;
         kestrel.Limits.KeepAliveTimeout = apiOptions.Hosting.MultipartLimits?.KeepAliveTimeout ?? kestrel.Limits.KeepAliveTimeout;
 
@@ -21,7 +22,7 @@ internal static class KestrelServerOptionsExtensions
             kestrel
                 .ListenAnyIP(port, listen =>
                 {
-                    listen.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
+                    listen.Protocols = HttpProtocols.Http1;
                 });
         }
 

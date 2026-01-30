@@ -11,6 +11,7 @@
 * [Summary](#summary)
 * [Configuration](#configuration)
 * [Console Worker](#console-worker) 
+* [Start-Up Tasks](#start-up-tasks) 
 
 ## Summary
 The ```ConsoleApplication``` derives from ```DefaultApplication```. It initializes the required services and into a service collection, and is able to handle and resolve dependencies, similar to a web application. This is explained in details further down.    

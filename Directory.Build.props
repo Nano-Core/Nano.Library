@@ -1,5 +1,6 @@
 <Project>
-    <PropertyGroup>
+
+	<PropertyGroup>
 	    <TargetFramework>net10.0</TargetFramework>
 	    <NoWarn>NU1902; NU5104</NoWarn>
 	    <AssemblyVersion>10.0.0.0</AssemblyVersion>
@@ -16,7 +17,7 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
 	    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-	    <IsPackable>false</IsPackable>
+	    <IsPackable>true</IsPackable>
 		<Authors>Michael Vivet</Authors>
 	    <Owners>Michael Vivet</Owners>
 	    <Product>$(ProjectName)</Product>
@@ -40,7 +41,7 @@
 	    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	    <PackageVersion>$(Version)</PackageVersion>
-		<PackageTags></PackageTags>
+			<PackageTags></PackageTags>
 		<PackageProjectUrl>https://github.com/Nano-Core/Nano.Library/$(ProjectName)</PackageProjectUrl>
 	    <PackageLicenseFile>LICENSE</PackageLicenseFile>
 	    <PackageIcon>icon.png</PackageIcon>
