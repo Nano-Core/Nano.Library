@@ -12,6 +12,7 @@
 * [Configuration](#configuration)
 * [Console Worker](#console-worker) 
 * [Start-Up Tasks](#start-up-tasks) 
+* [Examples](#examples)
 
 ## Summary
 The ```ConsoleApplication``` derives from ```DefaultApplication```. It initializes the required services and into a service collection, and is able to handle and resolve dependencies, similar to a web application. This is explained in details further down.    
@@ -73,8 +74,15 @@ public class MyWorker : DefaultWorker
 }
 ```
 
+## Start-Up Tasks
+Nano supports startup-tasks, that executes before the application starts. 
+For console applications the worker won't start before all startup tasks has completed.
+It's rarely needed for console applications, but supported just in case.
+
+Read more [Nano.App](nano-app#start-up-tasks)
+
 ## Examples
 See examples of Nano console applications here:
-* [Nano.Templates.Console](https://github.com/Nano-Core/Nano.Templates/tree/master/Console)
+* [Example.Console](https://github.com/Nano-Core/Nano.Examples/tree/master/Console)
 
 *** 

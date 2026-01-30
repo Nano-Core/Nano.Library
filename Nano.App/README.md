@@ -3,142 +3,53 @@
 [![NuGet](https://img.shields.io/nuget/dt/Nano.App.svg)](https://www.nuget.org/packages/Nano.App/)
 [![NuGet](https://img.shields.io/nuget/v/Nano.App.svg)](https://www.nuget.org/packages/Nano.App/)
 
+> _Shared components for Nano application._
 
-### Table of Contents
-
-* [Null Logger]()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### Table of Contents
+## Table of Contents
 * [Summary](#summary)
 * [Configuration](#configuration)
-* [Start-Up](#start-up)
+* [Start-Up Tasks](#start-up-tasks)
+
+* [Custom Application](#custom-applications)
+* [Examples](#examples)
+
+
+* [Null Logger]()
 * [Build and Run](#build-and-run)
 * [Background Jobs](#background-jobs)
-* [Injected Services](#injected-services)
 
-*** 
-
-### Summary
+## Summary
 In Nano, an application refers to the part of defining, building and running a host process.  
-
 The implementation isn't much different from the regular approach, when building .Net Core applications. The ```WebHost``` is being configured, then built and finally executed. During startup dependencies are registered, and components are configured and initialized. The supplied configuration (```appsettings.json```), allows for a fine-grained control over the behavior of these dependencies and components.  
-
 A few abstractions and interfaces are used to control an application. This resembles the ```startup.cs``` class you would normally implement in .Net core, but includes much more. The interface ```IApplication``` defines an application. When building the ```WebHost``` of the application, the interface is injected as dependency, resolving to the type implemented in your application. The abstract class ```BaseApplication```, implements ```IApplication```, and most importantly, it contains a static method ```ConfigureApp<TApplication>(...)```, that is responsible for initializing and configuring the application.  
-
 Nano comes with a concrete ```DefaultApplication``` implementation, deriving directly from ```BaseApplication```. That is in most cases sufficient, avoiding having to implement a custom implementation.    
 
-*** 
+## Configuration
+The common configuration that is the same for all application types.
+The `App` section in the configuration defines common options used by all types of applications. 
+Each application has additional configuration in the `App` section.
 
-### Configuration
-The ```appsettings.json``` contains the configurational information used by Nano, when initializing and building the application.  
+| Setting         | Type   | Default   | Description                                                               |
+| --------------- | ------ | --------- | ------------------------------------------------------------------------- |
+|  `Version`      | string | 1.0.0.0   | Application version identifier.                                           |
+|  `Cultures`     | enum   |           | Culture and localization settings for the application.                    |
+|  `Apis`         | enum   |           | Named Nano API client configurations available to the application.        |
 
-The ```App``` section of the configuration defines behavior related to the application. The section is deserialized into an instance of ```AppOptions```, and injected as dependency during startup, thus available for injection throughout the application.  
-
-See [Appendix - App Settings](app-settings) for details about the app section and the meaning of the variables.
-
-##### App Section
 ```json
 "App": {
-  "Name": "Application",
-  "EntryPoint": "Application.dll",
-  "Description": null,
   "Version": "1.0.0.0",
-  "TermsOfService": null,
-  "DefaultTimeZone": "UTC",
   "Cultures": {
     "Default": "en-US",
     "Supported": [
-      "en-US"
     ]
+  },
+  "Apis":{
   }
 }
 ```
 
-*** 
-
-### Start-Up
-The application implementation in nano, is essentially the ```startup.cs``` class of .Net Core.  
-
-The ```DefaultApplication``` implementation is the default startup class, and normally deriving your own implementation isn't needed. In fact, it's recommended not to, and instead configure any custom initialization within the ```.ConfigureServices(...)``` inline expression, as explained later. Is a more advanced setup required, and implementing a custom startup class can't be avoided, derive the implementation from one of the provided application classes, that in turn derives from ```DefaultApplication```, and override any methods as needed. For example, in order to inject custom middleware.   
-Remember to invoke base method implementations!  
-
-##### Sample Implementation
-```csharp
-public class MyApplication : DefaultApplication 
-{ 
-    public MyApplication(IConfiguration configuration)
-        : base(configuration)
-    {
-
-    }
-}
-```
-
-*** 
-
-### Build and Run
-This covers the entry point of the application, and how the startup implementation is applied and executed.  
-
-The ```DefaultApplication``` doesn't provide any initialization alone, and using it directly would manually require to declare and instantiate one of the ```IHostBuilder``` implementations of .Net Core. Nano provides application implementations for a ```WebApplication``` and a ```ConsoleApplication```.  
-
-The application implementation should include a static method to retrieve an implementation of ```IHostBuilder```. The included application implementations already includes such a method, ```.ConfigureApp(...)```. Invoke the method from the ```Main(...)``` method of ```Program``` class, and configure any additional dependencies inline in the ```ConfigureServices(x => ...)``` method. 
-
-When having a custom application implementation, either implement your own static method returning the appropriate ```IHostBuilder``` implementation, or use the method of one of the included application implementations. The later, can be accomplished by passing the custom application type as generic parameter, to the ```.ConfigureApp<TApplication>(...)``` method overload of one of the included application implementations, as shown below.
-
-##### Sample implementation
-```csharp
-// With default IApplication implementation
-public class Program
-{
-    public static void Main()
-    {
-        WebApplication
-            .ConfigureApp()
-            .ConfigureServices(x =>
-            {
-                // Additional dependencies...
-            })
-            .Build()
-            .Run();
-    }
-}
-
-// With custom IApplication implementation
-public class Program
-{
-    public static void Main()
-    {
-        WebApplication
-            .ConfigureApp<MyApplication>()
-            .ConfigureServices(x =>
-            {
-                // Additional dependencies...
-            })
-            .Build()
-            .Run();
-    }
-}
-```
-
-***
-
-### Background Jobs
+## Start-Up Tasks
 Nano supports running background jobs upon start-up.  
-
 Derive an implementation from the abstract ```BaseStartupTask```, and the task dependency will automatically be registered and started during application start-up.  
 
 The ```BaseStartupTask``` implements ```IHostedService``` abstractly, and contains a mechanism for controlling the number of background tasks running, ensuring proper completion when application shuts down.  
@@ -163,7 +74,50 @@ public class MyStartUpTask : BaseStartupTask
 }
 ```
 
-***
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Custom Applications
+For the most part it should not be needed to implement custom application types in Nano.
+Situations where you need a way different middleware setup, or other special requirements it is possible through a custom application implemenation 
+deriving from `IApplication` and `BaseApplication`.
+
+```csharp
+public class MyApplication : DefaultApplication 
+{ 
+    public MyApplication(IConfiguration configuration)
+        : base(configuration)
+    {
+
+    }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        WebApplication
+            .ConfigureApp()
+            .ConfigureServices(x =>
+            {
+                // Additional dependencies...
+            })
+            .Build()
+            .Run();
+    }
+}
+```
+
 
 
 
