@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Nano.App.Console.Config;
 using Nano.App.Console.Workers;
 using Nano.Common.Extensions;
 using System;
 using System.Globalization;
 using System.Linq;
+using Nano.App.Config;
 using Nano.Common.Helpers;
 
 namespace Nano.App.Console.Extensions;
@@ -34,10 +34,14 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoCultureInfo(this IServiceCollection services, ConsoleOptions options)
+    internal static IServiceCollection AddNanoCultureInfo(this IServiceCollection services, LocalizationOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(options);
+
+        if (options == null)
+        {
+            return services;
+        }
 
         CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(options.Cultures.Default);
 

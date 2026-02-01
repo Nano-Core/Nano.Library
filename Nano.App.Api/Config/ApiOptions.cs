@@ -9,12 +9,6 @@ namespace Nano.App.Api.Config;
 public class ApiOptions : BaseAppOptions
 {
     /// <summary>
-    /// Default time zone for the application.
-    /// </summary>
-    [Required]
-    public virtual string DefaultTimeZone { get; set; } = "UTC";
-
-    /// <summary>
     /// Number of seconds to wait after a SIGTERM signal before shutting down.
     /// </summary>
     public virtual int ShutdownTimeout { get; set; } = 10;
@@ -32,11 +26,6 @@ public class ApiOptions : BaseAppOptions
     public virtual HttpPolicyHeaderOptions HttpPolicyHeaders { get; set; } = new();
 
     /// <summary>
-    /// Identity configuration options.
-    /// </summary>
-    public virtual IdentityOptions? Identity { get; set; }
-
-    /// <summary>
     /// Response caching options.
     /// </summary>
     public virtual ResponseCacheOptions? ResponseCache { get; set; }
@@ -52,6 +41,11 @@ public class ApiOptions : BaseAppOptions
     public virtual SessionOptions? Session { get; set; }
 
     /// <summary>
+    /// Timezone configuration options.
+    /// </summary>
+    public virtual TimeZoneOptions? TimeZone { get; set; }
+
+    /// <summary>
     /// Virus scanning options.
     /// </summary>
     public virtual VirusScanOptions? VirusScan { get; set; }
@@ -65,4 +59,9 @@ public class ApiOptions : BaseAppOptions
     /// API documentation options.
     /// </summary>
     public virtual DocumentationOptions? Documentation { get; set; }
+
+    /// <summary>
+    /// Identity configuration options.
+    /// </summary>
+    public virtual IdentityOptions? Identity { get; set; }
 }

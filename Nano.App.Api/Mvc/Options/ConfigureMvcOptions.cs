@@ -57,7 +57,7 @@ public sealed class ConfigureMvcOptions : IConfigureOptions<MvcOptions>
         options.Conventions
             .Add(conditionalActionConvention);
 
-        if (this.apiOptions.CurrentValue.Hosting.UseHttpsRequired)
+        if (this.apiOptions.CurrentValue.Hosting.Https is { UseHttpsRequired: true })
         {
             options.Filters
                 .Add<RequireHttpsAttribute>();

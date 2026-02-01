@@ -32,14 +32,24 @@ public class CspOptions
     public virtual CspDirective? Defaults { get; set; }
 
     /// <summary>
+    /// Controls allowed sources for scripts (script-src).
+    /// </summary>
+    public virtual CspDirectiveScripts? Scripts { get; set; }
+
+    /// <summary>
+    /// Controls allowed sources for script elements (script-src-elem).
+    /// </summary>
+    public virtual CspDirectiveScripts? ScriptsElem { get; set; }
+
+    /// <summary>
+    /// Controls allowed sources for inline script attributes (script-src-attr).
+    /// </summary>
+    public virtual CspDirectiveScriptsAttr? ScriptsAttr { get; set; }
+
+    /// <summary>
     /// Controls allowed sources for stylesheets (style-src).
     /// </summary>
     public virtual CspDirectiveStyles? Styles { get; set; }
-
-    /// <summary>
-    /// Controls allowed sources for inline style attributes (style-src-attr).
-    /// </summary>
-    public virtual CspDirectiveStyles? StylesAttr { get; set; }
 
     /// <summary>
     /// Controls allowed sources for style elements (style-src-elem).
@@ -47,19 +57,9 @@ public class CspOptions
     public virtual CspDirectiveStyles? StylesElem { get; set; }
 
     /// <summary>
-    /// Controls allowed sources for scripts (script-src).
+    /// Controls allowed sources for inline style attributes (style-src-attr).
     /// </summary>
-    public virtual CspDirectiveScripts? Scripts { get; set; }
-
-    /// <summary>
-    /// Controls allowed sources for inline script attributes (script-src-attr).
-    /// </summary>
-    public virtual CspDirectiveScripts? ScriptsAttr { get; set; }
-
-    /// <summary>
-    /// Controls allowed sources for script elements (script-src-elem).
-    /// </summary>
-    public virtual CspDirectiveScripts? ScriptsElem { get; set; }
+    public virtual CspDirectiveStylesAttr? StylesAttr { get; set; }
 
     /// <summary>
     /// Controls allowed sources for object elements (object-src).
@@ -215,12 +215,6 @@ public class CspOptions
         public virtual bool UnsafeAllowRedirects { get; set; } = false;
 
         /// <summary>
-        /// Requires Trusted Types for script execution.
-        /// </summary>
-        [Required]
-        public virtual bool RequireTrustedTypes { get; set; } = false;
-
-        /// <summary>
         /// Specific nonces to allow inline scripts.
         /// </summary>
         public virtual string[] Nonces { get; set; } = [];
@@ -232,16 +226,46 @@ public class CspOptions
         public virtual string[] Hashes { get; set; } = [];
 
         /// <summary>
-        /// If true, enables 'report-sample' in CSP violation reports.
-        /// </summary>
-        [Required]
-        public virtual bool ReportSample { get; set; } = false;
-
-        /// <summary>
         /// Requires Subresource Integrity (SRI) for scripts.
         /// </summary>
         [Required]
         public virtual bool RequireSri { get; set; } = false;
+
+        /// <summary>
+        /// Requires Trusted Types for script execution.
+        /// </summary>
+        [Required]
+        public virtual bool RequireTrustedTypes { get; set; } = false;
+
+        /// <summary>
+        /// If true, enables 'report-sample' in CSP violation reports.
+        /// </summary>
+        [Required]
+        public virtual bool ReportSample { get; set; } = false; // BUG: Where is this used
+    }
+
+    /// <summary>
+    /// Represents script-specific CSP directive (script-src-attr).
+    /// </summary>
+    public class CspDirectiveScriptsAttr
+    {
+        /// <summary>
+        /// If true, only 'none' is allowed. All other sources are ignored.
+        /// </summary>
+        [Required]
+        public virtual bool IsNone { get; set; } = false;
+
+        /// <summary>
+        /// Allows inline styles ('unsafe-inline').
+        /// </summary>
+        [Required]
+        public virtual bool IsUnsafeInline { get; set; } = false;
+
+        /// <summary>
+        /// If true, enables 'report-sample' in CSP violation reports.
+        /// </summary>
+        [Required]
+        public virtual bool ReportSample { get; set; } = false; // BUG: Use
     }
 
     /// <summary>
@@ -277,13 +301,43 @@ public class CspOptions
         /// Requires Trusted Types for styles.
         /// </summary>
         [Required]
-        public virtual bool RequireTrustedTypes { get; set; } = false;
+        public virtual bool RequireTrustedTypes { get; set; } = false; // BUG: This need to be combined directive for style and script
 
         /// <summary>
         /// Requires Subresource Integrity (SRI) for styles.
         /// </summary>
         [Required]
-        public virtual bool RequireSri { get; set; } = false;
+        public virtual bool RequireSri { get; set; } = false; // BUG: This need to be combined directive for style and script
+
+        /// <summary>
+        /// If true, enables 'report-sample' in CSP violation reports.
+        /// </summary>
+        [Required]
+        public virtual bool ReportSample { get; set; } = false; // BUG: Use
+    }
+
+    /// <summary>
+    /// Represents style-specific CSP directive (src-style-attr).
+    /// </summary>
+    public class CspDirectiveStylesAttr
+    {
+        /// <summary>
+        /// If true, only 'none' is allowed. All other sources are ignored.
+        /// </summary>
+        [Required]
+        public virtual bool IsNone { get; set; } = false;
+
+        /// <summary>
+        /// Allows inline styles ('unsafe-inline').
+        /// </summary>
+        [Required]
+        public virtual bool IsUnsafeInline { get; set; } = false;
+
+        /// <summary>
+        /// If true, enables 'report-sample' in CSP violation reports.
+        /// </summary>
+        [Required]
+        public virtual bool ReportSample { get; set; } = false; // BUG: Use
     }
 
     /// <summary>
@@ -457,14 +511,14 @@ public class CspOptions
         /// Controls whether the current document is allowed to gather information about the acceleration
         /// of the device through the Accelerometer interface.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyAccelerometer? Accelerometer { get; set; }
+        public virtual CspDirective? Accelerometer { get; set; }
 
         /// <summary>
         /// Ambient Light Sensor.
         /// Controls whether the current document is allowed to gather information about the amount of light
         /// in the environment around the device through the AmbientLightSensor interface.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyAmbientLightSensor? AmbientLightSensor { get; set; }
+        public virtual CspDirective? AmbientLightSensor { get; set; }
 
         /// <summary>
         /// Auto Play.
@@ -472,21 +526,21 @@ public class CspOptions
         /// When this policy is disabled and there were no user gestures, the Promise returned by HTMLMediaElement.play() will reject with a DOMException.
         /// The autoplay attribute on audio and video elements will be ignored.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyAutoPlay? AutoPlay { get; set; }
+        public virtual CspDirective? AutoPlay { get; set; }
 
         /// <summary>
         /// Battery.
         /// Controls whether the use of the Battery Status API is allowed. When this policy is disabled,
         /// the Promise returned by Navigator.getBattery() will reject with a NotAllowedError DOMException.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyBattery? Battery { get; set; }
+        public virtual CspDirective? Battery { get; set; }
 
         /// <summary>
         /// Camera.
         /// Controls whether the current document is allowed to use video input devices.
         /// When this policy is disabled, the Promise returned by getUserMedia() will reject with a NotAllowedError DOMException.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyCamera? Camera { get; set; }
+        public virtual CspDirective? Camera { get; set; }
 
         /// <summary>
         /// Display Capture.
@@ -494,40 +548,40 @@ public class CspOptions
         /// When this policy is disabled, the promise returned by getDisplayMedia() will reject with a NotAllowedError
         /// if permission is not obtained to capture the display's contents.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyDisplayCapture? DisplayCapture { get; set; }
+        public virtual CspDirective? DisplayCapture { get; set; }
 
         /// <summary>
         /// Document Domain.
         /// Controls whether the current document is allowed to set document.domain.
         /// When this policy is disabled, attempting to set document.domain will fail and cause a SecurityError DOMException to be thrown.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyDocumentDomain? DocumentDomain { get; set; }
+        public virtual CspDirective? DocumentDomain { get; set; }
 
         /// <summary>
         /// Encrypted Media.
         /// Controls whether the current document is allowed to use the Encrypted Media Extensions API (EME).
         /// When this policy is disabled, the Promise returned by Navigator.requestMediaKeySystemAccess() will reject with a DOMException.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyEncryptedMedia? EncryptedMedia { get; set; }
+        public virtual CspDirective? EncryptedMedia { get; set; }
 
         /// <summary>
         /// Execution While Not Rendered.
         /// Controls whether tasks should execute in frames while they're not being rendered (e.g. if an iframe is hidden or display: none).
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyExecutionWhileNotRendered? ExecutionWhileNotRendered { get; set; }
+        public virtual CspDirective? ExecutionWhileNotRendered { get; set; }
 
         /// <summary>
         /// Execution While Out Of Viewport.
         /// Controls whether tasks should execute in frames while they're outside the visible viewport.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyExecutionWhileOutOfViewport? ExecutionWhileOutOfViewport { get; set; }
+        public virtual CspDirective? ExecutionWhileOutOfViewport { get; set; }
 
         /// <summary>
         /// FullScreen.
         /// Controls whether the current document is allowed to use Element.requestFullScreen().
         /// When this policy is disabled, the returned Promise rejects with a TypeError.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyFullscreen? FullScreen { get; set; }
+        public virtual CspDirective? FullScreen { get; set; }
 
         /// <summary>
         /// Gamepad.
@@ -535,7 +589,7 @@ public class CspOptions
         /// When this policy is disabled, calls to Navigator.getGamepads() will throw a SecurityError DOMException,
         /// and the gamepadconnected and gamepaddisconnected events will not fire.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyGamepad? Gamepad { get; set; }
+        public virtual CspDirective? Gamepad { get; set; }
 
         /// <summary>
         /// Geo location.
@@ -543,290 +597,129 @@ public class CspOptions
         /// When this policy is disabled, calls to getCurrentPosition() and watchPosition() will cause those functions' callbacks to be invoked
         /// with a GeolocationPositionError code of PERMISSION_DENIED.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyGeolocation? Geolocation { get; set; }
+        public virtual CspDirective? Geolocation { get; set; }
 
         /// <summary>
         /// Gyroscope.
         /// Controls whether the current document is allowed to gather information about the orientation
         /// of the device through the Gyroscope interface.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyGyroscope? Gyroscope { get; set; }
+        public virtual CspDirective? Gyroscope { get; set; }
 
         /// <summary>
         /// Layout Animations.
         /// Controls whether the current document is allowed to show layout animations.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyLayoutAnimations? LayoutAnimations { get; set; }
+        public virtual CspDirective? LayoutAnimations { get; set; }
 
         /// <summary>
         /// Legacy Image Formats.
         /// Controls whether the current document is allowed to display images in legacy formats.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyLegacyImageFormats? LegacyImageFormats { get; set; }
+        public virtual CspDirective? LegacyImageFormats { get; set; }
 
         /// <summary>
         /// Magnetometer.
         /// Controls whether the current document is allowed to gather information about the orientation of the device through the Magnetometer interface.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyMagnetometer? Magnetometer { get; set; }
+        public virtual CspDirective? Magnetometer { get; set; }
 
         /// <summary>
         /// Microphone.
         /// Controls whether the current document is allowed to use audio input devices.
         /// When this policy is disabled, the Promise returned by MediaDevices.getUserMedia() will reject with a NotAllowedError.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyMicrophone? Microphone { get; set; }
+        public virtual CspDirective? Microphone { get; set; }
 
         /// <summary>
         /// Midi.
         /// Controls whether the current document is allowed to use the Web MIDI API.
         /// When this policy is disabled, the Promise returned by Navigator.requestMIDIAccess() will reject with a DOMException.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyMidi? Midi { get; set; }
+        public virtual CspDirective? Midi { get; set; }
 
         /// <summary>
         /// Navigation Override.
         /// Controls the availability of mechanisms that enables the page author to take control over
         /// the behavior of spatial navigation, or to cancel it outright.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyNavigationOverride? NavigationOverride { get; set; }
+        public virtual CspDirective? NavigationOverride { get; set; }
 
         /// <summary>
         /// Oversized Images.
         /// Controls whether the current document is allowed to download and display large images.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyOversizedImages? OversizedImages { get; set; }
+        public virtual CspDirective? OversizedImages { get; set; }
 
         /// <summary>
         /// Payment.
         /// Controls whether the current document is allowed to use the Payment Request API.
         /// When this policy is enabled, the PaymentRequest() constructor will throw a SecurityError DOMException.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyPayment? Payment { get; set; }
+        public virtual CspDirective? Payment { get; set; }
 
         /// <summary>
         /// Picture In Picture.
         /// Controls whether the current document is allowed to play a video in a Picture-in-Picture mode via the corresponding API.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyPictureInPicture? PictureInPicture { get; set; }
+        public virtual CspDirective? PictureInPicture { get; set; }
 
         /// <summary>
         /// Public Key Credentials Get.
         /// Controls whether the current document is allowed to use the Web Authentication API to retrieve already stored public-key credentials,
         /// i.e. via navigator.credentials.get({publicKey: ..., ...}).
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyPublicKeyCredentialsGet? PublicKeyCredentialsGet { get; set; }
+        public virtual CspDirective? PublicKeyCredentialsGet { get; set; }
 
         /// <summary>
         /// Speaker Selection.
         /// Controls whether the current document is allowed to use the Audio Output Devices API to list and select speakers.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicySpeakerSelection? SpeakerSelection { get; set; }
+        public virtual CspDirective? SpeakerSelection { get; set; }
 
         /// <summary>
         /// Sync Xhr.
         /// Controls whether the current document is allowed to make synchronous XMLHttpRequest requests.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicySyncXhr? SyncXhr { get; set; }
+        public virtual CspDirective? SyncXhr { get; set; }
 
         /// <summary>
         /// Unoptimized Images.
         /// Controls whether the current document is allowed to download and display unoptimized images.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyUnoptimizedImages? UnoptimizedImages { get; set; }
+        public virtual CspDirective? UnoptimizedImages { get; set; }
 
         /// <summary>
         /// Unsized Media.
         /// Controls whether the current document is allowed to change the size of media elements after the initial layout is complete.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyUnsizedMedia? UnsizedMedia { get; set; }
+        public virtual CspDirective? UnsizedMedia { get; set; }
 
         /// <summary>
         /// Usb.
         /// Controls whether the current document is allowed to use the WebUSB API
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyUsb? Usb { get; set; }
+        public virtual CspDirective? Usb { get; set; }
 
         /// <summary>
         /// Screen Wake Lock.
         /// Controls whether the current document is allowed to use Screen Wake Lock API
         /// to indicate that device should not turn off or dim the screen.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyScreenWakeLock? ScreenWakeLock { get; set; }
+        public virtual CspDirective? ScreenWakeLock { get; set; }
 
         /// <summary>
         /// Web Share.
         /// Controls whether the current document is allowed to use the Navigator.share() of Web Share API to
         /// share text, links, images, and other content to arbitrary destinations of user's choice, e.g. mobile apps.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyWebShare? WebShare { get; set; }
+        public virtual CspDirective? WebShare { get; set; }
 
         /// <summary>
         /// Xr Spatial Tracking.
         /// Controls whether the current document is allowed to use the WebXR Device API to interact with a WebXR session.
         /// </summary>
-        public virtual CspDirectivePermissionsPolicyXrSpatialTracking? XrSpatialTracking { get; set; }
-
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Accelerometer.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyAccelerometer : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Ambient Light Sensor
-        /// </summary>
-        public class CspDirectivePermissionsPolicyAmbientLightSensor : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions PolicyAuto Play.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyAutoPlay : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Battery.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyBattery : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Camera
-        /// </summary>
-        public class CspDirectivePermissionsPolicyCamera : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Display Capture.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyDisplayCapture : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Document Domain.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyDocumentDomain : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Encrypted Media.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyEncryptedMedia : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Execution While Not Rendered.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyExecutionWhileNotRendered : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Execution While Out Of Viewport.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyExecutionWhileOutOfViewport : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Fullscreen.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyFullscreen : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Gamepad.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyGamepad : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Geo location.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyGeolocation : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Gyroscope.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyGyroscope : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Layout Animations.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyLayoutAnimations : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Legacy Image Formats.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyLegacyImageFormats : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Magnetometer.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyMagnetometer : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Microphone.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyMicrophone : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Midi.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyMidi : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Navigation Override.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyNavigationOverride : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Oversized Images.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyOversizedImages : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Payment.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyPayment : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Picture-In-Picture.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyPictureInPicture : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Public Key Credentials Get.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyPublicKeyCredentialsGet : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions PolicySpeakerSelection.
-        /// </summary>
-        public class CspDirectivePermissionsPolicySpeakerSelection : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Sync Xhr.
-        /// </summary>
-        public class CspDirectivePermissionsPolicySyncXhr : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Unoptimized Images.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyUnoptimizedImages : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Unsized Media.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyUnsizedMedia : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Usb.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyUsb : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Screen Wake Lock.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyScreenWakeLock : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Web Share.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyWebShare : CspDirective;
-
-        /// <summary>
-        /// Csp Directive Permissions Policy Xr Spatial Tracking.
-        /// </summary>
-        public class CspDirectivePermissionsPolicyXrSpatialTracking : CspDirective;
+        public virtual CspDirective? XrSpatialTracking { get; set; }
     }
 
     #endregion

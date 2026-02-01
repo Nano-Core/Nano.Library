@@ -42,6 +42,7 @@ public class DocumentationOptions
 
     /// <summary>
     /// Use default API version if true.
+    /// Default version routes will be hidden in swagger.
     /// </summary>
     [Required]
     public virtual bool UseDefaultVersion { get; set; } = true;

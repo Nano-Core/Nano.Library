@@ -8,28 +8,10 @@ namespace Nano.App.Api.Config;
 public class HostingOptions
 {
     /// <summary>
-    /// Root path for the application.
+    /// Root route for the application endpoints.
     /// </summary>
     [Required]
     public virtual string Root { get; set; } = "api";
-
-    /// <summary>
-    /// List of ports for HTTP.
-    /// </summary>
-    [Required]
-    public virtual int[] Ports { get; set; } = [];
-
-    /// <summary>
-    /// List of ports for HTTPS.
-    /// </summary>
-    [Required]
-    public virtual int[] PortsHttps { get; set; } = [];
-
-    /// <summary>
-    /// Enforce HTTPS redirect for all requests.
-    /// </summary>
-    [Required]
-    public virtual bool UseHttpsRequired { get; set; } = false;
 
     /// <summary>
     /// Expose detailed errors.
@@ -50,9 +32,15 @@ public class HostingOptions
     public virtual bool ExposeAuditController { get; set; } = true;
 
     /// <summary>
-    /// SSL certificate configuration.
+    /// Options for Http.
     /// </summary>
-    public virtual CertificateOptions? Certificate { get; set; }
+    [Required]
+    public virtual HttpOptions Http { get; set; } = new();
+
+    /// <summary>
+    /// Options for Https.
+    /// </summary>
+    public virtual HttpsOptions? Https { get; set; }
 
     /// <summary>
     /// Multipart upload limits.

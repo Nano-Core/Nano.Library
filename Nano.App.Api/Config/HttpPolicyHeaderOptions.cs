@@ -18,12 +18,12 @@ public class HttpPolicyHeaderOptions
     /// <summary>
     /// X-Frame-Options header options.
     /// </summary>
-    public virtual XFrameOptionsOptions? XFrameOptions { get; set; }
+    public virtual FrameOptionsOptions? FrameOptions { get; set; }
 
     /// <summary>
-    /// X-XSS-Protection header options.
+    /// XSS-Protection header options.
     /// </summary>
-    public virtual XXssProtectionOptions? XXssProtection { get; set; }
+    public virtual XssProtectionOptions? XssProtection { get; set; }
 
     /// <summary>
     /// Content-Security-Policy options.

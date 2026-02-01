@@ -22,6 +22,8 @@ using Nano.Common.Mvc.HealthChecks.Extensions;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Globalization;
+using System.Linq;
+using Nano.App.Config;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
@@ -133,22 +135,18 @@ internal static class ServiceCollectionExtensions
         services
             .AddHsts(x =>
             {
+                x.MaxAge = options.MaxAge;
                 x.IncludeSubDomains = options.IncludeSubdomains;
 
-                if (options is { IncludeSubdomains: true, MaxAge: not null })
+                if (options is { IncludeSubdomains: true })
                 {
                     const int MAX_WEEKS = 18;
-                    var weeks = options.MaxAge.Value.TotalDays / 7;
+                    var weeks = options.MaxAge.TotalDays / 7;
 
                     if (options.UsePreload && weeks >= MAX_WEEKS)
                     {
                         x.Preload = true;
                     }
-                }
-
-                if (options.MaxAge.HasValue)
-                {
-                    x.MaxAge = options.MaxAge.Value;
                 }
             });
 
@@ -208,7 +206,7 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoVersioning(this IServiceCollection services, string version = "1.0.0.0", bool? useDefaultVersion = false)
+    internal static IServiceCollection AddNanoVersioning(this IServiceCollection services, string version = "1.0.0.0")
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -221,12 +219,8 @@ internal static class ServiceCollectionExtensions
             .AddApiVersioning(x =>
             {
                 x.ReportApiVersions = true;
-
-                if (useDefaultVersion ?? false)
-                {
-                    x.DefaultApiVersion = apiVersion;
-                    x.AssumeDefaultVersionWhenUnspecified = true;
-                }
+                x.DefaultApiVersion = apiVersion;
+                x.AssumeDefaultVersionWhenUnspecified = true;
 
                 x.ApiVersionReader = ApiVersionReader.Combine(
                     new UrlSegmentApiVersionReader(),
@@ -237,20 +231,21 @@ internal static class ServiceCollectionExtensions
             {
                 x.GroupNameFormat = "'v'VV";
                 x.SubstituteApiVersionInUrl = true;
-
-                if (useDefaultVersion ?? false)
-                {
-                    x.DefaultApiVersion = apiVersion;
-                    x.AssumeDefaultVersionWhenUnspecified = true;
-                }
+                x.DefaultApiVersion = apiVersion;
+                x.AssumeDefaultVersionWhenUnspecified = true;
             });
 
         return services;
     }
 
-    internal static IServiceCollection AddNanoRequestLocalization(this IServiceCollection services)
+    internal static IServiceCollection AddNanoRequestLocalization(this IServiceCollection services, LocalizationOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
+
+        if (options == null)
+        {
+            return services;
+        }
 
         services
             .AddLocalization();
@@ -258,14 +253,19 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoRequestTimeZone(this IServiceCollection services, string defaultTimeZone)
+    internal static IServiceCollection AddNanoRequestTimeZone(this IServiceCollection services, TimeZoneOptions? options)
     {
         ArgumentNullException.ThrowIfNull(services);
+
+        if (options == null)
+        {
+            return services;
+        }
 
         services
             .AddRequestTimeZone(x =>
             {
-                x.Id = defaultTimeZone;
+                x.Id = options.DefaultTimeZone;
                 x.EnableRequestToUtc = true;
                 x.EnableResponseToLocal = true;
                 x.JsonSerializerType = JsonSerializerType.Newtonsoft;
@@ -359,6 +359,40 @@ internal static class ServiceCollectionExtensions
                 x.MultipartBoundaryLengthLimit = 256;
                 x.MultipartHeadersLengthLimit = 64 * 1024;
             });
+
+        return services;
+    }
+
+    internal static IServiceCollection AddNanoHttpsRedirection(this IServiceCollection services, HttpOptions httpOptions, HttpsOptions? httpsOptions = null)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(httpOptions);
+
+        if (httpsOptions == null)
+        {
+            return services;
+        }
+
+        if (!httpOptions.UseHttpsRedirection)
+        {
+            return services;
+        }
+
+        if (httpsOptions.Ports.Length == 0)
+        {
+            return services;
+        }
+
+        services
+            .AddHttpsRedirection(x =>
+            {
+                x.HttpsPort = httpsOptions.Ports
+                    .FirstOrDefault();
+            });
+
+
+        services
+            .AddScoped<ExceptionHandlingMiddleware>();
 
         return services;
     }

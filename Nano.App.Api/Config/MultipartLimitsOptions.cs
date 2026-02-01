@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.App.Api.Config;
 
@@ -9,11 +10,15 @@ public class MultipartLimitsOptions
 {
     /// <summary>
     /// Maximum allowed upload size in bytes.
+    /// Defaults to 32 MB
     /// </summary>
-    public virtual long? MaxUploadBytes { get; init; }
+    [Required]
+    public virtual long MaxUploadBytes { get; set; } = 32 * 1024 * 1024;
 
     /// <summary>
     /// Timeout for slow uploads.
+    /// Defaults to 130 seconds.
     /// </summary>
-    public virtual TimeSpan? KeepAliveTimeout { get; init; }
+    [Required]
+    public virtual TimeSpan KeepAliveTimeout { get; set; } = TimeSpan.FromSeconds(130);
 }

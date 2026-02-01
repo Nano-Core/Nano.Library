@@ -3,12 +3,13 @@
 [![NuGet](https://img.shields.io/nuget/dt/Nano.App.Console.svg)](https://www.nuget.org/packages/Nano.App.Console/)
 [![NuGet](https://img.shields.io/nuget/v/Nano.App.Console.svg)](https://www.nuget.org/packages/Nano.App.Console/)
 
-> _Nano Console applications._
+> _Nano Console application._
 
 ***
 
 ## Table of Contents
 * [Summary](#summary)
+* [Registration](#registration)
 * [Configuration](#configuration)
 * [Console Worker](#console-worker) 
 * [Start-Up Tasks](#start-up-tasks) 
@@ -18,7 +19,8 @@
 The ```ConsoleApplication``` derives from ```DefaultApplication```. It initializes the required services and into a service collection, and is able to handle and resolve dependencies, similar to a web application. This is explained in details further down.    
 Use the ```ConsoleApplication``` when you require to construct a background-worker, cloud function or similar single executing application.  
 
-#### program.cs
+## Registration
+program.cs
 ```csharp
 public class Program
 {

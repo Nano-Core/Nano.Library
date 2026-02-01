@@ -18,6 +18,7 @@ using System.Globalization;
 using System.Linq;
 using Nano.App.Api.Mvc.Documentation.Extensions;
 using Nano.App.Api.Mvc.HealthChecks.Const;
+using Nano.App.Config;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
@@ -34,6 +35,32 @@ internal static class ApplicationBuilderExtensions
 
         applicationBuilder
             .UseMiddleware<ExceptionHandlingMiddleware>();
+
+        return applicationBuilder;
+    }
+
+    internal static IApplicationBuilder UseNanoHttpsRedirection(this IApplicationBuilder applicationBuilder, HttpOptions httpOptions, HttpsOptions? httpsOptions = null)
+    {
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(httpOptions);
+
+        if (httpsOptions == null)
+        {
+            return applicationBuilder;
+        }
+
+        if (httpsOptions.Ports.Length == 0)
+        {
+            return applicationBuilder;
+        }
+
+        if (!httpOptions.UseHttpsRedirection)
+        {
+            return applicationBuilder;
+        }
+
+        applicationBuilder
+            .UseHttpsRedirection();
 
         return applicationBuilder;
     }
@@ -98,7 +125,7 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoHttpXFrameOptionsPolicyHeader(this IApplicationBuilder applicationBuilder, XFrameOptionsOptions? options = null)
+    internal static IApplicationBuilder UseNanoHttpXFrameOptionsPolicyHeader(this IApplicationBuilder applicationBuilder, FrameOptionsOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
 
@@ -111,7 +138,7 @@ internal static class ApplicationBuilderExtensions
             .Use((context, next) =>
             {
                 context.Response
-                    .AddXFrameOptionsPolicyHeader(options.XFrameOptionsPolicyHeader);
+                    .AddXFrameOptionsPolicyHeader(options.FrameOptionsPolicyHeader);
 
                 return next();
             });
@@ -119,7 +146,7 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoHttpXXssProtectionPolicyHeader(this IApplicationBuilder applicationBuilder, XXssProtectionOptions? options = null)
+    internal static IApplicationBuilder UseNanoHttpXXssProtectionPolicyHeader(this IApplicationBuilder applicationBuilder, XssProtectionOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
 
@@ -292,32 +319,41 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoRequestLocalization(this IApplicationBuilder applicationBuilder, ApiOptions apiOptions)
+    internal static IApplicationBuilder UseNanoRequestTimeZone(this IApplicationBuilder applicationBuilder, TimeZoneOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
-        ArgumentNullException.ThrowIfNull(apiOptions);
 
-        var cultureInfos = apiOptions.Cultures.Supported
+        if (options == null)
+        {
+            return applicationBuilder;
+        }
+
+        applicationBuilder
+            .UseRequestTimeZone();
+
+        return applicationBuilder;
+    }
+
+    internal static IApplicationBuilder UseNanoRequestLocalization(this IApplicationBuilder applicationBuilder, LocalizationOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+
+        if (options == null)
+        {
+            return applicationBuilder;
+        }
+
+        var cultureInfos = options.Cultures.Supported
             .Select(y => new CultureInfo(y))
             .ToArray();
 
         applicationBuilder
             .UseRequestLocalization(x =>
             {
-                x.DefaultRequestCulture = new RequestCulture(apiOptions.Cultures.Default);
+                x.DefaultRequestCulture = new RequestCulture(options.Cultures.Default);
                 x.SupportedCultures = cultureInfos;
                 x.SupportedUICultures = cultureInfos;
             });
-
-        return applicationBuilder;
-    }
-
-    internal static IApplicationBuilder UseNanoRequestTimeZone(this IApplicationBuilder applicationBuilder)
-    {
-        ArgumentNullException.ThrowIfNull(applicationBuilder);
-
-        applicationBuilder
-            .UseRequestTimeZone();
 
         return applicationBuilder;
     }

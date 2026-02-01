@@ -68,7 +68,7 @@ public sealed class NanoConsoleApplication : BaseApplication<IHost, HostApplicat
         builder.Services
             .AddNanoApp<ConsoleOptions>(builder.Configuration, out var consoleOptions)
             .AddNanoWorkers()
-            .AddNanoCultureInfo(consoleOptions);
+            .AddNanoCultureInfo(consoleOptions.Localization);
 
         return new NanoConsoleApplication(builder);
     }

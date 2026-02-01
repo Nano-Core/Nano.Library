@@ -254,7 +254,7 @@ internal static class HttpResponseExtensions
         return httpResponse;
     }
 
-    internal static HttpResponse AddXXssProtectionPolicyHeader(this HttpResponse httpResponse, XXssProtectionOptions? options)
+    internal static HttpResponse AddXXssProtectionPolicyHeader(this HttpResponse httpResponse, XssProtectionOptions? options)
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
 
@@ -265,10 +265,10 @@ internal static class HttpResponseExtensions
 
         var headerValue = options.XssProtectionPolicyHeader switch
         {
-            XXssProtectionPolicyBlockMode.FilterEnabled => "1",
-            XXssProtectionPolicyBlockMode.FilterDisabled => "0",
-            XXssProtectionPolicyBlockMode.FilterEnabledBlockMode => "1; mode=block",
-            XXssProtectionPolicyBlockMode.ProtectionReport => $"1; report={options.ReportingUrl}",
+            XssProtectionPolicyBlockMode.FilterEnabled => "1",
+            XssProtectionPolicyBlockMode.FilterDisabled => "0",
+            XssProtectionPolicyBlockMode.FilterEnabledBlockMode => "1; mode=block",
+            XssProtectionPolicyBlockMode.ProtectionReport => $"1; report={options.ReportingUrl}",
             _ => throw new ArgumentOutOfRangeException(nameof(options.XssProtectionPolicyHeader), options.XssProtectionPolicyHeader, "Argument is out of range.")
         };
 

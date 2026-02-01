@@ -20,10 +20,9 @@ public abstract class BaseAppOptions
     public virtual string Version { get; set; } = "1.0.0.0";
 
     /// <summary>
-    /// Culture and localization settings for the application.
+    /// Localization configuration options.
     /// </summary>
-    [Required]
-    public virtual CultureOptions Cultures { get; set; } = new();
+    public virtual LocalizationOptions? Localization { get; set; }
 
     /// <summary>
     /// Named Nano API client configurations available to the application.

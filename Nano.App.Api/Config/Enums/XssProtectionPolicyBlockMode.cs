@@ -3,7 +3,7 @@ namespace Nano.App.Api.Config.Enums;
 /// <summary>
 /// X-Xss Protection Policy BlockMode.
 /// </summary>
-public enum XXssProtectionPolicyBlockMode
+public enum XssProtectionPolicyBlockMode
 {
     /// <summary>
     /// Filter Disabled.

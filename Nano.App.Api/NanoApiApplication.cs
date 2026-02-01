@@ -68,19 +68,20 @@ public class NanoApiApplication : BaseApplication<WebApplication, WebApplication
             .AddNanoCookies()
             .AddNanoSession(options.Session)
             .AddNanoResponseCaching(options.ResponseCache)
-            .AddNanoVersioning(options.Version, options.Documentation?.UseDefaultVersion)
+            .AddNanoVersioning(options.Version)
             .AddNanoIdentityAuthentication(options.Identity?.Authentication)
             .AddNanoIdentityAuthorization()
-            .AddNanoRequestLocalization()
-            .AddNanoRequestTimeZone(options.DefaultTimeZone)
+            .AddNanoRequestLocalization(options.Localization)
+            .AddNanoRequestTimeZone(options.TimeZone)
             .AddNanoVirusScan(options.VirusScan)
             .AddNanoResponseCompression(options.ResponseCompression)
             .AddNanoRequestOptions()
             .AddNanoRequestIdentifier()
             .AddNanoFormOptions(options.Hosting.MultipartLimits)
+            .AddNanoHttpsRedirection(options.Hosting.Http, options.Hosting.Https)
             .AddNanoMvc()
             .AddNanoDocumentation(options.Documentation)
-            .AddNanoHealthChecking(options.Hosting.Ports.FirstOrDefault(), options.HealthCheck);
+            .AddNanoHealthChecking(options.Hosting.Http.Ports.FirstOrDefault(), options.HealthCheck);
 
         applicationBuilder.WebHost
             .UseNanoKestrel(options)
@@ -104,11 +105,12 @@ public class NanoApiApplication : BaseApplication<WebApplication, WebApplication
 
         this.application
             .UseNanoExceptionHandling()
+            .UseNanoHttpsRedirection(options.CurrentValue.Hosting.Http, options.CurrentValue.Hosting.Https)
             .UseNanoHttpCorsPolicy(options.CurrentValue.HttpPolicyHeaders.Cors)
             .UseNanoHttpXForwardedHeaders(options.CurrentValue.HttpPolicyHeaders.ForwardedHeaders)
             .UseNanoHttpXRobotsTagHeaders(options.CurrentValue.HttpPolicyHeaders.Robots)
-            .UseNanoHttpXFrameOptionsPolicyHeader(options.CurrentValue.HttpPolicyHeaders.XFrameOptions)
-            .UseNanoHttpXXssProtectionPolicyHeader(options.CurrentValue.HttpPolicyHeaders.XXssProtection)
+            .UseNanoHttpXFrameOptionsPolicyHeader(options.CurrentValue.HttpPolicyHeaders.FrameOptions)
+            .UseNanoHttpXXssProtectionPolicyHeader(options.CurrentValue.HttpPolicyHeaders.XssProtection)
             .UseNanoHttpContentTypeOptionsPolicyHeader(options.CurrentValue.HttpPolicyHeaders.ContentType)
             .UseNanoHttpReferrerPolicyHeader(options.CurrentValue.HttpPolicyHeaders.ReferrerPolicy)
             .UseNanoHttpStrictTransportSecurityPolicyHeader(options.CurrentValue.HttpPolicyHeaders.Hsts)
@@ -122,7 +124,7 @@ public class NanoApiApplication : BaseApplication<WebApplication, WebApplication
             .UseNanoRequestOptions()
             .UseNanoRequestIdentifier()
             .UseNanoRequestVirusScan(options.CurrentValue.VirusScan)
-            .UseNanoRequestLocalization(options.CurrentValue)
+            .UseNanoRequestLocalization(options.CurrentValue.Localization)
             .UseNanoRequestTimeZone()
             .UseNanoResponseCompression(options.CurrentValue.ResponseCompression)
             .UseNanoResponseCaching(options.CurrentValue.ResponseCache)

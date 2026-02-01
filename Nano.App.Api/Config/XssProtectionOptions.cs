@@ -6,7 +6,7 @@ namespace Nano.App.Api.Config;
 /// <summary>
 /// Options for configuring X-XSS-Protection headers.
 /// </summary>
-public class XXssProtectionOptions
+public class XssProtectionOptions
 {
     /// <summary>
     /// URL to report XSS attempts.
@@ -17,5 +17,5 @@ public class XXssProtectionOptions
     /// Specifies the X-XSS-Protection policy header value.
     /// </summary>
     [Required]
-    public virtual XXssProtectionPolicyBlockMode XssProtectionPolicyHeader { get; set; } = XXssProtectionPolicyBlockMode.FilterDisabled;
+    public virtual XssProtectionPolicyBlockMode XssProtectionPolicyHeader { get; set; } = XssProtectionPolicyBlockMode.FilterDisabled;
 }

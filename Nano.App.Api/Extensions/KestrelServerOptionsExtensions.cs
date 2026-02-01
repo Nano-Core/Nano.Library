@@ -17,7 +17,7 @@ internal static class KestrelServerOptionsExtensions
         kestrel.Limits.MaxRequestBodySize = apiOptions.Hosting.MultipartLimits?.MaxUploadBytes;
         kestrel.Limits.KeepAliveTimeout = apiOptions.Hosting.MultipartLimits?.KeepAliveTimeout ?? kestrel.Limits.KeepAliveTimeout;
 
-        foreach (var port in apiOptions.Hosting.Ports)
+        foreach (var port in apiOptions.Hosting.Http.Ports)
         {
             kestrel
                 .ListenAnyIP(port, listen =>
@@ -26,19 +26,22 @@ internal static class KestrelServerOptionsExtensions
                 });
         }
 
-        foreach (var port in apiOptions.Hosting.PortsHttps)
+        if (apiOptions.Hosting.Https != null)
         {
-            kestrel
-                .ListenAnyIP(port, listen =>
-                {
-                    listen.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
-
-                    if (apiOptions.Hosting.Certificate != null && File.Exists(apiOptions.Hosting.Certificate.Path))
+            foreach (var port in apiOptions.Hosting.Https.Ports)
+            {
+                kestrel
+                    .ListenAnyIP(port, listen =>
                     {
-                        listen
-                            .UseHttps(apiOptions.Hosting.Certificate.Path, apiOptions.Hosting.Certificate.Password);
-                    }
-                });
+                        listen.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
+
+                        if (File.Exists(apiOptions.Hosting.Https.Certificate.Path))
+                        {
+                            listen
+                                .UseHttps(apiOptions.Hosting.Https.Certificate.Path, apiOptions.Hosting.Https.Certificate.Password);
+                        }
+                    });
+            }
         }
     }
 }
