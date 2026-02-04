@@ -1,6 +1,6 @@
 namespace Nano.App.Api.Mvc.Csp.Directives.Abstractions;
 
-internal interface ICspDirectiveScript : ICspDirective
+internal interface ICspDirectiveScript : ICspDirectiveSimple
 {
     void UnsafeInline();
     void UnsafeEval();
@@ -11,7 +11,5 @@ internal interface ICspDirectiveScript : ICspDirective
     void Hashes(params string[] hashes);
     void UnsafeHashedAttributes();
     void UnsafeAllowRedirects();
-    void RequireTrustedType();
-    void RequireSri();
     void ReportSample();
 }

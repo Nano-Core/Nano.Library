@@ -293,8 +293,12 @@ internal static class HttpResponseExtensions
             .UseUpgradeInsecureRequests(options)
             .UseCspReportTo(options.ReportTo)
             .UseCspDefault(options.Defaults)
-            .UseCspStyle(options.Styles)
             .UseCspScript(options.Scripts)
+            .UseCspScriptAttr(options.ScriptsAttr)
+            .UseCspScriptElem(options.ScriptsElem)
+            .UseCspStyle(options.Styles)
+            .UseCspStyleAttr(options.StylesAttr)
+            .UseCspStyleElem(options.StylesElem)
             .UseCspObject(options.Objects)
             .UseCspImage(options.Images)
             .UseCspMedia(options.Media)
@@ -309,7 +313,9 @@ internal static class HttpResponseExtensions
             .UseCspManifest(options.Manifests)
             .UseCspWorker(options.Workers)
             .UseTrustedTypes(options.TrustedTypes)
-            .UseCspSandbox(options.Sandbox);
+            .UseCspSandbox(options.Sandbox)
+            .UseCspRequireTrustedTypesFor(options.Scripts)
+            .UseCspRequireSriFor(options.Scripts, options.Styles);
 
         var headerValue = builder
             .Build();
@@ -349,7 +355,7 @@ internal static class HttpResponseExtensions
         return httpResponse;
     }
 
-    internal static HttpResponse AddContentSecurityPolicyPermissionsHeader(this HttpResponse httpResponse, CspOptions.CspDirectivePermissionsPolicy? cspDirectivePermissionsPolicy = null)
+    internal static HttpResponse AddContentSecurityPolicyPermissionsHeader(this HttpResponse httpResponse, CspOptions.CspDirectivePermissionsPolicyOptions? cspDirectivePermissionsPolicy = null)
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
 
@@ -403,7 +409,7 @@ internal static class HttpResponseExtensions
 
 
     private static string UseCspPermissionsPolicyDirective<T>(string name, T? cspDirective = null)
-        where T : CspOptions.CspDirective
+        where T : CspOptions.CspDirectiveOptions
     {
         ArgumentNullException.ThrowIfNull(name);
 

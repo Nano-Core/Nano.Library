@@ -1,8 +1,8 @@
 namespace Nano.App.Api.Mvc.Csp.Directives.Abstractions;
 
-internal interface ICspDirectiveStyleAttr : ICspDirective
+internal interface ICspDirectiveStyleAttr : ICspDirectiveSimple
 {
     void UnsafeInline();
-    void Nonces(params string[] nonces);
-    void Hashes(params string[] hashes);
+    void UnsafeHashes();
+    void ReportSample();
 }

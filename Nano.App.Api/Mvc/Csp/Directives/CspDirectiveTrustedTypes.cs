@@ -1,14 +1,14 @@
-using System.Collections.Generic;
 using Nano.App.Api.Mvc.Csp.Directives.Abstractions;
 
 namespace Nano.App.Api.Mvc.Csp.Directives;
 
-internal sealed class CspDirectiveTrustedType(List<string> values)
-    : BaseCspBuilder(values), ICspDirectiveTrustedType
+internal sealed class CspDirectiveTrustedTypes : BaseCspDirectiveSimple, ICspDirectiveTrustedTypes
 {
+    public override string Name => "trusted-types";
+
     public void AllowDuplicates()
     {
-        this.values
+        this.Values
             .Add("'allow-duplicates'");
     }
 
@@ -16,7 +16,7 @@ internal sealed class CspDirectiveTrustedType(List<string> values)
     {
         foreach (var policy in policies)
         {
-            this.values
+            this.Values
                 .Add(policy);
         }
     }

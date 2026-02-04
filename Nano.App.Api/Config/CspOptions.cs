@@ -29,124 +29,124 @@ public class CspOptions
     /// <summary>
     /// Default directive (default-src) for all unspecified content types.
     /// </summary>
-    public virtual CspDirective? Defaults { get; set; }
+    public virtual CspDirectiveOptions? Defaults { get; set; }
 
     /// <summary>
     /// Controls allowed sources for scripts (script-src).
     /// </summary>
-    public virtual CspDirectiveScripts? Scripts { get; set; }
+    public virtual CspDirectiveScriptsOptions? Scripts { get; set; }
 
     /// <summary>
     /// Controls allowed sources for script elements (script-src-elem).
     /// </summary>
-    public virtual CspDirectiveScripts? ScriptsElem { get; set; }
+    public virtual CspDirectiveScriptsElemOptions? ScriptsElem { get; set; }
 
     /// <summary>
     /// Controls allowed sources for inline script attributes (script-src-attr).
     /// </summary>
-    public virtual CspDirectiveScriptsAttr? ScriptsAttr { get; set; }
+    public virtual CspDirectiveScriptsAttrOptions? ScriptsAttr { get; set; }
 
     /// <summary>
     /// Controls allowed sources for stylesheets (style-src).
     /// </summary>
-    public virtual CspDirectiveStyles? Styles { get; set; }
+    public virtual CspDirectiveStylesOptions? Styles { get; set; }
 
     /// <summary>
     /// Controls allowed sources for style elements (style-src-elem).
     /// </summary>
-    public virtual CspDirectiveStyles? StylesElem { get; set; }
+    public virtual CspDirectiveStylesElemOptions? StylesElem { get; set; }
 
     /// <summary>
     /// Controls allowed sources for inline style attributes (style-src-attr).
     /// </summary>
-    public virtual CspDirectiveStylesAttr? StylesAttr { get; set; }
+    public virtual CspDirectiveStylesAttrOptions? StylesAttr { get; set; }
 
     /// <summary>
     /// Controls allowed sources for object elements (object-src).
     /// </summary>
-    public virtual CspDirective? Objects { get; set; }
+    public virtual CspDirectiveOptions? Objects { get; set; }
 
     /// <summary>
     /// Controls allowed sources for images (img-src).
     /// </summary>
-    public virtual CspDirective? Images { get; set; }
+    public virtual CspDirectiveOptions? Images { get; set; }
 
     /// <summary>
     /// Controls allowed sources for audio and video elements (media-src).
     /// </summary>
-    public virtual CspDirective? Media { get; set; }
+    public virtual CspDirectiveOptions? Media { get; set; }
 
     /// <summary>
     /// Controls allowed sources for frames and iframes (frame-src).
     /// </summary>
-    public virtual CspDirective? Frames { get; set; }
+    public virtual CspDirectiveOptions? Frames { get; set; }
 
     /// <summary>
     /// Controls allowed sources for fenced frames (fenced-frame-src).
     /// </summary>
-    public virtual CspDirective? FencedFrames { get; set; }
+    public virtual CspDirectiveOptions? FencedFrames { get; set; }
 
     /// <summary>
     /// Controls which sources can embed this document (frame-ancestors).
     /// </summary>
-    public virtual CspDirective? FrameAncestors { get; set; }
+    public virtual CspDirectiveOptions? FrameAncestors { get; set; }
 
     /// <summary>
     /// Controls allowed sources for fonts (font-src).
     /// </summary>
-    public virtual CspDirective? Fonts { get; set; }
+    public virtual CspDirectiveOptions? Fonts { get; set; }
 
     /// <summary>
     /// Controls allowed URLs for fetch, XHR, WebSocket, EventSource (connect-src).
     /// </summary>
-    public virtual CspDirective? Connections { get; set; }
+    public virtual CspDirectiveOptions? Connections { get; set; }
 
     /// <summary>
     /// Controls allowed base URLs for the document (base-uri).
     /// </summary>
-    public virtual CspDirective? BaseUris { get; set; }
+    public virtual CspDirectiveOptions? BaseUris { get; set; }
 
     /// <summary>
     /// Controls allowed sources for nested browsing contexts (child-src).
     /// </summary>
-    public virtual CspDirective? Children { get; set; }
+    public virtual CspDirectiveOptions? Children { get; set; }
 
     /// <summary>
     /// Controls allowed URLs for form submissions (form-action).
     /// </summary>
-    public virtual CspDirective? Forms { get; set; }
+    public virtual CspDirectiveOptions? Forms { get; set; }
 
     /// <summary>
     /// Controls allowed sources for web app manifests (manifest-src).
     /// </summary>
-    public virtual CspDirective? Manifests { get; set; }
+    public virtual CspDirectiveOptions? Manifests { get; set; }
 
     /// <summary>
     /// Controls allowed sources for web workers, service workers, and shared workers (worker-src).
     /// </summary>
-    public virtual CspDirective? Workers { get; set; }
+    public virtual CspDirectiveOptions? Workers { get; set; }
 
     /// <summary>
     /// Restricts which Trusted Types policies are allowed to create DOM objects.
     /// </summary>
-    public virtual CspDirectiveTrustedTypes? TrustedTypes { get; set; }
+    public virtual CspDirectiveTrustedTypesOptions? TrustedTypes { get; set; }
 
     /// <summary>
     /// Restricts features of a page when embedded in an iframe (sandbox).
     /// </summary>
-    public virtual CspDirectiveSandbox? Sandbox { get; set; }
+    public virtual CspDirectiveSandboxOptions? Sandbox { get; set; }
 
     /// <summary>
     /// Controls access to powerful browser features (permissions-policy).
     /// </summary>
-    public virtual CspDirectivePermissionsPolicy? PermissionsPolicy { get; set; }
+    public virtual CspDirectivePermissionsPolicyOptions? PermissionsPolicy { get; set; }
 
     #region Nested Classes
 
     /// <summary>
     /// Represents a generic CSP directive (e.g., default-src, img-src, connect-src).
     /// </summary>
-    public class CspDirective
+    public class CspDirectiveOptions
     {
         /// <summary>
         /// If true, only 'none' is allowed. All other sources are ignored.
@@ -170,7 +170,7 @@ public class CspOptions
     /// <summary>
     /// Represents script-specific CSP directive (script-src).
     /// </summary>
-    public class CspDirectiveScripts : CspDirective
+    public class CspDirectiveScriptsOptions : CspDirectiveOptions
     {
         /// <summary>
         /// Allows inline scripts ('unsafe-inline').
@@ -217,12 +217,14 @@ public class CspOptions
         /// <summary>
         /// Specific nonces to allow inline scripts.
         /// </summary>
+        [Required]
         public virtual string[] Nonces { get; set; } = [];
 
         /// <summary>
         /// SHA hashes to allow inline script content.
         /// Must be prefixed with 'sha256-', 'sha384-', or 'sha512-'.
         /// </summary>
+        [Required]
         public virtual string[] Hashes { get; set; } = [];
 
         /// <summary>
@@ -241,13 +243,31 @@ public class CspOptions
         /// If true, enables 'report-sample' in CSP violation reports.
         /// </summary>
         [Required]
-        public virtual bool ReportSample { get; set; } = false; // BUG: Where is this used
+        public virtual bool ReportSample { get; set; } = false;
+    }
+
+    /// <summary>
+    /// CSP directive for script element-specific sources (script-src-elem).
+    /// </summary>
+    public class CspDirectiveScriptsElemOptions : CspDirectiveOptions
+    {
+        /// <summary>
+        /// Allows inline content (attributes or inline styles/scripts).
+        /// </summary>
+        [Required]
+        public virtual bool IsUnsafeInline { get; set; } = false;
+
+        /// <summary>
+        /// If true, enables 'report-sample' in CSP violation reports.
+        /// </summary>
+        [Required]
+        public virtual bool ReportSample { get; set; } = false;
     }
 
     /// <summary>
     /// Represents script-specific CSP directive (script-src-attr).
     /// </summary>
-    public class CspDirectiveScriptsAttr
+    public class CspDirectiveScriptsAttrOptions
     {
         /// <summary>
         /// If true, only 'none' is allowed. All other sources are ignored.
@@ -262,16 +282,22 @@ public class CspOptions
         public virtual bool IsUnsafeInline { get; set; } = false;
 
         /// <summary>
+        /// Allows unsafe hashes for inline scripts.
+        /// </summary>
+        [Required]
+        public virtual bool IsUnsafeHashes { get; set; } = false;
+
+        /// <summary>
         /// If true, enables 'report-sample' in CSP violation reports.
         /// </summary>
         [Required]
-        public virtual bool ReportSample { get; set; } = false; // BUG: Use
+        public virtual bool ReportSample { get; set; } = false;
     }
 
     /// <summary>
     /// Represents style-specific CSP directive (style-src).
     /// </summary>
-    public class CspDirectiveStyles : CspDirective
+    public class CspDirectiveStylesOptions : CspDirectiveOptions
     {
         /// <summary>
         /// Allows inline styles ('unsafe-inline').
@@ -288,6 +314,7 @@ public class CspOptions
         /// <summary>
         /// Nonces to allow specific inline styles.
         /// </summary>
+        [Required]
         public virtual string[] Nonces { get; init; } = [];
 
         /// <summary>
@@ -298,28 +325,22 @@ public class CspOptions
         public virtual string[] Hashes { get; init; } = [];
 
         /// <summary>
-        /// Requires Trusted Types for styles.
-        /// </summary>
-        [Required]
-        public virtual bool RequireTrustedTypes { get; set; } = false; // BUG: This need to be combined directive for style and script
-
-        /// <summary>
         /// Requires Subresource Integrity (SRI) for styles.
         /// </summary>
         [Required]
-        public virtual bool RequireSri { get; set; } = false; // BUG: This need to be combined directive for style and script
+        public virtual bool RequireSri { get; set; } = false;
 
         /// <summary>
         /// If true, enables 'report-sample' in CSP violation reports.
         /// </summary>
         [Required]
-        public virtual bool ReportSample { get; set; } = false; // BUG: Use
+        public virtual bool ReportSample { get; set; } = false;
     }
 
     /// <summary>
     /// Represents style-specific CSP directive (src-style-attr).
     /// </summary>
-    public class CspDirectiveStylesAttr
+    public class CspDirectiveStylesAttrOptions
     {
         /// <summary>
         /// If true, only 'none' is allowed. All other sources are ignored.
@@ -334,17 +355,22 @@ public class CspOptions
         public virtual bool IsUnsafeInline { get; set; } = false;
 
         /// <summary>
+        /// Allows unsafe hashes for inline styles.
+        /// </summary>
+        [Required]
+        public virtual bool IsUnsafeHashes { get; set; } = false;
+
+        /// <summary>
         /// If true, enables 'report-sample' in CSP violation reports.
         /// </summary>
         [Required]
-        public virtual bool ReportSample { get; set; } = false; // BUG: Use
+        public virtual bool ReportSample { get; set; } = false;
     }
 
     /// <summary>
-    /// CSP directive for element- or attribute-specific sources.
-    /// Used for script-src-attr, script-src-elem, style-src-attr, style-src-elem.
+    /// CSP directive for style element-specific sources (style-src-elem).
     /// </summary>
-    public class CspDirectiveElement : CspDirective
+    public class CspDirectiveStylesElemOptions : CspDirectiveOptions
     {
         /// <summary>
         /// Allows inline content (attributes or inline styles/scripts).
@@ -353,8 +379,15 @@ public class CspOptions
         public virtual bool IsUnsafeInline { get; set; } = false;
 
         /// <summary>
+        /// Allows unsafe hashes for inline styles.
+        /// </summary>
+        [Required]
+        public virtual bool IsUnsafeHashes { get; set; } = false;
+
+        /// <summary>
         /// Nonces to allow inline element content.
         /// </summary>
+        [Required]
         public virtual string[] Nonces { get; set; } = [];
 
         /// <summary>
@@ -362,12 +395,18 @@ public class CspOptions
         /// </summary>
         [Required]
         public virtual string[] Hashes { get; init; } = [];
+
+        /// <summary>
+        /// If true, enables 'report-sample' in CSP violation reports.
+        /// </summary>
+        [Required]
+        public virtual bool ReportSample { get; set; } = false;
     }
 
     /// <summary>
     /// Controls which Trusted Types policies are allowed.
     /// </summary>
-    public class CspDirectiveTrustedTypes
+    public class CspDirectiveTrustedTypesOptions
     {
         /// <summary>
         /// If true, only 'none' is allowed. All other policies are ignored.
@@ -416,7 +455,7 @@ public class CspOptions
     /// Sandbox directive configuration.
     /// Restricts iframe capabilities.
     /// </summary>
-    public class CspDirectiveSandbox
+    public class CspDirectiveSandboxOptions
     {
         /// <summary>
         /// Allows downloads in the sandbox.
@@ -480,6 +519,7 @@ public class CspOptions
         /// <summary>
         /// Allows storage access via user activation.
         /// </summary>
+        [Required]
         public virtual bool AllowStorageAccessByUserActivation { get; set; } = false;
 
         /// <summary>
@@ -504,21 +544,21 @@ public class CspOptions
     /// <summary>
     /// Csp Directive Permissions Policy.
     /// </summary>
-    public class CspDirectivePermissionsPolicy
+    public class CspDirectivePermissionsPolicyOptions
     {
         /// <summary>
         /// Accelerometer.
         /// Controls whether the current document is allowed to gather information about the acceleration
         /// of the device through the Accelerometer interface.
         /// </summary>
-        public virtual CspDirective? Accelerometer { get; set; }
+        public virtual CspDirectiveOptions? Accelerometer { get; set; }
 
         /// <summary>
         /// Ambient Light Sensor.
         /// Controls whether the current document is allowed to gather information about the amount of light
         /// in the environment around the device through the AmbientLightSensor interface.
         /// </summary>
-        public virtual CspDirective? AmbientLightSensor { get; set; }
+        public virtual CspDirectiveOptions? AmbientLightSensor { get; set; }
 
         /// <summary>
         /// Auto Play.
@@ -526,21 +566,21 @@ public class CspOptions
         /// When this policy is disabled and there were no user gestures, the Promise returned by HTMLMediaElement.play() will reject with a DOMException.
         /// The autoplay attribute on audio and video elements will be ignored.
         /// </summary>
-        public virtual CspDirective? AutoPlay { get; set; }
+        public virtual CspDirectiveOptions? AutoPlay { get; set; }
 
         /// <summary>
         /// Battery.
         /// Controls whether the use of the Battery Status API is allowed. When this policy is disabled,
         /// the Promise returned by Navigator.getBattery() will reject with a NotAllowedError DOMException.
         /// </summary>
-        public virtual CspDirective? Battery { get; set; }
+        public virtual CspDirectiveOptions? Battery { get; set; }
 
         /// <summary>
         /// Camera.
         /// Controls whether the current document is allowed to use video input devices.
         /// When this policy is disabled, the Promise returned by getUserMedia() will reject with a NotAllowedError DOMException.
         /// </summary>
-        public virtual CspDirective? Camera { get; set; }
+        public virtual CspDirectiveOptions? Camera { get; set; }
 
         /// <summary>
         /// Display Capture.
@@ -548,40 +588,40 @@ public class CspOptions
         /// When this policy is disabled, the promise returned by getDisplayMedia() will reject with a NotAllowedError
         /// if permission is not obtained to capture the display's contents.
         /// </summary>
-        public virtual CspDirective? DisplayCapture { get; set; }
+        public virtual CspDirectiveOptions? DisplayCapture { get; set; }
 
         /// <summary>
         /// Document Domain.
         /// Controls whether the current document is allowed to set document.domain.
         /// When this policy is disabled, attempting to set document.domain will fail and cause a SecurityError DOMException to be thrown.
         /// </summary>
-        public virtual CspDirective? DocumentDomain { get; set; }
+        public virtual CspDirectiveOptions? DocumentDomain { get; set; }
 
         /// <summary>
         /// Encrypted Media.
         /// Controls whether the current document is allowed to use the Encrypted Media Extensions API (EME).
         /// When this policy is disabled, the Promise returned by Navigator.requestMediaKeySystemAccess() will reject with a DOMException.
         /// </summary>
-        public virtual CspDirective? EncryptedMedia { get; set; }
+        public virtual CspDirectiveOptions? EncryptedMedia { get; set; }
 
         /// <summary>
         /// Execution While Not Rendered.
         /// Controls whether tasks should execute in frames while they're not being rendered (e.g. if an iframe is hidden or display: none).
         /// </summary>
-        public virtual CspDirective? ExecutionWhileNotRendered { get; set; }
+        public virtual CspDirectiveOptions? ExecutionWhileNotRendered { get; set; }
 
         /// <summary>
         /// Execution While Out Of Viewport.
         /// Controls whether tasks should execute in frames while they're outside the visible viewport.
         /// </summary>
-        public virtual CspDirective? ExecutionWhileOutOfViewport { get; set; }
+        public virtual CspDirectiveOptions? ExecutionWhileOutOfViewport { get; set; }
 
         /// <summary>
         /// FullScreen.
         /// Controls whether the current document is allowed to use Element.requestFullScreen().
         /// When this policy is disabled, the returned Promise rejects with a TypeError.
         /// </summary>
-        public virtual CspDirective? FullScreen { get; set; }
+        public virtual CspDirectiveOptions? FullScreen { get; set; }
 
         /// <summary>
         /// Gamepad.
@@ -589,7 +629,7 @@ public class CspOptions
         /// When this policy is disabled, calls to Navigator.getGamepads() will throw a SecurityError DOMException,
         /// and the gamepadconnected and gamepaddisconnected events will not fire.
         /// </summary>
-        public virtual CspDirective? Gamepad { get; set; }
+        public virtual CspDirectiveOptions? Gamepad { get; set; }
 
         /// <summary>
         /// Geo location.
@@ -597,129 +637,129 @@ public class CspOptions
         /// When this policy is disabled, calls to getCurrentPosition() and watchPosition() will cause those functions' callbacks to be invoked
         /// with a GeolocationPositionError code of PERMISSION_DENIED.
         /// </summary>
-        public virtual CspDirective? Geolocation { get; set; }
+        public virtual CspDirectiveOptions? Geolocation { get; set; }
 
         /// <summary>
         /// Gyroscope.
         /// Controls whether the current document is allowed to gather information about the orientation
         /// of the device through the Gyroscope interface.
         /// </summary>
-        public virtual CspDirective? Gyroscope { get; set; }
+        public virtual CspDirectiveOptions? Gyroscope { get; set; }
 
         /// <summary>
         /// Layout Animations.
         /// Controls whether the current document is allowed to show layout animations.
         /// </summary>
-        public virtual CspDirective? LayoutAnimations { get; set; }
+        public virtual CspDirectiveOptions? LayoutAnimations { get; set; }
 
         /// <summary>
         /// Legacy Image Formats.
         /// Controls whether the current document is allowed to display images in legacy formats.
         /// </summary>
-        public virtual CspDirective? LegacyImageFormats { get; set; }
+        public virtual CspDirectiveOptions? LegacyImageFormats { get; set; }
 
         /// <summary>
         /// Magnetometer.
         /// Controls whether the current document is allowed to gather information about the orientation of the device through the Magnetometer interface.
         /// </summary>
-        public virtual CspDirective? Magnetometer { get; set; }
+        public virtual CspDirectiveOptions? Magnetometer { get; set; }
 
         /// <summary>
         /// Microphone.
         /// Controls whether the current document is allowed to use audio input devices.
         /// When this policy is disabled, the Promise returned by MediaDevices.getUserMedia() will reject with a NotAllowedError.
         /// </summary>
-        public virtual CspDirective? Microphone { get; set; }
+        public virtual CspDirectiveOptions? Microphone { get; set; }
 
         /// <summary>
         /// Midi.
         /// Controls whether the current document is allowed to use the Web MIDI API.
         /// When this policy is disabled, the Promise returned by Navigator.requestMIDIAccess() will reject with a DOMException.
         /// </summary>
-        public virtual CspDirective? Midi { get; set; }
+        public virtual CspDirectiveOptions? Midi { get; set; }
 
         /// <summary>
         /// Navigation Override.
         /// Controls the availability of mechanisms that enables the page author to take control over
         /// the behavior of spatial navigation, or to cancel it outright.
         /// </summary>
-        public virtual CspDirective? NavigationOverride { get; set; }
+        public virtual CspDirectiveOptions? NavigationOverride { get; set; }
 
         /// <summary>
         /// Oversized Images.
         /// Controls whether the current document is allowed to download and display large images.
         /// </summary>
-        public virtual CspDirective? OversizedImages { get; set; }
+        public virtual CspDirectiveOptions? OversizedImages { get; set; }
 
         /// <summary>
         /// Payment.
         /// Controls whether the current document is allowed to use the Payment Request API.
         /// When this policy is enabled, the PaymentRequest() constructor will throw a SecurityError DOMException.
         /// </summary>
-        public virtual CspDirective? Payment { get; set; }
+        public virtual CspDirectiveOptions? Payment { get; set; }
 
         /// <summary>
         /// Picture In Picture.
         /// Controls whether the current document is allowed to play a video in a Picture-in-Picture mode via the corresponding API.
         /// </summary>
-        public virtual CspDirective? PictureInPicture { get; set; }
+        public virtual CspDirectiveOptions? PictureInPicture { get; set; }
 
         /// <summary>
         /// Public Key Credentials Get.
         /// Controls whether the current document is allowed to use the Web Authentication API to retrieve already stored public-key credentials,
         /// i.e. via navigator.credentials.get({publicKey: ..., ...}).
         /// </summary>
-        public virtual CspDirective? PublicKeyCredentialsGet { get; set; }
+        public virtual CspDirectiveOptions? PublicKeyCredentialsGet { get; set; }
 
         /// <summary>
         /// Speaker Selection.
         /// Controls whether the current document is allowed to use the Audio Output Devices API to list and select speakers.
         /// </summary>
-        public virtual CspDirective? SpeakerSelection { get; set; }
+        public virtual CspDirectiveOptions? SpeakerSelection { get; set; }
 
         /// <summary>
         /// Sync Xhr.
         /// Controls whether the current document is allowed to make synchronous XMLHttpRequest requests.
         /// </summary>
-        public virtual CspDirective? SyncXhr { get; set; }
+        public virtual CspDirectiveOptions? SyncXhr { get; set; }
 
         /// <summary>
         /// Unoptimized Images.
         /// Controls whether the current document is allowed to download and display unoptimized images.
         /// </summary>
-        public virtual CspDirective? UnoptimizedImages { get; set; }
+        public virtual CspDirectiveOptions? UnoptimizedImages { get; set; }
 
         /// <summary>
         /// Unsized Media.
         /// Controls whether the current document is allowed to change the size of media elements after the initial layout is complete.
         /// </summary>
-        public virtual CspDirective? UnsizedMedia { get; set; }
+        public virtual CspDirectiveOptions? UnsizedMedia { get; set; }
 
         /// <summary>
         /// Usb.
         /// Controls whether the current document is allowed to use the WebUSB API
         /// </summary>
-        public virtual CspDirective? Usb { get; set; }
+        public virtual CspDirectiveOptions? Usb { get; set; }
 
         /// <summary>
         /// Screen Wake Lock.
         /// Controls whether the current document is allowed to use Screen Wake Lock API
         /// to indicate that device should not turn off or dim the screen.
         /// </summary>
-        public virtual CspDirective? ScreenWakeLock { get; set; }
+        public virtual CspDirectiveOptions? ScreenWakeLock { get; set; }
 
         /// <summary>
         /// Web Share.
         /// Controls whether the current document is allowed to use the Navigator.share() of Web Share API to
         /// share text, links, images, and other content to arbitrary destinations of user's choice, e.g. mobile apps.
         /// </summary>
-        public virtual CspDirective? WebShare { get; set; }
+        public virtual CspDirectiveOptions? WebShare { get; set; }
 
         /// <summary>
         /// Xr Spatial Tracking.
         /// Controls whether the current document is allowed to use the WebXR Device API to interact with a WebXR session.
         /// </summary>
-        public virtual CspDirective? XrSpatialTracking { get; set; }
+        public virtual CspDirectiveOptions? XrSpatialTracking { get; set; }
     }
 
     #endregion

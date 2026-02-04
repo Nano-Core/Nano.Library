@@ -23,29 +23,32 @@ internal static class CspBuilderExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspReportTo(this CspBuilder builder, CspOptions.CspReportToOptions? cspDirective = null)
+    internal static CspBuilder UseCspReportTo(this CspBuilder builder, CspOptions.CspReportToOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
 
-        if (cspDirective.Endpoints.Length > 0)
+        var reportTo = builder
+            .ReportTo();
+
+        if (options.Endpoints.Length > 0)
         {
-            builder
-                .ReportTo(cspDirective);
+            reportTo
+                .Group(options.Group);
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspDefault(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
+    internal static CspBuilder UseCspDefault(this CspBuilder builder, CspOptions.CspDirectiveOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -53,205 +56,34 @@ internal static class CspBuilderExtensions
         var defaultSrc = builder
             .DefaultSrc();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             defaultSrc
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 defaultSrc
                     .Self();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.Sources.Length > 0)
             {
                 defaultSrc
-                    .Sources(cspDirective.Sources);
+                    .Sources(options.Sources);
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspStyle(this CspBuilder builder, CspOptions.CspDirectiveStyles? cspDirective = null)
+    internal static CspBuilder UseCspScript(this CspBuilder builder, CspOptions.CspDirectiveScriptsOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
-        {
-            return builder;
-        }
-
-        var styleSrc = builder
-            .StyleSrc();
-
-        if (cspDirective.IsNone)
-        {
-            styleSrc
-                .None();
-        }
-        else
-        {
-            if (cspDirective.IsSelf)
-            {
-                styleSrc
-                    .Self();
-            }
-
-            if (cspDirective.IsUnsafeInline)
-            {
-                styleSrc
-                    .UnsafeInline();
-            }
-
-            if (cspDirective.IsUnsafeHashes)
-            {
-                styleSrc
-                    .UnsafeHashes();
-            }
-
-            if (cspDirective.Sources.Length > 0)
-            {
-                styleSrc
-                    .Sources(cspDirective.Sources);
-            }
-
-            if (cspDirective.Nonces.Length > 0)
-            {
-                styleSrc
-                    .Nonces(cspDirective.Nonces);
-            }
-
-            if (cspDirective.Hashes.Length > 0)
-            {
-                styleSrc
-                    .Hashes(cspDirective.Hashes);
-            }
-
-            if (cspDirective.RequireTrustedTypes)
-            {
-                styleSrc
-                    .RequireTrustedType();
-            }
-
-            if (cspDirective.RequireSri)
-            {
-                styleSrc
-                    .RequireSri();
-            }
-        }
-
-        return builder;
-    }
-
-    internal static CspBuilder UseCspStyleAttr(this CspBuilder builder, CspOptions.CspDirectiveElement? cspDirective = null)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        if (cspDirective == null)
-        {
-            return builder;
-        }
-
-        var styleSrcAttr = builder
-            .StyleSrcAttr();
-
-        if (cspDirective.IsNone)
-        {
-            styleSrcAttr
-                .None();
-        }
-        else
-        {
-            if (cspDirective.IsSelf)
-            {
-                styleSrcAttr
-                    .Self();
-            }
-
-            if (cspDirective.IsUnsafeInline)
-            {
-                styleSrcAttr
-                    .UnsafeInline();
-            }
-
-            if (cspDirective.Sources.Length > 0)
-            {
-                styleSrcAttr
-                    .Sources(cspDirective.Sources);
-            }
-
-            if (cspDirective.Nonces.Length > 0)
-            {
-                styleSrcAttr
-                    .Nonces(cspDirective.Nonces);
-            }
-
-            if (cspDirective.Hashes.Length > 0)
-            {
-                styleSrcAttr
-                    .Hashes(cspDirective.Hashes);
-            }
-        }
-
-        return builder;
-    }
-
-    internal static CspBuilder UseCspStyleElem(this CspBuilder builder, CspOptions.CspDirectiveElement? cspDirective = null)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        if (cspDirective == null)
-        {
-            return builder;
-        }
-
-        var styleSrcAttr = builder
-            .StyleSrcElem();
-
-        if (cspDirective.IsNone)
-        {
-            styleSrcAttr
-                .None();
-        }
-        else
-        {
-            if (cspDirective.IsSelf)
-            {
-                styleSrcAttr
-                    .Self();
-            }
-
-            if (cspDirective.Sources.Length > 0)
-            {
-                styleSrcAttr
-                    .Sources(cspDirective.Sources);
-            }
-
-            if (cspDirective.Nonces.Length > 0)
-            {
-                styleSrcAttr
-                    .Nonces(cspDirective.Nonces);
-            }
-
-            if (cspDirective.Hashes.Length > 0)
-            {
-                styleSrcAttr
-                    .Hashes(cspDirective.Hashes);
-            }
-        }
-
-        return builder;
-    }
-
-    internal static CspBuilder UseCspScript(this CspBuilder builder, CspOptions.CspDirectiveScripts? cspDirective = null)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -259,106 +91,94 @@ internal static class CspBuilderExtensions
         var scriptSrc = builder
             .ScriptSrc();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             scriptSrc
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 scriptSrc
                     .Self();
             }
 
-            if (cspDirective.IsUnsafeEval)
+            if (options.IsUnsafeEval)
             {
                 scriptSrc
                     .UnsafeEval();
             }
 
-            if (cspDirective.IsUnsafeHashes)
+            if (options.IsUnsafeHashes)
             {
                 scriptSrc
                     .UnsafeHashes();
             }
 
-            if (cspDirective.IsUnsafeInline)
+            if (options.IsUnsafeInline)
             {
                 scriptSrc
                     .UnsafeInline();
             }
 
-            if (cspDirective.IsUnsafeWasmEval)
+            if (options.IsUnsafeWasmEval)
             {
                 scriptSrc
                     .UnsafeWasmEval();
             }
 
-            if (cspDirective.StrictDynamic)
+            if (options.StrictDynamic)
             {
                 scriptSrc
                     .StrictDynamic();
             }
 
-            if (cspDirective.UnsafeHashedAttributes)
+            if (options.UnsafeHashedAttributes)
             {
                 scriptSrc
                     .UnsafeHashedAttributes();
             }
 
-            if (cspDirective.UnsafeAllowRedirects)
+            if (options.UnsafeAllowRedirects)
             {
                 scriptSrc
                     .UnsafeAllowRedirects();
             }
 
-            if (cspDirective.ReportSample)
+            if (options.Sources.Length > 0)
+            {
+                scriptSrc
+                    .Sources(options.Sources);
+            }
+
+            if (options.Nonces.Length > 0)
+            {
+                scriptSrc
+                    .Nonces(options.Nonces);
+            }
+
+            if (options.Hashes.Length > 0)
+            {
+                scriptSrc
+                    .Hashes(options.Hashes);
+            }
+
+            if (options.ReportSample)
             {
                 scriptSrc
                     .ReportSample();
-            }
-
-            if (cspDirective.Sources.Length > 0)
-            {
-                scriptSrc
-                    .Sources(cspDirective.Sources);
-            }
-
-            if (cspDirective.Nonces.Length > 0)
-            {
-                scriptSrc
-                    .Nonces(cspDirective.Nonces);
-            }
-
-            if (cspDirective.Hashes.Length > 0)
-            {
-                scriptSrc
-                    .Hashes(cspDirective.Hashes);
-            }
-
-            if (cspDirective.RequireTrustedTypes)
-            {
-                scriptSrc
-                    .RequireTrustedType();
-            }
-
-            if (cspDirective.RequireSri)
-            {
-                scriptSrc
-                    .RequireSri();
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspScriptAttr(this CspBuilder builder, CspOptions.CspDirectiveElement? cspDirective = null)
+    internal static CspBuilder UseCspScriptAttr(this CspBuilder builder, CspOptions.CspDirectiveScriptsAttrOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -366,52 +186,40 @@ internal static class CspBuilderExtensions
         var scriptSrcAttr = builder
             .ScriptSrcAttr();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             scriptSrcAttr
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
-            {
-                scriptSrcAttr
-                    .Self();
-            }
-
-            if (cspDirective.IsUnsafeInline)
+            if (options.IsUnsafeInline)
             {
                 scriptSrcAttr
                     .UnsafeInline();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.IsUnsafeHashes)
             {
                 scriptSrcAttr
-                    .Sources(cspDirective.Sources);
+                    .UnsafeHashes();
             }
 
-            if (cspDirective.Nonces.Length > 0)
+            if (options.ReportSample)
             {
                 scriptSrcAttr
-                    .Nonces(cspDirective.Nonces);
-            }
-
-            if (cspDirective.Hashes.Length > 0)
-            {
-                scriptSrcAttr
-                    .Hashes(cspDirective.Hashes);
+                    .ReportSample();
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspScriptElem(this CspBuilder builder, CspOptions.CspDirectiveElement? cspDirective = null)
+    internal static CspBuilder UseCspScriptElem(this CspBuilder builder, CspOptions.CspDirectiveScriptsElemOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -419,46 +227,205 @@ internal static class CspBuilderExtensions
         var scriptSrcElem = builder
             .ScriptSrcElem();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             scriptSrcElem
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 scriptSrcElem
                     .Self();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.Sources.Length > 0)
             {
                 scriptSrcElem
-                    .Sources(cspDirective.Sources);
+                    .Sources(options.Sources);
             }
 
-            if (cspDirective.Nonces.Length > 0)
+            if (options.ReportSample)
             {
                 scriptSrcElem
-                    .Nonces(cspDirective.Nonces);
-            }
-
-            if (cspDirective.Hashes.Length > 0)
-            {
-                scriptSrcElem
-                    .Hashes(cspDirective.Hashes);
+                    .ReportSample();
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspObject(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
+    internal static CspBuilder UseCspStyle(this CspBuilder builder, CspOptions.CspDirectiveStylesOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
+        {
+            return builder;
+        }
+
+        var styleSrc = builder
+            .StyleSrc();
+
+        if (options.IsNone)
+        {
+            styleSrc
+                .None();
+        }
+        else
+        {
+            if (options.IsSelf)
+            {
+                styleSrc
+                    .Self();
+            }
+
+            if (options.IsUnsafeInline)
+            {
+                styleSrc
+                    .UnsafeInline();
+            }
+
+            if (options.IsUnsafeHashes)
+            {
+                styleSrc
+                    .UnsafeHashes();
+            }
+
+            if (options.Sources.Length > 0)
+            {
+                styleSrc
+                    .Sources(options.Sources);
+            }
+
+            if (options.Nonces.Length > 0)
+            {
+                styleSrc
+                    .Nonces(options.Nonces);
+            }
+
+            if (options.Hashes.Length > 0)
+            {
+                styleSrc
+                    .Hashes(options.Hashes);
+            }
+
+            if (options.ReportSample)
+            {
+                styleSrc
+                    .ReportSample();
+            }
+        }
+
+        return builder;
+    }
+
+    internal static CspBuilder UseCspStyleAttr(this CspBuilder builder, CspOptions.CspDirectiveStylesAttrOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        if (options == null)
+        {
+            return builder;
+        }
+
+        var styleSrcAttr = builder
+            .StyleSrcAttr();
+
+        if (options.IsNone)
+        {
+            styleSrcAttr
+                .None();
+        }
+        else
+        {
+            if (options.IsUnsafeInline)
+            {
+                styleSrcAttr
+                    .UnsafeInline();
+            }
+
+            if (options.IsUnsafeHashes)
+            {
+                styleSrcAttr
+                    .UnsafeHashes();
+            }
+
+            if (options.ReportSample)
+            {
+                styleSrcAttr
+                    .ReportSample();
+            }
+        }
+
+        return builder;
+    }
+
+    internal static CspBuilder UseCspStyleElem(this CspBuilder builder, CspOptions.CspDirectiveStylesElemOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        if (options == null)
+        {
+            return builder;
+        }
+
+        var styleSrcElem = builder
+            .StyleSrcElem();
+
+        if (options.IsNone)
+        {
+            styleSrcElem
+                .None();
+        }
+        else
+        {
+            if (options.IsSelf)
+            {
+                styleSrcElem
+                    .Self();
+            }
+
+            if (options.Sources.Length > 0)
+            {
+                styleSrcElem
+                    .Sources(options.Sources);
+            }
+
+            if (options.Nonces.Length > 0)
+            {
+                styleSrcElem
+                    .Nonces(options.Nonces);
+            }
+
+            if (options.Hashes.Length > 0)
+            {
+                styleSrcElem
+                    .Hashes(options.Hashes);
+            }
+
+            if (options.IsUnsafeHashes)
+            {
+                styleSrcElem
+                    .UnsafeHashes();
+            }
+
+            if (options.ReportSample)
+            {
+                styleSrcElem
+                    .ReportSample();
+            }
+        }
+
+        return builder;
+    }
+
+    internal static CspBuilder UseCspObject(this CspBuilder builder, CspOptions.CspDirectiveOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        if (options == null)
         {
             return builder;
         }
@@ -466,34 +433,34 @@ internal static class CspBuilderExtensions
         var objectSrc = builder
             .ObjectSrc();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             objectSrc
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 objectSrc
                     .Self();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.Sources.Length > 0)
             {
                 objectSrc
-                    .Sources(cspDirective.Sources);
+                    .Sources(options.Sources);
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspImage(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
+    internal static CspBuilder UseCspImage(this CspBuilder builder, CspOptions.CspDirectiveOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -501,34 +468,34 @@ internal static class CspBuilderExtensions
         var objectSrc = builder
             .ImageSrc();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             objectSrc
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 objectSrc
                     .Self();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.Sources.Length > 0)
             {
                 objectSrc
-                    .Sources(cspDirective.Sources);
+                    .Sources(options.Sources);
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspMedia(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
+    internal static CspBuilder UseCspMedia(this CspBuilder builder, CspOptions.CspDirectiveOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -536,34 +503,34 @@ internal static class CspBuilderExtensions
         var objectSrc = builder
             .MediaSrc();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             objectSrc
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 objectSrc
                     .Self();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.Sources.Length > 0)
             {
                 objectSrc
-                    .Sources(cspDirective.Sources);
+                    .Sources(options.Sources);
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspFrame(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
+    internal static CspBuilder UseCspFrame(this CspBuilder builder, CspOptions.CspDirectiveOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -571,34 +538,34 @@ internal static class CspBuilderExtensions
         var objectSrc = builder
             .FramesSrc();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             objectSrc
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 objectSrc
                     .Self();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.Sources.Length > 0)
             {
                 objectSrc
-                    .Sources(cspDirective.Sources);
+                    .Sources(options.Sources);
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspFencedFrame(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
+    internal static CspBuilder UseCspFencedFrame(this CspBuilder builder, CspOptions.CspDirectiveOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -606,34 +573,34 @@ internal static class CspBuilderExtensions
         var objectSrc = builder
             .FencedFramesSrc();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             objectSrc
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 objectSrc
                     .Self();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.Sources.Length > 0)
             {
                 objectSrc
-                    .Sources(cspDirective.Sources);
+                    .Sources(options.Sources);
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspFrameAncestor(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
+    internal static CspBuilder UseCspFrameAncestor(this CspBuilder builder, CspOptions.CspDirectiveOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -641,34 +608,34 @@ internal static class CspBuilderExtensions
         var objectSrc = builder
             .FrameAncestorsSrc();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             objectSrc
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 objectSrc
                     .Self();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.Sources.Length > 0)
             {
                 objectSrc
-                    .Sources(cspDirective.Sources);
+                    .Sources(options.Sources);
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspFont(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
+    internal static CspBuilder UseCspFont(this CspBuilder builder, CspOptions.CspDirectiveOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -676,34 +643,34 @@ internal static class CspBuilderExtensions
         var objectSrc = builder
             .FontSrc();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             objectSrc
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 objectSrc
                     .Self();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.Sources.Length > 0)
             {
                 objectSrc
-                    .Sources(cspDirective.Sources);
+                    .Sources(options.Sources);
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspConnection(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
+    internal static CspBuilder UseCspConnection(this CspBuilder builder, CspOptions.CspDirectiveOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -711,34 +678,34 @@ internal static class CspBuilderExtensions
         var objectSrc = builder
             .ConnectionSrc();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             objectSrc
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 objectSrc
                     .Self();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.Sources.Length > 0)
             {
                 objectSrc
-                    .Sources(cspDirective.Sources);
+                    .Sources(options.Sources);
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspBaseUri(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
+    internal static CspBuilder UseCspBaseUri(this CspBuilder builder, CspOptions.CspDirectiveOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -746,34 +713,34 @@ internal static class CspBuilderExtensions
         var objectSrc = builder
             .BaseUri();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             objectSrc
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 objectSrc
                     .Self();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.Sources.Length > 0)
             {
                 objectSrc
-                    .Sources(cspDirective.Sources);
+                    .Sources(options.Sources);
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspChildren(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
+    internal static CspBuilder UseCspChildren(this CspBuilder builder, CspOptions.CspDirectiveOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -781,34 +748,34 @@ internal static class CspBuilderExtensions
         var objectSrc = builder
             .ChildrenSrc();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             objectSrc
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 objectSrc
                     .Self();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.Sources.Length > 0)
             {
                 objectSrc
-                    .Sources(cspDirective.Sources);
+                    .Sources(options.Sources);
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspForm(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
+    internal static CspBuilder UseCspForm(this CspBuilder builder, CspOptions.CspDirectiveOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -816,34 +783,34 @@ internal static class CspBuilderExtensions
         var objectSrc = builder
             .FormSrc();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             objectSrc
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 objectSrc
                     .Self();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.Sources.Length > 0)
             {
                 objectSrc
-                    .Sources(cspDirective.Sources);
+                    .Sources(options.Sources);
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspManifest(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
+    internal static CspBuilder UseCspManifest(this CspBuilder builder, CspOptions.CspDirectiveOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -851,34 +818,34 @@ internal static class CspBuilderExtensions
         var objectSrc = builder
             .ManifestSrc();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             objectSrc
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 objectSrc
                     .Self();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.Sources.Length > 0)
             {
                 objectSrc
-                    .Sources(cspDirective.Sources);
+                    .Sources(options.Sources);
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspWorker(this CspBuilder builder, CspOptions.CspDirective? cspDirective = null)
+    internal static CspBuilder UseCspWorker(this CspBuilder builder, CspOptions.CspDirectiveOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -886,34 +853,34 @@ internal static class CspBuilderExtensions
         var objectSrc = builder
             .WorkerSrc();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             objectSrc
                 .None();
         }
         else
         {
-            if (cspDirective.IsSelf)
+            if (options.IsSelf)
             {
                 objectSrc
                     .Self();
             }
 
-            if (cspDirective.Sources.Length > 0)
+            if (options.Sources.Length > 0)
             {
                 objectSrc
-                    .Sources(cspDirective.Sources);
+                    .Sources(options.Sources);
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseTrustedTypes(this CspBuilder builder, CspOptions.CspDirectiveTrustedTypes? cspDirective)
+    internal static CspBuilder UseTrustedTypes(this CspBuilder builder, CspOptions.CspDirectiveTrustedTypesOptions? options)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirective == null)
+        if (options == null)
         {
             return builder;
         }
@@ -921,34 +888,34 @@ internal static class CspBuilderExtensions
         var trustedTypes = builder
             .TrustedTypes();
 
-        if (cspDirective.IsNone)
+        if (options.IsNone)
         {
             trustedTypes
                 .None();
         }
         else
         {
-            if (cspDirective.AllowDuplicates)
+            if (options.AllowDuplicates)
             {
                 trustedTypes
                     .AllowDuplicates();
             }
 
-            if (cspDirective.Policies.Length > 0)
+            if (options.Policies.Length > 0)
             {
                 trustedTypes
-                    .TrustedTypes(cspDirective.Policies);
+                    .TrustedTypes(options.Policies);
             }
         }
 
         return builder;
     }
 
-    internal static CspBuilder UseCspSandbox(this CspBuilder builder, CspOptions.CspDirectiveSandbox? cspDirectiveSandbox = null)
+    internal static CspBuilder UseCspSandbox(this CspBuilder builder, CspOptions.CspDirectiveSandboxOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (cspDirectiveSandbox == null)
+        if (options == null)
         {
             return builder;
         }
@@ -956,88 +923,136 @@ internal static class CspBuilderExtensions
         var sandbox = builder
             .Sandbox();
 
-        if (cspDirectiveSandbox.AllowDownloads)
+        if (options.AllowDownloads)
         {
             sandbox
                 .AllowDownloads();
         }
 
-        if (cspDirectiveSandbox.AllowForms)
+        if (options.AllowForms)
         {
             sandbox
                 .AllowForms();
         }
 
-        if (cspDirectiveSandbox.AllowModals)
+        if (options.AllowModals)
         {
             sandbox
                 .AllowModals();
         }
 
-        if (cspDirectiveSandbox.AllowOrientationLock)
+        if (options.AllowOrientationLock)
         {
             sandbox
                 .AllowOrientationLock();
         }
 
-        if (cspDirectiveSandbox.AllowPointerLock)
+        if (options.AllowPointerLock)
         {
             sandbox
                 .AllowPointerLock();
         }
 
-        if (cspDirectiveSandbox.AllowPopups)
+        if (options.AllowPopups)
         {
             sandbox
                 .AllowPopups();
         }
 
-        if (cspDirectiveSandbox.AllowPopupsToEscapeSandbox)
+        if (options.AllowPopupsToEscapeSandbox)
         {
             sandbox
                 .AllowPopupsToEscapeSandbox();
         }
 
-        if (cspDirectiveSandbox.AllowPresentation)
+        if (options.AllowPresentation)
         {
             sandbox
                 .AllowPresentation();
         }
 
-        if (cspDirectiveSandbox.AllowSameOrigin)
+        if (options.AllowSameOrigin)
         {
             sandbox
                 .AllowSameOrigin();
         }
 
-        if (cspDirectiveSandbox.AllowScripts)
+        if (options.AllowScripts)
         {
             sandbox
                 .AllowScripts();
         }
 
-        if (cspDirectiveSandbox.AllowStorageAccessByUserActivation)
+        if (options.AllowStorageAccessByUserActivation)
         {
             sandbox
                 .AllowStorageAccessByUserActivation();
         }
 
-        if (cspDirectiveSandbox.AllowTopNavigation)
+        if (options.AllowTopNavigation)
         {
             sandbox
                 .AllowTopNavigation();
         }
 
-        if (cspDirectiveSandbox.AllowTopNavigationByUserActivation)
+        if (options.AllowTopNavigationByUserActivation)
         {
             sandbox
                 .AllowTopNavigationByUserActivation();
         }
 
-        if (cspDirectiveSandbox.AllowTopNavigationToCustomProtocols)
+        if (options.AllowTopNavigationToCustomProtocols)
         {
             sandbox
                 .AllowTopNavigationToCustomProtocols();
+        }
+
+        return builder;
+    }
+
+    internal static CspBuilder UseCspRequireTrustedTypesFor(this CspBuilder builder, CspOptions.CspDirectiveScriptsOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        if (options == null)
+        {
+            return builder;
+        }
+
+        var requireTrustedTypesFor = builder
+            .RequireTrustedTypesFor();
+
+        if (options.RequireTrustedTypes)
+        {
+            requireTrustedTypesFor
+                .Script();
+        }
+
+        return builder;
+    }
+
+    internal static CspBuilder UseCspRequireSriFor(this CspBuilder builder, CspOptions.CspDirectiveScriptsOptions? scriptOptions = null, CspOptions.CspDirectiveStylesOptions? styleOptions = null)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        if (scriptOptions == null && styleOptions == null)
+        {
+            return builder;
+        }
+
+        var requireSriFor = builder
+            .RequireSriFor();
+
+        if (scriptOptions is { RequireSri: true })
+        {
+            requireSriFor
+                .Script();
+        }
+
+        if (styleOptions is { RequireSri: true })
+        {
+            requireSriFor
+                .Script();
         }
 
         return builder;

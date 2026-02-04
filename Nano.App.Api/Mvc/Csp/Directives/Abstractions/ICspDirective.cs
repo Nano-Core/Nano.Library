@@ -1,8 +1,10 @@
+using System.Collections.Generic;
+
 namespace Nano.App.Api.Mvc.Csp.Directives.Abstractions;
 
 internal interface ICspDirective
 {
-    void None();
-    void Self();
-    void Sources(params string[] sources);
+    string Name { get; }
+
+    List<string> Values { get; }
 }
