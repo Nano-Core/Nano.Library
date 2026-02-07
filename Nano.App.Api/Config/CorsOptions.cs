@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.App.Api.Config;
@@ -36,4 +38,17 @@ public class CorsOptions
     /// </summary>
     [Required]
     public virtual CorsOriginOptions Origin { get; set; } = new();
+
+    /// <summary>
+    /// Additional exposed headers.
+    /// Nano always expose these headers:
+    /// <list>
+    ///     <item>RequestId</item>
+    ///     <item>TZ</item>
+    ///     <item>Content-Disposition</item>
+    ///     <item>api-supported-versions</item>
+    /// </list>
+    /// </summary>
+    [Required]
+    public virtual IEnumerable<string> ExposedHeaders { get; set; } = [];
 }

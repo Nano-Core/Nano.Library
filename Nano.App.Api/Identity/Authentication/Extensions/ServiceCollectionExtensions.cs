@@ -12,6 +12,7 @@ using Nano.App.Api.Config;
 using Nano.App.Api.Identity.Authentication.Abstractions;
 using Nano.App.Api.Identity.Authentication.Consts;
 using Nano.App.Config;
+using Nano.Common.Consts;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using AuthenticationOptions = Nano.App.Api.Config.AuthenticationOptions;
@@ -67,7 +68,7 @@ internal static class ServiceCollectionExtensions
                         return AuthenticationSchemes.JWT;
                     }
 
-                    if (hasApiKey && context.Request.Headers.ContainsKey(ApiKeyHeaderNames.X_API_KEY))
+                    if (hasApiKey && context.Request.Headers.ContainsKey(NanoHeaderNames.X_API_KEY))
                     {
                         return AuthenticationSchemes.API_KEY;
                     }

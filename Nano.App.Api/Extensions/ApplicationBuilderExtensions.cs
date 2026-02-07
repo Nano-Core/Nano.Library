@@ -103,8 +103,13 @@ internal static class ApplicationBuilderExtensions
             return applicationBuilder;
         }
 
+        // BUG: Add settings for this, talk to chat-gpt for a simple configuration for most used stuff
+        var forwardedHeadersOptions = new Microsoft.AspNetCore.Builder.ForwardedHeadersOptions()
+        {
+        };
+
         applicationBuilder
-            .UseForwardedHeaders();
+            .UseForwardedHeaders(forwardedHeadersOptions);
 
         return applicationBuilder;
     }

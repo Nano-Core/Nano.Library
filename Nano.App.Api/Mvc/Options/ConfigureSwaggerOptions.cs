@@ -11,6 +11,7 @@ using Nano.App.Api.Config;
 using Nano.App.Api.Mvc.Documentation.Filters.Document;
 using Nano.App.Api.Mvc.Documentation.Filters.Schema;
 using Nano.App.Api.Mvc.Options.Regex;
+using Nano.Common.Consts;
 using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -179,7 +180,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
                 Type = SecuritySchemeType.ApiKey,
                 Name = AuthenticationSchemes.API_KEY,
                 Description = "API Key Authorization headering using api-key scheme. Format: X-Api-Key: [apikey]",
-                Scheme = ApiKeyHeaderNames.X_API_KEY
+                Scheme = NanoHeaderNames.X_API_KEY
             };
 
             options

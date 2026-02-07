@@ -1,6 +1,7 @@
+using Microsoft.AspNetCore.Http;
+using Nano.Common.Consts;
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace Nano.App.Api.Mvc.Middleware;
 
@@ -20,7 +21,7 @@ public sealed class HttpRequestIdentifierMiddleware : IMiddleware
         ArgumentNullException.ThrowIfNull(httpContext);
         ArgumentNullException.ThrowIfNull(next);
 
-        httpContext.Response.Headers["RequestId"] = httpContext.TraceIdentifier;
+        httpContext.Response.Headers[NanoHeaderNames.REQUEST_ID] = httpContext.TraceIdentifier;
 
         return next(httpContext);
     }

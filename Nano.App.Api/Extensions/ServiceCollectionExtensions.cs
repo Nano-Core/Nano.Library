@@ -12,23 +12,26 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using Nano.App.Api.Config;
 using Nano.App.Api.Mvc.Extensions;
 using Nano.App.Api.Mvc.HealthChecks;
 using Nano.App.Api.Mvc.Middleware;
 using Nano.App.Api.Mvc.Options;
 using Nano.App.Api.Mvc.Serialization.Json;
+using Nano.App.Config;
+using Nano.Common.Consts;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Globalization;
 using System.Linq;
-using Nano.App.Config;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
 using ForwardedHeadersOptions = Nano.App.Api.Config.ForwardedHeadersOptions;
 using ResponseCompressionOptions = Nano.App.Api.Config.ResponseCompressionOptions;
+using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
 using SessionOptions = Nano.App.Api.Config.SessionOptions;
 
 namespace Nano.App.Api.Extensions;
@@ -49,8 +52,25 @@ internal static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
+        var defaultExposedHeaders = new[]
+        {
+            NanoHeaderNames.REQUEST_ID,
+            NanoHeaderNames.TZ,
+            HeaderNames.ContentDisposition,
+            NanoHeaderNames.API_SUPPORTED_VERSIONS
+        };
+
         if (options == null)
         {
+            services
+                .AddCors(x =>
+                {
+                    x.AddPolicy(x.DefaultPolicyName, y =>
+                    {
+                        y.WithExposedHeaders(defaultExposedHeaders);
+                    });
+                });
+
             return services;
         }
 
@@ -96,9 +116,12 @@ internal static class ServiceCollectionExtensions
                         y.DisallowCredentials();
                     }
 
-                    // BUG: Chat-GPT: learn a bit more about this. Maybe we need a setting for adding more?
-                    // BUG: make cosnts or something
-                    y.WithExposedHeaders("RequestId", "TZ", "Content-Disposition", "api-supported-versions");
+                    var exposedHeaders = options.ExposedHeaders
+                        .Union(defaultExposedHeaders)
+                        .Distinct()
+                        .ToArray();
+
+                    y.WithExposedHeaders(exposedHeaders);
                 });
             });
 

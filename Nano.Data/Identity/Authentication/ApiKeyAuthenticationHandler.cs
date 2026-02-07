@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Nano.Common.Consts;
 using Nano.Data.Abstractions.Identity;
-using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity.Consts;
 
 namespace Nano.Data.Identity.Authentication;
@@ -54,7 +54,7 @@ public class ApiKeyAuthenticationHandler<TIdentity> : AuthenticationHandler<Auth
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var success = this.Request.Headers
-            .TryGetValue(ApiKeyHeaderNames.X_API_KEY, out var apiKeyHeaderValues);
+            .TryGetValue(NanoHeaderNames.X_API_KEY, out var apiKeyHeaderValues);
 
         if (!success)
         {
