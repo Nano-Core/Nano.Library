@@ -96,6 +96,8 @@ internal static class ServiceCollectionExtensions
                         y.DisallowCredentials();
                     }
 
+                    // BUG: Chat-GPT: learn a bit more about this. Maybe we need a setting for adding more?
+                    // BUG: make cosnts or something
                     y.WithExposedHeaders("RequestId", "TZ", "Content-Disposition", "api-supported-versions");
                 });
             });

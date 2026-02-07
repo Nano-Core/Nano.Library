@@ -339,11 +339,20 @@ internal static class HttpResponseExtensions
             return httpResponse;
         }
 
+        var endpoints = options.Endpoints;
+
+        if (options.Endpoints.Length == 0)
+        {
+            var request = httpResponse.HttpContext.Request;
+
+            endpoints = [$"{request.Scheme}://{request.Host}/csp/report-to"];
+        }
+
         var reportTo = new
         {
             group = options.Group,
             max_age = options.MaxAge,
-            endpoints = options.Endpoints
+            endpoints = endpoints
                 .Select(x => new
                 {
                     url = x
@@ -351,6 +360,7 @@ internal static class HttpResponseExtensions
         };
 
         httpResponse.Headers["Report-To"] = JsonConvert.SerializeObject(reportTo);
+        httpResponse.Headers["Reporting-Endpoints"] = $"{options.Group}={string.Join(',', options.Endpoints.Select(x => $"\"{x}\""))}";
 
         return httpResponse;
     }
@@ -420,14 +430,13 @@ internal static class HttpResponseExtensions
 
         if (cspDirective.IsNone)
         {
-            return $"{name}=();";
+            return $"{name}=(),";
         }
 
-        var value = cspDirective.Sources
-            .Aggregate(string.Empty, (current, x) => current + $"{x} ");
+        var value = string.Join(' ', cspDirective.Sources);
 
         return cspDirective.IsSelf
-            ? $"{name}=(self {value}),"
-            : $"{name}=({value}),";
+            ? $"{name}=(self),"
+            : $"{name}=(\"{value}\"),";
     }
 }

@@ -35,11 +35,8 @@ internal static class CspBuilderExtensions
         var reportTo = builder
             .ReportTo();
 
-        if (options.Endpoints.Length > 0)
-        {
-            reportTo
-                .Group(options.Group);
-        }
+        reportTo
+            .Group(options.Group);
 
         return builder;
     }

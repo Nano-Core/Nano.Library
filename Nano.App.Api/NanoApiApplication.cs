@@ -162,6 +162,7 @@ public class NanoApiApplication : BaseApplication<WebApplication, WebApplication
     protected static WebApplicationBuilder CreateBuilder(string[] args)
     {
         var root = Directory.GetCurrentDirectory();
+        var wwwroot = Path.Combine(root, "wwwroot");
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Development;
 
         var entryAssembly = Assembly.GetEntryAssembly();
@@ -173,7 +174,8 @@ public class NanoApiApplication : BaseApplication<WebApplication, WebApplication
             Args = args,
             ApplicationName = applicationName,
             EnvironmentName = environment,
-            ContentRootPath = root
+            ContentRootPath = root,
+            WebRootPath = wwwroot
         };
 
         var builder = WebApplication

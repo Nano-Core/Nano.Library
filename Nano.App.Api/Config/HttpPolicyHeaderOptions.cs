@@ -7,6 +7,7 @@ public class HttpPolicyHeaderOptions
 {
     /// <summary>
     /// Content-Type header options.
+    /// Prevents attacks like MIME type confusion, which can lead to XSS or other client-side vulnerabilities.
     /// </summary>
     public virtual ContentTypeOptions? ContentType { get; set; }
 

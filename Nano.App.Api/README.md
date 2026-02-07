@@ -280,6 +280,9 @@ See [Example Api.PolicyHeaders](Api.PolicyHeaders)
 ```
 
 ## Content Security Policy
+The csp-reports is configured and uses the default Nano report endpoint `/csp/report-to`, which logs the violation to console. If you need different handling than just logging
+the report to console, implement your own endpoint for handling csp violations
+
 ```json
 "App": {
   "HttpPolicyHeaders": {

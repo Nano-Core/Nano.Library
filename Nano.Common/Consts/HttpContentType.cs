@@ -136,6 +136,11 @@ public static class HttpContentType
     public const string JSON = "application/json";
 
     /// <summary>
+    /// JSON content type ("application/reports+json").
+    /// </summary>
+    public const string REPORTS_JSON = "application/reports+json";
+
+    /// <summary>
     /// Form URL encoded content type ("application/x-www-form-urlencoded").
     /// </summary>
     public const string FORM_ENCODED = "application/x-www-form-urlencoded";

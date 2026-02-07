@@ -429,6 +429,7 @@ public class CspOptions
 
     /// <summary>
     /// CSP Report-To configuration for sending violation reports.
+    /// Configuring this will also set the 'Report-To' and the 'Reporting-Endpoints' http header.
     /// </summary>
     public class CspReportToOptions
     {
@@ -446,6 +447,7 @@ public class CspOptions
 
         /// <summary>
         /// URLs to receive CSP reports.
+        /// If no endpoints is specified, report-to will default to the built in endpoint: <c>/csp/report-to</c> in Nano.
         /// </summary>
         [Required]
         public virtual string[] Endpoints { get; set; } = [];

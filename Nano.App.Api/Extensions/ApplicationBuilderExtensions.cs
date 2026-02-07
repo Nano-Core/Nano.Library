@@ -7,18 +7,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using Nano.App.Api.Config;
+using Nano.App.Api.Mvc.Documentation.Extensions;
 using Nano.App.Api.Mvc.Extensions;
+using Nano.App.Api.Mvc.HealthChecks.Const;
 using Nano.App.Api.Mvc.Middleware;
+using Nano.App.Config;
+using Newtonsoft.Json.Linq;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
-using Nano.App.Api.Mvc.Documentation.Extensions;
-using Nano.App.Api.Mvc.HealthChecks.Const;
-using Nano.App.Config;
+using Nano.App.Api.Mvc.Consts;
+using Nano.Common.Consts;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
@@ -264,6 +269,57 @@ internal static class ApplicationBuilderExtensions
 
                     return next();
                 });
+
+            if (options.ReportTo.Endpoints.Length == 0)
+            {
+                applicationBuilder
+                    .Map(ActionRoutes.CSP_REPORT_TO, builder =>
+                    {
+                        builder
+                            .Run(async context =>
+                            {
+                                if (!HttpMethods.IsPost(context.Request.Method))
+                                {
+                                    context.Response.StatusCode = StatusCodes.Status405MethodNotAllowed;
+
+                                    return;
+                                }
+
+                                var isContentTypeJson = context.Request.ContentType?
+                                    .StartsWith(HttpContentType.JSON) ?? false;
+
+                                var isContentTypeReportsJson = context.Request.ContentType?
+                                    .StartsWith(HttpContentType.REPORTS_JSON) ?? false;
+
+                                if (!isContentTypeJson && !isContentTypeReportsJson)
+                                {
+                                    context.Response.StatusCode = StatusCodes.Status415UnsupportedMediaType;
+
+                                    return;
+                                }
+
+                                context.Request
+                                    .EnableBuffering();
+
+                                using var reader = new StreamReader(context.Request.Body);
+
+                                var body = await reader
+                                    .ReadToEndAsync();
+
+                                context.Request.Body.Position = 0;
+
+                                var message = JArray.Parse(body).ToString();
+
+                                var logger = context.RequestServices
+                                    .GetRequiredService<ILogger>();
+
+                                logger
+                                    .LogWarning(message);
+
+                                context.Response.StatusCode = StatusCodes.Status200OK;
+                            });
+                    });
+            }
         }
 
         return applicationBuilder;

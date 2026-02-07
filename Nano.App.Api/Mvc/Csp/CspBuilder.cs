@@ -47,7 +47,7 @@ internal sealed class CspBuilder
                     return null;
                 }
 
-                return $"{x.Name} {string.Join(' ', x.Values)}";
+                return $"{x.Name} {string.Join(' ', x.Values)}".Trim();
             })
             .Where(x => x != null);
 
