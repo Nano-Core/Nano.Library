@@ -173,6 +173,9 @@ internal static class ServiceCollectionExtensions
                         x.Preload = true;
                     }
                 }
+
+                x.ExcludedHosts
+                    .Clear();
             });
 
         return services;

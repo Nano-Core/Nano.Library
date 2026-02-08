@@ -731,7 +731,17 @@ the report to console, implement your own endpoint for handling csp violations
 ```
 
 ## Forwarded Headers
-There is no configuration for forwarded headers. Just enable it be setting an empty json object, and all headers will be forwarded.
+There is   configuration for forwarded headers. Just enable it be setting an empty json object, and all headers will be forwarded.
+
+| Header               | HttpContext                             |
+| -------------------- | --------------------------------------- |
+| X-Forwarded Header   | HttpContext Property Updated            |
+| X-Forwarded-For	   | HttpContext.Connection.RemoteIpAddress  |
+| X-Forwarded-Proto	   | HttpContext.Request.Scheme              |
+| X-Forwarded-Host	   | HttpContext.Request.Host                |
+
+If your app is directly exposed to the internet without a reverse proxy in front, clients can spoof X-Forwarded headers: fake IP, scheme, or host.
+Therefore, this approach is safe only if your traffic always passes through a trusted proxy / load balancer, which is exactly the case in cloud deployments.
 
 ```json
 "App": {
@@ -743,7 +753,7 @@ There is no configuration for forwarded headers. Just enable it be setting an em
 ```
 
 ## Response Cache
-Try to disable one endpoint in example, and test enabled vs disabled
+It's recommended to enable in configuration, and then disable of certain actions where neeeded.
 
 ## Response Compression
 Try to disable one endpoint in example, and test enabled vs disabled and see the response size difference

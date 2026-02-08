@@ -10,11 +10,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using Nano.App.Api.Config;
+using Nano.App.Api.Mvc.Consts;
 using Nano.App.Api.Mvc.Documentation.Extensions;
 using Nano.App.Api.Mvc.Extensions;
 using Nano.App.Api.Mvc.HealthChecks.Const;
 using Nano.App.Api.Mvc.Middleware;
 using Nano.App.Config;
+using Nano.Common.Consts;
 using Newtonsoft.Json.Linq;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System;
@@ -22,8 +24,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using Nano.App.Api.Mvc.Consts;
-using Nano.Common.Consts;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
@@ -103,10 +103,18 @@ internal static class ApplicationBuilderExtensions
             return applicationBuilder;
         }
 
-        // BUG: Add settings for this, talk to chat-gpt for a simple configuration for most used stuff
-        var forwardedHeadersOptions = new Microsoft.AspNetCore.Builder.ForwardedHeadersOptions()
+        var forwardedHeadersOptions = new Microsoft.AspNetCore.Builder.ForwardedHeadersOptions
         {
+            ForwardedHeaders = options.Headers,
+            RequireHeaderSymmetry = options.RequireHeaderSymmetry,
+            ForwardLimit = null
         };
+
+        forwardedHeadersOptions.KnownProxies
+            .Clear();
+
+        forwardedHeadersOptions.KnownIPNetworks
+            .Clear();
 
         applicationBuilder
             .UseForwardedHeaders(forwardedHeadersOptions);

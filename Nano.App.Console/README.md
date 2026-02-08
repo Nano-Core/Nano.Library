@@ -11,6 +11,7 @@
 * [Summary](#summary)
 * [Registration](#registration)
 * [Configuration](#configuration)
+* [Localization](#localization)
 * [Console Worker](#console-worker) 
 * [Start-Up Tasks](#start-up-tasks) 
 * [Examples](#examples)
@@ -44,6 +45,22 @@ The ```Console``` section of the configuration defines behavior related to the a
 "Console": 
 {
 
+}
+```
+
+## Localization
+Nano supports the built in methods for specifying the language when invoking requests.  
+See the official Microsoft documentation about localization here: [Localization Documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/localization?view=aspnetcore-2.1)  
+
+| Setting         | Type   | Default   | Description                                                               |
+| --------------- | ------ | --------- | ------------------------------------------------------------------------- |
+|  `Cultures`     | enum   |           | Culture and localization settings for the application.                    |
+
+```json
+"App": {
+  "Cultures": {
+    "Default": "en-US"
+  }
 }
 ```
 
