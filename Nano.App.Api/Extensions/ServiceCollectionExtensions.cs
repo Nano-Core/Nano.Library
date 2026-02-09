@@ -19,7 +19,6 @@ using Nano.App.Api.Mvc.HealthChecks;
 using Nano.App.Api.Mvc.Middleware;
 using Nano.App.Api.Mvc.Options;
 using Nano.App.Api.Mvc.Serialization.Json;
-using Nano.App.Config;
 using Nano.Common.Consts;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -28,6 +27,7 @@ using System.Globalization;
 using System.Linq;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
+using Vivet.AspNetCore.RequestTimeZone.Providers;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
 using ForwardedHeadersOptions = Nano.App.Api.Config.ForwardedHeadersOptions;
 using ResponseCompressionOptions = Nano.App.Api.Config.ResponseCompressionOptions;
@@ -55,7 +55,7 @@ internal static class ServiceCollectionExtensions
         var defaultExposedHeaders = new[]
         {
             NanoHeaderNames.REQUEST_ID,
-            NanoHeaderNames.TZ,
+            RequestTimeZoneHeaderProvider.Headerkey,
             HeaderNames.ContentDisposition,
             NanoHeaderNames.API_SUPPORTED_VERSIONS
         };
@@ -439,16 +439,21 @@ internal static class ServiceCollectionExtensions
             .AddControllersWithViews()
             .AddNewtonsoftJson(x =>
             {
-                x.AllowInputFormatterExceptionMessages = true;
-
                 var serializerSettings = SerializerSettings.GetMVcJsonSerializerSettings();
 
+                x.AllowInputFormatterExceptionMessages = true;
+                
                 x.SerializerSettings.Culture = CultureInfo.CurrentCulture;
                 x.SerializerSettings.NullValueHandling = serializerSettings.NullValueHandling;
                 x.SerializerSettings.ReferenceLoopHandling = serializerSettings.ReferenceLoopHandling;
                 x.SerializerSettings.PreserveReferencesHandling = serializerSettings.PreserveReferencesHandling;
                 x.SerializerSettings.ContractResolver = serializerSettings.ContractResolver;
-                x.SerializerSettings.Converters = serializerSettings.Converters;
+
+                foreach (var serializerSettingsConverter in serializerSettings.Converters)
+                {
+                    x.SerializerSettings.Converters
+                        .Add(serializerSettingsConverter);
+                }
             })
             .AddViewLocalization()
             .AddDataAnnotationsLocalization()

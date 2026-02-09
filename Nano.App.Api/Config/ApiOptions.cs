@@ -46,9 +46,9 @@ public class ApiOptions : BaseAppOptions
     public virtual TimeZoneOptions? TimeZone { get; set; }
 
     /// <summary>
-    /// Virus scanning options.
+    /// Localization configuration options.
     /// </summary>
-    public virtual VirusScanOptions? VirusScan { get; set; }
+    public virtual LocalizationOptions? Localization { get; set; }
 
     /// <summary>
     /// Health-check configuration options.
@@ -59,6 +59,11 @@ public class ApiOptions : BaseAppOptions
     /// API documentation options.
     /// </summary>
     public virtual DocumentationOptions? Documentation { get; set; }
+
+    /// <summary>
+    /// Virus scanning options.
+    /// </summary>
+    public virtual VirusScanOptions? VirusScan { get; set; }
 
     /// <summary>
     /// Identity configuration options.

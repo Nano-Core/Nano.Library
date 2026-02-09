@@ -20,11 +20,6 @@ public abstract class BaseAppOptions
     public virtual string Version { get; set; } = "1.0.0.0";
 
     /// <summary>
-    /// Localization configuration options.
-    /// </summary>
-    public virtual LocalizationOptions? Localization { get; set; }
-
-    /// <summary>
     /// Named Nano API client configurations available to the application.
     /// </summary>
     [Required]

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Nano.App.Config;
+namespace Nano.App.Console.Config;
 
 /// <summary>
 /// Options for localization.
@@ -8,8 +8,8 @@ namespace Nano.App.Config;
 public class LocalizationOptions
 {
     /// <summary>
-    /// Culture and localization settings for the application.
+    /// The default culture used by the application.
     /// </summary>
     [Required]
-    public virtual CultureOptions Cultures { get; set; } = new();
+    public virtual string DefaultCulture { get; set; } = "en-US";
 }

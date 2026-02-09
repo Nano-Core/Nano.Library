@@ -5,7 +5,7 @@ using Nano.Common.Extensions;
 using System;
 using System.Globalization;
 using System.Linq;
-using Nano.App.Config;
+using Nano.App.Console.Config;
 using Nano.Common.Helpers;
 
 namespace Nano.App.Console.Extensions;
@@ -43,7 +43,7 @@ internal static class ServiceCollectionExtensions
             return services;
         }
 
-        CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(options.Cultures.Default);
+        CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(options.DefaultCulture);
 
         return services;
     }

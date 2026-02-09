@@ -5,6 +5,13 @@
 
 > _Nano Api application._
 
+ALL SECTIONS: Link to Microsoft, Lessions, Other official docs, e.g. Mozilla Observatory
+## Nano Architectures
+* Solo application
+* micro-service orchestratration
+REFER TO THESE IN README CONFIG FOR VARIOUS SETTINGS (we need readme's for them)
+
+
 ## Table of Contents
 * [Summary](#summary)
 * [Registration](#registration)
@@ -28,9 +35,9 @@
   * [Session](#session)
   * [TimeZone](#timezone)
   * [Localization](#localization)
-  * [Virus Scan](#virus-scan)
   * [Documentation](#documentation)
   * [Health Checks](#health-checks)
+  * [Virus Scan](#virus-scan)
 
 
   * [Versioning](#versioning)
@@ -786,11 +793,6 @@ See the official Microsoft documentation about localization here: [Localization 
 }
 ```
 
-## Virus Scan
-Nano supports virus scan by specifying a network connection to a clamav instance.  
-All uploaded files will be scanned, and a ```VirusScanException``` will be thrown if one or more files contains any virus or malware.  
-See the official documentation about virus scan here: [Virus Scan Documentation](https://github.com/vivet/Vivet.AspNetCore/tree/master/Vivet.AspNetCore.RequestVirusScan#vivetaspnetcorerequestvirusscan)  
-
 ## Documentation
 When documentation is enabled in the configuration file, a web-interface documenting the service, it's endpoints and it's models - is created and deployed.  
 The documentation is based on [Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore).  
@@ -802,6 +804,11 @@ When enabling health-checks in the web section of the confiugration, the applica
 
 If the health check UI is also enabled in the confiugration, an interface for monitoring the health of the application, as well as any enabled health checks for dependent providers, can be found here:  
 * ```http://{host}:{port}/healthz-ui```  
+
+## Virus Scan
+Nano supports virus scan by specifying a network connection to a clamav instance.  
+All uploaded files will be scanned, and a ```VirusScanException``` will be thrown if one or more files contains any virus or malware.  
+See the official documentation about virus scan here: [Virus Scan Documentation](https://github.com/vivet/Vivet.AspNetCore/tree/master/Vivet.AspNetCore.RequestVirusScan#vivetaspnetcorerequestvirusscan)  
 
 
 

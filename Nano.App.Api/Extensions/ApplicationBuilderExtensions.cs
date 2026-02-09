@@ -15,7 +15,6 @@ using Nano.App.Api.Mvc.Documentation.Extensions;
 using Nano.App.Api.Mvc.Extensions;
 using Nano.App.Api.Mvc.HealthChecks.Const;
 using Nano.App.Api.Mvc.Middleware;
-using Nano.App.Config;
 using Nano.Common.Consts;
 using Newtonsoft.Json.Linq;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -412,14 +411,14 @@ internal static class ApplicationBuilderExtensions
             return applicationBuilder;
         }
 
-        var cultureInfos = options.Cultures.Supported
+        var cultureInfos = options.SupportedCultures
             .Select(y => new CultureInfo(y))
             .ToArray();
 
         applicationBuilder
             .UseRequestLocalization(x =>
             {
-                x.DefaultRequestCulture = new RequestCulture(options.Cultures.Default);
+                x.DefaultRequestCulture = new RequestCulture(options.DefaultCulture);
                 x.SupportedCultures = cultureInfos;
                 x.SupportedUICultures = cultureInfos;
             });

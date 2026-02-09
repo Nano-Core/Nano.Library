@@ -1,22 +1,22 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Nano.App.Config;
+namespace Nano.App.Api.Config;
 
 /// <summary>
-/// Defines culture and localization options for the application.
+/// Options for localization.
 /// </summary>
-public class CultureOptions
+public class LocalizationOptions
 {
     /// <summary>
     /// The default culture used by the application.
     /// </summary>
     [Required]
-    public virtual string Default { get; set; } = "en-US";
+    public virtual string DefaultCulture { get; set; } = "en-US";
 
     /// <summary>
     /// The set of cultures supported by the application.
     /// </summary>
     [Required]
-    public virtual IEnumerable<string> Supported { get; set; } = [];
+    public virtual IEnumerable<string> SupportedCultures { get; set; } = [];
 }

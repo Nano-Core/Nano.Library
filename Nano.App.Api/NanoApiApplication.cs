@@ -125,7 +125,7 @@ public class NanoApiApplication : BaseApplication<WebApplication, WebApplication
             .UseNanoRequestIdentifier()
             .UseNanoRequestVirusScan(options.CurrentValue.VirusScan)
             .UseNanoRequestLocalization(options.CurrentValue.Localization)
-            .UseNanoRequestTimeZone()
+            .UseNanoRequestTimeZone(options.CurrentValue.TimeZone)
             .UseNanoResponseCompression(options.CurrentValue.ResponseCompression)
             .UseNanoResponseCaching(options.CurrentValue.ResponseCache)
             .UseEndpoints(x =>

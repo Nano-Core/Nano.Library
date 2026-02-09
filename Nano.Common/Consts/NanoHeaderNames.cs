@@ -17,11 +17,6 @@ public static class NanoHeaderNames
     public const string REQUEST_ID = "RequestId";
 
     /// <summary>
-    /// The HTTP header name for the timezone used to pass in requests.
-    /// </summary>
-    public const string TZ = "TZ";
-
-    /// <summary>
     /// The HTTP header name for the suppported api versions.
     /// </summary>
     public const string API_SUPPORTED_VERSIONS = "api-supported-versions";

@@ -78,7 +78,7 @@ public static class StringExtensions
 
         if (extension == null)
         {
-            throw new ArgumentOutOfRangeException(nameof(filename), "Filename has no extension.");
+            throw new ArgumentOutOfRangeException(nameof(filename), filename, "Filename has no extension.");
         }
 
         if (extensionToContentType.TryGetValue(extension, out var contentType))

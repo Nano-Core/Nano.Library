@@ -22,7 +22,7 @@ public static class HealthStatusLevelExtensions
             HealthStatusLevel.Healthy => HealthStatus.Healthy,
             HealthStatusLevel.Degraded => HealthStatus.Degraded,
             HealthStatusLevel.Unhealthy => HealthStatus.Unhealthy,
-            _ => throw new ArgumentOutOfRangeException(nameof(healthStatusLevel), healthStatusLevel, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(healthStatusLevel), healthStatusLevel, "Argument out of range.")
         };
     }
 }
