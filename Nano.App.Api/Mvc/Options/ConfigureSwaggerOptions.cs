@@ -132,9 +132,9 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
                 openApiInfo.License = this.apiOptions.CurrentValue.Documentation.License;
             }
 
-            if (!string.IsNullOrEmpty(this.apiOptions.CurrentValue.Documentation.TermsOfService))
+            if (!string.IsNullOrEmpty(this.apiOptions.CurrentValue.Documentation.TermsOfServiceUrl))
             {
-                openApiInfo.TermsOfService = new Uri(this.apiOptions.CurrentValue.Documentation.TermsOfService);
+                openApiInfo.TermsOfService = new Uri(this.apiOptions.CurrentValue.Documentation.TermsOfServiceUrl);
             }
 
             if (apiVersionDescription.IsDeprecated)

@@ -38,12 +38,11 @@ REFER TO THESE IN README CONFIG FOR VARIOUS SETTINGS (we need readme's for them)
   * [Documentation](#documentation)
   * [Health Checks](#health-checks)
   * [Virus Scan](#virus-scan)
-
-
   * [Versioning](#versioning)
+  * [Cookies](#cookies)
+  * [Idenity](#authentication)
   * [Authentication](#authentication)
   * [Authorization](#authorization)
-
 * [Controllers](#controllers)
 * [Request Validation](#model-validation)
 * [Response Serialization](#serialization)
@@ -767,6 +766,9 @@ Try to disable one endpoint in example, and test enabled vs disabled and see the
 
 ## Session
 Discouraged to use in Api, but included because it can be used. Should we include it?
+When hosting in a scaled environment, sticky sessions needs to be enabled. SHOW ingress and links to official docs about sticky sesssions og Nginx docs or ??
+
+Cookie name: `.AspNetCore.Session`
 
 ## TimeZone
 Nano supports the built in methods for specifying the timezone when invoking requests.  
@@ -775,9 +777,20 @@ See the official documentation about timezone here: [TimeZone Documentation](htt
 | Setting                    | Type    | Default    | Description                                                                           |
 |  `DefaultTimeZone`         | string  | UTC        | Default time zone for the application.                                                |
 
+Explain about when to use DateTime (when the date is fixed, and shouldn't change no matter where you are on earth) 
+and DateTimeOffset (that should vary depending on where on earth you are).
+
+DateTimeInfo.Now / DateTimeInfo.UtcNow
+Use to get the local timezone based on the timezone of the `tz` header parameter.
+
+Cookie name: `.AspNetCore.TimeZone`
+
 ## Localization
 Nano supports the built in methods for specifying the language when invoking requests.  
 See the official Microsoft documentation about localization here: [Localization Documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/localization?view=aspnetcore-2.1)  
+
+Only supported cultures will be used. Any unsupported cultures will default to Default Culture.
+
 
 | Setting         | Type   | Default   | Description                                                               |
 | --------------- | ------ | --------- | ------------------------------------------------------------------------- |
@@ -793,12 +806,38 @@ See the official Microsoft documentation about localization here: [Localization 
 }
 ```
 
+Cookie name: `.AspNetCore.Culture`
+
+
 ## Documentation
 When documentation is enabled in the configuration file, a web-interface documenting the service, it's endpoints and it's models - is created and deployed.  
 The documentation is based on [Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore).  
 When using Default version only non versioned routes are shown in swagger for the default version.
 
+### CspNonce
+This value is meant for allowing swagger to work when using Csp nonce values for scripts. You will set a static nonce for swagger and also for other frontends you have,
+and the ingresses will be replacing them with dynamically generated nonce tokens before exposure.
+
+```
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: | 
+      more_set_headers "Content-Security-Policy: script-src 'self' 'nonce-${request_id}'; style-src 'self' 'nonce-${request_id}'";
+      sub_filter_once off;
+      sub_filter '%NONCE_TOKEN%' $request_id;
+      sub_filter '(<body[^>]*>)(.*?)%NONCE_TOKEN%(.*?<\/body>)' '$1$2"$request_id"$3';
+```
+HOW MUCH MORE DO WE NEED HERE. 
+
+### Use Default Version
+When this is `true` then the routes in swagger for the default version (`App:Version`) will be omitted from swagger, and only the default non-versioned routes will show.
+The versioned routes still work, but is just hidden from swagger.
+
 ## Health Checks
+Open http://localhost:8080/healthz-ui#/healthchecks and see that the startup health-check has completed, and reports healthy.
+When more Nano providers and services are added to the application, if health-check enabled, these services will appear hear, and report their status.
+
 When enabling health-checks in the web section of the confiugration, the application will be configured with a health-check. The health status of the application, can be found here:  
 * ```http://{host}:{port}/healthz```  
 
@@ -810,57 +849,56 @@ Nano supports virus scan by specifying a network connection to a clamav instance
 All uploaded files will be scanned, and a ```VirusScanException``` will be thrown if one or more files contains any virus or malware.  
 See the official documentation about virus scan here: [Virus Scan Documentation](https://github.com/vivet/Vivet.AspNetCore/tree/master/Vivet.AspNetCore.RequestVirusScan#vivetaspnetcorerequestvirusscan)  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-WHAT ABOUT OTHER HEADERS?
-- Check what else is exposed / Set
-- Check how many version deliminators work in route. e.g. api/v1.0.0.0/....
-
-## Content-Type Negotiation 
-WE ALWAYS USE JSON. AND ITS NOT ```Content-Type``` or   ```Accept```, CHECK WHICH IS REQUEST AND WHICH IS RESPONSE
-Nano supports several different formats (listed below) for the requests and responses of the controller actions.  
-The format, also known as content-type may be specified, either through the ```Content-Type``` or   ```Accept``` header, or by appending the following querystring parameter: ```?format={format}```. The later is default by ([Microsoft Formatting](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/formatting)), by any of the three methods will work with Nano.
-
-Supported formats:
-* Json
-
-
-WHERE => Additionally Nano adds a `RequestId` header value.
-
-
-
 ## Versioning
+There is no configuration for versioning. It's a built in feature in .NET, and you just need to use `[ApiVersion]` and `[MapToApiVersion]` annotations.
+
 During application startup, Nano registers dependencies for enabling api versioning. 
 Obviously, since most controller actions will be inherited from one or more of the base controller implementations, 
 versioning has to be annotated in derived controller classes. Additionally, versioned action methods must be overridden in the derived controller, 
 as the versioning would otherwise apply to all derived controller implementations.  
 
-Clients can specify the version in the following ways:
-* Route segment (```vx```)
+Clients can specify the version in the following ways and order:
+* Route segment (```vV```)
+* Http header (```api-version```)
 * Query parameter (```api-version```)
-* Http header (```X-Api-Version```)
 
 Besides that, versioning follows the standard .Net Core approach.  
 
 Routes will by default use default version. The `App:Version` you have configured will be default. routes with default version will work without specifying the version
-number in the route.
+number in the route. ANd there is no need to annotate default version to controllers and actions, it's assumed.
 
 LINK to documentation about version annotation, etc. ISn't there a Microsoft Learn link, or check which packages i use now
+
+## Cookies
+Reasonable and not configurable options.
+
+x.HttpOnly = HttpOnlyPolicy.None;
+Describes the HttpOnly behavior for cookies.
+The cookie does not have a configured HttpOnly behavior. This cookie can be accessed by JavaScript <c>document.cookie</c> API.
+
+x.Secure = CookieSecurePolicy.Always;
+Determines how cookie security properties are set
+Secure is always marked true. Use this value when your login page and all subsequent pages requiring the authenticated identity are HTTPS. 
+Local development will also need to be done with HTTPS urls.
+
+x.MinimumSameSitePolicy = SameSiteMode.Strict;
+Indicates the client should only send the cookie with "same-site" requests.
+Used to set the SameSite field on response cookies to indicate if those cookies should be included by the client on future "same-site" or "cross-site" requests.
+RFC Draft: <see href="https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-03#section-4.1.1"/>
+
+When creating cookies:
+CookiePolicyMiddleware in ASP.NET Core enforces the policy you set in AddCookiePolicy after the cookie is added to the response.
+Key points:
+If a cookie’s options match or exceed the policy (e.g., stricter), nothing changes.
+If a cookie violates the policy, the middleware adjusts it to conform before sending to the client.
+
+
+
+
+
+
+
+
 
 
 ## Authentication

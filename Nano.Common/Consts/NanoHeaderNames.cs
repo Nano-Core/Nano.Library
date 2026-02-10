@@ -17,6 +17,11 @@ public static class NanoHeaderNames
     public const string REQUEST_ID = "RequestId";
 
     /// <summary>
+    /// The HTTP header name for the api version.
+    /// </summary>
+    public const string API_VERSION = "api-version";
+
+    /// <summary>
     /// The HTTP header name for the suppported api versions.
     /// </summary>
     public const string API_SUPPORTED_VERSIONS = "api-supported-versions";

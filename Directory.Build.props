@@ -41,7 +41,7 @@
 	    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	    <PackageVersion>$(Version)</PackageVersion>
-			<PackageTags></PackageTags>
+		<PackageTags></PackageTags>
 		<PackageProjectUrl>https://github.com/Nano-Core/Nano.Library/$(ProjectName)</PackageProjectUrl>
 	    <PackageLicenseFile>LICENSE</PackageLicenseFile>
 	    <PackageIcon>icon.png</PackageIcon>

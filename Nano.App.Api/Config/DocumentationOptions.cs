@@ -23,7 +23,8 @@ public class DocumentationOptions
     /// <summary>
     /// URL or text for terms of service.
     /// </summary>
-    public virtual string? TermsOfService { get; set; }
+    [Url]
+    public virtual string? TermsOfServiceUrl { get; set; }
 
     /// <summary>
     /// Contact information for the API.

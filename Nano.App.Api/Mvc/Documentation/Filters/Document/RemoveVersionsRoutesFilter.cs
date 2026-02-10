@@ -64,14 +64,6 @@ public class RemoveVersionsRoutesFilter : IDocumentFilter
                         .Remove("/" + apiDescription.RelativePath);
                 }
             }
-            else
-            {
-                if (!apiDescription.RelativePath.StartsWith(baseRoute, StringComparison.Ordinal))
-                {
-                    swaggerDoc.Paths
-                        .Remove("/" + apiDescription.RelativePath);
-                }
-            }
         }
     }
 }

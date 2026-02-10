@@ -252,8 +252,8 @@ internal static class ServiceCollectionExtensions
 
                 x.ApiVersionReader = ApiVersionReader.Combine(
                     new UrlSegmentApiVersionReader(),
-                    new QueryStringApiVersionReader("api-version"),
-                    new HeaderApiVersionReader("Api-Version"));
+                    new HeaderApiVersionReader(NanoHeaderNames.API_VERSION),
+                    new QueryStringApiVersionReader("api-version"));
             })
             .AddVersionedApiExplorer(x =>
             {
@@ -293,7 +293,7 @@ internal static class ServiceCollectionExtensions
         services
             .AddRequestTimeZone(x =>
             {
-                x.Id = options.DefaultTimeZone;
+                x.DefaultTimeZone = options.DefaultTimeZone;
                 x.EnableRequestToUtc = true;
                 x.EnableResponseToLocal = true;
                 x.JsonSerializerType = JsonSerializerType.Newtonsoft;
@@ -442,7 +442,7 @@ internal static class ServiceCollectionExtensions
                 var serializerSettings = SerializerSettings.GetMVcJsonSerializerSettings();
 
                 x.AllowInputFormatterExceptionMessages = true;
-                
+
                 x.SerializerSettings.Culture = CultureInfo.CurrentCulture;
                 x.SerializerSettings.NullValueHandling = serializerSettings.NullValueHandling;
                 x.SerializerSettings.ReferenceLoopHandling = serializerSettings.ReferenceLoopHandling;
