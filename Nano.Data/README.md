@@ -18,6 +18,7 @@
 * [Migration](#migration)
 * [Repositories](#repositories)
 * [Audit](#audit)
+* [Spacial Types](#spacial-types)
 * [Identity](#identity)
 * [Soft Delete](#soft-delete)
 * [Triggers](#triggers)

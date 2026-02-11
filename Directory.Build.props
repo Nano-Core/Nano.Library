@@ -3,10 +3,10 @@
 	<PropertyGroup>
 	    <TargetFramework>net10.0</TargetFramework>
 	    <NoWarn>NU1902; NU5104</NoWarn>
+		<Version>10.0.0-preview</Version>
 	    <AssemblyVersion>10.0.0.0</AssemblyVersion>
-	    <FileVersion>10.0.0.0</FileVersion>
-	    <Version>10.0.0.0-preview1</Version>
-	    <PlatformTarget>AnyCPU</PlatformTarget>
+		<FileVersion>10.0.0.0</FileVersion>
+		<PlatformTarget>AnyCPU</PlatformTarget>
 	    <Configurations>Debug;Release</Configurations>
 	    <LangVersion>latest</LangVersion>
 	    <NeutralLanguage>en-US</NeutralLanguage>
@@ -41,7 +41,11 @@
 	    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	    <PackageVersion>$(Version)</PackageVersion>
-		<PackageTags></PackageTags>
+		<PackageTags>
+			nano configuration logging data eventing storage mvc cache audit api console identity authentication authorization health-checks
+			repositories middleware error-handling documentation security http-policy-headers validation event-handlers http virus-scan versioning 
+			localization timezone session response-compression response-cache migrations serialization startup-tasks entity-events providers 
+		</PackageTags>
 		<PackageProjectUrl>https://github.com/Nano-Core/Nano.Library/$(ProjectName)</PackageProjectUrl>
 	    <PackageLicenseFile>LICENSE</PackageLicenseFile>
 	    <PackageIcon>icon.png</PackageIcon>

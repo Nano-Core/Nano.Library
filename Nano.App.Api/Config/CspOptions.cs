@@ -315,14 +315,14 @@ public class CspOptions
         /// Nonces to allow specific inline styles.
         /// </summary>
         [Required]
-        public virtual string[] Nonces { get; init; } = [];
+        public virtual string[] Nonces { get; set; } = [];
 
         /// <summary>
         /// SHA hashes to allow specific inline styles.
         /// Must be prefixed with 'sha256-', 'sha384-', or 'sha512-'.
         /// </summary>
         [Required]
-        public virtual string[] Hashes { get; init; } = [];
+        public virtual string[] Hashes { get; set; } = [];
 
         /// <summary>
         /// Requires Subresource Integrity (SRI) for styles.
@@ -394,7 +394,7 @@ public class CspOptions
         /// Precomputed hashes (sha256/384/512) for inline content.
         /// </summary>
         [Required]
-        public virtual string[] Hashes { get; init; } = [];
+        public virtual string[] Hashes { get; set; } = [];
 
         /// <summary>
         /// If true, enables 'report-sample' in CSP violation reports.

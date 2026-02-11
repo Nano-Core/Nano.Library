@@ -40,12 +40,14 @@ REFER TO THESE IN README CONFIG FOR VARIOUS SETTINGS (we need readme's for them)
   * [Virus Scan](#virus-scan)
   * [Versioning](#versioning)
   * [Cookies](#cookies)
-  * [Idenity](#authentication)
+
+  * [Preflight](#preflight)
+  * [Content Type Negotiation](#content-type-negotiation)
   * [Authentication](#authentication)
   * [Authorization](#authorization)
 * [Controllers](#controllers)
 * [Request Validation](#model-validation)
-* [Response Serialization](#serialization)
+* [Serialization](#serialization)
 * [Error Handling](#error-handling)
 * [Start-Up Tasks](#start-up-tasks)
 
@@ -867,6 +869,8 @@ Besides that, versioning follows the standard .Net Core approach.
 Routes will by default use default version. The `App:Version` you have configured will be default. routes with default version will work without specifying the version
 number in the route. ANd there is no need to annotate default version to controllers and actions, it's assumed.
 
+Only major and minor version will be considered in relation to routing. `/api/v1/...` (works), `/api/v1.0/...` (works), `/api/v1.0.0/...` (won't works)
+
 LINK to documentation about version annotation, etc. ISn't there a Microsoft Learn link, or check which packages i use now
 
 ## Cookies
@@ -892,6 +896,17 @@ Key points:
 If a cookie’s options match or exceed the policy (e.g., stricter), nothing changes.
 If a cookie violates the policy, the middleware adjusts it to conform before sending to the client.
 
+## Preflight
+Describe support for http OPTIONS. Is it called preflight or preflight request or? Read more about this and check code
+
+
+## Content-Type Negotiation 
+WE ARE MISSING EXAMPLE
+WE ALWAYS USE JSON. AND ITS NOT ```Content-Type``` or   ```Accept```, CHECK WHICH IS REQUEST AND WHICH IS RESPONSE
+Nano supports several different formats (listed below) for the requests and responses of the controller actions.  
+The format, also known as content-type may be specified, either through the ```Content-Type``` or   ```Accept``` header, or by appending the following querystring parameter: ```?format={format}```. The later is default by ([Microsoft Formatting](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/formatting)), by any of the three methods will work with Nano.
+
+Supported formats: Json
 
 
 
@@ -1166,11 +1181,13 @@ When deriving a controller implementation from ```BaseController```, model valid
 Other than that, then validation isn't any different from normal.  
 See the official Microsoft documentation here: [Model Validation Documentation](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-2.1)  
 
-## Response Serialization
+## Serialization
 Nano has a custom contract serializer implementation.  
 The serializer derives from the regular implementation, but removes empty lists and system properties, related to soft-deletion and lazy-loading for instance. The serializer applies to deserializing incoming requests, though this process does nothing out of the ordinary. It also applies when serializing models into response content.  
 When serializing responses, if lazy-loading entities is enabled in data configuration, it's disabled. This ensures that data will not be lazy fetched when the serializer navigates relational properties, but only data existing in the change-tracker will be serialized.  
 The serializer will not serialize navigations that is of type ```IEntity```, except when they are annotated with ```IncludeAttribute```. This is to avoid returning unwanted navigation references, that is automatically added if dependent navigations are loaded separately.  
+
+Nano's serializer supports Geometry types, from Nettoplogysuite
 
 ## Error Handling
 When an exception or other errors occurs for a request, and ```500 Internal Server Error``` is returned to the client, contain ```Error``` response, as shown below.  
