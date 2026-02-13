@@ -24,6 +24,12 @@ public abstract class BaseController : Controller
     protected virtual ILogger Logger { get; }
 
     /// <summary>
+    /// Gets the current request identififer from header.
+    /// </summary>
+    public virtual string? RequestId => null; // BUG: implement get request id header
+
+    // BUG: Should we remove these??? They don't really belong here, or?
+    /// <summary>
     /// Gets the current authenticated user's Id from JWT claims.
     /// </summary>
     public virtual Guid? UserId => this.HttpContext.GetJwtUserId();

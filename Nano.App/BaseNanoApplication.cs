@@ -10,7 +10,7 @@ namespace Nano.App;
 /// </summary>
 /// <typeparam name="THost">The type of host (e.g., <see cref="IHost"/> or <see cref="WebApplication"/>).</typeparam>
 /// <typeparam name="THostBuilder">The type of host builder (e.g., <see cref="IHostApplicationBuilder"/> or <see cref="WebApplicationBuilder"/>).</typeparam>
-public abstract class BaseApplication<THost, THostBuilder>
+public abstract class BaseNanoApplication<THost, THostBuilder>
     where THost : class, IHost
     where THostBuilder : IHostApplicationBuilder
 {
@@ -25,11 +25,11 @@ public abstract class BaseApplication<THost, THostBuilder>
     protected THostBuilder applicationBuilder;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BaseApplication{THost, THostBuilder}"/> class.
+    /// Initializes a new instance of the <see cref="BaseNanoApplication{THost,THostBuilder}"/> class.
     /// </summary>
     /// <param name="builder">The application builder used to configure services and middleware.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="builder"/> is null.</exception>
-    protected BaseApplication(THostBuilder builder)
+    protected BaseNanoApplication(THostBuilder builder)
     {
         this.applicationBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
     }

@@ -44,7 +44,7 @@ The ```Console``` section of the configuration defines behavior related to the a
 ```json
 "Console": 
 {
-
+    "Localization": null
 }
 ```
 

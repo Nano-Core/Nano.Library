@@ -24,7 +24,7 @@ namespace Nano.App.Api;
 /// Represents a Nano web API application.
 /// </summary>
 /// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api">Nano Api Application</see></remarks>
-public class NanoApiApplication : BaseApplication<WebApplication, WebApplicationBuilder>, IApplication
+public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplicationBuilder>, INanoApplication
 {
     /// <summary>
     /// 
@@ -39,9 +39,9 @@ public class NanoApiApplication : BaseApplication<WebApplication, WebApplication
     /// Allows consumers to register services for the API application.
     /// </summary>
     /// <param name="configure">A delegate to configure <see cref="IServiceCollection"/>.</param>
-    /// <returns>The current <see cref="IApplication"/> instance for chaining.</returns>
+    /// <returns>The current <see cref="INanoApplication"/> instance for chaining.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="configure"/> is null.</exception>
-    public virtual IApplication ConfigureServices(Action<IServiceCollection> configure)
+    public virtual INanoApplication ConfigureServices(Action<IServiceCollection> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
 
@@ -54,8 +54,8 @@ public class NanoApiApplication : BaseApplication<WebApplication, WebApplication
     /// Creates and configures the API application with default Nano services, middleware, and web options.
     /// </summary>
     /// <param name="args">Command-line arguments passed to the application.</param>
-    /// <returns>A configured <see cref="IApplication"/> instance.</returns>
-    public static IApplication ConfigureApp(params string[] args)
+    /// <returns>A configured <see cref="INanoApplication"/> instance.</returns>
+    public static INanoApplication ConfigureApp(params string[] args)
     {
         var applicationBuilder = CreateBuilder(args);
 
@@ -94,8 +94,8 @@ public class NanoApiApplication : BaseApplication<WebApplication, WebApplication
     /// <summary>
     /// Builds the API application, registers middleware, routing, and health checks.
     /// </summary>
-    /// <returns>The current <see cref="IApplication"/> instance.</returns>
-    public IApplication Build()
+    /// <returns>The current <see cref="INanoApplication"/> instance.</returns>
+    public INanoApplication Build()
     {
         this.application = this.applicationBuilder
             .Build();
@@ -154,12 +154,8 @@ public class NanoApiApplication : BaseApplication<WebApplication, WebApplication
         return this;
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="args"></param>
-    /// <returns></returns>
-    protected static WebApplicationBuilder CreateBuilder(string[] args)
+
+    private static WebApplicationBuilder CreateBuilder(string[] args)
     {
         var root = Directory.GetCurrentDirectory();
         var wwwroot = Path.Combine(root, "wwwroot");

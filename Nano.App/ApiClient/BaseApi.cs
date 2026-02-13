@@ -6,7 +6,9 @@ using Nano.App.ApiClient.Extensions;
 using Nano.App.ApiClient.Models;
 using Nano.App.ApiClient.Requests;
 using Nano.App.ApiClient.Requests.Auth;
+using Nano.App.ApiClient.Requests.Auth.Models;
 using Nano.App.Exceptions;
+using Nano.Common.Consts;
 using Nano.Common.Serialization.Json;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Exceptions;
@@ -19,7 +21,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.App.ApiClient.Requests.Auth.Models;
+using Microsoft.Extensions.Primitives;
 
 namespace Nano.App.ApiClient;
 
@@ -170,10 +172,14 @@ public abstract class BaseApi
         var uri = this.GetUri(request);
         var jwtToken = await this.AuthenticateAsync(request, cancellationToken);
 
+        StringValues requestIdHeader = default;
+        this.httpContextAccessor.HttpContext?.Request.Headers
+            .TryGetValue(NanoHeaderNames.REQUEST_ID, out requestIdHeader);
+
         var httpRequestMessage = new HttpRequestMessage(method, uri);
 
         await httpRequestMessage
-            .AddHttpHeaders(request, jwtToken, cancellationToken);
+            .AddHttpHeaders(request, jwtToken, requestIdHeader, cancellationToken);
 
         await httpRequestMessage
             .AddHttpBody(request, cancellationToken);
