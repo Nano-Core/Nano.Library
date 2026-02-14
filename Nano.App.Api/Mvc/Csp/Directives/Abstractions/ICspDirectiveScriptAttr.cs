@@ -4,5 +4,6 @@ internal interface ICspDirectiveScriptAttr : ICspDirectiveSimple
 {
     void UnsafeInline();
     void UnsafeHashes();
+    void UnsafeHashedAttributes();
     void ReportSample();
 }

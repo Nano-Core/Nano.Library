@@ -507,7 +507,7 @@ internal static class ApplicationBuilderExtensions
 
                     var defaultApiVersion = new ApiVersion(defaultVersion.Major, defaultVersion.Minor);
 
-                    var defaultVersionText = options.UseDefaultVersion && description.ApiVersion == defaultApiVersion
+                    var defaultVersionText = options.HideDefaultVersion && description.ApiVersion == defaultApiVersion
                         ? " (Default)"
                         : string.Empty;
 

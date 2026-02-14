@@ -56,7 +56,7 @@ public class RemoveVersionsRoutesFilter : IDocumentFilter
 
             var baseRoute = $"{this.apiOptions.CurrentValue.Hosting.Root}/{currentDocumentName.Replace(".0", string.Empty)}";
 
-            if (this.apiOptions.CurrentValue.Documentation.UseDefaultVersion && currentDocumentName == defaultDocumentName)
+            if (this.apiOptions.CurrentValue.Documentation.HideDefaultVersion && currentDocumentName == defaultDocumentName)
             {
                 if (apiDescription.RelativePath.StartsWith(baseRoute, StringComparison.Ordinal))
                 {

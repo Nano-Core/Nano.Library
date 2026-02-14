@@ -13,11 +13,11 @@ internal sealed class CspBuilder
     internal ICspDirective UpgradeInsecureRequests() => this.AddDirective<CspDirectiveUpgradeInsecureRequests>();
     internal ICspDirectiveDefault DefaultSrc() => this.AddDirective<CspDirectiveDefault>();
     internal ICspDirectiveScript ScriptSrc() => this.AddDirective<CspDirectiveScript>();
-    internal ICspDirectiveScriptAttr ScriptSrcAttr() => this.AddDirective<CspDirectiveScriptAttr>();
     internal ICspDirectiveScriptElem ScriptSrcElem() => this.AddDirective<CspDirectiveScriptElem>();
+    internal ICspDirectiveScriptAttr ScriptSrcAttr() => this.AddDirective<CspDirectiveScriptAttr>();
     internal ICspDirectiveStyle StyleSrc() => this.AddDirective<CspDirectiveStyle>();
-    internal ICspDirectiveStyleAttr StyleSrcAttr() => this.AddDirective<CspDirectiveStyleAttr>();
     internal ICspDirectiveStyleElem StyleSrcElem() => this.AddDirective<CspDirectiveStyleElem>();
+    internal ICspDirectiveStyleAttr StyleSrcAttr() => this.AddDirective<CspDirectiveStyleAttr>();
     internal ICspDirectiveSimple ObjectSrc() => this.AddDirective<CspDirectiveObject>();
     internal ICspDirectiveSimple ImageSrc() => this.AddDirective<CspDirectiveImage>();
     internal ICspDirectiveSimple MediaSrc() => this.AddDirective<CspDirectiveMedia>();

@@ -31,7 +31,7 @@ public class CorsOptions
     /// Indicates whether credentials are allowed.
     /// </summary>
     [Required]
-    public virtual bool AllowCredentials { get; set; } = true;
+    public virtual bool AllowCredentials { get; set; } = false;
 
     /// <summary>
     /// Origin-specific CORS policies.

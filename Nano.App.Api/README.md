@@ -16,13 +16,13 @@
     * [Https](#https)
     * [Multipart Limits](#multipart-limits)
   * [Http Policy Headers](#http-policy-headers)
-    * [Content Type](#content-type) 
+    * [Content Type Options](#content-type-options) 
     * [Referrer Policy](#referrer-policy) 
     * [Frame Options](#frame-options)
     * [Xss Protection](#xss-protection)
-    * [Content Security Policy)](#content-security-policy)
+    * [Content Security Policy (CSP))](#content-security-policy-csp)
     * [Cors](#cors)
-    * [Hsts](#hsts) 
+    * [Strict Transport Security (HSTS)](#strict-transport-security-hsts)
     * [Robots](#robots)
     * [Forwarded Headers](#forwarded-headers)
   * [Response Cache](#response-cache)
@@ -244,20 +244,19 @@ Otherwise, it is recommended to specify maximum upload sizes and timeouts to pro
 Try it out yourself using the **[Api.Hosting.MultipartLimits](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Hosting.MultipartLimits)** example.  
 
 ## Http Policy Headers
-Additionally, the configuration supports various options, for controlling transport-security, XXS-protection, cache control, 
-as well as content-type and download restrictions. 
+Configure headers such as HSTS, XSS protection, CSP, CORS, and other policies to secure and control HTTP behavior.
 
-| Setting              | Type    | Default  | Description                                                                                       |
-| -------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------- |
-|  `ContentType`       | object  | null     | Content-Type header options. See [Content Type](#content-type)                                    |
-|  `ReferrerPolicy`    | object  | null     | Referrer-Policy header options. See [Referrer Policy](#referrer-policy)                           |
-|  `FrameOptions`      | object  | null     | X-Frame-Options header options. See [Frame Options](#frame-options)                               |
-|  `XssProtection`     | object  | null     | XSS-Protection header options. See [Xss Protection](#xss-protection)                              |
-|  `Csp`               | object  | null     | Content-Security-Policy (CSP) options. See [Content Security Policy](#content-security-policy)    |
-|  `Cors`              | object  | null     | CORS configuration options. See [Cors](#cors)                                                     |
-|  `Hsts`              | object  | null     | HSTS configuration options. See [Hsts](#hsts)                                                     |
-|  `Robots`            | object  | null     | Robots meta tag options. See [Robots](#robots)                                                    |
-|  `ForwardedHeaders`  | object  | null     | Forwarded headers configuration. See [Forwarded Headers](#forwarded-headers)                      |
+| Setting              | Type    | Default  | Description                                                                                           |
+| -------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------- |
+|  `ContentType`       | object  | null     | Content-Type header options. See **[Content Type](#content-type)**                                    |
+|  `ReferrerPolicy`    | object  | null     | Referrer-Policy header options. See **[Referrer Policy](#referrer-policy)**                           |
+|  `FrameOptions`      | object  | null     | X-Frame-Options header options. See **[Frame Options](#frame-options)**                               |
+|  `XssProtection`     | object  | null     | XSS-Protection header options. See **[Xss Protection](#xss-protection)**                              |
+|  `Csp`               | object  | null     | Content-Security-Policy (CSP) options. See **[Content Security Policy](#content-security-policy)**    |
+|  `Cors`              | object  | null     | CORS configuration options. See **[Cors](#cors)**                                                     |
+|  `Hsts`              | object  | null     | HSTS configuration options. See **[Hsts](#hsts)**                                                     |
+|  `Robots`            | object  | null     | Robots meta tag options. See **[Robots](#robots)**                                                    |
+|  `ForwardedHeaders`  | object  | null     | Forwarded headers configuration. See **[Forwarded Headers](#forwarded-headers)**                      |
 
 ```json
 "App": {
@@ -275,12 +274,13 @@ as well as content-type and download restrictions.
 }
 ```
 
-## Content Type
-Content type.
+## Content Type Options
+The HTTP X-Content-Type-Options response header indicates that the MIME types advertised in the Content-Type headers should be respected and not changed. 
+The header allows you to avoid MIME type sniffing by specifying that the MIME types are deliberately configured.
 
-| Setting              | Type    | Default  | Description                                                                                       |
-| -------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------- |
-|  `ContentType`       | object  | null     | Content-Type header options. See [Content Type](#content-type)                                    |
+| Setting          | Type  | Default  | Description                                       |
+| ---------------- | ----- | -------- | ------------------------------------------------- |
+|  `NoSniff`       | bool  | false    | If true, prevents MIME type sniffing. ⭐ `true`  |
 
 ```json
 "App": {
@@ -292,12 +292,16 @@ Content type.
 }
 ```
 
-## Referrer Policy
-Referrer.
+> 📖 Learn more about **[Content Type Options](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Content-Type-Options)**
 
-| Setting              | Type    | Default  | Description                                                                                       |
-| -------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------- |
-|  `ContentType`       | object  | null     | Content-Type header options. See [Content Type](#content-type)                                    |
+Try it out yourself using the **[Api.PolicyHeaders.ContentType](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.ContentTypeOptions)** example.  
+
+## Referrer Policy
+The HTTP Referrer-Policy response header controls how much referrer information (sent with the Referer header) should be included with requests.  
+
+| Setting                  | Type  | Default   | Description                                      |
+| ------------------------ | ----- | --------- | ------------------------------------------------ |
+|  `ReferrerPolicyHeader`  | enum  | Disabled  | The referrer-policy. See possible values below   |
 
 ```json
 "App": {
@@ -309,12 +313,34 @@ Referrer.
 }
 ```
 
-## Frame Options
-Frame options.
+#### Referrer Policies
+| Policy                          | Description                                                                                                                                                                                                                                                                             |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|  `Disabled`                     | Specifies that the Referrer-Policy header should not be set in the HTTP response.                                                                                                                                                                                                       |
+|  `NoReferrer`                   | Enables the no-referrer policy, instructing the browser to not send referrer information.                                                                                                                                                                                               |
+|  `NoReferrerWhenDowngrade`      | Enables the no-referrer-when-downgrade policy, instructing the browser to send full referrer information unless navigation is from HTTPS to HTTP.                                                                                                                                       |
+|  **`SameOrigin`**⭐             | **Enables the same-origin policy, instructing the browser to send full referrer information for same-origin requests and no referrer for cross-origin requests.**                                                                                                      |
+|  `Origin`                       | Enables the origin policy, instructing the browser to send origin (no path and query) as referrer information for both same-origin and cross-origin requests.                                                                                                                           |
+|  `StrictOrigin`                 | Enables the strict-origin policy, instructing the browser to send origin (no path and query) as referrer information for both same-origin and cross-origin HTTPS to HTTPS and HTTP to HTTP requests. HTTPS / HTTP requests will not include referrer information.                       |
+|  `OriginWhenCrossOrigin`        | Enables the origin-when-cross-origin policy, instructing the browser to send full referrer information for same-origin requests and origin (no path and query) as referrer information for cross-origin requests (includes HTTPS to HTTP and HTTP to HTTPS).                            |
+|  `StrictOriginWhenCrossOrigin`  | Enables the strict-origin-when-cross-origin policy, instructing the browser to send full referrer information for same-origin requests and origin (no path and query) as referrer information for cross-origin requests. Referrer information is not sent for HTTPS to HTTP requests.   |
+|  `UnsafeUrl`                    | Enables the unsafe-url policy, instructing the browser to send full referrer information for all requests. Note that this will leak full referrer information for HTTPS to HTTP requests, which is even more unsafe than default browser behaviour.                                     |
 
-| Setting              | Type    | Default  | Description                                                                                       |
-| -------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------- |
-|  `ContentType`       | object  | null     | Content-Type header options. See [Content Type](#content-type)                                    |
+> 📖 Learn more about **[Referrer Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Referrer-Policy)**
+
+Try it out yourself using the **[Api.PolicyHeaders.ReferrerPolicy](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.ReferrerPolicy)** example.  
+
+## Frame Options
+The HTTP X-Frame-Options response header can be used to indicate whether a browser should be allowed to render the document 
+in a `<frame>`, `<iframe>`, `<embed>` or `<object>`. Sites can use this to avoid clickjacking attacks and some cross-site leaks, 
+by ensuring that their content is not embedded into other sites.
+
+If this header is not sent, and the website has not implemented any other mechanisms to restrict embedding (such as the frame-ancestors CSP directive), 
+then the browser will allow other sites to embed this document.
+
+| Setting                           | Type  | Default   | Description                                           |
+| --------------------------------- | ----- | --------- | ----------------------------------------------------- |
+|  `FrameOptionsPolicyHeader`       | enum  | Disabled  | Specifies the X-Frame-Options policy header value.    |
 
 ```json
 "App": {
@@ -326,59 +352,201 @@ Frame options.
 }
 ```
 
-## Xss Protection
-xxs protection
+#### Frame Options Policies
+| Policy              | Description                                                                                                                                                                                                             |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|  `Disabled`         | Specifies that the X-Frame-Options header should not be set in the HTTP response.                                                                                                                                       |
+|  **`Deny`** ⭐       | **Specifies that the X-Frame-Options header should be set in the HTTP response, instructing the browser to not display the page when it is loaded in an iframe.**                                                       |
+|  `SameOrigin`       | Specifies that the X-Frame-Options header should be set in the HTTP response, instructing the browser to display the page when it is loaded in an iframe - but only if the iframe is from the same origin as the page.  |
+    
+> 📖 Learn more about **[Frame Options Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Frame-Options)**
 
-| Setting              | Type    | Default  | Description                                                                                       |
-| -------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------- |
-|  `ContentType`       | object  | null     | Content-Type header options. See [Content Type](#content-type)                                    |
+Try it out yourself using the **[Api.PolicyHeaders.FrameOptions](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.FrameOptions)** example.  
+
+## Xss Protection
+The HTTP X-XSS-Protection response header was a feature of Internet Explorer, Chrome and Safari that stopped pages from loading 
+when they detected reflected cross-site scripting (XSS) attacks. These protections are largely unnecessary in modern browsers when sites 
+implement a strong Content-Security-Policy that disables the use of inline JavaScript (`unsafe-inline`).  
+
+> ⚠️ Deprecated: This feature is no longer recommended, and only supported by older browsers.  
+
+| Setting                       | Type    | Default  | Description                                           |
+| ----------------------------- | ------- | -------- | ----------------------------------------------------- |
+|  `XssProtectionPolicyHeader`  | enum    | null     | Specifies the X-XSS-Protection policy header value.   |
+|  `ReportingUrl`               | string  | null     | URL to report XSS attempts.                           |
 
 ```json
 "App": {
   "HttpPolicyHeaders": {
     "XssProtection": {
-      "XssProtectionPolicyHeader": "Disabled"
+      "XssProtectionPolicyHeader": "Disabled",
+      "ReportingUrl": null
     }
   }
 }
 ```
 
+#### Xss Protection Policies
+| Policy                           | Description                                                                                                                                           |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+|  `FilterDisabled`                | Specifies that the X-Xss-Protection header should be set in the HTTP response, explicitly disabling the IE XSS filter.                                |
+|  `FilterEnabled`                 | Specifies that the X-Xss-Protection header should be set in the HTTP response, explicitly enabling the IE XSS filter.                                 |
+|  **`FilterEnabledBlockMode`**⭐   | **Specifies that the X-Xss-Protection header should be set in the HTTP response, explicitly enabling the IE XSS filter. BlockMode is set to true.**   |
+|  `ProtectionReport`              | Report is sent.                                                                                                                                       |
+
+> 📖 Learn more about **[Xss Protection](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-XSS-Protection)**
+
+Try it out yourself using the **[Api.PolicyHeaders.XssProtection](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.XssProtection)** example.  
+
 ## Content Security Policy
-The csp-reports is configured and uses the default Nano report endpoint `/csp/report-to`, which logs the violation to console. If you need different handling than just logging
-the report to console, implement your own endpoint for handling csp violations
+The HTTP Content-Security-Policy response header allows website administrators to control resources the user agent is allowed to load for a given page. 
+With a few exceptions, policies mostly involve specifying server origins and script endpoints. This helps guard against cross-site scripting attacks.  
 
-| Setting              | Type    | Default  | Description                                                                                       |
-| -------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------- |
-|  `ContentType`       | object  | null     | Content-Type header options. See [Content Type](#content-type)                                    |
+See the **[Content Security Policy (CSP) Guide](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP)** for details about how a CSP is delivered to the browser, 
+what it looks like, along with use cases and deployment strategies.  
 
-```json
+| Setting                      | Type    | Default  | Description                                                                                                                                           |
+| ---------------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+|  `ReportOnly`                | object  | false    | The CSP will be enforced in report-only mode. Violations will be reported but not blocked.                                                            |
+|  `UpgradeInsecureRequests`   | object  | false    | Instructs the browser to upgrade all HTTP requests to HTTPS automatically.                                                                            |
+|  `ReportTo`                  | object  | null     | CSP Report-To header configuration. Specifies where CSP violation reports are sent (`report-to`). See [Report-To Directive](#report-to-directive)     |
+|  `Defaults`                  | object  | null     | Default directive (`default-src`) for all unspecified content types. See [Common Directive](#common-directive)                                        |
+|  `Scripts`                   | object  | null     | Controls allowed sources for scripts (`script-src`). See [Script Directive](#script-directive)                                                        |
+|  `ScriptsElem`               | object  | null     | Controls allowed sources for script elements (`script-src-elem`). See [Script Directive](#script-directive)                                           |
+|  `ScriptsAttr`               | object  | null     | Controls allowed sources for inline script attributes (`script-src-attr`). See [Script Directive](#script-directive)                                  |
+|  `Styles`                    | object  | null     | Controls allowed sources for stylesheets (`style-src`). See [Style Directive](#style-directive)                                                       |
+|  `StylesElem`                | object  | null     | Controls allowed sources for style elements (`style-src-elem`). See [Style Directive](#style-directive)                                               |
+|  `StylesAttr`                | object  | null     | Controls allowed sources for inline style attributes (`style-src-attr`). See [Style Directive](#style-directive)                                      |
+|  `Objects`                   | object  | null     | Controls allowed sources for object elements (`object-src`). See [Common Directive](#common-directive)                                                |
+|  `Images`                    | object  | null     | Controls allowed sources for images (`img-src`). See [Common Directive](#common-directive)                                                            |
+|  `Media`                     | object  | null     | Controls allowed sources for audio and video elements (`media-src`). See [Common Directive](#common-directive)                                        |
+|  `Frames`                    | object  | null     | Controls allowed sources for frames and iframes (`frame-src`). See [Common Directive](#common-directive)                                              |
+|  `FencedFrames`              | object  | null     | Controls allowed sources for fenced frames (`fenced-frame-src`). See [Common Directive](#common-directive)                                            |
+|  `FrameAncestors`            | object  | null     | Controls which sources can embed this document (`frame-ancestors`). See [Common Directive](#common-directive)                                         |
+|  `Fonts`                     | object  | null     | Controls allowed sources for fonts (`font-src`). See [Common Directive](#common-directive)                                                            |
+|  `Connections`               | object  | null     | Controls allowed URLs for fetch, XHR, WebSocket, EventSource (`connect-src`). See [Common Directive](#common-directive)                               |
+|  `BaseUris`                  | object  | null     | Controls allowed base URLs for the document (`base-uri`). See [Common Directive](#common-directive)                                                   |
+|  `Children`                  | object  | null     | Controls allowed sources for nested browsing contexts (`child-src`). See [Common Directive](#common-directive)                                        |
+|  `Forms`                     | object  | null     | Controls allowed URLs for form submissions (`form-action`). See [Common Directive](#common-directive)                                                 |
+|  `Manifests`                 | object  | null     | Controls allowed sources for web app manifests (`manifest-src`). See [Common Directive](#common-directive)                                            |
+|  `Workers`                   | object  | null     | Controls allowed sources for web workers, service workers, and shared workers (`worker-src`). See [Common Directive](#common-directive)               |
+|  `TrustedTypes`              | object  | null     | Restricts which Trusted Types policies are allowed to create DOM objects (`trusted-types`). See [Trusted Types Directive](#trusted-types-directive)   |
+|  `Sandbox`                   | object  | null     | Restricts features of a page when embedded in an iframe (`sandbox`). See [Sandbox Directive](#sandbox-directive)                                      |
+|  `PermissionsPolicy`         | object  | null     | Controls access to powerful browser features (`permissions-policy`). See [Permissions Policy Directive](#permissions-policy-directive)                |
+
+```json 
 "App": {
   "HttpPolicyHeaders": {
     "Csp": {
       "ReportOnly": false,
       "UpgradeInsecureRequests": false,
-      "ReportTo": {
-        "Group": "csp-reports",
-        "MaxAge": "10886400",
-        "Endpoints": [
-        ]
-      },
-      "Defaults": {
+      "ReportTo": null,
+      "Defaults": null,
+      "Scripts": null,
+      "ScriptsElem": null,
+      "ScriptsAttr": null,
+      "Styles": null,
+      "StylesElem": null,
+      "StylesAttr": null,
+      "Objects": null,
+      "Images": null,
+      "Media": null,
+      "Frames": null,
+      "FencedFrames": null,
+      "FrameAncestors": null,
+      "Fonts": null,
+      "Connections": null,
+      "BaseUris": null,
+      "Children": null,
+      "Forms": null,
+      "Manifests": null,
+      "TrustedTypes": null,
+      "Sandbox": null,
+      "PermissionsPolicy": null
+    }
+  }
+}
+```
+
+#### Common Directive
+Common configuration applicable to the following CSP directives:   
+`Defaults`, `Objects`, `Media`, `Images`, `Frames`, `FencedFrames`, `FrameAncestors`, `Fonts`, `Connections`, `BaseUris`, `Children`, `Forms`, `Manifests`, `Workers`
+
+| Setting        | Type    | Default | Description                                                        |
+| -------------- | ------- | ------- | ------------------------------------------------------------------ |
+|  `IsNone`      | bool    | false   | If `true`, only 'none' is allowed. All other sources are ignored.  |
+|  `IsSelf`      | bool    | false   | If `true`, 'self' is allowed as a source. ⭐                        |
+|  `Sources`     | array   | []      | Custom sources for the directive.                                  |
+
+```json 
+"App": {
+  "HttpPolicyHeaders": {
+    "Csp": {
+      "{Directive}": {
         "IsNone": false,
         "IsSelf": false,
         "Sources": [
         ]
-      },
+      }
+    }
+  }
+}
+```
+
+#### Scripts Directive
+The HTTP Content-Security-Policy (CSP) script directive specifies valid sources for JavaScript.  
+Scripts directive are split into three different directives. `script-src`, `script-src-elem` and `script-src-attr`.  
+
+This table shows options for `script-src` and `script-src-elem`:  
+
+| Setting                     | Type    | Default | Description                                                                                           |
+| --------------------------- | ------- | ------- | ----------------------------------------------------------------------------------------------------- |
+|  `IsNone`                   | bool    | false   | Only `none` is allowed. All other sources are ignored.                                                |
+|  `IsSelf`                   | bool    | false   | `self` is allowed as a source. ⭐                                                                      |
+|  `IsUnsafeInline`           | bool    | false   | Allows inline scripts (`unsafe-inline`).                                                              |
+|  `IsUnsafeEval`             | bool    | false   | Allows eval() and similar constructs (`unsafe-eval`).                                                 |
+|  `IsUnsafeWasmEval`         | bool    | false   | Allows WebAssembly unsafe evaluation (`wasm-unsafe-eval`).                                            |
+|  `IsTrustedTypesEval`       | bool    | false   | Allows undo of trusted-type evaluation (`trusted-types-eval`).                                        |
+|  `StrictDynamic`            | bool    | false   | Enables 'strict-dynamic' behavior for script execution (`strict-dynamic`).                            |
+|  `IsUnsafeHashes`           | bool    | false   | Allows unsafe hashes for inline scripts (`unsafe-hashes`). ⚠️ Only allowed for `script-src`           |
+|  `UnsafeHashedAttributes`   | bool    | false   | Allows unsafe hashed attributes (`unsafe-hashed-attributes`). ⚠️ Only allowed for `script-src`        |
+|  `UnsafeAllowRedirects`     | bool    | false   | Allows redirects from unsafe sources (`unsafe-allow-redirects`).                                      |
+|  `InlineSpeculationRules`   | bool    | false   | Allows inline speculation rules (`inline-speculation-rules`).                                         |
+|  `Sources`                  | array   | []      | Custom sources for scripts.                                                                           |
+|  `Nonces`                   | array   | []      | Specific nonces to allow inline scripts.                                                              |
+|  `Hashes`                   | array   | []      | SHA hashes to allow inline script content. Must be prefixed with `sha256-`, `sha384-`, or `sha512-`.  |
+|  `RequireTrustedTypes`      | bool    | false   | Requires Trusted Types for script execution. ⚠️ Only allowed for `script-src`                         |
+|  `RequireSri`               | bool    | false   | Requires Subresource Integrity (SRI) for scripts. ⚠️ Only allowed for `script-src`                    |
+|  `ReportSample`             | bool    | false   | Enables 'report-sample' in CSP violation reports.                                                     |
+
+This table shows the options for `script-src-attr`.
+
+| Setting                     | Type    | Default | Description                                                                                           |
+| --------------------------- | ------- | ------- | ----------------------------------------------------------------------------------------------------- |
+|  `IsNone`                   | bool    | false   | Only `none` is allowed. All other sources are ignored.                                                |
+|  `IsSelf`                   | bool    | false   | `self` is allowed as a source.⭐                                                                       |
+|  `IsUnsafeInline`           | bool    | false   | Allows inline scripts (`unsafe-inline`).                                                              |
+|  `IsUnsafeHashes`           | bool    | false   | Allows unsafe hashes for inline scripts (`unsafe-hashes`).                                            |
+|  `UnsafeHashedAttributes`   | bool    | false   | Allows unsafe hashed attributes (`unsafe-hashed-attributes`).                                         |
+|  `Sources`                  | array   | []      | Custom sources for scripts.                                                                           |
+|  `ReportSample`             | bool    | false   | Enables 'report-sample' in CSP violation reports.                                                     |
+
+```json 
+"App": {
+  "HttpPolicyHeaders": {
+    "Csp": {
       "Scripts": {
         "IsNone": false,
         "IsSelf": false,
         "IsUnsafeInline": false,
         "IsUnsafeEval": false,
         "IsUnsafeWasmEval": false,
-        "StrictDynamic": false,
+        "IsTrustedTypesEval": false,
         "IsUnsafeHashes": false,
+        "StrictDynamic": false,
         "UnsafeHashedAttributes": false,
         "UnsafeAllowRedirects": false,
+        "InlineSpeculationRules": false
         "Sources": [
         ],
         "Nonces": [
@@ -395,10 +563,11 @@ the report to console, implement your own endpoint for handling csp violations
         "IsUnsafeInline": false,
         "IsUnsafeEval": false,
         "IsUnsafeWasmEval": false,
+        "IsTrustedTypesEval": false,
         "StrictDynamic": false,
-        "IsUnsafeHashes": false,
         "UnsafeHashedAttributes": false,
         "UnsafeAllowRedirects": false,
+        "InlineSpeculationRules": false
         "Sources": [
         ],
         "Nonces": [
@@ -411,9 +580,52 @@ the report to console, implement your own endpoint for handling csp violations
       },
       "ScriptsAttr": {
         "IsNone": false,
+        "IsSelf": false,
         "IsUnsafeInline": false,
+        "IsUnsafeHashes": false,
+        "UnsafeHashedAttributes": false,
+        "Sources": [
+        ],
         "ReportSample": false
-      },
+      }
+    }
+  }
+}
+```
+
+#### Styles Directive
+The HTTP Content-Security-Policy (CSP) style directive specifies valid sources for stylesheets.  
+Styles directive are split into three different directives. `style-src`, `style-src-elem` and `style-src-attr`.  
+
+This table shows options for `style-src` and `style-src-elem`:  
+
+| Setting                     | Type    | Default | Description                                                                                           |
+| --------------------------- | ------- | ------- | ----------------------------------------------------------------------------------------------------- |
+|  `IsNone`                   | bool    | false   | Only `none` is allowed. All other sources are ignored.                                                |
+|  `IsSelf`                   | bool    | false   | `self` is allowed as a source. ⭐                                                                      |
+|  `IsUnsafeInline`           | bool    | false   | Allows inline styles (`unsafe-inline`).                                                               |
+|  `IsUnsafeHashes`           | bool    | false   | Allows unsafe hashes for inline styles (`unsafe-hashes`). ⚠️ Only allowed for `style-src`             |
+|  `Sources`                  | array   | []      | Custom sources for styles.                                                                            |
+|  `Nonces`                   | array   | []      | Specific nonces to allow inline styles.                                                               |
+|  `Hashes`                   | array   | []      | SHA hashes to allow inline styles content. Must be prefixed with `sha256-`, `sha384-`, or `sha512-`.  |
+|  `RequireSri`               | bool    | false   | Requires Subresource Integrity (SRI) for styles. ⚠️ Only allowed for `style-src`                      |
+|  `ReportSample`             | bool    | false   | Enables 'report-sample' in CSP violation reports.                                                     |
+
+This table shows trhe options for `script-src-attr`.
+
+| Setting                     | Type    | Default | Description                                                                                           |
+| --------------------------- | ------- | ------- | ----------------------------------------------------------------------------------------------------- |
+|  `IsNone`                   | bool    | false   | Only `none` is allowed. All other sources are ignored.                                                |
+|  `IsSelf`                   | bool    | false   | `self` is allowed as a source. ⭐                                                                      |
+|  `IsUnsafeInline`           | bool    | false   | Allows inline styles (`unsafe-inline`).                                                               |
+|  `IsUnsafeHashes`           | bool    | false   | Allows unsafe hashes for inline styles (`unsafe-hashes`).                                             |
+|  `Sources`                  | array   | []      | Custom sources for styles.                                                                            |
+|  `ReportSample`             | bool    | false   | Enables 'report-sample' in CSP violation reports.                                                     |
+
+```json 
+"App": {
+  "HttpPolicyHeaders": {
+    "Csp": {
       "Styles": {
         "IsNone": false,
         "IsSelf": false,
@@ -432,105 +644,78 @@ the report to console, implement your own endpoint for handling csp violations
         "IsNone": false,
         "IsSelf": false,
         "IsUnsafeInline": false,
-        "IsUnsafeHashes": false,
         "Sources": [
         ],
         "Nonces": [
         ],
         "Hashes": [
         ],
-        "RequireSri": false,
         "ReportSample": false
       },
       "StylesAttr": {
         "IsNone": false,
+        "IsSelf": false,
         "IsUnsafeInline": false,
+        "IsUnsafeHashes": false,
+        "Sources": [
+        ],
         "ReportSample": false
-      },
-      "Objects": {
-        "IsNone": false,
-        "IsSelf": false,
-        "Sources": [
-        ]
-      },
-      "Media": {
-        "IsNone": false,
-        "IsSelf": false,
-        "Sources": [
-        ]
-      },
-      "Images": {
-        "IsNone": false,
-        "IsSelf": false,
-        "Sources": [
-        ]
-      },
-      "Frames": {
-        "IsNone": false,
-        "IsSelf": false,
-        "Sources": [
-        ]
-      },
-      "FencedFrames": {
-        "IsNone": false,
-        "IsSelf": false,
-        "Sources": [
-        ]
-      },
-      "FrameAncestors": {
-        "IsNone": false,
-        "IsSelf": false,
-        "Sources": [
-        ]
-      },
-      "Fonts": {
-        "IsNone": false,
-        "IsSelf": false,
-        "Sources": [
-        ]
-      },
-      "Connections": {
-        "IsNone": false,
-        "IsSelf": false,
-        "Sources": [
-        ]
-      },
-      "BaseUris": {
-        "IsNone": false,
-        "IsSelf": false,
-        "Sources": [
-        ]
-      },
-      "Children": {
-        "IsNone": false,
-        "IsSelf": false,
-        "Sources": [
-        ]
-      },
-      "Forms": {
-        "IsNone": false,
-        "IsSelf": false,
-        "Sources": [
-        ]
-      },
-      "Manifests": {
-        "IsNone": false,
-        "IsSelf": false,
-        "Sources": [
-        ]
-      },
-      "Workers": {
-        "IsNone": false,
-        "IsSelf": false,
-        "Sources": [
-        ]
-      },
+      }
+    }
+  }
+}
+```
+
+#### TrustedTypes Directive
+The HTTP Content-Security-Policy (CSP) trusted-types directive is used to specify an allowlist of Trusted Type policy names 
+that a website can create using `trustedTypes.createPolicy()`.
+
+| Setting             | Type    | Default | Description                                               |
+| ------------------- | ------- | ------- | --------------------------------------------------------- |
+|  `IsNone`           | bool    | false   | Only `none` is allowed. All other sources are ignored.    |
+|  `AllowDuplicates`  | bool    | false   | Allow duplicate policy names.                             |
+|  `Policies`         | array   | []      | List of allowed Trusted Types policy names.               |
+
+```json 
+"App": {
+  "HttpPolicyHeaders": {
+    "Csp": {
       "TrustedTypes": {
         "IsNone": false,
         "AllowDuplicates": false,
         "Policies": [
         ]
-      },
+      }
+    }
+  }
+}
+```
+
+#### Sandbox Directive
+The HTTP Content-Security-Policy (CSP) sandbox directive enables a sandbox for the requested resource similar to the `<iframe>` sandbox attribute. 
+It applies restrictions to a page's actions including preventing popups, preventing the execution of plugins and scripts, and enforcing a same-origin policy.  
+
+| Setting                                 | Type    | Default     | Description                                                  |
+| --------------------------------------- | ------- | ----------- | ------------------------------------------------------------ |
+|  `AllowDownloads`                       | bool    | false       | Allows downloads in the sandbox.                             |
+|  `AllowForms`                           | bool    | false       | Allows form submissions from the sandboxed page.             |
+|  `AllowModals`                          | bool    | false       | Allows opening modal windows.                                |
+|  `AllowOrientationLock`                 | bool    | false       | Allows disabling screen orientation lock.                    |
+|  `AllowPointerLock`                     | bool    | false       | Allows usage of Pointer Lock API.                            |
+|  `AllowPopups`                          | bool    | false       | Allows popups (window.open, target=_blank).                  |
+|  `AllowPopupsToEscapeSandbox`           | bool    | false       | Allows popups to escape sandbox restrictions.                |
+|  `AllowPresentation`                    | bool    | false       | Allows initiating presentations from the sandboxed page.     |
+|  `AllowSameOrigin`                      | bool    | false       | Allows same-origin access from sandboxed content.            |
+|  `AllowScripts`                         | bool    | false       | Allows execution of scripts.                                 |
+|  `AllowStorageAccessByUserActivation`   | bool    | false       | Allows storage access via user activation.                   |
+|  `AllowTopNavigation`                   | bool    | false       | Allows top-level navigation.                                 |
+|  `AllowTopNavigationByUserActivation`   | bool    | false       | Allows top-level navigation via user activation.             |
+|  `AllowTopNavigationToCustomProtocols`  | bool    | false       | Allows navigation to custom protocols.                       |
+
+```json 
+"App": {
+  "HttpPolicyHeaders": {
+    "Csp": {
       "Sandbox": {
         "AllowDownloads": false,
         "AllowForms": false,
@@ -546,195 +731,89 @@ the report to console, implement your own endpoint for handling csp violations
         "AllowTopNavigation": false,
         "AllowTopNavigationByUserActivation": false,
         "AllowTopNavigationToCustomProtocols": false
-      },
+      }
+    }
+  }
+}
+```
+
+#### Permissions Policy Directive
+The HTTP Permissions-Policy response header provides a mechanism to allow and deny the use of browser features in a document or 
+within any `<iframe>` elements in the document.  
+
+The following directives may be added to `PermissionPolicy` in the configuration:
+| Directive                      | Description                                                                                                                                                                                                                            |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Accelerometer`                | Controls whether the current document is allowed to gather information about the acceleration of the device through the Accelerometer interface.                                                                                       |
+| `AmbientLightSensor`           | Controls whether the current document is allowed to gather information about the amount of light in the environment around the device through the AmbientLightSensor interface.                                                        |
+| `AriaNotify`                   | Controls whether the current document is allowed to use the `ariaNotify()` method to fire screen reader announcements.                                                                                                                 |
+| `AutoPlay`                     | Controls whether the current document is allowed to autoplay media requested through the HTMLMediaElement interface.                                                                                                                   |
+| `Bluetooth`                    | Controls whether the use of the Web Bluetooth API is allowed.                                                                                                                                                                          |
+| `Battery`                      | Controls whether the use of the Battery Status API is allowed.                                                                                                                                                                         |
+| `Camera`                       | Controls whether the current document is allowed to use video input devices.                                                                                                                                                           |
+| `CapturedSurfaceControl`       | Controls whether or not the document is permitted to use the Captured Surface Control API.                                                                                                                                             |
+| `HighEntropyValues`            | Controls whether or not the document is permitted to use the `NavigatorUAData.getHighEntropyValues()` method to retrieve high-entropy user-agent data.                                                                                 |
+| `ComputePressure`              | Controls access to the Compute Pressure API.                                                                                                                                                                                           |
+| `CrossOriginIsolated`          | Controls whether the current document can be treated as cross-origin isolated.                                                                                                                                                         |
+| `DeferredFetch`                | Controls the allocation of the top-level origin's `fetchLater()` quota.                                                                                                                                                                |
+| `DeferredFetchMinimal`         | Controls the allocation of the shared cross-origin subframe `fetchLater()` quota.                                                                                                                                                      |
+| `DisplayCapture`               | Controls whether the current document is permitted to use the `getDisplayMedia()` method to capture screen contents.                                                                                                                   |
+| `DocumentDomain`               | Controls whether the current document is allowed to set `document.domain`.                                                                                                                                                             |
+| `EncryptedMedia`               | Controls whether the current document is allowed to use the Encrypted Media Extensions API (EME).                                                                                                                                      |
+| `ExecutionWhileNotRendered`    | Execution While Not Rendered. Controls whether tasks should execute in frames while they're not being rendered (e.g. if an iframe is hidden or display: none).                                                                         |
+| `ExecutionWhileOutOfViewport`  | Execution While Out Of Viewport. Controls whether tasks should execute in frames while they're outside the visible viewport.                                                                                                           |
+| `FullScreen`                   | Controls whether the current document is allowed to use `Element.requestFullScreen()`.                                                                                                                                                 |
+| `Gamepad`                      | Controls whether the current document is allowed to use the Gamepad API.                                                                                                                                                               |
+| `Geolocation`                  | Controls whether the current document is allowed to use the Geolocation Interface.                                                                                                                                                     |
+| `Gyroscope`                    | Controls whether the current document is allowed to gather information about the orientation of the device through the Gyroscope interface.                                                                                            |
+| `Hid`                          | Controls whether the current document is allowed to use the WebHID API to connect to uncommon or exotic human interface devices such as alternative keyboards or gamepads.                                                             |
+| `IdentityCredentialsGet`       | Controls whether the current document is allowed to use the Federated Credential Management API (FedCM).                                                                                                                               |
+| `IdleDetection`                | Controls whether the current document is allowed to use the Idle Detection API to detect when users are interacting with their devices, for example to report "available"/"away" status in chat applications.                          |
+| `LanguageDetector`             | Controls access to the language detection functionality of the Translator and Language Detector APIs.                                                                                                                                  |
+| `LocalFonts`                   | Controls whether the current document is allowed to gather data on the user's locally-installed fonts via the Window.queryLocalFonts() method (see also the Local Font Access API).                                                    |
+| `LayoutAnimations`             | Controls whether the current document is allowed to show layout animations.                                                                                                                                                            |
+| `LegacyImageFormats`           | Controls whether the current document is allowed to display images in legacy formats.                                                                                                                                                  |
+| `Magnetometer`                 | Controls whether the current document is allowed to gather information about the orientation of the device through the Magnetometer interface.                                                                                         |
+| `Microphone`                   | Controls whether the current document is allowed to use audio input devices.                                                                                                                                                           |
+| `Midi`                         | Controls whether the current document is allowed to use the Web MIDI API.                                                                                                                                                              |
+| `OnDeviceSpeechRecognition`    | Controls access to the on-device speech recognition functionality of the Web Speech API.                                                                                                                                               |
+| `OtpCredentials`               | Controls whether the current document is allowed to use the WebOTP API to request a one-time password (OTP) from a specially-formatted SMS message sent by the app's server, i.e., via `navigator.credentials.get({otp: ..., ...})`.   |
+| `NavigationOverride`           | Controls the availability of mechanisms that enables the page author to take control over the behavior of spatial navigation, or to cancel it outright.                                                                                |
+| `OversizedImages`              | Controls whether the current document is allowed to download and display large images.                                                                                                                                                 |
+| `Payment`                      | Controls whether the current document is allowed to use the Payment Request API.                                                                                                                                                       |
+| `PictureInPicture`             | Controls whether the current document is allowed to play a video in a Picture-in-Picture mode via the corresponding API.                                                                                                               |
+| `PrivateStateTokenIssuance`    | Controls usage of private state token token-request operations.                                                                                                                                                                        |
+| `PrivateStateTokenRedemption`  | Controls usage of private state token token-redemption and send-redemption-record operations.                                                                                                                                          |
+| `PublickeyCredentialsCreate`   | Controls whether the current document is allowed to use the Web Authentication API to create new asymmetric key credentials, i.e., via `navigator.credentials.create({ publicKey: ..., ...})`.                                         |
+| `PublicKeyCredentialsGet`      | Controls whether the current document is allowed to use the Web Authentication API to retrieve already stored public-key credentials, i.e. via `navigator.credentials.get({publicKey: ..., ...})`.                                     |
+| `ScreenWakeLock`               | Controls whether the current document is allowed to use Screen Wake Lock API to indicate that device should not turn off or dim the screen.                                                                                            |
+| `Serial`                       | Controls whether the current document is allowed to use the Web Serial API to communicate with serial devices, either directly connected via a serial port, or via USB or Bluetooth devices emulating a serial port.                   |
+| `SpeakerSelection`             | Controls whether the current document is allowed to use the Audio Output Devices API to list and select speakers.                                                                                                                      |
+| `StorageAccess`                | Controls whether a document loaded in a third-party context (i.e., embedded in an iframe) is allowed to use the Storage Access API to request access to unpartitioned cookies.                                                         |
+| `Translator`                   | Controls access to the translation functionality of the Translator and Language Detector APIs.                                                                                                                                         |
+| `Summarizer`                   | Controls access to the Summarizer API.                                                                                                                                                                                                 |
+| `SyncXhr`                      | Controls whether the current document is allowed to make synchronous XMLHttpRequest requests.                                                                                                                                          |
+| `UnoptimizedImages`            | Controls whether the current document is allowed to download and display unoptimized images.                                                                                                                                           |
+| `UnsizedMedia`                 | Controls whether the current document is allowed to change the size of media elements after the initial layout is complete.                                                                                                            |
+| `Usb`                          | Controls whether the current document is allowed to use the WebUSB API.                                                                                                                                                                |
+| `WebShare`                     | Controls whether the current document is allowed to use the `Navigator.share()` of Web Share API to share text, links, images, and other content to arbitrary destinations of user's choice, e.g. mobile apps.                         |
+| `WindowManagement`             | Controls whether or not the current document is allowed to use the Window Management API to manage windows on multiple displays.                                                                                                       |
+| `XrSpatialTracking`            | Controls whether the current document is allowed to use the WebXR Device API to interact with a WebXR session.                                                                                                                         |
+
+Each directive may be configured as shown below.  
+
+| Setting                     | Type    | Default | Description                                                 |
+| --------------------------- | ------- | ------- | ----------------------------------------------------------- |
+|  `IsNone`                   | bool    | false   | Only `none` is allowed. All other sources are ignored.      |
+|  `IsSelf`                   | bool    | false   | `self` is allowed as a source. ⭐                            |
+|  `Sources`                  | array   | []      | Allowed custom asources.                                    |
+
+```json 
+"App": {
+  "HttpPolicyHeaders": {
+    "Csp": {
       "PermissionsPolicy": {
-        "Accelerometer": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "AmbientLightSensor": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "AutoPlay": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "Battery": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "Camera": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "DisplayCapture": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "DocumentDomain": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "EncryptedMedia": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "ExecutionWhileNotRendered": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "ExecutionWhileOutOfViewport": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "FullScreen": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "Gamepad": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "Geolocation": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "Gyroscope": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "LayoutAnimations": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "LegacyImageFormats": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "Magnetometer": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "Microphone": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "Midi": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "NavigationOverride": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "OversizedImages": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "Payment": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "PictureInPicture": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "PublicKeyCredentialsGet": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "SpeakerSelection": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "SyncXhr": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "UnoptimizedImages": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "UnsizedMedia": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "Usb": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "ScreenWakeLock": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "WebShare": {
-          "IsNone": false,
-          "IsSelf": false,
-          "Sources": [
-          ]
-        },
-        "XrSpatialTracking": {
+        "{directive}": {
           "IsNone": false,
           "IsSelf": false,
           "Sources": [
@@ -746,12 +825,50 @@ the report to console, implement your own endpoint for handling csp violations
 }
 ```
 
-## Cors
-Cors.
+#### Report-To Directive
+Defines the CSP `report-to` directive for reporting policy violations.  
+If configured, both the `Report-To` and `Reporting-Endpoints` headers are emitted on every response using the provided configuration.  
 
-| Setting              | Type    | Default  | Description                                                                                       |
-| -------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------- |
-|  `ContentType`       | object  | null     | Content-Type header options. See [Content Type](#content-type)                                    |
+| Setting        | Type    | Default     | Description                                                                                                                                                  |
+| -------------- | ------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+|  `Group`       | string  | csp-reports | Reporting group name referenced by CSP.                                                                                                                      |
+|  `MaxAge`      | int     | 10886400    | Max age (seconds) for the report group.                                                                                                                      |
+|  `Endpoints`   | array   | []          | URLs to receive CSP reports. If no endpoints is specified, report-to will default to the built-in Nano endpoint: `/csp/report-to`, that logs the violation.  |
+
+```json 
+"App": {
+  "HttpPolicyHeaders": {
+    "Csp": {
+      "ReportTo": {
+        "Group": "csp-reports",
+        "MaxAge": "10886400",
+        "Endpoints": [
+        ]
+      }
+    }
+  }
+}
+```
+
+> 📖 Learn more about **[Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy)**
+
+Try it out yourself using the **[Api.PolicyHeaders.ContentSecurityPolicy](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.ContentSecurityPolicy)** example.  
+
+## Cors
+Cross-Origin Resource Sharing (CORS) is an HTTP-header-based security mechanism that allows a server to authorize web browsers to load resources 
+from a domain different than the one that served the original page.  
+
+| Setting                   | Type    | Default  | Description                                                                                                                                |
+| ------------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+|  `AllowedOrigins`         | array   | []       | Allowed origins.                                                                                                                           |
+|  `AllowedHeaders`         | array   | []       | Allowed HTTP headers.                                                                                                                      |
+|  `AllowedMethods`         | array   | []       | Allowed HTTP methods.                                                                                                                      |
+|  `AllowCredentials`       | bool    | false    | Indicates whether credentials are allowed.                                                                                                 |
+|  `Origin`                 | object  | default  | Origin-specific CORS policies.                                                                                                             |
+|  `Origin.EmbedderPolicy`  | object  | default  | The HTTP Cross-Origin-Embedder-Policy (COEP) response header configures the current document's policy for loading and embedding cross-origin resources. Allowed values: `UnsafeNone`⭐, `RequireCorp` or `Credentialless`.  |
+|  `Origin.OpenerPolicy`    | object  | default  | The HTTP Cross-Origin-Opener-Policy (COOP) response header allows a website to control whether a new top-level document, opened using Window.open() or by navigating to a new page, is opened in the same browsing context group (BCG) or in a new browsing context group. Allowed values: `SameOrigin`⭐, `UnsafeNone` or `SameOriginAllowPopups`.  |
+|  `Origin.ResourcePolicy`  | object  | default  | The HTTP Cross-Origin-Resource-Policy response header (CORP) indicates that the browser should block no-cors cross-origin or cross-site requests to the given resource. Allowed values: `SameOrigin`⭐, `SameSite` or `CrossOrigin`.  |
+|  `ExposedHeaders`         | object  | default  | Additional exposed headers. Nano exposes these headers by default: `TZ`, `RequestId`, `Content-Disposition` and `api-supported-versions`.  |
 
 ```json
 "App": {
@@ -763,23 +880,31 @@ Cors.
       ],
       "AllowedMethods": [
       ],
-      "AllowCredentials": true,
+      "AllowCredentials": false,
       "Origin": {
         "EmbedderPolicy": null,
         "OpenerPolicy": null,
         "ResourcePolicy": null
       }
+      "ExposedHeaders": [
+      ]
     }
   }
 }
 ```
 
-## Hsts
-Hsts
+> 📖 Learn more about **[Hsts](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS)**
 
-| Setting              | Type    | Default  | Description                                                                                       |
-| -------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------- |
-|  `ContentType`       | object  | null     | Content-Type header options. See [Content Type](#content-type)                                    |
+Try it out yourself using the **[Api.PolicyHeaders.Cors](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.Cors)** example.  
+
+## Strict Transport Security (Hsts)
+HTTP Strict Transport Security (HSTS) is a web security policy mechanism that forces browsers to interact with websites solely through secure HTTPS connections.  
+
+| Setting               | Type     | Default       | Description                                                                                           |
+| --------------------- | -------- | ------------- | ----------------------------------------------------------------------------------------------------- |
+|  `MaxAge`             | TimeSpan | 182:00:00:00  | Maximum age for HSTS. Default 182 days.                                                               |
+|  `UsePreload`         | bool     | false         | Enable or disable the preload directive. Preload will only used if `MaxAge` is greater than 7 weeks.  |
+|  `IncludeSubdomains`  | bool     | false         | Include subdomains in HSTS policy.                                                                    |
 
 ```json
 "App": {
@@ -793,12 +918,23 @@ Hsts
 }
 ```
 
-## Robots
-Robots.
+> 📖 Learn more about **[Hsts](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Strict-Transport-Security)**
 
-| Setting              | Type    | Default  | Description                                                                                       |
-| -------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------- |
-|  `ContentType`       | object  | null     | Content-Type header options. See [Content Type](#content-type)                                    |
+Try it out yourself using the **[Api.PolicyHeaders.Hsts](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.Hsts)** example.  
+
+## Robots
+The `X-Robots-Tag` response header defines how crawlers should index URLs. While not part of any specification, it is a de-facto standard method 
+for communicating with search bots, web crawlers, and similar user agents.
+
+| Setting             | Type  | Default  | Description                                                                         |
+| ------------------- | ----- | -------- | ----------------------------------------------------------------------------------- |
+|  `UseNoIndex`       | bool  | false    | Instructs search engines to not index the page.                                     |
+|  `UseNoFollow`      | bool  | false    | Instructs search engines to not follow links on the page.                           |
+|  `UseNoSnippet`     | bool  | false    | Instructs search engines to not display a snippet for the page in search results.   |
+|  `UseNoArchive`     | bool  | false    | Instructs search engines to not offer a cached version of the page.                 |
+|  `UseNoOdp`         | bool  | false    | Instructs search engines to not use Open Directory Project info for title/snippet.  |
+|  `UseNoTranslate`   | bool  | false    | Instructs search engines to not offer translation of the page (Google only).        |
+|  `UseNoImageIndex`  | bool  | false    | Instructs search engines to not index images on the page (Google only).             |
 
 ```json
 "App": {
@@ -816,11 +952,16 @@ Robots.
 }
 ```
 
+> 📖 Learn more about **[X-Robots-Tag](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Robots-Tag)**
+
+Try it out yourself using the **[Api.PolicyHeaders.Robots](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.Robots)** example.  
+
 ## Forwarded Headers
 
-| Setting              | Type    | Default  | Description                                                                                       |
-| -------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------- |
-|  `ContentType`       | object  | null     | Content-Type header options. See [Content Type](#content-type)                                    |
+| Setting                   | Type    | Default  | Description                                                                                              |
+| ------------------------- | ------- | -------- | -------------------------------------------------------------------------------------------------------- |
+|  `Headers`                | object  | All      | Defines the headers that should forwarded.                                                               |
+|  `RequireHeaderSymmetry`  | bool    | true     | Specifies that forwarded headers will only be processed if the set of headers is complete for that hop.  |
 
 ```json
 "App": {
@@ -833,16 +974,31 @@ Robots.
 }
 ```
 
-| Header               | HttpContext                             |
-| -------------------- | --------------------------------------- |
-| X-Forwarded Header   | HttpContext Property Updated            |
-| X-Forwarded-For	   | HttpContext.Connection.RemoteIpAddress  |
-| X-Forwarded-Proto	   | HttpContext.Request.Scheme              |
-| X-Forwarded-Host	   | HttpContext.Request.Host                |
+#### Headers Values
+| Setting              | Description                                                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------ |
+|  `None`              | Do not process any forwarders.                                                                         |
+|  `XForwardedFor`     | Process `X-Forwarded-For`, which identifies the originating IP address of the client.                  |
+|  `XForwardedHost`    | Process `X-Forwarded-Host`, which identifies the original host requested by the client.                |
+|  `XForwardedProto`   | Process `X-Forwarded-Proto`, which identifies the protocol (HTTP or HTTPS) the client used to connect. |
+|  `XForwardedPrefix`  | Process `X-Forwarded-Prefix`, which identifies the original path base used by the client.              |
+|  `All`               | Process X-Forwarded-For, X-Forwarded-Host, X-Forwarded-Proto and X-Forwarded-Prefix.                   |
+
+#### X-Forwarded-Headers
+| Header               | HttpContext                                     |
+| -------------------- | ----------------------------------------------- |
+| `X-Forwarded-Proto`  | Sets `HttpContext.Request.Scheme`.              |
+| `X-Forwarded-Host`   | Sets `HttpContext.Request.Host`.                |
+| `X-Forwarded-Port`   | Sets `HttpContext.Request.Port`.                |
+| `X-Forwarded-For`	   | Sets `HttpContext.Connection.RemoteIpAddress`.  |
+| `X-Forwarded-Prefix` | Ignored, and not transferred to `httpContext`.  |
 
 If your app is directly exposed to the internet without a reverse proxy in front, clients can spoof X-Forwarded headers: fake IP, scheme, or host.
 Therefore, this approach is safe only if your traffic always passes through a trusted proxy / load balancer, which is exactly the case in cloud deployments.
 
+> 📖 Learn more about **[Forwarded Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Forwarded)**
+
+Try it out yourself using the **[Api.PolicyHeaders.ForwardedHeaders](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.ForwardedHeaders)** example.  
 
 
 
@@ -857,7 +1013,7 @@ Therefore, this approach is safe only if your traffic always passes through a tr
 
 
 ## Response Cache
-It's recommended to enable in configuration, and then disable of certain actions where neeeded.
+It's recommended to enable in configuration, and then disable of certain actions where neeeded using the annotation. show the attribute for cache
 
 ## Response Compression
 Try to disable one endpoint in example, and test enabled vs disabled and see the response size difference
@@ -908,6 +1064,8 @@ Cookie name: `.AspNetCore.Culture`
 
 
 ## Documentation
+TRY DIFFERENT route format in addversioning, etc. like the 'Vv' could be 'Vvv' for 3 version numbers. TRY IT OUT
+
 When documentation is enabled in the configuration file, a web-interface documenting the service, it's endpoints and it's models - is created and deployed.  
 The documentation is based on [Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore).  
 When using Default version only non versioned routes are shown in swagger for the default version.
@@ -928,7 +1086,7 @@ metadata:
 ```
 HOW MUCH MORE DO WE NEED HERE. 
 
-### Use Default Version
+### Hide Default Version
 When this is `true` then the routes in swagger for the default version (`App:Version`) will be omitted from swagger, and only the default non-versioned routes will show.
 The versioned routes still work, but is just hidden from swagger.
 
@@ -1018,17 +1176,20 @@ If a cookie violates the policy, the middleware adjusts it to conform before sen
 
 
 ## Preflight
+LESSON MISSING
 Describe support for http OPTIONS. Is it called preflight or preflight request or? Read more about this and check code
 
 
 ## Request Traceability
-BaseController.RequestId
+LESSON MISSING
+Check BaseController.RequestId
+ARE WE USING THIS IN EXCEPTION HANDLING MIDDLEWARE???
 Will be set in the first Nano reached in the architecture and used all the way through. It may also be set from the frontend, and that is encurraged.
 CHECK it's used in logging (exceptionhandling middleware)
 
 
 ## Content-Type Negotiation 
-WE ARE MISSING EXAMPLE
+LESSON MISSING
 WE ALWAYS USE JSON. AND ITS NOT ```Content-Type``` or   ```Accept```, CHECK WHICH IS REQUEST AND WHICH IS RESPONSE
 Nano supports several different formats (listed below) for the requests and responses of the controller actions.  
 The format, also known as content-type may be specified, either through the ```Content-Type``` or   ```Accept``` header, or by appending the following querystring parameter: ```?format={format}```. The later is default by ([Microsoft Formatting](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/formatting)), by any of the three methods will work with Nano.
@@ -1048,6 +1209,8 @@ Supported formats: Json
 ## Identity
 
 ## Authentication
+HOW DO WE ADD ROLES FOR TRANSIENT LOGIN (WE NEED ROLES OTHERWISE NO ACCESS TO CONTROLLERS)
+
 When authentication has been enabled and configured, and the application is running, users authenticate in order to gain access to the controllers and their actions. Nano has a ```AuthController``` implementation, responsible for this.  
 
 Nano supports various methods of authentication as described in [Security - Authentication](security#authentication) section.  
@@ -1089,6 +1252,8 @@ The ```Security``` section of the configuration defines behavior related to auth
 ```
 
 ### Roles & Claims
+ROLES AND CLAIMS SHOULD BE MOVED TO DATA, or
+
 #### Roles
 Name | Type | Description |
 ---- | ---- | ---- |

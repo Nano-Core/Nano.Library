@@ -6,10 +6,12 @@ internal interface ICspDirectiveScript : ICspDirectiveSimple
     void UnsafeEval();
     void UnsafeHashes();
     void UnsafeWasmEval();
+    void TrustedTypesEval();
     void StrictDynamic();
-    void Nonces(params string[] nonces);
-    void Hashes(params string[] hashes);
     void UnsafeHashedAttributes();
     void UnsafeAllowRedirects();
+    void InlineSpeculationRules();
+    void Nonces(params string[] nonces);
+    void Hashes(params string[] hashes);
     void ReportSample();
 }

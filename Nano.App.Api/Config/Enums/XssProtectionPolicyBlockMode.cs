@@ -25,7 +25,7 @@ public enum XssProtectionPolicyBlockMode
     FilterEnabledBlockMode,
 
     /// <summary>
-    /// 
+    /// Send report.
     /// </summary>
     ProtectionReport
 }

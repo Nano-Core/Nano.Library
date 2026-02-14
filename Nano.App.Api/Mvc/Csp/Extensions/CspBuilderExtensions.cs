@@ -107,6 +107,24 @@ internal static class CspBuilderExtensions
                     .UnsafeEval();
             }
 
+            if (options.IsUnsafeWasmEval)
+            {
+                scriptSrc
+                    .UnsafeWasmEval();
+            }
+
+            if (options.IsTrustedTypesEval)
+            {
+                scriptSrc
+                    .TrustedTypesEval();
+            }
+
+            if (options.StrictDynamic)
+            {
+                scriptSrc
+                    .StrictDynamic();
+            }
+
             if (options.IsUnsafeHashes)
             {
                 scriptSrc
@@ -119,18 +137,6 @@ internal static class CspBuilderExtensions
                     .UnsafeInline();
             }
 
-            if (options.IsUnsafeWasmEval)
-            {
-                scriptSrc
-                    .UnsafeWasmEval();
-            }
-
-            if (options.StrictDynamic)
-            {
-                scriptSrc
-                    .StrictDynamic();
-            }
-
             if (options.UnsafeHashedAttributes)
             {
                 scriptSrc
@@ -141,6 +147,12 @@ internal static class CspBuilderExtensions
             {
                 scriptSrc
                     .UnsafeAllowRedirects();
+            }
+
+            if (options.InlineSpeculationRules)
+            {
+                scriptSrc
+                    .InlineSpeculationRules();
             }
 
             if (options.Sources.Length > 0)
@@ -164,47 +176,6 @@ internal static class CspBuilderExtensions
             if (options.ReportSample)
             {
                 scriptSrc
-                    .ReportSample();
-            }
-        }
-
-        return builder;
-    }
-
-    internal static CspBuilder UseCspScriptAttr(this CspBuilder builder, CspOptions.CspDirectiveScriptsAttrOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        if (options == null)
-        {
-            return builder;
-        }
-
-        var scriptSrcAttr = builder
-            .ScriptSrcAttr();
-
-        if (options.IsNone)
-        {
-            scriptSrcAttr
-                .None();
-        }
-        else
-        {
-            if (options.IsUnsafeInline)
-            {
-                scriptSrcAttr
-                    .UnsafeInline();
-            }
-
-            if (options.IsUnsafeHashes)
-            {
-                scriptSrcAttr
-                    .UnsafeHashes();
-            }
-
-            if (options.ReportSample)
-            {
-                scriptSrcAttr
                     .ReportSample();
             }
         }
@@ -237,15 +208,128 @@ internal static class CspBuilderExtensions
                     .Self();
             }
 
+            if (options.IsUnsafeEval)
+            {
+                scriptSrcElem
+                    .UnsafeEval();
+            }
+
+            if (options.IsUnsafeWasmEval)
+            {
+                scriptSrcElem
+                    .UnsafeWasmEval();
+            }
+
+            if (options.IsTrustedTypesEval)
+            {
+                scriptSrcElem
+                    .TrustedTypesEval();
+            }
+
+            if (options.StrictDynamic)
+            {
+                scriptSrcElem
+                    .StrictDynamic();
+            }
+
+            if (options.IsUnsafeInline)
+            {
+                scriptSrcElem
+                    .UnsafeInline();
+            }
+
+            if (options.UnsafeAllowRedirects)
+            {
+                scriptSrcElem
+                    .UnsafeAllowRedirects();
+            }
+
+            if (options.InlineSpeculationRules)
+            {
+                scriptSrcElem
+                    .InlineSpeculationRules();
+            }
+
             if (options.Sources.Length > 0)
             {
                 scriptSrcElem
                     .Sources(options.Sources);
             }
 
+            if (options.Nonces.Length > 0)
+            {
+                scriptSrcElem
+                    .Nonces(options.Nonces);
+            }
+
+            if (options.Hashes.Length > 0)
+            {
+                scriptSrcElem
+                    .Hashes(options.Hashes);
+            }
+
             if (options.ReportSample)
             {
                 scriptSrcElem
+                    .ReportSample();
+            }
+        }
+
+        return builder;
+    }
+
+    internal static CspBuilder UseCspScriptAttr(this CspBuilder builder, CspOptions.CspDirectiveScriptsAttrOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        if (options == null)
+        {
+            return builder;
+        }
+
+        var scriptSrcAttr = builder
+            .ScriptSrcAttr();
+
+        if (options.IsNone)
+        {
+            scriptSrcAttr
+                .None();
+        }
+        else
+        {
+            if (options.IsSelf)
+            {
+                scriptSrcAttr
+                    .Self();
+            }
+
+            if (options.IsUnsafeInline)
+            {
+                scriptSrcAttr
+                    .UnsafeInline();
+            }
+
+            if (options.IsUnsafeHashes)
+            {
+                scriptSrcAttr
+                    .UnsafeHashes();
+            }
+
+            if (options.UnsafeHashedAttributes)
+            {
+                scriptSrcAttr
+                    .UnsafeHashedAttributes();
+            }
+
+            if (options.Sources.Length > 0)
+            {
+                scriptSrcAttr
+                    .Sources(options.Sources);
+            }
+
+            if (options.ReportSample)
+            {
+                scriptSrcAttr
                     .ReportSample();
             }
         }
@@ -318,47 +402,6 @@ internal static class CspBuilderExtensions
         return builder;
     }
 
-    internal static CspBuilder UseCspStyleAttr(this CspBuilder builder, CspOptions.CspDirectiveStylesAttrOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        if (options == null)
-        {
-            return builder;
-        }
-
-        var styleSrcAttr = builder
-            .StyleSrcAttr();
-
-        if (options.IsNone)
-        {
-            styleSrcAttr
-                .None();
-        }
-        else
-        {
-            if (options.IsUnsafeInline)
-            {
-                styleSrcAttr
-                    .UnsafeInline();
-            }
-
-            if (options.IsUnsafeHashes)
-            {
-                styleSrcAttr
-                    .UnsafeHashes();
-            }
-
-            if (options.ReportSample)
-            {
-                styleSrcAttr
-                    .ReportSample();
-            }
-        }
-
-        return builder;
-    }
-
     internal static CspBuilder UseCspStyleElem(this CspBuilder builder, CspOptions.CspDirectiveStylesElemOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
@@ -384,6 +427,12 @@ internal static class CspBuilderExtensions
                     .Self();
             }
 
+            if (options.IsUnsafeInline)
+            {
+                styleSrcElem
+                    .UnsafeInline();
+            }
+
             if (options.Sources.Length > 0)
             {
                 styleSrcElem
@@ -402,15 +451,62 @@ internal static class CspBuilderExtensions
                     .Hashes(options.Hashes);
             }
 
-            if (options.IsUnsafeHashes)
+            if (options.ReportSample)
             {
                 styleSrcElem
+                    .ReportSample();
+            }
+        }
+
+        return builder;
+    }
+
+    internal static CspBuilder UseCspStyleAttr(this CspBuilder builder, CspOptions.CspDirectiveStylesAttrOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        if (options == null)
+        {
+            return builder;
+        }
+
+        var styleSrcAttr = builder
+            .StyleSrcAttr();
+
+        if (options.IsNone)
+        {
+            styleSrcAttr
+                .None();
+        }
+        else
+        {
+            if (options.IsSelf)
+            {
+                styleSrcAttr
+                    .Self();
+            }
+
+            if (options.IsUnsafeInline)
+            {
+                styleSrcAttr
+                    .UnsafeInline();
+            }
+
+            if (options.IsUnsafeHashes)
+            {
+                styleSrcAttr
                     .UnsafeHashes();
+            }
+
+            if (options.Sources.Length > 0)
+            {
+                styleSrcAttr
+                    .Sources(options.Sources);
             }
 
             if (options.ReportSample)
             {
-                styleSrcElem
+                styleSrcAttr
                     .ReportSample();
             }
         }

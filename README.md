@@ -88,6 +88,8 @@ The GitHub action basically does:
 |  `config/slack.yml`                | `yaml`  | Spec for posting builds to _Slack_ (Optional).                                         |
 |  `workflows/build-and-deploy.yml`  | `yaml`  | GitHub Action that builds, test, publushes artifacts and deploys a Nano application.   |
 
+> ⚠️ All deployments are to Azure!!!! using `azure-cli`.
+
 ## `.kubernetes`
 This folder contains Kubenetes templates required to deploy the solution in CI/CD. 
 Used only in `Staging` and `Production environment`.
@@ -158,6 +160,8 @@ Next, the `Api.Blank.Models` that include models that should be published and sh
 private NuGet. For now and for this lesson there the project is empty, as well as the NuGet that is published during CI/CD. 
 Nano references needs to be added to this project, as models depends on Nano.App to be used in the api-client
 
+Models project is configured for packaging a NuGet, which should be published internally and used to connect api to services. Also why the Nano dependences must be added here.
+
 ## NuGet overview
 
 ## Architectures
@@ -165,3 +169,37 @@ THERE ARE NOW LINKS TO THIS SECTION
 * Solo application
 * micro-service orchestratration
 REFER TO THESE IN README CONFIG FOR VARIOUS SETTINGS (we need readme's for them)
+
+
+
+
+## Link to full config: 
+A complete configuration containing all options can be found here: **[`appsettings.api.json`]()** .
+WHERE TO PLACE?
+
+
+## To rename a blank solution (Getting started... ???)
+docker-compose
+services:
+  api.policyheaders.contenttype:
+    image: api.policyheaders.contenttype
+    hostname: api-policyheaders-contenttype
+    build:
+      context: ../Api.PolicyHeaders.ContentType
+
+.GitHub build-and-deploy
+env:
+  APP_NAME: Api.PolicyHeaders.ContentType
+  IMAGE_NAME: api.policyheaders.contenttype
+  SERVICE_NAME: api-policyheaders-contenttype
+
+rename csproj/sln files and rename all referenced projects
+- Api.PolicyHeaders.XssProtection.sln
+- Api.PolicyHeaders.XssProtection.csproj
+- Api.PolicyHeaders.XssProtection.Models.csproj
+- Tests.Api.PolicyHeaders.XssProtection.csproj
+
+- change in /Api.PolicyHeaders.XssProtection/Properties/InternalsVisibleTo
+
+Dockerfile / Dockerfile.local
+rename Entry Point

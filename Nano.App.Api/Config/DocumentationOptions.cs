@@ -42,9 +42,9 @@ public class DocumentationOptions
     public virtual string? CspNonce { get; set; }
 
     /// <summary>
-    /// Use default API version if true.
+    /// hide default API version if true.
     /// Default version routes will be hidden in swagger.
     /// </summary>
     [Required]
-    public virtual bool UseDefaultVersion { get; set; } = true;
+    public virtual bool HideDefaultVersion { get; set; } = true;
 }
