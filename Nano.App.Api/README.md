@@ -36,9 +36,9 @@
   * [Health Checks](#health-checks)
   * [Virus Scan](#virus-scan)
   * [Error Handling](#error-handling)
+  * [Content Negotiation](#content-negotiation)
+  * [Request Tracing](#request-tracing)
   * [Preflight](#preflight)
-  * [Request Traceability](#request-traceability)
-  * [Content Type Negotiation](#content-type-negotiation)
   * [Identity](#identity)
     * [Authentication](#authentication)
     * [Authorization](#authorization)
@@ -1140,7 +1140,7 @@ Cookie name: `.AspNetCore.TimeZone`
 }
 ```
 
-> 📖 Learn more about [Request TimeZone](https://github.com/vivet/Vivet.AspNetCore/tree/master/Vivet.AspNetCore.RequestTimeZone#vivetaspnetcorerequesttimezone)  
+> 📖 Learn more about **[Request TimeZone](https://github.com/vivet/Vivet.AspNetCore/tree/master/Vivet.AspNetCore.RequestTimeZone#vivetaspnetcorerequesttimezone)**.  
 
 Try it out yourself using the **[Api.TimeZone](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.TimeZone)** example.  
 
@@ -1169,42 +1169,79 @@ Cookie name: `.AspNetCore.Culture`
 }
 ```
 
-> 📖 Learn more about [Request Localization](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/localization)  
+> 📖 Learn more about **[Request Localization](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/localization)**.  
 
 Try it out yourself using the **[Api.Localization](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Localization)** example.  
 
 ## Versioning
-There is no configuration for versioning. It's a built in feature in .NET, and you just need to use `[ApiVersion]` and `[MapToApiVersion]` annotations.
+API versioning in **Nano** requires no additional configuration. It leverages the built-in versioning support provided by ASP.NET Core. 
+To enable versioning, apply the `[ApiVersion]` attribute to the controller and the `[MapToApiVersion]` attribute to each action with the desired version number. 
+Both attributes are required for versioning to work correctly.  
 
-During application startup, Nano registers dependencies for enabling api versioning. 
-Obviously, since most controller actions will be inherited from one or more of the base controller implementations, 
-versioning has to be annotated in derived controller classes. Additionally, versioned action methods must be overridden in the derived controller, 
-as the versioning would otherwise apply to all derived controller implementations.  
+The API version can be specified using the following mechanisms, evaluated in this order:
+* Route segment (`v{version}`)
+* HTTP header (`api-version`)
+* Query parameter (`api-version`)
 
-Clients can specify the version in the following ways and order:
-* Route segment (```vV```)
-* Http header (```api-version```)
-* Query parameter (```api-version```)
+By default, routes use the configured application version. The value set in `App:Version` is treated as the default API version, 
+allowing routes targeting the default version to work without explicitly specifying a version in the URL. Controllers and actions targeting the default version 
+do not need to be annotated, as this version is assumed automatically.
 
-Besides that, versioning follows the standard .Net Core approach.  
+Only **major** and **minor** version numbers are considered for routing.  
+For example, `/api/v1/...` and `/api/v1.0/...` are valid, while `/api/v1.0.0/...` is not supported. The same applies to the other veresion providers.  
 
-Routes will by default use default version. The `App:Version` you have configured will be default. routes with default version will work without specifying the version
-number in the route. ANd there is no need to annotate default version to controllers and actions, it's assumed.
+> ⚠️ **Versioning should be used with caution**  
+> Managing multiple API versions quickly adds complexity and maintenance overhead. Whenever possible, prefer evolving the API in a backward-compatible way 
+so existing clients continue to work without requiring new versions. Use versioning only in rare cases where breaking changes are unavoidable.
 
-Only major and minor version will be considered in relation to routing. `/api/v1/...` (works), `/api/v1.0/...` (works), `/api/v1.0.0/...` (won't works)
-
-LINK to documentation about version annotation, etc. ISn't there a Microsoft Learn link, or check which packages i use now
+Try it out yourself using the **[Api.Versioning](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Versioning)** example.  
 
 ## Documentation
-TRY DIFFERENT route format in addversioning, etc. like the 'Vv' could be 'Vvv' for 3 version numbers. TRY IT OUT
+When documentation is enabled in the configuration, the API's web-based documentation interface (Swagger) is available at `/docs`.
 
-When documentation is enabled in the configuration file, a web-interface documenting the service, it's endpoints and it's models - is created and deployed.  
-The documentation is based on [Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore).  
-When using Default version only non versioned routes are shown in swagger for the default version.
+| Setting               | Type    | Default   | Description                                                                                                                                  |
+| --------------------- | ------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+|  `Name`               | string  | Nano App  | Name of the application or API.                                                                                                              |
+|  `Description`        | string  | null      | Description of the application or API.                                                                                                       |
+|  `TermsOfServiceUrl`  | string  | null      | URL for terms of service. Must be a valid url.                                                                                               |
+|  `Contact`            | string  | null      | Contact information for the API.                                                                                                             |
+|  `Contact.Name`       | string  | null      | The identifying name of the contact person/organization.                                                                                     |
+|  `Contact.Email`      | string  | null      | The email address of the contact person/organization. Must be a valid email address.                                                         |
+|  `Contact.Url`        | string  | null      | The URL pointing to the contact information. MUST be in the format of a URL. Must be a valid url.                                            |
+|  `License`            | string  | null      | License information for the API.                                                                                                             |
+|  `License.Name`       | string  | null      | The license name used for the API.                                                                                                           |
+|  `License.Identifier` | string  | null      | An SPDX license expression for the API. The identifier field is mutually exclusive of the url field.                                         |
+|  `License.Url`        | string  | null      | The URL pointing to the contact information. MUST be in the format of a URL. Must be a valid url.                                            |
+|  `CspNonce`           | string  | null      | Optional Content Security Policy nonce. See [CSP Nonce](#csp-nonce).                                                                         |
+|  `HideDefaultVersion` | bool    | true      | Hide default API version (`App:Version`). Default version routes will be hidden in swagger, only the default non-versioned routes will show. |
 
-CspNonce:
-This value is meant for allowing swagger to work when using Csp nonce values for scripts. You will set a static nonce for swagger and also for other frontends you have,
-and the ingresses will be replacing them with dynamically generated nonce tokens before exposure.
+```json
+"App": {
+  "Documentation": {
+    "Name": "Application",
+    "Description": null,
+    "TermsOfServiceUrl": null,
+    "Contact": {
+      "Name": null,
+      "Email": null,
+      "Url": null
+    },
+    "License": {
+      "Name": null,
+      "Url": null
+    },
+    "CspNonce": null,
+    "HideDefaultVersion": true
+  }
+}
+```
+
+#### CSP Nonce:
+This value allows Swagger to function correctly when using Content Security Policy (CSP) nonce values for scripts and styles. 
+A static nonce is configured for Swagger and any other frontends you may have. The `ingress-controller` in Kubenetes will then replace these static nonces 
+with dynamically generated tokens before serving the pages to clients.  
+
+Example `ingress.yaml` configuration:
 
 ```
 kind: Ingress
@@ -1216,65 +1253,145 @@ metadata:
       sub_filter '%NONCE_TOKEN%' $request_id;
       sub_filter '(<body[^>]*>)(.*?)%NONCE_TOKEN%(.*?<\/body>)' '$1$2"$request_id"$3';
 ```
-HOW MUCH MORE DO WE NEED HERE. 
 
-Hide Default Version:
-When this is `true` then the routes in swagger for the default version (`App:Version`) will be omitted from swagger, and only the default non-versioned routes will show.
-The versioned routes still work, but is just hidden from swagger.
+> 📖 Learn more about **[Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)**.  
+
+Try it out yourself using the **[Api.Documentation](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Documentation)** example.  
 
 ## Health Checks
-Open http://localhost:8080/healthz-ui#/healthchecks and see that the startup health-check has completed, and reports healthy.
-When more Nano providers and services are added to the application, if health-check enabled, these services will appear hear, and report their status.
+When health checks are enabled in the configuration, a `/health` endpoint is exposed, along with a web-based health monitor interface at `/healthz-ui`.  
 
-When enabling health-checks in the web section of the confiugration, the application will be configured with a health-check. The health status of the application, can be found here:  
-* ```http://{host}:{port}/healthz```  
+A startup health check is performed to await the completion of all pending startup tasks before the application is reported as ready. 
+As additional Nano providers and services are added to the application, they will automatically appear in the health checks and report their status, 
+if configured with health-check enabled.  
 
-If the health check UI is also enabled in the confiugration, an interface for monitoring the health of the application, as well as any enabled health checks for dependent providers, can be found here:  
-* ```http://{host}:{port}/healthz-ui```  
+Dependencies between services are represented as a tree of health checks. If any service in the chain fails, its failure status propagates according 
+to the configured rules, affecting the overall health status of the application. This makes it easy to monitor the health of all components and dependencies 
+in a consistent and centralized way.  
+
+| Setting                              | Type   | Default | Description                                                                                                                                                               |
+| ------------------------------------ | ------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|  `EvaluationInterval`                | int    | 10      | Interval between health-check evaluations, in seconds.                                                                                                                    |
+|  `FailureNotificationInterval`       | int    | 60      | Minimum interval between failure notifications, in seconds.                                                                                                               |
+|  `MaximumHistoryEntriesPerEndpoint`  | int    | 50      | Maximum number of historical entries per endpoint stored in the UI database.                                                                                              |
+|  `WebHooks`                          | array  | []      | Configured web-hooks triggered on health-check events. ⚠️ Normally, webhooks aren’t needed; in the cloud, `/healthz` is polled and monitoring uses more robust alerting.  |
+|  `WebHooks.Name`                     | string | null    | Name of the web-hook.                                                                                                                                                     |
+|  `WebHooks.Url`                      | string | null    | URL to which the web-hook will send requests.                                                                                                                             |
+|  `WebHooks.Payload`                  | string | null    | Optional payload to include in the web-hook request.                                                                                                                      |
+
+```json
+"App": {
+  "HealthCheck": {
+    "EvaluationInterval": 10,
+    "FailureNotificationInterval": 60,
+    "MaximumHistoryEntriesPerEndpoint": 50,
+    "WebHooks": [
+      {
+        "Name": null,
+        "Url": null,
+        "Payload": null
+      }
+    ]
+  }
+}
+```
+
+> 📖 Learn more about **[AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks)**.  
+
+Try it out yourself using the **[Api.HealthChecks](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.HealthChecks)** example.  
 
 ## Virus Scan
-Nano supports virus scan by specifying a network connection to a clamav instance.  
-All uploaded files will be scanned, and a ```VirusScanException``` will be thrown if one or more files contains any virus or malware.  
-See the official documentation about virus scan here: [Virus Scan Documentation](https://github.com/vivet/Vivet.AspNetCore/tree/master/Vivet.AspNetCore.RequestVirusScan#vivetaspnetcorerequestvirusscan)  
+Nano provides built-in virus scanning through a connected `ClamAV` service.  
+
+When configured, all uploaded files are automatically processed through the ClamAV virus scan middleware before they are saved or processed further. 
+If any uploaded file is found to contain a virus, the request is rejected and a `500 Internal Server Error` is returned. The response includes a message indicating 
+the name of the virus detected and which file(s) triggered the scan.  
+
+This feature ensures that all file uploads are automatically checked for malware, providing an extra layer of security for your application. By integrating ClamAV scanning 
+into the middleware pipeline, Nano helps enforce security best practices and prevents potentially harmful files from entering your system.
+
+> ⚠️ `ClamAV` has no authentication, so only run it internally in Kubernetes.
+
+| Setting                         | Type   | Default   | Description                                                                                        |
+| ------------------------------- | ------ | --------- | -------------------------------------------------------------------------------------------------- |
+|  `Host`                         | string | clamav    | Hostname of the virus scanning service.                                                            |
+|  `Port`                         | int    | 3310      | Port of the virus scanning service.                                                                |
+|  `HealthCheck`                  | object | null      | Health check configuration for the virus scanning service.                                         |
+|  `HealthCheck.UnhealthyStatus`  | enum   | Unhealthy | Gets or sets the health status level to report when a monitored service is detected as unhealthy.  |
+
+```json
+"App": {
+  "VirusScan": {
+    "Host": "clamav",
+    "Port": 3310,
+    "HealthCheck": {
+      "UnhealthyStatus": "Unhealthy"
+    }
+  }
+}
+```
+
+> 📖 Learn more about **[Request Virus Scan](https://github.com/vivet/Vivet.AspNetCore/tree/master/Vivet.AspNetCore.RequestVirusScan#vivetaspnetcorerequestvirusscan)**.  
+
+Try it out yourself using the **[Api.VirusScan](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.VirusScan)** example.  
+
+
+
+
+
+
+
 
 ## Error Handling
-This configuration section is required and will automatically be populated if omittee from configuration.
+This configuration section is required and will automatically be populated if omitted from configuration.
 
-When an exception or other errors occurs for a request, and ```500 Internal Server Error``` is returned to the client, contain ```Error``` response, as shown below.  
+When an exception or other errors occurs for a request, and ```500 Internal Server Error``` is returned to the client, contain ```ProblemDetails``` response, as per RFCxxxx.  
 
+If ```Error.IsTranslated``` is true, then the consumer can expect the Exceptions to be translated to the language matching the Current CultureInfo, unless translations in that language is not available, and the default translation is used.  
+If ```Error.IsCoded``` is true, then the consumer can expect the Exceptions to be a code, that can be used to map an error message for the user.  
 
 | Setting                      | Type    | Default  | Description                                                              |
 | ---------------------------- | ------- | -------- | ------------------------------------------------------------------------ |
 |  `ExposeErrors`              | bool    | false    | Expose detailed errors (internal server errors).                         |
 
+```json
+"App": {
+  "VirusScan": {
+    "Host": "clamav",
+    "Port": 3310,
+    "HealthCheck": {
+      "UnhealthyStatus": "Unhealthy"
+    }
+  }
+}
+```
 
+Try it out yourself using the **[Api.ErrorHandling](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.ErrorHandling)** example.  
 
-If ```Error.IsTranslated``` is true, then the consumer can expect the Exceptions to be translated to the language matching the Current CultureInfo, unless translations in that language is not available, and the default translation is used.  
-If ```Error.IsCoded``` is true, then the consumer can expect the Exceptions to be a code, that can be used to map an error message for the user.  
+## Content Negotiation
+Content negotiation allows clients to request a specific response format via the `Accept` header.  
 
+Default is `application/json`, and currently the only supported format in Nano. Exceptions occur in cases where content negotiation is bypassed, 
+such as when returning files.  
 
+No configuration or additional setup is required.  
 
+Try it out yourself using the **[Api.ContentNegotiation](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.ContentNegotiation)** example.  
 
+## Request Tracing
+The `RequestId` is generated by the first Nano instance reached in the architecture and flows through all layers of the system. 
+It can also be set from the frontend, which is recommended so that every layer uses the same identifier.
 
+In controllers deriving from `BaseController`, the `RequestId` is accessible via the `RequestId` property.
 
+No configuration or additional setup is required.  
 
-
-
+You can try this out using the **[Api.RequestTracing](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.RequestTracing)** example.
 
 ## Preflight
 Describe support for http OPTIONS. Is it called preflight or preflight request or? Read more about this and check code
+LEARN MORE ABOUT THIs
 
-## Request Traceability
-Check BaseController.RequestId
-ARE WE USING THIS IN EXCEPTION HANDLING MIDDLEWARE???
-Will be set in the first Nano reached in the architecture and used all the way through. It may also be set from the frontend, and that is encurraged.
-CHECK it's used in logging (exceptionhandling middleware)
-
-## Content-Type Negotiation 
-WE ALWAYS USE JSON. AND ITS NOT ```Content-Type``` or   ```Accept```, CHECK WHICH IS REQUEST AND WHICH IS RESPONSE
-Nano supports several different formats (listed below) for the requests and responses of the controller actions.  
-The format, also known as content-type may be specified, either through the ```Content-Type``` or   ```Accept``` header, or by appending the following querystring parameter: ```?format={format}```. The later is default by ([Microsoft Formatting](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/formatting)), by any of the three methods will work with Nano.
-Supported formats: Json
 
 
 

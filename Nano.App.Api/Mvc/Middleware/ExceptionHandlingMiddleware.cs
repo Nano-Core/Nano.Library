@@ -22,6 +22,8 @@ using Vivet.AspNetCore.RequestVirusScan.Exceptions;
 
 namespace Nano.App.Api.Mvc.Middleware;
 
+// BUG: 222: Go through, Refactor, check, etc for documenation and example
+
 /// <summary>
 /// Middleware to handle exceptions globally, log them, and return structured <see cref="ProblemDetails"/> responses.
 /// Supports various custom exceptions, translation, and UX-specific error handling.
@@ -222,7 +224,7 @@ public sealed class ExceptionHandlingMiddleware : IMiddleware
 
             var pathAndqueryString = $"{path}{queryString}";
             var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
-            var id = httpContext.TraceIdentifier;
+            var id = httpContext.TraceIdentifier; // BUG: 111: Should be request Id. check what TraceIdentifier is ???
 
             var isHealthCheck = logLevel == LogLevel.Information && path == HealthzCheckUris.Path;
 

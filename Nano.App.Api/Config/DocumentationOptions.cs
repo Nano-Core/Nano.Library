@@ -21,7 +21,7 @@ public class DocumentationOptions
     public virtual string? Description { get; set; }
 
     /// <summary>
-    /// URL or text for terms of service.
+    /// URL for terms of service.
     /// </summary>
     [Url]
     public virtual string? TermsOfServiceUrl { get; set; }
@@ -42,7 +42,7 @@ public class DocumentationOptions
     public virtual string? CspNonce { get; set; }
 
     /// <summary>
-    /// hide default API version if true.
+    /// Hide default API version if true.
     /// Default version routes will be hidden in swagger.
     /// </summary>
     [Required]

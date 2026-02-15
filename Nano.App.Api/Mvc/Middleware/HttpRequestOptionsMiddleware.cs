@@ -35,6 +35,8 @@ public sealed class HttpRequestOptionsMiddleware : IMiddleware
         ArgumentNullException.ThrowIfNull(httpContext);
         ArgumentNullException.ThrowIfNull(next);
 
+        // BUG: 111: Review if this is correct
+
         if (httpContext.Request.Method == HttpMethods.Options)
         {
             var response = httpContext.Response;

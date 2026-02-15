@@ -40,9 +40,6 @@ public sealed class ConfigureMvcOptions : IConfigureOptions<MvcOptions>
         options.RespectBrowserAcceptHeader = true;
         options.MaxValidationDepth = 128;
 
-        options.FormatterMappings
-            .SetMediaTypeMappingForFormat("json", HttpContentType.JSON);
-
         var routeAttribute = new RouteAttribute(this.apiOptions.CurrentValue.Hosting.Root);
         var routePrefixConvention = new RoutePrefixConvention(routeAttribute);
         var producesJsonConvention = new ProducesJsonConvention();
