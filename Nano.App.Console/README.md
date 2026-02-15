@@ -14,11 +14,10 @@
 * [Localization](#localization)
 * [Console Worker](#console-worker) 
 * [Start-Up Tasks](#start-up-tasks) 
-* [Examples](#examples)
 
 ## Summary
-The ```ConsoleApplication``` derives from ```DefaultApplication```. It initializes the required services and into a service collection, and is able to handle and resolve dependencies, similar to a web application. This is explained in details further down.    
-Use the ```ConsoleApplication``` when you require to construct a background-worker, cloud function or similar single executing application.  
+The ```NanoConsoleApplication``` derives from ```BaseNanoApplication```. It initializes the required services and into a service collection, and is able to handle and resolve dependencies, similar to a web application. This is explained in details further down.    
+Use the ```NanoConsoleApplication``` when you require to construct a background-worker, cloud function or similar single executing application.  
 
 ## Registration
 program.cs
@@ -31,7 +30,7 @@ public class Program
             .ConfigureApp()
             .ConfigureServices(x =>
             {
-                // Additional dependencies...
+                // Your services...
             })
             .Build()
             .Run();
@@ -50,19 +49,19 @@ The ```Console``` section of the configuration defines behavior related to the a
 
 ## Localization
 Nano supports the built in methods for specifying the language when invoking requests.  
-See the official Microsoft documentation about localization here: [Localization Documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/localization?view=aspnetcore-2.1)  
 
-| Setting         | Type   | Default   | Description                                                               |
-| --------------- | ------ | --------- | ------------------------------------------------------------------------- |
-|  `Cultures`     | enum   |           | Culture and localization settings for the application.                    |
+| Setting            | Type   | Default   | Description                                    |
+| ------------------ | ------ | --------- | ---------------------------------------------- |
+|  `DefaultCulture`  | string | en-US     | The default culture used by the application.   |
 
 ```json
 "App": {
-  "Cultures": {
-    "Default": "en-US"
-  }
+  "DefaultCulture": "en-US"
 }
 ```
+
+See the official Microsoft documentation about localization here: [Localization Documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/localization?view=aspnetcore-2.1)  
+
 
 ## Console Worker
 When the console application is run, a background-worker is started and executed until finished, and the application shuts down.  
@@ -99,9 +98,5 @@ For console applications the worker won't start before all startup tasks has com
 It's rarely needed for console applications, but supported just in case.
 
 Read more [Nano.App](nano-app#start-up-tasks)
-
-## Examples
-See examples of Nano console applications here:
-* [Example.Console](https://github.com/Nano-Core/Nano.Examples/tree/master/Console)
 
 *** 

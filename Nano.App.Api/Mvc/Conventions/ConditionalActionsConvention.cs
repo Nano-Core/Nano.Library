@@ -55,7 +55,7 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
             return;
         }
 
-        if (!(this.apiOptions.CurrentValue.Identity?.Authentication.Jwt != null || this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.RootLogin != null) || !this.apiOptions.CurrentValue.Hosting.ExposeAuthController)
+        if (!(this.apiOptions.CurrentValue.Identity?.Authentication.Jwt != null || this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.RootLogin != null) || this.apiOptions.CurrentValue.Hosting.HideAuthController)
         {
             controller.ApiExplorer.IsVisible = false;
 
@@ -170,7 +170,7 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
             return;
         }
 
-        if ((this.dataOptions?.CurrentValue.UseAudit ?? false) && this.apiOptions.CurrentValue.Hosting.ExposeAuditController)
+        if ((this.dataOptions?.CurrentValue.UseAudit ?? false) && !this.apiOptions.CurrentValue.Hosting.HideAuditController)
         {
             return;
         }

@@ -14,22 +14,16 @@ public class HostingOptions
     public virtual string Root { get; set; } = "api";
 
     /// <summary>
-    /// Expose detailed errors.
-    /// </summary>
-    [Required]
-    public virtual bool ExposeErrors { get; set; } = false;
-
-    /// <summary>
     /// Expose authentication controller.
     /// </summary>
     [Required]
-    public virtual bool ExposeAuthController { get; set; } = true;
+    public virtual bool HideAuthController { get; set; } = false;
 
     /// <summary>
     /// Expose audit controller.
     /// </summary>
     [Required]
-    public virtual bool ExposeAuditController { get; set; } = true;
+    public virtual bool HideAuditController { get; set; } = false;
 
     /// <summary>
     /// Options for Http.

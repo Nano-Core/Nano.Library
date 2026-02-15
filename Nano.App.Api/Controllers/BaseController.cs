@@ -26,23 +26,7 @@ public abstract class BaseController : Controller
     /// <summary>
     /// Gets the current request identififer from header.
     /// </summary>
-    public virtual string? RequestId => null; // BUG: implement get request id header
-
-    // BUG: Should we remove these??? They don't really belong here, or?
-    /// <summary>
-    /// Gets the current authenticated user's Id from JWT claims.
-    /// </summary>
-    public virtual Guid? UserId => this.HttpContext.GetJwtUserId();
-
-    /// <summary>
-    /// Gets the current authenticated user's name from JWT claims.
-    /// </summary>
-    public virtual string? UserName => this.HttpContext.GetJwtUserName();
-
-    /// <summary>
-    /// Gets the current authenticated user's email from JWT claims.
-    /// </summary>
-    public virtual string? UserEmail => this.HttpContext.GetJwtUserEmail();
+    public virtual string? RequestId => this.HttpContext.GetRequestId();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseController"/> class.

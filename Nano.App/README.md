@@ -14,7 +14,6 @@
 * [Start-Up Tasks](#start-up-tasks)
 * [Api Client](#api-client)
 * [Custom Application](#custom-applications)
-* [Examples](#examples)
 
 ## Summary
 In Nano, an application refers to the part of defining, building and running a host process.  
@@ -206,4 +205,3 @@ public class Program
 }
 ```
 
-## Examples

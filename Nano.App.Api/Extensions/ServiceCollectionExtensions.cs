@@ -17,7 +17,6 @@ using Nano.App.Api.Config;
 using Nano.App.Api.Mvc.Extensions;
 using Nano.App.Api.Mvc.HealthChecks;
 using Nano.App.Api.Mvc.Middleware;
-using Nano.App.Api.Mvc.Options;
 using Nano.App.Api.Mvc.Serialization.Json;
 using Nano.Common.Consts;
 using Nano.Common.Mvc.HealthChecks.Extensions;
@@ -25,6 +24,8 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Globalization;
 using System.Linq;
+using Nano.App.Api.Mvc;
+using Nano.App.Api.Mvc.Documentation;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
@@ -188,8 +189,8 @@ internal static class ServiceCollectionExtensions
         services
             .AddCookiePolicy(x =>
             {
-                x.HttpOnly = HttpOnlyPolicy.None;
-                x.Secure = CookieSecurePolicy.Always;
+                x.HttpOnly = HttpOnlyPolicy.Always;
+                x.Secure = CookieSecurePolicy.SameAsRequest;
                 x.MinimumSameSitePolicy = SameSiteMode.Strict;
             });
 

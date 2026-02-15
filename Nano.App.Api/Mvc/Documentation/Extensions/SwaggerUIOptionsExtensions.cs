@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
+using Nano.App.Api.Mvc.Documentation.Regex;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Nano.App.Api.Mvc.Documentation.Extensions;
@@ -27,9 +27,10 @@ internal static class SwaggerUIOptionsExtensions
             var originalIndexHtmlContents = originalStreamReader
                 .ReadToEnd();
 
-            const string PATTERN = "<(script|style)([^>]*)>";
             var replacement = $"<$1$2 nonce=\"{cspNonce}\">";
-            var nonceEnabledIndexHtmlContents = Regex.Replace(originalIndexHtmlContents, PATTERN, replacement, RegexOptions.IgnoreCase);
+
+            var nonceEnabledIndexHtmlContents = Regexes.ScriptAndStyles()
+                .Replace(originalIndexHtmlContents, replacement);
 
             var bytes = Encoding.UTF8
                 .GetBytes(nonceEnabledIndexHtmlContents);

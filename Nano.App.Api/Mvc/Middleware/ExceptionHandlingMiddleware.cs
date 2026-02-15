@@ -174,7 +174,7 @@ public sealed class ExceptionHandlingMiddleware : IMiddleware
                         break;
 
                     default:
-                        if (!this.ApiOptions.CurrentValue.Hosting.ExposeErrors)
+                        if (!this.ApiOptions.CurrentValue.ErrorHandling.ExposeErrors)
                         {
                             problemDetails.Detail = null;
 

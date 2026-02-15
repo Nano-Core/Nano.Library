@@ -10,13 +10,13 @@ using Microsoft.OpenApi;
 using Nano.App.Api.Config;
 using Nano.App.Api.Mvc.Documentation.Filters.Document;
 using Nano.App.Api.Mvc.Documentation.Filters.Schema;
-using Nano.App.Api.Mvc.Options.Regex;
+using Nano.App.Api.Mvc.Documentation.Regex;
 using Nano.Common.Consts;
 using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Nano.App.Api.Mvc.Options;
+namespace Nano.App.Api.Mvc.Documentation;
 
 /// <summary>
 /// Configures Swagger generation options including API documentation, security definitions, and XML comments.

@@ -7,7 +7,7 @@ using Nano.App.Api.Mvc.Conventions;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions.Config;
 
-namespace Nano.App.Api.Mvc.Options;
+namespace Nano.App.Api.Mvc;
 
 /// <summary>
 /// Configures MVC options such as conventions, filters, formatters, and HTTPS requirements.

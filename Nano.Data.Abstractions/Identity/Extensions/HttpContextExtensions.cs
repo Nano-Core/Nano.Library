@@ -1,6 +1,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Http;
+using Nano.Common.Consts;
 using Nano.Data.Abstractions.Identity.Consts;
 
 namespace Nano.Data.Abstractions.Identity.Extensions;
@@ -10,6 +11,26 @@ namespace Nano.Data.Abstractions.Identity.Extensions;
 /// </summary>
 public static class HttpContextExtensions
 {
+    /// <summary>
+    /// Gets the request id from the HTTP context.
+    /// </summary>
+    /// <param name="httpContext">The current HTTP context.</param>
+    /// <returns>The request id if present; otherwise, null.</returns>
+    public static string? GetRequestId(this HttpContext httpContext)
+    {
+        ArgumentNullException.ThrowIfNull(httpContext);
+
+        httpContext.Request.Headers
+            .TryGetValue(NanoHeaderNames.REQUEST_ID, out var values);
+
+        if (string.IsNullOrEmpty(values))
+        {
+            return null;
+        }
+
+        return values.ToString();
+    }
+
     /// <summary>
     /// Gets the App Id claim from the JWT token in the HTTP context.
     /// </summary>

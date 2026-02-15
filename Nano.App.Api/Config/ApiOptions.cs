@@ -66,6 +66,11 @@ public class ApiOptions : BaseAppOptions
     public virtual VirusScanOptions? VirusScan { get; set; }
 
     /// <summary>
+    /// Error handling options.
+    /// </summary>
+    public virtual ErrorHandlingOptions ErrorHandling { get; set; } = new();
+
+    /// <summary>
     /// Identity configuration options.
     /// </summary>
     public virtual IdentityOptions? Identity { get; set; }

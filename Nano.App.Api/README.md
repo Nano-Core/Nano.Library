@@ -28,13 +28,14 @@
   * [Response Cache](#response-cache)
   * [Response Compression](#response-cache)
   * [Session](#session)
+  * [Cookies](#cookies)
   * [TimeZone](#timezone)
   * [Localization](#localization)
+  * [Versioning](#versioning)
   * [Documentation](#documentation)
   * [Health Checks](#health-checks)
   * [Virus Scan](#virus-scan)
-  * [Versioning](#versioning)
-  * [Cookies](#cookies)
+  * [Error Handling](#error-handling)
   * [Preflight](#preflight)
   * [Request Traceability](#request-traceability)
   * [Content Type Negotiation](#content-type-negotiation)
@@ -44,7 +45,6 @@
 * [Controllers](#controllers)
 * [Request Validation](#model-validation)
 * [Serialization](#serialization)
-* [Error Handling](#error-handling)
 * [Start-Up Tasks](#start-up-tasks)
 
 *** 
@@ -102,6 +102,7 @@ The `App` section in the configuration defines behavior related to the applicati
 |  `Documentation`           | object     | null       | API documentation options (Swagger). See **[Documentation](#documentation)**.                                                                                        |
 |  `HealthCheck`             | object     | null       | Health-check configuration options. See **[health Check](#health-check)**.                                                                                           |
 |  `VirusScan`               | object     | null       | Virus scanning options. See **[Virus Scan](#virus-scan)**.                                                                                                           |
+|  `ErrorHandling`           | object     | default    | Error handling configuration options. See **[Error Handling](#error-handling)**.                                                                                     |
 |  `Identity`                | object     | null       | Identity configuration options. See **[Identity](#identity)**.                                                                                                       |
 |  `Apis`                    | dictionary | []         | Named Nano API client configurations available to the application. See **[Api-Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client)**.  |
 
@@ -121,6 +122,8 @@ The `App` section in the configuration defines behavior related to the applicati
   "Documentation": null,
   "HealthCheck": null,
   "VirusScan": null,
+  "ErrorHandling": {
+  }
   "Identity": null,
   "Apis": []
 }
@@ -129,23 +132,21 @@ The `App` section in the configuration defines behavior related to the applicati
 ## Hosting
 Hosting configuration specifies how the API is hosted on the Kestrel web server, defining endpoint exposure as well as request handling limits.  
 
-| Setting                      | Type    | Default  | Description                                                              |
-| ---------------------------- | ------- | -------- | ------------------------------------------------------------------------ |
-|  `Root`                      | string  | api      | Root route for the application endpoints.                                |
-|  `ExposeErrors`              | bool    | false    | Expose detailed errors (internal server errors).                         |
-|  `ExposeAuthController`      | bool    | true     | Expose auth controller.                                                  |
-|  `ExposeAuditController`     | bool    | true     | Expose audit controller.                                                 |
-|  `Http`                      | object  | default  | Options for HTTP. See **[Http](#http)**.                                 |
-|  `Https`                     | object  | null     | Options for HTTPS. See **[Https](#https)**.                              |
-|  `MultipartLimits`           | object  | null     | Multipart upload limits. See **[MultiPart Limits](#multipart-limits)**.  |
+| Setting                  | Type    | Default  | Description                                                                                       |
+| ------------------------ | ------- | -------- | ------------------------------------------------------------------------------------------------- |
+|  `Root`                  | string  | api      | Root route for the application endpoints.                                                         |
+|  `HideAuthController`    | bool    | false    | Controls whether the authentication controller should be visible when authentication is enabled.  |
+|  `HideAuditController`   | bool    | false    | Controls whether the audit controller should be visible when audit is enabled.                    |
+|  `Http`                  | object  | default  | Options for HTTP. See **[Http](#http)**.                                                          |
+|  `Https`                 | object  | null     | Options for HTTPS. See **[Https](#https)**.                                                       |
+|  `MultipartLimits`       | object  | null     | Multipart upload limits. See **[MultiPart Limits](#multipart-limits)**.                           |
 
 ```json
 "App": {
   "Hosting": {
     "Root": "api",
-    "ExposeErrors": false,
-    "ExposeAuditController": true, 
-    "ExposeAuthController": true,
+    "HideAuditController": false, 
+    "HideAuthController": false,
     "Http": { 
     }
     "Https": null
@@ -1000,110 +1001,177 @@ Therefore, this approach is safe only if your traffic always passes through a tr
 
 Try it out yourself using the **[Api.PolicyHeaders.ForwardedHeaders](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.ForwardedHeaders)** example.  
 
-
-
-
-
-
-
-
-
-
-
-
-
 ## Response Cache
-It's recommended to enable in configuration, and then disable of certain actions where neeeded using the annotation. show the attribute for cache
+The HTTP cache stores a response associated with a request and reuses the stored response for subsequent requests.  
 
-## Response Compression
-Try to disable one endpoint in example, and test enabled vs disabled and see the response size difference
+There are several advantages to reusability. First, since there is no need to deliver the request to the origin server, 
+then the closer the client and cache are, the faster the response will be. The most typical example is when the browser itself stores a cache for browser requests.  
 
-## Session
-Discouraged to use in Api, but included because it can be used. Should we include it?
-When hosting in a scaled environment, sticky sessions needs to be enabled. SHOW ingress and links to official docs about sticky sesssions og Nginx docs or ??
+Also, when a response is reusable, the origin server does not need to process the request — so it does not need to parse and route the request, 
+restore the session based on the cookie, query the DB for results, or render the template engine. That reduces the load on the server.
 
-Cookie name: `.AspNetCore.Session`
+> ⚠️ It's recommended to enable this in configuration, then disable for specific actions using `[ResponseCache(...)]`.
 
-## TimeZone
-Nano supports the built in methods for specifying the timezone when invoking requests.  
-See the official documentation about timezone here: [TimeZone Documentation](https://github.com/vivet/Vivet.AspNetCore/tree/master/Vivet.AspNetCore.RequestTimeZone#vivetaspnetcorerequesttimezone)  
-
-| Setting                    | Type    | Default    | Description                                                                           |
-|  `DefaultTimeZone`         | string  | UTC        | Default time zone for the application.                                                |
-
-Explain about when to use DateTime (when the date is fixed, and shouldn't change no matter where you are on earth) 
-and DateTimeOffset (that should vary depending on where on earth you are).
-
-DateTimeInfo.Now / DateTimeInfo.UtcNow
-Use to get the local timezone based on the timezone of the `tz` header parameter.
-
-Cookie name: `.AspNetCore.TimeZone`
-
-## Localization
-Nano supports the built in methods for specifying the language when invoking requests.  
-See the official Microsoft documentation about localization here: [Localization Documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/localization?view=aspnetcore-2.1)  
-
-Only supported cultures will be used. Any unsupported cultures will default to Default Culture.
-
-
-| Setting         | Type   | Default   | Description                                                               |
-| --------------- | ------ | --------- | ------------------------------------------------------------------------- |
-|  `Cultures`     | enum   |           | Culture and localization settings for the application.                    |
+| Setting        | Type     | Default  | Description                                         |
+| -------------- | -------- | -------- | --------------------------------------------------- |
+|  `MaxSize`     | int      | 1024     | Maximum cache size in KB. Default is 1 MB.          |
+|  `MaxBodySize` | int      | 102400   | Maximum cached body size in KB. Default is 100 MB.  |
+|  `MaxAge`      | TimeSpan | 00:20:00 | Maximum cache duration. Default is 20 minutes.      |
 
 ```json
 "App": {
-  "Cultures": {
-    "Default": "en-US",
-    "Supported": [
+  "ResponseCache": {
+    "MaxSize": 1024,
+    "MaxBodySize": 102400,
+    "MaxAge": "00:20:00"
+  }
+}
+```
+
+> 📖 Learn more about **[Response Caching](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching)**
+
+Try it out yourself using the **[Api.ResponseCache](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.ResponseCache)** example.  
+
+## Response Compression
+HTTP response compression is a technique used to reduce the size of data sent from a web server to a client (usually a browser). 
+By shrinking the payload, it improves website loading speeds, reduces bandwidth consumption, and enhances overall network efficiency.  
+
+| Setting        | Type   | Default  | Description                            |
+| -------------- | ------ | -------- | -------------------------------------- |
+|  `UseGzip`     | bool   | true     | Enable or disable Gzip compression.    |
+|  `UseBrotli`   | bool   | true     | Enable or disable Brotli compression.  |
+
+```json
+"App": {
+  "ResponseCompression": {
+    "UseGzip": true,
+    "UseBrotli": true
+  }
+}
+```
+
+> 📖 Learn more about **[Response Compression](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Compression)**
+
+Try it out yourself using the **[Api.ResponseCompression](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.ResponseCompression)** example.  
+
+## Session
+Adds session state support to the application, allowing user-specific data to persist across requests. 
+It stores this data on the server and uses a session cookie to track individual users. This enables features like authentication, shopping carts, or temporary user settings.  
+
+Cookie name: `.AspNetCore.Session`
+
+> ⚠️ Sessions are discouraged, as tit breaks statelessness and complicates scaling.
+
+For sessions to work properly in a scaled environment, enable sticky sessions by adding these annotations to your `ingress.yaml` resource.
+
+```yaml
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    nginx.ingress.kubernetes.io/session-cookie-name: "eventssticky"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+```
+
+| Setting        | Type     | Default  | Description                                         |
+| -------------- | -------- | -------- | --------------------------------------------------- |
+|  `Timeout`     | TimeSpan | 00:20:00 | Session timeout duration. Default is 20 minutes.    |
+
+```json
+"App": {
+  "Session": {
+    "Timeout": "00:20:00"
+  }
+}
+```
+
+Try it out yourself using the **[Api.Session](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Session)** example.  
+
+## Cookies
+Cookies in Nano are pre-configured for security and cannot be customized. This ensures that all cookies follow best practices by default.  
+
+Auto configured cookie settings:
+
+| Setting                | Value          | Description                                                             |
+| ---------------------- | -------------- | ----------------------------------------------------------------------- |
+|  `HttpOnly`            | Always         | This cookie inaccessible to the JavaScript `document.cookie` API.       |
+|  `CookieSecurePolicy`  | SameAsRequest  | If the URI that provides the cookie is HTTPS, then the cookie will only be returned to the server on subsequent HTTPS requests. Otherwise if the URI that provides the cookie is HTTP, then the cookie will be returned to the server on all HTTP and HTTPS requests. This value ensures HTTPS for all authenticated requests on deployed servers, and also supports HTTP for localhost development and for servers that do not have HTTPS support.  |
+|  `SameSiteMode`        | Strict         | Cookie is restricted to `same-site` requests, mitigating CSRF attacks.  |
+
+When a cookie is created, Nano automatically enforces these settings.  
+If a cookie’s options already match the policy or are stricter, they remain unchanged. 
+However, if a cookie’s options violate the policy, the middleware adjusts them to ensure they conform before the response is sent to the client.
+
+Try it out yourself using the **[Api.Cookies](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Cookies)** example.  
+
+## TimeZone
+Nano supports built-in methods for specifying the timezone when making requests.  
+
+When `DateTimeOffset` values are passed in requests or querystrings, Nano automatically converts them to UTC, simplifying date and time handling within the application, 
+as all internal operations work in UTC. When returning responses, `DateTimeOffset` properties are converted back to the timezone specified in the request. 
+If no timezone is provided, the configured `TimeZone.DefaultTimeZone` is used for converting response values.  
+
+> ⚠️ Note that `DateTime` values are not converted, either in requests or responses.
+
+To specify the timezone in a request, you can use one of the following methods:
+* Http header (`tz=Europe/Copenhagen`)
+* Querystring parameter (`tz=Europe/Copenhagen`)
+* Cookie (`.AspNetCore.TimeZone=Europe/Copenhagen`)
+
+To easily obtain the current date and time, use the following properties on `DateTimeInfo`:
+
+```csharp
+var local = DateTimeInfo.Now;   // Local date-time based on the timezone specified in the request or DefaultTimeZone
+var utc   = DateTimeInfo.UtcNow; // UTC date-time
+```
+
+Cookie name: `.AspNetCore.TimeZone`
+
+| Setting             | Type    | Default  | Description                             |
+| ------------------- | ------- | -------- | --------------------------------------- |
+|  `DefaultTimeZone`  | string  | UTC      | Default time zone for the application.  |
+
+```json
+"App": {
+  "TimeZone": {
+    "DefaultTimeZone": "UTC"
+  }
+}
+```
+
+> 📖 Learn more about [Request TimeZone](https://github.com/vivet/Vivet.AspNetCore/tree/master/Vivet.AspNetCore.RequestTimeZone#vivetaspnetcorerequesttimezone)  
+
+Try it out yourself using the **[Api.TimeZone](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.TimeZone)** example.  
+
+## Localization
+Nano provides built-in support for specifying the language when making requests.
+
+To specify the language for a request, you can use one of the following methods:
+* Http header (```Accept-Language=da-DK```)
+* Query parameter (```culture=da-DK```)
+* Cookie (`.AspNetCore.Culture=c=da-DK|uic=da-DK`)
+
+Cookie name: `.AspNetCore.Culture`
+
+| Setting               | Type    | Default  | Description                                                                                                |
+| --------------------- | --------| -------- | ---------------------------------------------------------------------------------------------------------- |
+|  `DefaultCulture`     | string  | en-US    | The default culture used by the application.                                                               |
+|  `SupportedCultures`  | enum    | []       | The set of cultures supported by the application. Unsupported cultures will fallback to `DefaultCulture`.  |
+
+```json
+"App": {
+  "Localization": {
+    "DefaultCulture": "en-US",
+    "SupportedCultures": [
     ]
   }
 }
 ```
 
-Cookie name: `.AspNetCore.Culture`
+> 📖 Learn more about [Request Localization](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/localization)  
 
-
-## Documentation
-TRY DIFFERENT route format in addversioning, etc. like the 'Vv' could be 'Vvv' for 3 version numbers. TRY IT OUT
-
-When documentation is enabled in the configuration file, a web-interface documenting the service, it's endpoints and it's models - is created and deployed.  
-The documentation is based on [Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore).  
-When using Default version only non versioned routes are shown in swagger for the default version.
-
-### CspNonce
-This value is meant for allowing swagger to work when using Csp nonce values for scripts. You will set a static nonce for swagger and also for other frontends you have,
-and the ingresses will be replacing them with dynamically generated nonce tokens before exposure.
-
-```
-kind: Ingress
-metadata:
-  annotations:
-    nginx.ingress.kubernetes.io/configuration-snippet: | 
-      more_set_headers "Content-Security-Policy: script-src 'self' 'nonce-${request_id}'; style-src 'self' 'nonce-${request_id}'";
-      sub_filter_once off;
-      sub_filter '%NONCE_TOKEN%' $request_id;
-      sub_filter '(<body[^>]*>)(.*?)%NONCE_TOKEN%(.*?<\/body>)' '$1$2"$request_id"$3';
-```
-HOW MUCH MORE DO WE NEED HERE. 
-
-### Hide Default Version
-When this is `true` then the routes in swagger for the default version (`App:Version`) will be omitted from swagger, and only the default non-versioned routes will show.
-The versioned routes still work, but is just hidden from swagger.
-
-## Health Checks
-Open http://localhost:8080/healthz-ui#/healthchecks and see that the startup health-check has completed, and reports healthy.
-When more Nano providers and services are added to the application, if health-check enabled, these services will appear hear, and report their status.
-
-When enabling health-checks in the web section of the confiugration, the application will be configured with a health-check. The health status of the application, can be found here:  
-* ```http://{host}:{port}/healthz```  
-
-If the health check UI is also enabled in the confiugration, an interface for monitoring the health of the application, as well as any enabled health checks for dependent providers, can be found here:  
-* ```http://{host}:{port}/healthz-ui```  
-
-## Virus Scan
-Nano supports virus scan by specifying a network connection to a clamav instance.  
-All uploaded files will be scanned, and a ```VirusScanException``` will be thrown if one or more files contains any virus or malware.  
-See the official documentation about virus scan here: [Virus Scan Documentation](https://github.com/vivet/Vivet.AspNetCore/tree/master/Vivet.AspNetCore.RequestVirusScan#vivetaspnetcorerequestvirusscan)  
+Try it out yourself using the **[Api.Localization](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Localization)** example.  
 
 ## Versioning
 There is no configuration for versioning. It's a built in feature in .NET, and you just need to use `[ApiVersion]` and `[MapToApiVersion]` annotations.
@@ -1127,44 +1195,62 @@ Only major and minor version will be considered in relation to routing. `/api/v1
 
 LINK to documentation about version annotation, etc. ISn't there a Microsoft Learn link, or check which packages i use now
 
-## Cookies
-Reasonable and not configurable options.
+## Documentation
+TRY DIFFERENT route format in addversioning, etc. like the 'Vv' could be 'Vvv' for 3 version numbers. TRY IT OUT
 
-x.HttpOnly = HttpOnlyPolicy.None;
-Describes the HttpOnly behavior for cookies.
-The cookie does not have a configured HttpOnly behavior. This cookie can be accessed by JavaScript <c>document.cookie</c> API.
+When documentation is enabled in the configuration file, a web-interface documenting the service, it's endpoints and it's models - is created and deployed.  
+The documentation is based on [Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore).  
+When using Default version only non versioned routes are shown in swagger for the default version.
 
-x.Secure = CookieSecurePolicy.Always;
-Determines how cookie security properties are set
-Secure is always marked true. Use this value when your login page and all subsequent pages requiring the authenticated identity are HTTPS. 
-Local development will also need to be done with HTTPS urls.
+CspNonce:
+This value is meant for allowing swagger to work when using Csp nonce values for scripts. You will set a static nonce for swagger and also for other frontends you have,
+and the ingresses will be replacing them with dynamically generated nonce tokens before exposure.
 
-x.MinimumSameSitePolicy = SameSiteMode.Strict;
-Indicates the client should only send the cookie with "same-site" requests.
-Used to set the SameSite field on response cookies to indicate if those cookies should be included by the client on future "same-site" or "cross-site" requests.
-RFC Draft: <see href="https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-03#section-4.1.1"/>
+```
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: | 
+      more_set_headers "Content-Security-Policy: script-src 'self' 'nonce-${request_id}'; style-src 'self' 'nonce-${request_id}'";
+      sub_filter_once off;
+      sub_filter '%NONCE_TOKEN%' $request_id;
+      sub_filter '(<body[^>]*>)(.*?)%NONCE_TOKEN%(.*?<\/body>)' '$1$2"$request_id"$3';
+```
+HOW MUCH MORE DO WE NEED HERE. 
 
-When creating cookies:
-CookiePolicyMiddleware in ASP.NET Core enforces the policy you set in AddCookiePolicy after the cookie is added to the response.
-Key points:
-If a cookie’s options match or exceed the policy (e.g., stricter), nothing changes.
-If a cookie violates the policy, the middleware adjusts it to conform before sending to the client.
+Hide Default Version:
+When this is `true` then the routes in swagger for the default version (`App:Version`) will be omitted from swagger, and only the default non-versioned routes will show.
+The versioned routes still work, but is just hidden from swagger.
+
+## Health Checks
+Open http://localhost:8080/healthz-ui#/healthchecks and see that the startup health-check has completed, and reports healthy.
+When more Nano providers and services are added to the application, if health-check enabled, these services will appear hear, and report their status.
+
+When enabling health-checks in the web section of the confiugration, the application will be configured with a health-check. The health status of the application, can be found here:  
+* ```http://{host}:{port}/healthz```  
+
+If the health check UI is also enabled in the confiugration, an interface for monitoring the health of the application, as well as any enabled health checks for dependent providers, can be found here:  
+* ```http://{host}:{port}/healthz-ui```  
+
+## Virus Scan
+Nano supports virus scan by specifying a network connection to a clamav instance.  
+All uploaded files will be scanned, and a ```VirusScanException``` will be thrown if one or more files contains any virus or malware.  
+See the official documentation about virus scan here: [Virus Scan Documentation](https://github.com/vivet/Vivet.AspNetCore/tree/master/Vivet.AspNetCore.RequestVirusScan#vivetaspnetcorerequestvirusscan)  
+
+## Error Handling
+This configuration section is required and will automatically be populated if omittee from configuration.
+
+When an exception or other errors occurs for a request, and ```500 Internal Server Error``` is returned to the client, contain ```Error``` response, as shown below.  
+
+
+| Setting                      | Type    | Default  | Description                                                              |
+| ---------------------------- | ------- | -------- | ------------------------------------------------------------------------ |
+|  `ExposeErrors`              | bool    | false    | Expose detailed errors (internal server errors).                         |
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+If ```Error.IsTranslated``` is true, then the consumer can expect the Exceptions to be translated to the language matching the Current CultureInfo, unless translations in that language is not available, and the default translation is used.  
+If ```Error.IsCoded``` is true, then the consumer can expect the Exceptions to be a code, that can be used to map an error message for the user.  
 
 
 
@@ -1176,24 +1262,18 @@ If a cookie violates the policy, the middleware adjusts it to conform before sen
 
 
 ## Preflight
-LESSON MISSING
 Describe support for http OPTIONS. Is it called preflight or preflight request or? Read more about this and check code
 
-
 ## Request Traceability
-LESSON MISSING
 Check BaseController.RequestId
 ARE WE USING THIS IN EXCEPTION HANDLING MIDDLEWARE???
 Will be set in the first Nano reached in the architecture and used all the way through. It may also be set from the frontend, and that is encurraged.
 CHECK it's used in logging (exceptionhandling middleware)
 
-
 ## Content-Type Negotiation 
-LESSON MISSING
 WE ALWAYS USE JSON. AND ITS NOT ```Content-Type``` or   ```Accept```, CHECK WHICH IS REQUEST AND WHICH IS RESPONSE
 Nano supports several different formats (listed below) for the requests and responses of the controller actions.  
 The format, also known as content-type may be specified, either through the ```Content-Type``` or   ```Accept``` header, or by appending the following querystring parameter: ```?format={format}```. The later is default by ([Microsoft Formatting](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/formatting)), by any of the three methods will work with Nano.
-
 Supported formats: Json
 
 
@@ -1495,22 +1575,6 @@ The serializer will not serialize navigations that is of type ```IEntity```, exc
 
 Nano's serializer supports Geometry types, from Nettoplogysuite
 
-## Error Handling
-When an exception or other errors occurs for a request, and ```500 Internal Server Error``` is returned to the client, contain ```Error``` response, as shown below.  
-
-```csharp
-public class Error
-{
-    public virtual string Summary { get; set; } // Summary of the error.
-    public virtual string[] Exceptions { get; set; } // Array of exceptions.
-    public virtual int StatusCode { get; set; } // The http status code.
-    public virtual bool IsTranslated { get; set; } // Indicates if the exception messages is translated.
-    public virtual bool IsCoded { get; set; } // Indicates if the exception messages is coded.
-}
-``` 
-
-If ```Error.IsTranslated``` is true, then the consumer can expect the Exceptions to be translated to the language matching the Current CultureInfo, unless translations in that language is not available, and the default translation is used.  
-If ```Error.IsCoded``` is true, then the consumer can expect the Exceptions to be a code, that can be used to map an error message for the user.  
 
 ## Start-Up Tasks
 Nano supports startup-tasks, that executes before the application starts. 

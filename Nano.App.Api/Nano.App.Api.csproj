@@ -22,4 +22,8 @@
 		<ProjectReference Include="..\Nano.App\Nano.App.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Mvc\Options\" />
+	</ItemGroup>
+
 </Project>
