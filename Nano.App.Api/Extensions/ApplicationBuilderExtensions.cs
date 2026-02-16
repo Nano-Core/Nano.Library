@@ -352,16 +352,6 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoRequestOptions(this IApplicationBuilder applicationBuilder)
-    {
-        ArgumentNullException.ThrowIfNull(applicationBuilder);
-
-        applicationBuilder
-            .UseMiddleware<HttpRequestOptionsMiddleware>();
-
-        return applicationBuilder;
-    }
-
     internal static IApplicationBuilder UseNanoRequestIdentifier(this IApplicationBuilder applicationBuilder)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);

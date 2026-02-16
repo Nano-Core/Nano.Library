@@ -17,10 +17,13 @@ using Nano.App.Exceptions;
 using Nano.Common.Serialization.Json;
 using Nano.Data.Abstractions.Annotations;
 using Nano.Data.Abstractions.Identity.Exceptions;
+using Nano.Data.Abstractions.Identity.Extensions;
 using Newtonsoft.Json;
 using Vivet.AspNetCore.RequestVirusScan.Exceptions;
 
 namespace Nano.App.Api.Mvc.Middleware;
+
+// BUG: 111: Custom headers (e.g. Authorization, X-Request-Id) <= what is X-Request-Id, can we use forwarded headers to move request through ingress, needed?  better??
 
 // BUG: 222: Go through, Refactor, check, etc for documenation and example
 
@@ -224,7 +227,9 @@ public sealed class ExceptionHandlingMiddleware : IMiddleware
 
             var pathAndqueryString = $"{path}{queryString}";
             var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
-            var id = httpContext.TraceIdentifier; // BUG: 111: Should be request Id. check what TraceIdentifier is ???
+
+            var id = httpContext
+                .GetRequestId();
 
             var isHealthCheck = logLevel == LogLevel.Information && path == HealthzCheckUris.Path;
 

@@ -357,16 +357,6 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoRequestOptions(this IServiceCollection services)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-
-        services
-            .AddScoped<HttpRequestOptionsMiddleware>();
-
-        return services;
-    }
-
     internal static IServiceCollection AddNanoRequestIdentifier(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);

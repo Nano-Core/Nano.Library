@@ -21,9 +21,9 @@ public sealed class HttpRequestIdentifierMiddleware : IMiddleware
         ArgumentNullException.ThrowIfNull(httpContext);
         ArgumentNullException.ThrowIfNull(next);
 
-        if (!httpContext.Response.Headers.ContainsKey(NanoHeaderNames.REQUEST_ID))
+        if (!httpContext.Request.Headers.ContainsKey(NanoHeaderNames.REQUEST_ID))
         {
-            httpContext.Response.Headers[NanoHeaderNames.REQUEST_ID] = httpContext.TraceIdentifier;
+            httpContext.Request.Headers[NanoHeaderNames.REQUEST_ID] = httpContext.TraceIdentifier;
         }
 
         return next(httpContext);
