@@ -1,14 +1,25 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Nano.App.Exceptions;
 
-internal class ProblemDetailsException : Exception
+/// <summary>
+/// Represents an exception that is thrown for identity-related errors.
+/// </summary>
+public class ProblemDetailsException : Exception
 {
-    internal ProblemDetails ProblemDetails { get; set; }
+    /// <summary>
+    /// The problem details object that describes the error.
+    /// </summary>
+    public ProblemDetails ProblemDetails { get; set; }
 
-    internal ProblemDetailsException(ProblemDetails problemDetails)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProblemDetailsException"/> class with a specified error message.
+    /// </summary>
+    /// <param name="problemDetails">The <see cref="Microsoft.AspNetCore.Mvc.ProblemDetails"/> that describes the error.</param>
+    public ProblemDetailsException(ProblemDetails problemDetails)
+        : base(problemDetails.Detail)
     {
-        ProblemDetails = problemDetails ?? throw new ArgumentNullException(nameof(problemDetails));
+        this.ProblemDetails = problemDetails ?? throw new ArgumentNullException(nameof(problemDetails));
     }
 }

@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.Api.Identity.Authentication.Consts;
+using Nano.App.Extensions;
 using Nano.Data.Abstractions;
-using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Eventing.Abstractions;
 
 namespace Nano.App.Api.Controllers;
+
+// BUG: Check status codes used in endpoint (should we use 204 No Content, and what should we return when logic exception, if not 500 Internal server error)
 
 /// <summary>
 /// Base API controller that provides common properties and behaviors for all derived controllers.
@@ -26,7 +28,7 @@ public abstract class BaseController : Controller
     /// <summary>
     /// Gets the current request identififer from header.
     /// </summary>
-    public virtual string? RequestId => this.HttpContext.GetRequestId();
+    public virtual string? RequestId => this.HttpContext.Request.GetRequestId();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseController"/> class.

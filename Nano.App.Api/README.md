@@ -41,6 +41,7 @@
   * [Identity](#identity)
     * [Authentication](#authentication)
     * [Authorization](#authorization)
+  * [Api Clients](#api-clients)
 * [Controllers](#controllers)
 * [Request Validation](#model-validation)
 * [Serialization](#serialization)
@@ -51,17 +52,17 @@
 ## Summary
 The `NanoApiApplication` is a ready-to-use application template for building APIs with Nano.  
 
-It derives from `BaseNanoApplication` and implements the `INanoApplication` interface, following the common Nano application patterns and providing a concrete implementation 
+It derives from `BaseNanoApplication` and implements the `IApplication` interface, following the common Nano application patterns and providing a concrete implementation 
 for building web API applications with Nano. This class includes a structured setup for configuring services, middleware, routing, etc. 
 It also provides convenient static methods to create and configure the application with sensible defaults, while allowing full customization of services 
 through the `ConfigureServices` method. This design ensures that all core API behaviors are initialized consistently using you configuration, reducing boilerplate code 
 and simplifying the setup of new API applications.  
 
-> 📖 Learn more about common application features here: **[Nano Application](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**.  
+> 📖 Learn more about common Nano application features here: **[Nano Application](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**.  
 
 The `NanoApiApplication` can operate as either an internal service or an externally accessible API.
 As an internal service, it can run behind your network boundary, handling requests from other applications within the system, 
-using the built-in **[Nano Api-Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client)**.
+using the built-in **[Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client)**.
 When exposed as an external API, it sits behind an entry point that manages incoming traffic, providing controlled access to clients while keeping 
 the internal implementation consistent. This design allows the same application to function in both roles without changing its core configuration or service logic, 
 supporting flexible deployment scenarios.  
@@ -88,22 +89,22 @@ NanoApiApplication
 The `App` section in the configuration defines behavior related to the application.  
 
 | Setting                    | Type       | Default    | Description                                                                                                                                                          |
-| -------------------------- | ---------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|  `Version`                 | string     | 1.0.0.0    | Application version identifier.                                                                                                                                      |
-|  `ShutdownTimeout`         | int        | 10         | Number of seconds to wait after a SIGTERM signal before shutting down.                                                                                               |
-|  `Hosting`                 | object     | default    | Hosting options. See **[Hosting](#hosting)**.                                                                                                                        |
-|  `HttpPolicyHeaders`       | object     | default    | HTTP policy header options. See **[Http Policy Headers](#http-policy-headers)**.                                                                                     |
-|  `ResponseCache`           | object     | null       | Response caching options. See **[Response Cache](#response-cache)**.                                                                                                 |
-|  `ResponseCompression`     | object     | null       | Response compression options. See **[Response Compression](#response-compression)**.                                                                                 |
-|  `Session`                 | object     | null       | Session management options. See **[Session](#session)**.                                                                                                             |
-|  `TimeZone`                | object     | null       | Timezone configuration options. See **[TimeZone](#timezone)**.                                                                                                       |
-|  `Localization`            | object     | null       | Localization configuration options. See **[Localization](#localization)**.                                                                                           |
-|  `Documentation`           | object     | null       | API documentation options (Swagger). See **[Documentation](#documentation)**.                                                                                        |
-|  `HealthCheck`             | object     | null       | Health-check configuration options. See **[health Check](#health-check)**.                                                                                           |
-|  `VirusScan`               | object     | null       | Virus scanning options. See **[Virus Scan](#virus-scan)**.                                                                                                           |
-|  `ErrorHandling`           | object     | default    | Error handling configuration options. See **[Error Handling](#error-handling)**.                                                                                     |
-|  `Identity`                | object     | null       | Identity configuration options. See **[Identity](#identity)**.                                                                                                       |
-|  `Apis`                    | dictionary | []         | Named Nano API client configurations available to the application. See **[Api-Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client)**.  |
+| -------------------------- | ---------- | ---------- | ----------------------------------------------------------------------------------------------------------- |
+|  `Version`                 | string     | 1.0.0.0    | Application version identifier.                                                                             |
+|  `ShutdownTimeout`         | int        | 10         | Number of seconds to wait after a SIGTERM signal before shutting down.                                      |
+|  `Hosting`                 | object     | default    | Hosting options. See **[Hosting](#hosting)**.                                                               |
+|  `HttpPolicyHeaders`       | object     | default    | HTTP policy header options. See **[Http Policy Headers](#http-policy-headers)**.                            |
+|  `ResponseCache`           | object     | null       | Response caching options. See **[Response Cache](#response-cache)**.                                        |
+|  `ResponseCompression`     | object     | null       | Response compression options. See **[Response Compression](#response-compression)**.                        |
+|  `Session`                 | object     | null       | Session management options. See **[Session](#session)**.                                                    |
+|  `TimeZone`                | object     | null       | Timezone configuration options. See **[TimeZone](#timezone)**.                                              |
+|  `Localization`            | object     | null       | Localization configuration options. See **[Localization](#localization)**.                                  |
+|  `Documentation`           | object     | null       | API documentation options (Swagger). See **[Documentation](#documentation)**.                               |
+|  `HealthCheck`             | object     | null       | Health-check configuration options. See **[health Check](#health-check)**.                                  |
+|  `VirusScan`               | object     | null       | Virus scanning options. See **[Virus Scan](#virus-scan)**.                                                  |
+|  `ErrorHandling`           | object     | default    | Error handling configuration options. See **[Error Handling](#error-handling)**.                            |
+|  `Identity`                | object     | null       | Identity configuration options. See **[Identity](#identity)**.                                              |
+|  `Apis`                    | dictionary | []         | Named Nano API client configurations available to the application. See **[Api Client](api-clients)**.       |
 
 ```json
 "App": {
@@ -742,6 +743,7 @@ The HTTP Permissions-Policy response header provides a mechanism to allow and de
 within any `<iframe>` elements in the document.  
 
 The following directives may be added to `PermissionPolicy` in the configuration:
+
 | Directive                      | Description                                                                                                                                                                                                                            |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Accelerometer`                | Controls whether the current document is allowed to gather information about the acceleration of the device through the Accelerometer interface.                                                                                       |
@@ -959,6 +961,8 @@ for communicating with search bots, web crawlers, and similar user agents.
 Try it out yourself using the **[Api.PolicyHeaders.Robots](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.Robots)** example.  
 
 ## Forwarded Headers
+When connecting through a HTTP proxy (or load balancer), server logs will only contain the IP address, host address, and protocol of the proxy; 
+this header can be used to identify the IP address, host, and protocol, of the original request.
 
 | Setting                   | Type    | Default  | Description                                                                                              |
 | ------------------------- | ------- | -------- | -------------------------------------------------------------------------------------------------------- |
@@ -982,6 +986,7 @@ Try it out yourself using the **[Api.PolicyHeaders.Robots](https://github.com/Na
 |  `None`              | Do not process any forwarders.                                                                         |
 |  `XForwardedFor`     | Process `X-Forwarded-For`, which identifies the originating IP address of the client.                  |
 |  `XForwardedHost`    | Process `X-Forwarded-Host`, which identifies the original host requested by the client.                |
+|  `XForwardedPort`    | Process `X-Forwarded-Port`, which identifies the original port requested by the client.                |
 |  `XForwardedProto`   | Process `X-Forwarded-Proto`, which identifies the protocol (HTTP or HTTPS) the client used to connect. |
 |  `XForwardedPrefix`  | Process `X-Forwarded-Prefix`, which identifies the original path base used by the client.              |
 |  `All`               | Process X-Forwarded-For, X-Forwarded-Host, X-Forwarded-Proto and X-Forwarded-Prefix.                   |
@@ -991,7 +996,7 @@ Try it out yourself using the **[Api.PolicyHeaders.Robots](https://github.com/Na
 | -------------------- | ----------------------------------------------- |
 | `X-Forwarded-Proto`  | Sets `HttpContext.Request.Scheme`.              |
 | `X-Forwarded-Host`   | Sets `HttpContext.Request.Host`.                |
-| `X-Forwarded-Port`   | Sets `HttpContext.Request.Port`.                |
+| `X-Forwarded-Port`   | Sets `HttpContext.Request.Host.Port`.           |
 | `X-Forwarded-For`	   | Sets `HttpContext.Connection.RemoteIpAddress`.  |
 | `X-Forwarded-Prefix` | Ignored, and not transferred to `httpContext`.  |
 
@@ -1120,6 +1125,9 @@ To specify the timezone in a request, you can use one of the following methods:
 * Querystring parameter (`tz=Europe/Copenhagen`)
 * Cookie (`.AspNetCore.TimeZone=Europe/Copenhagen`)
 
+When using layered Nano APIs, the `tz` header is automatically propagated across all layers when leveraging
+the built-in [Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client).  
+
 To easily obtain the current date and time, use the following properties on `DateTimeInfo`:
 
 ```csharp
@@ -1152,6 +1160,9 @@ To specify the language for a request, you can use one of the following methods:
 * Http header (```Accept-Language=da-DK```)
 * Query parameter (```culture=da-DK```)
 * Cookie (`.AspNetCore.Culture=c=da-DK|uic=da-DK`)
+
+When using layered Nano APIs, the `Accept-Language` header is automatically propagated across all layers when leveraging 
+the built-in [Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client).  
 
 Cookie name: `.AspNetCore.Culture`
 
@@ -1188,8 +1199,12 @@ By default, routes use the configured application version. The value set in `App
 allowing routes targeting the default version to work without explicitly specifying a version in the URL. Controllers and actions targeting the default version 
 do not need to be annotated, as this version is assumed automatically.
 
-Only **major** and **minor** version numbers are considered for routing.  
-For example, `/api/v1/...` and `/api/v1.0/...` are valid, while `/api/v1.0.0/...` is not supported. The same applies to the other veresion providers.  
+Nano automatically adds API versioning headers to every response. The `Api-Version` header reflects the version requested by the client 
+(or the default if none is specified), and the `Api-Supported-Versions` header lists all versions supported by the API.  
+
+Only **major** and **minor** version numbers are considered when specifying versions 
+For example, when specifying version in route, `/api/v1/...` and `/api/v1.0/...` are valid, while `/api/v1.0.0/...` is not supported. The same applies 
+to the other veresion providers.  
 
 > ⚠️ **Versioning should be used with caution**  
 > Managing multiple API versions quickly adds complexity and maintenance overhead. Whenever possible, prefer evolving the API in a backward-compatible way 
@@ -1347,46 +1362,60 @@ No configuration or additional setup is required.
 Try it out yourself using the **[Api.ContentNegotiation](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.ContentNegotiation)** example.  
 
 ## Request Tracing
-The `RequestId` is generated by the first Nano instance reached in the architecture and flows through all layers of the system. 
-It can also be set from the frontend, which is recommended so that every layer in the system uses the same identifier.
+A `X-Request-Id` is generated by the first Nano instance encountered in the architecture and is propagated through all layers of the system. 
+When using layered Nano APIs with [Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client), the `X-Request-Id` is 
+automatically passed along. It can also be set by the frontend, which is recommended to ensure that every layer uses the same identifier.  
 
-In controllers deriving from `BaseController`, the `RequestId` is accessible via the `RequestId` property.
+In controllers deriving from `BaseController`, the `X-Request-Id` header value is accessible via the `RequestId` property.
+The `X-Request-Id` is also added to the http response, so the consumer can see it.  
 
 No configuration or additional setup is required.  
 
 You can try this out using the **[Api.RequestTracing](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.RequestTracing)** example.
 
-
-
-
-
-
-
 ## Error Handling
-This configuration section is required and will automatically be populated if omitted from configuration.
+This configuration section is required and will automatically be populated if omitted.
 
-When an exception or other errors occurs for a request, and ```500 Internal Server Error``` is returned to the client, contain ```ProblemDetails``` response, as per RFCxxxx.  
-
-If ```Error.IsTranslated``` is true, then the consumer can expect the Exceptions to be translated to the language matching the Current CultureInfo, unless translations in that language is not available, and the default translation is used.  
-If ```Error.IsCoded``` is true, then the consumer can expect the Exceptions to be a code, that can be used to map an error message for the user.  
-
-| Setting                      | Type    | Default  | Description                                                              |
-| ---------------------------- | ------- | -------- | ------------------------------------------------------------------------ |
-|  `ExposeErrors`              | bool    | false    | Expose detailed errors (internal server errors).                         |
+| Setting        | Type | Default | Description                                                                                                                            |
+| -------------- | ---- | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `ExposeErrors` | bool | `false` | Expose detailed error information (`500 Internal Server Errors`). ⚠️ It's not recommended to enable this for `Production` environment  |
 
 ```json
 "App": {
-  "VirusScan": {
-    "Host": "clamav",
-    "Port": 3310,
-    "HealthCheck": {
-      "UnhealthyStatus": "Unhealthy"
-    }
+  "ErrorHandlong": {
+    "ExposeErrors": false
   }
 }
 ```
 
+Nano includes a centralized error handling middleware that catches all unhandled exceptions, thrown anywhere in the application, and converts them into 
+consistent HTTP error responses with appropriate status codes. All error responses are written using `ProblemDetails`, in accordance 
+with [https://datatracker.ietf.org/doc/html/rfc7807](https://datatracker.ietf.org/doc/html/rfc7807).
+
+Nano provides built-in mappings between common exception types and HTTP error responses.
+
+| Exception                    | Status Code                   | Description                                                                                                                             |
+| ---------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `IdentityException`          | `400` Bad Request             | Thrown when identity-related operations fail. Sets `IsTranslated=true`                                                                  |
+| `UnauthorizedException`      | `401` Unauthorized            | Thrown when authentication fails.                                                                                                       |
+| `PermissionDeniedException`  | `403` Forbidden               | Thrown when access to a resource is denied.                                                                                             |
+| `OperationCanceledException` | `408` Request Timeout         | Thrown when an operation is cancelled by the client or server.                                                                          |
+| `VirusScanException`         | `422` Unprocessable Entity    | Thrown when a virus is detected in one or more uploaded files. Sets `IsTranslated=true`                                                 |
+| `AggregateException`         | `500` Internal Server Error   | Thrown anywhere.                                                                                                                        |
+| `Exception`                  | `500` Internal Server Error   | Thrown anywhere.                                                                                                                        |
+| `ProblemDetailsException`    | `Any`                         | Used to throw a fully defined `ProblemDetails` directly.                                                                                |
+| `BadRequestException`        | `400` Bad Request             | Thrown for bad request errors. Can be `IsCoded`, exposing a machine-readable error code, or `IsTranslated` exposing a server-translated message. Always appears in `ProblemDetails.Detail`.  |
+
+The exceptions above may be thrown anywhere in the application, and the Nano error handling middleware will automatically construct the appropriate `ProblemDetails` response.
+
+Nano supports any HTTP status code as long as `ProblemDetails` is used. This also enables proper error propagation when using Nano in a layered architecture 
+with the [Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client). When returning custom error responses directly from controllers, 
+always return `ProblemDetails` or no response body. Returning custom objects for error responses will not work in a layered Nano architecture, 
+as the API client can only propagate `ProblemDetails` and will otherwise fall back to a generic `500 Internal Server Error`.
+
 Try it out yourself using the **[Api.ErrorHandling](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.ErrorHandling)** example.  
+
+
 
 
 
@@ -1408,6 +1437,9 @@ HOW DO WE ADD ROLES FOR TRANSIENT LOGIN (WE NEED ROLES OTHERWISE NO ACCESS TO CO
 When authentication has been enabled and configured, and the application is running, users authenticate in order to gain access to the controllers and their actions. Nano has a ```AuthController``` implementation, responsible for this.  
 
 Nano supports various methods of authentication as described in [Security - Authentication](security#authentication) section.  
+
+When using layered Nano APIs, the `Authorization` header is automatically propagated across all layers when leveraging 
+the built-in [Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client).  
 
 The ```Security``` section of the configuration defines behavior related to authentication and authorization in the application. The section is deserialized into an instance of ```SecurityOptions```, and injected as dependency during startup, thus available for injection throughout the application.  
 ```json
@@ -1556,26 +1588,8 @@ Roles:
 By default, authorization to controller actions is handling by the built-in roles and policies defined by Nano. Controllers may be decorated with the ```AuthorizeAttribute```, and allow to override the default authorization and use custom defined roles and policies.  
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+## Api Clients
+See [Nano Api Clients](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-clients)
 
 
 ## Controllers
@@ -1689,9 +1703,8 @@ The serializer will not serialize navigations that is of type ```IEntity```, exc
 
 Nano's serializer supports Geometry types, from Nettoplogysuite
 
-
 ## Start-Up Tasks
 Nano supports startup-tasks, that executes before the application starts. 
-A 'self' startup-healtcheck will report ready when all startup tasks have completed. Only relevant for api applications.
+A 'self' startup health-check will report ready when all startup tasks have completed. Only relevant for api applications.
 
-Read more [Nano.App](nano-app#start-up-tasks)
+Read more [Nano Start-Up Tasks](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#start-up-tasks)

@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
@@ -83,9 +84,15 @@ internal static class ApplicationBuilderExtensions
             .Use((context, next) =>
             {
                 context.Response
-                    .AddCrossOriginEmbedderPolicyHeader(options.Origin.EmbedderPolicy)
-                    .AddCrossOriginOpenerPolicyHeader(options.Origin.OpenerPolicy)
-                    .AddCrossOriginResourcePolicyHeader(options.Origin.ResourcePolicy);
+                    .OnStarting(() =>
+                    {
+                        context.Response
+                            .AddCrossOriginEmbedderPolicyHeader(options.Origin.EmbedderPolicy)
+                            .AddCrossOriginOpenerPolicyHeader(options.Origin.OpenerPolicy)
+                            .AddCrossOriginResourcePolicyHeader(options.Origin.ResourcePolicy);
+
+                        return Task.CompletedTask;
+                    });
 
                 return next();
             });
@@ -134,7 +141,13 @@ internal static class ApplicationBuilderExtensions
             .Use((context, next) =>
             {
                 context.Response
-                    .AddXRobotsHeader(options);
+                    .OnStarting(() =>
+                    {
+                        context.Response
+                            .AddXRobotsHeader(options);
+
+                        return Task.CompletedTask;
+                    });
 
                 return next();
             });
@@ -155,7 +168,13 @@ internal static class ApplicationBuilderExtensions
             .Use((context, next) =>
             {
                 context.Response
-                    .AddXFrameOptionsPolicyHeader(options.FrameOptionsPolicyHeader);
+                    .OnStarting(() =>
+                    {
+                        context.Response
+                            .AddXFrameOptionsPolicyHeader(options.FrameOptionsPolicyHeader);
+
+                        return Task.CompletedTask;
+                    });
 
                 return next();
             });
@@ -176,7 +195,13 @@ internal static class ApplicationBuilderExtensions
             .Use((context, next) =>
             {
                 context.Response
-                    .AddXXssProtectionPolicyHeader(options);
+                    .OnStarting(() =>
+                    {
+                        context.Response
+                            .AddXXssProtectionPolicyHeader(options);
+
+                        return Task.CompletedTask;
+                    });
 
                 return next();
             });
@@ -197,7 +222,13 @@ internal static class ApplicationBuilderExtensions
             .Use((context, next) =>
             {
                 context.Response
-                    .AddContentTypeOptionsHeader(options);
+                    .OnStarting(() =>
+                    {
+                        context.Response
+                            .AddContentTypeOptionsHeader(options);
+
+                        return Task.CompletedTask;
+                    });
 
                 return next();
             });
@@ -218,7 +249,13 @@ internal static class ApplicationBuilderExtensions
             .Use((context, next) =>
             {
                 context.Response
-                    .AddReferrerPolicyHeader(options);
+                    .OnStarting(() =>
+                    {
+                        context.Response
+                            .AddReferrerPolicyHeader(options);
+
+                        return Task.CompletedTask;
+                    });
 
                 return next();
             });
@@ -254,7 +291,13 @@ internal static class ApplicationBuilderExtensions
             .Use((context, next) =>
             {
                 context.Response
-                    .AddContentSecurityPolicyHeader(options);
+                    .OnStarting(() =>
+                    {
+                        context.Response
+                            .AddContentSecurityPolicyHeader(options);
+
+                        return Task.CompletedTask;
+                    });
 
                 return next();
             });
@@ -265,7 +308,13 @@ internal static class ApplicationBuilderExtensions
                 .Use((context, next) =>
                 {
                     context.Response
-                        .AddContentSecurityPolicyPermissionsHeader(options.PermissionsPolicy);
+                        .OnStarting(() =>
+                        {
+                            context.Response
+                                .AddContentSecurityPolicyPermissionsHeader(options.PermissionsPolicy);
+
+                            return Task.CompletedTask;
+                        });
 
                     return next();
                 });
@@ -277,7 +326,13 @@ internal static class ApplicationBuilderExtensions
                 .Use((context, next) =>
                 {
                     context.Response
-                        .AddContentSecurityPolicyReportToHeader(options.ReportTo);
+                        .OnStarting(() =>
+                        {
+                            context.Response
+                                .AddContentSecurityPolicyReportToHeader(options.ReportTo);
+
+                            return Task.CompletedTask;
+                        });
 
                     return next();
                 });
@@ -357,7 +412,51 @@ internal static class ApplicationBuilderExtensions
         ArgumentNullException.ThrowIfNull(applicationBuilder);
 
         applicationBuilder
-            .UseMiddleware<HttpRequestIdentifierMiddleware>();
+            .Use((context, next) =>
+            {
+                var requestId = context.Request.Headers[NanoHeaderNames.REQUEST_ID].FirstOrDefault() ?? context.TraceIdentifier;
+
+                context.Request.Headers[NanoHeaderNames.REQUEST_ID] = requestId;
+
+                context.Response
+                    .OnStarting(() =>
+                    {
+                        context.Response.Headers[NanoHeaderNames.REQUEST_ID] = requestId;
+
+                        return Task.CompletedTask;
+                    });
+
+                return next();
+            });
+
+        return applicationBuilder;
+    }
+
+    internal static IApplicationBuilder UseNanoApiVersion(this IApplicationBuilder applicationBuilder)
+    {
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+
+        applicationBuilder
+            .Use((context, next) =>
+            {
+                var apiVersion = context
+                    .GetRequestedApiVersion();
+
+                context.Response
+                    .OnStarting(() =>
+                    {
+                        if (apiVersion != null)
+                        {
+                            var versionString = $"{apiVersion.MajorVersion ?? 0}.{apiVersion.MinorVersion ?? 0}";
+
+                            context.Response.Headers[NanoHeaderNames.API_VERSION] = versionString;
+                        }
+
+                        return Task.CompletedTask;
+                    });
+
+                return next();
+            });
 
         return applicationBuilder;
     }

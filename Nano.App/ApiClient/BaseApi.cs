@@ -1,6 +1,7 @@
 ﻿using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using Nano.App.ApiClient.Config;
 using Nano.App.ApiClient.Extensions;
 using Nano.App.ApiClient.Models;
@@ -9,19 +10,19 @@ using Nano.App.ApiClient.Requests.Auth;
 using Nano.App.ApiClient.Requests.Auth.Models;
 using Nano.App.Exceptions;
 using Nano.Common.Consts;
-using Nano.Common.Serialization.Json;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Identity.Exceptions;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
+using Nano.Common.Serialization.Json;
+using Vivet.AspNetCore.RequestTimeZone.Providers;
 
 namespace Nano.App.ApiClient;
 
@@ -176,7 +177,37 @@ public abstract class BaseApi
         this.httpContextAccessor.HttpContext?.Request.Headers
             .TryGetValue(NanoHeaderNames.REQUEST_ID, out requestIdHeader);
 
+        var httpContext = this.httpContextAccessor.HttpContext;
         var httpRequestMessage = new HttpRequestMessage(method, uri);
+
+        var headersToForward = new[]
+        {
+            NanoHeaderNames.X_FORWARDED_PROTO,
+            NanoHeaderNames.X_FORWARDED_HOST,
+            NanoHeaderNames.X_FORWARDED_PORT,
+            NanoHeaderNames.X_FORWARDED_FOR,
+            NanoHeaderNames.X_FORWARDED_PREFIX,
+            NanoHeaderNames.REQUEST_ID,
+            HeaderNames.AcceptLanguage,
+            RequestTimeZoneHeaderProvider.Headerkey,
+        };
+
+        if (httpContext != null)
+        {
+            foreach (var header in headersToForward)
+            {
+                if (httpContext.Request.Headers.TryGetValue(header, out var value))
+                {
+                    httpRequestMessage.Headers
+                        .TryAddWithoutValidation(header, value.ToArray());
+                }
+            }
+        }
+
+        if (jwtToken != null)
+        {
+            httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
+        }
 
         await httpRequestMessage
             .AddHttpHeaders(request, jwtToken, requestIdHeader, cancellationToken);
@@ -237,44 +268,38 @@ public abstract class BaseApi
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
 
-        switch (httpResponse.StatusCode)
+        switch ((int)httpResponse.StatusCode)
         {
-            case HttpStatusCode.NotFound:
-            case HttpStatusCode.NoContent:
-                return;
-
-            case HttpStatusCode.Unauthorized:
-                throw new UnauthorizedException();
-
-            case HttpStatusCode.Forbidden:
-                throw new PermissionDeniedException();
-
-            case HttpStatusCode.BadRequest:
+            case >= 400 and < 600:
             {
-                var errorContent = await httpResponse.Content
+                var content = await httpResponse.Content
                     .ReadAsStringAsync(cancellationToken);
 
-                throw GetBadRequestException(errorContent);
-            }
-
-            case HttpStatusCode.InternalServerError:
-            {
-                var errorContent = await httpResponse.Content
-                    .ReadAsStringAsync(cancellationToken);
-
-                var internalServerErrorException = GetInternalServerErrorException(errorContent);
-
-                if (internalServerErrorException != null)
+                try
                 {
-                    throw internalServerErrorException;
+                    var serializerSettings = SerializerSettings.GetDefault();
+                    var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(content, serializerSettings);
+
+                    if (problemDetails == null)
+                    {
+                        throw new NullReferenceException(nameof(problemDetails));
+                    }
+
+                    throw new ProblemDetailsException(problemDetails);
                 }
+                catch (JsonException)
+                {
+                    var exceptionMessage = content
+                        .RemoveQuotes();
 
-                break;
+                    throw new Exception(exceptionMessage);
+                }
             }
+            default:
+                httpResponse
+                    .EnsureSuccessStatusCode();
+                break;
         }
-
-        httpResponse
-            .EnsureSuccessStatusCode();
     }
     private static async Task<TResponse?> GetResponseAsync<TResponse>(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
         where TResponse : class
@@ -331,62 +356,6 @@ public abstract class BaseApi
             }
 
             throw;
-        }
-    }
-    private static BadRequestException GetBadRequestException(string content)
-    {
-        ArgumentNullException.ThrowIfNull(content);
-
-        try
-        {
-            var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(content, SerializerSettings.GetDefault());
-
-            if (problemDetails == null)
-            {
-                throw new NullReferenceException(nameof(problemDetails));
-            }
-
-            throw new ProblemDetailsException(problemDetails);
-        }
-        catch (JsonException)
-        {
-            if (content.StartsWith("\"", StringComparison.Ordinal))
-            {
-                content = content[1..];
-            }
-
-            if (content.EndsWith("\"", StringComparison.Ordinal))
-            {
-                content = content[..^1];
-            }
-
-            var exceptionMessage = content
-                .RemoveQuotes();
-
-            return new BadRequestException(exceptionMessage);
-        }
-    }
-    private static InvalidOperationException GetInternalServerErrorException(string content)
-    {
-        ArgumentNullException.ThrowIfNull(content);
-
-        try
-        {
-            var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(content, SerializerSettings.GetDefault());
-
-            if (problemDetails == null)
-            {
-                throw new NullReferenceException(nameof(problemDetails));
-            }
-
-            throw new ProblemDetailsException(problemDetails);
-        }
-        catch (JsonException)
-        {
-            var exceptionMessage = content
-                .RemoveQuotes();
-
-            return new InvalidOperationException(exceptionMessage);
         }
     }
 }

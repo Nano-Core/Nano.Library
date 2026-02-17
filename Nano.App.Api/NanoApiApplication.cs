@@ -24,7 +24,7 @@ namespace Nano.App.Api;
 /// Represents a Nano web API application.
 /// </summary>
 /// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api">Nano Api Application</see></remarks>
-public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplicationBuilder>, INanoApplication
+public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplicationBuilder>, IApplication
 {
     /// <summary>
     /// 
@@ -39,9 +39,9 @@ public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplica
     /// Allows consumers to register services for the API application.
     /// </summary>
     /// <param name="configure">A delegate to configure <see cref="IServiceCollection"/>.</param>
-    /// <returns>The current <see cref="INanoApplication"/> instance for chaining.</returns>
+    /// <returns>The current <see cref="IApplication"/> instance for chaining.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="configure"/> is null.</exception>
-    public virtual INanoApplication ConfigureServices(Action<IServiceCollection> configure)
+    public virtual IApplication ConfigureServices(Action<IServiceCollection> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
 
@@ -54,8 +54,8 @@ public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplica
     /// Creates and configures the API application with default Nano services, middleware, and web options.
     /// </summary>
     /// <param name="args">Command-line arguments passed to the application.</param>
-    /// <returns>A configured <see cref="INanoApplication"/> instance.</returns>
-    public static INanoApplication ConfigureApp(params string[] args)
+    /// <returns>A configured <see cref="IApplication"/> instance.</returns>
+    public static IApplication ConfigureApp(params string[] args)
     {
         var applicationBuilder = CreateBuilder(args);
 
@@ -75,7 +75,6 @@ public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplica
             .AddNanoRequestTimeZone(options.TimeZone)
             .AddNanoVirusScan(options.VirusScan)
             .AddNanoResponseCompression(options.ResponseCompression)
-            .AddNanoRequestIdentifier()
             .AddNanoFormOptions(options.Hosting.MultipartLimits)
             .AddNanoHttpsRedirection(options.Hosting.Http, options.Hosting.Https)
             .AddNanoMvc()
@@ -93,8 +92,8 @@ public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplica
     /// <summary>
     /// Builds the API application, registers middleware, routing, and health checks.
     /// </summary>
-    /// <returns>The current <see cref="INanoApplication"/> instance.</returns>
-    public INanoApplication Build()
+    /// <returns>The current <see cref="IApplication"/> instance.</returns>
+    public IApplication Build()
     {
         this.application = this.applicationBuilder
             .Build();
@@ -121,6 +120,7 @@ public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplica
             .UseAuthorization()
             .UseNanoSession(options.CurrentValue.Session)
             .UseNanoRequestIdentifier()
+            .UseNanoApiVersion()
             .UseNanoRequestVirusScan(options.CurrentValue.VirusScan)
             .UseNanoRequestLocalization(options.CurrentValue.Localization)
             .UseNanoRequestTimeZone(options.CurrentValue.TimeZone)

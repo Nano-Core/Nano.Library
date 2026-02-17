@@ -17,7 +17,6 @@ using Nano.App.Api.Config;
 using Nano.App.Api.Mvc.Extensions;
 using Nano.App.Api.Mvc.HealthChecks;
 using Nano.App.Api.Mvc.Middleware;
-using Nano.App.Api.Mvc.Serialization.Json;
 using Nano.Common.Consts;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -26,6 +25,7 @@ using System.Globalization;
 using System.Linq;
 using Nano.App.Api.Mvc;
 using Nano.App.Api.Mvc.Documentation;
+using Nano.App.Api.Mvc.Serialization.Json;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
@@ -353,16 +353,6 @@ internal static class ServiceCollectionExtensions
                         .Add<BrotliCompressionProvider>();
                 }
             });
-
-        return services;
-    }
-
-    internal static IServiceCollection AddNanoRequestIdentifier(this IServiceCollection services)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-
-        services
-            .AddScoped<HttpRequestIdentifierMiddleware>();
 
         return services;
     }

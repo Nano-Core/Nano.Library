@@ -11,6 +11,7 @@ public class UnauthorizedException : Exception
     /// Initializes a new instance of the <see cref="UnauthorizedException"/> class.
     /// </summary>
     public UnauthorizedException()
+        : this("")
     {
     }
 

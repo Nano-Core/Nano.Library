@@ -8,12 +8,12 @@ internal static class StringExtensions
     {
         ArgumentNullException.ThrowIfNull(@string);
 
-        if (@string.StartsWith("\"", StringComparison.Ordinal))
+        if (@string.StartsWith('\"'))
         {
             @string = @string[1..];
         }
 
-        if (@string.EndsWith("\"", StringComparison.Ordinal))
+        if (@string.EndsWith('\"'))
         {
             @string = @string[..^1];
         }

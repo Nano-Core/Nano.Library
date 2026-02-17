@@ -1,31 +1,21 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Nano.App.Api.Config;
+using Nano.App.Api.Mvc.HealthChecks.Const;
+using Nano.App.Consts;
+using Nano.App.Exceptions;
+using Nano.App.Extensions;
+using Nano.Data.Abstractions.Identity.Exceptions;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Nano.App.Api.Config;
-using Nano.App.Api.Exceptions;
-using Nano.App.Api.Mvc.HealthChecks.Const;
-using Nano.App.Consts;
-using Nano.App.Exceptions;
-using Nano.Common.Serialization.Json;
-using Nano.Data.Abstractions.Annotations;
-using Nano.Data.Abstractions.Identity.Exceptions;
-using Nano.Data.Abstractions.Identity.Extensions;
-using Newtonsoft.Json;
 using Vivet.AspNetCore.RequestVirusScan.Exceptions;
 
 namespace Nano.App.Api.Mvc.Middleware;
-
-// BUG: 111: Custom headers (e.g. Authorization, X-Request-Id) <= what is X-Request-Id, can we use forwarded headers to move request through ingress, needed?  better??
-
-// BUG: 222: Go through, Refactor, check, etc for documenation and example
 
 /// <summary>
 /// Middleware to handle exceptions globally, log them, and return structured <see cref="ProblemDetails"/> responses.
@@ -62,223 +52,174 @@ public sealed class ExceptionHandlingMiddleware : IMiddleware
 
         var timestamp = Stopwatch.GetTimestamp();
 
-        var request = httpContext.Request;
-        var response = httpContext.Response;
-
-        var logLevel = response.StatusCode is >= 500 and <= 599
-            ? LogLevel.Error
-            : LogLevel.Information;
-
         Exception? exception = null;
+        Exception[] exceptions = [];
+
+        var problemDetails = new ProblemDetails();
+
         try
         {
             await next(httpContext);
         }
+        catch (VirusScanException ex)
+        {
+            exception = ex;
+
+            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-422-unprocessable-content";
+            problemDetails.Status = (int)HttpStatusCode.UnprocessableEntity;
+            problemDetails.Title = "Unprocessable Entity";
+        }
         catch (UnauthorizedException ex)
         {
-            exception = ex.GetBaseException();
-            response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            exception = ex;
+
+            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-401-unauthorized";
+            problemDetails.Status = (int)HttpStatusCode.Unauthorized;
+            problemDetails.Title = "Unauthorized";
         }
         catch (PermissionDeniedException ex)
         {
-            exception = ex.GetBaseException();
-            response.StatusCode = (int)HttpStatusCode.Forbidden;
+            exception = ex;
+
+            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-403-forbidden";
+            problemDetails.Status = (int)HttpStatusCode.Forbidden;
+            problemDetails.Title = "Forbidden";
         }
-        catch (TaskCanceledException ex)
+        catch (IdentityException ex)
         {
-            exception = ex.GetBaseException();
-            response.StatusCode = (int)HttpStatusCode.NoContent;
+            exception = ex;
+
+            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-400-bad-request";
+            problemDetails.Status = (int)HttpStatusCode.BadRequest;
+            problemDetails.Title = "Bad Request";
+        }
+        catch (BadRequestException ex)
+        {
+            exception = ex;
+
+            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-400-bad-request";
+            problemDetails.Status = (int)HttpStatusCode.BadRequest;
+            problemDetails.Title = "Bad Request";
+
+            if (ex.IsCoded)
+            {
+                problemDetails.Extensions
+                    .Add(ProblemDetailsExtensionKeys.IS_CODED, true);
+            }
+
+            if (ex.IsTranslated)
+            {
+                problemDetails.Extensions
+                    .Add(ProblemDetailsExtensionKeys.IS_TRANSLATED, true);
+            }
         }
         catch (OperationCanceledException ex)
         {
-            exception = ex.GetBaseException();
-            response.StatusCode = (int)HttpStatusCode.NoContent;
+            exception = ex;
+
+            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#section-15.5.9";
+            problemDetails.Status = (int)HttpStatusCode.RequestTimeout;
+            problemDetails.Title = "Request Timeout";
+        }
+        catch (ProblemDetailsException ex)
+        {
+            exception = ex;
+
+            problemDetails = ex.ProblemDetails;
+        }
+        catch (AggregateException ex)
+        {
+            exception = ex;
+            exceptions = ex.InnerExceptions.ToArray();
+
+            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-500-internal-server-error";
+            problemDetails.Status = (int)HttpStatusCode.InternalServerError;
+            problemDetails.Title = "Internal Server Error";
         }
         catch (Exception ex)
         {
             exception = ex;
 
-            if (response.HasStarted)
-            {
-                response.Clear();
-            }
-
-            response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-            Exception topException;
-            Exception[] exceptions;
-            if (ex is AggregateException aggregateException)
-            {
-                topException = aggregateException.InnerException ?? aggregateException;
-                exceptions = aggregateException.InnerExceptions.ToArray();
-            }
-            else
-            {
-                topException = ex;
-                exceptions = [topException];
-            }
-
-            var exceptionMessages = exceptions
-                .Select(x => x.Message)
-                .ToArray();
-
-            var problemDetails = new ProblemDetails
-            {
-                Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1",
-                Status = response.StatusCode,
-                Title = "Internal Server Error",
-                Detail = topException.Message,
-                Extensions =
-                {
-                    { ProblemDetailsExtensions.EXCEPTIONS, exceptionMessages }
-                }
-            };
-
-            var uxExceptionAttribute = GetUxExceptionAttribute(httpContext, topException);
-
-            if (uxExceptionAttribute == null)
-            {
-                switch (topException)
-                {
-                    case BadRequestException:
-                        response.StatusCode = (int)HttpStatusCode.BadRequest;
-
-                        problemDetails.Status = response.StatusCode;
-                        problemDetails.Title = "Bad Request";
-
-                        problemDetails.Extensions
-                            .Add(ProblemDetailsExtensions.IS_TRANSLATED, true);
-
-                        break;
-
-                    case VirusScanException:
-                        problemDetails.Title = "Virus Scan Error";
-
-                        break;
-
-                    case CodedException:
-                        problemDetails.Title = "Coded Error";
-
-                        problemDetails.Extensions
-                            .Add(ProblemDetailsExtensions.IS_CODED, true);
-
-                        break;
-
-                    case IdentityException:
-                    case TranslationException:
-                        problemDetails.Title = "Translated Error";
-
-                        problemDetails.Extensions
-                            .Add(ProblemDetailsExtensions.IS_TRANSLATED, true);
-
-                        break;
-
-                    case ProblemDetailsException problemDetailsException:
-                        problemDetails = problemDetailsException.ProblemDetails;
-
-                        break;
-
-                    default:
-                        if (!this.ApiOptions.CurrentValue.ErrorHandling.ExposeErrors)
-                        {
-                            problemDetails.Detail = null;
-
-                            problemDetails.Extensions
-                                .Remove(ProblemDetailsExtensions.EXCEPTIONS);
-                        }
-
-                        break;
-                }
-            }
-            else
-            {
-                problemDetails.Detail = uxExceptionAttribute.Message;
-
-                problemDetails.Extensions
-                    .Add(ProblemDetailsExtensions.IS_CODED, true);
-            }
-
-            logLevel = SetLogLevel(problemDetails);
-
-            var serializerSettings = SerializerSettings.GetDefault();
-            var result = JsonConvert.SerializeObject(problemDetails, serializerSettings);
-
-            await response
-                .WriteAsync(result);
+            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-500-internal-server-error";
+            problemDetails.Status = (int)HttpStatusCode.InternalServerError;
+            problemDetails.Title = "Internal Server Error";
         }
         finally
         {
-            var protocol = request.IsHttps
-                ? request.Protocol.Replace("HTTP", "HTTPS")
-                : request.Protocol;
-
-            var method = request.Method;
-            var path = request.Path.Value;
-            var queryString = request.QueryString.HasValue ? $"{request.QueryString.Value}" : null;
-
-            var success = request.Query
-                .TryGetValue("access_token", out var accessToken);
-
-            if (success)
+            if (exception != null)
             {
-                queryString = queryString?
-                    .Replace(accessToken.ToString(), "<<secret>>");
+                if (!httpContext.Response.HasStarted)
+                {
+                    httpContext.Response
+                        .Clear();
+
+                    httpContext.Response.StatusCode = problemDetails.Status ?? (int)HttpStatusCode.InternalServerError;
+
+                    if (httpContext.Response.StatusCode != (int)HttpStatusCode.InternalServerError || this.ApiOptions.CurrentValue.ErrorHandling.ExposeErrors)
+                    {
+                        problemDetails.Detail = exception.Message;
+                        problemDetails.Extensions
+                            .Add(ProblemDetailsExtensionKeys.ERRORS, exceptions.Select(x => x.Message).ToArray());
+                    }
+                    else
+                    {
+                        problemDetails.Detail = null;
+                        problemDetails.Extensions
+                            .Remove(ProblemDetailsExtensionKeys.ERRORS);
+                    }
+
+                    await httpContext.Response
+                        .WriteAsJsonAsync(problemDetails);
+                }
+                else
+                {
+                    this.Logger
+                        .LogError(exception, "Unhandled exception after response started");
+                }
             }
 
-            var pathAndqueryString = $"{path}{queryString}";
-            var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
+            var logLevel = httpContext.Response.StatusCode == (int)HttpStatusCode.InternalServerError
+                ? LogLevel.Error
+                : LogLevel.Information;
 
-            var id = httpContext
-                .GetRequestId();
-
-            var isHealthCheck = logLevel == LogLevel.Information && path == HealthzCheckUris.Path;
-
-            if (!isHealthCheck)
-            {
-                this.Logger
-                    .Log(logLevel, exception, MESSAGE_TEMPLATE, protocol, method, pathAndqueryString, response.StatusCode, elapsed, id);
-            }
+            this.LogRequest(httpContext.Request, logLevel, httpContext.Response.StatusCode, timestamp, exception);
         }
     }
 
 
-    private static UxExceptionAttribute? GetUxExceptionAttribute(HttpContext httpContext, Exception exception)
+    private void LogRequest(HttpRequest httpRequest, LogLevel logLevel, int statusCode, long timestamp, Exception? exception = null)
     {
-        ArgumentNullException.ThrowIfNull(httpContext);
+        ArgumentNullException.ThrowIfNull(httpRequest);
 
-        var endpoint = httpContext
-            .GetEndpoint();
+        var protocol = httpRequest.IsHttps
+            ? httpRequest.Protocol.Replace("HTTP", "HTTPS")
+            : httpRequest.Protocol;
 
-        var actionDescriptor = endpoint?.Metadata
-            .GetMetadata<ControllerActionDescriptor>();
+        var method = httpRequest.Method;
+        var path = httpRequest.Path.Value;
+        var queryString = httpRequest.QueryString.HasValue ? $"{httpRequest.QueryString.Value}" : null;
 
-        var type = actionDescriptor?.ControllerTypeInfo.BaseType?.GenericTypeArguments
-            .FirstOrDefault();
+        var success = httpRequest.Query
+            .TryGetValue("access_token", out var accessToken);
 
-        return type?
-            .GetCustomAttributes<UxExceptionAttribute>(true)
-            .FirstOrDefault(x =>
-                exception.Message
-                    .Contains("UX") &&
-                exception.Message
-                    .Contains(x.Properties
-                        .Aggregate(string.Empty, (current, y) => current + $"_{y}")));
-    }
-    private static LogLevel SetLogLevel(ProblemDetails problemDetails)
-    {
-        ArgumentNullException.ThrowIfNull(problemDetails);
+        if (success)
+        {
+            queryString = queryString?
+                .Replace(accessToken.ToString(), "<<secret>>");
+        }
 
-        problemDetails.Extensions
-            .TryGetValue(ProblemDetailsExtensions.IS_TRANSLATED, out var isTranslated);
+        var pathAndqueryString = $"{path}{queryString}";
+        var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
 
-        problemDetails.Extensions
-            .TryGetValue(ProblemDetailsExtensions.IS_CODED, out var isCoded);
+        var id = httpRequest
+            .GetRequestId();
 
-        bool.TryParse(isTranslated?.ToString(), out var boolIsTranslated);
-        bool.TryParse(isCoded?.ToString(), out var boolIsCoded);
+        var isHealthCheck = logLevel == LogLevel.Information && path == HealthzCheckUris.Path;
 
-        return boolIsTranslated || boolIsCoded
-            ? LogLevel.Information
-            : LogLevel.Error;
+        if (!isHealthCheck)
+        {
+            this.Logger
+                .Log(logLevel, exception, MESSAGE_TEMPLATE, protocol, method, pathAndqueryString, statusCode, elapsed, id);
+        }
     }
 }
