@@ -8,7 +8,10 @@
 ***
 
 ## Table of Contents
+* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
+
+THIS NUGET SHOULD NOT BE INSTALLED DIRECTLY SEE Providers
 
 ## Summary
 Abstractions contains the interfaces used when implementing eventing providers.  

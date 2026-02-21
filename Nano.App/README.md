@@ -6,6 +6,7 @@
 > _Common features for all types of Nano application._
 
 ## Table of Contents
+* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Environment](#environment)
 * [Configuration](#configuration)
@@ -15,6 +16,8 @@
 * [Api Client](#api-client)
 * [Custom Application](#custom-applications)
 * [Annotations](#annotations)
+
+THIS NUGET SHOULD NOT BE INSTALLED DIRECTLY SEE Nano.App.Api or Nano.App.Console or Nano.App.Web?
 
 ## Summary
 Applications are the core part of Nano

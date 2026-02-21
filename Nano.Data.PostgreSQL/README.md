@@ -8,6 +8,7 @@
 *** 
 
 ## Table of Contents
+* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Registration](#registration)
 * [Dependencies](#dependencies)
@@ -17,6 +18,12 @@ Data Provider implementation for PostgreSQL data access.
 Read more about storage here: [Nano.Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)
 
 ## Registration
+First install the [Nano.Data.PostgreSQL](https://www.nuget.org/packages/Nano.Data.PostgreSQL) NuGet package.  
+
+```powershell
+dotnet add package Nano.Data.PostgreSQL;
+```
+
 The PostgreSQL data provider must be registered as dependencies.  
 ```csharp
     .ConfigureServices(x =>

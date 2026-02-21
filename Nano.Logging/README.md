@@ -8,11 +8,14 @@
 ***
 
 ## Table of Contents
+* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Registration](#registration)
 * [Configuration](#configuration)
 * [Logging Providers](#logging-providers)
 * [Examples](#examples)
+
+THIS NUGET SHOULD NOT BE INSTALLED DIRECTLY SEE Providers
 
 ## Summary
 Nano registers the interfaces ```ILoggerFactory```, ```ILogger``` and ```ILogger<T>``` during application startup. 

@@ -8,6 +8,7 @@
 ***
 
 ## Table of Contents
+* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Registration](#registration)
 * [Configuration](#configuration)
@@ -45,8 +46,6 @@
    * [Serialization](#serialization)
 * [Startup Tasks](#startup-tasks)
 
-*** 
-
 ## Summary
 The `NanoApiApplication` is a ready-to-use application template for building APIs with Nano.  
 
@@ -70,7 +69,13 @@ supporting flexible deployment scenarios.
 Also checkout the **[Api.Blank](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api._Blank)** example, that shows a minimal configured API application.  
 
 ## Registration
-To create a `NanoApiApplication` simply add the following code-snippet to `program.cs`.  
+First install the [Nano.App.Api](https://www.nuget.org/packages/Nano.App.Api) NuGet package.  
+
+```powershell
+dotnet add package Nano.App.Api;
+```
+
+Then, to create a `NanoApiApplication` simply add the following code to `program.cs`.  
 
 ```csharp
 NanoApiApplication

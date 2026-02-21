@@ -8,6 +8,7 @@
 *** 
 
 ## Table of Contents
+* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Registration](#registration)
 * [Dependencies](#dependencies)
@@ -17,6 +18,12 @@ Data Provider implementation for MySQL data access.
 Read more about storage here: [Nano.Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)
 
 ## Registration
+First install the [Nano.Data.MySql](https://www.nuget.org/packages/Nano.Data.MySql) NuGet package.  
+
+```powershell
+dotnet add package Nano.Data.MySql;
+```
+
 The MySQL data provider must be registered as dependencies.  
 ```csharp
     .ConfigureServices(x =>

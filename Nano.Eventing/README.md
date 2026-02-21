@@ -8,12 +8,15 @@
 ***
 
 ## Table of Contents
+* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Registration](#registration)
 * [Configuration](#configuration)
 * [Eventing Providers](#eventing-providers)
 * [Publish and Subscribe](#publish-and-subscribe)
 * [Examples](#examples)
+
+THIS NUGET SHOULD NOT BE INSTALLED DIRECTLY SEE Providers
 
 ## Summary
 Nano supports different ways of publishing and subscribing to events.  

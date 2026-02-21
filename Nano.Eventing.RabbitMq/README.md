@@ -8,6 +8,7 @@
 *** 
 
 ## Table of Contents
+* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Registration](#registration)
 * [Dependencies](#dependencies)
@@ -17,6 +18,12 @@ Eventing Provider implementation for RabbitMQ.
 Read more about storage here: [Nano.Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing)
 
 ## Registration
+First install the [Nano.Eventing.RabbitMq](https://www.nuget.org/packages/Nano.Eventing.RabbitMq) NuGet package.  
+
+```powershell
+dotnet add package Nano.Eventing.RabbitMq;
+```
+
 The RabbitMQ eventing provider must be registered as dependencies.  
 ```csharp
     .ConfigureServices(x =>

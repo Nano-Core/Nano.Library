@@ -8,6 +8,7 @@
 ***
 
 ## Table of Contents
+* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Registration](#registration)
 
@@ -16,6 +17,12 @@ Logging Provider implementation for Log4Net.
 Read more about logging here: [Nano.Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)
 
 ## Registration
+First install the [Nano.Logging.Log4Net](https://www.nuget.org/packages/Nano.Logging.Log4Net) NuGet package.  
+
+```powershell
+dotnet add package Nano.Logging.Log4Net;
+```
+
 The Log4Net Logging Provider must be registered as dependencies.  
 ```csharp
     .ConfigureServices(x =>

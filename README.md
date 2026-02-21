@@ -18,7 +18,7 @@ MAKE TABLE OF CONTENTS LINKING TO ALL OTHER PAGES. Api, Console, Data. HERE SHOU
   * [.solution](#-solution)
   * [.tests](#-tests)
   * [.application](#-application)
-* [NuGet Overview](#nuget-overview)
+* [NuGet Packages](#nuget-packages)
 * [Architectures](#architectures)
 
 ## Summary
@@ -174,7 +174,9 @@ Nano references needs to be added to this project, as models depends on Nano.App
 
 Models project is configured for packaging a NuGet, which should be published internally and used to connect api to services. Also why the Nano dependences must be added here.
 
-## NuGet overview
+## NuGet Packages
+EXPLAIN STRUCTURE OF PACKAGES
+
 
 ## Architectures
 THERE ARE NOW LINKS TO THIS SECTION FROM Api._Blank and Console._Blank, maybe other places

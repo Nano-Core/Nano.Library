@@ -8,6 +8,7 @@
 ***
 
 ## Table of Contents
+* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Registration](#registration)
 * [Configuration](#configuration)
@@ -32,7 +33,13 @@ initialized consistently from configuration, reducing boilerplate code and simpl
 > 📖 Learn more about common Nano application features here: **[Nano Application](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**.  
 
 ## Registration
-To create a `NanoConsoleApplication` simply add the following code-snippet to `program.cs`.  
+First install the [Nano.App.Console](https://www.nuget.org/packages/Nano.App.Console) NuGet package.  
+
+```powershell
+dotnet add package Nano.App.Console;
+```
+
+Then, to create a `NanoConsoleApplication` simply add the following code to `program.cs`.  
 
 ```csharp
 NanoConsoleApplication

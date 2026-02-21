@@ -17,7 +17,7 @@ namespace Nano.App.Startup;
 /// <param name="logger">The <see cref="ILogger"/> used for logging errors and status.</param>
 /// <param name="scopeFactory">The <see cref="IServiceScopeFactory"/> used to create a service scope for resolving tasks.</param>
 /// <param name="startupTaskContext">The <see cref="StartupTaskContext"/> used to track running startup tasks.</param>
-public class StartupHostedService(ILogger logger, IServiceScopeFactory scopeFactory, StartupTaskContext startupTaskContext)
+public sealed class StartupHostedService(ILogger logger, IServiceScopeFactory scopeFactory, StartupTaskContext startupTaskContext)
     : IHostedService
 {
     private readonly ILogger logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -52,7 +52,7 @@ public class StartupHostedService(ILogger logger, IServiceScopeFactory scopeFact
                     logger
                         .LogError(ex, ex.Message);
 
-                    throw; // BUG
+                    throw;
                 }
             });
 
@@ -88,7 +88,7 @@ public class StartupHostedService(ILogger logger, IServiceScopeFactory scopeFact
                     this.logger
                         .LogError(ex, ex.Message);
 
-                    throw; // BUG
+                    throw;
                 }
             });
 

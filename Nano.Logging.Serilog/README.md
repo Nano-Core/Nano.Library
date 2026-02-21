@@ -8,6 +8,7 @@
 *** 
 
 ## Table of Contents
+* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Registration](#registration)
 
@@ -16,6 +17,12 @@ Logging Provider implementation for Serilog.
 Read more about logging here: [Nano.Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)
 
 ## Registration
+First install the [Nano.Logging.Serilog](https://www.nuget.org/packages/Nano.Logging.Serilog) NuGet package.  
+
+```powershell
+dotnet add package Nano.Logging.Serilog;
+```
+
 The Serilog Logging Provider must be registered as dependencies.  
 ```csharp
     .ConfigureServices(x =>

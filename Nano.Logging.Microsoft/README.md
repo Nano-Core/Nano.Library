@@ -8,6 +8,7 @@
 ***
 
 ## Table of Contents
+* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Registration](#registration)
 
@@ -16,6 +17,12 @@ Logging Provider implementation for Microsoft.
 Read more about logging here: [Nano.Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)
 
 ## Registration
+First install the [Nano.Logging.Microsoft](https://www.nuget.org/packages/Nano.Logging.Microsoft) NuGet package.  
+
+```powershell
+dotnet add package Nano.Logging.Microsoft;
+```
+
 The Microsoft Logging Provider must be registered as dependencies.  
 ```csharp
     .ConfigureServices(x =>

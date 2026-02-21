@@ -8,11 +8,14 @@
 ***
 
 ## Table of Contents
+* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Registration](#registration)
 * [Configuration](#configuration)
 * [Storage Providers](#storage-providers)
 * [Examples](#examples)
+
+THIS NUGET SHOULD NOT BE INSTALLED DIRECTLY SEE Providers
 
 ## Summary
 **Nano.Storage** adds a flexible, provider-agnostic file storage layer to your Nano applications.  

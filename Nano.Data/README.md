@@ -8,6 +8,7 @@
 ***
 
 ## Table of Contents
+* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Registration](#registration)
 * [Configuration](#configuration)
@@ -27,6 +28,8 @@
 * [Health Checks](#health-checks)
 * [Special Annotations](#special-annotations)
 * [Examples](#examples)
+
+THIS NUGET SHOULD NOT BE INSTALLED DIRECTLY SEE Providers
 
 ## Summary
 Data access management in Nano.  

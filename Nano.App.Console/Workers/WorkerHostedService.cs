@@ -26,7 +26,7 @@ namespace Nano.App.Console.Workers;
 /// <param name="scopeFactory">The <see cref="IServiceScopeFactory"/>.</param>
 /// <param name="startupTaskContext">The <see cref="startupTaskContext"/>.</param>
 /// <param name="applicationLifetime">The <see cref="IHostApplicationBuilder"/>.</param>
-public class WorkerHostedService(ILogger logger, IServiceScopeFactory scopeFactory, StartupTaskContext startupTaskContext, IHostApplicationLifetime applicationLifetime)
+public sealed class WorkerHostedService(ILogger logger, IServiceScopeFactory scopeFactory, StartupTaskContext startupTaskContext, IHostApplicationLifetime applicationLifetime)
     : IHostedService
 {
     private readonly ILogger logger = logger ?? throw new ArgumentNullException(nameof(logger));
