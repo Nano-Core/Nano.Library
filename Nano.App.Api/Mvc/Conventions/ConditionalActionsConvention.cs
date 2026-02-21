@@ -55,7 +55,7 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
             return;
         }
 
-        if (!(this.apiOptions.CurrentValue.Identity?.Authentication.Jwt != null || this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.RootLogin != null) || this.apiOptions.CurrentValue.Hosting.HideAuthController)
+        if (!(this.apiOptions.CurrentValue.Authentication?.Jwt != null || this.apiOptions.CurrentValue.Authentication?.Jwt != null) || this.apiOptions.CurrentValue.Hosting.HideAuthController)
         {
             controller.ApiExplorer.IsVisible = false;
 
@@ -67,82 +67,82 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
             var disabledActions = controller.Actions
                 .Where(x =>
                 {
-                    if (nameof(BaseAuthController<>.LogInAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Identity?.Authentication.Jwt == null)
+                    if (nameof(BaseAuthController<>.LogInAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication?.Jwt == null)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseAuthController<>.LogInRootAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.RootLogin == null)
+                    if (nameof(BaseAuthController<>.LogInRootAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication?.Jwt?.RootLogin == null)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseAuthController<>.LogInRefreshAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Identity?.Authentication.Jwt == null)
+                    if (nameof(BaseAuthController<>.LogInRefreshAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication?.Jwt == null)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseAuthController<>.LogInExternalDirectAsync).ReplaceAsync() == x.ActionName && !(this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.IsConfigured ?? false))
+                    if (nameof(BaseAuthController<>.LogInExternalDirectAsync).ReplaceAsync() == x.ActionName && !(this.apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.IsConfigured ?? false))
                     {
                         return true;
                     }
 
-                    if (nameof(BaseAuthController<>.LogInExternalDirectTransientAsync).ReplaceAsync() == x.ActionName && !(this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.IsConfigured ?? false))
+                    if (nameof(BaseAuthController<>.LogInExternalDirectTransientAsync).ReplaceAsync() == x.ActionName && !(this.apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.IsConfigured ?? false))
                     {
                         return true;
                     }
 
-                    if (nameof(BaseAuthController<>.LogInExternalGoogleAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Google == null)
+                    if (nameof(BaseAuthController<>.LogInExternalGoogleAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.Google == null)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseAuthController<>.LogInExternalGoogleTransientAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Google == null)
+                    if (nameof(BaseAuthController<>.LogInExternalGoogleTransientAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.Google == null)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseAuthController<>.LogInExternalFacebookAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Facebook == null)
+                    if (nameof(BaseAuthController<>.LogInExternalFacebookAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.Facebook == null)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseAuthController<>.LogInExternalFacebookTransientAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Facebook == null)
+                    if (nameof(BaseAuthController<>.LogInExternalFacebookTransientAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.Facebook == null)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseAuthController<>.LogInExternalMicrosoftAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Microsoft == null)
+                    if (nameof(BaseAuthController<>.LogInExternalMicrosoftAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.Microsoft == null)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseAuthController<>.LogInExternalMicrosoftTransientAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Microsoft == null)
+                    if (nameof(BaseAuthController<>.LogInExternalMicrosoftTransientAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.Microsoft == null)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseAuthController<>.LogOutAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Identity?.Authentication.Jwt == null)
+                    if (nameof(BaseAuthController<>.LogOutAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication?.Jwt == null)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseAuthController<>.GetExternalSchemesAsync).ReplaceAsync() == x.ActionName && !(this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.IsConfigured ?? false))
+                    if (nameof(BaseAuthController<>.GetExternalSchemesAsync).ReplaceAsync() == x.ActionName && !(this.apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.IsConfigured ?? false))
                     {
                         return true;
                     }
 
-                    if (nameof(BaseAuthController<>.GetExternalLoginDataGoogleAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Google == null)
+                    if (nameof(BaseAuthController<>.GetExternalLoginDataGoogleAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.Google == null)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseAuthController<>.GetExternalLoginDataFaceBookAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Facebook == null)
+                    if (nameof(BaseAuthController<>.GetExternalLoginDataFaceBookAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.Facebook == null)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseAuthController<>.GetExternalLoginDataMicrosoftAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Identity?.Authentication.Jwt?.ExternalLogins.Microsoft == null)
+                    if (nameof(BaseAuthController<>.GetExternalLoginDataMicrosoftAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.Microsoft == null)
                     {
                         return true;
                     }

@@ -1,88 +1,37 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Nano.App.StartUp;
+using Nano.App.Console.Workers.Abstractions;
 
 namespace Nano.App.Console.Workers;
 
 /// <summary>
-/// Provides a base implementation for workers implementing <see cref="IHostedService"/>.
-/// Supports logging and application lifetime management, and implements <see cref="IDisposable"/>.
+/// Represents the base implementation for a worker that can be started and stopped by the application host.
+/// <para>
+/// Derived classes must implement <see cref="OnStartAsync(CancellationToken)"/> to define their startup behavior.
+/// <see cref="OnStopAsync(CancellationToken)"/> can optionally be overridden to define cleanup or shutdown logic.
+/// </para>
 /// </summary>
-public abstract class BaseWorker : IHostedService, IDisposable
+public abstract class BaseWorker(ILogger logger) 
+    : IWorker
 {
     /// <summary>
-    /// Gets the <see cref="ILogger"/> used for logging within the worker.
+    /// Gets the <see cref="ILogger"/> instance used for logging within the worker.
     /// </summary>
-    protected virtual ILogger Logger { get; }
+    protected ILogger logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     /// <summary>
-    /// Gets the <see cref="IHostApplicationLifetime"/> to manage the application lifecycle.
+    /// Performs the asynchronous startup logic for the worker. Derived classes must implement this method.
     /// </summary>
-    protected IHostApplicationLifetime ApplicationLifetime { get; }
+    /// <param name="cancellationToken">A <see cref="CancellationToken"/> that can be used to cancel the startup operation.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous startup operation.</returns>
+    public abstract Task OnStartAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Gets the <see cref="StartupTaskContext"/> to monitor the application startup.
-    /// </summary>
-    protected StartupTaskContext StartupTaskContext { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BaseWorker"/> class.
-    /// </summary>
-    /// <param name="logger">The <see cref="ILogger"/> to use for logging.</param>
-    /// <param name="applicationLifetime">The <see cref="IHostApplicationLifetime"/> for application lifecycle management.</param>
-    /// <param name="startupTaskContext">The <see cref="StartupTaskContext"/> for the application startup.</param>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="logger"/> or <paramref name="applicationLifetime"/> is null.</exception>
-    protected BaseWorker(ILogger logger, IHostApplicationLifetime applicationLifetime, StartupTaskContext startupTaskContext)
-    {
-        this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        this.ApplicationLifetime = applicationLifetime ?? throw new ArgumentNullException(nameof(applicationLifetime));
-        this.StartupTaskContext = startupTaskContext ?? throw new ArgumentNullException(nameof(startupTaskContext));
-    }
-
-    /// <summary>
-    /// Starts the worker asynchronously. Must be implemented by derived classes.
-    /// </summary>
-    /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public async Task StartAsync(CancellationToken cancellationToken)
-    {
-        await this.StartupTaskContext.Completion
-            .WaitAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        await this.OnStartAsync(cancellationToken)
-            .ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Called when the worker starts execution.
-    /// Implement this method to perform the worker's startup logic.
-    /// </summary>
-    /// <param name="cancellationToken">A <see cref="CancellationToken"/> used to observe cancellation requests during startup.</param>
-    /// <returns>A <see cref="Task"/> that represents the asynchronous startup operation.</returns>
-    protected abstract Task OnStartAsync(CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Stops the worker asynchronously and triggers application shutdown.
-    /// Can be overridden in derived classes to perform additional cleanup or shutdown logic.
+    /// Performs the asynchronous shutdown logic for the worker. Can be overridden in derived classes to perform cleanup or stopping logic.
     /// </summary>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> that can be used to cancel the stop operation.</param>
-    /// <returns>A <see cref="Task"/> that represents the completion of the stop operation.</returns>
-    public virtual Task StopAsync(CancellationToken cancellationToken = default)
-    {
-        this.ApplicationLifetime
-            .StopApplication();
-
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting resources.
-    /// </summary>
-    public virtual void Dispose()
-    {
-    }
+    /// <returns>A <see cref="Task"/> representing the asynchronous stop operation. By default, returns a completed task.</returns>
+    public virtual Task OnStopAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
 }

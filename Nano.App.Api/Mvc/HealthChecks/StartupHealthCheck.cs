@@ -2,22 +2,13 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Nano.App.StartUp;
+using Nano.App.Startup;
 
 namespace Nano.App.Api.Mvc.HealthChecks;
 
-internal sealed class StartupHealthCheck : IHealthCheck
+internal sealed class StartupHealthCheck(StartupTaskContext taskContext) : IHealthCheck
 {
-    private readonly StartupTaskContext taskContext;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="StartupHealthCheck"/> class.
-    /// </summary>
-    /// <param name="taskContext">The <see cref="StartupTaskContext"/> that tracks the startup task completion.</param>
-    public StartupHealthCheck(StartupTaskContext taskContext)
-    {
-        this.taskContext = taskContext ?? throw new ArgumentNullException(nameof(taskContext));
-    }
+    private readonly StartupTaskContext startupTaskContext = taskContext ?? throw new ArgumentNullException(nameof(taskContext));
 
     /// <summary>
     /// Checks the health of the application based on the completion status of startup tasks.
@@ -32,7 +23,7 @@ internal sealed class StartupHealthCheck : IHealthCheck
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        var result = this.taskContext.IsDone
+        var result = this.startupTaskContext.IsDone
             ? HealthCheckResult.Healthy()
             : HealthCheckResult.Unhealthy();
 

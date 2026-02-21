@@ -71,7 +71,7 @@ public class ApiOptions : BaseAppOptions
     public virtual ErrorHandlingOptions ErrorHandling { get; set; } = new();
 
     /// <summary>
-    /// Identity configuration options.
+    /// Authentication-related options.
     /// </summary>
-    public virtual IdentityOptions? Identity { get; set; }
+    public virtual AuthenticationOptions? Authentication { get; set; }
 }

@@ -27,4 +27,9 @@
 	    <ProjectReference Include="..\Nano.Storage\Nano.Storage.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<None Include="README.md" Pack="false" Visible="true" />
+		<None Include="..\README.md" Pack="true" Visible="false" PackagePath="" />
+	</ItemGroup>
+
 </Project>

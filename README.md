@@ -1,9 +1,12 @@
-﻿# Nano Library
+﻿# Nano.Library
 [![Build and Deploy](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml/badge.svg)](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml)
 [![NuGet](https://img.shields.io/nuget/dt/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
 [![NuGet](https://img.shields.io/nuget/v/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
 
-> _Nano application structure._
+> _Nano._
+
+MAKE TABLE OF CONTENTS LINKING TO ALL OTHER PAGES. Api, Console, Data. HERE SHOULD BE THE OVERVIEW
+
 
 ## Table of Contents
 * [Summary](#summary)
@@ -12,6 +15,7 @@
   * [.docker](#-docker)
   * [.gitHub](#-gitHub)
   * [.kubernetes](#-kubernetes)
+  * [.solution](#-solution)
   * [.tests](#-tests)
   * [.application](#-application)
 * [NuGet Overview](#nuget-overview)
@@ -22,7 +26,6 @@ Welcome to Nano Wiki.
 These pages covers documentation, guides, samples and other relevant information, to assist you in understanding and using Nano.  
 It's recommended to start out by following our **[Quick Guide](Quick-Guide)**, to get familiarized with Nano. Also, inspect these **[Sample Templates](https://github.com/Nano-Core/Nano.Templates)**.  
 Next, continue reading **[The Library](The-Library)** section, to get a more comprehensive understanding, and to learn how to Configure, inject, extend, override and otherwise customize the behavior of Nano.  
-Last, use the **[The Appendix](Appendix)** as reference for key aspects of Nano.  
 
 Nano is a library for rapidly building .NET10 applications.  
 The project is inspired by years of tedious repetitions, continuously re-writing similar code-snippets and libraries, to handle common functionality, not related to the business domain, such as logging, data persistence, message queuing, documentation, validation and similar.
@@ -52,6 +55,9 @@ Nano is using three distinct environments:
 ...but can easily be extended if more environments is required. Just a few modifications to the deployment and the application configuration files.
 
 ## Application Composition
+THIS IS DIFFERENT FOR CONSOLE APPLICATIONS. WHERE TO PLACE THIS??? MAYBE MOVE TO Nano.App.Api and Nano.App.Console
+
+
 All Nano applications follow the same structure.  
 Locally in `Development` environment the application is orchestratd using docker-compose, and for `Staging` and `Production` it's Kubernetes.
 Continius integration and delivery (CI/CD) is handled by GitHub Actions, and it's included in the default Nano solution composition. 
@@ -112,6 +118,12 @@ For Console applications
 |  `cronjob.yaml`      | `yaml`  | The scheduled job spec for Kubernetes.                       |
 |  `configmap.yaml`    | `yaml`  | The configuration spec for Kuberentes.                       |
 
+
+### Commands
+* ```kubectl patch cronjob {{cronjob-name}} -p '{"spec": {"suspend": true}}'```  
+* ```kubectl create job --from=cronjob/{{cronjob-name}} {{job-name}}```
+
+
 ## `.solution`
 The solution directory (root) contains several individual files, such as content for NuGet packages, ignore files for docker and github, etc.
 
@@ -165,7 +177,7 @@ Models project is configured for packaging a NuGet, which should be published in
 ## NuGet overview
 
 ## Architectures
-THERE ARE NOW LINKS TO THIS SECTION
+THERE ARE NOW LINKS TO THIS SECTION FROM Api._Blank and Console._Blank, maybe other places
 * Solo application
 * micro-service orchestratration
 REFER TO THESE IN README CONFIG FOR VARIOUS SETTINGS (we need readme's for them)

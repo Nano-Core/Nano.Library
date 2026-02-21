@@ -14,6 +14,7 @@
 * [Start-Up Tasks](#start-up-tasks)
 * [Api Client](#api-client)
 * [Custom Application](#custom-applications)
+* [Annotations](#annotations)
 
 ## Summary
 Applications are the core part of Nano
@@ -49,7 +50,7 @@ The order of which the different ways of specifying configuration variables is t
 3. Environmental Variables
 4. User Secrets (Development environment only)
 
-## Custom Configuration
+## Custom Configuration (COMMON)
 Extending the configuration and adding custom sections, obtaining the same registration and behavior as the existing Nano sections, is straight forward.  
 Nano provides the ```IServiceCollection``` extension method ```.AddOptions<TOption>(...)```, registering the dependency of a custom configuration section. 
 The ```TOption``` generic type paramter, defines the object model, the section will be deserialized into.  
@@ -75,17 +76,34 @@ Last, register the dependency in ```Program.Main()```, passing section name.
     x.AddConfigOptions<MyOptions>("mySection");
 })
 ```
+Nano allows registering custom configuration sectuions.
+
+```csharp
+public class MyOptions
+{
+	public bool IsEnabled { get; set; }
+}
+
+services
+	.AddNanoConfigSection<MyOptions>("section-name", out var options);
+```
+
+
+
 
 ## Null Logger
 Nano automatically registers a `NullLogger`. That ensures that `ILogger` and realted logging services are available even when no Logging Provider 
 has been included in the solution. Logs will be sent to the void and lost so it's not recommended.
 
 ## Start-Up Tasks
+CHECK THIS WHERE TO PUT: For health checks and startup tasks, we need to write that readyness probe in kubernetes needs to set accordingly, otherwise Kubernetes restarts the pod. Keep Startup tasks simple and fast.
+
+A failing startup task that throw unhandled exceptions will the application to shutdown. Startup tasks must succeed in order for the application run.  
+
 Nano supports running background jobs upon start-up.  
 Derive an implementation from the abstract ```BaseStartupTask```, and the task dependency will automatically be registered and started during application start-up.  
 
-The ```BaseStartupTask``` implements ```IHostedService``` abstractly, and contains a mechanism for controlling the number of background tasks running, ensuring proper completion 
-when application shuts down.  
+The ```BaseStartupTask``` implements ```IHostedService``` abstractly, and contains a mechanism for controlling the number of background tasks running.  
 
 ```csharp
 public class MyStartUpTask : BaseStartupTask
@@ -209,3 +227,8 @@ public class MyApplication : BaseApplication
     }
 }
 ```
+
+## Special Annotations (COMMON)
+* InternationalPhoneAttribute
+* RequiredOneOfAttribute
+* UrlAttribute

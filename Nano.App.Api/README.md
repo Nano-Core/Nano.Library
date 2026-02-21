@@ -38,14 +38,12 @@
   * [Content Negotiation](#content-negotiation)
   * [Request Tracing](#request-tracing)
   * [Error Handling](#error-handling)
-  * [Identity](#identity)
-    * [Authentication](#authentication)
-    * [Authorization](#authorization)
+  * [Authentication](#authentication)
+  * [Authorization](#authorization)
   * [Api Clients](#api-clients)
 * [Controllers](#controllers)
-* [Request Validation](#model-validation)
-* [Serialization](#serialization)
-* [Start-Up Tasks](#start-up-tasks)
+   * [Serialization](#serialization)
+* [Startup Tasks](#startup-tasks)
 
 *** 
 
@@ -84,6 +82,8 @@ NanoApiApplication
     .Build()
     .Run();
 ```
+
+Register your custom services in the `ConfigureServices(x => { })` method to extend Nano with additional functionality or integrations.  
 
 ## Configuration
 The `App` section in the configuration defines behavior related to the application.  
@@ -326,6 +326,8 @@ The HTTP Referrer-Policy response header controls how much referrer information 
 |  `OriginWhenCrossOrigin`        | Enables the origin-when-cross-origin policy, instructing the browser to send full referrer information for same-origin requests and origin (no path and query) as referrer information for cross-origin requests (includes HTTPS to HTTP and HTTP to HTTPS).                            |
 |  `StrictOriginWhenCrossOrigin`  | Enables the strict-origin-when-cross-origin policy, instructing the browser to send full referrer information for same-origin requests and origin (no path and query) as referrer information for cross-origin requests. Referrer information is not sent for HTTPS to HTTP requests.   |
 |  `UnsafeUrl`                    | Enables the unsafe-url policy, instructing the browser to send full referrer information for all requests. Note that this will leak full referrer information for HTTPS to HTTP requests, which is even more unsafe than default browser behaviour.                                     |
+
+Use `[ReferrerPolicy]` to override the global configuration, if needed.  
 
 > 📖 Learn more about **[Referrer Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Referrer-Policy)**
 
@@ -897,6 +899,8 @@ Nano intercepts browser preflight (OPTIONS) requests and responds with the corre
 }
 ```
 
+Use `[EnableCors]` and `[DisableCors]` to override the global configuration, if needed.  
+
 > 📖 Learn more about **[Hsts](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS)**
 
 Try it out yourself using the **[Api.PolicyHeaders.Cors](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.Cors)** example.  
@@ -1371,6 +1375,9 @@ The `X-Request-Id` is also added to the http response, so the consumer can see i
 
 No configuration or additional setup is required.  
 
+When [Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging) is enabled, Nano adds the `X-Request-Id` to all logs for endpoint requests and responses, 
+enabling request-level tracing and correlation.  
+
 You can try this out using the **[Api.RequestTracing](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.RequestTracing)** example.
 
 ## Error Handling
@@ -1391,6 +1398,9 @@ This configuration section is required and will automatically be populated if om
 Nano includes a centralized error handling middleware that catches all unhandled exceptions, thrown anywhere in the application, and converts them into 
 consistent HTTP error responses with appropriate status codes. All error responses are written using `ProblemDetails`, in accordance 
 with [https://datatracker.ietf.org/doc/html/rfc7807](https://datatracker.ietf.org/doc/html/rfc7807).
+
+Additionally, when [Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging) is registered with the application, 
+the error is logged using the configured provider.  
 
 Nano provides built-in mappings between common exception types and HTTP error responses.
 
@@ -1415,24 +1425,8 @@ as the API client can only propagate `ProblemDetails` and will otherwise fall ba
 
 Try it out yourself using the **[Api.ErrorHandling](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.ErrorHandling)** example.  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Identity
-
 ## Authentication
-HOW DO WE ADD ROLES FOR TRANSIENT LOGIN (WE NEED ROLES OTHERWISE NO ACCESS TO CONTROLLERS)
+HOW DO WE ADD ROLES FOR TRANSIENT LOGIN (WE NEED ROLES OTHERWISE NO ACCESS TO CONTROLLERS). I THINK THE USER HAS TO PASS TRANSIENT ROLES, BUT WE NEED TO DOCUMENT THAT
 
 When authentication has been enabled and configured, and the application is running, users authenticate in order to gain access to the controllers and their actions. Nano has a ```AuthController``` implementation, responsible for this.  
 
@@ -1477,10 +1471,10 @@ The ```Security``` section of the configuration defines behavior related to auth
 }
 ```
 
-### Roles & Claims
+Roles & Claims:
 ROLES AND CLAIMS SHOULD BE MOVED TO DATA, or
 
-#### Roles
+Roles:
 Name | Type | Description |
 ---- | ---- | ---- |
 Guest | built-in | Currently, not authorized to do anything.
@@ -1490,7 +1484,7 @@ Service | built-in | Authorized to all services.
 Administrator | built-in | Full access to everything.
 MyRole | custom | Custom role specified during signup or login.
 
-#### Claims
+Claims:
 Name | Type | Description |
 ---- | ---- | ---- |
 AppId | built-in | The id of the application. Set during logon, and used for supporting multiple refresh tokens. Default value: "Default"
@@ -1537,12 +1531,12 @@ The ```jwt-token``` contains the following claims and values.
 }
 ```
 
-#### Api Key
+Api Key:
 It's also possible to authenticate using an api-key, by setting the header ```x-api-key``` with a valid api-key.  
 
 Api-keys can be managed through the ``IdentityManager```.  
 
-#### External Providers
+External Providers:
 Nano supports the following external providers.
 
 Name | Type | Description
@@ -1557,7 +1551,7 @@ Scopes for ```id```, ```email``` and ```username``` should be enabled for extern
 
 ***
 
-### Root Log-In
+Root Log-In:
 Nano comes with a built-in administrator, defined in the [Security Section](#configuration), as shown below. The administrator user will be created during start-up, if it doesn't already exist.
 
 The administrator has unrestricted permissions, and may access any part of the application. 
@@ -1587,10 +1581,17 @@ All methods returns null, when not authenticated and no authorization token is p
 Roles:
 By default, authorization to controller actions is handling by the built-in roles and policies defined by Nano. Controllers may be decorated with the ```AuthorizeAttribute```, and allow to override the default authorization and use custom defined roles and policies.  
 
-
 ## Api Clients
-See [Nano Api Clients](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-clients)
+Nano API clients provide a structured way to communicate with other Nano API applications. They are designed to simplify service-to-service communication while maintaining 
+consistent error handling, logging, and resilience across applications.
 
+API clients make it easy to compose Nano APIs into a layered architecture, where higher-level services can call lower-level services without leaking transport or protocol concerns 
+into the business logic. Responses and errors are propagated in a predictable way, enabling reliable chaining of services.
+
+When used together with Nano’s **[Error Handling](#error-handling)** and `ProblemDetails` support, API clients ensure that errors can flow through multiple layers without being lost 
+or transformed into generic failures.
+
+> 📖 Learn more [Nano Api Clients](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-clients)
 
 ## Controllers
 OPTIONS HTTP METHOD functionality
@@ -1650,12 +1651,12 @@ Nano controllers has three dependencies injected into the constructor, all of wh
 * ```IEventing```, is the interface for publishing events in the controller.
 
 
-### Models in Controller
+Models in Controller:
 Now the controller needs a model and a QueryCriteria.
 Naming Conventions:
 IMPORTANT: Controllers must be named the same as their entity pluralized, e.g. MyEntity and MyEntitysController.
 
-### Query Criteria
+Query Criteria:
 THESE CAN ALSO BE DEFINED AND USED IN CONSOLE APP, MAKES LITTLE SENSE THOUGH, BUT `IRepository` has methods with query criteria
 
 Nano uses the [DynamicExpression](https://github.com/vivet/DynamicExpression) library to map properties of the query and criteria to a Linq Expression of the entity.  
@@ -1664,10 +1665,10 @@ Query criteria defines a contract for a model. It's used when invoking the ```Qu
 
 Obviously, since query criteria is only used by controller actions, there is no need for them when building console applications.  
 
-#### Query
+Query:
 The base query class contains pagination (number, count) and ordering (by, direction) properties. Naturally, these are used by controller actions and data queries to control the number of returned results as well as the order of which they are sorted.  
 
-#### Criteria
+Criteria:
 Nano contains a ```DefaultQueryCritiera``` class, implementing the ```IQueryCriteria``` interface, of the  [DynamicExpression](https://github.com/vivet/DynamicExpression) library. It combines a ```Expression<TEntity>``` for the auditable properties ```IsActive```, ```CreateAt``` and ```UpdatedAt```, and expexts a ```DefaultEntity```. If models doesn't derive from ```DefaultEntity```, either derive the query criteria from ```BaseQueryCriteria``` or implement the interface ```IQueryCriteria``` directly.  
 
 So simply, create a class deriving from ```DefaultQueryCritiera```, add criteria properties, and last override the ```GetExpression<TEntity>()``` method mapping the criteria properties to the entity properties, as shown below.  
@@ -1689,7 +1690,7 @@ public class MyQueryCriteria : DefaultQueryCriteria
 }
 ```
 
-## Request Validation
+Request Validation:
 When deriving a controller implementation from ```BaseController```, model validation is automatically enabled. Based on the annotations (attributes) which model properties is decorated with. When a model fails validation, a bad request with the validation errors is returned.  
 
 Other than that, then validation isn't any different from normal.  
@@ -1704,7 +1705,13 @@ The serializer will not serialize navigations that is of type ```IEntity```, exc
 Nano's serializer supports Geometry types, from Nettoplogysuite
 
 ## Start-Up Tasks
-Nano supports startup-tasks, that executes before the application starts. 
-A 'self' startup health-check will report ready when all startup tasks have completed. Only relevant for api applications.
+Nano supports start-up tasks that are executed before the application begins handling requests. These tasks are intended for work that must complete successfully 
+during application initialization, such as warming caches, validating external dependencies, running migrations, or performing initial connectivity checks.  
 
-Read more [Nano Start-Up Tasks](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#start-up-tasks)
+When Health Checks are configured, Nano automatically exposes a built-in self start-up health check. This health check will report the application as ready 
+only after all configured start-up tasks have completed successfully. Until then, the application is considered not ready to receive traffic. This makes start-up tasks especially 
+useful in orchestrated environments, where readiness signals are required to control traffic flow and ensure the application is fully initialized before becoming available.
+
+> 📖 Learn more about **[Nano Startup Tasks](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#startup-tasks)**.
+
+Try it out yourself using the **[Api.StartupTasks](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.StartupTasks)** example.  

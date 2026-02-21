@@ -9,8 +9,6 @@ using Nano.Eventing.Abstractions;
 
 namespace Nano.App.Api.Controllers;
 
-// BUG: Check status codes used in endpoint (should we use 204 No Content, and what should we return when logic exception, if not 500 Internal server error)
-
 /// <summary>
 /// Base API controller that provides common properties and behaviors for all derived controllers.
 /// </summary>

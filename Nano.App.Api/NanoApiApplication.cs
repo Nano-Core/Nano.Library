@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -69,7 +70,7 @@ public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplica
             .AddNanoSession(options.Session)
             .AddNanoResponseCaching(options.ResponseCache)
             .AddNanoVersioning(options.Version)
-            .AddNanoIdentityAuthentication(options.Identity?.Authentication)
+            .AddNanoIdentityAuthentication(options.Authentication)
             .AddNanoIdentityAuthorization()
             .AddNanoRequestLocalization(options.Localization)
             .AddNanoRequestTimeZone(options.TimeZone)
@@ -80,6 +81,9 @@ public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplica
             .AddNanoMvc()
             .AddNanoDocumentation(options.Documentation)
             .AddNanoHealthChecking(options.Hosting.Http.Ports.FirstOrDefault(), options.HealthCheck);
+
+        applicationBuilder.Services
+            .AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         applicationBuilder.WebHost
             .UseNanoKestrel(options)

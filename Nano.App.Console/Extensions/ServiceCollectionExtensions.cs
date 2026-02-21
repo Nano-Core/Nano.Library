@@ -1,12 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Nano.App.Console.Config;
 using Nano.App.Console.Workers;
+using Nano.App.Console.Workers.Abstractions;
 using Nano.Common.Extensions;
+using Nano.Common.Helpers;
 using System;
 using System.Globalization;
 using System.Linq;
-using Nano.App.Console.Config;
-using Nano.Common.Helpers;
+using System.Text.RegularExpressions;
 
 namespace Nano.App.Console.Extensions;
 
@@ -20,7 +21,7 @@ internal static class ServiceCollectionExtensions
             .GetAllTypes()
             .Where(x =>
                 !x.IsAbstract &&
-                x.IsTypeOf(typeof(BaseWorker)))
+                x.IsTypeOf(typeof(IWorker)))
             .GroupBy(x => x.FullName)
             .Select(x => x.FirstOrDefault())
             .Where(x => x != null);
@@ -28,8 +29,11 @@ internal static class ServiceCollectionExtensions
         foreach (var type in types)
         {
             services
-                .AddSingleton(typeof(IHostedService), type!);
+                .AddScoped(typeof(IWorker), type!);
         }
+
+        services
+            .AddHostedService<WorkerHostedService>();
 
         return services;
     }
@@ -43,7 +47,10 @@ internal static class ServiceCollectionExtensions
             return services;
         }
 
-        CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(options.DefaultCulture);
+        var culture = new CultureInfo(options.DefaultCulture);
+
+        CultureInfo.DefaultThreadCurrentCulture = culture;
+        CultureInfo.DefaultThreadCurrentUICulture = culture;
 
         return services;
     }

@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Nano.App.StartUp;
+namespace Nano.App.Startup;
 
 /// <summary>
 /// Tracks the progress and completion status of startup tasks.
@@ -9,12 +9,24 @@ namespace Nano.App.StartUp;
 public sealed class StartupTaskContext
 {
     private int count;
+    private bool started;
     private readonly TaskCompletionSource<object?> completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     /// <summary>
     /// Gets a task that completes when all startup tasks have finished.
     /// </summary>
-    public Task Completion => this.completion.Task;
+    public Task Completion
+    {
+        get
+        {
+            if (!this.started)
+            {
+                return Task.CompletedTask;
+            }
+
+            return completion.Task;
+        }
+    }
 
     /// <summary>
     /// Gets a value indicating whether all tracked startup tasks have completed.
@@ -26,6 +38,8 @@ public sealed class StartupTaskContext
     /// </summary>
     public void Increment()
     {
+        started = true;
+
         Interlocked.Increment(ref this.count);
     }
 
@@ -36,8 +50,7 @@ public sealed class StartupTaskContext
     {
         if (Interlocked.Decrement(ref this.count) == 0)
         {
-            this.completion
-                .TrySetResult(null);
+            this.completion.TrySetResult(null);
         }
     }
 }

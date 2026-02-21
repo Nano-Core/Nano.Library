@@ -1,5 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="..\Nano.All\Nano.All.csproj" />
-  </ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Nano.All\Nano.All.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="false" Visible="true" />
+		<None Include="..\README.md" Pack="true" Visible="false" PackagePath="" />
+	</ItemGroup>
+
 </Project>

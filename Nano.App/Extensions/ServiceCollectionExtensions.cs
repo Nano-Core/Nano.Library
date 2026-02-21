@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -9,7 +7,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Nano.App.ApiClient.Extensions;
 using Nano.App.Config;
 using Nano.App.Config.Extensions;
-using Nano.App.StartUp;
+using Nano.App.Startup;
+using Nano.App.Startup.Abstractions;
 using Nano.Common.Extensions;
 using Nano.Common.Helpers;
 
@@ -29,8 +28,7 @@ internal static class ServiceCollectionExtensions
 
         services
             .AddNulLogger()
-            .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-            .AddStartUpTasks()
+            .AddStartupTasks()
             .AddNanoApis(options);
 
         return services;
@@ -46,24 +44,27 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
-    private static IServiceCollection AddStartUpTasks(this IServiceCollection services)
+    private static IServiceCollection AddStartupTasks(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddSingleton<StartupTaskContext>();
 
-        TypesHelper
+        var types = TypesHelper
             .GetAllTypes()
             .Where(x =>
                 !x.IsAbstract &&
-                x.IsTypeOf(typeof(BaseStartupTask)))
-            .ToList()
-            .ForEach(x =>
-            {
-                services
-                    .AddSingleton(typeof(IHostedService), x);
-            });
+                x.IsTypeOf(typeof(IStartupTask)));
+
+        foreach (var type in types)
+        {
+            services
+                .AddScoped(typeof(IStartupTask), type!);
+        }
+
+        services
+            .AddHostedService<StartupHostedService>();
 
         return services;
     }
