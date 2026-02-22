@@ -30,7 +30,7 @@ It provides a concrete and opinionated implementation tailored specifically for 
 while still allowing full customization through configuration and the `ConfigureServices` method. This ensures that all core application behaviors are 
 initialized consistently from configuration, reducing boilerplate code and simplifying the creation of new console applications.
 
-> 📖 Learn more about common Nano application features here: **[Nano Application](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**.  
+> ⚠️ Before proceeding, it is highly recommended to familiarize yourself generally with **[Nano Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**.  
 
 ## Registration
 First install the [Nano.App.Console](https://www.nuget.org/packages/Nano.App.Console) NuGet package.  

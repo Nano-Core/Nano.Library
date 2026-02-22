@@ -56,7 +56,7 @@ It also provides convenient static methods to create and configure the applicati
 through the `ConfigureServices` method. This design ensures that all core API behaviors are initialized consistently using you configuration, reducing boilerplate code 
 and simplifying the setup of new API applications.  
 
-> 📖 Learn more about common Nano application features here: **[Nano Application](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**.  
+> ⚠️ Before proceeding, it is highly recommended to familiarize yourself generally with **[Nano Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**.  
 
 The `NanoApiApplication` can operate as either an internal service or an externally accessible API.
 As an internal service, it can run behind your network boundary, handling requests from other applications within the system, 

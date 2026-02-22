@@ -13,13 +13,20 @@
 * [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Environment](#environment)
+* [Solution Composition](#application-composition)
+  * [.docker](#-docker)
+  * [.gitHub](#-gitHub)
+  * [.kubernetes](#-kubernetes)
+  * [.solution](#-solution)
+  * [.tests](#-tests)
+  * [.application](#-application)
 * [Configuration](#configuration)
   * [Null Logger](#null-logger)
   * [Api Clients](#api-clients)
 * [Start-Up Tasks](#start-up-tasks)
 * [Custom Services](#custom-services)
 * [Custom Middleware](#custom-middleware)
-* [Custom Configuration Sections](#custom-configuration-sections)
+* [Custom Configuration Section](#custom-configuration-section)
 
 ## Summary
 Applications are the core part of Nano.  
@@ -222,11 +229,14 @@ During the `Build(...)` step in `Program.cs`, add your middleware to the `IAppli
 ...
 ```
 
-## Custom Configuration Sections
+> ⚠️ Custom middleware is supported only by API and Web applications. In Console applications, the `builder` delegate is ignored.  
+
+## Custom Configuration Section
 Extending Nano with custom configuration sections is straightforward and integrates seamlessly with existing Nano configuration.
 
 Use the `IServiceCollection` extension `AddConfigOptions<TOption>(...)` to register your custom configuration section. The generic type TOption defines 
-the object model into which the section will be deserialized.
+the object model into which the section will be deserialized. You may register as many custom sections as you like, as long as they don't conflict with the 
+built-in sections in Nano, `App`, `Logging`, `Data`, `Eventing`, and `Storage`.  
 
 To add a custom configuration section, first define an options model that represents the structure of your configuration section.
 

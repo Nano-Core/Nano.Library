@@ -20,7 +20,7 @@
 ## Summary
 Extends the API application with built-in support for Razor Pages and Blazor through registered services and middleware.  
 
-> 📖 Learn more about **[Nano API Application](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)**.
+> ⚠️ Before proceeding, it is highly recommended to familiarize yourself generally with **[Nano Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**.  
 
 ## Registration
 First install the [Nano.App.Web](https://www.nuget.org/packages/Nano.App.Web) NuGet package.  
