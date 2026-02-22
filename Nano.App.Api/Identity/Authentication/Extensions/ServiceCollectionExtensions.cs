@@ -21,7 +21,7 @@ namespace Nano.App.Api.Identity.Authentication.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddNanoIdentityAuthentication(this IServiceCollection services, AuthenticationOptions? options = null)
+    internal static IServiceCollection AddNanoAuthentication(this IServiceCollection services, AuthenticationOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -96,7 +96,7 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoIdentityAuthorization(this IServiceCollection services)
+    internal static IServiceCollection AddNanoAuthorization(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 

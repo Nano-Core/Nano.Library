@@ -5,6 +5,8 @@
 
 > _Pluggable, provider-agnostic file storage for Nano applications._
 
+> ⚠️ This NuGet is included in other Nano Packages, and is not meant to be included directly.
+
 ***
 
 ## Table of Contents
@@ -14,8 +16,6 @@
 * [Configuration](#configuration)
 * [Storage Providers](#storage-providers)
 * [Examples](#examples)
-
-THIS NUGET SHOULD NOT BE INSTALLED DIRECTLY SEE Providers
 
 ## Summary
 **Nano.Storage** adds a flexible, provider-agnostic file storage layer to your Nano applications.  

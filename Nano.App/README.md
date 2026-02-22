@@ -1,134 +1,82 @@
-# Nano.App
+﻿# Nano.App
 [![Build and Deploy](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml/badge.svg)](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml)
 [![NuGet](https://img.shields.io/nuget/dt/Nano.App.svg)](https://www.nuget.org/packages/Nano.App/)
 [![NuGet](https://img.shields.io/nuget/v/Nano.App.svg)](https://www.nuget.org/packages/Nano.App/)
 
 > _Common features for all types of Nano application._
 
+> ⚠️ This NuGet is included in other Nano Packages, and is not meant to be included directly.
+
+***
+
 ## Table of Contents
 * [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Environment](#environment)
 * [Configuration](#configuration)
-* [Custom Configuration](#custom-configuration)
-* [Null Logger](#null-logger)
+  * [Null Logger](#null-logger)
+  * [Api Clients](#api-clients)
 * [Start-Up Tasks](#start-up-tasks)
-* [Api Client](#api-client)
-* [Custom Application](#custom-applications)
-* [Annotations](#annotations)
-
-THIS NUGET SHOULD NOT BE INSTALLED DIRECTLY SEE Nano.App.Api or Nano.App.Console or Nano.App.Web?
+* [Custom Services](#custom-services)
+* [Custom Middleware](#custom-middleware)
+* [Custom Configuration Sections](#custom-configuration-sections)
 
 ## Summary
-Applications are the core part of Nano
+Applications are the core part of Nano.  
 In Nano, an application refers to the part of defining, building and running a host process.  
 
 Conrete application implementations derive from `BaseNanoApplication` and implements the `IApplication` interface, following the common Nano application patterns 
-and providing a concrete implementation for building applications with Nano. It provides convenient static methods to create and configure the application with sensible defaults, 
-while allowing full customization of services through the `ConfigureServices` method. This design ensures that all core applications behaviors are initialized consistently 
-using you configuration, reducing boilerplate code and simplifying the setup of new applications.  
+and providing a concrete implementation for building applications with Nano. It provides convenient static methods to create and configure the application with 
+sensible defaults, while allowing full customization of services through the `ConfigureServices` method. This design ensures that all core applications behaviors 
+are initialized consistently using you configuration, reducing boilerplate code and simplifying the setup of new applications.  
 
-Currently, two concrete application implementations are avaialble:
-* [Nano Api Application](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)
-* [Nano Console Application](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console)
+Three concrete application implementations are avaialble in Nano:
+
+| Application                                                                              | Description                                                          |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| [Nano API](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)           | API application exposing endpoints and optional static pages.        |
+| [Nano Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console)   | Console application that runs a job and exits.                       |
+| [Nano Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web)           | Web application exposing endpoints and dynamic Razor/Blazor pages.   |
 
 ## Environment
-By design Nano is environment neutral, and does neither operate with any environment specific configuration, nor has any environment specific behavior. Everything is defined by 
-having different configurations for different environments, like 
-`appsettings.{environment}.json`. 
+By design, Nano is environment-neutral: it does not rely on environment-specific code or behavior.  
+Environment-specific behavior is defined solely through configuration files, such as `appsettings.{environment}.json`.
 
-.Net Core reads the environment variable `ASPNETCORE_ENVIRONMENT`, and applies the corresponding configuration. The environment defaults to `Development`. It's recommended to keep
-the code environment neutral, and handle differences in configuration and in the deployment pipeline.  
+.NET Core reads the `DOTNET_ENVIRONMENT` or `ASPNETCORE_ENVIRONMENT` variable and applies the corresponding configuration. By default, the environment is set to `Development`.  
+It is recommended to keep code environment-neutral and handle differences through configuration and deployment pipelines.
+
+Nano supports three standard environments:
+
+| Environment     | Type   | Description                  |
+| --------------- | ------ | ---------------------------- |
+| `Development`   | Local  | Local development machine.   |
+| `Staging`       | Cloud  | Cloud Kubernetes deployment. |
+| `Production`    | Cloud  | Cloud Kubernetes deployment. |
+
+> ⚠️ Additional environments can easily be added by updating deployment settings and corresponding configuration files.
 
 ## Configuration
-The configuration that is the same for all application types.
+Nano follows the standard .NET Core configuration pattern, loading key/value pairs from configuration providers.  
+By default, Nano uses `appsettings.json`, but individual settings can be overridden using environment variables, command-line arguments, or user secrets.
 
-The configuration follows the regular .Net Core pattern, populating key/values from a configuration provider. 
-Nano defaults to use ```appsettings.json``` as provider, but all or individual settings may be overridden from either environmental variables, 
-command-line parameters, or secrets.
+The order of precedence for configuration sources is as follows (later items override earlier ones):
 
-The order of which the different ways of specifying configuration variables is traversed. The later overrides the former.
-1. App Settings
-2. Command-Line Arguments
-3. Environmental Variables
-4. User Secrets (Development environment only)
-
-## Custom Configuration (COMMON)
-Extending the configuration and adding custom sections, obtaining the same registration and behavior as the existing Nano sections, is straight forward.  
-Nano provides the ```IServiceCollection``` extension method ```.AddOptions<TOption>(...)```, registering the dependency of a custom configuration section. 
-The ```TOption``` generic type paramter, defines the object model, the section will be deserialized into.  
-
-First, implement an options model.
-```csharp
-public class MyOptions
-{
-    // Properties...
-}
-```
-Second, add a section to ```appsetings.json```, matching the structure of the options model above.
-```json
-{
-    "MySection": {
-    }
-}
-```
-Last, register the dependency in ```Program.Main()```, passing section name.
-```csharp
-.ConfigureServices(x =>
-{
-    x.AddConfigOptions<MyOptions>("mySection");
-})
-```
-Nano allows registering custom configuration sectuions.
-
-```csharp
-public class MyOptions
-{
-	public bool IsEnabled { get; set; }
-}
-
-services
-	.AddNanoConfigSection<MyOptions>("section-name", out var options);
-```
-
-
-
+1. App Settings  
+   a. `appsettings.json`  
+   b. `appsettings.{environment}.json`  
+2. Command-Line Arguments (`args`) 
+3. Environment Variables  
+4. User Secrets (`Development` environment only)
 
 ## Null Logger
-Nano automatically registers a `NullLogger`. That ensures that `ILogger` and realted logging services are available even when no Logging Provider 
-has been included in the solution. Logs will be sent to the void and lost so it's not recommended.
+Nano automatically registers a `NullLogger`, ensuring that `ILogger` and related logging services are available even if no logging provider has been configured.  
+With the `NullLogger`, all log messages are discarded, so no logs are persisted.  
 
-## Start-Up Tasks
-CHECK THIS WHERE TO PUT: For health checks and startup tasks, we need to write that readyness probe in kubernetes needs to set accordingly, otherwise Kubernetes restarts the pod. Keep Startup tasks simple and fast.
+This is intended as a safety fallback.  
 
-A failing startup task that throw unhandled exceptions will the application to shutdown. Startup tasks must succeed in order for the application run.  
+> 📖 Learn more about [Nano Logging Providers](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging).  
 
-Nano supports running background jobs upon start-up.  
-Derive an implementation from the abstract ```BaseStartupTask```, and the task dependency will automatically be registered and started during application start-up.  
-
-The ```BaseStartupTask``` implements ```IHostedService``` abstractly, and contains a mechanism for controlling the number of background tasks running.  
-
-```csharp
-public class MyStartUpTask : BaseStartupTask
-{
-    public MyStartUpTask(StartupTaskContext startupTaskContext) 
-        : base(startupTaskContext)
-    {
-    }
-
-    public override Task StartAsync(CancellationToken cancellationToken = default)
-    {
-        return Task.CompletedTask;
-    }
-
-    public override Task StopAsync(CancellationToken cancellationToken = default)
-    {
-        return Task.CompletedTask;
-    }
-}
-```
-
-## Api-Client
+## Api Clients
 Nano provides a generic api-client implementation, that can be used by other services to seamlessly connect and communicate with your micro-service. The implementation consists of an 
 abstract ```BaseApi``` class implementation, from which the concrete and specific implementation of the micro-service can be derived. The base class provides methods for accessing all 
 controllers and actions, using generic methods and conventions.  
@@ -149,6 +97,8 @@ public class MyApi : DefaultApi
 
 It's possible to derive form the ```BaseApi``` abstract implementation, though this will leave the api-client empty, expect for any custom method implementations. 
 Typically, this is the case when the default controller isn't used in the application, and all controller implementations are derived from ```BaseController```.  
+
+SHOW CONFIG JSON AND TABLE
 
 ```json
 "MyApi": {
@@ -215,23 +165,95 @@ public class MyApi : IdentityApi
 }
 ```
 
-## Custom Applications
-For the most part it should not be needed to implement custom application types in Nano.
-Situations where you need a way different middleware setup, or other special requirements it is possible through a custom application implemenation 
-deriving from `IApplication` and `BaseApplication`.
+## Start-Up Tasks
+Nano supports running background jobs during application start-up.  
+A failing startup task that throws an unhandled exception will cause the application to shut down. Startup tasks must complete successfully for the application to run.
+
+Implement startup tasks by deriving from the abstract `BaseStartupTask` or implementing the `IStartupTask` interface. Dependencies are automatically registered and 
+executed during application start-up. For convenience, deriving from `BaseStartupTask` allows you to implement only `OnStartAsync()` if no custom logic 
+is needed in `OnStopAsync()`.  
 
 ```csharp
-public class MyApplication : BaseApplication 
-{ 
-    public MyApplication(IConfiguration configuration)
-        : base(configuration)
+public class MyStartUpTask(ILogger logger) 
+    : BaseStartupTask(logger)
+{
+    public override async Task OnStartAsync(CancellationToken cancellationToken = default)
     {
+        // Your startup logic here...
+    }
 
+    // Optional
+    public override async Task OnStopAsync(CancellationToken cancellationToken = default)
+    {
+        // Your shutdown/cleanup logic here...
     }
 }
 ```
 
-## Special Annotations (COMMON)
-* InternationalPhoneAttribute
-* RequiredOneOfAttribute
-* UrlAttribute
+You can inject any registered service your startup task needs, including scoped services, which will be correctly resolved when the startup task is executed.  
+
+## Custom Services
+All Nano application types support registering custom services.  
+Simply add your services during the `ConfigureServices(...)` step when building the application in `Program.cs`.  
+
+Each application type’s documentation provides detailed guidance on how to configure and build the application, customize services, and where to place them.
+
+```csharp
+...
+    .ConfigureServices(services =>
+    {
+        // Your services...
+    })
+...
+```
+
+## Custom Middleware
+Custom middleware works similarly to custom services.  
+During the `Build(...)` step in `Program.cs`, add your middleware to the `IApplicationBuilder` delegate parameter.  
+
+> ⚠️ All custom middleware is appended to the end of the middleware pipeline registered by Nano.
+
+```csharp
+...
+    .Build(builder =>
+    {
+        // Your middleware..
+    })
+...
+```
+
+## Custom Configuration Sections
+Extending Nano with custom configuration sections is straightforward and integrates seamlessly with existing Nano configuration.
+
+Use the `IServiceCollection` extension `AddConfigOptions<TOption>(...)` to register your custom configuration section. The generic type TOption defines 
+the object model into which the section will be deserialized.
+
+To add a custom configuration section, first define an options model that represents the structure of your configuration section.
+
+```csharp
+public class MySectionModel
+{
+    // Properties...
+}
+```
+
+Next, Add a matching section to `appsetings.json`.
+
+```json
+{
+    "MySection": {
+    }
+}
+```
+
+Last, register the section as options.
+
+```csharp
+.ConfigureServices(services =>
+{
+    services
+        .AddNanoConfigSection<MySectionModel>("MySection", out var options);
+})
+```
+
+The options are returned for use in further service registration, and it is now also available for dependency injection through the `IOptions<T>` and related interfaces.  

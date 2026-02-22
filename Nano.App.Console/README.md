@@ -72,6 +72,8 @@ The `App` section in the configuration defines behavior related to the applicati
 }
 ```
 
+View the full reference configuration here: **[`appsettings.default.json`](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console/appsettings.default.json)**.  
+
 ## Localization
 The Nano configuration supports specifying a default `CultureInfo` for console applications, ensuring that culture-sensitive operations 
 such as date, number, and currency formatting—are applied consistently across the entire application lifecycle.  
@@ -130,9 +132,9 @@ public class MyWorker(ILogger logger)
 }
 ```
 
-You can inject any services your worker needs, including scoped services, which will be correctly resolved when the worker is executed.  
+You can inject any registered service your worker needs, including scoped services, which will be correctly resolved when the worker is executed.  
 
-Try it out yourself using the **[Api.Workers](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Workers)** example.  
+Try it out yourself using the **[Console.Workers](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Workers)** example.  
 
 ## Startup Tasks
 Nano Console applications supports start-up tasks that execute before the application begins processing requests.  

@@ -6,7 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{EA0E8885-9387-4A54-8DE6-65EB2431C1B9}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		appsettings.default.json = appsettings.default.json
 		Directory.Build.props = Directory.Build.props
 		icon.png = icon.png
 		LICENSE = LICENSE
@@ -81,6 +80,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.Storage.Azure", "Nano.Storage.Azure\Nano.Storage.Azure.csproj", "{3E381C11-A637-CB16-5EFA-6598B5FF9654}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.Storage.Local", "Nano.Storage.Local\Nano.Storage.Local.csproj", "{923ABD14-EDEF-61EE-8F78-C4A4F092F559}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano.App.Web", "Nano.App.Web\Nano.App.Web.csproj", "{9DCA21D0-C8D3-97D0-6BD6-01FC69E0DBE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -196,6 +197,10 @@ Global
 		{923ABD14-EDEF-61EE-8F78-C4A4F092F559}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{923ABD14-EDEF-61EE-8F78-C4A4F092F559}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{923ABD14-EDEF-61EE-8F78-C4A4F092F559}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DCA21D0-C8D3-97D0-6BD6-01FC69E0DBE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DCA21D0-C8D3-97D0-6BD6-01FC69E0DBE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DCA21D0-C8D3-97D0-6BD6-01FC69E0DBE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DCA21D0-C8D3-97D0-6BD6-01FC69E0DBE9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

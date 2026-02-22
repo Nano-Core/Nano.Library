@@ -7,12 +7,23 @@ using Nano.Common.Helpers;
 using System;
 using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Nano.App.Console.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
+    internal static IServiceCollection ConfigureNanoConsoleServices(this IServiceCollection services, ConsoleOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
+
+        services
+            .AddNanoWorkers()
+            .AddNanoCultureInfo(options.Localization);
+
+        return services;
+    }
+
     internal static IServiceCollection AddNanoWorkers(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);

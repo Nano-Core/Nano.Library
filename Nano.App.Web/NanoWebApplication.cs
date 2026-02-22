@@ -1,31 +1,36 @@
-using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Nano.App.Abstractions;
+using Nano.App.Api;
 using Nano.App.Api.Config;
 using Nano.App.Api.Extensions;
+using Nano.App.Config;
+using Nano.App.Config.Extensions;
 using Nano.App.Extensions;
+using Nano.App.Web.Config;
+using Nano.App.Web.Extensions;
+using System;
 
-namespace Nano.App.Api;
+namespace Nano.App.Web;
 
 /// <summary>
-/// Represents a Nano API application.
+/// Represents a Nano Web application.
 /// </summary>
-/// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api">Nano Api Application</see></remarks>
-public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplicationBuilder>
+/// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web">Nano Web Application</see></remarks>
+public class NanoWebApplication<TRoot> : NanoApiApplication
 {
     /// <summary>
-    /// Initializes an instance of <see cref="NanoApiApplication"/>.
+    /// Initializes an instance of <see cref="NanoWebApplication{TRoot}"/>.
     /// </summary>
     /// <param name="builder">The <see cref="WebApplicationBuilder"/>.</param>
-    protected NanoApiApplication(WebApplicationBuilder builder)
+    protected NanoWebApplication(WebApplicationBuilder builder)
         : base(builder)
     {
     }
 
     /// <summary>
-    /// Creates and configures the API application with default Nano services, middleware, and web options.
+    /// Creates and configures the Web application with default Nano services, middleware, and web options.
     /// </summary>
     /// <param name="args">Command-line arguments passed to the application.</param>
     /// <returns>A configured <see cref="IApplication"/> instance.</returns>
@@ -34,19 +39,20 @@ public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplica
         var applicationBuilder = BaseNanoApplication.CreateWebBuilder(args);
 
         applicationBuilder.Services
-            .AddNanoApp<ApiOptions>(applicationBuilder.Configuration, out var options);
+            .AddNanoApp<WebOptions>(applicationBuilder.Configuration, out var options)
+            .AddNanoConfigSection<ApiOptions>(applicationBuilder.Configuration, BaseAppOptions.SectionName, out _);
 
         applicationBuilder.Services
-            .ConfigureNanoApiServices(options);
+            .ConfigureNanoWebServices(options);
 
         applicationBuilder.WebHost
             .ConfigureWebHost(options);
 
-        return new NanoApiApplication(applicationBuilder);
+        return new NanoWebApplication<TRoot>(applicationBuilder);
     }
 
     /// <summary>
-    /// Builds the API application, registers middleware, routing, and health checks.
+    /// Builds the Web application, registers middleware, routing, and health checks.
     /// </summary>
     /// <param name="applicationBuilderAction">The <see cref="IApplicationBuilder"/>.</param>
     /// <returns>The current <see cref="IApplication"/> instance.</returns>
@@ -56,10 +62,10 @@ public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplica
             .Build();
 
         var options = this.application.Services
-            .GetRequiredService<IOptionsMonitor<ApiOptions>>();
+            .GetRequiredService<IOptionsMonitor<WebOptions>>();
 
         this.application
-            .ConfigureNanoApiApplication(options.CurrentValue);
+            .ConfigureNanoWebApplication<TRoot>(options.CurrentValue);
 
         applicationBuilderAction?
             .Invoke(this.application);

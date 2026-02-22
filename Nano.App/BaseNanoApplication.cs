@@ -1,8 +1,82 @@
-using Microsoft.Extensions.Hosting;
-using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Nano.App.Abstractions;
+using Nano.Common.Config;
+using System;
+using System.IO;
+using System.Reflection;
 
 namespace Nano.App;
+
+/// <summary>
+/// Base class for Nano applications, providing shared builder initialization for both web and console application types.
+/// </summary>
+public abstract class BaseNanoApplication
+{
+    /// <summary>
+    /// Creates and configures a <see cref="WebApplicationBuilder"/> with Nano defaults for web-based applications.
+    /// </summary>
+    /// <param name="args">Command-line arguments passed to the application.</param>
+    /// <returns>A configured <see cref="WebApplicationBuilder"/> instance.</returns>
+    protected static WebApplicationBuilder CreateWebBuilder(string[] args)
+    {
+        var root = Directory.GetCurrentDirectory();
+        var wwwroot = Path.Combine(root, "wwwroot");
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Development;
+
+        var entryAssembly = Assembly.GetEntryAssembly();
+        var config = ConfigManager.BuildConfiguration(environment, entryAssembly, args);
+        var applicationName = entryAssembly?.GetName().Name;
+
+        var options = new WebApplicationOptions
+        {
+            Args = args,
+            ApplicationName = applicationName,
+            EnvironmentName = environment,
+            ContentRootPath = root,
+            WebRootPath = wwwroot
+        };
+
+        var builder = WebApplication
+            .CreateBuilder(options);
+
+        builder.Configuration
+            .AddConfiguration(config);
+
+        return builder;
+    }
+
+    /// <summary>
+    /// Creates and configures a <see cref="HostApplicationBuilder"/> with Nano defaults for console-based applications.
+    /// </summary>
+    /// <param name="args">Command-line arguments passed to the application.</param>
+    /// <returns>A configured <see cref="HostApplicationBuilder"/> instance.</returns>
+    protected static HostApplicationBuilder CreateConsoleBuilder(string[] args)
+    {
+        var root = Directory.GetCurrentDirectory();
+        var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Development;
+        var entryAssembly = Assembly.GetEntryAssembly();
+        var config = ConfigManager.BuildConfiguration(environment, entryAssembly, args);
+        var applicationName = Assembly.GetEntryAssembly()?.GetName().Name;
+
+        var applicationOptions = new HostApplicationBuilderSettings
+        {
+            Args = args,
+            ApplicationName = applicationName,
+            EnvironmentName = environment,
+            ContentRootPath = root
+        };
+
+        var builder = Host.CreateApplicationBuilder(applicationOptions);
+
+        builder.Configuration
+            .AddConfiguration(config);
+
+        return builder;
+    }
+}
 
 /// <summary>
 /// Represents a base abstract application with a host and builder.
@@ -10,14 +84,14 @@ namespace Nano.App;
 /// </summary>
 /// <typeparam name="THost">The type of host (e.g., <see cref="IHost"/> or <see cref="WebApplication"/>).</typeparam>
 /// <typeparam name="THostBuilder">The type of host builder (e.g., <see cref="IHostApplicationBuilder"/> or <see cref="WebApplicationBuilder"/>).</typeparam>
-public abstract class BaseNanoApplication<THost, THostBuilder>
+public abstract class BaseNanoApplication<THost, THostBuilder> : BaseNanoApplication, IApplication
     where THost : class, IHost
     where THostBuilder : IHostApplicationBuilder
 {
     /// <summary>
     /// The application instance built from the builder.
     /// </summary>
-    protected THost application = null!;
+    protected THost? application;
 
     /// <summary>
     /// The builder used to configure the application.
@@ -35,9 +109,32 @@ public abstract class BaseNanoApplication<THost, THostBuilder>
     }
 
     /// <summary>
-    /// Runs the application. The <see cref="application"/> must be built before calling this method.
+    /// Creates and configures a new application instance.
+    /// Acts as the entry point for application setup.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown if the application has not been configured and built.</exception>
+    /// <remarks>This needs to be overriden in a concrete application class.</remarks>
+    /// <param name="args">Optional command-line arguments.</param>
+    /// <returns>A configured <see cref="IApplication"/> instance.</returns>
+    /// <exception cref="NotSupportedException">This will always throw <see cref="NotSupportedException"/>.</exception>
+    public static IApplication ConfigureApp(params string[] args)
+    {
+        throw new NotSupportedException();
+    }
+
+    /// <inheritdoc />
+    public virtual IApplication ConfigureServices(Action<IServiceCollection> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(this.applicationBuilder.Services);
+
+        return this;
+    }
+
+    /// <inheritdoc />
+    public abstract IApplication Build(Action<IApplicationBuilder>? applicationBuilderAction = null);
+
+    /// <inheritdoc />
     public virtual void Run()
     {
         if (this.application == null)

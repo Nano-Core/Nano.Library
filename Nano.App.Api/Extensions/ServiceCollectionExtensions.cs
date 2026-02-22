@@ -23,6 +23,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Globalization;
 using System.Linq;
+using Nano.App.Api.Identity.Authentication.Extensions;
 using Nano.App.Api.Mvc;
 using Nano.App.Api.Mvc.Documentation;
 using Nano.App.Api.Mvc.Serialization.Json;
@@ -39,6 +40,38 @@ namespace Nano.App.Api.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
+    internal static IServiceCollection ConfigureNanoApiServices(this IServiceCollection services, ApiOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
+
+        services
+            .AddNanoExceptionHandling()
+            .AddNanoCors(options.HttpPolicyHeaders.Cors)
+            .AddNanoForwardedHeaders(options.HttpPolicyHeaders.ForwardedHeaders)
+            .AddNanoHsts(options.HttpPolicyHeaders.Hsts)
+            .AddNanoCookies()
+            .AddNanoSession(options.Session)
+            .AddNanoResponseCaching(options.ResponseCache)
+            .AddNanoVersioning(options.Version)
+            .AddNanoAuthentication(options.Authentication)
+            .AddNanoAuthorization()
+            .AddNanoRequestLocalization(options.Localization)
+            .AddNanoRequestTimeZone(options.TimeZone)
+            .AddNanoVirusScan(options.VirusScan)
+            .AddNanoResponseCompression(options.ResponseCompression)
+            .AddNanoFormOptions(options.Hosting.MultipartLimits)
+            .AddNanoHttpsRedirection(options.Hosting.Http, options.Hosting.Https)
+            .AddNanoMvc()
+            .AddNanoDocumentation(options.Documentation)
+            .AddNanoHealthChecking(options.HealthCheck, options.Hosting.Http.Ports.FirstOrDefault());
+
+        services
+            .AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+        return services;
+    }
+
     internal static IServiceCollection AddNanoExceptionHandling(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -472,7 +505,7 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoHealthChecking(this IServiceCollection services, int? port, HealthCheckOptions? options = null)
+    internal static IServiceCollection AddNanoHealthChecking(this IServiceCollection services, HealthCheckOptions? options = null, int? port = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 

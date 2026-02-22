@@ -39,6 +39,7 @@
   * [Content Negotiation](#content-negotiation)
   * [Request Tracing](#request-tracing)
   * [Error Handling](#error-handling)
+  * [Static Files](#static-files)
   * [Authentication](#authentication)
   * [Authorization](#authorization)
   * [Api Clients](#api-clients)
@@ -133,6 +134,8 @@ The `App` section in the configuration defines behavior related to the applicati
   "Apis": []
 }
 ```
+
+View the full reference configuration here: **[`appsettings.default.json`](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/appsettings.default.json)**.  
 
 ## Hosting
 Hosting configuration specifies how the API is hosted on the Kestrel web server, defining endpoint exposure as well as request handling limits.  
@@ -1430,6 +1433,19 @@ as the API client can only propagate `ProblemDetails` and will otherwise fall ba
 
 Try it out yourself using the **[Api.ErrorHandling](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.ErrorHandling)** example.  
 
+## Static Files
+Static files must always be placed in `wwwroot` folder.
+
+## Static Files
+Static Files are served directly by the web host without passing through the endpoint pipeline. Common static assets such as 
+CSS, JavaScript, images, and fonts are supported out of the box.  
+
+Static files must always be placed in the `wwwroot` folder.  
+
+This is enabled by default and requires no additional configuration.  
+
+Try it out yourself using the **[Api.StaticFiles](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.StaticFiles)** example.  
+
 ## Authentication
 HOW DO WE ADD ROLES FOR TRANSIENT LOGIN (WE NEED ROLES OTHERWISE NO ACCESS TO CONTROLLERS). I THINK THE USER HAS TO PASS TRANSIENT ROLES, BUT WE NEED TO DOCUMENT THAT
 
@@ -1714,8 +1730,12 @@ Nano supports start-up tasks that are executed before the application begins han
 during application initialization, such as warming caches, validating external dependencies, running migrations, or performing initial connectivity checks.  
 
 When Health Checks are configured, Nano automatically exposes a built-in self start-up health check. This health check will report the application as ready 
-only after all configured start-up tasks have completed successfully. Until then, the application is considered not ready to receive traffic. This makes start-up tasks especially 
-useful in orchestrated environments, where readiness signals are required to control traffic flow and ensure the application is fully initialized before becoming available.
+only after all configured start-up tasks have completed successfully. Until then, the application is considered not ready to receive traffic. This makes start-up tasks 
+especially useful in orchestrated environments, where readiness signals are required to control traffic flow and ensure the application 
+is fully initialized before becoming available.
+
+> ⚠️ When using health checks and startup tasks, configure the Kubernetes readiness probe correctly to prevent unwanted pod restarts.  
+Keep startup tasks simple and fast to ensure smooth application startup
 
 > 📖 Learn more about **[Nano Startup Tasks](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#startup-tasks)**.
 

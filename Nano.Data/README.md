@@ -1,9 +1,11 @@
-# Nano.Data
+﻿# Nano.Data
 [![Build and Deploy](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml/badge.svg)](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml)
 [![NuGet](https://img.shields.io/nuget/dt/Nano.Data.svg)](https://www.nuget.org/packages/Nano.Data/)
 [![NuGet](https://img.shields.io/nuget/v/Nano.Data.svg)](https://www.nuget.org/packages/Nano.Data/)
 
 > _Pluggable, provider-agnostic data access for Nano applications._
+
+> ⚠️ This NuGet is included in other Nano Packages, and is not meant to be included directly.
 
 ***
 
@@ -463,3 +465,15 @@ See examples of Nano applications with data registered here:
 * [Nano.Templates.Web.Data](https://github.com/Nano-Core/Nano.Templates/tree/master/Web.Data)
 * [Nano.Templates.Console.Data](https://github.com/Nano-Core/Nano.Templates/tree/master/Console.Data)
 
+
+## Model Annotations
+Nano provides a set of useful validation annotations that can be applied to Nano entity models.
+These annotations simplify common validation tasks and ensure consistency across your models.
+
+Nano comes with some useful validation annotations they may be used together with Nano entity models.  
+
+| Annotation                     | Description                                                                                                                                                |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `InternationalPhoneAttribute`  | Validates that a string contains a valid international phone number. Works with properties and parameters.                                                 |
+| `RequiredOneOfAttribute`       | Validates that at least one of the specified members, including the decorated member, has a non-null value. Works with properties, fields, and parameters. |
+| `UrlAttribute`                 | Validates that a string contains a valid URL. Works with properties, fields, and parameters.                                                               |

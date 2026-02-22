@@ -5,6 +5,8 @@
 
 > _Pluggable, provider-agnostic message queueing (pubSub) for Nano applications._
 
+> ⚠️ This NuGet is included in other Nano Packages, and is not meant to be included directly.
+
 ***
 
 ## Table of Contents
@@ -16,13 +18,11 @@
 * [Publish and Subscribe](#publish-and-subscribe)
 * [Examples](#examples)
 
-THIS NUGET SHOULD NOT BE INSTALLED DIRECTLY SEE Providers
-
 ## Summary
 Nano supports different ways of publishing and subscribing to events.  
 Adding eventing annotations to model implementations, provides a way of synchronizing entities between applications. Additionally, custom event models can be implemented and published, and consumed through subscriptions.  
 The ```IEventingProvider``` is registered during startup, and the implementing type defines the eventing provider used in the application. Furthermore, the interface ```IEventing``` is registered as well, and defines the entry to publishing and subscribing to events.  
-```Nano.Eventing.Interfaces.IEventing``` and ```Nano.Eventing.Interfaces.IEventingHandler<>```  
+```Nano.Eventing.Abstractions.IEventing``` and ```Nano.Eventing.Abstractions.IEventingHandler<>```  
 
 ## Registration
 The eventing provider must be registered as dependencies.

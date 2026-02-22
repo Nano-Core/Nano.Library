@@ -1,9 +1,11 @@
-# Nano.Logging
+﻿# Nano.Logging
 [![Build and Deploy](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml/badge.svg)](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml)
 [![NuGet](https://img.shields.io/nuget/dt/Nano.Logging.svg)](https://www.nuget.org/packages/Nano.Logging/)
 [![NuGet](https://img.shields.io/nuget/v/Nano.Logging.svg)](https://www.nuget.org/packages/Nano.Logging/)
 
 > _Pluggable, provider-agnostic logging for Nano applications._
+
+> ⚠️ This NuGet is included in other Nano Packages, and is not meant to be included directly.
 
 ***
 
@@ -14,8 +16,6 @@
 * [Configuration](#configuration)
 * [Logging Providers](#logging-providers)
 * [Examples](#examples)
-
-THIS NUGET SHOULD NOT BE INSTALLED DIRECTLY SEE Providers
 
 ## Summary
 Nano registers the interfaces ```ILoggerFactory```, ```ILogger``` and ```ILogger<T>``` during application startup. 
