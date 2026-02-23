@@ -13,13 +13,6 @@
 * [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Environment](#environment)
-* [Solution Composition](#application-composition)
-  * [.docker](#-docker)
-  * [.gitHub](#-gitHub)
-  * [.kubernetes](#-kubernetes)
-  * [.solution](#-solution)
-  * [.tests](#-tests)
-  * [.application](#-application)
 * [Configuration](#configuration)
   * [Null Logger](#null-logger)
   * [Api Clients](#api-clients)
@@ -37,13 +30,13 @@ and providing a concrete implementation for building applications with Nano. It 
 sensible defaults, while allowing full customization of services through the `ConfigureServices` method. This design ensures that all core applications behaviors 
 are initialized consistently using you configuration, reducing boilerplate code and simplifying the setup of new applications.  
 
-Three concrete application implementations are avaialble in Nano:
+Three concrete types application are avaialble in Nano:
 
-| Application                                                                              | Description                                                          |
-| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| [Nano API](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)           | API application exposing endpoints and optional static pages.        |
-| [Nano Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console)   | Console application that runs a job and exits.                       |
-| [Nano Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web)           | Web application exposing endpoints and dynamic Razor/Blazor pages.   |
+| Application   | Documentation                                                                           | Minimal Example                                                                                  |
+| ------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Nano API      | [Documentation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)     | [Example](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api._Blank)      |
+| Nano Console  | [Documentation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console) | [Example](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console._Blank)  |
+| Nano Web      | [Documentation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web)     | [Example](https://github.com/Nano-Core/Nano.Lessons/tree/master/Web._Blank)      |
 
 ## Environment
 By design, Nano is environment-neutral: it does not rely on environment-specific code or behavior.  

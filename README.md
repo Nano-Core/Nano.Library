@@ -7,10 +7,12 @@
 
 ## Table of Contents
 * [Summary](#summary)
+* [Getting Started](#getting-started)
 * [NuGet Packages](#nuget-packages)
 * [Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)
   * [Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)
   * [Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console)
+  * [Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web)
 * [Providers](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)
   * [Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)
   * [Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)
@@ -38,7 +40,40 @@ The aspects and benefits of Nano, can be summarized as follows.
 * Avoid wasting valuable development resources, on matters not related to the business.
 * Remain focused on modelling data and operations of the business domain.
 
+## Getting Started
+
 ## NuGet Packages
+
+
+| Package                      | Downloads                                                                                                |                                                                                                         |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Nano.All                     | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.App                     | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.App.Api                 | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.App.Console             | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.App.Web                 | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Data                    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Data.Abstractions       | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Data.InMemory           | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Data.MySql              | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Data.PostgreSQL         | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Data.SqLite             | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Data.SqlServer          | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Eventing                | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Eventing.Abstractions   | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Eventing.RabbitMq       | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Logging                 | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Logging.Abstractions    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Logging.Log4Net         | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Logging.Microsoft       | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Logging.NLog            | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Logging.Serilog         | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Storage                 | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Storage.Abstractions    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Storage.Azure           | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| Nano.Storage.Local           | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+| NanoCore                     | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
+
 EXPLAIN STRUCTURE OF PACKAGES
 
 ## Architectures
@@ -79,9 +114,12 @@ rename Entry Point
 
 
 
+MAKE SIMPLER. JUST TABLE FOR Api, Console and Web readme
+
+
 * [Solution Composition](#application-composition)
   * [.docker](#-docker)
-  * [.gitHub](#-gitHub)
+  * [.github](#-github)
   * [.kubernetes](#-kubernetes)
   * [.solution](#-solution)
   * [.tests](#-tests)
@@ -89,129 +127,119 @@ rename Entry Point
 
 
 ## Solution Composition
-THIS IS DIFFERENT FOR CONSOLE APPLICATIONS. WHERE TO PLACE THIS??? MAYBE MOVE TO Nano.App.Api and Nano.App.Console
+All Nano applications follow a consistent and predictable solution structure.  
 
-All Nano applications follow the same structure.  
-Locally in `Development` environment the application is orchestratd using docker-compose, and for `Staging` and `Production` it's Kubernetes.
-Continius integration and delivery (CI/CD) is handled by GitHub Actions, and it's included in a Nano Visual Studio solution. 
-Various other file are included in the solution root directory, such as docker- and gitignore and various asset files for git-repository and NuGet packages.
+In local `Development`, the application is orchestrated using Docker Compose, while `Staging` and `Production` environments are deployed and managed using Kubernetes.  
 
-Below is a table resemblong both the physical files and directories, as well as the Visual Studio solution, excepot items in the root directory are added to
-the `.solution ` folder in Visual Studio.
+Continuous Integration and Continuous Delivery (CI/CD) is handled by GitHub Actions and is included as part of the Nano Visual Studio solution.  
+
+The solution root also contains several supporting files, such as Docker- and Git-related configuration files, along with various asset files used by 
+the Git repository and NuGet packages.
+
+In the following sections, each part of the solution is described in detail, with files listed alongside their purpose and responsibilities, 
+covering both the physical file structure and the Visual Studio solution.  
 
 ## `.docker`
-This folder contains the `docker-compose` project, used for orchestration with the `Development` environment.  
+This folder contains the Docker Compose project used to orchestrate the application in the local `Development` environment.
 
-> ⚠️ Rememmber to set the docker-compose project as startup project for you solution, before running it in Visual Studio.
+> ⚠️ Rememmber to set the docker-compose project as startup project, before running the solution in Visual Studio.
 
-| File / Directory                      | Type      | Description                                                                                      |
-| ------------------------------------- | --------- | ------------------------------------------------------------------------------------------------ |
-|  `docker-compose`                     | `dcproj`  | The docker-compose project.                                                                      |
-|  `docker-compose/docker-compose.yml`  | `yaml`    | The docker-compose spec for orchestrating the application locally in `Development` environment.  |
+| File / Directory                      | Type      | Description                                                                                                   |
+| ------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------- |
+|  `docker-compose`                     | `dcproj`  | The Docker Compose project used by Visual Studio for local orchestration.                                     |
+|  `docker-compose/docker-compose.yml`  | `yaml`    | The Docker Compose specification for orchestrating the application locally in the `Development` environment.  |
 
-## `.gitHub`
-This folder is the GitHub folder, used by GitHub Actions among other. It contains the `build-and-deploy.yml` workflow file, that is used for building, testing, 
-publishing artifacts and deploying to Kubernetes to either `Staging` and `Production` environment.
+## `.github`
+This folder contains GitHub-specific configuration used primarily by GitHub Actions. It includes the `build-and-deploy.yml` workflow, 
+which is responsible for building, testing, publishing artifacts, and deploying the application to Kubernetes in the `Staging` and `Production` environments.
 
-The file is too large to display here, but you can find it here: [build-and-deploy.yml](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api._Blank/.github/workflows/build-and-deploy.yml), and check it out yourself. 
-It requires the environment variables to exists in github var and secrets, so they must be created before the GitHub Action can succeeed. But all variables and secrets
-required for the build is specified in the `env:` section of the GitHub action file. No need to fiddle around in multiple files to configure CI/CD. 
+The workflow relies on environment variables defined as GitHub variables and secrets, which must be created before the action can run successfully. All required 
+variables and secrets are explicitly declared in the `env:` section of the workflow file—there is no need to configure CI/CD across multiple files.
 
-The GitHub action basically does:
-1. Login to Azure.
-2. Build, Test and Packages the solution.
-3. Apply database migrations.
-4. Publish container image and NuGet package (optional)
-5. Apply changes to Kubernetes. 
-6. Post GitHub Release and Slack notification (optional).
+The workflow performs the following steps:
+1. Authenticate with Azure
+2. Build, test, and package the solution
+3. Apply database migrations
+4. Publish container images and NuGet packages (optional)
+5. Apply changes to Kubernetes
+6. Create a GitHub release and send Slack notifications (optional)
 
-| File / Directory                   | Type    | Description                                                                            |
-| ---------------------------------- | ------- | -------------------------------------------------------------------------------------- |
-|  `config/slack.yml`                | `yaml`  | Spec for posting builds to _Slack_ (Optional).                                         |
-|  `workflows/build-and-deploy.yml`  | `yaml`  | GitHub Action that builds, test, publushes artifacts and deploys a Nano application.   |
+| File / Directory                   | Type    | Description                                                                                        |
+| ---------------------------------- | ------- | -------------------------------------------------------------------------------------------------- |
+|  `config/slack.yml`                | `yaml`  | Configuration for posting build notifications to Slack _(optional)_.                               |
+|  `workflows/build-and-deploy.yml`  | `yaml`  | GitHub Actions workflow that builds, tests, publishes artifacts, and deploys a Nano application.   |
 
 ## `.kubernetes`
-This folder contains Kubenetes templates required to deploy the solution in CI/CD. 
-Used only in `Staging` and `Production` environment.
-Minimal set of Kubernetes spec files for a Nano application. Some applications will have additional spec file, such as `ingress.yaml` and `certificate.yaml` when 
-enabling https exposure for an application. 
+This folder holds Kubernetes templates required for automated deployment of the application through GitHub Actions.  
+These templates are used exclusively in the `Staging` and `Production` environments.
 
+Different applications uses different Kubernetes templates depending on the type of application. Below is listed which application types used which templates
 
-HERE
+**For All applications**
 
-For Service (API) applications
+| File / Directory     | Type    | Description                                                    |
+| -------------------- | ------- | -------------------------------------------------------------- |
+|  `configmap.yaml`    | `yaml`  | Configuration specification for Kubernetes.                    |
 
-| File / Directory     | Type    | Application | Description                                                  |
-| -------------------- | ------- | ------- | ------------------------------------------------------------ |
-|  `autoscaler.yaml`   | `yaml`  | The horizontal pod autoscaler (hpa) spec for Kubernetes.     |
-|  `configmap.yaml`    | `yaml`  | The configuration spec for Kuberentes.                       |
-|  `deployment.yaml`   | `yaml`  | The application deployment spec for Kubernetes.              |
-|  `service.yaml`      | `yaml`  | The application service exposure spec for Kubernetes.        |
+**Only API and Web applications**
 
-|  `ingress.yaml`      | `yaml`  | The application service exposure spec for Kubernetes.        |
-|  `certificate.yaml`  | `yaml`  | The application service exposure spec for Kubernetes.        |
+| File / Directory     | Type    | Description                                                                                                                           |
+| -------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+|  `autoscaler.yaml`   | `yaml`  | [Horizontal Pod Autoscaler (HPA)](https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/) specification. |
+|  `deployment.yaml`   | `yaml`  | Application [Deployment](https://kubernetes.io/docs/concepts/services-networking/ingress/) specification.                             |
+|  `service.yaml`      | `yaml`  | Application [Service](https://kubernetes.io/docs/concepts/services-networking/service/) exposure specification.                       |
+|  `ingress.yaml`      | `yaml`  | Application [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) specification _(Optional)_.                   |
+|  `certificate.yaml`  | `yaml`  | Application TLS [Certificate](https://cert-manager.io/docs/usage/certificate/) specification _(Optional)_.                            |
 
-|  `cronjob.yaml`      | `yaml`  | The scheduled job spec for Kubernetes.                       |
+**Only Console applications**
 
-
-
-
-For Console applications
-
-
-
+| File / Directory     | Type    | Description                                                    |
+| -------------------- | ------- | -------------------------------------------------------------- |
+|  `cronjob.yaml`      | `yaml`  | The scheduled job spec for Kubernetes.                         |
 
 ## `.solution`
-The solution directory (root) contains several individual files, such as content for NuGet packages, ignore files for docker and github, etc.
+The solution root directory contains several individual files used for repository management, Docker and Git configuration, and NuGet package assets.  
+These files are part of the solution in Visual Studio, organized under the `.solution` folder.  
 
-| File / Directory  | Type    | Description                                                                                                                                                                      |
-| ----------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|  `.dockerignore`  |         | The files ignored by `Docker`.                                                                                                                                                   |
-|  `.gitignore`     |         | The files ignored by git.                                                                                                                                                        |
-|  `Dockerfile`     |         | The Dockerfile used to build the container image when deploying to `Staging` and `Production`                                                                                    |
-|  `README.md`      |         | Asset file for the `git-repository` and the application models NuGet package (Optional). _* if deleted, remember to remove the reference from the application `csproj` file._   |
+**Common for all applications**
 
+| File / Directory  | Description                                                                                   |
+| ----------------- | --------------------------------------------------------------------------------------------- |
+| `.dockerignore`   | Lists files and folders to ignore when building Docker images.                                |
+| `.gitignore`      | Lists files and folders to ignore in Git version control.                                     |
+| `Dockerfile`      | Dockerfile used to build the container image for `Staging` and `Production` deployments.      |
+| `README.md`       | Documentation asset for the Git repository and the application’s NuGet package _(Optional)_.  |
 
-NOT CONSOLE
-|  `icon.png`       | `image` | Asset file for application models NuGet package (Optional). _* if deleted, remember to remove the reference from the application `csproj` file._                                  |
-|  `LICENSE`        |         | Asset file for the `git-repository` and the application models NuGet package (Optional). _* if deleted, remember to remove the reference from the application `csproj` file._  |
+**For API and Web applications**
+
+| File / Directory  | Description                                                                            |
+| ----------------- | -------------------------------------------------------------------------------------- |
+| `icon.png`        | Icon asset for the application’s NuGet package _(Optional)_.                           |
+| `LICENSE`         | License file for the Git repository and the application’s NuGet package _(Optional)_.  |
 
 ## `.tests`
-The is a test project, which is empty and just included to show the structure and where the tests should be added.
+This folder contains a test project, which is empty by default and included to demonstrate the structure and where unit or integration tests should be added.  
 
 | File / Directory         | Type      | Description                                                  |
 | ------------------------ | --------- | ------------------------------------------------------------ |
-|  `Tests.{name}.csproj`   | `csproj`  | Empty Visual Studio Test project. Ready for adding tests.    |
+| `Tests.{name}.csproj`    | `csproj`  | Empty Visual Studio test project, ready for adding tests.    |
 
 ## `.application`
-The solution contains two project, first the `Api.Blank`, containg the application.
-This application has only minimal configuration in `appsettings.json`, with http, as shown below. `appsettings.json` overrides for the default environments has also
-been added, for `appsettings.Development.json`, `appsettings.Staging.json` and `appsettings.Production.json`. Overrides are empty by default.
+The solution contains one or two projects depending on the application type:
 
-```json 
-"App": {
-  "Version": "1.0.0.0",
-  "Hosting": {
-    "Root": "api",
-    "Http": {
-      "Ports": [
-        8080
-      ]
-    }
-  }
-}
-```
+- **Console applications:** only the application project exists.  
+- **API and Web applications:** two projects exist — one for the application and one for models, which is designed to be packaged and published as a private NuGet during deployment.
 
-The project also has a `Properties/InternalsVisibleTo.cs`, which just sets interval types visible for the test project.
-The `DockerfileLocal` is used by the `docker-compose`, but is required to be located in the application project folder. Don't move it!
-The solution also contains an empty `launchSettings.json`
+The application projects contains the main application implementation, including the `program.cs` file.  
+The project includes minimal configuration in `appsettings.json`, and empty override configurations for all three environments.
 
-Last the `program.cs` file with the Nano application setup; 
+Other important files:
+* `Properties/InternalsVisibleTo.cs` — exposes internal types to the test project.
+* `Dockerfile.Local` — used by Docker Compose in `Development` environment; must remain in the application project folder.
+* `launchSettings.json` — included but empty.
 
-Next, the `Api.Blank.Models` that include models that should be published and shared on 
-private NuGet. For now and for this lesson there the project is empty, as well as the NuGet that is published during CI/CD. 
-Nano references needs to be added to this project, as models depends on Nano.App to be used in the api-client
+The second project contains models that are packaged and published as a private NuGet, enabling internal sharing between services. This separation keeps 
+the application lightweight while allowing shared **models** to be versioned and distributed consistently across services.
 
-Models project is configured for packaging a NuGet, which should be published internally and used to connect api to services. Also why the Nano dependences must be added here.
-
-
+> ⚠️ The models project must reference the [Nano.App](https://www.nuget.org/packages/Nano.App) NuGet package.  
+> This provides access to the API client implementation and allows the models project to expose models along with the derived API client functionality.
