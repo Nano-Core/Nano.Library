@@ -127,6 +127,8 @@ MAKE SIMPLER. JUST TABLE FOR Api, Console and Web readme
 
 
 ## Solution Composition
+LINKS TO HERE
+
 All Nano applications follow a consistent and predictable solution structure.  
 
 In local `Development`, the application is orchestrated using Docker Compose, while `Staging` and `Production` environments are deployed and managed using Kubernetes.  
