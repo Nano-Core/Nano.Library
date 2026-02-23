@@ -65,7 +65,7 @@ When exposed as an external API, it sits behind an entry point that manages inco
 the internal implementation consistent. This design allows the same application to function in both roles without changing its core configuration or service logic, 
 supporting flexible deployment scenarios.  
 
-> 📖 Learn more about the overall Nano architecture here: **[Nano Architectures](https://github.com/Nano-Core/Nano.Library#architectures)**.  
+> 📖 Learn more about the overall Nano architecture here: **[Nano Architectures](https://github.com/Nano-Core/Nano.Library#nano-architectures)**.  
 
 Also checkout the **[Api.Blank](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api._Blank)** example, that shows a minimal configured API application.  
 

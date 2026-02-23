@@ -43,7 +43,7 @@ By design, Nano is environment-neutral: it does not rely on environment-specific
 Environment-specific behavior is defined solely through configuration files, such as `appsettings.{environment}.json`.
 
 .NET Core reads the `DOTNET_ENVIRONMENT` or `ASPNETCORE_ENVIRONMENT` variable and applies the corresponding configuration. By default, the environment is set to `Development`.  
-It is recommended to keep code environment-neutral and handle differences through configuration and deployment pipelines.
+Generally, it's recommended to keep code environment-neutral and handle differences through configuration and deployment pipelines.
 
 Nano supports three standard environments:
 
