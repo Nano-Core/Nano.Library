@@ -3,7 +3,7 @@
 [![NuGet](https://img.shields.io/nuget/dt/Nano.Logging.svg)](https://www.nuget.org/packages/Nano.Logging/)
 [![NuGet](https://img.shields.io/nuget/v/Nano.Logging.svg)](https://www.nuget.org/packages/Nano.Logging/)
 
-> _Common logging provider implementations for Nano applications._
+> _Logging provider common implementations for Nano applications._
 
 > ⚠️ This NuGet is transitive and included in other Nano Packages, and is not meant to be included directly.
 
@@ -51,7 +51,7 @@ The ```Logging``` section in the configuration defines the logging provider and 
 | Setting                         | Type   | Default      | Description                                                                                                                     |
 | ------------------------------- | ------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------- |
 |  `LogLevel`                     | enum   | Information  | The default minimum LogLevel used by the logging provider. Values: Debug, Information, Warning, Error, Fatal.                   |
-|  `LogLevelOverrides`            | Array  | []           | Optional overrides for specific namespaces, allowing different log levels for different parts of the application.               |
+|  `LogLevelOverrides`            | array  | []           | Optional overrides for specific namespaces, allowing different log levels for different parts of the application.               |
 |  `LogLevelOverrides.Namespace`  | string | null         | The log level to apply for a specific namespace. You may prepend an asterisk (`*`) as a wildcard to match multiple namespaces.  |
 |  `LogLevelOverrides.LogLevel`   | enum   | Warning      | The namespace for which this log level override applies. Values: Debug, Information, Warning, Error, Fatal.                     |
 

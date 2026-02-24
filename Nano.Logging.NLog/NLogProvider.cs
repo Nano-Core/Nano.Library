@@ -47,6 +47,7 @@ public sealed class NLogProvider : ILoggingProvider
         {
             // BUG: NLog LogLevel Overrides doesn't work
             // THe above "*" makes the override not work
+            // https://github.com/NLog/NLog
 
             loggingConfiguration.LoggingRules
                 .Add(new LoggingRule($"{@override.Namespace}*", @override.LogLevel.GetLogLevel(), target));

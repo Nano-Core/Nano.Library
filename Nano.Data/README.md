@@ -3,7 +3,7 @@
 [![NuGet](https://img.shields.io/nuget/dt/Nano.Data.svg)](https://www.nuget.org/packages/Nano.Data/)
 [![NuGet](https://img.shields.io/nuget/v/Nano.Data.svg)](https://www.nuget.org/packages/Nano.Data/)
 
-> _Pluggable, provider-agnostic data access for Nano applications._
+> _Data provider common implementations for Nano applications._
 
 > ⚠️ This NuGet is transitive and included in other Nano Packages, and is not meant to be included directly.
 
@@ -87,9 +87,9 @@ The ```Data``` section in the configuration defines the data provider and relate
 |  `DefaultCollation`             | string | null        | The default collation for the database.                                               |
 |  `ConnectionString`             | string | null        | The connection string for the database.                                               |
 |  `Cache`                        | object | null        | The cache configuration options. See [Cache](#cache)                                  |
-|  `Identity`                     | object | null        | The identity configuration options. See [Cache](#identity)                            |
-|  `ConnectionPool`               | object | null        | The connection pool configuration options. See [Cache](#connection-pool)              |
-|  `HealthCheck`                  | object | null        | The options for configuring health checks. See [Cache](#health-check)                 |
+|  `Identity`                     | object | null        | The identity configuration options. See [Identity](#identity)                            |
+|  `ConnectionPool`               | object | null        | The connection pool configuration options. See [ConnectionPool](#connection-pool)              |
+|  `HealthCheck`                  | object | null        | The options for configuring health checks. See [HealthCheck](#health-check)  _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.                 |
 
 ```json
 "Data": {

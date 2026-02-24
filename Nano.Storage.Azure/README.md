@@ -1,9 +1,9 @@
-# Nano.Storage.Azure
+﻿# Nano.Storage.Azure
 [![Build and Deploy](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml/badge.svg)](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml)
 [![NuGet](https://img.shields.io/nuget/dt/Nano.Storage.Azure.svg)](https://www.nuget.org/packages/Nano.Storage.Azure/)
 [![NuGet](https://img.shields.io/nuget/v/Nano.Storage.Azure.svg)](https://www.nuget.org/packages/Nano.Storage.Azure/)
 
-> Azure File Share storage for Nano applications._
+> Azure file share storage for Nano applications._
 
 *** 
 
@@ -14,25 +14,68 @@
 
 ## Summary
 Storage Provider implementation for Microsoft Azure File Shares.  
-Read more about storage here: [Nano.Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)
+
+A file share from an Azure Storage Account can be mounted into your container, allowing your Nano application to access it as if it were a local drive. This approach 
+enables your application to read from and write to the storage directly, while the underlying Azure file share handles persistence and centralized storage. 
+No changes to your application code are required and you can interact with the file share using the `IPathProvider` interface.  
+
+> 📖 Learn more about **[Nano Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)**.
+> 📖 Learn more about **[Nano Azure File Share](https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Storage)**.  
+
+Try it out yourself using the **[Api.Storage.Azure](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Storage.Azure)** or 
+**[Console.Storage.Azure](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Storage.Azure)** example.  
 
 ## Registration
-First install the [Nano.Storage.Azure](https://www.nuget.org/packages/Nano.Storage.Azure) NuGet package.  
+Install the **[Nano.Storage.Azure](https://www.nuget.org/packages/Nano.Storage.Azure)** NuGet package.
 
 ```powershell
 dotnet add package Nano.Storage.Azure;
 ```
 
-The Azure File Share storage provider must be registered as dependencies.  
+Register the `AzureFileshareProvider` provider during application startup in the `ConfigureServices(...)` method.
+
 ```csharp
-    .ConfigureServices(services =>
-    {
-        services
-            .AddNanoStorage<AzureFileshareProvider>();
-    })
+...
+.ConfigureServices(services =>
+{
+    services
+        .AddNanoStorage<AzureFileshareProvider>();
+})
+...
 ```
 
-Also, add the following to your Kubernets ```deployment.yaml``` for the Nano application.
+In addition to registering storage, map a local folder to a container path in your Docker setup to give the container access to the storage directory:
+
+```yaml
+services:
+  {my.service}:
+    volumes:
+      - {share-name}:/mnt/{share-name}
+```
+
+Next, we need to map the `storage-account-secret` that is created alongside the 
+[Nano Azure Storage Account](https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Storage) in the `deployment.yaml`. 
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+        env:
+        - name: Storage__Account__Id
+          valueFrom:
+            secretKeyRef:
+              name: storage-account-secret
+              key: azurestorageaccountname
+        - name: Storage__Account__Secret
+          valueFrom:
+            secretKeyRef:
+              name: storage-account-secret
+              key: azurestorageaccountkey
+```
+
+Finally, add the following to your Kubernetes `deployment.yaml` for the Nano application.
+
 ```yaml
 template:
   spec:
@@ -43,6 +86,3 @@ template:
         shareName: {share-name}
         readOnly: false
 ```
-
-## Dependencies
-* https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Storage

@@ -22,14 +22,17 @@ The provider is preconfigured to write log output to the console using a concise
 
 > 📖 Learn more about **[Nano Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)**.
 
+Try it out yourself using the **[Api.Logging.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Logging.Microsoft)** or 
+**[Console.Logging.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Logging.Microsoft)** example.  
+
 ## Registration
-Install the [Nano.Logging.Microsoft](https://www.nuget.org/packages/Nano.Logging.Microsoft) NuGet package:
+Install the **[Nano.Logging.Microsoft](https://www.nuget.org/packages/Nano.Logging.Microsoft)** NuGet package.
 
 ```powershell
 dotnet add package Nano.Logging.Microsoft;
 ```
 
-Register the Microsoft logging provider during application startup in the `ConfigureServices(...)` method:
+Register the `MicrosoftProvider` provider during application startup in the `ConfigureServices(...)` method.
 
 ```csharp
 ...

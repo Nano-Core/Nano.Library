@@ -22,14 +22,17 @@ The provider is preconfigured to write log output to the console using a concise
 
 > 📖 Learn more about **[Nano Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)**.
 
+Try it out yourself using the **[Api.Logging.Serilog](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Logging.Serilog)** or 
+**[Console.Logging.Serilog](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Logging.Serilog)** example.  
+
 ## Registration
-Install the [Nano.Logging.Serilog](https://www.nuget.org/packages/Nano.Logging.Serilog) NuGet package:
+Install the **[Nano.Logging.Serilog](https://www.nuget.org/packages/Nano.Logging.Serilog)** NuGet package.
 
 ```powershell
 dotnet add package Nano.Logging.Serilog;
 ```
 
-Register the Serilog logging provider during application startup in the `ConfigureServices(...)` method:
+Register the `SerilogProvider` provider during application startup in the `ConfigureServices(...)` method.
 
 ```csharp
 ...

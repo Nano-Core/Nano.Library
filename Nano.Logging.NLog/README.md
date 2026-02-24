@@ -22,14 +22,17 @@ ${date:format=dd-MM-yyyy HH\\:mm\\:ss.ffffff} [${level:uppercase=true:truncate=3
 
 > 📖 Learn more about **[Nano Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)**.
 
+Try it out yourself using the **[Api.Logging.NLog](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Logging.NLog)** or 
+**[Console.Logging.NLog](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Logging.NLog)** example.  
+
 ## Registration
-Install the [Nano.Logging.NLog](https://www.nuget.org/packages/Nano.Logging.NLog) NuGet package:
+Install the **[Nano.Logging.NLog](https://www.nuget.org/packages/Nano.Logging.NLog)** NuGet package.
 
 ```powershell
 dotnet add package Nano.Logging.NLog;
 ```
 
-Register the NLog logging provider during application startup in the `ConfigureServices(...)` method:
+Register the `NLogProvider` provider during application startup in the `ConfigureServices(...)` method.
 
 ```csharp
 ...

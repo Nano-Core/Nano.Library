@@ -22,14 +22,17 @@ The provider is preconfigured to write log output to the console using a concise
 
 > 📖 Learn more about **[Nano Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)**.
 
+Try it out yourself using the **[Api.Logging.Log4Net](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Logging.Log4Net)** or 
+**[Console.Logging.Log4Net](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Logging.Log4Net)** example.  
+
 ## Registration
-Install the [Nano.Logging.Log4Net](https://www.nuget.org/packages/Nano.Logging.Log4Net) NuGet package:
+Install the **[Nano.Logging.Log4Net](https://www.nuget.org/packages/Nano.Logging.Log4Net)** NuGet package.
 
 ```powershell
 dotnet add package Nano.Logging.Log4Net;
 ```
 
-Register the Log4Net logging provider during application startup in the `ConfigureServices(...)` method:
+Register the `Log4NetProvider` provider during application startup in the `ConfigureServices(...)` method.
 
 ```csharp
 ...
