@@ -26,9 +26,10 @@ dotnet add package Nano.Data.InMemory;
 
 The In-Memory data provider must be registered as dependencies.  
 ```csharp
-    .ConfigureServices(x =>
+    .ConfigureServices(services =>
     {
-        x.AddNanoData<InMemoryProvider>();
+        services
+            .AddNanoData<InMemoryProvider>();
     })
 ```
 

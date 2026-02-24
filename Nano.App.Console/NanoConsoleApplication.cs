@@ -50,7 +50,7 @@ public class NanoConsoleApplication : BaseNanoApplication<IHost, HostApplication
     ///     The <paramref name="applicationBuilderAction"/> has NO effect in <see cref="NanoConsoleApplication"/>.
     /// </remarks>
     /// <returns>The current <see cref="IApplication"/> instance.</returns>
-    public override IApplication Build(Action<IApplicationBuilder>? applicationBuilderAction = null)
+    public override IApplication Build(Action<IApplicationBuilder>? applicationBuilderAction = null) // BUG: Try and get rid of the parameter for Console Applications
     {
         this.application = this.applicationBuilder
             .Build();

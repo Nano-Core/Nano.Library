@@ -36,19 +36,19 @@ public class NanoWebApplication<TRoot> : NanoApiApplication
     /// <returns>A configured <see cref="IApplication"/> instance.</returns>
     public new static IApplication ConfigureApp(params string[] args)
     {
-        var applicationBuilder = BaseNanoApplication.CreateWebBuilder(args);
+        var builder = BaseNanoApplication.CreateWebBuilder(args);
 
-        applicationBuilder.Services
-            .AddNanoApp<WebOptions>(applicationBuilder.Configuration, out var options)
-            .AddNanoConfigSection<ApiOptions>(applicationBuilder.Configuration, BaseAppOptions.SectionName, out _);
+        builder.Services
+            .AddNanoApp<WebOptions>(builder.Configuration, out var options)
+            .AddNanoConfigSection<ApiOptions>(builder.Configuration, BaseAppOptions.SectionName, out _);
 
-        applicationBuilder.Services
+        builder.Services
             .ConfigureNanoWebServices(options);
 
-        applicationBuilder.WebHost
+        builder.WebHost
             .ConfigureWebHost(options);
 
-        return new NanoWebApplication<TRoot>(applicationBuilder);
+        return new NanoWebApplication<TRoot>(builder);
     }
 
     /// <summary>

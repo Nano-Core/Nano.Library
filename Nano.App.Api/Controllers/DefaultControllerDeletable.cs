@@ -13,7 +13,7 @@ public class DefaultControllerDeletable<TEntity, TCriteria> : DefaultControllerD
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected DefaultControllerDeletable(ILogger logger, IRepository repository, IEventing eventing)
+    protected DefaultControllerDeletable(ILogger<DefaultControllerDeletable<TEntity, TCriteria>> logger, IRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
     }
@@ -26,7 +26,7 @@ public class DefaultControllerDeletable<TEntity, TIdentity, TCriteria> : BaseCon
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected DefaultControllerDeletable(ILogger logger, IRepository repository, IEventing? eventing = null)
+    protected DefaultControllerDeletable(ILogger<DefaultControllerDeletable<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

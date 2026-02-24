@@ -11,7 +11,6 @@
 * [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Registration](#registration)
-* [Dependencies](#dependencies)
 
 ## Summary
 Storage Provider implementation for Microsoft Azure File Shares.  
@@ -26,9 +25,10 @@ dotnet add package Nano.Storage.Azure;
 
 The Azure File Share storage provider must be registered as dependencies.  
 ```csharp
-    .ConfigureServices(x =>
+    .ConfigureServices(services =>
     {
-        x.AddNanoStorage<AzureFileshareProvider>();
+        services
+            .AddNanoStorage<AzureFileshareProvider>();
     })
 ```
 
@@ -46,5 +46,3 @@ template:
 
 ## Dependencies
 * https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Storage
-
-***

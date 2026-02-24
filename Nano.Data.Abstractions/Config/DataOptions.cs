@@ -4,7 +4,7 @@ using Nano.Common.Config;
 
 namespace Nano.Data.Abstractions.Config;
 
-// BUG: Move Repository settings into repository class
+// TODO: Move Repository settings into repository class
 
 /// <summary>
 /// Options for configuring the data access layer and DbContext behavior.

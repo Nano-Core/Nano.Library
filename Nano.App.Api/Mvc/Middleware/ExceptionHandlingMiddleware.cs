@@ -21,23 +21,15 @@ namespace Nano.App.Api.Mvc.Middleware;
 /// Middleware to handle exceptions globally, log them, and return structured <see cref="ProblemDetails"/> responses.
 /// Supports various custom exceptions, translation, and UX-specific error handling.
 /// </summary>
-public sealed class ExceptionHandlingMiddleware : IMiddleware
+/// <param name="logger">The <see cref="ILogger{T}"/> used for logging.</param>
+/// <param name="apiOptions">The <see cref="IOptionsMonitor{ApiOptions}"/> containing API configuration.</param>
+public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> logger, IOptionsMonitor<ApiOptions> apiOptions)
+    : IMiddleware
 {
     private const string MESSAGE_TEMPLATE = "{protocol} {method} {pathAndqueryString} {statusCode} in {elapsed:0.0000} ms. (Id={id})";
 
-    private ILogger Logger { get; }
-    private IOptionsMonitor<ApiOptions> ApiOptions { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ExceptionHandlingMiddleware"/> class.
-    /// </summary>
-    /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
-    /// <param name="apiOptions">The <see cref="IOptionsMonitor{ApiOptions}"/> containing API configuration.</param>
-    public ExceptionHandlingMiddleware(ILogger logger, IOptionsMonitor<ApiOptions> apiOptions)
-    {
-        this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        this.ApiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
-    }
+    private ILogger<ExceptionHandlingMiddleware> Logger { get; } = logger ?? throw new ArgumentNullException(nameof(logger));
+    private IOptionsMonitor<ApiOptions> ApiOptions { get; } = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
 
     /// <summary>
     /// Invokes the middleware to handle exceptions, log request information, and write structured problem details responses.

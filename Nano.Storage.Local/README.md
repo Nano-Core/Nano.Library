@@ -29,9 +29,10 @@ dotnet add package Nano.Storage.Local;
 
 The Azure File Share storage provider must be registered as dependencies.  
 ```csharp
-    .ConfigureServices(x =>
+    .ConfigureServices(services =>
     {
-        x.AddNanoStorage<LocalFileShareProvider>();
+        services
+            .AddNanoStorage<LocalFileShareProvider>();
     })
 ```
 

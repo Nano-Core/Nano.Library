@@ -10,14 +10,14 @@ namespace Nano.App.Startup;
 /// Provides a base implementation for a startup task in the Nano application.
 /// Derive from this class to implement custom startup logic that runs during application initialization.
 /// </summary>
-/// <param name="logger">The <see cref="ILogger"/> instance used for logging within the startup task.</param>
-public abstract class BaseStartupTask(ILogger logger)
+/// <param name="logger">The <see cref="ILogger{T}"/> instance used for logging within the startup task.</param>
+public abstract class BaseStartupTask(ILogger<BaseStartupTask> logger)
     : IStartupTask
 {
     /// <summary>
     /// Gets the <see cref="ILogger"/> instance used for logging within the startup task.
     /// </summary>
-    protected ILogger logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    protected ILogger<BaseStartupTask> logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     /// <summary>
     /// Called when the startup task begins execution.

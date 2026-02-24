@@ -14,13 +14,13 @@ namespace Nano.App.Startup;
 /// A hosted service that runs all registered <see cref="IStartupTask"/> instances during application startup
 /// and ensures proper cleanup when stopping. It also tracks task completion using <see cref="StartupTaskContext"/>.
 /// </summary>
-/// <param name="logger">The <see cref="ILogger"/> used for logging errors and status.</param>
+/// <param name="logger">The <see cref="ILogger{T}"/> used for logging errors and status.</param>
 /// <param name="scopeFactory">The <see cref="IServiceScopeFactory"/> used to create a service scope for resolving tasks.</param>
 /// <param name="startupTaskContext">The <see cref="StartupTaskContext"/> used to track running startup tasks.</param>
-public sealed class StartupHostedService(ILogger logger, IServiceScopeFactory scopeFactory, StartupTaskContext startupTaskContext)
+public sealed class StartupHostedService(ILogger<StartupHostedService> logger, IServiceScopeFactory scopeFactory, StartupTaskContext startupTaskContext)
     : IHostedService
 {
-    private readonly ILogger logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly ILogger<StartupHostedService> logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly IServiceScopeFactory scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
     private readonly StartupTaskContext startupTaskContext = startupTaskContext ?? throw new ArgumentNullException(nameof(startupTaskContext));
 

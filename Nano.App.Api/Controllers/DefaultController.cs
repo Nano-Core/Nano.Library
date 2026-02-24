@@ -14,7 +14,7 @@ public class DefaultController<TEntity, TCriteria> : DefaultController<TEntity, 
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected DefaultController(ILogger logger, IRepository repository, IEventing eventing)
+    protected DefaultController(ILogger<DefaultController<TEntity, TCriteria>> logger, IRepository repository, IEventing eventing)
         : base(logger, repository, eventing)
     {
     }
@@ -27,7 +27,7 @@ public class DefaultController<TEntity, TIdentity, TCriteria> : BaseControllerWr
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected DefaultController(ILogger logger, IRepository repository, IEventing? eventing = null)
+    protected DefaultController(ILogger<DefaultController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

@@ -14,12 +14,12 @@ namespace Nano.Data;
 internal sealed class DbMigrationTask<TIdentity> : IDbMigrationTask
     where TIdentity : IEquatable<TIdentity>
 {
-    private readonly ILogger logger;
+    private readonly ILogger<DbMigrationTask<TIdentity>> logger;
     private readonly IOptionsMonitor<DataOptions> options;
     private readonly BaseDbContext<TIdentity> dbContext;
     private readonly RoleManager<IdentityRole<TIdentity>>? roleManager;
 
-    internal DbMigrationTask(ILogger logger, IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, RoleManager<IdentityRole<TIdentity>>? roleManager = null)
+    internal DbMigrationTask(ILogger<DbMigrationTask<TIdentity>> logger, IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, RoleManager<IdentityRole<TIdentity>>? roleManager = null)
     {
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this.options = options ?? throw new ArgumentNullException(nameof(options));

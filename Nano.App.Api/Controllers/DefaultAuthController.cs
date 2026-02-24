@@ -12,7 +12,7 @@ namespace Nano.App.Api.Controllers;
 public class DefaultAuthController : BaseAuthController<Guid>
 {
     /// <inheritdoc />
-    public DefaultAuthController(ILogger logger, IIdentityAuthRepository? identityAuthRepository = null, IAuthTransientRepository? authTransientRepository = null, IAuthRootRepository? authRootRepository = null, IAuthExternalRepository? authExternalRepository = null)
+    public DefaultAuthController(ILogger<DefaultAuthController> logger, IIdentityAuthRepository? identityAuthRepository = null, IAuthTransientRepository? authTransientRepository = null, IAuthRootRepository? authRootRepository = null, IAuthExternalRepository? authExternalRepository = null)
         : base(logger, identityAuthRepository, authTransientRepository, authRootRepository, authExternalRepository)
     {
     }

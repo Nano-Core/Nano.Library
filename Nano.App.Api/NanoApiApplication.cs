@@ -31,18 +31,18 @@ public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplica
     /// <returns>A configured <see cref="IApplication"/> instance.</returns>
     public new static IApplication ConfigureApp(params string[] args)
     {
-        var applicationBuilder = BaseNanoApplication.CreateWebBuilder(args);
+        var builder = BaseNanoApplication.CreateWebBuilder(args);
 
-        applicationBuilder.Services
-            .AddNanoApp<ApiOptions>(applicationBuilder.Configuration, out var options);
+        builder.Services
+            .AddNanoApp<ApiOptions>(builder.Configuration, out var options);
 
-        applicationBuilder.Services
+        builder.Services
             .ConfigureNanoApiServices(options);
 
-        applicationBuilder.WebHost
+        builder.WebHost
             .ConfigureWebHost(options);
 
-        return new NanoApiApplication(applicationBuilder);
+        return new NanoApiApplication(builder);
     }
 
     /// <summary>

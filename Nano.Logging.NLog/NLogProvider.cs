@@ -31,30 +31,33 @@ public sealed class NLogProvider : ILoggingProvider
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
 
-        var configuration = new LoggingConfiguration();
+        var loggingConfiguration = new LoggingConfiguration();
         var target = new ConsoleTarget("console")
         {
-            Layout = "${longdate} [${level:uppercase=true}] ${logger} - ${message}${exception:format=toString}"
+            Layout = "${date:format=dd-MM-yyyy HH\\:mm\\:ss.ffffff} [${level:uppercase=true:truncate=3}] ${message}${onexception:${newline}${exception:format=toString}}"
         };
 
-        configuration
+        loggingConfiguration
             .AddTarget(target);
 
-        configuration.LoggingRules
+        loggingConfiguration.LoggingRules
             .Add(new LoggingRule("*", options.LogLevel.GetLogLevel(), target));
 
         foreach (var @override in options.LogLevelOverrides)
         {
-            configuration.LoggingRules
-                .Add(new LoggingRule($"{@override.Namespace}.*", @override.LogLevel.GetLogLevel(), target));
+            // BUG: NLog LogLevel Overrides doesn't work
+            // THe above "*" makes the override not work
+
+            loggingConfiguration.LoggingRules
+                .Add(new LoggingRule($"{@override.Namespace}*", @override.LogLevel.GetLogLevel(), target));
         }
 
         services
             .AddLogging(x =>
             {
-                x.AddNLog(configuration);
+                x.AddNLog(loggingConfiguration);
             });
 
-        LogManager.Configuration = configuration;
+        LogManager.Configuration = loggingConfiguration;
     }
 }

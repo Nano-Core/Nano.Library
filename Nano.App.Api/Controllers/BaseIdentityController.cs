@@ -52,7 +52,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <param name="repository">The <see cref="IRepository"/>.</param>
     /// <param name="identityRepository">The <see cref="IIdentityRepository{TIdentity}"/>.</param>
     /// <param name="authExternalRepository">The optional <see cref="IAuthExternalRepository"/>.</param>
-    protected BaseIdentityController(ILogger logger, TRepository repository, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository? authExternalRepository = null)
+    protected BaseIdentityController(ILogger<BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository? authExternalRepository = null)
         : base(logger, repository)
     {
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
@@ -67,7 +67,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <param name="eventing">The <see cref="IEventing"/>.</param>
     /// <param name="identityRepository">The <see cref="IIdentityRepository{TIdentity}"/>.</param>
     /// <param name="authExternalRepository">The optional <see cref="IAuthExternalRepository"/>.</param>
-    protected BaseIdentityController(ILogger logger, TRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository? authExternalRepository = null)
+    protected BaseIdentityController(ILogger<BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository? authExternalRepository = null)
         : base(logger, repository, eventing)
     {
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));

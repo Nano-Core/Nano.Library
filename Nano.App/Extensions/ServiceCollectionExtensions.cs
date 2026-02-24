@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Linq;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Nano.App.ApiClient.Extensions;
@@ -11,6 +10,8 @@ using Nano.App.Startup;
 using Nano.App.Startup.Abstractions;
 using Nano.Common.Extensions;
 using Nano.Common.Helpers;
+using System;
+using System.Linq;
 
 namespace Nano.App.Extensions;
 
@@ -40,7 +41,7 @@ internal static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services
-            .AddSingleton<ILogger, NullLogger>(_ => NullLogger.Instance);
+            .TryAddSingleton<ILoggerFactory>(NullLoggerFactory.Instance);
 
         return services;
     }

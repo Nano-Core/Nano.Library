@@ -26,9 +26,10 @@ dotnet add package Nano.Data.PostgreSQL;
 
 The PostgreSQL data provider must be registered as dependencies.  
 ```csharp
-    .ConfigureServices(x =>
+    .ConfigureServices(services =>
     {
-        x.AddNanoData<PostgreSqlProvider>();
+        services
+            .AddNanoData<PostgreSqlProvider>();
     })
 ```
 

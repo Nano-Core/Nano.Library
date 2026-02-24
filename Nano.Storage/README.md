@@ -5,7 +5,7 @@
 
 > _Pluggable, provider-agnostic file storage for Nano applications._
 
-> ⚠️ This NuGet is included in other Nano Packages, and is not meant to be included directly.
+> ⚠️ This NuGet is transitive and included in other Nano Packages, and is not meant to be included directly.
 
 ***
 

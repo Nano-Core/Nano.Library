@@ -26,9 +26,10 @@ dotnet add package Nano.Data.SqLite;
 
 The SqLite data provider must be registered as dependencies.  
 ```csharp
-    .ConfigureServices(x =>
+    .ConfigureServices(services =>
     {
-        x.AddNanoData<SqLiteProvider>();
+        services
+            .AddNanoData<SqLiteProvider>();
     })
 ```
 

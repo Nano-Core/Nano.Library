@@ -34,7 +34,7 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseControllerWritable(ILogger logger, TRepository repository, IEventing? eventing = null)
+    protected BaseControllerWritable(ILogger<BaseControllerWritable<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

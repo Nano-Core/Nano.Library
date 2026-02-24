@@ -34,7 +34,7 @@ public sealed class Log4NetProvider : ILoggingProvider
 
         var patternLayout = new PatternLayout
         {
-            ConversionPattern = "%utcdate{dd-MM-yyyy HH:mm:ss.ffffff} [%level] %logger - %message%newline"
+            ConversionPattern = "%utcdate{dd-MM-yyyy HH:mm:ss.ffffff} [%level{3}] %message%newline%exception"
         };
 
         patternLayout
@@ -55,14 +55,14 @@ public sealed class Log4NetProvider : ILoggingProvider
 
         hierarchy.Root.Level = options.LogLevel.GetLogLevel();
 
-        foreach (var over in options.LogLevelOverrides)
+        foreach (var @override in options.LogLevelOverrides)
         {
-            if (hierarchy.GetLogger(over.Namespace) is not Logger logger)
+            if (hierarchy.GetLogger(@override.Namespace) is not Logger logger)
             {
                 continue;
             }
 
-            logger.Level = over.LogLevel.GetLogLevel();
+            logger.Level = @override.LogLevel.GetLogLevel();
 
             logger
                 .AddAppender(consoleAppender);

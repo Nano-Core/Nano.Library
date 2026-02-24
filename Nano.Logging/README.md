@@ -3,9 +3,9 @@
 [![NuGet](https://img.shields.io/nuget/dt/Nano.Logging.svg)](https://www.nuget.org/packages/Nano.Logging/)
 [![NuGet](https://img.shields.io/nuget/v/Nano.Logging.svg)](https://www.nuget.org/packages/Nano.Logging/)
 
-> _Pluggable, provider-agnostic logging for Nano applications._
+> _Common logging provider implementations for Nano applications._
 
-> ⚠️ This NuGet is included in other Nano Packages, and is not meant to be included directly.
+> ⚠️ This NuGet is transitive and included in other Nano Packages, and is not meant to be included directly.
 
 ***
 
@@ -15,39 +15,45 @@
 * [Registration](#registration)
 * [Configuration](#configuration)
 * [Logging Providers](#logging-providers)
-* [Examples](#examples)
 
 ## Summary
-Nano registers the interfaces ```ILoggerFactory```, ```ILogger``` and ```ILogger<T>``` during application startup. 
+Enabling logging in a Nano application is done by adding a logging provider.  
+When a provider is registered, Nano automatically registers the following interfaces during application startup:
 
-All Providers are logging to console. In live environment orchestrations grap those STD OUT and STD ERR and stream them to your desired logs collector.
-Argue that to avoid uncessary connection from logging to cloud environment, like it would be required for Application Insights. 
-Instead it's better to add the application insight collector on the virtual machines in the cloud.
+* `ILoggerFactory`
+* `ILogger`
+* `ILogger<T>`
 
-If no logging is registered for a Nano application, the `NullLogger` will be registered, and ```ILogger``` and ```ILogger<T>``` will resolve, but all logging
-will be flushed into the void.
+All logging providers write to the console by default.  
+In `Staging` and `Production` environments, Kubernetes agents intercept `STDOUT` and `STDERR` and stream logs into centralized logging. It is recommended 
+to let the log collector handle log storage and routing, rather than configuring individual applications.  
+
+If no logging provider is registered, a `NullLogger` is used. This means `ILogger` and `ILogger<T>` will resolve correctly, 
+but all logs are discarded. Similarly, `ILoggerFactory` is available but produces no output.  
 
 ## Registration
-The logging provider must be registered as dependencies.
-Invoke the method ```AddNanoLogging<TProvider>()```, using the logging provider implementation as generic type parameters.
+To enable logging, the logging provider must be registered.    
+Use the `AddNanoLogging<TProvider>()` method, specifying your logging provider implementation as the generic type parameter.
 
 ```csharp
+...
 .ConfigureServices(services =>
 {
     services
         .AddNanoLogging<TProvider>();
 })
+...
 ```
 
 ## Configuration
 The ```Logging``` section in the configuration defines the logging provider and related settings used by the application.
 
-| Setting                         | Type   | Default      | Description                                                                                                       |
-| ------------------------------- | ------ | ------------ | ----------------------------------------------------------------------------------------------------------------- |
-|  `LogLevel`                     | enum   | Information  | The default minimum LogLevel used by the logging provider. Values: Debug, Information, Warning, Error, Fatal.     |
-|  `LogLevelOverrides`            | Array  | []           | Optional overrides for specific namespaces, allowing different log levels for different parts of the application. |
-|  `LogLevelOverrides.Namespace`  | string | null         | The LogLevel to use for the specified namespace.                                                                  |
-|  `LogLevelOverrides.LogLevel`   | enum   | Warning      | The namespace for which this log level override applies. Values: Debug, Information, Warning, Error, Fatal.       |
+| Setting                         | Type   | Default      | Description                                                                                                                     |
+| ------------------------------- | ------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+|  `LogLevel`                     | enum   | Information  | The default minimum LogLevel used by the logging provider. Values: Debug, Information, Warning, Error, Fatal.                   |
+|  `LogLevelOverrides`            | Array  | []           | Optional overrides for specific namespaces, allowing different log levels for different parts of the application.               |
+|  `LogLevelOverrides.Namespace`  | string | null         | The log level to apply for a specific namespace. You may prepend an asterisk (`*`) as a wildcard to match multiple namespaces.  |
+|  `LogLevelOverrides.LogLevel`   | enum   | Warning      | The namespace for which this log level override applies. Values: Debug, Information, Warning, Error, Fatal.                     |
 
 ```json
 "Logging": {
@@ -55,7 +61,7 @@ The ```Logging``` section in the configuration defines the logging provider and 
   "LogLevelOverrides": 
   [
     {
-      "Namespace": "System",
+      "Namespace": "Microsoft",
       "LogLevel": "Warning"
     }
   ]
@@ -63,26 +69,17 @@ The ```Logging``` section in the configuration defines the logging provider and 
 ```
 
 ## Logging Providers
-Nano provides several logging providers (and more added on request), so usually there is no need to implement a custom data provider for your application.  
+Nano provides several logging providers, so usually there is no need to implement a custom provider for your application.  
 
-Logging providers implements the interface ```ILoggingProvider```. It contains a single method ```Configure(...)```, that is responsible for handling any configuration and setup required for the logging provider.  
+Logging providers implements the interface ```ILoggingProvider```. It contains a single method ```Configure(...)```, that is responsible for handling 
+any configuration and setup required for the logging provider.  
 
-To implement a new storage provider:
+To create a new logging provider, implement the `ILoggingProvider` interface. Make sure to register all required services in the `Configure` method, 
+and then register your provider with the application using `.AddNanoLogging<TProvider>()`.  
 
-1. Create a class that implements `ILoggingProvider`.
-2. Ensure that all required services are registered in `Configure`.
-3. Register your provider in the application using `AddNanoLogging<MyProvider>()`.
+The following logging providers are currently supported in Nano.  
 
-The following logging providers are currently supported:
-* ```Log4NetProvider```
-* ```MicrosoftProvider```
-* ```NLogProvider```
-* ```SerilogProvider```
-
-***
-
-## Examples
-See examples of Nano applications with storage registered here:
-* [Nano.Templates.Web.Logging](https://github.com/Nano-Core/Nano.Templates/tree/master/Web.Logging)
-* [Nano.Templates.Console.Logging](https://github.com/Nano-Core/Nano.Templates/tree/master/Console.Logging)
-
+* [Log4Net](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.Log4Net)
+* [Microsoft](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.Microsoft)
+* [NLog](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.NLog)
+* [Serilog](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.Serilog)

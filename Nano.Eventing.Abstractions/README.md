@@ -3,9 +3,9 @@
 [![NuGet](https://img.shields.io/nuget/dt/Nano.Eventing.Abstractions.svg)](https://www.nuget.org/packages/Nano.Eventing.Abstractions/)
 [![NuGet](https://img.shields.io/nuget/v/Nano.Eventing.Abstractions.svg)](https://www.nuget.org/packages/Nano.Eventing.Abstractions/)
 
-> _Pluggable, provider-agnostic message queueing (pubSub) for Nano applications._
+> _Eventing abstractions for Nano applications._
 
-> ⚠️ This NuGet is included in other Nano Packages, and is not meant to be included directly.
+> ⚠️ This NuGet is transitive and included in other Nano Packages, and is not meant to be included directly.
 
 ***
 
@@ -14,11 +14,10 @@
 * [Summary](#summary)
 
 ## Summary
-Abstractions contains the interfaces used when implementing eventing providers.  
+This NuGet provides the core configuration, interfaces, and base abstractions used across all eventing providers.
 
-This should not be included indepentely and is already included in [Nano.Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing), 
-which you should use when implementing custom eventing providers.
+This package is not meant to be included directly.  
+It serves as a transitive dependency for concrete eventing providers and is also included in [Nano Application](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App), 
+allowing Nano applications to rely on eventing abstractions rather than specific implementations.
 
-Read more here: [Nano.Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing)
-
-***
+> 📖 Learn more about [Nano Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing)

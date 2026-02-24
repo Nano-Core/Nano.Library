@@ -38,7 +38,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     /// <param name="logger">The logger instance.</param>
     /// <param name="repository">The repository instance.</param>
     /// <param name="eventing">Optional eventing service.</param>
-    protected BaseControllerReadOnly(ILogger logger, TRepository repository, IEventing? eventing = null)
+    protected BaseControllerReadOnly(ILogger<BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

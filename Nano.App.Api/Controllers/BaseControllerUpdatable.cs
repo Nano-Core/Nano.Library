@@ -34,7 +34,7 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseControllerUpdatable(ILogger logger, TRepository repository, IEventing? eventing = null)
+    protected BaseControllerUpdatable(ILogger<BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

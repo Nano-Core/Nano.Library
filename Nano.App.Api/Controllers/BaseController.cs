@@ -21,7 +21,7 @@ public abstract class BaseController : Controller
     /// <summary>
     /// Logger instance for logging messages within the controller.
     /// </summary>
-    protected virtual ILogger Logger { get; }
+    protected virtual ILogger<BaseController> Logger { get; }
 
     /// <summary>
     /// Gets the current request identififer from header.
@@ -32,7 +32,7 @@ public abstract class BaseController : Controller
     /// Initializes a new instance of the <see cref="BaseController"/> class.
     /// </summary>
     /// <param name="logger">The <see cref="ILogger"/> used for logging within the controller.</param>
-    protected BaseController(ILogger logger)
+    protected BaseController(ILogger<BaseController> logger)
     {
         this.Logger = logger;
     }
@@ -61,7 +61,7 @@ public abstract class BaseController<TRepository> : BaseController
     /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
     /// <param name="repository">The repository implementing <see cref="IRepository"/>.</param>
     /// <param name="eventing">Optional <see cref="IEventing"/> for publishing events.</param>
-    protected BaseController(ILogger logger, TRepository repository, IEventing? eventing = null)
+    protected BaseController(ILogger<BaseController<TRepository>> logger, TRepository repository, IEventing? eventing = null)
         : base(logger)
     {
         this.Repository = repository ?? throw new ArgumentNullException(nameof(repository));

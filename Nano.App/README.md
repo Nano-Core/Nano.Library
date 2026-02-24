@@ -5,7 +5,7 @@
 
 > _Common features for all types of Nano application._
 
-> ⚠️ This NuGet is included in other Nano Packages, and is not meant to be included directly.
+> ⚠️ This NuGet is transitive and included in other Nano Packages, and is not meant to be included directly.
 
 ***
 

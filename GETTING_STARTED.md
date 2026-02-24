@@ -5,7 +5,25 @@
 ***
 
 ## Table of Contents
-* [Summary](#summary)
+* [Choosing Applcation Type](#choosing-applcation-type)
+* [Adding Providers](#adding-providers)
+  * [Logging](#logging)
+  * [Data](#data)
+  * [Eventing](#eventing)
+  * [Storage](#storage)
+
+## Choosing Applcation Type
+
+## Adding Providers
+
+## Logging
+
+## Data
+
+## Eventing
+
+## Storage
+
 
 
 

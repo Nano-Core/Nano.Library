@@ -13,7 +13,7 @@ public class DefaultControllerReadOnly<TEntity, TCriteria> : DefaultControllerRe
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected DefaultControllerReadOnly(ILogger logger, IRepository repository, IEventing? eventing = null)
+    protected DefaultControllerReadOnly(ILogger<DefaultControllerReadOnly<TEntity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }
@@ -26,7 +26,7 @@ public class DefaultControllerReadOnly<TEntity, TIdentity, TCriteria> : BaseCont
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected DefaultControllerReadOnly(ILogger logger, IRepository repository, IEventing? eventing = null)
+    protected DefaultControllerReadOnly(ILogger<DefaultControllerReadOnly<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

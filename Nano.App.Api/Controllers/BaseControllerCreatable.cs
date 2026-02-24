@@ -33,7 +33,7 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseControllerCreatable(ILogger logger, TRepository repository, IEventing? eventing = null)
+    protected BaseControllerCreatable(ILogger<BaseControllerCreatable<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

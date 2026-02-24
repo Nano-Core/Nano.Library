@@ -31,7 +31,7 @@ public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, T
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseControllerDeletable(ILogger logger, TRepository repository, IEventing? eventing = null)
+    protected BaseControllerDeletable(ILogger<BaseControllerDeletable<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

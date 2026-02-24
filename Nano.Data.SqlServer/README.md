@@ -3,7 +3,7 @@
 [![NuGet](https://img.shields.io/nuget/dt/Nano.Data.SqlServer.svg)](https://www.nuget.org/packages/Nano.Data.SqlServer/)
 [![NuGet](https://img.shields.io/nuget/v/Nano.Data.SqlServer.svg)](https://www.nuget.org/packages/Nano.Data.SqlServer/)
 
-> Sql Server data access provider for Nano applications._
+> Sql Server data provider for Nano applications._
 
 *** 
 
@@ -26,9 +26,10 @@ dotnet add package Nano.Data.SqlServer;
 
 The Sql Server data provider must be registered as dependencies.  
 ```csharp
-    .ConfigureServices(x =>
+    .ConfigureServices(services =>
     {
-        x.AddNanoData<SqlServerProvider>();
+        services
+            .AddNanoData<SqlServerProvider>();
     })
 ```
 

@@ -1,9 +1,10 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Nano.Logging.Abstractions;
 using Nano.Logging.Abstractions.Config;
 using Nano.Logging.Microsoft.Extensions;
+using System;
 
 namespace Nano.Logging.Microsoft;
 
@@ -31,12 +32,12 @@ public sealed class MicrosoftProvider : ILoggingProvider
         services
             .AddLogging(x =>
             {
-                x.AddSimpleConsole(y =>
+                x.AddConsole(y =>
                 {
-                    y.IncludeScopes = true;
-                    y.TimestampFormat = "dd-MM-yyyy HH:mm:ss.ffffff ";
+                    y.FormatterName = NanoConsoleFormatter.FORMATTER_NAME;
                 });
 
+                x.AddConsoleFormatter<NanoConsoleFormatter, ConsoleFormatterOptions>();
                 x.SetMinimumLevel(options.LogLevel.GetLogLevel());
 
                 foreach (var @override in options.LogLevelOverrides)

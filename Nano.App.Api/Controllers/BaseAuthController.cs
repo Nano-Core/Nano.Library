@@ -24,6 +24,7 @@ namespace Nano.App.Api.Controllers;
 /// Base controller for authentication-related operations.
 /// Handles login, logout, token refresh, and external authentication.
 /// </summary>
+/// <typeparam name="TIdentity"></typeparam>
 [Route(ControllerRoutes.AUTH_CONTROLLER_ROUTE)]
 [Route($"v{{v:apiVersion}}/{ControllerRoutes.AUTH_CONTROLLER_ROUTE}")]
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR + "," + BuiltInUserRoles.EDITOR + "," + BuiltInUserRoles.DELETER + "," + BuiltInUserRoles.READER)]
@@ -43,7 +44,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <param name="authTransientRepository">Repository for transient authentication.</param>
     /// <param name="authRootRepository">Repository for root authentication.</param>
     /// <param name="authExternalRepository">Repository for external authentication.</param>
-    protected BaseAuthController(ILogger logger, IIdentityAuthRepository<TIdentity>? identityAuthRepository = null, IAuthTransientRepository? authTransientRepository = null, IAuthRootRepository? authRootRepository = null, IAuthExternalRepository? authExternalRepository = null)
+    protected BaseAuthController(ILogger<BaseAuthController<TIdentity>> logger, IIdentityAuthRepository<TIdentity>? identityAuthRepository = null, IAuthTransientRepository? authTransientRepository = null, IAuthRootRepository? authRootRepository = null, IAuthExternalRepository? authExternalRepository = null)
         : base(logger)
     {
         this.identityAuthRepository = identityAuthRepository;

@@ -13,7 +13,7 @@ public class DefaultControllerCreatable<TEntity, TCriteria> : DefaultControllerC
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected DefaultControllerCreatable(ILogger logger, IRepository repository, IEventing? eventing = null)
+    protected DefaultControllerCreatable(ILogger<DefaultControllerCreatable<TEntity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }
@@ -26,7 +26,7 @@ public class DefaultControllerCreatable<TEntity, TIdentity, TCriteria> : BaseCon
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected DefaultControllerCreatable(ILogger logger, IRepository repository, IEventing? eventing = null)
+    protected DefaultControllerCreatable(ILogger<DefaultControllerCreatable<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

@@ -26,9 +26,10 @@ dotnet add package Nano.Eventing.RabbitMq;
 
 The RabbitMQ eventing provider must be registered as dependencies.  
 ```csharp
-    .ConfigureServices(x =>
+    .ConfigureServices(services =>
     {
-        x.AddNanoEventing<RabbitMqProvider>();
+        services
+            .AddNanoEventing<RabbitMqProvider>();
     })
 ```
 

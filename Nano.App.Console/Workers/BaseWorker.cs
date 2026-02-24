@@ -13,13 +13,13 @@ namespace Nano.App.Console.Workers;
 /// <see cref="OnStopAsync(CancellationToken)"/> can optionally be overridden to define cleanup or shutdown logic.
 /// </para>
 /// </summary>
-public abstract class BaseWorker(ILogger logger) 
+public abstract class BaseWorker(ILogger<BaseWorker> logger)
     : IWorker
 {
     /// <summary>
     /// Gets the <see cref="ILogger"/> instance used for logging within the worker.
     /// </summary>
-    protected ILogger logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    protected ILogger<BaseWorker> logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     /// <summary>
     /// Performs the asynchronous startup logic for the worker. Derived classes must implement this method.

@@ -26,9 +26,10 @@ dotnet add package Nano.Data.MySql;
 
 The MySQL data provider must be registered as dependencies.  
 ```csharp
-    .ConfigureServices(x =>
+    .ConfigureServices(services =>
     {
-        x.AddNanoData<MySqlProvider>();
+        services
+            .AddNanoData<MySqlProvider>();
     })
 ```
 
