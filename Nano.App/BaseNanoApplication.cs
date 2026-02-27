@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nano.App.Abstractions;
 using Nano.Common.Config;
@@ -12,10 +11,49 @@ using Microsoft.Extensions.Logging;
 namespace Nano.App;
 
 /// <summary>
-/// Base class for Nano applications, providing shared builder initialization for both web and console application types.
+/// Represents a base abstract application with a host and builder.
+/// Provides common functionality for running the application.
 /// </summary>
-public abstract class BaseNanoApplication
+/// <typeparam name="TApp">The type of application, a type of <see cref="IApplication"/></typeparam>
+/// <typeparam name="THost">The type of host (e.g., <see cref="IHost"/> or <see cref="WebApplication"/>).</typeparam>
+/// <typeparam name="THostBuilder">The type of host builder (e.g., <see cref="IHostApplicationBuilder"/> or <see cref="WebApplicationBuilder"/>).</typeparam>
+public abstract class BaseNanoApplication<TApp, THost, THostBuilder> : IApplication
+    where TApp : IApplication<TApp>
+    where THost : class, IHost
+    where THostBuilder : IHostApplicationBuilder
 {
+    /// <summary>
+    /// The application instance built from the builder.
+    /// </summary>
+    protected THost? application;
+
+    /// <summary>
+    /// The builder used to configure the application.
+    /// </summary>
+    protected THostBuilder applicationBuilder;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BaseNanoApplication{TApp,THost,THostBuilder}"/> class.
+    /// </summary>
+    /// <param name="builder">The application builder used to configure services and middleware.</param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="builder"/> is null.</exception>
+    protected BaseNanoApplication(THostBuilder builder)
+    {
+        this.applicationBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
+    }
+
+    /// <inheritdoc />
+    public virtual void Run()
+    {
+        if (this.application == null)
+        {
+            throw new InvalidOperationException("No Application has been configured and Build.");
+        }
+
+        this.application
+            .Run();
+    }
+
     /// <summary>
     /// Creates and configures a <see cref="WebApplicationBuilder"/> with Nano defaults for web-based applications.
     /// </summary>
@@ -82,74 +120,5 @@ public abstract class BaseNanoApplication
             .ClearProviders();
 
         return builder;
-    }
-}
-
-/// <summary>
-/// Represents a base abstract application with a host and builder.
-/// Provides common functionality for running the application.
-/// </summary>
-/// <typeparam name="THost">The type of host (e.g., <see cref="IHost"/> or <see cref="WebApplication"/>).</typeparam>
-/// <typeparam name="THostBuilder">The type of host builder (e.g., <see cref="IHostApplicationBuilder"/> or <see cref="WebApplicationBuilder"/>).</typeparam>
-public abstract class BaseNanoApplication<THost, THostBuilder> : BaseNanoApplication, IApplication
-    where THost : class, IHost
-    where THostBuilder : IHostApplicationBuilder
-{
-    /// <summary>
-    /// The application instance built from the builder.
-    /// </summary>
-    protected THost? application;
-
-    /// <summary>
-    /// The builder used to configure the application.
-    /// </summary>
-    protected THostBuilder applicationBuilder;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BaseNanoApplication{THost,THostBuilder}"/> class.
-    /// </summary>
-    /// <param name="builder">The application builder used to configure services and middleware.</param>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="builder"/> is null.</exception>
-    protected BaseNanoApplication(THostBuilder builder)
-    {
-        this.applicationBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
-    }
-
-    /// <summary>
-    /// Creates and configures a new application instance.
-    /// Acts as the entry point for application setup.
-    /// </summary>
-    /// <remarks>This needs to be overriden in a concrete application class.</remarks>
-    /// <param name="args">Optional command-line arguments.</param>
-    /// <returns>A configured <see cref="IApplication"/> instance.</returns>
-    /// <exception cref="NotSupportedException">This will always throw <see cref="NotSupportedException"/>.</exception>
-    public static IApplication ConfigureApp(params string[] args)
-    {
-        throw new NotSupportedException();
-    }
-
-    /// <inheritdoc />
-    public virtual IApplication ConfigureServices(Action<IServiceCollection> configure)
-    {
-        ArgumentNullException.ThrowIfNull(configure);
-
-        configure(this.applicationBuilder.Services);
-
-        return this;
-    }
-
-    /// <inheritdoc />
-    public abstract IApplication Build(Action<IApplicationBuilder>? applicationBuilderAction = null);
-
-    /// <inheritdoc />
-    public virtual void Run()
-    {
-        if (this.application == null)
-        {
-            throw new InvalidOperationException("No Application has been configured and Build.");
-        }
-
-        this.application
-            .Run();
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nano.App.Abstractions;
 using Nano.App.Console.Config;
@@ -13,7 +13,7 @@ namespace Nano.App.Console;
 /// Provides an entry point for configuring services and running console-based Nano applications.
 /// </summary>
 /// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console">Nano Console Application</see></remarks>
-public class NanoConsoleApplication : BaseNanoApplication<IHost, HostApplicationBuilder>
+public class NanoConsoleApplication : BaseNanoApplication<IConsoleApplication, IHost, HostApplicationBuilder>, IConsoleApplication
 {
     /// <summary>
     /// Initializes an instance of <see cref="NanoConsoleApplication"/>.
@@ -29,9 +29,9 @@ public class NanoConsoleApplication : BaseNanoApplication<IHost, HostApplication
     /// </summary>
     /// <param name="args">Command-line arguments passed to the application.</param>
     /// <returns>A configured <see cref="IApplication"/> instance.</returns>
-    public new static IApplication ConfigureApp(params string[] args)
+    public static IConsoleApplication ConfigureApp(params string[] args)
     {
-        var builder = BaseNanoApplication.CreateConsoleBuilder(args);
+        var builder = CreateConsoleBuilder(args);
 
         builder.Services
             .AddNanoApp<ConsoleOptions>(builder.Configuration, out var options);
@@ -42,15 +42,18 @@ public class NanoConsoleApplication : BaseNanoApplication<IHost, HostApplication
         return new NanoConsoleApplication(builder);
     }
 
-    /// <summary>
-    /// Builds the application and prepares it for execution.
-    /// </summary>
-    /// <param name="applicationBuilderAction">The <see cref="IApplicationBuilder"/>.</param>
-    /// <remarks>
-    ///     The <paramref name="applicationBuilderAction"/> has NO effect in <see cref="NanoConsoleApplication"/>.
-    /// </remarks>
-    /// <returns>The current <see cref="IApplication"/> instance.</returns>
-    public override IApplication Build(Action<IApplicationBuilder>? applicationBuilderAction = null) // BUG: Try and get rid of the parameter for Console Applications
+    /// <inheritdoc />
+    public virtual IConsoleApplication ConfigureServices(Action<IServiceCollection> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(this.applicationBuilder.Services);
+
+        return this;
+    }
+
+    /// <inheritdoc />
+    public virtual IConsoleApplication Build()
     {
         this.application = this.applicationBuilder
             .Build();

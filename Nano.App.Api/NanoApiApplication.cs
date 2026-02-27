@@ -13,7 +13,7 @@ namespace Nano.App.Api;
 /// Represents a Nano API application.
 /// </summary>
 /// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api">Nano Api Application</see></remarks>
-public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplicationBuilder>
+public class NanoApiApplication : BaseNanoApplication<IApiApplication, WebApplication, WebApplicationBuilder>, IApiApplication
 {
     /// <summary>
     /// Initializes an instance of <see cref="NanoApiApplication"/>.
@@ -29,9 +29,9 @@ public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplica
     /// </summary>
     /// <param name="args">Command-line arguments passed to the application.</param>
     /// <returns>A configured <see cref="IApplication"/> instance.</returns>
-    public new static IApplication ConfigureApp(params string[] args)
+    public static IApiApplication ConfigureApp(params string[] args)
     {
-        var builder = BaseNanoApplication.CreateWebBuilder(args);
+        var builder = CreateWebBuilder(args);
 
         builder.Services
             .AddNanoApp<ApiOptions>(builder.Configuration, out var options);
@@ -45,12 +45,18 @@ public class NanoApiApplication : BaseNanoApplication<WebApplication, WebApplica
         return new NanoApiApplication(builder);
     }
 
-    /// <summary>
-    /// Builds the API application, registers middleware, routing, and health checks.
-    /// </summary>
-    /// <param name="applicationBuilderAction">The <see cref="IApplicationBuilder"/>.</param>
-    /// <returns>The current <see cref="IApplication"/> instance.</returns>
-    public override IApplication Build(Action<IApplicationBuilder>? applicationBuilderAction = null)
+    /// <inheritdoc />
+    public virtual IApiApplication ConfigureServices(Action<IServiceCollection> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(this.applicationBuilder.Services);
+
+        return this;
+    }
+
+    /// <inheritdoc />
+    public virtual IApiApplication Build(Action<IApplicationBuilder>? applicationBuilderAction = null)
     {
         this.application = this.applicationBuilder
             .Build();

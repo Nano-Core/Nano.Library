@@ -18,10 +18,10 @@ namespace Nano.App.Web;
 /// Represents a Nano Web application.
 /// </summary>
 /// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web">Nano Web Application</see></remarks>
-public class NanoWebApplication<TRoot> : NanoApiApplication
+public class NanoWebApplication : NanoApiApplication, IWebApplication
 {
     /// <summary>
-    /// Initializes an instance of <see cref="NanoWebApplication{TRoot}"/>.
+    /// Initializes an instance of <see cref="NanoWebApplication"/>.
     /// </summary>
     /// <param name="builder">The <see cref="WebApplicationBuilder"/>.</param>
     protected NanoWebApplication(WebApplicationBuilder builder)
@@ -34,9 +34,9 @@ public class NanoWebApplication<TRoot> : NanoApiApplication
     /// </summary>
     /// <param name="args">Command-line arguments passed to the application.</param>
     /// <returns>A configured <see cref="IApplication"/> instance.</returns>
-    public new static IApplication ConfigureApp(params string[] args)
+    public new static IWebApplication ConfigureApp(params string[] args)
     {
-        var builder = BaseNanoApplication.CreateWebBuilder(args);
+        var builder = CreateWebBuilder(args);
 
         builder.Services
             .AddNanoApp<WebOptions>(builder.Configuration, out var options)
@@ -48,15 +48,21 @@ public class NanoWebApplication<TRoot> : NanoApiApplication
         builder.WebHost
             .ConfigureWebHost(options);
 
-        return new NanoWebApplication<TRoot>(builder);
+        return new NanoWebApplication(builder);
     }
 
-    /// <summary>
-    /// Builds the Web application, registers middleware, routing, and health checks.
-    /// </summary>
-    /// <param name="applicationBuilderAction">The <see cref="IApplicationBuilder"/>.</param>
-    /// <returns>The current <see cref="IApplication"/> instance.</returns>
-    public override IApplication Build(Action<IApplicationBuilder>? applicationBuilderAction = null)
+    /// <inheritdoc />
+    public new IWebApplication ConfigureServices(Action<IServiceCollection> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(this.applicationBuilder.Services);
+
+        return this;
+    }
+
+    /// <inheritdoc />
+    public virtual IWebApplication Build<TRoot>(Action<IApplicationBuilder>? applicationBuilderAction = null)
     {
         this.application = this.applicationBuilder
             .Build();
