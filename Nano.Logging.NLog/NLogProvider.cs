@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Logging.Abstractions;
 using Nano.Logging.Abstractions.Config;
@@ -7,6 +6,7 @@ using NLog;
 using NLog.Config;
 using NLog.Extensions.Logging;
 using NLog.Targets;
+using System;
 
 namespace Nano.Logging.NLog;
 
@@ -31,34 +31,41 @@ public sealed class NLogProvider : ILoggingProvider
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
 
-        var loggingConfiguration = new LoggingConfiguration();
+        var configuration = new LoggingConfiguration();
         var target = new ConsoleTarget("console")
         {
             Layout = "${date:format=dd-MM-yyyy HH\\:mm\\:ss.ffffff} [${level:uppercase=true:truncate=3}] ${message}${onexception:${newline}${exception:format=toString}}"
         };
 
-        loggingConfiguration
+        configuration
             .AddTarget(target);
-
-        loggingConfiguration.LoggingRules
-            .Add(new LoggingRule("*", options.LogLevel.GetLogLevel(), target));
 
         foreach (var @override in options.LogLevelOverrides)
         {
-            // BUG: NLog LogLevel Overrides doesn't work
-            // THe above "*" makes the override not work
-            // https://github.com/NLog/NLog
+            var overrideNamePattern = $"{@override.Namespace}*";
+            var overrideLogLevel = @override.LogLevel.GetLogLevel();
+            var overrideLoggingRule = new LoggingRule(overrideNamePattern, overrideLogLevel, target)
+            {
+                FinalMinLevel = overrideLogLevel
+            };
 
-            loggingConfiguration.LoggingRules
-                .Add(new LoggingRule($"{@override.Namespace}*", @override.LogLevel.GetLogLevel(), target));
+            configuration.LoggingRules
+                .Add(overrideLoggingRule);
         }
+
+        const string NAME_PATTERN = "*";
+        var logLevel = options.LogLevel.GetLogLevel();
+        var loggingRule = new LoggingRule(NAME_PATTERN, logLevel, target);
+
+        configuration.LoggingRules
+            .Add(loggingRule);
 
         services
             .AddLogging(x =>
             {
-                x.AddNLog(loggingConfiguration);
+                x.AddNLog(configuration);
             });
 
-        LogManager.Configuration = loggingConfiguration;
+        LogManager.Configuration = configuration;
     }
 }
