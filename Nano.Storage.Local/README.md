@@ -54,10 +54,25 @@ services:
 
 As the container in Kubernetes is read-only, the following must also be added to your Kubernetes `deployment.yaml` to ensure the file share is writable.  
 
+```json
+spec:
+  template:
+    spec:
+      containers:
+        volumeMounts:
+        - name: %SERVICE_NAME%-volume
+          mountPath: /mnt/%STORAGE_SHARE_NAME%
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: %STORAGE_SHARE_NAME%
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}
+```
+
+Last, the `build-and-deploy.yaml` needs additional environmental variables related to local storage provder.  
+
 ```yaml
-template
-  spec
-    volumes:
-    - name: {share-name}
-      emptyDir: {}
+  STORAGE_SHARE_NAME: {share-name}
 ```

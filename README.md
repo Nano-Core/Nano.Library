@@ -7,6 +7,15 @@
 
 ***
 
+
+Where to put:
+### Commands
+* ```kubectl patch cronjob {{cronjob-name}} -p '{"spec": {"suspend": true}}'```  
+* ```kubectl create job --from=cronjob/{{cronjob-name}} {{job-name}}```
+
+
+
+
 ## Table of Contents
 * [Summary](#summary)
 * [NuGet Packages](#nuget-packages)

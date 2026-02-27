@@ -24,21 +24,21 @@ public sealed class StartupTaskContext
                 return Task.CompletedTask;
             }
 
-            return completion.Task;
+            return this.completion.Task;
         }
     }
 
     /// <summary>
     /// Gets a value indicating whether all tracked startup tasks have completed.
     /// </summary>
-    public bool IsDone => Volatile.Read(ref this.count) == 0;
+    public bool IsDone => Volatile.Read(ref this.count) == 0 || !this.started;
 
     /// <summary>
     /// Call when a startup task begins.
     /// </summary>
     public void Increment()
     {
-        started = true;
+        this.started = true;
 
         Interlocked.Increment(ref this.count);
     }
@@ -50,7 +50,8 @@ public sealed class StartupTaskContext
     {
         if (Interlocked.Decrement(ref this.count) == 0)
         {
-            this.completion.TrySetResult(null);
+            this.completion
+                .TrySetResult(null);
         }
     }
 }

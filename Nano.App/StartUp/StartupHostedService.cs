@@ -77,11 +77,14 @@ public sealed class StartupHostedService(ILogger<StartupHostedService> logger, I
             .GetRequiredService<IEnumerable<IStartupTask>>();
 
         var stopTasks = workers
-            .Select(x =>
+            .Select(async x =>
             {
                 try
                 {
-                    return x.OnStopAsync(cancellationToken);
+                    await x.OnStopAsync(cancellationToken);
+
+                    this.startupTaskContext
+                        .Decrement();
                 }
                 catch (Exception ex)
                 {
@@ -94,8 +97,5 @@ public sealed class StartupHostedService(ILogger<StartupHostedService> logger, I
 
         await Task.WhenAll(stopTasks)
             .ConfigureAwait(false);
-
-        this.startupTaskContext
-            .Decrement();
     }
 }

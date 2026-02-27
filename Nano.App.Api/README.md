@@ -1287,7 +1287,7 @@ metadata:
 Try it out yourself using the **[Api.Documentation](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Documentation)** example.  
 
 ## Health Checks
-When health checks are enabled in the configuration, a `/health` endpoint is exposed, along with a web-based health monitor interface at `/healthz-ui`.  
+When health checks are enabled in the configuration, a `/healthz` endpoint is exposed, along with a web-based health monitor interface at `/healthz-ui`.  
 
 A startup health check is performed to await the completion of all pending startup tasks before the application is reported as ready. 
 As additional Nano providers and services are added to the application, they will automatically appear in the health checks and report their status, 

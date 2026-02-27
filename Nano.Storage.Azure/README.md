@@ -44,7 +44,7 @@ Register the `AzureFileshareProvider` provider during application startup in the
 ...
 ```
 
-In addition to registering storage, map a local folder to a container path in your Docker setup to give the container access to the storage directory:
+In addition to registering storage, map a local folder to a container path in in your `docker-compose` so the container can access the storage directory.
 
 ```yaml
 services:
@@ -53,36 +53,63 @@ services:
       - {share-name}:/mnt/{share-name}
 ```
 
-Next, we need to map the `storage-account-secret` that is created alongside the 
-[Nano Azure Storage Account](https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Storage) in the `deployment.yaml`. 
+Next, add the following to your Kubernetes `deployment.yaml` for the Nano application.
+You also need to map the `storage-account-secret` that is created alongside the [Nano Azure Storage Account](https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Storage) 
+in the `deployment.yaml` for fileshare authentication.
 
-```yaml
+```json
 spec:
   template:
     spec:
       containers:
         env:
-        - name: Storage__Account__Id
+        - name: Storage__AccountName
           valueFrom:
             secretKeyRef:
               name: storage-account-secret
               key: azurestorageaccountname
-        - name: Storage__Account__Secret
+        - name: Storage__AccountKey
           valueFrom:
             secretKeyRef:
               name: storage-account-secret
               key: azurestorageaccountkey
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: %SERVICE_NAME%-volume
+          mountPath: /mnt/%STORAGE_SHARE_NAME%
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: %SERVICE_NAME%-volume
+        azureFile:
+          secretName: storage-account-secret
+          shareName: %STORAGE_SHARE_NAME%
+          readOnly: false
 ```
 
-Finally, add the following to your Kubernetes `deployment.yaml` for the Nano application.
+Last, the `build-and-deploy.yaml` needs a few additional environmental variables related to Azure storage provder.  
 
 ```yaml
-template:
-  spec:
-    volumes:
-    - name: {service-name}-volume
-      azureFile:
-        secretName: storage-account-secret
-        shareName: {share-name}
-        readOnly: false
+STORAGE_SHARE_NAME: {share-name}
+STORAGE_ACCOUNT_NAME: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_ACCOUNT_NAME  || secrets.STAGING_STORAGE_ACCOUNT_NAME }}
+STORAGE_ACCOUNT_KEY: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_ACCOUNT_KEY  || secrets.STAGING_STORAGE_ACCOUNT_KEY }}
+STORAGE_SIZE: 1000
+```
+
+Also, the Azure fileshare needs to be created during deployment if it does not already exist. Add the following step to the `build-and-deploy.yaml`.  
+
+```yaml
+- name: Create Fileshare
+  shell: pwsh
+  run: |
+    $env:EXISTING_FILE_SHARE = sudo az storage share list --account-name $env:STORAGE_ACCOUNT_NAME --account-key $env:STORAGE_ACCOUNT_KEY --query "[?contains(name, '$env:STORAGE_SHARE_NAME')].[name]" -o tsv;
+    if ([string]::IsNullOrEmpty($env:EXISTING_FILE_SHARE))
+    { 
+        sudo az storage share create -n $env:STORAGE_SHARE_NAME --account-name $env:STORAGE_ACCOUNT_NAME --account-key $env:STORAGE_ACCOUNT_KEY --quota $env:STORAGE_SIZE;
+        if ($LastExitCode -ne 0) 
+        { 
+            throw "error";
+        };  
+    }
 ```

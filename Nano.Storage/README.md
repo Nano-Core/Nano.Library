@@ -39,7 +39,7 @@ Use the `AddNanoStorage<TProvider>()` extension method, where `TProvider` is you
 ...
 ```
 
-In addition to registering storage, map a local folder to a container path in your Docker setup so the container can access the storage directory.
+In addition to registering storage, map a local folder to a container path in in your `docker-compose.yml` so the container can access the storage directory.
 
 ```yaml
 services:
@@ -48,19 +48,27 @@ services:
       - {share-name}:/mnt/{share-name}
 ```
 
-When deploying Nano applications to Kubernetes, ensure your `deployment.yaml` maps the shared storage directory. The exact configuration depends on 
-the storage provider. Check out supported **[Storage Providers](#storage-providers)**.  
+When deploying Nano applications to Kubernetes, ensure your `deployment.yaml` or `cronjob.yaml`, depending on the application type, maps the shared storage directory. The exact 
+configuration depends on the storage provider. See supported **[Storage Providers](#storage-providers)** for details.  
 
 > ⚠️ Optionally, map a writable `tmp` directory for temporary files.  
 This allows the main container to remain immutable while supporting temporary data.  
 
 ```yaml
-template
-  spec
-    volumes:
-    - name: tmp
-      emptyDir: {}
+spec:
+  template:
+    spec:
+      containers:
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}
 ```
+
+Last, the `build-and-deploy` needs to have additional environmental variables defined used by the storage provider. Again exactly what variables depends on the specific 
+storage provider. See supported **[Storage Providers](#storage-providers)** for details.  
 
 ## Configuration
 The ```Storage``` section in the configuration defines the storage provider and related settings used by the application.
@@ -76,14 +84,19 @@ The ```Storage``` section in the configuration defines the storage provider and 
 
 ```json
 "Storage": {
-  "AccountName": null,
-  "AccountKey": null,
   "ShareName": null,
+  "Account": {
+    "Id": null,
+    "Secret": null
+  },
   "HealthCheck": {
     "UnhealthyStatus": "Unhealthy"
   }
 }
 ```
+
+> ⚠️ In order for storage healthcheck to take effect, healthchecks must be enabled for the application. 
+Read more about [Nano Health Check](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api#health-checks)
 
 ## Storage Providers
 Nano provides several storage providers, so usually there is no need to implement a custom provider for your application.  

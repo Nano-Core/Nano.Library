@@ -14,8 +14,8 @@
 * [Summary](#summary)
 * [Registration](#registration)
 * [Configuration](#configuration)
-* [Eventing Providers](#eventing-providers)
 * [Publish and Subscribe](#publish-and-subscribe)
+* [Eventing Providers](#eventing-providers)
 * [Examples](#examples)
 
 ## Summary
@@ -23,11 +23,6 @@ Nano supports different ways of publishing and subscribing to events.
 Adding eventing annotations to model implementations, provides a way of synchronizing entities between applications. Additionally, custom event models can be implemented and published, and consumed through subscriptions.  
 The ```IEventingProvider``` is registered during startup, and the implementing type defines the eventing provider used in the application. Furthermore, the interface ```IEventing``` is registered as well, and defines the entry to publishing and subscribing to events.  
 ```Nano.Eventing.Abstractions.IEventing``` and ```Nano.Eventing.Abstractions.IEventingHandler<>```  
-
-try out
-* [Nano.Templates.Web.Eventing](https://github.com/Nano-Core/Nano.Templates/tree/master/Web.Eventing)
-* [Nano.Templates.Console.Eventing](https://github.com/Nano-Core/Nano.Templates/tree/master/Console.Eventing)
-
 
 ## Registration
 The eventing provider must be registered as dependencies.
