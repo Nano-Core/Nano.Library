@@ -25,7 +25,7 @@ using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Identity;
 
-// TODO: API-KEY: IdentityApiKey Roles and Claims (don't inherit from IdentityUser)
+// BUG: API-KEY: IdentityApiKey Roles and Claims (don't inherit from IdentityUser)
 
 /// <inheritdoc />
 public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, SignInManager<IdentityUserEx<TIdentity>> signInManager, UserManager<IdentityUserEx<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)

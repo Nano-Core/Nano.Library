@@ -22,8 +22,4 @@
 		<ProjectReference Include="..\Nano.App\Nano.App.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<None Include="appsettings.default.json" Pack="false" Visible="true" PackagePath="" />
-	</ItemGroup>
-
 </Project>

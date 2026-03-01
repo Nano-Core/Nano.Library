@@ -142,7 +142,7 @@ await this.Eventing
 ⚠️ IEventing also provides a `SubscribeAsync(...)` method, but manual invocation is not required. All `IEventingHandler<T>` implementations are automatically 
 registered during application startup.
 
-To consume events in another application, implement an event handler for the specific event type.  
+To consume events in another application, implement an eventing handler for the specific event type by deriving an implementation from `BaseEventHandler<TEvent>`.  
 
 ```csharp
 public class MyEventingHandler : BaseEventHandler<MyEvent>
@@ -155,6 +155,8 @@ public class MyEventingHandler : BaseEventHandler<MyEvent>
     }
 }
 ```
+
+> ⚠️ Be aware that all `BaseEventHandler<TEvent>` implementations must be non-generic, or they will be ignored during startup registration.  
 
 While it is possible to implement `IEventingHandler<MyEvent>` directly, it is generally not recommended. Doing so requires manually implementing two properties that 
 are handled automatically in the base class. By deriving from `BaseEventHandler<TEvent>` instead, these properties are managed for you and can optionally 

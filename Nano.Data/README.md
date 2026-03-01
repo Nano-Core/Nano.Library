@@ -69,27 +69,27 @@ By default, the ```BaseDbContext``` dependency is registered to resolve to ```De
 ## Configuration
 The ```Data``` section in the configuration defines the data provider and related settings used by the application.
 
-| Setting                         | Type   | Default     | Description                                                                           |
-| ------------------------------- | ------ | ----------- | ------------------------------------------------------------------------------------- |
-|  `BatchSize`                    | int    | 25          | The maximum batch size for queries.                                                   |
-|  `BulkBatchSize`                | int    | 500         | The maximum batch size for bulk operations.                                           |
-|  `BulkBatchDelay`               | int    | 1000        | The delay (in milliseconds) between bulk batches.                                     |
-|  `QueryRetryCount`              | int    | 0           | The number of times a query will retry on failure.                                    |
-|  `QueryIncludeDepth`            | int    | 4           | The maximum depth for query includes.                                                 |
-|  `UseAutoSave`                  | bool   | true        | A value indicating whether automatic saving of changes in repositories is enabled.    |
-|  `UseLazyLoading`               | bool   | false       | A value indicating whether lazy loading is enabled.                                   |
-|  `UseCreateDatabase`            | bool   | false       | A value indicating whether soft deletion is enabled.                                  |
-|  `UseMigrateDatabase`           | bool   | false       | A value indicating whether the database should be created automatically.              |
-|  `UseSoftDeletetion`            | bool   | false       | A value indicating whether database migrations should be applied automatically.       |
-|  `UseSensitiveDataLogging`      | bool   | false       | A value indicating whether sensitive data logging is enabled.                         |
-|  `UseAudit`                     | bool   | false       | A value indicating whether auditing is enabled.                                       |
-|  `QuerySplittingBehavior`       | enum   | SingleQuery | The default query splitting behavior for EF Core queries.                             |
-|  `DefaultCollation`             | string | null        | The default collation for the database.                                               |
-|  `ConnectionString`             | string | null        | The connection string for the database.                                               |
-|  `Cache`                        | object | null        | The cache configuration options. See [Cache](#cache)                                  |
-|  `Identity`                     | object | null        | The identity configuration options. See [Identity](#identity)                            |
-|  `ConnectionPool`               | object | null        | The connection pool configuration options. See [ConnectionPool](#connection-pool)              |
-|  `HealthCheck`                  | object | null        | The options for configuring health checks. See [HealthCheck](#health-check)  _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.                 |
+| Setting                         | Type   | Default     | Description                                                                                                                                       |
+| ------------------------------- | ------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+|  `BatchSize`                    | int    | 25          | The maximum batch size for queries.                                                                                                               |
+|  `BulkBatchSize`                | int    | 500         | The maximum batch size for bulk operations.                                                                                                       |
+|  `BulkBatchDelay`               | int    | 1000        | The delay (in milliseconds) between bulk batches.                                                                                                 |
+|  `QueryRetryCount`              | int    | 0           | The number of times a query will retry on failure.                                                                                                |
+|  `QueryIncludeDepth`            | int    | 4           | The maximum depth for query includes.                                                                                                             |
+|  `UseAutoSave`                  | bool   | true        | A value indicating whether automatic saving of changes in repositories is enabled.                                                                |
+|  `UseLazyLoading`               | bool   | false       | A value indicating whether lazy loading is enabled.                                                                                               |
+|  `UseCreateDatabase`            | bool   | false       | A value indicating whether soft deletion is enabled.                                                                                              |
+|  `UseMigrateDatabase`           | bool   | false       | A value indicating whether the database should be created automatically.                                                                          |
+|  `UseSoftDeletetion`            | bool   | false       | A value indicating whether database migrations should be applied automatically.                                                                   |
+|  `UseSensitiveDataLogging`      | bool   | false       | A value indicating whether sensitive data logging is enabled.                                                                                     |
+|  `UseAudit`                     | bool   | false       | A value indicating whether auditing is enabled.                                                                                                   |
+|  `QuerySplittingBehavior`       | enum   | SingleQuery | The default query splitting behavior for EF Core queries.                                                                                         |
+|  `DefaultCollation`             | string | null        | The default collation for the database.                                                                                                           |
+|  `ConnectionString`             | string | null        | The connection string for the database.                                                                                                           |
+|  `Cache`                        | object | null        | The cache configuration options. See [Cache](#cache)                                                                                              |
+|  `Identity`                     | object | null        | The identity configuration options. See [Identity](#identity)                                                                                     |
+|  `ConnectionPool`               | object | null        | The connection pool configuration options. See [ConnectionPool](#connection-pool)                                                                 |
+|  `HealthCheck`                  | object | null        | The options for configuring health checks. See [HealthCheck](#health-check)  _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.   |
 
 ```json
 "Data": {

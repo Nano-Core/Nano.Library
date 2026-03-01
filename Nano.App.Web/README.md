@@ -50,8 +50,6 @@ Currently, the web application does not add any additional configuration options
 
 > 📖 Learn more about **[Nano API Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api#configuration)**.
 
-View the full reference configuration here: **[`appsettings.default.json`](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web/appsettings.default.json)**.  
-
 ## Razor
 Coming...
 

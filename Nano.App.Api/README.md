@@ -135,8 +135,6 @@ The `App` section in the configuration defines behavior related to the applicati
 }
 ```
 
-View the full reference configuration here: **[`appsettings.default.json`](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/appsettings.default.json)**.  
-
 ## Hosting
 Hosting configuration specifies how the API is hosted on the Kestrel web server, defining endpoint exposure as well as request handling limits.  
 
