@@ -35,5 +35,3 @@ The PostgreSQL data provider must be registered as dependencies.
 
 ## Dependencies
 * https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Sql
-
-***

@@ -13,11 +13,12 @@ Where to put:
 * ```kubectl patch cronjob {{cronjob-name}} -p '{"spec": {"suspend": true}}'```  
 * ```kubectl create job --from=cronjob/{{cronjob-name}} {{job-name}}```
 
-
+LOOK AT THE GITHUB REPO 'Github Requirement' or soemthing like that
 
 
 ## Table of Contents
 * [Summary](#summary)
+* [Requirements](#requirements)
 * [NuGet Packages](#nuget-packages)
 * [Solution Composition](#solution-composition)
 * [Nano Architectures](#nano-architectures)
@@ -56,9 +57,16 @@ Nano gives you everything you tecnically to start building micro-services
 * Avoid wasting valuable development resources, on matters not related to the business.
 * Remain focused on modelling data and operations of the business domain.
 
-Also check out our **[Nano.Lessons](https://github.com/Nano-Core/Nano.Lessons)**. 
+Also, don't forget to check out our **[Nano.Lessons](https://github.com/Nano-Core/Nano.Lessons)**. There are **50+** examples of Nano applications, show-casing each 
+feature individually.  
 
 > If you are new to Nano, it's recommended to follow your [Getting Started Guide](https://github.com/Nano-Core/Nano.Library/tree/master/GETTING_STARTED.md)
+
+## Requirements
+Docker desktop
+Azure CLI
+GitHub Account
+
 
 ## NuGet Packages
 These packages are all-inclusive packages, where all other Nano packages are included. Easy to get started, but it's recommended to instead select only the

@@ -43,13 +43,13 @@ In addition to registering storage, map a local folder to a container path in in
 
 ```yaml
 services:
-  {my.service}:
+  {service-name}:
     volumes:
-      - {share-name}:/mnt/{share-name}
+      - ./bin/{share-name}:/mnt/{share-name}
 ```
 
-When deploying Nano applications to Kubernetes, ensure your `deployment.yaml` or `cronjob.yaml`, depending on the application type, maps the shared storage directory. The exact 
-configuration depends on the storage provider. See supported **[Storage Providers](#storage-providers)** for details.  
+When deploying Nano applications to Kubernetes, ensure your `deployment.yaml` or `cronjob.yaml`, depending on the application type, maps the shared storage directory and 
+a secret is created for the storage account. The exact configuration depends on the storage provider. See supported **[Storage Providers](#storage-providers)** for details.  
 
 > ⚠️ Optionally, map a writable `tmp` directory for temporary files.  
 This allows the main container to remain immutable while supporting temporary data.  
@@ -76,16 +76,16 @@ The ```Storage``` section in the configuration defines the storage provider and 
 | Setting                         | Type   | Default     | Description                                                                                                                              |
 | ------------------------------- | ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 |  `ShareName`                    | string | null        | The logical container, share, or bucket name used for file storage.                                                                      |
-|  `Account`                      | object | null        | The account of the storage provider.                                                                                                     |
-|  `Account.Id`                   | string | null        | The account id, username or tenant identifier used to authenticate with the storage provider.                                            |
-|  `Account.Secret`               | string | null        | The secret, key, password or credential used to authenticate with the storage provider.                                                  |
+|  `Credentials`                  | object | null        | The credential or account of the storage provider.                                                                                       |
+|  `Credentials.Id`               | string | null        | The account id, username or tenant identifier used to authenticate with the storage provider.                                            |
+|  `Credentials.Secret`           | string | null        | The password, secret, key, password or credential used to authenticate with the storage provider.                                        |
 |  `HealthCheck`                  | object | null        | Storage health check. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_..                                                |
 |  `HealthCheck.UnhealthyStatus`  | enum   | Unhealthy   | The health status reported when the storage provider is unavailable. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.  |
 
 ```json
 "Storage": {
   "ShareName": null,
-  "Account": {
+  "Credentials": {
     "Id": null,
     "Secret": null
   },

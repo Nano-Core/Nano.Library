@@ -22,9 +22,14 @@ internal static class HealtCheckBuilderExtensions
                 var options = x
                     .GetRequiredService<IOptionsMonitor<EventingOptions>>();
 
-                var connectionString = string.IsNullOrEmpty(options.CurrentValue.Username) || string.IsNullOrEmpty(options.CurrentValue.Password)
+                if (options.CurrentValue.Credentials == null)
+                {
+                    throw new NullReferenceException(nameof(options.CurrentValue.Credentials));
+                }
+
+                var connectionString = string.IsNullOrEmpty(options.CurrentValue.Credentials.Id) || string.IsNullOrEmpty(options.CurrentValue.Credentials.Secret)
                     ? $"amqp://{options.CurrentValue.Host}:{options.CurrentValue.Port}{options.CurrentValue.VHost}"
-                    : $"amqp://{options.CurrentValue.Username}:{options.CurrentValue.Password}@{options.CurrentValue.Host}:{options.CurrentValue.Port}{options.CurrentValue.VHost}";
+                    : $"amqp://{options.CurrentValue.Credentials.Id}:{options.CurrentValue.Credentials.Secret}@{options.CurrentValue.Host}:{options.CurrentValue.Port}{options.CurrentValue.VHost}";
 
                 var factory = new ConnectionFactory
                 {

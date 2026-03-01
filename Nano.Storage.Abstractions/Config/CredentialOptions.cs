@@ -3,12 +3,12 @@
 namespace Nano.Storage.Abstractions.Config;
 
 /// <summary>
-/// Represents configuration options for the application's storage account.
+/// Represents configuration options for the credentials of a storage account.
 /// </summary>
-public class AccountOptions
+public class CredentialOptions
 {
     /// <summary>
-    /// Gets or sets the account or tenant identifier used to authenticate with the storage provider.
+    /// Gets or sets the username, account or tenant identifier used to authenticate with the storage provider.
     /// </summary>
     /// <remarks>
     ///     The exact meaning of this value depends on the storage provider
@@ -18,7 +18,7 @@ public class AccountOptions
     public virtual string Id { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets the secret, key, or credential used to authenticate with the storage provider.
+    /// Gets or sets the password, secret, key, or credential used to authenticate with the storage provider.
     /// </summary>
     /// <remarks>
     ///     This value is treated as sensitive data and should be stored securely.

@@ -24,9 +24,9 @@ public class StorageOptions
     public virtual string ShareName { get; set; } = null!;
 
     /// <summary>
-    /// Get or sets the account information used to connect to the storage provider.
+    /// Get or sets the credentials or account information used to connect to the storage provider.
     /// </summary>
-    public virtual AccountOptions? Account { get; set; }
+    public virtual CredentialOptions? Credentials { get; set; }
 
     /// <summary>
     /// Options for configuring health-checks.

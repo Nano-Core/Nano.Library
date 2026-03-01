@@ -4,7 +4,10 @@ using Nano.App.Abstractions;
 using Nano.App.Console.Config;
 using Nano.App.Console.Extensions;
 using Nano.App.Extensions;
+using Nano.Eventing.Abstractions.Extensions;
 using System;
+using Nano.Data.Abstractions.Eventing.Extensions;
+using Nano.Data.Abstractions.Extensions;
 
 namespace Nano.App.Console;
 
@@ -57,6 +60,11 @@ public class NanoConsoleApplication : BaseNanoApplication<IConsoleApplication, I
     {
         this.application = this.applicationBuilder
             .Build();
+
+        this.application.Services
+            .UseEventHandlers()
+            .UseEntityEventHandlers()
+            .UseNanoDbMigrations();
 
         return this;
     }

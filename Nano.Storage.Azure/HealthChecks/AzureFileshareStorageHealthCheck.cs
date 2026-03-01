@@ -88,11 +88,11 @@ public sealed class AzureFileshareStorageHealthCheck : IHealthCheck
     }
     private string GetConnectionString()
     {
-        if (this.options.CurrentValue.Account == null)
+        if (this.options.CurrentValue.Credentials == null)
         {
-            throw new NullReferenceException(nameof(this.options.CurrentValue.Account));
+            throw new NullReferenceException(nameof(this.options.CurrentValue.Credentials));
         }
 
-        return $"DefaultEndpointsProtocol=https;AccountName={this.options.CurrentValue.Account.Id};AccountKey={this.options.CurrentValue.Account.Secret};EndpointSuffix=core.windows.net";
+        return $"DefaultEndpointsProtocol=https;AccountName={this.options.CurrentValue.Credentials.Id};AccountKey={this.options.CurrentValue.Credentials.Secret};EndpointSuffix=core.windows.net";
     }
 }

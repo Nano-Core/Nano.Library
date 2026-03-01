@@ -11,13 +11,17 @@
 * [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Registration](#registration)
+* [Configuration](#configuration)
+* [Docker](#docker)
+* [Kuberentes](#kuberentes)
+* [GitHub Actions](#github-actions)
 
 ## Summary
 Storage provider implementation for local file shares.  
 
 This provider is intended for convenience when using a local file system. Registering it with Nano gives you access to the `IPathProvider` interface.
 
-> ⚠️ In cloud environments, the file share path is expected to already exist. No external drives are mapped to the container or machine.
+> ⚠️ In cloud environments, the file share path is expected to already exist. No external drives are created or mapped to the container or machine.
 
 > 📖 Learn more about **[Nano Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)**.
 
@@ -43,7 +47,20 @@ Register the `LocalFileShareProvider` provider during application startup in the
 ...
 ```
 
-In addition to registering storage, map a local folder to a container path in your Docker setup to give the container access to the storage directory:
+## Configuration
+Add the storage configuration.  
+
+```json
+"Storage": {
+  "ShareName": null,
+  "HealthCheck": {
+    "UnhealthyStatus": "Unhealthy"
+  }
+}
+```
+
+## Docker
+In addition to registering and configuring storage, map a local folder to a container path in your `docker-compose.yml` to give the container access to the storage directory:
 
 ```yaml
 services:
@@ -52,7 +69,9 @@ services:
       - {share-name}:/mnt/{share-name}
 ```
 
-As the container in Kubernetes is read-only, the following must also be added to your Kubernetes `deployment.yaml` to ensure the file share is writable.  
+## Kubernetes
+Next, As the container in Kubernetes is read-only, the following must also be added to your Kubernetes `deployment.yaml` or `cronjob.yaml` (depending on application type) 
+to ensure the file share is writable.  
 
 ```json
 spec:
@@ -71,7 +90,8 @@ spec:
         emptyDir: {}
 ```
 
-Last, the `build-and-deploy.yaml` needs additional environmental variables related to local storage provder.  
+## GitHub Actions
+Last, The `build-and-deploy.yaml` needs additional environmental variables related to local storage provder.  
 
 ```yaml
   STORAGE_SHARE_NAME: {share-name}

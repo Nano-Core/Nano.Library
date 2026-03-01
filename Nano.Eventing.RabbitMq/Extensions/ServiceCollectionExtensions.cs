@@ -31,6 +31,11 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
 
+        if (options.Credentials == null)
+        {
+            throw new NullReferenceException(nameof(options.Credentials));
+        }
+
         var serializerSettings = SerializerSettings.GetDefault();
 
         services
@@ -41,8 +46,8 @@ public static class ServiceCollectionExtensions
                     new HostConfiguration(options.Host, options.Port)
                 ];
                 x.VirtualHost = options.VHost;
-                x.UserName = options.Username;
-                x.Password = options.Password;
+                x.UserName = options.Credentials.Id;
+                x.Password = options.Credentials.Secret;
                 x.RequestedHeartbeat = TimeSpan.FromSeconds(options.Heartbeat);
                 x.Timeout = options.Timeout;
                 x.PrefetchCount = options.PrefetchCount;

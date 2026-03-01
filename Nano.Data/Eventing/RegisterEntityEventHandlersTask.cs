@@ -45,15 +45,10 @@ internal sealed class RegisterEntityEventHandlersTask : IRegisterEntityEventHand
 
         foreach (var entityType in entityTypes)
         {
-            var routing = entityType.ClrType.Name;
-
             var eventType = typeof(EntityEvent);
 
-            var genericType = typeof(IEventingHandler<>)
-                .MakeGenericType(eventType);
-
             var eventHandler = serviceProvider
-                .GetRequiredService(genericType);
+                .GetRequiredService<IEventingHandler<EntityEvent>>();
 
             var subscribeMethod = eventing
                 .GetType()
@@ -61,7 +56,7 @@ internal sealed class RegisterEntityEventHandlersTask : IRegisterEntityEventHand
 
             subscribeMethod?
                 .MakeGenericMethod(eventType)
-                .Invoke(eventing, [eventHandler, routing, null, CancellationToken.None]);
+                .Invoke(eventing, [eventHandler, entityType.ClrType.Name, null, CancellationToken.None]);
         }
     }
 }

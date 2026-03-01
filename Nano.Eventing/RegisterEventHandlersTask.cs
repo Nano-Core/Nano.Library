@@ -40,8 +40,6 @@ internal sealed class RegisterEventHandlersTask(IEventing eventing) : IRegisterE
 
         foreach (var eventHandlerType in eventHandlerTypes)
         {
-            var routing = string.Empty;
-
             var eventType = eventHandlerType?
                 .GetGenericArguments()[0];
 
@@ -56,6 +54,10 @@ internal sealed class RegisterEventHandlersTask(IEventing eventing) : IRegisterE
             var eventHandler = serviceProvider
                 .GetRequiredService(genericType);
 
+            var routingKey = (string?)genericType
+                .GetProperty(nameof(IEventingHandler<>.RoutingKey))?
+                .GetValue(eventHandler);
+
             var prefetchCount = (ushort?)genericType
                 .GetProperty(nameof(IEventingHandler<>.OverridePrefetchCount))?
                 .GetValue(eventHandler);
@@ -66,7 +68,7 @@ internal sealed class RegisterEventHandlersTask(IEventing eventing) : IRegisterE
 
             subscribeMethod?
                 .MakeGenericMethod(eventType)
-                .Invoke(eventing, [eventHandler, routing, prefetchCount, CancellationToken.None]);
+                .Invoke(eventing, [eventHandler, routingKey, prefetchCount, CancellationToken.None]);
         }
     }
 }

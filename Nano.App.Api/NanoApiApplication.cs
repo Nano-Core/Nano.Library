@@ -6,6 +6,9 @@ using Nano.App.Abstractions;
 using Nano.App.Api.Config;
 using Nano.App.Api.Extensions;
 using Nano.App.Extensions;
+using Nano.Data.Abstractions.Eventing.Extensions;
+using Nano.Data.Abstractions.Extensions;
+using Nano.Eventing.Abstractions.Extensions;
 
 namespace Nano.App.Api;
 
@@ -69,6 +72,11 @@ public class NanoApiApplication : BaseNanoApplication<IApiApplication, WebApplic
 
         applicationBuilderAction?
             .Invoke(this.application);
+
+        this.application.Services
+            .UseEventHandlers()
+            .UseEntityEventHandlers()
+            .UseNanoDbMigrations();
 
         return this;
     }

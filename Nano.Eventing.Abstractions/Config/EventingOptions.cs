@@ -30,16 +30,6 @@ public class EventingOptions
     public virtual string VHost { get; set; } = "/";
 
     /// <summary>
-    /// Username for authenticating with the broker.
-    /// </summary>
-    public virtual string Username { get; set; } = null!;
-
-    /// <summary>
-    /// Password for authenticating with the broker.
-    /// </summary>
-    public virtual string Password { get; set; } = null!;
-
-    /// <summary>
     /// Port to connect to on the broker.
     /// Default is 5672.
     /// </summary>
@@ -73,6 +63,11 @@ public class EventingOptions
     /// </summary>
     [Required]
     public virtual ushort PrefetchCount { get; set; } = 50;
+
+    /// <summary>
+    /// Options for configuring the eventing credentials or account.
+    /// </summary>
+    public virtual CredentialOptions? Credentials { get; set; }
 
     /// <summary>
     /// Options for configuring health-checks.

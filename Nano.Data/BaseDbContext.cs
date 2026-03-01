@@ -380,7 +380,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
                 .Enqueue(entityEvent);
         }
     }
-    private async Task PublishEntityEvents()
+    private async Task PublishEntityEvents(CancellationToken cancellationToken = default)
     {
         if (this.eventing == null || !this.isEntityEventEnabled)
         {
@@ -397,7 +397,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
                 if (success && entityEvent != null)
                 {
                     await this.eventing
-                        .PublishAsync(entityEvent, entityEvent.Type);
+                        .PublishAsync(entityEvent, entityEvent.Type, cancellationToken);
                 }
             }
         }

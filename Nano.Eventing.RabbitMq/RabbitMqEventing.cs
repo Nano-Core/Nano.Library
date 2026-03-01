@@ -32,7 +32,7 @@ public sealed class RabbitMqEventing : IEventing
     }
 
     /// <inheritdoc />
-    public async Task PublishAsync<TMessage>(TMessage body, string routing = "", CancellationToken cancellationToken = default)
+    public async Task PublishAsync<TMessage>(TMessage body, string? routing = null, CancellationToken cancellationToken = default)
         where TMessage : class
     {
         ArgumentNullException.ThrowIfNull(body);
@@ -49,7 +49,7 @@ public sealed class RabbitMqEventing : IEventing
     }
 
     /// <inheritdoc />
-    public async Task SubscribeAsync<TMessage>(IEventingHandler<TMessage> eventHandler, string routing = "", ushort? prefetchCount = null, CancellationToken cancellationToken = default)
+    public async Task SubscribeAsync<TMessage>(IEventingHandler<TMessage> eventHandler, string? routing = null, ushort? prefetchCount = null, CancellationToken cancellationToken = default)
         where TMessage : class
     {
         ArgumentNullException.ThrowIfNull(eventHandler);
@@ -98,10 +98,9 @@ public sealed class RabbitMqEventing : IEventing
     }
 
 
-    private static string GetQueueName(string name, string routing)
+    private static string GetQueueName(string name, string? routing = null)
     {
         ArgumentNullException.ThrowIfNull(name);
-        ArgumentNullException.ThrowIfNull(routing);
 
         var appName = Assembly.GetEntryAssembly()?.GetName().Name;
 

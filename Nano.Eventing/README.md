@@ -14,36 +14,39 @@
 * [Summary](#summary)
 * [Registration](#registration)
 * [Configuration](#configuration)
-* [Publish and Subscribe](#publish-and-subscribe)
+* [Serialization](#serialization)
 * [Eventing Providers](#eventing-providers)
-* [Examples](#examples)
+* [Publish and Subscribe](#publish-and-subscribe)
 
 ## Summary
-Nano supports different ways of publishing and subscribing to events.  
-Adding eventing annotations to model implementations, provides a way of synchronizing entities between applications. Additionally, custom event models can be implemented and published, and consumed through subscriptions.  
-The ```IEventingProvider``` is registered during startup, and the implementing type defines the eventing provider used in the application. Furthermore, the interface ```IEventing``` is registered as well, and defines the entry to publishing and subscribing to events.  
-```Nano.Eventing.Abstractions.IEventing``` and ```Nano.Eventing.Abstractions.IEventingHandler<>```  
+Nano provides a robust eventing framework that enables applications to publish events and have them consumed by other applications. 
+This facilitates decoupled, asynchronous communication, making it easier to build scalable and distributed systems.  
+
+When the `IEventingProvider` is registered during application startup, the `IEventing` service becomes available for publishing custom events to the configured provider. 
+Any part of the application can then emit events without needing to know the details of the underlying messaging infrastructure.  
+
+To publish an event, simply call: ```await IEventing.PublishAsync<TEvent>(new());```.  
+
+To handle incoming events, implement `IEventingHandler<TEvent>` for your specific event types. These handlers are automatically registered and will consume messages 
+from the broker as they are published.  
 
 ## Registration
-The eventing provider must be registered as dependencies.
-Invoke the method ```AddNanoEventing<TProvider>();```, using the eventing provider implementation as generic type parameters.
+To use Nano eventing, the eventing provider must be registered as a dependency during application startup. This is done by invoking 
+the `AddNanoEventing<TProvider>()` method, specifying your chosen eventing provider implementation as the generic type parameter.
 
 ```csharp
+...
 .ConfigureServices(services =>
 {
     services
         .AddNanoEventing<TProvider>();
 })
+...
 ```
 
-Besides registering eventing in your Nano application, you also need to configure your docker-compose setup.
-
-```yaml
-
-```
-
-USE SECRET IN `deployment.yaml`, should we mention it here?
-
+Both `docker-compose.yml` for Docker setups and `deployment.yaml` or `cronjob.yaml` for Kubernetes deployments must be updated to support Nano eventing. This includes 
+configuring service dependencies for the eventing broker. The exact configuration will depend on the chosen eventing provider. For detailed instructions, 
+see supported **[Eventing Providers](#eventing-providers)**.
 
 ## Configuration
 The ```Eventing``` section in the configuration defines the eventing provider and related settings used by the application.
@@ -52,76 +55,120 @@ The ```Eventing``` section in the configuration defines the eventing provider an
 | ------------------------------- | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 |  `Host`                         | string   | null        | The hostname or IP address of the event broker or messaging server.                                                                          |             
 |  `VHost`                        | string   | /           | The virtual host or namespace on the broker to connect to, if applicable.                                                                    |
-|  `Username`                     | string   | null        | Username for authenticating with the broker.                                                                                                 |
-|  `Password`                     | string   | null        | Password for authenticating with the broker.                                                                                                 |
 |  `Port`                         | ushort   | 5672        | Port to connect to on the broker.                                                                                                            |
 |  `Timeout`                      | TimeSpan | 00:00:30    | Connection timeout for the broker, in seconds.                                                                                               |
 |  `UseSsl`                       | bool     | false       | Indicates whether to use SSL/TLS when connecting to the broker.                                                                              |
 |  `Heartbeat`                    | ushort   | 60          | Heartbeat or keep-alive interval in seconds to maintain the connection. Set to zero to disable heartbeat/keep-alive.                         |
 |  `PrefetchCount`                | ushort   | 50          | Prefetch count for consuming messages. Controls how many messages can be fetched at once for processing.                                     |
-|  `HealthCheck`                  |          | null        | Eventing health check. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.                                                    |
+|  `Credentials`                  | object   | null        | Account / credentials information for eventing.                                                                                              |
+|  `Credentials.Id`               | string   | null        | Username for authenticating.                                                                                                                 |
+|  `Credentials.Secret`           | string   | null        | Password for authenticating.                                                                                                                 |
+|  `HealthCheck`                  | object   | null        | Eventing health check. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.                                                    |
 |  `HealthCheck.UnhealthyStatus`  | enum     | Unhealthy   | Health status level to report when the eventing provider is unavailable. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.  |
 
 ```json
 "Eventing": {
   "Host": null,
   "VHost": null,
-  "Username": null,
-  "Password": null,
   "Port": 5672,
   "Timeout": 30,
   "UseSsl": false,
   "Heartbeat": 60,
   "PrefetchCount": 50,
+  "Credentials": {
+    "Id": null,
+    "Secret": null
+  }
   "HealthCheck": {
     "UnhealthyStatus": "Unhealthy"
   }
 }
 ```
- 
+
+## Serialization
+Nano eventing uses `Newtonsoft.Json` for serialization and deserialization.  It supports all built-in Nano types, types derived from Nano base types, 
+and all `Geometry` types from `NetTopologySuite`.  
+
+The serializer is configured to handle various edge cases for robustness. However, event contracts should remain simple. Eventing is not intended for 
+transferring large payloads. It works best with small, well-defined message contracts that represent identifiable business events.  
+
 ## Eventing Providers
-All eventing providers implement the `IEventingProvider` interface. 
-This interface is responsible for handling all configuration and setup required for the eventing provider.  
-Additionally it's responsbile for Implementing the `IEventing` interface as well, and register all event handlers??
+All eventing providers in Nano implement the `IEventingProvider` interface. This interface is responsible for configuring and setting up the underlying 
+eventing infrastructure, as well as providing an implementation of the `IEventing` interface for publishing events. It also ensures that all 
+relevant `IEventingHandler<TEvent>` implementations are registered so that events can be consumed as they are published.  
 
 To implement a new eventing provider:
-
 1. Create a class that implements `IEventingProvider`.
-2. Ensure that all required services are registered in `Configure`.
-3. Register your provider in the application using `AddNanoEventing<MyProvider>()`.
+2. Register all required services and dependencies in the `Configure` method.
+3. Add your provider to the application using:
 
-The following storage providers are currently supported:
-* ```RabbitMqProvider```
+```csharp
+services.AddNanoEventing<MyProvider>();
+```
+
+The following eventing providers are currently supported in Nano:
+* [Nano.Eventing.RabbitMq](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing.RabbitMq)
+
+Additional providers can be implemented by following the same pattern, allowing you to extend Nano’s eventing system to any messaging broker of your choice.
 
 ## Publish and Subscribe
-An event can be published from anywhere within the application.  
-Nano controllers has the ```IEventing``` dependency injected, and publishing from one of it's actions is recommended. Either override an existing inherited action or implement a new one.  
+Events can be published from anywhere within your application.  
+
+The first step is to define an event model, which acts as the contract for the messages.  
 
 ```csharp
-public void Publish()
+public class MyEvent
 {
-    var @event = new MyEvent();
-    this.Eventing.PublishAsync(@event);
+    public string Text { get; set; }
 }
 ```
 
-Subscribing to an event requires an event handler implementation.  
-Implementing the interface ```IEventingHandler<TEvent>``` ensures that the event handler is registered during startup, and the subscription is configured to listen for incoming events. The method ```CallbackAsync(...)``` is invoked for evert event received.  
-It's recommended to share the event model, as both the publisher and subscriber must understand the object model.  
+The event model may by any type derived from Nano types, as well as all `Geometry` types from `NetTopologySuite`. Keep it simple though. See [Serialization](#Serialization)
+for details.    
+
+> ⚠️ Share the event model as a NuGet package to ensure a consistent contract between publishers and subscribers. Exchange and queue names are derived automatically 
+from the event type.
+
+Next, to publish an event from one application:
 
 ```csharp
-public class MyEventHandler : IEventingHandler<MyEvent>
+await this.Eventing
+.PublishAsync(new MyEvent
 {
-    protected virtual IService Service { get; }
+    Text = "Message from another service"
+});
+```
 
-    public MyEventHandler(IService service)
-    {
-        this.Service = service;
-    }
+⚠️ IEventing also provides a `SubscribeAsync(...)` method, but manual invocation is not required. All `IEventingHandler<T>` implementations are automatically 
+registered during application startup.
 
-    public void CallbackAsync(MyEvent @event, bool isRetrying)
+To consume events in another application, implement an event handler for the specific event type.  
+
+```csharp
+public class MyEventingHandler : BaseEventHandler<MyEvent>
+{
+    public override async Task CallbackAsync(MyEvent myEvent, bool isRedelivered)
     {
-        // Event logic.
+        await Task.CompletedTask;
+
+        Console.WriteLine(myEvent.Text);
     }
 }
 ```
+
+While it is possible to implement `IEventingHandler<MyEvent>` directly, it is generally not recommended. Doing so requires manually implementing two properties that 
+are handled automatically in the base class. By deriving from `BaseEventHandler<TEvent>` instead, these properties are managed for you and can optionally 
+be set via the constructor.  
+
+```csharp
+public class MyEventingHandler() : BaseEventHandler<MyEvent>(routingKey: null, overridePrefetchCount: null)
+{
+    ...
+}
+```
+
+In most cases, specifying the `routingKey` is unnecessary, but it allows the same event model to be consumed by different receivers if needed. 
+This feature should be used sparingly, as it supports advanced or conditional event consumption.  
+
+The `overridePrefetchCount` allows an event handler to override the globally configured Eventing.PrefetchCount for a specific handler. 
+This is useful when an event requires more processing or resources, as a lower prefetch count can help prevent the consuming application from being overloaded.

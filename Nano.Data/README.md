@@ -26,7 +26,7 @@
 * [Soft Delete](#soft-delete)
 * [Triggers](#triggers)
 * [Cache](#cache)
-* [Entity Eventing](#entity-events)
+* [Entity Events](#entity-events)
 * [Health Checks](#health-checks)
 * [Special Annotations](#special-annotations)
 * [Examples](#examples)
@@ -414,7 +414,9 @@ For more details about triggers and how to use them, consult the docucmenation o
 ## Cache
 Simple memory caching can be enabled, by setting ```Data.UseMemoryCache = true``` in the configuration. The cache stores queries once executed, for future invocations. 
 
-## Entity Eventing
+## Entity Events
+Adding eventing annotations to model implementations, provides a way of synchronizing entities between applications. 
+
 When building micro-service applications, managing relations and dependencies of shared models, becomes a challenge. The eventing attributes provides a very simple method publishing change notifications in one application, and subscribing to it in another.  
 Eventing attributes is similar to database foreign-key relations, just in between services. The ```PublishAttribute``` publishes an ```EntityEvent``` whenever an instance is either created, updated or deleted. When receiving an event subscribed to by a model annotated with the ```SubscribeAttribute```, the built-in ```EntityEventHandler``` handles the event, and likewise creates, updates or deletes the instance.  
 The contract between the publisher and the subscriber is the type ```EntityEvent```, using the entity type name (```Type.Name```, and not ```Type.FullName```), when routing the event. The subscriber doesn't have any knowledge about the event being fired, and shouldn't. By convention, the relationship is loosely coupled.  

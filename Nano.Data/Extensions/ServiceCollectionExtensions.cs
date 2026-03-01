@@ -7,12 +7,10 @@ using Nano.Common.Config.Extensions;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Eventing;
-using Nano.Data.Abstractions.Eventing.Models;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Eventing;
 using Nano.Data.Identity.Authentication.Extensions;
 using Nano.Data.Identity.Extensions;
-using Nano.Eventing.Abstractions;
 using System;
 using System.Linq;
 using Nano.Data.Abstractions.Models;
@@ -93,7 +91,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IDbMigrationTask, DbMigrationTask<TIdentity>>();
 
         services
-            .AddScoped<IEventingHandler<EntityEvent>, EntityEventHandler<TIdentity>>()
+            .AddScoped<EntityEventingHandler<TIdentity>>()
             .AddScoped<IRegisterEntityEventHandlersTask, RegisterEntityEventHandlersTask>();
 
         services

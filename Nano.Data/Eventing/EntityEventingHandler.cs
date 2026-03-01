@@ -14,16 +14,13 @@ namespace Nano.Data.Eventing;
 /// </summary>
 /// <typeparam name="TIdentity">The type of the entity identity. Must implement <see cref="IEquatable{T}"/>.</typeparam>
 /// <param name="dbContext">The <see cref="BaseDbContext{TIdentity}"/> used to apply entity events.</param>
-public sealed class EntityEventHandler<TIdentity>(BaseDbContext<TIdentity> dbContext) : IEventingHandler<EntityEvent>
+public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> dbContext) : BaseEventHandler<EntityEvent>
     where TIdentity : IEquatable<TIdentity>
 {
     private readonly BaseDbContext<TIdentity> dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
     /// <inheritdoc />
-    public ushort? OverridePrefetchCount { get; set; }
-
-    /// <inheritdoc />
-    public async Task CallbackAsync(EntityEvent @event, bool isRetrying)
+    public override async Task CallbackAsync(EntityEvent @event, bool isRedelivered)
     {
         ArgumentNullException.ThrowIfNull(@event);
 

@@ -34,6 +34,4 @@ The Sql Server data provider must be registered as dependencies.
 ```
 
 ## Dependencies
-* https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Sql
-
-***
+* https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Sql   NEEDS TO BE SPECIFC URLS.

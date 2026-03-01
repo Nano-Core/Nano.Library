@@ -1,9 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Nano.App.Api.Config;
-using Nano.Data.Abstractions.Eventing.Extensions;
-using Nano.Data.Abstractions.Extensions;
-using Nano.Eventing.Abstractions.Extensions;
 
 namespace Nano.App.Api.Extensions;
 
@@ -44,11 +41,6 @@ internal static class WebApplicationExtensions
 
         webApplication
             .MapControllers();
-
-        webApplication
-            .UseEventHandlers()
-            .UseEntityEventHandlers()
-            .UseNanoDbMigrations();
 
         return webApplication;
     }

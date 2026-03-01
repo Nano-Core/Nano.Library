@@ -11,12 +11,17 @@
 * [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
 * [Summary](#summary)
 * [Registration](#registration)
+* [Configuration](#configuration)
+* [Docker](#docker)
+* [Kuberentes](#kuberentes)
+* [GitHub Actions](#github-actions)
 
 ## Summary
 Storage Provider implementation for Microsoft Azure File Shares.  
 
 A file share from an Azure Storage Account can be mounted into your container, allowing your Nano application to access it as if it were a local drive. This approach 
-enables your application to read from and write to the storage directly, while the underlying Azure file share handles persistence and centralized storage. 
+enables your application to read from and write to the storage directly, while the underlying Azure file share handles persistence and centralized storage.  
+
 No changes to your application code are required and you can interact with the file share using the `IPathProvider` interface.  
 
 > 📖 Learn more about **[Nano Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)**.
@@ -44,7 +49,24 @@ Register the `AzureFileshareProvider` provider during application startup in the
 ...
 ```
 
-In addition to registering storage, map a local folder to a container path in in your `docker-compose` so the container can access the storage directory.
+## Configuration
+Add the storage configuration.  
+
+```json
+"Storage": {
+  "ShareName": null,
+  "Credentials": {
+    "Id": null,
+    "Secret": null
+  },
+  "HealthCheck": {
+    "UnhealthyStatus": "Unhealthy"
+  }
+}
+```
+
+## Docker
+In addition to registering and configuring storage, map a local folder to a container path in in your `docker-compose.yml` so the container can access the storage directory.
 
 ```yaml
 services:
@@ -53,7 +75,8 @@ services:
       - {share-name}:/mnt/{share-name}
 ```
 
-Next, add the following to your Kubernetes `deployment.yaml` for the Nano application.
+## Kubernetes
+Next, the following to your Kubernetes `deployment.yaml` or `cronjob.yaml` (depending on application type) for the Nano application.
 You also need to map the `storage-account-secret` that is created alongside the [Nano Azure Storage Account](https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Storage) 
 in the `deployment.yaml` for fileshare authentication.
 
@@ -63,12 +86,12 @@ spec:
     spec:
       containers:
         env:
-        - name: Storage__AccountName
+        - name: Storage__Account__Id
           valueFrom:
             secretKeyRef:
               name: storage-account-secret
               key: azurestorageaccountname
-        - name: Storage__AccountKey
+        - name: Storage__Account__Secret
           valueFrom:
             secretKeyRef:
               name: storage-account-secret
@@ -88,12 +111,16 @@ spec:
           readOnly: false
 ```
 
+> ⚠️ The `storage-account-secret` secret will be reused for all applications using Azure Fileshare as storage provider.  
+That makes it easy to change the secret values later on when needed, and just requires the secret values to be updated and re-deployed.  
+
+## GitHub Actions
 Last, the `build-and-deploy.yaml` needs a few additional environmental variables related to Azure storage provder.  
 
 ```yaml
 STORAGE_SHARE_NAME: {share-name}
-STORAGE_ACCOUNT_NAME: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_ACCOUNT_NAME  || secrets.STAGING_STORAGE_ACCOUNT_NAME }}
-STORAGE_ACCOUNT_KEY: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_ACCOUNT_KEY  || secrets.STAGING_STORAGE_ACCOUNT_KEY }}
+STORAGE_CREDENTIALS_ID: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_CREDENTIALS_ID || secrets.STAGING_STORAGE_CREDENTIALS_ID }}
+STORAGE_CREDENTIALS_SECRET: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_CREDENTIALS_SECRET || secrets.STAGING_STORAGE_CREDENTIALS_SECRET }}
 STORAGE_SIZE: 1000
 ```
 
@@ -103,10 +130,10 @@ Also, the Azure fileshare needs to be created during deployment if it does not a
 - name: Create Fileshare
   shell: pwsh
   run: |
-    $env:EXISTING_FILE_SHARE = sudo az storage share list --account-name $env:STORAGE_ACCOUNT_NAME --account-key $env:STORAGE_ACCOUNT_KEY --query "[?contains(name, '$env:STORAGE_SHARE_NAME')].[name]" -o tsv;
+    $env:EXISTING_FILE_SHARE = sudo az storage share list --account-name $env:STORAGE_CREDENTIALS_ID --account-key $env:STORAGE_CREDENTIALS_SECRET --query "[?contains(name, '$env:STORAGE_SHARE_NAME')].[name]" -o tsv;
     if ([string]::IsNullOrEmpty($env:EXISTING_FILE_SHARE))
     { 
-        sudo az storage share create -n $env:STORAGE_SHARE_NAME --account-name $env:STORAGE_ACCOUNT_NAME --account-key $env:STORAGE_ACCOUNT_KEY --quota $env:STORAGE_SIZE;
+        sudo az storage share create -n $env:STORAGE_SHARE_NAME --account-name $env:STORAGE_CREDENTIALS_ID --account-key $env:STORAGE_CREDENTIALS_SECRET --quota $env:STORAGE_SIZE;
         if ($LastExitCode -ne 0) 
         { 
             throw "error";
