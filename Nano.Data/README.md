@@ -75,17 +75,18 @@ The ```Data``` section in the configuration defines the data provider and relate
 |  `BulkBatchSize`                | int    | 500         | The maximum batch size for bulk operations.                                                                                                       |
 |  `BulkBatchDelay`               | int    | 1000        | The delay (in milliseconds) between bulk batches.                                                                                                 |
 |  `QueryRetryCount`              | int    | 0           | The number of times a query will retry on failure.                                                                                                |
-|  `QueryIncludeDepth`            | int    | 4           | The maximum depth for query includes.                                                                                                             |
-|  `UseAutoSave`                  | bool   | true        | A value indicating whether automatic saving of changes in repositories is enabled.                                                                |
-|  `UseLazyLoading`               | bool   | false       | A value indicating whether lazy loading is enabled.                                                                                               |
+|  `UseLazyLoading`               | bool   | false       | A value indicating whether lazy loading is enabled. ⚠️ Not recommended, use [Nano Include Annotation](#include-annotation)                        |
 |  `UseCreateDatabase`            | bool   | false       | A value indicating whether soft deletion is enabled.                                                                                              |
-|  `UseMigrateDatabase`           | bool   | false       | A value indicating whether the database should be created automatically.                                                                          |
+|  `UseMigrateDatabase`           | bool   | false       | A value indicating whether the database should be created automatically using just the mappings and without migrations. ⚠️ Not recommended.       |
 |  `UseSoftDeletetion`            | bool   | false       | A value indicating whether database migrations should be applied automatically.                                                                   |
 |  `UseSensitiveDataLogging`      | bool   | false       | A value indicating whether sensitive data logging is enabled.                                                                                     |
 |  `UseAudit`                     | bool   | false       | A value indicating whether auditing is enabled.                                                                                                   |
 |  `QuerySplittingBehavior`       | enum   | SingleQuery | The default query splitting behavior for EF Core queries.                                                                                         |
 |  `DefaultCollation`             | string | null        | The default collation for the database.                                                                                                           |
 |  `ConnectionString`             | string | null        | The connection string for the database.                                                                                                           |
+|  `Repository`                   | object | default     | The cache configuration options. See [Repositories](#repositories).                                                                               |
+|  `Repository.UseAutoSave`       | bool   | true        | A value indicating whether automatic saving of changes in repositories is enabled.                                                                |
+|  `Repository.QueryIncludeDepth` | int    | 4           | The maximum depth for query includes.                                                                                                             |
 |  `Cache`                        | object | null        | The cache configuration options. See [Cache](#cache)                                                                                              |
 |  `Identity`                     | object | null        | The identity configuration options. See [Identity](#identity)                                                                                     |
 |  `ConnectionPool`               | object | null        | The connection pool configuration options. See [ConnectionPool](#connection-pool)                                                                 |
@@ -97,22 +98,24 @@ The ```Data``` section in the configuration defines the data provider and relate
   "BulkBatchSize": 500,
   "BulkBatchDelay": 1000,
   "QueryRetryCount": 0,
-  "QueryIncludeDepth": 4,
-  "UseAutoSave": false,
-  "UseLazyLoading": true,
-  "UseCreateDatabase": true,
-  "UseMigrateDatabase": true,
-  "UseSoftDeletetion": true,
+  "UseLazyLoading": false,
+  "UseCreateDatabase": false,
+  "UseMigrateDatabase": false,
+  "UseSoftDeletetion": false,
   "UseSensitiveDataLogging": false,
   "UseAudit": false,
   "QuerySplittingBehavior": "SingleQuery",
   "DefaultCollation": null,
   "ConnectionString": null,
+  "Repository": { 
+    "UseAutoSave": false,
+    "QueryIncludeDepth": 4
+  },
   "Cache": { },
   "Identity": { },
   "ConnectionPool": { },
   "HealthCheck": { }
-},
+}
 ```
 
 ## Data Providers
@@ -135,6 +138,12 @@ The following data providers are currently supported:
 * [Nano.Data.SqlServer](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqlServer)
 
 ## Data Context
+Derive the `DefaultDbContext` and `DefaultDbContextFactory`
+You don't need to implement anything, they just need to be located in your application project, same as where `program.cs` resides.  
+
+> ⚠️ If you override the `OnModelCreating(...)` of the `DefaultDbContext`, remember to call the `base` method.
+
+
 Create the data context implementation, by deriving a class from ```DefaultDbContext```.  
 
 Later, associations between models and their mappings will be declared in the method ```OnModelCreating(...)```. Remember to invoke base class method!
@@ -238,6 +247,17 @@ Creating migration scripts at design-time, which in-turn are applied when runnin
 
 Entity framework's support for database migration is made easy with Nano.  
 Open NuGet PM console from `VS -> Tools -> NuGet Package Manager -> Package Manager Console`, and run the following command (replace parameters).  
+
+In `Devemlopment` environment, `host.docker.internal` will be replaced with `localhost` for convinience, as you would otherwise need to include additional NuGets for 
+some wierd reason. FIGURE WHAT DLL IT IS.
+
+```
+if (environment == Environments.Development)
+{
+    dataOptions.ConnectionString = dataOptions.ConnectionString
+        .Replace("host.docker.internal", "localhost");
+}
+```
 
 ```
 PM> Add-Migration -name {name} -StartUpProject {project}
@@ -444,7 +464,7 @@ When enabling health-checks in the data section of the confiugration, the applic
 Publish and subscribe
 Readme [Entity Eventing](#entity-eventng)
 
-### Include Annotations
+### Include Annotation
 Annotating a property with the ```IncludeAttribte```, instructs the repository layer to fetch additional data when getting and querying the entity. It works similar to the ```IQueryable.Include(...)``` extension, but allows for design-time definition. The property must be a class and have a navigation relations, otherwise the annotation is ignored.   
 The maximum query (join) depth for a model having properties decorated with ```IncludeAttribte```, can be set in the data options of the configuration, ```QueryIncludeDepth```.  
 When having navigations inside owned models decorated with include annotation, then the owned model property on the parent must also be annotated with Include. This will be ignored by entity framework, but allows Nano to trigger the nested include.  

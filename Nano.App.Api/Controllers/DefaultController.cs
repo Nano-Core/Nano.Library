@@ -10,7 +10,7 @@ namespace Nano.App.Api.Controllers;
 
 /// <inheritdoc />
 public class DefaultController<TEntity, TCriteria> : DefaultController<TEntity, Guid, TCriteria>
-    where TEntity : DefaultEntity, new()
+    where TEntity : BaseEntity, new()
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />

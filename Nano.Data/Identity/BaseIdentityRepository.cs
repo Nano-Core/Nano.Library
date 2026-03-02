@@ -782,7 +782,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         var entityEntry = this.dbContext
             .Update(identityUser);
 
-        if (this.options.CurrentValue.UseAutoSave)
+        if (this.options.CurrentValue.Repository.UseAutoSave)
         {
             await this.dbContext
                 .SaveChangesAsync(cancellationToken);
@@ -818,7 +818,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         var entityEntry = this.dbContext
             .Update(identityUser);
 
-        if (this.options.CurrentValue.UseAutoSave)
+        if (this.options.CurrentValue.Repository.UseAutoSave)
         {
             await this.dbContext
                 .SaveChangesAsync(cancellationToken);

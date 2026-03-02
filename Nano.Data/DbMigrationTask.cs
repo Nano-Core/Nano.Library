@@ -11,22 +11,16 @@ using Nano.Data.Abstractions.Identity.Consts;
 
 namespace Nano.Data;
 
-internal sealed class DbMigrationTask<TIdentity> : IDbMigrationTask
+/// <inheritdoc />
+internal sealed class DbMigrationTask<TIdentity>(ILogger<DbMigrationTask<TIdentity>> logger, IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, RoleManager<IdentityRole<TIdentity>>? roleManager = null)
+    : IDbMigrationTask
     where TIdentity : IEquatable<TIdentity>
 {
-    private readonly ILogger<DbMigrationTask<TIdentity>> logger;
-    private readonly IOptionsMonitor<DataOptions> options;
-    private readonly BaseDbContext<TIdentity> dbContext;
-    private readonly RoleManager<IdentityRole<TIdentity>>? roleManager;
+    private readonly ILogger<DbMigrationTask<TIdentity>> logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IOptionsMonitor<DataOptions> options = options ?? throw new ArgumentNullException(nameof(options));
+    private readonly BaseDbContext<TIdentity> dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
-    internal DbMigrationTask(ILogger<DbMigrationTask<TIdentity>> logger, IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, RoleManager<IdentityRole<TIdentity>>? roleManager = null)
-    {
-        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        this.options = options ?? throw new ArgumentNullException(nameof(options));
-        this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        this.roleManager = roleManager;
-    }
-
+    /// <inheritdoc />
     public async Task MigrateAndSeedAsync(CancellationToken cancellationToken = default)
     {
         await this.EnsureCreatedAsync(cancellationToken);

@@ -13,21 +13,21 @@ using Nano.Eventing.Abstractions;
 namespace Nano.Data.Eventing;
 
 /// <inheritdoc />
-internal sealed class RegisterEntityEventHandlersTask : IRegisterEntityEventHandlersTask
+internal sealed class RegisterEntityEventingHandlersTask : IRegisterEntityEventingHandlersTask
 {
     private readonly DbContext dbContext;
-    private readonly IEventing eventing;
+    private readonly IEventing? eventing;
 
     /// <summary>
-    /// 
+    /// Instantiates and instance of <see cref="RegisterEntityEventingHandlersTask"/>.
     /// </summary>
-    /// <param name="dbContext"></param>
-    /// <param name="eventing"></param>
+    /// <param name="dbContext">The <see cref="DbContext"/>.</param>
+    /// <param name="eventing">The <see cref="IEventing"/>.</param>
     /// <exception cref="ArgumentNullException"></exception>
-    public RegisterEntityEventHandlersTask(DbContext dbContext, IEventing eventing)
+    public RegisterEntityEventingHandlersTask(DbContext dbContext, IEventing? eventing = null)
     {
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        this.eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
+        this.eventing = eventing;
     }
 
     /// <inheritdoc />
@@ -36,6 +36,11 @@ internal sealed class RegisterEntityEventHandlersTask : IRegisterEntityEventHand
         ArgumentNullException.ThrowIfNull(serviceProvider);
 
         await Task.CompletedTask;
+
+        if (this.eventing == null)
+        {
+            return;
+        }
 
         var entityTypes = dbContext.Model
             .GetEntityTypes()

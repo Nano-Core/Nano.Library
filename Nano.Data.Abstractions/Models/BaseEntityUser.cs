@@ -5,6 +5,18 @@ using Nano.Data.Abstractions.Models.Identity;
 
 namespace Nano.Data.Abstractions.Models;
 
+/// <inheritdoc />
+public abstract class BaseEntityUser : BaseEntityUser<Guid>
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BaseEntityUser"/> class with a new <see cref="Guid"/> identifier.
+    /// </summary>
+    protected BaseEntityUser()
+    {
+        this.Id = Guid.NewGuid();
+    }
+}
+
 /// <summary>
 /// Base class for entities associated with a user.
 /// Implements <see cref="IEntityUser{TIdentity}"/>.

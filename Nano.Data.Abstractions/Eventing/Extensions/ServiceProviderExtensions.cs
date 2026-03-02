@@ -10,7 +10,7 @@ namespace Nano.Data.Abstractions.Eventing.Extensions;
 public static class ServiceProviderExtensions
 {
     /// <summary>
-    /// Registers all entity event handlers in the application by executing the <see cref="IRegisterEntityEventHandlersTask"/> at startup.
+    /// Registers all entity event handlers in the application by executing the <see cref="IRegisterEntityEventingHandlersTask"/> at startup.
     /// </summary>
     /// <param name="serviceProvider">The <see cref="IServiceProvider"/> instance to configure.</param>
     /// <returns>The <see cref="IServiceProvider"/> instance for chaining.</returns>
@@ -23,7 +23,7 @@ public static class ServiceProviderExtensions
             .CreateScope();
 
         var registerEntityEventHandlersTask = scope.ServiceProvider
-            .GetService<IRegisterEntityEventHandlersTask>();
+            .GetService<IRegisterEntityEventingHandlersTask>();
 
         registerEntityEventHandlersTask?
             .RegisterEntityEventHandlers(scope.ServiceProvider)

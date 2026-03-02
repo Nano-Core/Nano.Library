@@ -27,27 +27,27 @@ public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbC
     /// <exception cref="NullReferenceException">Thrown if the <see cref="DataOptions"/> or the created <typeparamref name="TContext"/> instance is null.</exception>
     public virtual TContext CreateDbContext(string[] args)
     {
-        var configuration = ConfigManager.BuildConfiguration(Environments.Development);
-
         var builder = new DbContextOptionsBuilder<TContext>();
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Development;
+        var configuration = ConfigManager.BuildConfiguration(environment);
 
-        var options = new DataOptions();
+        var dataOptions = new DataOptions();
+        var dataOptionsMonitor = new StaticOptionsMonitor<DataOptions>(dataOptions);
 
         configuration
             .GetSection(DataOptions.SectionName)
-            .Bind(options);
+            .Bind(dataOptions);
 
-        if (options == null)
+        if (environment == Environments.Development)
         {
-            throw new NullReferenceException(nameof(options));
+            dataOptions.ConnectionString = dataOptions.ConnectionString
+                .Replace("host.docker.internal", "localhost");
         }
 
-        TProvider.Configure(builder, options);
+        TProvider.Configure(builder, dataOptions);
 
-        var optionsMonitor = new StaticOptionsMonitor<DataOptions>(options);
+        var dbContext = (TContext)Activator.CreateInstance(typeof(TContext), builder.Options, dataOptionsMonitor, null)!;
 
-        return Activator.CreateInstance(typeof(TContext), builder.Options, optionsMonitor, null) is not TContext dbContext
-            ? throw new NullReferenceException(nameof(dbContext))
-            : dbContext;
+        return dbContext;
     }
 }

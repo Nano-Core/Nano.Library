@@ -5,9 +5,9 @@ using Nano.Data.Abstractions.Models;
 namespace Nano.App.Api.Controllers.Models;
 
 /// <summary>
-/// Query criteria specifically for audit entries, extending <see cref="DefaultQueryCriteria"/>.
+/// Query criteria specifically for audit entries, extending <see cref="BaseQueryCriteria"/>.
 /// </summary>
-public class AuditEntryQueryCriteria : DefaultQueryCriteria
+public class AuditEntryQueryCriteria : BaseQueryCriteria
 {
     /// <summary>
     /// Filter by the creator of the audit entry.

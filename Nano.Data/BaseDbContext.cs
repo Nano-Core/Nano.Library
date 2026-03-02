@@ -1,4 +1,5 @@
 using EntityFrameworkCore.Triggers;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -7,8 +8,16 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Options;
 using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Config;
+using Nano.Data.Abstractions.Eventing.Annotations;
 using Nano.Data.Abstractions.Eventing.Models;
+using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Models.Identity;
+using Nano.Data.Eventing.Extensions;
 using Nano.Data.Extensions;
+using Nano.Data.Identity.Extensions;
+using Nano.Data.Mappings;
+using Nano.Data.Mappings.Extensions;
 using Nano.Eventing.Abstractions;
 using System;
 using System.Collections;
@@ -19,14 +28,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Eventing.Annotations;
-using Nano.Data.Abstractions.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Data.Abstractions.Models.Identity;
-using Nano.Data.Eventing.Extensions;
-using Nano.Data.Identity.Extensions;
-using Nano.Data.Mappings;
-using Nano.Data.Mappings.Extensions;
 using Z.EntityFramework.Plus;
 
 namespace Nano.Data;
@@ -36,7 +37,9 @@ namespace Nano.Data;
 // 2. When SaveChanges then check if any property names are affected (e.g. User.IdentityUser.Email is changed, then User needs to be fetched and published)
 // NB: Maybe make startup validation of Publish properties and use of include 
 
-// BUG: Test if we can make a Db context base class without identity, to avoid creating the tables - or maybe we can control not creating them in another way
+/// <inheritdoc />
+public class BaseDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> dataOptions, IEventing? eventing = null)
+    : BaseDbContext<Guid>(contextOptions, dataOptions, eventing);
 
 /// <summary>
 /// Base DbContext for identity and application data, with support for auditing, soft deletion, and entity events.
@@ -358,9 +361,20 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         }
 
         modelBuilder
-            .MapIdentity<TIdentity>(this.options.CurrentValue.Identity)
-            .AddMapping<AuditEntry<TIdentity>, AuditEntryMapping<TIdentity>>()
-            .AddMapping<AuditEntryProperty<TIdentity>, AuditEntryPropertyMapping<TIdentity>>();
+            .MapEntities();
+
+        if (this.options.CurrentValue.UseAudit)
+        {
+            modelBuilder
+                .AddMapping<AuditEntry<TIdentity>, AuditEntryMapping<TIdentity>>()
+                .AddMapping<AuditEntryProperty<TIdentity>, AuditEntryPropertyMapping<TIdentity>>();
+        }
+
+        if (this.options.CurrentValue.Identity != null)
+        {
+            modelBuilder
+                .MapIdentity<TIdentity>(this.options.CurrentValue.Identity);
+        }
     }
 
 

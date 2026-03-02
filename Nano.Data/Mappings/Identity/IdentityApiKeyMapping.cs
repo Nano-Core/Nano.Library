@@ -18,11 +18,11 @@ public class IdentityApiKeyMapping<TIdentity> : BaseEntityIdentityMapping<Identi
     /// Configures the entity using the <see cref="EntityTypeBuilder{TEntity}"/>.
     /// </summary>
     /// <param name="builder">The EF Core entity type builder.</param>
-    public override void Map(EntityTypeBuilder<IdentityApiKey<TIdentity>> builder)
+    public override void Configure(EntityTypeBuilder<IdentityApiKey<TIdentity>> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        base.Map(builder);
+        base.Configure(builder);
 
         builder
             .ToTable(TableNames.IDENTITY_API_KEY);

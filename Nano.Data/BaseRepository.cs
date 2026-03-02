@@ -53,7 +53,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         where TEntity : class, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>
     {
-        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return this.GetAsync<TEntity, TKey>(key, includeDepth, cancellationToken);
     }
@@ -125,7 +125,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return this.GetFirstAsync<TEntity, TCriteria>(query, includeDepth, cancellationToken);
     }
@@ -152,7 +152,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     {
         ArgumentNullException.ThrowIfNull(where);
 
-        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return this.GetFirstAsync(where, new Ordering(), includeDepth, cancellationToken);
     }
@@ -173,7 +173,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         ArgumentNullException.ThrowIfNull(where);
         ArgumentNullException.ThrowIfNull(ordering);
 
-        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return this.GetFirstAsync(where, ordering, includeDepth, cancellationToken);
     }
@@ -200,7 +200,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     {
         ArgumentNullException.ThrowIfNull(keys);
 
-        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return this.GetManyAsync<TEntity, TKey>(keys, includeDepth, cancellationToken);
     }
@@ -297,7 +297,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return this.GetManyAsync<TEntity>(query, includeDepth, cancellationToken);
     }
@@ -323,7 +323,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return this.GetManyAsync<TEntity, TCriteria>(query, includeDepth, cancellationToken);
     }
@@ -350,7 +350,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     {
         ArgumentNullException.ThrowIfNull(where);
 
-        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return this.GetManyAsync(where, includeDepth, cancellationToken);
     }
@@ -375,7 +375,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         ArgumentNullException.ThrowIfNull(where);
         ArgumentNullException.ThrowIfNull(ordering);
 
-        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return this.GetManyAsync(where, ordering, includeDepth, cancellationToken);
     }
@@ -402,7 +402,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         ArgumentNullException.ThrowIfNull(where);
         ArgumentNullException.ThrowIfNull(pagination);
 
-        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return this.GetManyAsync(where, pagination, includeDepth, cancellationToken);
     }
@@ -430,7 +430,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         ArgumentNullException.ThrowIfNull(pagination);
         ArgumentNullException.ThrowIfNull(ordering);
 
-        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return this.GetManyAsync(where, pagination, ordering, includeDepth, cancellationToken);
     }
@@ -481,7 +481,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         ArgumentNullException.ThrowIfNull(where);
         ArgumentNullException.ThrowIfNull(orderBy);
 
-        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return this.GetManyAsync(where, orderBy, includeDepth, orderingDirection, cancellationToken);
     }
@@ -504,7 +504,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         ArgumentNullException.ThrowIfNull(orderBy);
         ArgumentNullException.ThrowIfNull(pagination);
 
-        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return this.GetManyAsync(where, orderBy, pagination, includeDepth, orderingDirection, cancellationToken);
     }
@@ -546,7 +546,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         var entry = await this.dbContext
             .AddAsync(entity, cancellationToken);
 
-        if (this.options.CurrentValue.UseAutoSave)
+        if (this.options.CurrentValue.Repository.UseAutoSave)
         {
             await this.SaveChangesAsync(cancellationToken);
         }
@@ -561,7 +561,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     {
         ArgumentNullException.ThrowIfNull(entity);
 
-        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         entity = await this.AddAsync(entity, cancellationToken);
 
@@ -577,7 +577,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         await this.dbContext
             .AddRangeAsync(entities, cancellationToken);
 
-        if (this.options.CurrentValue.UseAutoSave)
+        if (this.options.CurrentValue.Repository.UseAutoSave)
         {
             await this.SaveChangesAsync(cancellationToken);
         }
@@ -606,7 +606,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         var entry = this.dbContext
             .Update(entity);
 
-        if (this.options.CurrentValue.UseAutoSave)
+        if (this.options.CurrentValue.Repository.UseAutoSave)
         {
             await this.SaveChangesAsync(cancellationToken);
         }
@@ -619,7 +619,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         where TEntity : class, IEntityUpdatable, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>
     {
-        var includeDepth = this.options.CurrentValue.QueryIncludeDepth;
+        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         entity = await this.UpdateAsync(entity, cancellationToken);
 
@@ -635,7 +635,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         this.dbContext
             .UpdateRange(entities);
 
-        if (this.options.CurrentValue.UseAutoSave)
+        if (this.options.CurrentValue.Repository.UseAutoSave)
         {
             return this.SaveChangesAsync(cancellationToken);
         }
@@ -697,7 +697,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         var entry = this.dbContext
             .AddOrUpdate(entity);
 
-        if (this.options.CurrentValue.UseAutoSave)
+        if (this.options.CurrentValue.Repository.UseAutoSave)
         {
             await this.SaveChangesAsync(cancellationToken);
         }
@@ -717,7 +717,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
                 .AddOrUpdate(entity);
         }
 
-        if (this.options.CurrentValue.UseAutoSave)
+        if (this.options.CurrentValue.Repository.UseAutoSave)
         {
             await this.SaveChangesAsync(cancellationToken);
         }
@@ -784,7 +784,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         this.dbContext
             .SingleDelete(entity);
 
-        if (this.options.CurrentValue.UseAutoSave)
+        if (this.options.CurrentValue.Repository.UseAutoSave)
         {
             return this.SaveChangesAsync(cancellationToken);
         }
@@ -815,7 +815,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         this.dbContext
             .RemoveRange(entities);
 
-        if (this.options.CurrentValue.UseAutoSave)
+        if (this.options.CurrentValue.Repository.UseAutoSave)
         {
             return this.SaveChangesAsync(cancellationToken);
         }

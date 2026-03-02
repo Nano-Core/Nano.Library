@@ -1,7 +1,8 @@
-using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Nano.Data.Abstractions.Models.Abstractions;
+using System;
 
 namespace Nano.Data.Mappings;
 
@@ -11,12 +12,12 @@ namespace Nano.Data.Mappings;
 /// </summary>
 /// <typeparam name="TEntity">The type of entity.</typeparam>
 /// <typeparam name="TIdentity">The type of the entity's identity key.</typeparam>
-public abstract class BaseEntityIdentityMapping<TEntity, TIdentity> : BaseEntityMapping<TEntity>
+public abstract class BaseEntityIdentityMapping<TEntity, TIdentity> : IEntityTypeConfiguration<TEntity>
     where TEntity : class, IEntityIdentity<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    public override void Map(EntityTypeBuilder<TEntity> builder)
+    public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 

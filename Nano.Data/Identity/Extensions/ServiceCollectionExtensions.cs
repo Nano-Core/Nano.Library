@@ -59,8 +59,8 @@ internal static class ServiceCollectionExtensions
             .PersistKeysToDbContext<TContext>();
 
         services
-            .AddScoped<IIdentityRepository, DefaultIdentityRepository>()
-            .AddScoped<IIdentityRepository<TIdentity>, DefaultIdentityRepository<TIdentity>>();
+            .AddScoped<IIdentityRepository, IdentityRepository>()
+            .AddScoped<IIdentityRepository<TIdentity>, IdentityRepository<TIdentity>>();
 
         services
             .AddIdentityAuthRepository<IIdentityAuthRepository, DefaultIdentityAuthRepository>()

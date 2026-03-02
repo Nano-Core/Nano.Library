@@ -25,7 +25,7 @@ public static class ServiceProviderExtensions
             .CreateScope();
 
         var registerEventHandlersTask = scope.ServiceProvider
-            .GetService<IRegisterEventHandlersTask>();
+            .GetService<IRegisterEventingHandlersTask>();
 
         registerEventHandlersTask?
             .RegisterEventHandlers(scope.ServiceProvider)

@@ -4,7 +4,10 @@ using System.Threading.Tasks;
 
 namespace Nano.Data.Abstractions.Eventing;
 
-internal interface IRegisterEntityEventHandlersTask
+/// <summary>
+/// Task for registering all entity eventing handlers in the application.
+/// </summary>
+internal interface IRegisterEntityEventingHandlersTask
 {
     /// <summary>
     /// Registers entity event handlers using the provided <see cref="IServiceProvider"/>.

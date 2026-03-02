@@ -4,8 +4,6 @@ using Nano.Common.Config;
 
 namespace Nano.Data.Abstractions.Config;
 
-// BUG: Repository settings into repository class
-
 /// <summary>
 /// Options for configuring the data access layer and DbContext behavior.
 /// </summary>
@@ -43,20 +41,6 @@ public class DataOptions
     /// </summary>
     [Required]
     public virtual int QueryRetryCount { get; set; } = 0;
-
-    /// <summary>
-    /// Gets or sets the maximum depth for query includes.
-    /// Defaults to <c>4</c>.
-    /// </summary>
-    [Required]
-    public virtual int QueryIncludeDepth { get; set; } = 4;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether automatic saving of changes in repositories is enabled.
-    /// Defaults to <c>true</c>.
-    /// </summary>
-    [Required]
-    public virtual bool UseAutoSave { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether lazy loading is enabled.
@@ -117,6 +101,11 @@ public class DataOptions
     /// </summary>
     [Required]
     public virtual string ConnectionString { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the repository configuration options.
+    /// </summary>
+    public virtual RepositoryOptions Repository { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the cache configuration options.

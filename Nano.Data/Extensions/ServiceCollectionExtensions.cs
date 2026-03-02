@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/> for chaining.</returns>
     public static IServiceCollection AddNanoData<TProvider, TContext>(this IServiceCollection services)
         where TProvider : IDataProvider
-        where TContext : DefaultDbContext
+        where TContext : BaseDbContext
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -42,7 +42,7 @@ public static class ServiceCollectionExtensions
             .AddNanoData<TProvider, TContext, Guid>();
 
         services
-            .AddScoped<DefaultDbContext, TContext>();
+            .AddScoped<BaseDbContext, TContext>();
 
         return services;
     }
@@ -85,14 +85,14 @@ public static class ServiceCollectionExtensions
             .AddScoped<TContext>()
             .AddScoped<DbContext, TContext>()
             .AddScoped<BaseDbContext<TIdentity>, TContext>()
-            .AddScoped<IRepository, DefaultRepository<TContext, TIdentity>>();
+            .AddScoped<IRepository, Repository<TContext, TIdentity>>();
 
         services
             .AddScoped<IDbMigrationTask, DbMigrationTask<TIdentity>>();
 
         services
             .AddScoped<EntityEventingHandler<TIdentity>>()
-            .AddScoped<IRegisterEntityEventHandlersTask, RegisterEntityEventHandlersTask>();
+            .AddScoped<IRegisterEntityEventingHandlersTask, RegisterEntityEventingHandlersTask>();
 
         services
             .AddAuthentication()

@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
     ///     <item>Creates an instance of <typeparamref name="TProvider"/> and invokes its <see cref="IEventingProvider.Configure"/> method.</item>
     ///     <item>Registers <typeparamref name="TProvider"/> as a singleton <see cref="IEventingProvider"/>.</item>
     ///     <item>Scans all loaded types for implementations of <see cref="IEventingHandler{TEvent}"/> and registers them as scoped services.</item>
-    ///     <item>Registers <see cref="IRegisterEventHandlersTask"/> as a scoped service for automatic event handler registration.</item>
+    ///     <item>Registers <see cref="IRegisterEventingHandlersTask"/> as a scoped service for automatic event handler registration.</item>
     ///     </list>
     /// </remarks>
     public static IServiceCollection AddNanoEventing<TProvider>(this IServiceCollection services)
@@ -48,7 +48,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddEventingHandlers()
-            .AddScoped<IRegisterEventHandlersTask, RegisterEventHandlersTask>();
+            .AddScoped<IRegisterEventingHandlersTask, RegisterEventingHandlersTask>();
 
         return services;
     }

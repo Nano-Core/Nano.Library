@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 
 namespace Nano.Eventing;
 
-internal sealed class RegisterEventHandlersTask(IEventing eventing) : IRegisterEventHandlersTask
+/// <inheritdoc />
+internal sealed class RegisterEventingHandlersTask(IEventing eventing) : IRegisterEventingHandlersTask
 {
     private readonly IEventing eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
 

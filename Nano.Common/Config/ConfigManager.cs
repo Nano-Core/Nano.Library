@@ -32,17 +32,17 @@ public static class ConfigManager
         var path = Directory.GetCurrentDirectory();
         var stream = ConfigManager.LoadConfigurationStream(path, environment);
 
-        if (entryAssembly == null)
-        {
-            throw new NullReferenceException(nameof(entryAssembly));
-        }
-
         var configurationBuilder = new ConfigurationBuilder()
             .SetBasePath(path)
             .AddJsonStream(stream)
             .AddEnvironmentVariables()
-            .AddCommandLine(args)
-            .AddUserSecrets(entryAssembly, true, true);
+            .AddCommandLine(args);
+
+        if (entryAssembly != null)
+        {
+            configurationBuilder
+                .AddUserSecrets(entryAssembly, true, true);
+        }
 
         return ConfigManager.Configuration = configurationBuilder
             .Build();

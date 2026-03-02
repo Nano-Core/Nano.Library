@@ -14,11 +14,11 @@ public class AuditEntryMapping<TIdentity> : BaseEntityIdentityMapping<AuditEntry
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    public override void Map(EntityTypeBuilder<AuditEntry<TIdentity>> builder)
+    public override void Configure(EntityTypeBuilder<AuditEntry<TIdentity>> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        base.Map(builder);
+        base.Configure(builder);
 
         builder
             .ToTable(TableNames.AUDIT);
