@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Nano.Common.Helpers;
 
@@ -22,16 +23,23 @@ public static class TypesHelper
             {
                 var name = x.GetName().Name;
 
-                if (name == null)
-                {
-                    return null;
-                }
-
-                return name.StartsWith(nameof(Microsoft), StringComparison.Ordinal)
+                return name == null || name.StartsWith(nameof(Microsoft), StringComparison.Ordinal)
                     ? null
                     : x;
             })
-            .Where(x => x != null)
-            .SelectMany(x => x!.GetTypes());
+            .SelectMany(x =>
+            {
+                try
+                {
+                    return x?
+                        .GetTypes() ?? [];
+                }
+                catch (ReflectionTypeLoadException ex)
+                {
+                    return ex.Types
+                        .Where(t => t != null)!;
+                }
+            })
+            .Where(x => x != null)!;
     }
 }

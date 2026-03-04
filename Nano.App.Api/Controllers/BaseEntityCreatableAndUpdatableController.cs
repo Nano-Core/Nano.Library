@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,34 +13,52 @@ using Nano.App.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
-using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Nano.App.Api.Controllers;
 
+/// <inheritdoc />
+public abstract class BaseEntityCreatableAndUpdatableController<TEntity, TCriteria> : BaseEntityCreatableAndUpdatableController<TEntity, Guid, TCriteria>
+    where TEntity : class, IEntityIdentity<Guid>, IEntityCreatableAndUpdatable
+    where TCriteria : class, IQueryCriteria, new()
+{
+    /// <inheritdoc />
+    protected BaseEntityCreatableAndUpdatableController(ILogger<BaseEntityCreatableAndUpdatableController<TEntity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
+        : base(logger, repository, eventing)
+    {
+    }
+}
+
+/// <inheritdoc />
+public abstract class BaseEntityCreatableAndUpdatableController<TEntity, TIdentity, TCriteria> : BaseEntityCreatableAndUpdatableController<IRepository, TEntity, TIdentity, TCriteria>
+    where TEntity : class, IEntityIdentity<TIdentity>, IEntityCreatableAndUpdatable
+    where TCriteria : class, IQueryCriteria, new()
+    where TIdentity : IEquatable<TIdentity>
+{
+    /// <inheritdoc />
+    protected BaseEntityCreatableAndUpdatableController(ILogger<BaseEntityCreatableAndUpdatableController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
+        : base(logger, repository, eventing)
+    {
+    }
+}
+
 /// <summary>
-/// Controller providing update operations.
+/// Controller providing create and update operations.
 /// </summary>
 /// <typeparam name="TRepository">The repository implementing <see cref="IRepository"/> used for data access.</typeparam>
 /// <typeparam name="TEntity">The entity type implementing <see cref="IEntity"/> handled by this controller.</typeparam>
 /// <typeparam name="TIdentity">The identifier type of <typeparamref name="TEntity"/>.</typeparam>
 /// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
-[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.EDITOR)]
-public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
+[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR)]
+public abstract class BaseEntityCreatableAndUpdatableController<TRepository, TEntity, TIdentity, TCriteria> : BaseEntityCreatableController<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : class, IRepository
-    where TEntity : class, IEntityIdentity<TIdentity>, IEntityUpdatable
+    where TEntity : class, IEntityIdentity<TIdentity>, IEntityCreatableAndUpdatable
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseControllerUpdatable(ILogger<BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
+    protected BaseEntityCreatableAndUpdatableController(ILogger<BaseEntityCreatableController<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }
@@ -55,12 +79,12 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     [Route(ActionRoutes.EDIT)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(BaseEntity), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> EditAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> EditAsync([FromBody][Required] TEntity entity, CancellationToken cancellationToken = default)
     {
         var entityEdited = await this.Repository
             .UpdateAsync(entity, cancellationToken);
@@ -86,11 +110,11 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     [Route(ActionRoutes.EDIT_GET)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(BaseEntity), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> EditAndGetAsync([FromBody][Required]TEntity entity, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> EditAndGetAsync([FromBody][Required] TEntity entity, CancellationToken cancellationToken = default)
     {
         var entityEdited = await this.Repository
             .UpdateAndGetAsync<TEntity, TIdentity>(entity, cancellationToken);
@@ -120,7 +144,7 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> EditManyAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> EditManyAsync([FromBody][Required] IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         await this.Repository
             .UpdateManyAsync(entities, cancellationToken);
@@ -150,7 +174,7 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> EditManyBulkAsync([FromBody][Required]IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> EditManyBulkAsync([FromBody][Required] IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         await this.Repository
             .UpdateManyBulkAsync(entities, cancellationToken);
@@ -176,7 +200,7 @@ public abstract class BaseControllerUpdatable<TRepository, TEntity, TIdentity, T
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> EditQueryAsync([FromBody][Required]UpdateQuery<TCriteria> query, CancellationToken cancellationToken = default)
+    public virtual async Task<IActionResult> EditQueryAsync([FromBody][Required] UpdateQuery<TCriteria> query, CancellationToken cancellationToken = default)
     {
         await this.Repository
             .UpdateManyBulkAsync<TEntity, TCriteria>(query.Criteria, query.PropertyUpdates, cancellationToken);

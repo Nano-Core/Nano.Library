@@ -20,13 +20,21 @@ using Nano.Data.Abstractions.Identity.Consts;
 
 namespace Nano.App.Api.Controllers;
 
+/// <inheritdoc />
+public class BaseAuthController : BaseAuthController<Guid>
+{
+    /// <inheritdoc />
+    public BaseAuthController(ILogger<BaseAuthController> logger, IIdentityAuthRepository? identityAuthRepository = null, IAuthTransientRepository? authTransientRepository = null, IAuthRootRepository? authRootRepository = null, IAuthExternalRepository? authExternalRepository = null)
+        : base(logger, identityAuthRepository, authTransientRepository, authRootRepository, authExternalRepository)
+    {
+    }
+}
+
 /// <summary>
 /// Base controller for authentication-related operations.
 /// Handles login, logout, token refresh, and external authentication.
 /// </summary>
 /// <typeparam name="TIdentity"></typeparam>
-[Route(ControllerRoutes.AUTH_CONTROLLER_ROUTE)]
-[Route($"v{{v:apiVersion}}/{ControllerRoutes.AUTH_CONTROLLER_ROUTE}")]
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR + "," + BuiltInUserRoles.EDITOR + "," + BuiltInUserRoles.DELETER + "," + BuiltInUserRoles.READER)]
 public abstract class BaseAuthController<TIdentity> : BaseController
     where TIdentity : IEquatable<TIdentity>

@@ -19,6 +19,31 @@ using System.Threading.Tasks;
 
 namespace Nano.App.Api.Controllers;
 
+/// <inheritdoc />
+public abstract class BaseEntityController<TEntity, TCriteria> : BaseEntityController<TEntity, Guid, TCriteria>
+    where TEntity : class, IEntityIdentity<Guid>, IEntityWritable, new()
+    where TCriteria : class, IQueryCriteria, new()
+{
+    /// <inheritdoc />
+    protected BaseEntityController(ILogger<BaseEntityController<TEntity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
+        : base(logger, repository, eventing)
+    {
+    }
+}
+
+/// <inheritdoc />
+public abstract class BaseEntityController<TEntity, TIdentity, TCriteria> : BaseEntityController<IRepository, TEntity, TIdentity, TCriteria>
+    where TEntity : class, IEntityIdentity<TIdentity>, IEntityWritable, new()
+    where TCriteria : class, IQueryCriteria, new()
+    where TIdentity : IEquatable<TIdentity>
+{
+    /// <inheritdoc />
+    protected BaseEntityController(ILogger<BaseEntityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
+        : base(logger, repository, eventing)
+    {
+    }
+}
+
 /// <summary>
 /// Controller providing writable operations (Create, Edit, Delete).
 /// </summary>
@@ -27,14 +52,14 @@ namespace Nano.App.Api.Controllers;
 /// <typeparam name="TIdentity">The identifier type of <typeparamref name="TEntity"/>.</typeparam>
 /// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER)]
-public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
+public abstract class BaseEntityController<TRepository, TEntity, TIdentity, TCriteria> : BaseEntityReadOnlyController<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : class, IRepository
     where TEntity : class, IEntityIdentity<TIdentity>, IEntityWritable, new()
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseControllerWritable(ILogger<BaseControllerWritable<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
+    protected BaseEntityController(ILogger<BaseEntityController<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }
@@ -53,7 +78,7 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [Route(ActionRoutes.CREATE)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(BaseEntity), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
@@ -82,7 +107,7 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [Route(ActionRoutes.CREATE_GET)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(BaseEntity), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
@@ -166,7 +191,7 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [Route(ActionRoutes.EDIT)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(BaseEntity), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -197,7 +222,7 @@ public abstract class BaseControllerWritable<TRepository, TEntity, TIdentity, TC
     [Route(ActionRoutes.EDIT_GET)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(BaseEntity), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]

@@ -28,6 +28,43 @@ using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.App.Api.Controllers;
 
+/// <inheritdoc />
+public abstract class BaseIdentityController<TEntity, TCriteria> : BaseIdentityController<IRepository, TEntity, Guid, TCriteria>
+    where TEntity : class, IEntityUser<Guid>, IEntityUpdatable, IEntityDeletable, IEntityIdentity<Guid>, new()
+    where TCriteria : class, IQueryCriteria, new()
+{
+    /// <inheritdoc />
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IIdentityRepository<Guid> identityRepository, IAuthExternalRepository? authExternalRepository = null)
+        : base(logger, repository, identityRepository, authExternalRepository)
+    {
+    }
+
+    /// <inheritdoc />
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<Guid> identityRepository, IAuthExternalRepository? authExternalRepository = null)
+        : base(logger, repository, eventing, identityRepository, authExternalRepository)
+    {
+    }
+}
+
+/// <inheritdoc />
+public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : BaseIdentityController<IRepository, TEntity, TIdentity, TCriteria>
+    where TEntity : class, IEntityUser<TIdentity>, IEntityUpdatable, IEntityDeletable, IEntityIdentity<TIdentity>, new()
+    where TIdentity : IEquatable<TIdentity>
+    where TCriteria : class, IQueryCriteria, new()
+{
+    /// <inheritdoc />
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository? authExternalRepository = null)
+        : base(logger, repository, identityRepository, authExternalRepository)
+    {
+    }
+
+    /// <inheritdoc />
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository? authExternalRepository = null)
+        : base(logger, repository, eventing, identityRepository, authExternalRepository)
+    {
+    }
+}
+
 /// <summary>
 /// Identity controller providing identity-related endpoints.
 /// </summary>
@@ -36,7 +73,7 @@ namespace Nano.App.Api.Controllers;
 /// <typeparam name="TIdentity">The identity key type.</typeparam>
 /// <typeparam name="TCriteria">The query criteria type.</typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.IDENTITY)]
-public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerUpdatable<TRepository, TEntity, TIdentity, TCriteria>
+public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseEntityUpdatableController<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : class, IRepository
     where TEntity : class, IEntityUser<TIdentity>, IEntityUpdatable, IEntityDeletable, IEntityIdentity<TIdentity>, new()
     where TIdentity : IEquatable<TIdentity>

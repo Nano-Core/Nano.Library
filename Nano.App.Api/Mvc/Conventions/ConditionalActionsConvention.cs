@@ -55,7 +55,7 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
             return;
         }
 
-        if (!(this.apiOptions.CurrentValue.Authentication?.Jwt != null || this.apiOptions.CurrentValue.Authentication?.Jwt != null) || this.apiOptions.CurrentValue.Hosting.HideAuthController)
+        if (this.apiOptions.CurrentValue.Authentication?.Jwt == null || this.apiOptions.CurrentValue.Authentication.HideAuthController)
         {
             controller.ApiExplorer.IsVisible = false;
 
@@ -163,14 +163,14 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
         ArgumentNullException.ThrowIfNull(controller);
 
         var isAuditController = controller.ControllerType
-            .IsTypeOf(typeof(AuditController<>));
+            .IsTypeOf(typeof(BaseAuditController<>));
 
         if (!isAuditController)
         {
             return;
         }
 
-        if ((this.dataOptions?.CurrentValue.UseAudit ?? false) && !this.apiOptions.CurrentValue.Hosting.HideAuditController)
+        if (this.dataOptions?.CurrentValue.UseAudit ?? false)
         {
             return;
         }

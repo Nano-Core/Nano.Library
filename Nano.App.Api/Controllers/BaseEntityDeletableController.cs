@@ -16,6 +16,31 @@ using System.Threading.Tasks;
 
 namespace Nano.App.Api.Controllers;
 
+/// <inheritdoc />
+public abstract class BaseEntityDeletableController<TEntity, TCriteria> : BaseEntityDeletableController<TEntity, Guid, TCriteria>
+    where TEntity : class, IEntityIdentity<Guid>, IEntityDeletable, new()
+    where TCriteria : class, IQueryCriteria, new()
+{
+    /// <inheritdoc />
+    protected BaseEntityDeletableController(ILogger<BaseEntityDeletableController<TEntity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
+        : base(logger, repository, eventing)
+    {
+    }
+}
+
+/// <inheritdoc />
+public abstract class BaseEntityDeletableController<TEntity, TIdentity, TCriteria> : BaseEntityDeletableController<IRepository, TEntity, TIdentity, TCriteria>
+    where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable, new()
+    where TCriteria : class, IQueryCriteria, new()
+    where TIdentity : IEquatable<TIdentity>
+{
+    /// <inheritdoc />
+    protected BaseEntityDeletableController(ILogger<BaseEntityDeletableController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
+        : base(logger, repository, eventing)
+    {
+    }
+}
+
 /// <summary>
 /// Controller providing delete operations.
 /// </summary>
@@ -24,14 +49,14 @@ namespace Nano.App.Api.Controllers;
 /// <typeparam name="TIdentity">The identifier type of <typeparamref name="TEntity"/>.</typeparam>
 /// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.DELETER)]
-public abstract class BaseControllerDeletable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
+public abstract class BaseEntityDeletableController<TRepository, TEntity, TIdentity, TCriteria> : BaseEntityReadOnlyController<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : class, IRepository
     where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable, new()
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseControllerDeletable(ILogger<BaseControllerDeletable<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
+    protected BaseEntityDeletableController(ILogger<BaseEntityDeletableController<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

@@ -1,16 +1,16 @@
+using Nano.Data.Abstractions.Models.Abstractions;
 using System;
 using System.ComponentModel.DataAnnotations;
-using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Abstractions.Models;
 
 /// <inheritdoc />
-public abstract class BaseEntity : BaseEntity<Guid>
+public abstract class BaseEntityUpdatable : BaseEntityUpdatable<Guid>
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="BaseEntity"/> class with a new <see cref="Guid"/> identifier.
+    /// Initializes a new instance of the <see cref="BaseEntityUpdatable"/> class with a new <see cref="Guid"/> identifier.
     /// </summary>
-    protected BaseEntity()
+    protected BaseEntityUpdatable()
     {
         this.Id = Guid.NewGuid();
     }
@@ -18,10 +18,10 @@ public abstract class BaseEntity : BaseEntity<Guid>
 
 /// <summary>
 /// Base class for entities.
-/// Implements <see cref="IEntityWritable"/>.
+/// Implements <see cref="IEntityUpdatable"/>.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the entity identity.</typeparam>
-public abstract class BaseEntity<TIdentity> : BaseEntityIdentity<TIdentity>, IEntityWritable
+public abstract class BaseEntityUpdatable<TIdentity> : BaseEntityIdentity<TIdentity>, IEntityUpdatable
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

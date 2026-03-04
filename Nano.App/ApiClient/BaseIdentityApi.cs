@@ -16,6 +16,17 @@ using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.App.ApiClient;
 
+/// <inheritdoc />
+public abstract class BaseIdentityApi<TUser> : BaseIdentityApi<TUser, Guid>
+    where TUser : class, IEntityUser<Guid>
+{
+    /// <inheritdoc />
+    protected BaseIdentityApi(ApiClientOptions apiClientOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        : base(apiClientOptions, httpClient, httpContextAccessor)
+    {
+    }
+}
+
 /// <summary>
 /// Default Identity Api.
 /// </summary>

@@ -12,10 +12,20 @@ using System.Threading.Tasks;
 
 namespace Nano.App.ApiClient;
 
+/// <inheritdoc />
+public abstract class BaseAuthApi : BaseEntityApi<Guid>
+{
+    /// <inheritdoc />
+    protected BaseAuthApi(ApiClientOptions apiClientOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        : base(apiClientOptions, httpClient, httpContextAccessor)
+    {
+    }
+}
+
 /// <summary>
 /// 
 /// </summary>
-public abstract class BaseAuthApi<TIdentity> : BaseApi<TIdentity>
+public abstract class BaseAuthApi<TIdentity> : BaseEntityApi<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />

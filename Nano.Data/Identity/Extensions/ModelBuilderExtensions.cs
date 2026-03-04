@@ -12,7 +12,7 @@ namespace Nano.Data.Identity.Extensions;
 
 internal static class ModelBuilderExtensions
 {
-    internal static ModelBuilder MapIdentity<TIdentity>(this ModelBuilder modelBuilder, IdentityOptions? options = null)
+    internal static ModelBuilder MapIdentityEntities<TIdentity>(this ModelBuilder modelBuilder, IdentityOptions? options = null)
         where TIdentity : IEquatable<TIdentity>
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
@@ -31,9 +31,9 @@ internal static class ModelBuilderExtensions
             .MapDataProtectionKey<TIdentity>();
 
         modelBuilder
-            .AddMapping<IdentityApiKey<TIdentity>, IdentityApiKeyMapping<TIdentity>>()
-            .AddMapping<IdentityUserChangeData<TIdentity>, IdentityUserChangeDataMapping<TIdentity>>()
-            .AddMapping<IdentityUserRefreshToken<TIdentity>, IdentityUserRefreshTokenMapping<TIdentity>>();
+            .AddMapping<IdentityApiKey<TIdentity>, TIdentity, IdentityApiKeyMapping<TIdentity>>()
+            .AddMapping<IdentityUserChangeData<TIdentity>, TIdentity, IdentityUserChangeDataMapping<TIdentity>>()
+            .AddMapping<IdentityUserRefreshToken<TIdentity>, TIdentity, IdentityUserRefreshTokenMapping<TIdentity>>();
 
         return modelBuilder;
     }

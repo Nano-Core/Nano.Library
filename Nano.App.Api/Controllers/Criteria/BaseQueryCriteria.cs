@@ -1,10 +1,10 @@
+using System;
+using System.Collections.Generic;
 using DynamicExpression;
 using DynamicExpression.Interfaces;
 using Nano.Data.Abstractions.Models;
-using System;
-using System.Collections.Generic;
 
-namespace Nano.App.Api.Controllers.Models;
+namespace Nano.App.Api.Controllers.Criteria;
 
 /// <summary>
 /// Base implementation of <see cref="IQueryCriteria"/> with time-based filtering options.

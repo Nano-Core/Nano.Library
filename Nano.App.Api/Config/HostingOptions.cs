@@ -14,18 +14,6 @@ public class HostingOptions
     public virtual string Root { get; set; } = "api";
 
     /// <summary>
-    /// Expose authentication controller.
-    /// </summary>
-    [Required]
-    public virtual bool HideAuthController { get; set; } = false;
-
-    /// <summary>
-    /// Expose audit controller.
-    /// </summary>
-    [Required]
-    public virtual bool HideAuditController { get; set; } = false;
-
-    /// <summary>
     /// Options for Http.
     /// </summary>
     [Required]

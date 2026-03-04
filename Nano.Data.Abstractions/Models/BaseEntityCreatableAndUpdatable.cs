@@ -5,12 +5,12 @@ using Nano.Data.Abstractions.Models.Abstractions;
 namespace Nano.Data.Abstractions.Models;
 
 /// <inheritdoc />
-public abstract class BaseEntity : BaseEntity<Guid>
+public abstract class BaseEntityCreatableAndUpdatable : BaseEntityCreatableAndUpdatable<Guid>
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="BaseEntity"/> class with a new <see cref="Guid"/> identifier.
+    /// Initializes a new instance of the <see cref="BaseEntityCreatableAndUpdatable"/> class with a new <see cref="Guid"/> identifier.
     /// </summary>
-    protected BaseEntity()
+    protected BaseEntityCreatableAndUpdatable()
     {
         this.Id = Guid.NewGuid();
     }
@@ -18,10 +18,10 @@ public abstract class BaseEntity : BaseEntity<Guid>
 
 /// <summary>
 /// Base class for entities.
-/// Implements <see cref="IEntityWritable"/>.
+/// Implements <see cref="IEntityCreatable"/>.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the entity identity.</typeparam>
-public abstract class BaseEntity<TIdentity> : BaseEntityIdentity<TIdentity>, IEntityWritable
+public abstract class BaseEntityCreatableAndUpdatable<TIdentity> : BaseEntityIdentity<TIdentity>, IEntityCreatable
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

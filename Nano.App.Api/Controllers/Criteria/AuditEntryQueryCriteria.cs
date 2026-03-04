@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using DynamicExpression;
 using Nano.Data.Abstractions.Models;
 
-namespace Nano.App.Api.Controllers.Models;
+namespace Nano.App.Api.Controllers.Criteria;
 
 /// <summary>
 /// Query criteria specifically for audit entries, extending <see cref="BaseQueryCriteria"/>.

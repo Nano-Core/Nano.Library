@@ -4,15 +4,51 @@ using Nano.Data.Abstractions.Models.Abstractions;
 using System;
 using System.Linq;
 using System.Reflection;
+using Nano.Common.Helpers;
 using Nano.Data.Abstractions.Models;
 
 namespace Nano.Data.Mappings.Extensions;
 
 internal static class ModelBuilderExtensions
 {
-    internal static ModelBuilder AddMapping<TEntity, TMapping>(this ModelBuilder builder)
-        where TEntity : BaseEntity
-        where TMapping : BaseEntityMapping<TEntity>, new()
+    internal static ModelBuilder MapEntities<TIdentity>(this ModelBuilder builder)
+        where TIdentity : IEquatable<TIdentity>
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        var addMappingMethod = typeof(ModelBuilderExtensions)
+            .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
+            .Single(x =>
+                x is { Name: nameof(ModelBuilderExtensions.AddMapping), IsGenericMethodDefinition: true } &&
+                x.GetGenericArguments().Length == 3 &&
+                x.GetParameters().Length == 1);
+
+        var mappingTypes = TypesHelper
+            .GetAllTypes()
+            .Where(x =>
+                x is { IsAbstract: false, IsInterface: false, IsGenericType: false } &&
+                x.IsTypeOf(typeof(BaseMapping<>)))
+            .ToArray();
+
+        foreach (var mappingType in mappingTypes)
+        {
+            var baseType = mappingType.BaseType!;
+            var genericArgs = baseType.GetGenericArguments();
+            var entityType = genericArgs[0];
+            var identityType = typeof(TIdentity);
+
+            addMappingMethod
+                .MakeGenericMethod(entityType, identityType, mappingType)
+                .Invoke(null, [builder]);
+        }
+
+        return builder;
+    }
+
+    internal static ModelBuilder AddMapping<TEntity, TIdentity, TMapping>(this ModelBuilder builder)
+        where TEntity : BaseEntityIdentity<TIdentity>
+        where TIdentity : IEquatable<TIdentity>
+        where TMapping : BaseEntityIdentityMapping<TEntity, TIdentity>, new()
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -26,126 +62,41 @@ internal static class ModelBuilderExtensions
             .UpdateUniuqeIndexes<TEntity>();
     }
 
-    internal static ModelBuilder MapEntities(this ModelBuilder builder)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        // BUG: We find Nano types "Default", we should make those abstract, all of them
-        // Check all Default naming, e.g. DefaultRepository should we renamed to just Repository, because it should not be abstract, like AuthController.
-        // We will accidently map Audit and Identity, when that should be conditional outside this method
-
-        var entityTypes = AppDomain.CurrentDomain
-            .GetAssemblies()
-            .SelectMany(x => x.GetTypes())
-            .Where(x => x is { IsAbstract: false, IsInterface: false })
-            .Where(x => x.GetInterfaces()
-                .Any(y => y == typeof(IEntity)))
-            .ToList();
-
-        // AuditEntry`1
-        // AuditEntryProperty`1
-        // DefaultEntity
-        // DefaultEntity`1
-        // DefaultEntityReadOnly
-        // DefaultEntityUser
-        // DefaultEntityUser`1
-        // IdentityApiKey`1
-        // IdentityApiKeyCreated`1
-        // IdentityUserChangeData`1
-        // IdentityUserEx`1
-        // IdentityUserRefreshToken`1
-
-
-
-        foreach (var entityType in entityTypes)
-        {
-            Console.WriteLine(entityType.Name);
-        }
-
-        var assembliesWithMappings = AppDomain.CurrentDomain.GetAssemblies()
-            .Where(a => a.GetTypes().Any(t =>
-                t is { IsAbstract: false, IsInterface: false } &&
-                t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEntityTypeConfiguration<>))))
-            .ToArray();
-
-        foreach (var assembly in assembliesWithMappings)
-        {
-            builder
-                .ApplyConfigurationsFromAssembly(assembly);
-        }
-
-
-        //var entityTypes = AppDomain.CurrentDomain
-        //    .GetAssemblies()
-        //    .SelectMany(x => x.GetTypes())
-        //    .Where(x => x is { IsAbstract: false, IsInterface: false })
-        //    .Where(x => x.GetInterfaces()
-        //        .Any(y => y == typeof(IEntity)));
-
-        //foreach (var entityType in entityTypes)
-        //{
-        //    var mappingType = AppDomain.CurrentDomain
-        //        .GetAssemblies()
-        //        .SelectMany(x => x.GetTypes())
-        //        .FirstOrDefault(x =>
-        //            x is { IsAbstract: false, IsInterface: false } &&
-        //            typeof(IEntityTypeConfiguration<>).MakeGenericType(entityType).IsAssignableFrom(x)); 
-
-        //    if (mappingType == null)
-        //    {
-        //        throw new NullReferenceException(nameof(mappingType));
-        //    }
-
-        //    const string METHOD_NAME = nameof(ModelBuilderExtensions.AddMapping);
-
-        //    var addMappingMethod = typeof(ModelBuilderExtensions)
-        //        .GetMethods(BindingFlags.Static | BindingFlags.Public)
-        //        .FirstOrDefault(x => x is { Name: METHOD_NAME, IsGenericMethodDefinition: true } && x.GetGenericArguments().Length == 2);
-
-        //    var genericMethod = addMappingMethod?
-        //        .MakeGenericMethod(entityType, mappingType);
-
-        //    genericMethod?
-        //        .Invoke(null, [builder]);
-        //}
-
-        return builder;
-    }
-
-
     private static ModelBuilder UpdateUniuqeIndexes<TEntity>(this ModelBuilder builder)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        var entity = builder.Entity<TEntity>();
+        var entity = builder
+            .Entity<TEntity>();
 
-        entity.Metadata
+        var indices = entity.Metadata
             .GetIndexes()
             .Where(x => x.IsUnique)
-            .ToList()
-            .ForEach(x =>
-            {
-                entity.Metadata
-                    .RemoveIndex(x.Properties);
+            .ToArray();
 
-                var columns = x.Properties
-                    .Select(y => y.Name)
-                    .ToArray();
+        foreach (var index in indices)
+        {
+            entity.Metadata
+                .RemoveIndex(index.Properties);
 
-                var tableName = x.DeclaringEntityType
-                    .GetTableName();
+            var columns = index.Properties
+                .Select(y => y.Name)
+                .ToArray();
 
-                var columnNames = columns
-                    .Aggregate("", (y, z) => y + $"_{z}");
+            var tableName = index.DeclaringEntityType
+                .GetTableName();
 
-                var indexName = $"UX_{tableName}{columnNames}";
+            var columnNames = columns
+                .Aggregate("", (y, z) => y + $"_{z}");
 
-                entity
-                    .HasIndex(columns)
-                    .HasDatabaseName(indexName)
-                    .IsUnique();
-            });
+            var indexName = $"UX_{tableName}{columnNames}";
+
+            entity
+                .HasIndex(columns)
+                .HasDatabaseName(indexName)
+                .IsUnique();
+        }
 
         return builder;
     }
@@ -154,35 +105,35 @@ internal static class ModelBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        var isDeletableSoft = typeof(TEntity).IsTypeOf(typeof(IEntityDeletableSoft));
-
-        if (!isDeletableSoft)
+        if (!typeof(TEntity).IsTypeOf(typeof(IEntityDeletableSoft)))
         {
             return builder;
         }
 
-        var entity = builder.Entity<TEntity>();
+        var entity = builder
+            .Entity<TEntity>();
 
-        entity.Metadata
+        var indices = entity.Metadata
             .GetIndexes()
             .Where(x =>
                 x.IsUnique &&
-                x.Properties.All(y => y.Name != "IsDeleted" && !y.IsKey()))
-            .ToList()
-            .ForEach(x =>
-            {
-                entity.Metadata
-                    .RemoveIndex(x.Properties);
+                x.Properties.All(y => y.Name != nameof(BaseEntity.IsDeleted) && !y.IsKey()))
+            .ToArray();
 
-                var columns = x.Properties
-                    .Select(y => y.Name)
-                    .Union(["IsDeleted"])
-                    .ToArray();
+        foreach (var index in indices)
+        {
+            entity.Metadata
+                .RemoveIndex(index.Properties);
 
-                entity
-                    .HasIndex(columns)
-                    .IsUnique();
-            });
+            var columns = index.Properties
+                .Select(y => y.Name)
+                .Union([nameof(BaseEntity.IsDeleted)])
+                .ToArray();
+
+            entity
+                .HasIndex(columns)
+                .IsUnique();
+        }
 
         return builder;
     }

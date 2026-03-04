@@ -2,11 +2,11 @@ using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Nano.App.ApiClient.Requests.Models;
 using Nano.App.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
-using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 using System;
@@ -18,6 +18,31 @@ using System.Threading.Tasks;
 
 namespace Nano.App.Api.Controllers;
 
+/// <inheritdoc />
+public abstract class BaseEntityCreatableController<TEntity, TCriteria> : BaseEntityCreatableController<TEntity, Guid, TCriteria>
+    where TEntity : class, IEntityIdentity<Guid>, IEntityCreatable
+    where TCriteria : class, IQueryCriteria, new()
+{
+    /// <inheritdoc />
+    protected BaseEntityCreatableController(ILogger<BaseEntityCreatableController<TEntity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
+        : base(logger, repository, eventing)
+    {
+    }
+}
+
+/// <inheritdoc />
+public abstract class BaseEntityCreatableController<TEntity, TIdentity, TCriteria> : BaseEntityCreatableController<IRepository, TEntity, TIdentity, TCriteria>
+    where TEntity : class, IEntityIdentity<TIdentity>, IEntityCreatable
+    where TCriteria : class, IQueryCriteria, new()
+    where TIdentity : IEquatable<TIdentity>
+{
+    /// <inheritdoc />
+    protected BaseEntityCreatableController(ILogger<BaseEntityCreatableController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
+        : base(logger, repository, eventing)
+    {
+    }
+}
+
 /// <summary>
 /// Controller providing create operations.
 /// </summary>
@@ -26,14 +51,14 @@ namespace Nano.App.Api.Controllers;
 /// <typeparam name="TIdentity">The identifier type of <typeparamref name="TEntity"/>.</typeparam>
 /// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR)]
-public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, TCriteria> : BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>
+public abstract class BaseEntityCreatableController<TRepository, TEntity, TIdentity, TCriteria> : BaseEntityReadOnlyController<TRepository, TEntity, TIdentity, TCriteria>
     where TRepository : class, IRepository
     where TEntity : class, IEntityIdentity<TIdentity>, IEntityCreatable
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseControllerCreatable(ILogger<BaseControllerCreatable<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
+    protected BaseEntityCreatableController(ILogger<BaseEntityCreatableController<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }
@@ -52,7 +77,7 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     [Route(ActionRoutes.CREATE)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(BaseEntity), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
@@ -81,7 +106,7 @@ public abstract class BaseControllerCreatable<TRepository, TEntity, TIdentity, T
     [Route(ActionRoutes.CREATE_GET)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(BaseEntity), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]

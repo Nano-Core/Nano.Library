@@ -4,6 +4,9 @@ using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Abstractions.Models;
 
+/// <inheritdoc />
+public abstract class BaseEntityIdentity : BaseEntityIdentity<Guid>;
+
 /// <summary>
 /// Base class for entities with an identity property.
 /// </summary>

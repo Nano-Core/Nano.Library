@@ -10,11 +10,11 @@ namespace Nano.Data.Mappings;
 /// Configures the entity to have no key and maps it to a view.
 /// </summary>
 /// <typeparam name="TEntity">The read-only entity type.</typeparam>
-public abstract class BaseEntityViewMapping<TEntity> : IEntityTypeConfiguration<TEntity>
+public abstract class BaseEntityViewMapping<TEntity> : BaseMapping<TEntity>
     where TEntity : class, IEntity
 {
     /// <inheritdoc />
-    public virtual void Configure(EntityTypeBuilder<TEntity> builder)
+    public override void Configure(EntityTypeBuilder<TEntity> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 

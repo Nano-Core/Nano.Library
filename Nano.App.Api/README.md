@@ -44,7 +44,9 @@
   * [Authorization](#authorization)
   * [Api Clients](#api-clients)
 * [Controllers](#controllers)
-   * [Serialization](#serialization)
+  * [Request Validation](#request-validation)
+  * [Request Multipart JSON](#request-multipart-json)
+  * [Response Serialization](#response-serialization)
 * [Startup Tasks](#startup-tasks)
 
 ## Summary
@@ -141,8 +143,6 @@ Hosting configuration specifies how the API is hosted on the Kestrel web server,
 | Setting                  | Type    | Default  | Description                                                                                       |
 | ------------------------ | ------- | -------- | ------------------------------------------------------------------------------------------------- |
 |  `Root`                  | string  | api      | Root route for the application endpoints.                                                         |
-|  `HideAuthController`    | bool    | false    | Controls whether the authentication controller should be visible when authentication is enabled.  |
-|  `HideAuditController`   | bool    | false    | Controls whether the audit controller should be visible when audit is enabled.                    |
 |  `Http`                  | object  | default  | Options for HTTP. See **[Http](#http)**.                                                          |
 |  `Https`                 | object  | null     | Options for HTTPS. See **[Https](#https)**.                                                       |
 |  `MultipartLimits`       | object  | null     | Multipart upload limits. See **[MultiPart Limits](#multipart-limits)**.                           |
@@ -151,10 +151,7 @@ Hosting configuration specifies how the API is hosted on the Kestrel web server,
 "App": {
   "Hosting": {
     "Root": "api",
-    "HideAuditController": false, 
-    "HideAuthController": false,
-    "Http": { 
-    }
+    "Http": { }
     "Https": null
     "MultipartLimits": null
   }
@@ -1432,9 +1429,6 @@ as the API client can only propagate `ProblemDetails` and will otherwise fall ba
 Try it out yourself using the **[Api.ErrorHandling](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.ErrorHandling)** example.  
 
 ## Static Files
-Static files must always be placed in `wwwroot` folder.
-
-## Static Files
 Static Files are served directly by the web host without passing through the endpoint pipeline. Common static assets such as 
 CSS, JavaScript, images, and fonts are supported out of the box.  
 
@@ -1455,8 +1449,13 @@ When using layered Nano APIs, the `Authorization` header is automatically propag
 the built-in [Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client).  
 
 The ```Security``` section of the configuration defines behavior related to authentication and authorization in the application. The section is deserialized into an instance of ```SecurityOptions```, and injected as dependency during startup, thus available for injection throughout the application.  
+
+
+|  `HideAuthController`    | bool    | false    | Controls whether the authentication controller should be visible when authentication is enabled.  |
+
 ```json
 "Security": {
+    "HideAuthController": false,
     "Jwt": {
         "IsEnabled": true,
         "Issuer": "issuer",
@@ -1613,115 +1612,167 @@ or transformed into generic failures.
 > 📖 Learn more [Nano Api Clients](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-clients)
 
 ## Controllers
-OPTIONS HTTP METHOD functionality
-BaseController properties for getting jwt-token stuff and header stuff
+Nano provides several base controller classes that concrete API controllers are expected to inherit from.
 
-Nano includes a few base controller classes, providing derived functionality for model validation, content-type negotiation, exception handling and more. 
-Furthermore, deriving controllers inherit a rich set of action methods for adding, updating, deleting and querying the model implemented by the controller.  
+All controllers must inherit from `BaseController`, either directly or indirectly. This base class establishes the fundamental API behavior in Nano, 
+including routing, versioning, model validation, authorization, and shared response handling. 
 
-Additionally, Nano includes the following concrete controllers.
-* **```AuditController```** Read-only actions for exposing audit logging entries, if audit is enabled.    
-* **```AuthController```** Login and logoff actions.  
-* **```IdentityController```** Identity management actions.  
+> ⚠️ Skipping this inheritance can lead to inconsistent behavior or parts of Nano not functioning as intended.
 
+Nano controls the base route for all controllers and applies the following structure: `http(s)://{host}:{port}/{root}/{controller}`.  
 
+This base route is defined by `BaseController` and must not be overridden. Concrete controllers should therefore **not** declare a `[Route]` attribute at the 
+controller level, as doing so may interfere with Nano’s routing configuration. Action methods, however, must define their own route templates. The `[Route]` (or HTTP verb) 
+attribute on actions can specify any route segment as needed by the consumer. This ensures consistent API structure across the application while still allowing 
+flexibility at the action level.
 
-The ```BaseController<TRepository, TEntity, TIdentity, TCriteria>``` abstract class implementation, is as shown defined by four generic type parameters. 
-* ```TRepository```, defines the underlying implementation of the ```IRepository``` interface. 
-* ```TEntity```, defines the entity of the controller.
-* ```TIdentity```, defines the identity type used by the entity related to finding entity by a unique identifier.
-* ```TCriteria```, defines the query criteria implementation related to querying the entity.  
+The `BaseController` also exposes a `RequestId` property, allowing easy access to the unique identifier of the current request. This is particularly useful for 
+logging and correlation. See [Request Tracing](#request-tracing).
 
-Normally, there is no reason to derive implementations directly from the ```BaseController<TRepository, TEntity, TIdentity, TCriteria>```. Deriving from the ```DefaultController<MyEntity, MyQueryCriteria>```is equivalent to ```BaseController<DefaultRepository, TEntity, Guid, TCriteria>```, where as shown, the ```TRepository``` parameter is defined as ```DefaultRepository```, and ```TIdentity```is of type ```System.Guid```. 
+In addition to `BaseController`, Nano includes specialized base entity controllers designed for working with Nano data entities. These controllers expose standard 
+CRUD operations depending on their intended responsibility, as shown below.
 
-In situations where only read-only actions is permitted on the model associated with a controller, Nano has the ```DefaultControllerReadOnly``` to support that. When deriving from that, only query actions are inherited. Additionally, Nano also provides default controller implementations for ```Creatable-```, ```Updatable-``` and ```DeletableController```, if needed.  
+| Controller                                  | Get | Create | Update | Delete |
+| ------------------------------------------- | --- | ------ | ------ | ------ |
+| `BaseEntityController`                      | ✔   | ✔     | ✔     | ✔     |
+| `BaseEntityReadOnlyController`              | ✔   | ❌    | ❌     | ❌    |
+| `BaseEntityCreatableController`             | ✔   | ✔     | ❌    | ❌     |
+| `BaseEntityCreatableAndUpdatableController` | ✔   | ✔     | ✔     | ❌    |
+| `BaseEntityUpdatableController`             | ✔   | ❌    | ✔     | ❌    |
+| `BaseEntityDeletableController`             | ✔   | ❌    | ❌    | ✔     |
 
-Additionally, some other controllers exists in Nano as well. These controllers differ in the generic parameter types, to allow for a more flexible use. For example, if no data repository is required by the application, a controller exists where the generic parameter ```TRepository``` is omitted.  
+Derive you concrete entity controllers classes from one of these base classes, and choose the most restrictive controller that satisfies the domain requirements 
+to keep the API surface minimal and explicit.
 
-```csharp 
-public class MyController : DefaultController<MyEntity, MyQueryCriteria>
+> ⚠️ Entity controllers require **Nano.Data** to be configured for the application.
+
+Each concrete implementation of an entity controller must specify two generic parameters. First, the entity model, which defines the database table and its properties 
+that the controller will work with. This model comes from [Nano Data Models](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#data-models) and uses 
+Entity Framework. 
+
+```csharp
+public class MyEntity : BaseEntity
 {
-    public MyController(ILogger logger, IRepository repository, IEventing eventing)
-        : base(logger, repository, eventing)
-    { }
+    // Properties
 }
 ```
 
-The ```IdentityController<TEntity, TCriteria>``` contains methods for creating and managing identities used to authenticate with the application. Derive a controller implementation from ```IdentityController<TEntity, TCriteria>```, and inherit all the identity actions.  
-The ```IdentityController<TEntity, TCriteria>``` derives from ```DefaultControllerUpdatable<TEntity, TCriteria>```,  allowing identities to only be updated (and fetched, naturally), but may only be created through the inherited identity action ```signup```.  
+> ⚠️ By convention, concrete entity controllers **must** be named pluralized relative to the entity model, e.g. `MyEntity` to `MyEntitysController`.   
+
+Second, the query criteria model defines how consumers can query the entity. Its properties determine the search criteria that can be applied to the underlying entity model, 
+and entity controllers also support ordering and pagination. A query criteria model is created by deriving from `BaseQueryCriteria`. For each property of the corresponding 
+entity that should be queryable, add a property to the derived class. You must also override the base method `GetExpressions()` and implement the logic to generate the 
+necessary expressions for each property. The `BaseQueryCriteria` class already includes properties and implementation for querying the start and end dates 
+of `BaseEntity.CreatedAt`, so don't forget to call `base.GetExpressions()`.
 
 ```csharp 
-public class MyController : IdentityController<MyEntity, MyQueryCriteria>
+public class MyEntityQueryCriteria : BaseQueryCriteria
 {
-    public MyController(ILogger logger, IRepository repository, IEventing eventing, IdentityManager identityManager)
-        : base(logger, repository, eventing, identityManager)
-    { }
-}
-```
+    public virtual string? Name { get; set; }
 
-When deriving a controller implementation from ```DefaultController<MyEntity, MyQueryCriteria>```, a rich set of action methods are inherited through the ```BaseControllerReadOnly<MyEntity, MyQueryCriteria>``` and the ```BaseControllerWriteable<MyEntity, MyQueryCriteria>``` abstract controller implementations. 
-
-Routing requests to controller actions, is done using the default convention, as shown below 
-* ```http(s)://{host}:{port}/{root}/{controller}/{action}/{Id?}```
-
-Nano controllers has three dependencies injected into the constructor, all of which is registered when building the application. Derived controller implementations can add further injections as needed.  
-* ```ILogger```, is the interface for logging in the controller. 
-* ```IRepository```, is the interface for get, add, update, delete and query data in the controller.
-* ```IEventing```, is the interface for publishing events in the controller.
-
-
-Models in Controller:
-Now the controller needs a model and a QueryCriteria.
-Naming Conventions:
-IMPORTANT: Controllers must be named the same as their entity pluralized, e.g. MyEntity and MyEntitysController.
-
-Query Criteria:
-THESE CAN ALSO BE DEFINED AND USED IN CONSOLE APP, MAKES LITTLE SENSE THOUGH, BUT `IRepository` has methods with query criteria
-
-Nano uses the [DynamicExpression](https://github.com/vivet/DynamicExpression) library to map properties of the query and criteria to a Linq Expression of the entity.  
-
-Query criteria defines a contract for a model. It's used when invoking the ```Query(...)``` method of the controller of the model. Adding properties to the contract and overridding the method ```GetExpression<TEntity>()```, mapping the contract properties to the actual entity, will at runtime dynamically build the ```Expression<T>``` used in Linq queries by Entity Framework (or for that matter any Linq provider).  
-
-Obviously, since query criteria is only used by controller actions, there is no need for them when building console applications.  
-
-Query:
-The base query class contains pagination (number, count) and ordering (by, direction) properties. Naturally, these are used by controller actions and data queries to control the number of returned results as well as the order of which they are sorted.  
-
-Criteria:
-Nano contains a ```DefaultQueryCritiera``` class, implementing the ```IQueryCriteria``` interface, of the  [DynamicExpression](https://github.com/vivet/DynamicExpression) library. It combines a ```Expression<TEntity>``` for the auditable properties ```IsActive```, ```CreateAt``` and ```UpdatedAt```, and expexts a ```DefaultEntity```. If models doesn't derive from ```DefaultEntity```, either derive the query criteria from ```BaseQueryCriteria``` or implement the interface ```IQueryCriteria``` directly.  
-
-So simply, create a class deriving from ```DefaultQueryCritiera```, add criteria properties, and last override the ```GetExpression<TEntity>()``` method mapping the criteria properties to the entity properties, as shown below.  
-
-```csharp 
-public class MyQueryCriteria : DefaultQueryCriteria
-{
-    public virtual string PropertyOne { get; set; }
-
-    public override CriteriaExpression GetExpression<TEntity>()
+    public override IList<CriteriaExpression> GetExpressions()
     {
-        var filter = base.GetExpression<TEntity>();
+        var expressions = base.GetExpressions();
 
-        if (this.PropertyOne != null)
-            filter.StartsWith("PropertyOne", this.PropertyOne);
+        var expression = expressions.FirstOrDefault() ?? new CriteriaExpression();
 
-        return filter;
+        if (!string.IsNullOrEmpty(this.Name))
+        {
+            expression
+                .StartsWith("Name", this.Name);
+        }
+
+        expressions
+            .Add(expression);
+
+        return expressions;
     }
 }
 ```
 
-Request Validation:
-When deriving a controller implementation from ```BaseController```, model validation is automatically enabled. Based on the annotations (attributes) which model properties is decorated with. When a model fails validation, a bad request with the validation errors is returned.  
+Converting query models into linq expressions for Entity Framework is based on the [DynamicExpression](https://github.com/vivet/DynamicExpression) library.  
 
-Other than that, then validation isn't any different from normal.  
-See the official Microsoft documentation here: [Model Validation Documentation](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-2.1)  
+Nano entity controllers have two required constructor dependencies and one optional dependency.  
 
-## Serialization
-Nano has a custom contract serializer implementation.  
-The serializer derives from the regular implementation, but removes empty lists and system properties, related to soft-deletion and lazy-loading for instance. The serializer applies to deserializing incoming requests, though this process does nothing out of the ordinary. It also applies when serializing models into response content.  
-When serializing responses, if lazy-loading entities is enabled in data configuration, it's disabled. This ensures that data will not be lazy fetched when the serializer navigates relational properties, but only data existing in the change-tracker will be serialized.  
-The serializer will not serialize navigations that is of type ```IEntity```, except when they are annotated with ```IncludeAttribute```. This is to avoid returning unwanted navigation references, that is automatically added if dependent navigations are loaded separately.  
+| Dependency    | Purpose                                                                                                                                                                                        |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ILogger`     | Required. Provides logging capabilities for the controller.                                                                                                                                              |
+| `IRepository` | Required. Provides methods to get, add, update, delete, and query entity data.                                                                                                                           |
+| `IEventing`   | Optional. If eventing is configured, this allows the controller to publish events from its actions. See [Nano.Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing).  |
 
-Nano's serializer supports Geometry types, from Nettoplogysuite
+A controller using the default `Guid` as `TIdentity` would look like this.  
+
+```csharp
+public class MyEntitysController(ILogger<MyEntitysController> logger,IRepository repository,IEventing? eventing) 
+    : BaseEntityController<MyEntity, MyEntityQueryCriteria>(logger, repository, eventing);
+```
+
+If you have specified a `TIdentity` type when registering [Nano.Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data), you must also specify the same type 
+when deriving your concrete controllers from the Nano base controllers. If `TIdentity` is a `string`, your controller would look like this
+
+```csharp
+public class MyEntitysController(ILogger<MyEntitysController> logger, IRepository repository, IEventing? eventing) 
+    : BaseEntityController<MyEntity, string, MyEntityQueryCriteria>(logger, repository, eventing);
+```
+
+If [Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity) is configured, Nano provides an additional base controller for identity management. 
+The `BaseIdentityController<TEntity, TCriteria>` includes methods for creating and managing user identities within the application. To use it, derive a concrete implementation 
+to expose the identity-related actions for your application. The controller behaves similarly to other entity controllers but includes additional actions specific to 
+identity management. Note that the `TEntity` generic parameter must not only derive from `BaseEntity` but specifically from `BaseEntityUser`.  
+
+> 📖 Learn more about [Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity).
+
+Another specialized base controller is provided for [Data Audit](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#audit). You can expose audit data by deriving 
+from `BaseAuditController` or `BaseAuditController<TIdentity>`. These controllers automatically provide read-only actions for querying audit records.  
+
+The final controller is the `AuthContrlller`. This is already a concrete controller, and unless having special needs, there is no reason to override it. The controller is only
+exposed if [Authentication](#authentication) has been configured, and only actions matching the configuration will be exposed.  
+
+## Request Validation
+When deriving a controller from `BaseController`, model validation is automatically enabled. Validation is based on the attributes applied to model properties. If 
+a model fails validation, the controller automatically returns a 400 Bad Request with the validation errors.  
+
+Beyond this automatic behavior, validation works the same way as in standard ASP.NET Core controllers. For more details, see the 
+official Microsoft documentation: [Model Validation Documentation](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-2.1).  
+
+Nano also provides a set of useful validation attributes that can be applied to entity models. These annotations simplify common validation tasks and help ensure 
+consistency across your models.
+
+| Annotation                         | Description                                                                                                                                                |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `InternationalPhoneAttribute`      | Ensures a string contains a valid international phone number. Works with properties and action parameters.                                                |
+| `RequiredOneOfAttribute`           | Ensures that at least one of the specified members, including the decorated member, has a non-null value. Works with properties, fields, and parameters. |
+| `UrlAttribute`                     | Ensures a string contains a valid URL. Works with properties, fields, and parameters.                                                                     |
+| `FileExtensionValidationAttribute` | Ensures uploaded files have allowed extensions.                                                                                                           |
+
+## Request Multipart JSON
+Nano supports scenarios where a controller needs to receive both files and JSON data in the same request. This is achieved using the `FromFormBody` attribute together 
+with a custom model binder.  
+
+To use this, create a controller action with parameters like the following.  
+
+```csharp
+public IActionResult UploadFile(IFormFile file, [FromFormBody] MyClass instance)
+{
+    // Your logic here
+}
+```
+
+The ModelBinder deserializes the form field string (JSON) into the specified model type, and also validates properties and fields decorated with ValidationAttribute, 
+populating the ModelState with any validation errors. This allows clients to send a `multipart/form-data` request containing both files and structured JSON data, 
+while the controller receives fully bound and validated models.
+
+⚠️ Make sure the JSON field name matches the name of the model parameter in your action.
+
+## Response Serialization
+Nano uses `Newtonsoft.Json` for serialization and deserialization. It supports all built-in Nano types, types derived from Nano base types, 
+and all `Geometry` types from `NetTopologySuite`.  
+
+The serializer only serializes navigations that is of type `IEntity`, when they are annotated with `IncludeAttribute`. This is to avoid returning unwanted navigation 
+references, that is automatically added if dependent navigations are loaded separately into the data context. Read more about 
+[Include Annotation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.App#include-annotation)
+
+Besides that, the serializer is configured to handle various edge cases for robustness.  
 
 ## Start-Up Tasks
 Nano supports start-up tasks that are executed before the application begins handling requests. These tasks are intended for work that must complete successfully 

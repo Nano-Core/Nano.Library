@@ -18,56 +18,60 @@
 * [Data Context](#data-context)
 * [Data Models](#data-models)
 * [Data Mappings](#data-mappings)
-* [Migration](#migration)
+* [Migrations](#migrations)
 * [Repositories](#repositories)
+  * [Autosave](#autosave)
+  * [Include Annotation](#include-annotation)
 * [Audit](#audit)
-* [Spacial Types](#spacial-types)
-* [Identity](#identity)
 * [Soft Delete](#soft-delete)
 * [Triggers](#triggers)
 * [Cache](#cache)
+* [Identity](#identity)
 * [Entity Events](#entity-events)
 * [Health Checks](#health-checks)
-* [Special Annotations](#special-annotations)
-* [Examples](#examples)
-
-THIS NUGET SHOULD NOT BE INSTALLED DIRECTLY SEE Providers
 
 ## Summary
-Data access management in Nano.  
-That includes database creation, transaction management and object-relation-mapping.  
+Nano provides a robust data framework that enables applications to integrate with SQL databases.  
+It's based on Entity Framework, and uses the unit-of-work pattern for easy and safe interafction with data, through the `IRepository` interface.  
 
-Nano uses Entity Framework Core for managing object relation mapping, and handling data contexts within the application.  The main parts of data in Nano, evolves around the data provider and the data context.  
+When the `IDataProvider` is registered during application startup and the `BaseDbContext ` have been implemented, the application is ready to interact with a database. The 
+`IRepository` interface gets registered as part of data in Nano, and enables easy access to common methods needed for data storage and retrieval. 
 
-The ```IDataProvider``` is registered during startup, and the implementing type defines the data provider used in the application.  
-
-The ```DbContext``` of Entity Framework is used in Nano, by the inheriting abstract class ```BaseDbContext```. Furthermore, the class ```DefaultDbContext``` derives from ```BaseDbContext```, and your custom data context implementation should derive from that. Both Nano data context implementations, overrides certain aspects of Entity Framework, in order to  extends it's functionality and to circumvent missing features.  
-
-Besides the above, the data context and the data provider must be initialized during application startup, and models mapped to corresponding data mapping implementations.  
-
-When starting the application, the database of the data context will be (if enabled). Additionally, any pending migrations will in-turn be applied to the database.  
+Nano data supports many features not built directly into Entity Framework.
 
 ## Registration
 The data context and data provider must be registered as dependencies.  
 Invoke the method ```.AddDataContext<TProvider, TContext>()```, using the data context and data provider implementations as generic type parameters.  
 
-By default, the ```BaseDbContext``` dependency is registered to resolve to ```DefaultDbContext```. When registering a custom data context implementation, the registration is mitigated, and both base classes will resolve to the ```TContext``` generic type parameter implementation.  
+When registering the data provider, a **[Data Context](#data-context) must also be specified as part the generic type signature. 
 
 ```csharp
-.ConfigureServices(x =>
+...
+.ConfigureServices(services =>
 {
-    x.AddDataContext<MySqlProvider, MyDbContext>(); // With default Guid type for Identity.
+    services
+        .AddDataContext<TProvider, TContext>();
 })
-
-// with string as custom type for Identity type.
-.ConfigureServices(x =>
-{
-    x.AddDataContext<MySqlProvider, MyDbContext, string>(); // With user defined type for Identity.
-})
+...
 ```
 
+By default Nano will use `guid` for all primary key columns. It's recommended to follow that, but Nano also support `string`, `int` and `long` for identity columns. To 
+register a custom identity use the follow data registration.
+
+```
+...
+.ConfigureServices(services =>
+{
+    services
+        .AddDataContext<TProvider, TContext, TIdentity>();
+})
+...
+```
+
+> ⚠️ Using non-default identity requires `TIdentity` to be specified on [Data Models](#data-models), [Data Mappings](#data-mappings), and other abstractions in Nano.
+
 ## Configuration
-The ```Data``` section in the configuration defines the data provider and related settings used by the application.
+The `Data` section in the configuration defines the data provider and related settings used by the application.
 
 | Setting                         | Type   | Default     | Description                                                                                                                                       |
 | ------------------------------- | ------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -119,117 +123,111 @@ The ```Data``` section in the configuration defines the data provider and relate
 ```
 
 ## Data Providers
-Data providers integrate a SQL database into your Nano application and provide easy access to mapped directories.  
+Data providers integrate a SQL database through Entity Framework into your Nano application.  
 
-All data providers implement the `IDataProvider` interface. 
-This interface is responsible for handling all configuration and setup required for the storage provider.  
+All data providers in Nano implement the `IDataProvider` interface. This interface is responsible for configuring and setting up the underlying 
+data context, as well as providing an implementation of the `IRepository` interface interacting with the `DbContext`. 
 
-To implement a new storage provider:
-
+To implement a new data provider:
 1. Create a class that implements `IDataProvider`.
-2. Ensure that all required services are registered in `Configure` methods.
-3. Register your provider in the application using `AddNanoData<MyProvider, MyDbContext>()`.
+2. Register all required services and dependencies in the `Configure` method for the data provider.
+3. Add your provider to the application using:
 
-The following data providers are currently supported:
+```csharp
+...
+.ConfigureServices(services =>
+{
+    services
+        .AddNanoData<MyProvider, MyDbContext>();
+})
+...
+```
+
+The following data providers are currently supported in Nano:
 * [Nano.Data.InMemory](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.InMemory)
 * [Nano.Data.MySql](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.MySql)
 * [Nano.Data.PostgreSQL](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.PostgreSQL)
 * [Nano.Data.SqLite](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqLite)
 * [Nano.Data.SqlServer](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqlServer)
 
+Additional providers can be implemented by following the same pattern, allowing you to extend Nano.
+
 ## Data Context
-Derive the `DefaultDbContext` and `DefaultDbContextFactory`
-You don't need to implement anything, they just need to be located in your application project, same as where `program.cs` resides.  
-
-> ⚠️ If you override the `OnModelCreating(...)` of the `DefaultDbContext`, remember to call the `base` method.
-
-
-Create the data context implementation, by deriving a class from ```DefaultDbContext```.  
-
-Later, associations between models and their mappings will be declared in the method ```OnModelCreating(...)```. Remember to invoke base class method!
+Nano takes care of managing the `DbContext`. 
+Simply, derive an implementation from the `BaseDbContext` or `BaseDbContext<TIdentity>` (if you want to use different primary key columns that `Guid`).
 
 ```csharp
-// Deriving from default db-context.
-public class MyDbContext : DefaultDbContext
-{
-    public MyDbContext(DbContextOptions options)
-        : base(options)
-    {  }
-
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        base.OnModelCreating(builder);
-    }
-}
-
-// Deriving from base db-context, specifying custom identity type.
-public class MyDbContext : BaseDbContext<string>
-{
-    public MyDbContext(DbContextOptions options)
-        : base(options)
-    {  }
-
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        base.OnModelCreating(builder);
-    }
-}
-
+public class MyDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> dataOptions, IEventing? eventing = null)
+    : BaseDbContext(contextOptions, dataOptions, eventing);
 ```
 
-You also need to implement DbContextFactory for use with migrations. Derived from Default- or BaseDbContextFactory
+You don't actually need to implement anything in `MyDbContext`, Entity Framework just requires the `DbContext` to be located in entry assemlby, where `program.cs` 
+is located. Also, Nano will automatically find and configure all [Data Mappings](#data-mappings), so there is no need to override the `OnModelCreating(...)` method. 
+
+> ⚠️ If you choose to override any methods from `BaseDbContext`, remember to call the `base` method, to ensure Nano will work correctly.
+
+Also DbContextFactory needs to be derived from `BaseDbContextFactory`, as shown below.  
+
 ```csharp
-public class MyDbContextFactory : BaseDbContextFactory<MySqlProvider, MyDbContext>
-{
-
-}
+public class MySqlDbContextFactory : BaseDbContextFactory<MySqlProvider, MySqlDbContext>;
 ```
+
+Again, you don't need to implement anything, they just need to be located in your application project, same as where `program.cs` resides.  
 
 ## Data Models
-Models, also referred to as entities, represent the definitions of data in the application.   
+Models, also referred to as entities, represent the tables in the database.  
 
-Derive a model implementation from ```DefaultEntity```, and inherit the default probabilities of Nano models. 
-Alternatively, derive models directly from the underlying interfaces and abstractions implemented by ```DefaultEntity```, for greater flexibility and control over the model implementations. 
-Through the data mapping implementations, models are associated with a data context. Model represents tables nd their properties columns, in the database.  
+To create a model in Nano, derive an implementation from `BaseEntity` or `BaseEntity<TIdentity>`.  
+Your model will automatically get the following properties.
 
-The object model, from which custom models can be derived, consists of a few abstractions and a set of interfaces.  
-
-The top-most interface definition for a model, is ```IEntity```. Many parts of Nano requires a model to be of that type, so it should always be implemented by any model.  
-Most of the other interfaces defines the kind of operation is supported by the model. The repository pattern implemented by ```IRepository```, expects models to implements the interfaces associated with the create, read, update and delete (CRUD) operations. See [Services Operations](services#operations) for further details on operations used with models.  
-The interface ```IEntityIdentity<TIdentity>```, defines an entity with an identifier property - ```Id```. The ```TIdentity``` generic type parameter can be any desired type, though it's recommended to use ```System.Guid```, which is also the default when deriving models from ```DefaultEntity```. Note, that it's possible to specify the identifier when creating entities through controller create action.
-
-## Data Mappings
-The models in the application, needs to be mapped and known to the data context.  
-When having both the model and the mapping, those needs to be associated. In the overridden method ```OnModelCreating(...)``` of the data context implementation, the method ```.AddMapping<MyEntity, MyEntityMapping>()``` to be invoked for each model / mappings pair in the application.  
+| Property      | Type            | Dscription                                                                                       |
+| ------------- | --------------- | ------------------------------------------------------------------------------------------------ |
+| `Id`          | TIdentity       | The primary key of type `TIdentity` the model. _Automatically instantiated for new instances._   |
+| `CreatedAt`   | DateTimeOffset  | The date-time the model was created. _Automatically set to `UtcNow` for new instances._          |
+| `IsDeleted`   | int             | Only used when [Soft Delete](#soft-delete) is enabled in configuration. _Default=0._             |
 
 ```csharp
-protected override void OnModelCreating(ModelBuilder builder)
+public class MyEntity : BaseEntity
 {
-    base.OnModelCreating(builder);
-
-    builder
-        .AddMapping<MyEntity, MyEntityMapping>();
+    // Properties
 }
 ```
-Nano uses Entity Framework for mapping models to database tables.  
 
-The [Data Context](Data#data-context) defines the class for managing the database session, and as explained associates models with their mappings, through the ```.OnModelCreating(...)``` method. The mapping implementations themselves, should derive from either ```BaseEntityMapping<TEntity>``` or ```DefaultEntityMapping<TEntity>```, depending which base class the model is deriving from.  
+If you have specified a `TIdentity` type during data [Registration](#registration) and when deriving the [Data Context](#data-context), you must also specify the same type 
+when deriving your concrete entities.
 
-The base mappings implementations, maps the properties of which they are responsible, and additionally set a query filter for ```IsDeleted=0```. 
+Alternatively, you can also derive you model from `BaseEntityIdentity` or `BaseEntityIdentity<TIdentity>`, to only inherit the `Id` property for your model.
+EXPLAIN MORE ABOUT THE Entity interfaces and how if you choose to enherit from `BaseEntityIdentity<TIdentity>`, you manually need to add interfaces for Creatable, Updateable,
+Deleteable. OR CREATE more BaseEntiy classes for that. 
+MENTION IEntity as topmost interface
+AND CONSUMERS SHOULDN'T DERIVE FROM `BaseEntityIdentity`
 
-##### Table mapping
+Nano also supports spatial `Geometry` types from `NetToplogySuite`, and spatial SQL operations.    
+
+## Data Mappings
+For every data model in your application a corresponding data mappings must be implemented as well.
+
 ```csharp
-public class MyEntityMapping : DefaultEntityMapping<MyEntity>
+public class MyEntityMapping : BaseEntityMapping<MyEntity>
 {
-    public override void Map(EntityTypeBuilder<MyEntity> builder)
+    public override void Configure(EntityTypeBuilder<MyEntity> builder)
     {
-        base.Map(builder);
+        base.Configure(builder);
 
-        // Entity Framework mapping.
+        // Entity Framework mappings.
     }
 }
 ```
-##### View mapping
+
+> ⚠️ Remember, to always invoke the `base.Configure(builder);`, or Nano might not work correctly.  
+
+Data mappings are automatically applied in Nano, and there is no need to manually apply the model data mappings. Only non-abstract, no-generic mapping types 
+will be automatically mapped.
+
+> ⚠️ It's highly recommended to fully map all properties on your models in your data mappings.  
+
+Nano also supports mapping read-only views in your application. Simply derive your mapping from `BaseEntityViewMapping<TEntity>`, as shown below.  
+
 ```csharp
 public class MyEntityMapping : BaseEntityViewMapping<MyEntity>
 {
@@ -237,50 +235,75 @@ public class MyEntityMapping : BaseEntityViewMapping<MyEntity>
     {
         base.Map(builder);
 
-        // Entity Framework mapping.
+        // Entity Framework mappings.
     }
 }
 ```
 
-## Migration
-Creating migration scripts at design-time, which in-turn are applied when running the application, can be accomplished simply by including an implementation of ```BaseDbContextFactory<TProvider, TContext>```. It's similar to the registration done in startup, and no additional implementation is needed.
+Nano will update all unique index mappings to include `IsDeleted` property, on order to ensure soft deleted entities can co-exist.   
 
-Entity framework's support for database migration is made easy with Nano.  
-Open NuGet PM console from `VS -> Tools -> NuGet Package Manager -> Package Manager Console`, and run the following command (replace parameters).  
+## Migrations
+Migrations in Nano is no different than normal.  
 
-In `Devemlopment` environment, `host.docker.internal` will be replaced with `localhost` for convinience, as you would otherwise need to include additional NuGets for 
-some wierd reason. FIGURE WHAT DLL IT IS.
+Ensure you have derived an implementation from `BaseDbContextFactory<MySqlProvider, MySqlDbContext>`. Then open powershell and add a new migration.  
 
-```
-if (environment == Environments.Development)
-{
-    dataOptions.ConnectionString = dataOptions.ConnectionString
-        .Replace("host.docker.internal", "localhost");
-}
+```powershell
+PM> dotnet ef migrations add Initial --project {project}
 ```
 
+In `Development` environment migrations are not applied automatically, unelss `UseMigrations` are enabled in the configuration.  
+
+> ⚠️ It's recommended to enable `UseMigrations` configuration only in `Development`.  
+
+In `Staging` and `Production` environment migrations are applied during application deployment in GitHub Actions, as shown below.  
+
+```powershell
+dotnet ef database update `
+  --no-build `
+  --startup-project $env:APP_NAME `
+  --connection "$env:MYSQL_MIGRATION_CONNECTIONSTRING";
 ```
-PM> Add-Migration -name {name} -StartUpProject {project}
-```  
+
+> 📖 Learn more about **EF Migrations](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli)**
 
 ## Repositories
 Repositories represents data repositories within an application.  
-The ```IRepository``` interface contains methods for getting, querying, adding, updating and deleting models in the application. Inject this, when implementations requires access to the application data.  
-The ```BaseRepository<TContext>``` implements the interface, and ensures data is stored and retrieved through the data context defined by the generic class parameter and injected into the constructor when resolved at runtime.  
-The ```DefaultRepository``` derives from ```BaseRepository<DefaultDbContext>```. and the ```DefaultDbContext``` contains overridden methods for saving changes, featuring eventing by annotation and custom extensions for entity framework.  
+The ```IRepository``` interface contains methods for getting, querying, adding, updating and deleting models in the application. Inject this, when implementations requires access to
+the application data.  
+The ```BaseRepository<TContext>``` implements the interface, and ensures data is stored and retrieved through the data context defined by the generic class parameter and injected into 
+the constructor when resolved at runtime.  
+The ```DefaultRepository``` derives from ```BaseRepository<DefaultDbContext>```. and the ```DefaultDbContext``` contains overridden methods for saving changes, featuring eventing by 
+annotation and custom extensions for entity framework.  
 The services follow the ```UnitOfWork``` pattern.  
 
-The ```BaseRepository<TContext>``` implementation contains various methods for getting, querying, updating, adding and deleting entities in the data context defined by the generic type parameter ```TContext```. This dependency is registered when configuring the data provider.  
-The methods definitions of ```IRepository```, has different generic type constraints, depending on the operation. For instance ```AddAsync<TEntity>```, is constrained to models implementing ```IEntityCreatable```.  
+The ```BaseRepository<TContext>``` implementation contains various methods for getting, querying, updating, adding and deleting entities in the data context defined by the generic 
+type parameter ```TContext```. This dependency is registered when configuring the data provider.  
+The methods definitions of ```IRepository```, has different generic type constraints, depending on the operation. For instance ```AddAsync<TEntity>```, is constrained to models 
+implementing ```IEntityCreatable```.  
 The ```IRepository``` also contains a property, to access the underlying ```DbSet``` of an entity, 
 * ```DbSet<TEntity> GetEntitySet<TEntity>()```   
 Use it for advanced operations not directly supported by the repository implementation.  
 
 When adding only the raw entity is returned from IRepository, and not included columns. Use AddAndGet to refersh all the includes.
 
-_Name_ is the name of the migration, _project_ is the project where the ```DbContext``` implementation is located and where the migration script will be saved to. Last, the _environment_ is the configuration to use, and it's important the connection-string in the settings file of the environment is valid, otherwise an error occurs and the migration fails.
+_Name_ is the name of the migration, _project_ is the project where the ```DbContext``` implementation is located and where the migration script will be saved to. Last, 
+the _environment_ is the configuration to use, and it's important the connection-string in the settings file of the environment is valid, otherwise an error occurs and the migration fails.
+
+## Autosave
+The repository can be configured for autosave. It's a convinience to not have to call `dbContext.SaveChanges(...)`.  
+If you want more fine-grained control of when changes are comitted, disable `UseAutoSave` in configuration.  
+
+## Include Annotation
+Annotating a property with the ```IncludeAttribte```, instructs the repository layer to fetch additional data when getting and querying the entity. It works similar to 
+the ```IQueryable.Include(...)``` extension, but allows for design-time definition. The property must be a class and have a navigation relations, otherwise the annotation is ignored.   
+The maximum query (join) depth for a model having properties decorated with ```IncludeAttribte```, can be set in the data options of the configuration, ```QueryIncludeDepth```.  
+When having navigations inside owned models decorated with include annotation, then the owned model property on the parent must also be annotated with Include. This will be ignored 
+by entity framework, but allows Nano to trigger the nested include.  
+Note, that when creating or updating entities the include is not interpreted.  
 
 ## Audit
+Even when audit is disabled the tables are still created. 
+
 Audit->Propertes has INCLUDE.
 The user needs to know the AuditEntry<TIdentity> (and the AuditEntryProperty<TIdentity>) to get them through api-client. Maybe this needs to be some place else, in Api docs??
 
@@ -298,103 +321,13 @@ To exclude models implement the ```IEntityAuditableNegated``` or ```ExcludeAttri
 
 The audit implementation is based on the [EntityFramework Plus](https://github.com/zzzprojects/EntityFramework-Plus) project.
 
-## Identity
-Securing the application is about user identity, and authentication and authorization.  
-Nano provides everything required to effectively manage user identities, and still leveraging full control for customizing polices, claims and roles. The default database created by Nano includes all the required tables, and contains all the technical identity data. This is extended with a custom generic user model during signup.  
-The ```DefaultIdentityManager``` exposes methods for handling all the interaction with user identities, such as login, signup, change email, etc. The ```TransientIdentityManager``` exposes methods for authentication against non-persisted user identities. This could be through external provider login, or with the built-in administrator user.  
-**NOTE:** Without a configured ```IDataProvider```, the identity features are highly limited. Only Transient operations will be available.  
-
-Security contains many models, handling everything from login to change password, or logging in with an external provider. Most are straight forward, and is used as parameter for just one method in the ```IdentityManager```.  
-When adding the initial database migration snapshot, models and mappings related to identity is injected. The models are based on ```Microsoft.AspNetCore.Identity``` library.  
-Normally, you would derive your custom user from the ```IdentityUser<T>```, when building a store for user identity. This approach is not possible when encapsulating functionality, as the consumer would have to deal with too many factors, such as generic parameters and constraints. By using a composite user model, where the identity and user is separated, Nano is able to manage the identity part without having to worry about custom properties. The Signup methods in Nano automatically links the two tables, and when a ```CustomUser``` is retrieved, the related ```IdentityUser``` data is retrieved as well.  
-
-The ```DefaultIdentityManager```, encapsulates features of Microsoft Identity (```UserManager``` and ```SignInManager```), exposes atomic methods for managing user identity, and simplifies using custom user identities, by separating the identity from the user.  
-The ```TransientIdentityManager``` contains methods for logging in users without having a identity store. This can be used to login transiently using the  administrator user defined in the configuration, or by using one of the supported external providers. Transient logins can't be refreshed.  
-
-Also Nano exposes a `SecurePasswordGenerator` class.
-
-### Identity Configuration
-| Setting                         | Type   | Default     | Description                                                                                                      |
-| ------------------------------- | ------ | ----------- | ---------------------------------------------------------------------------------------------------------------- |
-|  `User`                         | object | default     |                                                                                                                  |
-
-```json
-"Identity": {
-  "User": {
-    "IsUniqueEmailAddressRequired": true,
-    "IsUniquePhoneNumberRequired": false,
-    "AllowedUserNameCharacters": null,
-    "DefaultRoles": [
-      "administrator"
-    ]
-  },
-  "SignIn": {
-    "RequireConfirmedEmail": false,
-    "RequireConfirmedPhoneNumber": false
-  },
-  "Lockout": {
-    "AllowedForNewUsers": true,
-    "MaxFailedAccessAttempts": 3,
-    "DefaultLockoutTimeSpan": "00:30:00"
-  },
-  "Password": {
-    "RequireDigit": false,
-    "RequireNonAlphanumeric": false,
-    "RequireLowercase": false,
-    "RequireUppercase": false,
-    "RequiredLength": 5,
-    "RequiredUniqueCharacters": 0
-  },
-  "Authentication": {
-    "ApiKey": {
-      "Secret": null
-    }
-  }
-}
-```
-
-### Model
-The identity is associated with the user through a simple foreign key navigation, and is included when the user is queried, by deriving the custom user model from the ```DefaultEntityUser```.
- ```csharp
-public class DefaultEntityUser : DefaultEntity
-{
-    [MaxLength(128)]
-    public virtual string IdentityUserId { get; set; }
-
-    [Include]
-    public virtual IdentityUser IdentityUser { get; set; }
-}
-```
-
-This isolates and hides all functionality related to the account of a user, and allows to work solely with the user  relevant to the application.
-**NOTE:** All identity email addresses, user names and phone numbers must be unique or null. At least one must not be null.  
-
-### Mapping
-When mapping the user model, derive the mapping implementation from ```DefaultEntityUserMapping<TEntity>```. Besides that, mapping is no different than models not having an identity associated.  
-```csharp
-public class DefaultEntityUserMapping<TEntity> : DefaultEntityMapping<TEntity> 
-    where TEntity : DefaultEntityUser
-{
-    public override void Map(EntityTypeBuilder<TEntity> builder)
-    {
-        base.Map(builder);
-`
-        builder
-            .HasOne(x => x.IdentityUser)
-            .WithOne()
-            .IsRequired();
-    }
-}
-```
-
 ## Soft Delete
 In order for soft deletion to be enabled, it much be enabled in the data section of the configuration.  
 When implementing the interface ```IEntityDeletableSoft```, or when deriving a model implementation from the ```DefaultEntity```, the entity will be soft deleted when removed from the data context. When soft deleted, the data doesn't get removed, but the row gets flagged as deleted, and filtered out in future queries.  
 
-##### Unique Indexes
-When dealing with soft deleted entities, together with unique indexes, a conflict can arise having one or more deleted entities with duplicate unique values. Nano automatically adjusts unique indexes, appending the ```IsDeleted``` property. This is with the exception of the property defined as primary key.
+When dealing with soft deleted entities, together with unique indexes, a conflict can arise having one or more deleted entities with duplicate unique values. 
+Nano automatically adjusts unique indexes, appending the ```IsDeleted``` property. This is with the exception of the property defined as primary key.
 
-##### Cascade Delete
 Opposite of using regular delete, soft-deleting entities doesn't support cascading deletes.
 
 ## Triggers
@@ -434,6 +367,98 @@ For more details about triggers and how to use them, consult the docucmenation o
 ## Cache
 Simple memory caching can be enabled, by setting ```Data.UseMemoryCache = true``` in the configuration. The cache stores queries once executed, for future invocations. 
 
+
+## Identity
+Even when identity is not configured the tables are still created. 
+
+Securing the application is about user identity, and authentication and authorization.  
+Nano provides everything required to effectively manage user identities, and still leveraging full control for customizing polices, claims and roles. The default database created by Nano includes all the required tables, and contains all the technical identity data. This is extended with a custom generic user model during signup.  
+The ```DefaultIdentityManager``` exposes methods for handling all the interaction with user identities, such as login, signup, change email, etc. The ```TransientIdentityManager``` exposes methods for authentication against non-persisted user identities. This could be through external provider login, or with the built-in administrator user.  
+**NOTE:** Without a configured ```IDataProvider```, the identity features are highly limited. Only Transient operations will be available.  
+
+Security contains many models, handling everything from login to change password, or logging in with an external provider. Most are straight forward, and is used as parameter for just one method in the ```IdentityManager```.  
+When adding the initial database migration snapshot, models and mappings related to identity is injected. The models are based on ```Microsoft.AspNetCore.Identity``` library.  
+Normally, you would derive your custom user from the ```IdentityUser<T>```, when building a store for user identity. This approach is not possible when encapsulating functionality, as the consumer would have to deal with too many factors, such as generic parameters and constraints. By using a composite user model, where the identity and user is separated, Nano is able to manage the identity part without having to worry about custom properties. The Signup methods in Nano automatically links the two tables, and when a ```CustomUser``` is retrieved, the related ```IdentityUser``` data is retrieved as well.  
+
+The ```DefaultIdentityManager```, encapsulates features of Microsoft Identity (```UserManager``` and ```SignInManager```), exposes atomic methods for managing user identity, and simplifies using custom user identities, by separating the identity from the user.  
+The ```TransientIdentityManager``` contains methods for logging in users without having a identity store. This can be used to login transiently using the  administrator user defined in the configuration, or by using one of the supported external providers. Transient logins can't be refreshed.  
+
+Also Nano exposes a `SecurePasswordGenerator` class.
+
+Identity Configuration:
+| Setting                         | Type   | Default     | Description                                                                                                      |
+| ------------------------------- | ------ | ----------- | ---------------------------------------------------------------------------------------------------------------- |
+|  `User`                         | object | default     |                                                                                                                  |
+
+```json
+"Identity": {
+  "User": {
+    "IsUniqueEmailAddressRequired": true,
+    "IsUniquePhoneNumberRequired": false,
+    "AllowedUserNameCharacters": null,
+    "DefaultRoles": [
+      "administrator"
+    ]
+  },
+  "SignIn": {
+    "RequireConfirmedEmail": false,
+    "RequireConfirmedPhoneNumber": false
+  },
+  "Lockout": {
+    "AllowedForNewUsers": true,
+    "MaxFailedAccessAttempts": 3,
+    "DefaultLockoutTimeSpan": "00:30:00"
+  },
+  "Password": {
+    "RequireDigit": false,
+    "RequireNonAlphanumeric": false,
+    "RequireLowercase": false,
+    "RequireUppercase": false,
+    "RequiredLength": 5,
+    "RequiredUniqueCharacters": 0
+  },
+  "Authentication": {
+    "ApiKey": {
+      "Secret": null
+    }
+  }
+}
+```
+
+Model:
+The identity is associated with the user through a simple foreign key navigation, and is included when the user is queried, by deriving the custom user model from the ```DefaultEntityUser```.
+ ```csharp
+public class DefaultEntityUser : DefaultEntity
+{
+    [MaxLength(128)]
+    public virtual string IdentityUserId { get; set; }
+
+    [Include]
+    public virtual IdentityUser IdentityUser { get; set; }
+}
+```
+
+This isolates and hides all functionality related to the account of a user, and allows to work solely with the user  relevant to the application.
+**NOTE:** All identity email addresses, user names and phone numbers must be unique or null. At least one must not be null.  
+
+Mapping:
+When mapping the user model, derive the mapping implementation from ```DefaultEntityUserMapping<TEntity>```. Besides that, mapping is no different than models not having an identity associated.  
+```csharp
+public class DefaultEntityUserMapping<TEntity> : DefaultEntityMapping<TEntity> 
+    where TEntity : DefaultEntityUser
+{
+    public override void Map(EntityTypeBuilder<TEntity> builder)
+    {
+        base.Map(builder);
+`
+        builder
+            .HasOne(x => x.IdentityUser)
+            .WithOne()
+            .IsRequired();
+    }
+}
+```
+
 ## Entity Events
 Adding eventing annotations to model implementations, provides a way of synchronizing entities between applications. 
 
@@ -457,45 +482,3 @@ Publish/Subscribe can also work bi-directionally, but it would required the mode
 
 ## Health Checks
 When enabling health-checks in the data section of the confiugration, the application will be configured with a health-check for the data provider. When the application starts, a check is made to ensure that the data provider is up and running, returning a healthy status code when checked.  
-
-## Annotations
-
-### Entity Eventing Annotations
-Publish and subscribe
-Readme [Entity Eventing](#entity-eventng)
-
-### Include Annotation
-Annotating a property with the ```IncludeAttribte```, instructs the repository layer to fetch additional data when getting and querying the entity. It works similar to the ```IQueryable.Include(...)``` extension, but allows for design-time definition. The property must be a class and have a navigation relations, otherwise the annotation is ignored.   
-The maximum query (join) depth for a model having properties decorated with ```IncludeAttribte```, can be set in the data options of the configuration, ```QueryIncludeDepth```.  
-When having navigations inside owned models decorated with include annotation, then the owned model property on the parent must also be annotated with Include. This will be ignored by entity framework, but allows Nano to trigger the nested include.  
-Note, that when creating or updating entities the include is not interpreted.  
-
-### UX Exception Annotations
-Annotating a model with the ```UxExceptionAttribte```, instructs the exception handling middleware to return a custom translated error response, when a database unique index exception occurs, that matching the defined properties.  
-The attribute constructor takes two parameters. First, the custom error message to use when the Unique index exception is thrown. Second, an array of ordered properties, that aggregated should match the columns in the unique index.  
-It can make it easier to catch duplicate database entry exceptions.  
-```csharp
-[UxException("Duplicate name", nameof(Name)]
-public class MyEntity : DefaultEntity
-{
-    public virtual string Name { get; set; }
-}
-```
-
-## Examples
-See examples of Nano applications with data registered here:
-* [Nano.Templates.Web.Data](https://github.com/Nano-Core/Nano.Templates/tree/master/Web.Data)
-* [Nano.Templates.Console.Data](https://github.com/Nano-Core/Nano.Templates/tree/master/Console.Data)
-
-
-## Model Annotations
-Nano provides a set of useful validation annotations that can be applied to Nano entity models.
-These annotations simplify common validation tasks and ensure consistency across your models.
-
-Nano comes with some useful validation annotations they may be used together with Nano entity models.  
-
-| Annotation                     | Description                                                                                                                                                |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `InternationalPhoneAttribute`  | Validates that a string contains a valid international phone number. Works with properties and parameters.                                                 |
-| `RequiredOneOfAttribute`       | Validates that at least one of the specified members, including the decorated member, has a non-null value. Works with properties, fields, and parameters. |
-| `UrlAttribute`                 | Validates that a string contains a valid URL. Works with properties, fields, and parameters.                                                               |

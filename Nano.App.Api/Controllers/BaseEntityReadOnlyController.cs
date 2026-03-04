@@ -12,11 +12,35 @@ using Nano.App.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Identity.Consts;
-using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 
 namespace Nano.App.Api.Controllers;
+
+/// <inheritdoc />
+public abstract class BaseEntityReadOnlyController<TEntity, TCriteria> : BaseEntityReadOnlyController<TEntity, Guid, TCriteria>
+    where TEntity : class, IEntityIdentity<Guid>
+    where TCriteria : class, IQueryCriteria, new()
+{
+    /// <inheritdoc />
+    protected BaseEntityReadOnlyController(ILogger<BaseEntityReadOnlyController<TEntity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
+        : base(logger, repository, eventing)
+    {
+    }
+}
+
+/// <inheritdoc />
+public abstract class BaseEntityReadOnlyController<TEntity, TIdentity, TCriteria> : BaseEntityReadOnlyController<IRepository, TEntity, TIdentity, TCriteria>
+    where TEntity : class, IEntityIdentity<TIdentity>
+    where TCriteria : class, IQueryCriteria, new()
+    where TIdentity : IEquatable<TIdentity>
+{
+    /// <inheritdoc />
+    protected BaseEntityReadOnlyController(ILogger<BaseEntityReadOnlyController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
+        : base(logger, repository, eventing)
+    {
+    }
+}
 
 /// <summary>
 /// Controller providing read-only operations.
@@ -26,19 +50,19 @@ namespace Nano.App.Api.Controllers;
 /// <typeparam name="TIdentity">The type of the entity's identifier.</typeparam>
 /// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR + "," + BuiltInUserRoles.EDITOR + "," + BuiltInUserRoles.DELETER + "," + BuiltInUserRoles.READER)]
-public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria> : BaseController<TRepository>
+public abstract class BaseEntityReadOnlyController<TRepository, TEntity, TIdentity, TCriteria> : BaseController<TRepository>
     where TRepository : class, IRepository
     where TEntity : class, IEntityIdentity<TIdentity>
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="BaseControllerReadOnly{TRepository,TEntity,TIdentity,TCriteria}"/> class.
+    /// Initializes a new instance of the <see cref="BaseEntityReadOnlyController{TRepository,TEntity,TIdentity,TCriteria}"/> class.
     /// </summary>
     /// <param name="logger">The logger instance.</param>
     /// <param name="repository">The repository instance.</param>
     /// <param name="eventing">Optional eventing service.</param>
-    protected BaseControllerReadOnly(ILogger<BaseControllerReadOnly<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
+    protected BaseEntityReadOnlyController(ILogger<BaseEntityReadOnlyController<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }
@@ -58,7 +82,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [HttpGet]
     [Route(ActionRoutes.INDEX)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<BaseEntity>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -97,7 +121,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [Route(ActionRoutes.INDEX)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<BaseEntity>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -135,7 +159,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [HttpGet]
     [Route(ActionRoutes.DETAILS)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(BaseEntity), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -178,7 +202,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [HttpGet]
     [Route(ActionRoutes.DETAILS_MANY)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<BaseEntity>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -217,7 +241,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [Route(ActionRoutes.DETAILS_MANY)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<BaseEntity>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -255,7 +279,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [HttpGet]
     [Route(ActionRoutes.QUERY)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<BaseEntity>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -296,7 +320,7 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(IEnumerable<BaseEntity>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryPostAsync([FromBody][Required]IQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
@@ -333,9 +357,9 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [HttpGet]
     [Route(ActionRoutes.QUERY_FIRST)]
     [Produces(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(BaseEntity), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryFirstAsync([FromQuery][Required]IQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
@@ -377,9 +401,9 @@ public abstract class BaseControllerReadOnly<TRepository, TEntity, TIdentity, TC
     [Route(ActionRoutes.QUERY_FIRST)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(BaseEntity), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryFirstPostAsync([FromBody][Required]IQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)

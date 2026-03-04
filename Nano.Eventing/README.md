@@ -86,7 +86,7 @@ The ```Eventing``` section in the configuration defines the eventing provider an
 ```
 
 ## Serialization
-Nano eventing uses `Newtonsoft.Json` for serialization and deserialization.  It supports all built-in Nano types, types derived from Nano base types, 
+Nano eventing uses `Newtonsoft.Json` for serialization and deserialization. It supports all built-in Nano types, types derived from Nano base types, 
 and all `Geometry` types from `NetTopologySuite`.  
 
 The serializer is configured to handle various edge cases for robustness. However, event contracts should remain simple. Eventing is not intended for 

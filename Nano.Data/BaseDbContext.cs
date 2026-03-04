@@ -1,5 +1,4 @@
 using EntityFrameworkCore.Triggers;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -361,20 +360,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         }
 
         modelBuilder
-            .MapEntities();
-
-        if (this.options.CurrentValue.UseAudit)
-        {
-            modelBuilder
-                .AddMapping<AuditEntry<TIdentity>, AuditEntryMapping<TIdentity>>()
-                .AddMapping<AuditEntryProperty<TIdentity>, AuditEntryPropertyMapping<TIdentity>>();
-        }
-
-        if (this.options.CurrentValue.Identity != null)
-        {
-            modelBuilder
-                .MapIdentity<TIdentity>(this.options.CurrentValue.Identity);
-        }
+            .MapEntities<TIdentity>()
+            .MapIdentityEntities<TIdentity>(this.options.CurrentValue.Identity)
+            .AddMapping<AuditEntry<TIdentity>, TIdentity, AuditEntryMapping<TIdentity>>()
+            .AddMapping<AuditEntryProperty<TIdentity>, TIdentity, AuditEntryPropertyMapping<TIdentity>>();
     }
 
 
