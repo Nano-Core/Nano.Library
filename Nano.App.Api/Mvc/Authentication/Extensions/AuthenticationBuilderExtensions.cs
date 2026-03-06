@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Nano.App.Api.Config;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 
-namespace Nano.App.Api.Identity.Authentication.Extensions;
+namespace Nano.App.Api.Mvc.Authentication.Extensions;
 
 internal static class AuthenticationBuilderExtensions
 {

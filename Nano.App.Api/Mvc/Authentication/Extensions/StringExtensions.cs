@@ -2,7 +2,7 @@ using System;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Nano.App.Api.Identity.Authentication.Extensions;
+namespace Nano.App.Api.Mvc.Authentication.Extensions;
 
 internal static class StringExtensions
 {

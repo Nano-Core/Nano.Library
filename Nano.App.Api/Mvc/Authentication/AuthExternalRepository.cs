@@ -1,12 +1,12 @@
-using Nano.Data.Abstractions.Identity.Authentication;
-using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Identity.Exceptions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Identity.Exceptions;
 
-namespace Nano.App.Api.Identity.Authentication;
+namespace Nano.App.Api.Mvc.Authentication;
 
 /// <inheritdoc />
 public class AuthExternalRepository : IAuthExternalRepository

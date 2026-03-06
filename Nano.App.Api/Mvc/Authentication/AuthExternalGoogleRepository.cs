@@ -7,7 +7,7 @@ using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 
-namespace Nano.App.Api.Identity.Authentication;
+namespace Nano.App.Api.Mvc.Authentication;
 
 /// <inheritdoc />
 public class AuthExternalGoogleRepository(GoogleOptions options) : IAuthExternalGoogleRepository

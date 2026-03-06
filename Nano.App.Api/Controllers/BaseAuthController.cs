@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Nano.App.Api.Identity.Authentication.Abstractions;
+using Nano.App.Api.Mvc.Authentication.Abstractions;
 using Nano.App.ApiClient.Requests.Auth.Models;
 using Nano.App.Consts;
 using Nano.Common.Consts;

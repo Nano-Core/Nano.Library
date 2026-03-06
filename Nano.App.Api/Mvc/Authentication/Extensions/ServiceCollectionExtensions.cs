@@ -9,15 +9,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Nano.App.Api.Config;
-using Nano.App.Api.Identity.Authentication.Abstractions;
-using Nano.App.Api.Identity.Authentication.Consts;
+using Nano.App.Api.Mvc.Authentication.Abstractions;
+using Nano.App.Api.Mvc.Authentication.Consts;
 using Nano.App.Config;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using AuthenticationOptions = Nano.App.Api.Config.AuthenticationOptions;
 
-namespace Nano.App.Api.Identity.Authentication.Extensions;
+namespace Nano.App.Api.Mvc.Authentication.Extensions;
 
 internal static class ServiceCollectionExtensions
 {

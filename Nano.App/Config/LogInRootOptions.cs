@@ -8,14 +8,14 @@ namespace Nano.App.Config;
 public class LogInRootOptions
 {
     /// <summary>
-    /// The username used for authentication.
+    /// The username used for root authentication.
     /// </summary>
     [Required]
     [MaxLength(256)]
     public virtual string Username { get; set; } = null!;
 
     /// <summary>
-    /// The password used for authentication.
+    /// The password used for root authentication.
     /// </summary>
     [Required]
     [MaxLength(256)]

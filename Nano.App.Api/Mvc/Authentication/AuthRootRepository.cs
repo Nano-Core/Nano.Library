@@ -2,14 +2,14 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Nano.App.Api.Identity.Authentication.Abstractions;
+using Nano.App.Api.Mvc.Authentication.Abstractions;
 using Nano.App.ApiClient.Requests.Auth.Models;
 using Nano.App.Config;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
 
-namespace Nano.App.Api.Identity.Authentication;
+namespace Nano.App.Api.Mvc.Authentication;
 
 /// <inheritdoc />
 public class AuthRootRepository : IAuthRootRepository

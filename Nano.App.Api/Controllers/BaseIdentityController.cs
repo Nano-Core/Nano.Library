@@ -849,6 +849,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpPost]
     [HttpDelete]
     [Route(ActionRoutes.IDENTITY_DEACTIVATE)]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.DELETER)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -877,6 +878,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     [HttpPost]
     [HttpDelete]
     [Route(ActionRoutes.DELETE)]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.DELETER)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -912,6 +914,7 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
     /// <response code="500">Error occurred.</response>
     [HttpPost]
     [HttpDelete]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.DELETER)]
     [Route(ActionRoutes.DELETE_MANY)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]

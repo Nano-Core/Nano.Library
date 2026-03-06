@@ -180,6 +180,7 @@ public abstract class BaseApi
 
         var headersToForward = new[]
         {
+            NanoHeaderNames.X_API_KEY,
             NanoHeaderNames.X_FORWARDED_PROTO,
             NanoHeaderNames.X_FORWARDED_HOST,
             NanoHeaderNames.X_FORWARDED_PORT,

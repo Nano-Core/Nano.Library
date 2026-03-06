@@ -25,6 +25,30 @@ public static class HttpContextExtensions
     }
 
     /// <summary>
+    /// Gets the user identifier ("sub") claim from the JWT token in the HTTP context as a <see cref="Guid"/>.
+    /// </summary>
+    /// <param name="httpContext">The current HTTP context.</param>
+    /// <returns>The user identifier as a <see cref="Guid"/> if present and valid; otherwise, null.</returns>
+    public static Guid? GetJwtUserId(this HttpContext httpContext)
+    {
+        ArgumentNullException.ThrowIfNull(httpContext);
+
+        var value = httpContext
+            .GetJwtClaimValue(JwtRegisteredClaimNames.Sub);
+
+        if (value == null)
+        {
+            return null;
+        }
+
+        var success = Guid.TryParse(value, out var result);
+
+        return success
+            ? result
+            : null;
+    }
+
+    /// <summary>
     /// Gets the user name claim ("name") from the JWT token in the HTTP context.
     /// </summary>
     /// <param name="httpContext">The current HTTP context.</param>
@@ -48,30 +72,6 @@ public static class HttpContextExtensions
 
         return httpContext
             .GetJwtClaimValue(JwtRegisteredClaimNames.Email);
-    }
-
-    /// <summary>
-    /// Gets the user identifier ("sub") claim from the JWT token in the HTTP context as a <see cref="Guid"/>.
-    /// </summary>
-    /// <param name="httpContext">The current HTTP context.</param>
-    /// <returns>The user identifier as a <see cref="Guid"/> if present and valid; otherwise, null.</returns>
-    public static Guid? GetJwtUserId(this HttpContext httpContext)
-    {
-        ArgumentNullException.ThrowIfNull(httpContext);
-
-        var value = httpContext
-            .GetJwtClaimValue(JwtRegisteredClaimNames.Sub);
-
-        if (value == null)
-        {
-            return null;
-        }
-
-        var success = Guid.TryParse(value, out var result);
-
-        return success
-            ? result
-            : null;
     }
 
     /// <summary>

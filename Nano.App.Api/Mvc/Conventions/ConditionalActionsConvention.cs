@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Options;
@@ -192,36 +193,99 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
             return;
         }
 
-        if (this.dataOptions?.CurrentValue.Identity?.Authentication.ApiKey != null)
+        var disabledActions = new List<ActionModel>();
+
+        if (this.apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.Facebook == null)
         {
-            return;
+            disabledActions
+                .AddRange(controller.Actions
+                    .Where(x =>
+                    {
+                        if (nameof(BaseIdentityController<,,,>.AddExternalLoginFacebookAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        if (nameof(BaseIdentityController<,,,>.SignUpExternalFacebookAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        return false;
+                    }));
         }
 
-        var disabledActions2 = controller.Actions
-            .Where(x =>
-            {
-                if (nameof(BaseIdentityController<,,,>.GetApiKeysAsync).ReplaceAsync() == x.ActionName)
-                {
-                    return true;
-                }
-                if (nameof(BaseIdentityController<,,,>.CreateApiKeyAsync).ReplaceAsync() == x.ActionName)
-                {
-                    return true;
-                }
-                if (nameof(BaseIdentityController<,,,>.EditApiKeyAsync).ReplaceAsync() == x.ActionName)
-                {
-                    return true;
-                }
-                if (nameof(BaseIdentityController<,,,>.RevokeApiKeyAsync).ReplaceAsync() == x.ActionName)
-                {
-                    return true;
-                }
+        if (this.apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.Google == null)
+        {
+            disabledActions
+                .AddRange(controller.Actions
+                    .Where(x =>
+                    {
+                        if (nameof(BaseIdentityController<,,,>.AddExternalLoginGoogleAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
 
-                return false;
-            })
-            .ToArray();
+                        if (nameof(BaseIdentityController<,,,>.SignUpExternalGoogleAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
 
-        foreach (var action in disabledActions2)
+                        return false;
+                    }));
+        }
+
+        if (this.apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.Microsoft == null)
+        {
+            disabledActions
+                .AddRange(controller.Actions
+                    .Where(x =>
+                    {
+                        if (nameof(BaseIdentityController<,,,>.AddExternalLoginMicrosoftAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        if (nameof(BaseIdentityController<,,,>.SignUpExternalMicrosoftAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        return false;
+                    }));
+        }
+
+        if (this.dataOptions?.CurrentValue.Identity?.Authentication.ApiKey == null)
+        {
+            disabledActions
+                .AddRange(controller.Actions
+                    .Where(x =>
+                    {
+                        if (nameof(BaseIdentityController<,,,>.GetApiKeysAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        if (nameof(BaseIdentityController<,,,>.CreateApiKeyAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        if (nameof(BaseIdentityController<,,,>.EditApiKeyAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        if (nameof(BaseIdentityController<,,,>.RevokeApiKeyAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        return false;
+                    }));
+        }
+
+        foreach (var action in disabledActions)
         {
             controller.Actions
                 .Remove(action);

@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Nano.App.ApiClient.Requests.Auth.Models;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 
-namespace Nano.App.Api.Identity.Authentication.Abstractions;
+namespace Nano.App.Api.Mvc.Authentication.Abstractions;
 
 /// <summary>
 /// Provides authentication for the root/admin user.

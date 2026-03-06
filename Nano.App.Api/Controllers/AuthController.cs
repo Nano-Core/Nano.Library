@@ -1,6 +1,6 @@
 using System;
 using Microsoft.Extensions.Logging;
-using Nano.App.Api.Identity.Authentication.Abstractions;
+using Nano.App.Api.Mvc.Authentication.Abstractions;
 using Nano.Data.Abstractions.Identity.Authentication;
 
 namespace Nano.App.Api.Controllers;

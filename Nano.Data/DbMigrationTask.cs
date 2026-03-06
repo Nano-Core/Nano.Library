@@ -44,7 +44,7 @@ internal sealed class DbMigrationTask<TIdentity>(ILogger<DbMigrationTask<TIdenti
     }
     private Task EnsureMigratedAsync(CancellationToken cancellationToken = default)
     {
-        if (!this.options.CurrentValue.UseMigrateDatabase)
+        if (!this.options.CurrentValue.UseMigrateDatabase || this.options.CurrentValue.UseCreateDatabase)
         {
             return Task.CompletedTask;
         }

@@ -1,4 +1,4 @@
-﻿namespace Nano.App.Api.Identity.Authentication.Consts;
+﻿namespace Nano.App.Api.Mvc.Authentication.Consts;
 
 internal static class AuthorizationPolicies
 {

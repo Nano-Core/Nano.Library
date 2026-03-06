@@ -118,10 +118,8 @@ The `App` section in the configuration defines behavior related to the applicati
 "App": {
   "Version": "1.0.0.0",
   "ShutdownTimeout": 10,
-  "Hosting": { 
-  },
-  "HttpPolicyHeaders": {
-  },
+  "Hosting": { },
+  "HttpPolicyHeaders": { },
   "ResponseCache": null,
   "ResponseCompression": null,
   "Session": null,
@@ -130,8 +128,7 @@ The `App` section in the configuration defines behavior related to the applicati
   "Documentation": null,
   "HealthCheck": null,
   "VirusScan": null,
-  "ErrorHandling": {
-  }
+  "ErrorHandling": { }
   "Identity": null,
   "Apis": []
 }
@@ -1439,165 +1436,211 @@ This is enabled by default and requires no additional configuration.
 Try it out yourself using the **[Api.StaticFiles](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.StaticFiles)** example.  
 
 ## Authentication
-HOW DO WE ADD ROLES FOR TRANSIENT LOGIN (WE NEED ROLES OTHERWISE NO ACCESS TO CONTROLLERS). I THINK THE USER HAS TO PASS TRANSIENT ROLES, BUT WE NEED TO DOCUMENT THAT
+In Nano, authentication can be either persistent, using an identity store to manage user data, or transient, relying on external providers without storing identity information.  
 
-When authentication has been enabled and configured, and the application is running, users authenticate in order to gain access to the controllers and their actions. Nano has a ```AuthController``` implementation, responsible for this.  
+When your application needs to manage usernames, passwords, roles, permissions, or other persistent user data, you should configure 
+**[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)**. This enables Nano to store and maintain user credentials and claims in a 
+centralized identity store. Roles and claims can then be automatically loaded for each user, simplifying access control and authorization across your application.
 
-Nano supports various methods of authentication as described in [Security - Authentication](security#authentication) section.  
+Nano also supports transient authentication and must be assigned each time a user logs in. Users authenticate through external providers, and JWT tokens are generated for 
+use in subsequent requests. Roles and claims are transient, meaning they must be assigned each time a user logs in. To access all base controller actions in Nano, 
+the `administrator` role must be included. Otherwise, roles can be assigned more selectively from Nano’s default roles to provide finer-grained access control for 
+transient users.  
 
-When using layered Nano APIs, the `Authorization` header is automatically propagated across all layers when leveraging 
-the built-in [Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client).  
+| Name          | Description                          |
+| ------------- | ------------------------------------ |
+| reader        | Authorized to read.                  | 
+| writer        | Authorized to read and write.        | 
+| creator       | Authorized to create.                | 
+| editor        | Authorized to update.                | 
+| deleter       | Authorized to create.                | 
+| identity      | Authorized to use identity actions.  | 
+| Administrator | Full access to everything.           | 
 
-The ```Security``` section of the configuration defines behavior related to authentication and authorization in the application. The section is deserialized into an instance of ```SecurityOptions```, and injected as dependency during startup, thus available for injection throughout the application.  
+Transient roles and claims may also be added when using persistent authentication, and its often preferred for data than might change. Consider you might fetch a user’s 
+legal name at login and add it as a transient claim, rather than storing it permanently in the identity system. This approach ensures that certain information is always 
+current without updating persistent claims.
 
+Nano provides a concrete `AuthController`, which exposes endpoints based on your authentication configuration. Learn more about [Authentication Controllers](#controllers). 
+If you prefer implementing you own authentication controller, you can use the interfaces `IAuthRootRepository`, `IAuthTransientRepository` or `IIdentityAuthRepository`, 
+to derive authentication functionality.  
 
-|  `HideAuthController`    | bool    | false    | Controls whether the authentication controller should be visible when authentication is enabled.  |
+The following configuration is available for authentication.  
+
+| Setting                   | Type     | Default   | Description                                                                                |
+| ------------------------- | -------- | --------- | ------------------------------------------------------------------------------------------ |
+|  `HideAuthController`     | bool     | false     | Controls whether the `AuthController` should be visible when authentication is enabled.    |
+|  `Jwt`                    | object   | null      | Optional JWT authentication configuration.                                                 |
+|  `Jwt.Issuer`             | string   | null      | JWT issuer.                                                                                |
+|  `Jwt.Audience`           | string   | null      | JWT audience.                                                                              |
+|  `Jwt.PublicKey`          | string   | null      | Base64-encoded public key.                                                                 |
+|  `Jwt.PrivateKey`         | string   | null      | Base64-encoded private key.                                                                |
+|  `Jwt.Expiration`         | TimeSpan | 00:60:00  | Expiration for the access token.                                                           |
+|  `Jwt.RefreshExpiration`  | TimeSpan | 72:00:00  | Expiration for the refresh token.                                                          |
+|  `Jwt.RootLogin`          | object   | null      | Optional root login options.                                                               |
+|  `Jwt.ExternalLogins`     | object   | null      | Optional external login options.                                                           |
 
 ```json
-"Security": {
+"App": {
+  "Authentication": {
     "HideAuthController": false,
     "Jwt": {
-        "IsEnabled": true,
-        "Issuer": "issuer",
-        "Audience": "audience",
-        "PublicKey": null,
-        "PrivateKey": null,
-        "ExpirationInMinutes": 60,
-        "RefreshExpirationInHours": 72
-    },
-    "ExternalLogins": {
-        "Google": {
-            "ClientId": null,
-            "ClientSecret": "N/A",
-            "Scopes": [
-            ]
-        },
-        "Facebook": {
-            "AppId": null,
-            "AppSecret": "N/A",
-            "Scopes": [
-            ]
-        },
-        "Microsoft": {
-            "TenantId": null,
-            "ClientId": null,
-            "ClientSecret": "N/A",
-            "Scopes": [
-            ]
-        }
+      "Issuer": null,
+      "Audience": null,
+      "PublicKey": null,
+      "PrivateKey": null,
+      "Expiration": 00:60:00,
+      "RefreshExpiration": 72:00:00
     }
-}
-```
-
-Roles & Claims:
-ROLES AND CLAIMS SHOULD BE MOVED TO DATA, or
-
-Roles:
-Name | Type | Description |
----- | ---- | ---- |
-Guest | built-in | Currently, not authorized to do anything.
-Reader | built-in | Authorized to read.
-Writer | built-in | Authorized to read and write
-Service | built-in | Authorized to all services.
-Administrator | built-in | Full access to everything.
-MyRole | custom | Custom role specified during signup or login.
-
-Claims:
-Name | Type | Description |
----- | ---- | ---- |
-AppId | built-in | The id of the application. Set during logon, and used for supporting multiple refresh tokens. Default value: "Default"
-Id | built-in | The user id.
-Email | built-in | The user's email address.
-Name | built-in | The username
-MyClaim | custom | Custom claim specified during signup or login.
-
-
-Nano supports authenticating with user credentials (username and password), and also using one of the supported external providers.  
-
-A successful authentication returns a Nano ```AccessToken```. 
-```json
-{
-    "AppId": null,
-    "UserId": null,
-    "Token": null,
-    "ExpireAt": null,
-    "IsExpired": false,
-    "RefreshToken": {
-        "Token": null,
-        "ExpireAt": null,
-        "IsExpired": false,
-    },
-}
-```
-
-The ```jwt-token``` contains the following claims and values.  
-```json
-{
-  "appId": "Default",
-  "jti": "74ec40fe-bb18-4bd6-8ec5-51b37f9c8a5c",
-  "sub": "08d9da95-9a3b-4ec6-83b0-fa11da6bae7e",
-  "name": "admin@domain.com",
-  "email": "admin@domain.com",
-  "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": [
-    "service",
-    "administrator"
-  ],
-  "nbf": 1111111111,
-  "exp": 1111111111,
-  "iss": "development.nano",
-  "aud": "development.nano"
-}
-```
-
-Api Key:
-It's also possible to authenticate using an api-key, by setting the header ```x-api-key``` with a valid api-key.  
-
-Api-keys can be managed through the ``IdentityManager```.  
-
-External Providers:
-Nano supports the following external providers.
-
-Name | Type | Description
--------------|-------------|-------------
-Google | Implicit | Google authentication using implicit flow. No token refresh possible.
-Facebook | Implicit | Facebook authentication using implicit flow. No token refresh possible.
-Microsoft | Auth-Code | Microsoft authentication using auth code flow.
-
-When logging in with an external provider through a single-page-application, Nano finalizes the flow by validating the external response. On successful validation a Nano  jwt-token is created, wherein the retrieved external access-token is embedded, should it later be needed to authorize against the external provider.  
-
-Scopes for ```id```, ```email``` and ```username``` should be enabled for external providers.  
-
-***
-
-Root Log-In:
-Nano comes with a built-in administrator, defined in the [Security Section](#configuration), as shown below. The administrator user will be created during start-up, if it doesn't already exist.
-
-The administrator has unrestricted permissions, and may access any part of the application. 
-```json
-"Security": {
-  "User": {
-    "AdminUsername": "admin",
-    "AdminPassword": "<<secret>>",
   }
 }
 ```
 
+Nano supports a statically configured login called `RootLogin`. It is primarily intended for use in `Development` environments when testing services in isolation, but where 
+the application still requires an authenticated user. Another common scenario is when console applications need to authenticate through the Nano API client but do not have 
+a specific user account available for login. This login type is transient and does not rely on an identity store. The `RootLogin` configuration is defined as follows.  
+
+| Setting       | Type     | Default   | Description                                 |
+| ------------- | -------- | --------- | ------------------------------------------- |
+|  `Username`   | string   | null      | The username used for root authentication.  |
+|  `Password`   | string   | null      | The password used for root authentication.  |
+
+The supported `ExternalLogins` in Nano are Facebook, Google, and Microsoft. Nano allows you to use external logins either alongside 
+**[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)** or as transient logins without an identity store.  
+
+The configuration is defined as follows.  
+
+**Facebook**
+
+| Setting                    | Type   | Default  | Description               |
+| -------------------------- | ------ | -------- | ------------------------- |
+|  `Facebook.AppId`          | string | null     | Facebook App Id.          |
+|  `Facebook.AppSecret`      | string | null     | Facebook App Secret.      |
+|  `Facebook.Scopes`         | array  | []       | OAuth Scopes.             |
+
+**Google**
+
+| Setting                    | Type   | Default  | Description               |
+| -------------------------- | ------ | -------- | ------------------------- |
+|  `Google.ClientId`         | string | null     | Google Client Id.         |
+|  `Google.ClientSecret`     | string | null     | Google Client Secret.     |
+|  `Google.Scopes`           | array  | []       | OAuth Scopes..            |
+
+**Microsoft**
+
+| Setting                    | Type   | Default  | Description               |
+| -------------------------- | ------ | -------- | ------------------------- |
+|  `Microsoft.TenantId`      | string | null     | Microsoft Tenant Id.      |
+|  `Microsoft.ClientId`      | string | null     | Microsoft Client Id.      |
+|  `Microsoft.ClientSecret`  | string | null     | Microsoft Client Secret.  |
+|  `Microsoft.Scopes`        | array  | []       | OAuth Scopes.             |
+
+```json
+"App": {
+  "Authentication": {
+    "Jwt": {
+      "ExternalLogins": {
+        "Google": {
+          "ClientId": null,
+          "ClientSecret": null,
+          "Scopes": [ ]
+        },
+        "Facebook": {
+            "AppId": null,
+            "AppSecret": null,
+            "Scopes": [ ]
+        },
+        "Microsoft": {
+            "TenantId": null,
+            "ClientId": null,
+            "ClientSecret": null,
+            "Scopes": [ ]
+        }
+    }
+  }
+}
+```
+
+> ⚠️ The external provider application must be configured with at least the following scopes: `id`, `email`, and `username`.
+
+The `AuthController` exposes endpoints for all configured authentication methods. Each method allows specifying an `AppId`, a unique string that identifies the application 
+or platform the user is authenticating from. This enables logins to be managed independently per application. If no `AppId` is provided, it defaults to `Default`. All 
+authentication methods also return a consistent `AccessToken` in the response, with default values as shown below.  
+
+```json
+{
+  "AppId": null,
+  "UserId": null,
+  "Token": null,
+  "ExpireAt": "2026-03-06T12:00:00Z",
+  "IsExpired": false,
+  "RefreshToken": {
+    "Token": null,
+    "ExpireAt": "2026-03-07T12:00:00Z",
+    "IsExpired": false
+  }
+}
+```
+
+The token contains the following default claims. And Nano contains `HttpContext` extension methods for easy retrieval of the claims values.
+
+| Name      | HttpContext Extension | Description                      |
+| --------- | --------------------- | -------------------------------- |
+| AppId     | `GetJwtAppId()`       | The app id. Default: "Default".  |
+| Id        | `GetJwtUserId()`      | The user id.                     |
+| Name      | `GetJwtUserName()`    | The username.                    |
+| Email     | `GetJwtUserEmail()`   | The user's email address.        |
+
+All the `HttpContext` extension methods returns null, if not authenticated.  
+
+The refresh token may be used to extend the access-token when expired.  
+
+Nano also supports authentication using an API key, provided in the `X-Api-Key` header. This requires 
+**[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)** to be configured for API keys. When an API key is included in the HTTP header, 
+Nano authenticates the request using `ApiKeyAuthenticationHandler<TIdentity>`.
+
+> ⚠️ In a layered architecture, when using API key authentication, the Kubernetes ingress must handle the authentication step before requests reach your services. This means the 
+ingress needs to validate the API key by calling an authentication endpoint and exchanging it for a JWT token that can be forwarded to your backend service. Without this, services 
+behind the ingress won't automatically authenticate API-key requests.  
+
+For example, with NGINX ingress, you can use the `nginx.ingress.kubernetes.io/auth-url` annotation to forward requests to your auth endpoint, like this.  
+
+```yaml
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/auth-url: "http://{service-name}/auth/api-key"
+    nginx.ingress.kubernetes.io/auth-method: "GET"
+    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization"
+```
+
+Try out transient authentication yourself using one of these examples.  
+
+* **[Api.Authentication.RootLogin](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.RootLogin)** 
+* **[Api.Authentication.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.External.Facebook)** 
+* **[Api.Authentication.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.External.Google)** 
+* **[Api.Authentication.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.External.Microsoft)** 
+
+or examples with identity store configured.  
+
+* **[Api.Data.MySql.Identity.Authentication.Jwt](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Identity.Authentication.Jwt)** 
+* **[Api.Data.MySql.Identity.Authentication.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Identity.Authentication.External.Facebook)** 
+* **[Api.Data.MySql.Identity.Authentication.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Identity.Authentication.External.Google)** 
+* **[Api.Data.MySql.Identity.Authentication.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Identity.Authentication.External.Microsoft)** 
+
 ## Authorization
-When a user successfully authenticates, a jwt-token is returned to the client. Subsequent requests must include the ```Authorization``` header, containing the value ```Baerer {token}```.  See [JWT Explained](https://jwt.io/introduction/) for further details.  
+Nano supports authorization using either a JWT token or an API key. JWT tokens are provided in the `Authorization` header, while API keys are provided in 
+the `X-Api-Key` header. If both headers are present in a request, the JWT token takes precedence. If no authentication has been configured for an application, 
+Nano allows _anonymous_ access by default. You can change this behavior by registering a custom authentication handler during application startup 
+in `ConfigureServices(...)`.
 
-In Nano the ```HttpContext``` is extended with methods, that decrypts the authorization token, and extracts specific claim values.  
-* ```GetIsAnonymous()``` Returns whether the user is anonymous.  
-* ```GetJwtAppId()``` Returns app id.  
-* ```GetJwtToken()``` Returns the complete token.  
-* ```GetJwtUserId()``` Extracts the user-id of the logged in user.  
-* ```GetJwtUserName()``` Extracts the user username of the logged in user.  
-* ```GetJwtUserEmail()``` Extracts the user email address of the logged in user.  
-* ```GetJwtExternalToken()``` Extracts the external provider access token, if logged in with external provider.  
+When building layered Nano applications, the `Authorization` header is automatically propagated between applications when using the built-in  
+[Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client). This ensures that the authenticated context is preserved 
+across application boundaries.
 
-All methods returns null, when not authenticated and no authorization token is passed along with the request.  
-
-Roles:
-By default, authorization to controller actions is handling by the built-in roles and policies defined by Nano. Controllers may be decorated with the ```AuthorizeAttribute```, and allow to override the default authorization and use custom defined roles and policies.  
+In Nano, _claims_ are primarily used for carrying user information, while _roles_ are used for authorization. Nano can be extended to support any kind of custom 
+authorization strategies. For example, you can override the `[Authorize]` attribute used by base controllers in Nano and register custom authorization policies 
+during application startup. By default, however, Nano base controllers rely on role-based authorization. See [Controllers](#controllers) for details on which 
+roles are required for specific base controllers and actions.
 
 ## Api Clients
 Nano API clients provide a structured way to communicate with other Nano API applications. They are designed to simplify service-to-service communication while maintaining 
@@ -1609,7 +1652,7 @@ into the business logic. Responses and errors are propagated in a predictable wa
 When used together with Nano’s **[Error Handling](#error-handling)** and `ProblemDetails` support, API clients ensure that errors can flow through multiple layers without being lost 
 or transformed into generic failures.
 
-> 📖 Learn more [Nano Api Clients](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-clients)
+> 📖 Learn more **[Nano Api Clients](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-clients)**
 
 ## Controllers
 Nano provides several base controller classes that concrete API controllers are expected to inherit from.
@@ -1627,7 +1670,7 @@ attribute on actions can specify any route segment as needed by the consumer. Th
 flexibility at the action level.
 
 The `BaseController` also exposes a `RequestId` property, allowing easy access to the unique identifier of the current request. This is particularly useful for 
-logging and correlation. See [Request Tracing](#request-tracing).
+logging and correlation. See **[Request Tracing](#request-tracing)**.
 
 In addition to `BaseController`, Nano includes specialized base entity controllers designed for working with Nano data entities. These controllers expose standard 
 CRUD operations depending on their intended responsibility, as shown below.
@@ -1636,7 +1679,7 @@ CRUD operations depending on their intended responsibility, as shown below.
 | ------------------------------------------- | --- | ------ | ------ | ------ |
 | `BaseEntityController`                      | ✔   | ✔     | ✔     | ✔     |
 | `BaseEntityReadOnlyController`              | ✔   | ❌    | ❌     | ❌    |
-| `BaseEntityCreatableController`             | ✔   | ✔     | ❌    | ❌     |
+| `BaseEntityCreatableController`             | ✔   | ✔     | ❌    | ❌    |
 | `BaseEntityCreatableAndUpdatableController` | ✔   | ✔     | ✔     | ❌    |
 | `BaseEntityUpdatableController`             | ✔   | ❌    | ✔     | ❌    |
 | `BaseEntityDeletableController`             | ✔   | ❌    | ❌    | ✔     |
@@ -1647,7 +1690,7 @@ to keep the API surface minimal and explicit.
 > ⚠️ Entity controllers require **Nano.Data** to be configured for the application.
 
 Each concrete implementation of an entity controller must specify two generic parameters. First, the entity model, which defines the database table and its properties 
-that the controller will work with. This model comes from [Nano Data Models](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#data-models) and uses 
+that the controller will work with. This model comes from **[Nano Data Models](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#data-models)** and uses 
 Entity Framework. 
 
 ```csharp
@@ -1661,7 +1704,7 @@ public class MyEntity : BaseEntity
 
 Second, the query criteria model defines how consumers can query the entity. Its properties determine the search criteria that can be applied to the underlying entity model, 
 and entity controllers also support ordering and pagination. A query criteria model is created by deriving from `BaseQueryCriteria`. For each property of the corresponding 
-entity that should be queryable, add a property to the derived class. You must also override the base method `GetExpressions()` and implement the logic to generate the 
+entity that should be queryable, add a property to the derived criteria class. You must also override the base method `GetExpressions()` and implement the logic to generate the 
 necessary expressions for each property. The `BaseQueryCriteria` class already includes properties and implementation for querying the start and end dates 
 of `BaseEntity.CreatedAt`, so don't forget to call `base.GetExpressions()`.
 
@@ -1690,15 +1733,15 @@ public class MyEntityQueryCriteria : BaseQueryCriteria
 }
 ```
 
-Converting query models into linq expressions for Entity Framework is based on the [DynamicExpression](https://github.com/vivet/DynamicExpression) library.  
+Converting query models into linq expressions for Entity Framework is based on the **[DynamicExpression](https://github.com/vivet/DynamicExpression)** library.  
 
 Nano entity controllers have two required constructor dependencies and one optional dependency.  
 
-| Dependency    | Purpose                                                                                                                                                                                        |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ILogger`     | Required. Provides logging capabilities for the controller.                                                                                                                                              |
-| `IRepository` | Required. Provides methods to get, add, update, delete, and query entity data.                                                                                                                           |
-| `IEventing`   | Optional. If eventing is configured, this allows the controller to publish events from its actions. See [Nano.Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing).  |
+| Dependency    | Purpose                                                                                                                                                                                            |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ILogger`     | Required. Provides logging capabilities for the controller.                                                                                                                                        |
+| `IRepository` | Required. Provides methods to get, add, update, delete, and query entity data.                                                                                                                     |
+| `IEventing`   | Optional. If eventing is configured, this allows the controller to publish events from its actions. See **[Nano.Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing)**.  |
 
 A controller using the default `Guid` as `TIdentity` would look like this.  
 
@@ -1707,33 +1750,156 @@ public class MyEntitysController(ILogger<MyEntitysController> logger,IRepository
     : BaseEntityController<MyEntity, MyEntityQueryCriteria>(logger, repository, eventing);
 ```
 
-If you have specified a `TIdentity` type when registering [Nano.Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data), you must also specify the same type 
-when deriving your concrete controllers from the Nano base controllers. If `TIdentity` is a `string`, your controller would look like this
+If you have specified a `TIdentity` type when registering **[Nano.Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)**, you must also specify the same type 
+when deriving your concrete controllers from the Nano base controllers. If `TIdentity` is a `string`, your controller would look like this.  
 
 ```csharp
 public class MyEntitysController(ILogger<MyEntitysController> logger, IRepository repository, IEventing? eventing) 
     : BaseEntityController<MyEntity, string, MyEntityQueryCriteria>(logger, repository, eventing);
 ```
 
-If [Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity) is configured, Nano provides an additional base controller for identity management. 
-The `BaseIdentityController<TEntity, TCriteria>` includes methods for creating and managing user identities within the application. To use it, derive a concrete implementation 
-to expose the identity-related actions for your application. The controller behaves similarly to other entity controllers but includes additional actions specific to 
-identity management. Note that the `TEntity` generic parameter must not only derive from `BaseEntity` but specifically from `BaseEntityUser`.  
+When everything is configured and registered, the following endpoints becomes available for each entity controller.
 
-> 📖 Learn more about [Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity).
+| Endpoint                          | Method        | Role    | Description                                                                  |
+| --------------------------------- | ------------- | ------- | ---------------------------------------------------------------------------- |
+| `/api/{entity}s/create`           | POST          | creator | Creates a single model instance.                                             |
+| `/api/{entity}s/create/get`       | POST          | creator | Creates a single model instance and retrieves it with included navigations.  |
+| `/api/{entity}s/create/many`      | POST          | creator | Creates multiple model instances.                                            |
+| `/api/{entity}s/create/many/bulk` | POST          | creator | Creates multiple model instances in bulk.                                    |
+| `/api/{entity}s/{id}/details`     | GET           | reader  | Gets a single entity by its identifier.                                      |
+| `/api/{entity}s/details/many`     | GET, POST     | reader  | Gets multiple entities by their identifiers.                                 |
+| `/api/{entity}s/index`            | GET, POST     | reader  | Gets all entities matching the specified query.                              |
+| `/api/{entity}s/query`            | GET, POST     | reader  | Queries entities matching the specified criteria.                            |
+| `/api/{entity}s/query/count`      | GET, POST     | reader  | Gets the total count of entities matching the specified criteria.            |
+| `/api/{entity}s/query/first`      | GET, POST     | reader  | Retrieves the first entity matching the specified criteria.                  |
+| `/api/{entity}s/edit`             | PUT, POST     | editor  | Edits a single model instance.                                               |
+| `/api/{entity}s/edit/get`         | PUT, POST     | editor  | Edits a single model instance and retrieves it with included navigations.    |
+| `/api/{entity}s/edit/many`        | PUT, POST     | editor  | Edits multiple model instances.                                              |
+| `/api/{entity}s/edit/many/bulk`   | PUT, POST     | editor  | Edits multiple model instances in bulk.                                      |
+| `/api/{entity}s/edit/query`       | PUT, POST     | editor  | Edits entities that match the specified criteria.                            |
+| `/api/{entity}s/{id}/delete`      | POST, DELETE  | deleter | Deletes a single entity by its identifier.                                   |
+| `/api/{entity}s/delete/many`      | POST, DELETE  | deleter | Deletes multiple entities by their identifiers.                              |
+| `/api/{entity}s/delete/many/bulk` | POST, DELETE  | deleter | Deletes multiple entities by their identifiers in bulk.                      |
+| `/api/{entity}s/delete/query`     | POST, DELETE  | deleter | Deletes entities matching the specified criteria.                            |
 
-Another specialized base controller is provided for [Data Audit](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#audit). You can expose audit data by deriving 
-from `BaseAuditController` or `BaseAuditController<TIdentity>`. These controllers automatically provide read-only actions for querying audit records.  
+Try it yourself using one of the **[Api.Data Lessons](https://github.com/Nano-Core/Nano.Lessons)**, such as **[Api.Data.MySql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql)**, 
+or any of the other data provider examples.
 
-The final controller is the `AuthContrlller`. This is already a concrete controller, and unless having special needs, there is no reason to override it. The controller is only
-exposed if [Authentication](#authentication) has been configured, and only actions matching the configuration will be exposed.  
+When **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)** is enabled, Nano provides a specialized base controller for managing 
+entity identities. The `BaseIdentityController<TEntity, TCriteria>` offers a rich set of methods for creating, updating, and managing user identities within your application. 
+To use it, derive a concrete implementation of this controller to expose identity-related actions for your application. It behaves similarly to other entity controllers but 
+includes additional actions tailored for identity management, such as handling usernames, passwords, emails, phone numbers, external logins, claims, roles, and API keys.  
+
+The `TEntity` generic parameter must inherit not just from `BaseEntity`, but specifically from `BaseEntityUser` or `BaseEntityUser<TIdentity>`. Your user entity model 
+is connected through the `IdentityUser` property on the base class and can otherwise be used like any other entity model in Nano.
+
+The following endpoints are available in the `BaseIdentityController<TEntity, TCriteria>` for managing user identities. Not all identity features might be configured. Nano only 
+exposes endpoints that match the current configuration; any features not configured will not be registered or available in the controller.
+
+| Endpoint                                      | Method        | Role          | Description                                                                 |
+|---------------------------------------------- |-------------- | ------------- | --------------------------------------------------------------------------- |
+| `/{identity}/password/options`                | GET           | Anonymous     | Retrieves the configured password options.                                  |
+| `/{identity}/email/is-taken`                  | GET           | Anonymous     | Determines whether an email address is already in use.                      |
+| `/{identity}/phone/is-taken`                  | GET           | Anonymous     | Determines whether a phone number is already in use.                        |
+| `/{identity}/signup`                          | POST          | Anonymous     | Registers a new user.                                                       |
+| `/{identity}/signup/external/direct`          | POST          | Anonymous     | Registers a new user using externally provided login data.                  |
+| `/{identity}/signup/external/facebook`        | POST          | Anonymous     | Registers a new user using an external Facebook login provider.             |
+| `/{identity}/signup/external/google`          | POST          | Anonymous     | Registers a new user using an external Google login provider.               |
+| `/{identity}/signup/external/microsoft`       | POST          | Anonymous     | Registers a new user using an external Microsoft login provider.            |
+| `/{identity}/username/set`                    | POST          | Anonymous     | Sets the username of a user.                                                |
+| `/{identity}/password/set`                    | POST          | identity      | Assigns a password to a user that does not already have one.                |
+| `/{identity}/password/change`                 | POST          | identity      | Changes the password of an existing user.                                   |
+| `/{identity}/password/reset`                  | POST          | Anonymous     | Resets the password of a user using a reset token.                          |
+| `/{identity}/password/reset/token`            | POST          | Anonymous     | Generates a password reset token.                                           |
+| `/{identity}/email/change`                    | POST          | identity      | Changes the email address of a user.                                        |
+| `/{identity}/email/change/token`              | POST          | identity      | Generates an email change token.                                            |
+| `/{identity}/email/confirm`                   | POST          | identity      | Confirms the email address of a user.                                       |
+| `/{identity}/email/confirm/token`             | POST          | identity      | Generates an email confirmation token.                                      |
+| `/{identity}/phone/change`                    | POST          | identity      | Changes the phone number of a user.                                         |
+| `/{identity}/phone/change/token`              | POST          | identity      | Generates a phone number change token.                                      |
+| `/{identity}/phone/confirm`                   | POST          | identity      | Confirms the phone number of a user.                                        |
+| `/{identity}/phone/confirm/token`             | POST          | identity      | Generates a phone number confirmation token.                                |
+| `/{identity}/custom-purpose/confirm`          | POST          | identity      | Generates a custom-purpose token for a user.                                |
+| `/{identity}/custom-purpose/confirm/token`    | POST          | identity      | Confirms a previously generated custom-purpose token.                       |
+| `/{identity}/{id}/activate`                   | POST          | identity      | Activates the user with the specified identifier.                           |
+| `/{identity}/{id}/deactivate`                 | POST / DELETE | identity      | Deactivates the user with the specified identifier.                         |
+| `/{identity}/{id}/delete`                     | POST / DELETE | deleter       | Deletes the user with the specified identifier.                             |
+| `/{identity}/delete/many`                     | POST / DELETE | deleter       | Deletes multiple users with the specified identifiers.                      |
+| `/{identity}/{userId}/external-logins`        | GET           | identity      | Retrieves the external login providers associated with a user.              |
+| `/{identity}/external-logins/add/facebook`    | POST          | identity      | Adds a Facebook external login to a user account.                           |
+| `/{identity}/external-logins/add/google`      | POST          | identity      | Adds a Google external login to a user account.                             |
+| `/{identity}/external-logins/add/microsoft`   | POST          | identity      | Adds a Microsoft external login to a user account.                          |
+| `/{identity}/external-logins/remove`          | POST / DELETE | identity      | Removes an external login from a user account.                              |
+| `/{identity}/{userId}/refresh-tokens`         | GET           | identity      | Retrieves all refresh tokens associated with a specific user.               |
+| `/{identity}/{userId}/refresh-tokens/active`  | GET           | identity      | Retrieves all active refresh tokens for a specific user.                    |
+| `/{identity}/refresh-tokens/{refreshTokenId}` | DELETE        | identity      | Deletes a specific refresh token by its identifier.                         |
+| `/{identity}/{userId}/api-keys`               | GET           | identity      | Retrieves all API keys associated with a specific user.                     |
+| `/{identity}/api-keys/create`                 | POST          | identity      | Creates a new API key for a user.                                           |
+| `/{identity}/api-keys/edit`                   | PUT / POST    | identity      | Edits an existing API key.                                                  |
+| `/{identity}/api-keys/{apiKeyId}/revoke`      | DELETE        | identity      | Revokes a specific API key.                                                 |
+| `/{identity}/{userId}/claims`                 | GET           | identity      | Retrieves all claims assigned to a specific user.                           |
+| `/{identity}/claims/assign`                   | POST          | identity      | Assigns a new claim to a user.                                              |
+| `/{identity}/claims/replace`                  | PUT           | identity      | Replaces an existing claim of a user.                                       |
+| `/{identity}/claims/assign-or-replace`        | PUT           | identity      | Assigns or replaces a claim of a user.                                      |
+| `/{identity}/claims/remove`                   | POST / DELETE | identity      | Removes a claim from a user.                                                |
+| `/{identity}/roles`                           | GET           | administrator | Retrieves all roles in the system.                                          |
+| `/{identity}/roles/create`                    | POST          | administrator | Creates a new role.                                                         |
+| `/{identity}/roles/delete`                    | POST / DELETE | administrator | Deletes a role from the system.                                             |
+| `/{identity}/{userId}/roles`                  | GET           | identity      | Retrieves all roles assigned to a specific user.                            |
+| `/{identity}/roles/user/assign`               | POST          | identity      | Assigns a role to a user.                                                   |
+| `/{identity}/roles/user/remove`               | POST / DELETE | identity      | Removes a role from a user.                                                 |
+| `/{identity}/roles/{roleId}/claims`           | GET           | administrator | Retrieves all claims associated with a role.                                |
+| `/{identity}/roles/claims/assign`             | POST          | administrator | Assigns a claim to a role.                                                  |
+| `/{identity}/roles/claims/replace`            | PUT           | administrator | Replaces a claim of a role.                                                 |
+| `/{identity}/roles/claims/assign-or-replace`  | PUT           | administrator | Assigns or replaces a claim of a role.                                      |
+| `/{identity}/roles/claims/remove`             | POST / DELETE | administrator | Removes a claim from a role.                                                |
+
+> 📖 Learn more about **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)**.
+
+Try it yourself using the **[Api.Data.MySql.Identity](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Identity)**, or any of the other data provider examples.
+
+Another specialized base entity controller is provided for **[Data Audit](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#audit)**. If audit is not configured,
+the controller will not be available. You can expose audit data by deriving from `BaseAuditController` or `BaseAuditController<TIdentity>`. These controllers derive 
+from `BaseEntityReadOnlyController` and automatically provide read-only actions for querying audit records.  
+
+> 📖 Learn more about **[Data Audit](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#audit)**.
+
+Try it yourself using the **[Api.Data.MySql.Audit](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Audit)**, or any of the other data provider examples.
+
+Nano provides the `BaseAuthController` and `BaseAuthController<TIdentity>` for authentication-related operations. A concrete implementation, `AuthController`, is already included 
+with Nano. Unless you have specific requirements, there is usually no need to override it. The `AuthController` is only exposed if **[Authentication](#authentication)** has been 
+configured and if the configuration option `HideAuthController` is not set to `true`.  
+
+The following endpoints are available in the `BaseAuthController` for managing authentication. Note that not all authentication features may be configured. Nano only exposes 
+endpoints that match the current configuration; any features that are not configured will not be registered or available in the controller.  
+
+| Endpoint                                  | Method | Role      | Description                                                                          |
+| ----------------------------------------- | ------ | --------- | ------------------------------------------------------------------------------------ |
+| /auth/login                               | POST   | Anonymous | Authenticates a user and returns an access token (JWT).                              |
+| /auth/login-root                          | POST   | Anonymous | Authenticates the root user from configuration and returns an access token.          |
+| /auth/login-external-direct               | POST   | Anonymous | Signs in a user via direct external authentication data.                             |
+| /auth/login-external-direct-transient     | POST   | Anonymous | Signs in a transient user via direct external authentication data.                   |
+| /auth/login-external-facebook             | POST   | Anonymous | Signs in a user via external Facebook authentication.                                |
+| /auth/login-external-facebook-transient   | POST   | Anonymous | Signs in a transient user via external Facebook authentication.                      |
+| /auth/login-external-google               | POST   | Anonymous | Signs in a user via external Google authentication.                                  |
+| /auth/login-external-google-transient     | POST   | Anonymous | Signs in a transient user via external Google authentication.                        |
+| /auth/login-external-microsoft            | POST   | Anonymous | Signs in a user via external Microsoft authentication (auth-code flow).              |
+| /auth/login-external-microsoft-transient  | POST   | Anonymous | Signs in a transient user via external Microsoft authentication (auth-code flow).    |
+| /auth/login-refresh                       | POST   | Anonymous | Refreshes an existing access token.                                                  |
+| /auth/logout                              | POST   | Anonymous | Logs out the current user and clears external authentication cookies.                |
+| /auth/external-schemes                    | GET    | Anonymous | Retrieves all configured external authentication schemes (e.g., Google, Facebook).   |
+| /auth/external-facebook-data              | POST   | Anonymous | Retrieves external login data from Facebook authentication provider.                 |
+| /auth/external-google-data                | POST   | Anonymous | Retrieves external login data from Google authentication provider.                   |
+| /auth/external-microsoft-data             | POST   | Anonymous | Retrieves external login data from Microsoft authentication provider.                |
+
+> 📖 Learn more about **[Authentication](#authentication)**.
 
 ## Request Validation
 When deriving a controller from `BaseController`, model validation is automatically enabled. Validation is based on the attributes applied to model properties. If 
 a model fails validation, the controller automatically returns a 400 Bad Request with the validation errors.  
 
 Beyond this automatic behavior, validation works the same way as in standard ASP.NET Core controllers. For more details, see the 
-official Microsoft documentation: [Model Validation Documentation](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-2.1).  
+official Microsoft documentation: **[Model Validation Documentation](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation)**.  
 
 Nano also provides a set of useful validation attributes that can be applied to entity models. These annotations simplify common validation tasks and help ensure 
 consistency across your models.
@@ -1764,13 +1930,17 @@ while the controller receives fully bound and validated models.
 
 ⚠️ Make sure the JSON field name matches the name of the model parameter in your action.
 
+Try it out yourself using the **[Api.MultipartJson](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.MultipartJson)** example.  
+
 ## Response Serialization
 Nano uses `Newtonsoft.Json` for serialization and deserialization. It supports all built-in Nano types, types derived from Nano base types, 
 and all `Geometry` types from `NetTopologySuite`.  
 
 The serializer only serializes navigations that is of type `IEntity`, when they are annotated with `IncludeAttribute`. This is to avoid returning unwanted navigation 
 references, that is automatically added if dependent navigations are loaded separately into the data context. Read more about 
-[Include Annotation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.App#include-annotation)
+**[Include Annotation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.App#include-annotation)**.  
+
+Also, the serializer is case-insensitive.  
 
 Besides that, the serializer is configured to handle various edge cases for robustness.  
 

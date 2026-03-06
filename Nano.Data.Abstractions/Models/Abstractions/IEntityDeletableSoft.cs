@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace Nano.Data.Abstractions.Models.Abstractions;
+﻿namespace Nano.Data.Abstractions.Models.Abstractions;
 
 /// <summary>
 /// Represents an entity that supports soft deletion.
@@ -13,6 +11,5 @@ public interface IEntityDeletableSoft : IEntityDeletable
     /// Stores Unix-based time in milliseconds to allow unique indexes with soft deletion.
     /// Only active instances are returned from queries when filters are enabled (default behavior).
     /// </summary>
-    [JsonIgnore]
     long IsDeleted { get; set; }
 }

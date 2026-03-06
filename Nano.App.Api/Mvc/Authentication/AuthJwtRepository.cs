@@ -6,13 +6,13 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 using Nano.App.Api.Config;
-using Nano.App.Api.Identity.Authentication.Extensions;
+using Nano.App.Api.Mvc.Authentication.Extensions;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Exceptions;
 
-namespace Nano.App.Api.Identity.Authentication;
+namespace Nano.App.Api.Mvc.Authentication;
 
 /// <inheritdoc />
 public class AuthJwtRepository(JwtAuthenticationOptions options) : IAuthJwtRepository
@@ -41,7 +41,7 @@ public class AuthJwtRepository(JwtAuthenticationOptions options) : IAuthJwtRepos
             .Distinct();
 
         var notBeforeAt = DateTimeOffset.UtcNow;
-        var expireAt = DateTimeOffset.UtcNow.AddMinutes(this.options.ExpirationInMinutes);
+        var expireAt = DateTimeOffset.UtcNow.Add(this.options.Expiration);
 
         var rsaSecurityKey = this.options.PrivateKey
             .CreateRsaSecurityKey();
@@ -66,8 +66,7 @@ public class AuthJwtRepository(JwtAuthenticationOptions options) : IAuthJwtRepos
     {
         var token = GetRandomToken();
 
-        var expireAt = DateTimeOffset.UtcNow
-            .AddHours(this.options.RefreshExpirationInHours);
+        var expireAt = DateTimeOffset.UtcNow.Add(this.options.RefreshExpiration);
 
         return new RefreshToken
         {

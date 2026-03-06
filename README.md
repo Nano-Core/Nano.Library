@@ -57,10 +57,10 @@ Nano gives you everything you tecnically to start building micro-services
 * Avoid wasting valuable development resources, on matters not related to the business.
 * Remain focused on modelling data and operations of the business domain.
 
-Also, don't forget to check out our **[Nano.Lessons](https://github.com/Nano-Core/Nano.Lessons)**. There are **50+** examples of Nano applications, show-casing each 
+Also, don't forget to check out our **[Nano.Lessons](https://github.com/Nano-Core/Nano.Lessons)**. There are **100+** examples of Nano applications, show-casing each 
 feature individually.  
 
-> If you are new to Nano, it's recommended to follow your [Getting Started Guide](https://github.com/Nano-Core/Nano.Library/tree/master/GETTING_STARTED.md)
+> If you are new to Nano, it's recommended to follow your [Quick Start Guide](https://github.com/Nano-Core/Nano.Library/tree/master/QUICK_START.md)
 
 ## Requirements
 Docker desktop
@@ -113,6 +113,8 @@ Last, provider packages. These enable functionality related to a Nano provider.
 | Nano.Storage.Local           | `Storage`     | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
 
 ## Solution Composition
+CHECK WHERE WE LINK TO THIS, AND MAKE SURE ALL _Blank EXAMPLES LINKS TO IT.
+
 All Nano applications follow a consistent and predictable solution structure.  
 
 In local `Development`, the application is orchestrated using Docker Compose, while `Staging` and `Production` environments are deployed and managed using Kubernetes.  

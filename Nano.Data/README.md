@@ -21,29 +21,38 @@
 * [Migrations](#migrations)
 * [Repositories](#repositories)
   * [Autosave](#autosave)
+  * [Cache](#cache)
   * [Include Annotation](#include-annotation)
+* [Connection Pool](#connection-pool)
 * [Audit](#audit)
 * [Soft Delete](#soft-delete)
 * [Triggers](#triggers)
-* [Cache](#cache)
 * [Identity](#identity)
 * [Entity Events](#entity-events)
 * [Health Checks](#health-checks)
 
 ## Summary
-Nano provides a robust data framework that enables applications to integrate with SQL databases.  
-It's based on Entity Framework, and uses the unit-of-work pattern for easy and safe interafction with data, through the `IRepository` interface.  
+Nano provides a data access implementation built on top of **[Entity Framework](https://learn.microsoft.com/en-us/ef/)**, enabling applications to integrate with SQL-based 
+databases in a consistent and structured way.
 
-When the `IDataProvider` is registered during application startup and the `BaseDbContext ` have been implemented, the application is ready to interact with a database. The 
-`IRepository` interface gets registered as part of data in Nano, and enables easy access to common methods needed for data storage and retrieval. 
+To enable data support in a Nano application, a few core components must be implemented and registered. First, a **[Data Providers](#data-providers)** must be selected. Next, 
+the application must define a database context by deriving implementations from `BaseDbContext` and `BaseDbContextFactory`.  
 
-Nano data supports many features not built directly into Entity Framework.
+Once the context has been implemented, data services must be registered during application startup by invoking `AddDataContext<TProvider, TContext>()` in `program.cs`. 
+After registration, the application can define entity models derived from `BaseEntity`, along with their corresponding mappings derived from `BaseEntityMapping<TEntity>`.  
+
+When Nano data is registered, the `IRepository` interface becomes available for interacting with the database. This abstraction uses the Unit-Of-Work pattern, providing 
+a consistent and safe approach for working with persistent data.
+
+The following sections describe how to configure and register Nano data in your application in more detail.## Summary
+
+Also, explore it yourself by trying the various **[Nano Lessons](https://github.com/Nano-Core/Nano.Lessons)** for different data providers.  
 
 ## Registration
-The data context and data provider must be registered as dependencies.  
-Invoke the method ```.AddDataContext<TProvider, TContext>()```, using the data context and data provider implementations as generic type parameters.  
+To enable Nano data support, register the data provider and data context using `AddDataContext<TProvider, TContext>()`. The generic parameters represent the data provider 
+implementation and the application's data context.  
 
-When registering the data provider, a **[Data Context](#data-context) must also be specified as part the generic type signature. 
+When registering the data provider, a **[Data Context](#data-context)** must always be specified as part of the generic type signature.  
 
 ```csharp
 ...
@@ -55,8 +64,8 @@ When registering the data provider, a **[Data Context](#data-context) must also 
 ...
 ```
 
-By default Nano will use `guid` for all primary key columns. It's recommended to follow that, but Nano also support `string`, `int` and `long` for identity columns. To 
-register a custom identity use the follow data registration.
+By default, Nano uses `Guid` as the primary key type for all entities. This is the recommended approach. However, Nano also supports `string`, `int`, and `long` as identity types.
+If you want to use a custom identity type, it must be specified during registration by providing the TIdentity generic parameter.  
 
 ```
 ...
@@ -68,7 +77,8 @@ register a custom identity use the follow data registration.
 ...
 ```
 
-> ⚠️ Using non-default identity requires `TIdentity` to be specified on [Data Models](#data-models), [Data Mappings](#data-mappings), and other abstractions in Nano.
+> ⚠️ When using a non-default identity type, `TIdentity` must also be specified on **[Data Models](#data-models)**, **[Data Mappings](#data-mappings)**, and other related 
+Nano abstractions.  
 
 ## Configuration
 The `Data` section in the configuration defines the data provider and related settings used by the application.
@@ -79,10 +89,10 @@ The `Data` section in the configuration defines the data provider and related se
 |  `BulkBatchSize`                | int    | 500         | The maximum batch size for bulk operations.                                                                                                       |
 |  `BulkBatchDelay`               | int    | 1000        | The delay (in milliseconds) between bulk batches.                                                                                                 |
 |  `QueryRetryCount`              | int    | 0           | The number of times a query will retry on failure.                                                                                                |
-|  `UseLazyLoading`               | bool   | false       | A value indicating whether lazy loading is enabled. ⚠️ Not recommended, use [Nano Include Annotation](#include-annotation)                        |
-|  `UseCreateDatabase`            | bool   | false       | A value indicating whether soft deletion is enabled.                                                                                              |
-|  `UseMigrateDatabase`           | bool   | false       | A value indicating whether the database should be created automatically using just the mappings and without migrations. ⚠️ Not recommended.       |
-|  `UseSoftDeletetion`            | bool   | false       | A value indicating whether database migrations should be applied automatically.                                                                   |
+|  `UseLazyLoading`               | bool   | false       | A value indicating whether lazy loading is enabled. ⚠️ Not recommended, use [Nano Include Annotation](#include-annotation).                       |
+|  `UseCreateDatabase`            | bool   | false       | A value indicating whether the database should be created automatically using just the mappings, bypassing migrations.                            |
+|  `UseMigrateDatabase`           | bool   | false       | A value indicating whether database migrations should be applied automatically.                                                                   |
+|  `UseSoftDeletetion`            | bool   | false       | A value indicating whether soft deletion is enabled.                                                                                              |
 |  `UseSensitiveDataLogging`      | bool   | false       | A value indicating whether sensitive data logging is enabled.                                                                                     |
 |  `UseAudit`                     | bool   | false       | A value indicating whether auditing is enabled.                                                                                                   |
 |  `QuerySplittingBehavior`       | enum   | SingleQuery | The default query splitting behavior for EF Core queries.                                                                                         |
@@ -91,9 +101,9 @@ The `Data` section in the configuration defines the data provider and related se
 |  `Repository`                   | object | default     | The cache configuration options. See [Repositories](#repositories).                                                                               |
 |  `Repository.UseAutoSave`       | bool   | true        | A value indicating whether automatic saving of changes in repositories is enabled.                                                                |
 |  `Repository.QueryIncludeDepth` | int    | 4           | The maximum depth for query includes.                                                                                                             |
-|  `Cache`                        | object | null        | The cache configuration options. See [Cache](#cache)                                                                                              |
-|  `Identity`                     | object | null        | The identity configuration options. See [Identity](#identity)                                                                                     |
-|  `ConnectionPool`               | object | null        | The connection pool configuration options. See [ConnectionPool](#connection-pool)                                                                 |
+|  `ConnectionPool`               | object | null        | The connection pool configuration options. See [Connection Pool](#connection-pool).                                                               |
+|  `Cache`                        | object | null        | The cache configuration options. See [Cache](#cache).                                                                                             |
+|  `Identity`                     | object | null        | The identity configuration options. See [Identity](#identity).                                                                                    |
 |  `HealthCheck`                  | object | null        | The options for configuring health checks. See [HealthCheck](#health-check)  _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.   |
 
 ```json
@@ -115,23 +125,21 @@ The `Data` section in the configuration defines the data provider and related se
     "UseAutoSave": false,
     "QueryIncludeDepth": 4
   },
+  "ConnectionPool": { },
   "Cache": { },
   "Identity": { },
-  "ConnectionPool": { },
   "HealthCheck": { }
 }
 ```
 
 ## Data Providers
-Data providers integrate a SQL database through Entity Framework into your Nano application.  
+Data providers integrate a SQL database into a Nano application through Entity Framework.  
 
-All data providers in Nano implement the `IDataProvider` interface. This interface is responsible for configuring and setting up the underlying 
-data context, as well as providing an implementation of the `IRepository` interface interacting with the `DbContext`. 
+All Nano data providers implement the `IDataProvider` interface. This interface is responsible for configuring and initializing the underlying data context and 
+any required services.  
 
-To implement a new data provider:
-1. Create a class that implements `IDataProvider`.
-2. Register all required services and dependencies in the `Configure` method for the data provider.
-3. Add your provider to the application using:
+To create a custom data provider, implement the `IDataProvider` interface and register all required services and dependencies inside the provider’s `Configure` method. 
+Once implemented, the provider can be added to the application during startup configuration.  
 
 ```csharp
 ...
@@ -143,48 +151,47 @@ To implement a new data provider:
 ...
 ```
 
-The following data providers are currently supported in Nano:
+The following data providers are currently supported in Nano.  
+
 * [Nano.Data.InMemory](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.InMemory)
 * [Nano.Data.MySql](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.MySql)
 * [Nano.Data.PostgreSQL](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.PostgreSQL)
 * [Nano.Data.SqLite](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqLite)
 * [Nano.Data.SqlServer](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqlServer)
 
-Additional providers can be implemented by following the same pattern, allowing you to extend Nano.
-
 ## Data Context
-Nano takes care of managing the `DbContext`. 
-Simply, derive an implementation from the `BaseDbContext` or `BaseDbContext<TIdentity>` (if you want to use different primary key columns that `Guid`).
+Nano provides built-in management for the `DbContext` while still letting you use it as you normally would.  
+
+To integrate your database, simply derive a class from `BaseDbContext` or `BaseDbContext<TIdentity>` if you want to use a primary key type other than `Guid`.
 
 ```csharp
 public class MyDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> dataOptions, IEventing? eventing = null)
     : BaseDbContext(contextOptions, dataOptions, eventing);
 ```
+You don’t need to implement any additional logic in `MyDbContext`. Entity Framework only requires that the `DbContext` exists in the entry assembly, where `program.cs` is 
+located. Nano will automatically detect and configure all [Data Mappings](#data-mappings), so overriding the `OnModelCreating(...)` method is unnecessary.
 
-You don't actually need to implement anything in `MyDbContext`, Entity Framework just requires the `DbContext` to be located in entry assemlby, where `program.cs` 
-is located. Also, Nano will automatically find and configure all [Data Mappings](#data-mappings), so there is no need to override the `OnModelCreating(...)` method. 
+> ⚠️ If you override any methods from `BaseDbContext`, always call the `base` method to ensure Nano functions correctly.
 
-> ⚠️ If you choose to override any methods from `BaseDbContext`, remember to call the `base` method, to ensure Nano will work correctly.
-
-Also DbContextFactory needs to be derived from `BaseDbContextFactory`, as shown below.  
+In addition, you must derive a concrete implementation from `BaseDbContextFactory`.  
 
 ```csharp
 public class MySqlDbContextFactory : BaseDbContextFactory<MySqlProvider, MySqlDbContext>;
 ```
 
-Again, you don't need to implement anything, they just need to be located in your application project, same as where `program.cs` resides.  
+No further implementation is required. The factory class simply needs to exist in your application project alongside `program.cs`, similar to the `BaseDbContext` implementation.
 
 ## Data Models
-Models, also referred to as entities, represent the tables in the database.  
+Models in Nano, also referred to as entities, represent the tables in your database.
 
-To create a model in Nano, derive an implementation from `BaseEntity` or `BaseEntity<TIdentity>`.  
-Your model will automatically get the following properties.
+To create a model, derive a class from `BaseEntity` or `BaseEntity<TIdentity>` if you want to use a custom primary key type. By inheriting from `BaseEntity`, your model 
+automatically includes several built-in properties.  
 
-| Property      | Type            | Dscription                                                                                       |
-| ------------- | --------------- | ------------------------------------------------------------------------------------------------ |
-| `Id`          | TIdentity       | The primary key of type `TIdentity` the model. _Automatically instantiated for new instances._   |
-| `CreatedAt`   | DateTimeOffset  | The date-time the model was created. _Automatically set to `UtcNow` for new instances._          |
-| `IsDeleted`   | int             | Only used when [Soft Delete](#soft-delete) is enabled in configuration. _Default=0._             |
+| Property      | Type            | Description                                                                                     |
+| ------------- | --------------- | ----------------------------------------------------------------------------------------------- |
+| `Id`          | TIdentity       | The primary key of the model. _Automatically assigned for new instances._                       |
+| `CreatedAt`   | DateTimeOffset  | The timestamp when the model was created. _Automatically set to `UtcNow` for new instances._    |
+| `IsDeleted`   | int             | Used only when [Soft Delete](#soft-delete) is enabled. _Defaults to 0._                         |
 
 ```csharp
 public class MyEntity : BaseEntity
@@ -193,19 +200,25 @@ public class MyEntity : BaseEntity
 }
 ```
 
-If you have specified a `TIdentity` type during data [Registration](#registration) and when deriving the [Data Context](#data-context), you must also specify the same type 
-when deriving your concrete entities.
+If you specify a `TIdentity` type during data [Registration](#registration) and in your [Data Context](#data-context), you must use the same type when deriving your 
+concrete entities.
 
-Alternatively, you can also derive you model from `BaseEntityIdentity` or `BaseEntityIdentity<TIdentity>`, to only inherit the `Id` property for your model.
-EXPLAIN MORE ABOUT THE Entity interfaces and how if you choose to enherit from `BaseEntityIdentity<TIdentity>`, you manually need to add interfaces for Creatable, Updateable,
-Deleteable. OR CREATE more BaseEntiy classes for that. 
-MENTION IEntity as topmost interface
-AND CONSUMERS SHOULDN'T DERIVE FROM `BaseEntityIdentity`
+Alternatively, you can derive your entity model from one of the specialized CRUD base classes: `BaseEntityCreatable`, `BaseEntityCreatableAndUpdatable`, `BaseEntityUpdatable`, 
+or `BaseEntityDeletable`, to restrict the allowed `IRepository` operations for that entity.  
 
-Nano also supports spatial `Geometry` types from `NetToplogySuite`, and spatial SQL operations.    
+For more advanced scenarios, if you do not want the built-in properties provided by Nano, you can derive your entity model from `BaseEntityIdentity` or 
+`BaseEntityIdentity<TIdentity>`. This gives your entity only the `Id` property, but limits most built-in `IRepository` operations. To restore specific operations, your entity 
+must implement the corresponding interfaces: `IEntityWritable`, `IEntityCreatable`, `IEntityCreatableAndUpdatable`, `IEntityUpdatable`, or `IEntityDeletable` 
+(`IEntityDeletableSoft`). These interfaces mirror the functionality of the CRUD base entity classes.  
+
+> ⚠️ For simplicity and maintainability, it is recommended to derive entity models from `BaseEntity` or one of the specific base classes rather than 
+implementing the interfaces directly.  
+
+Nano also supports spatial `Geometry` types from `NetToplogySuite`.  
 
 ## Data Mappings
-For every data model in your application a corresponding data mappings must be implemented as well.
+Each data model in your application should have a corresponding data mapping. Data mappings define how your entities are configured in the database and allow you 
+to customize Entity Framework behavior.
 
 ```csharp
 public class MyEntityMapping : BaseEntityMapping<MyEntity>
@@ -214,48 +227,49 @@ public class MyEntityMapping : BaseEntityMapping<MyEntity>
     {
         base.Configure(builder);
 
-        // Entity Framework mappings.
+        // Add custom Entity Framework mappings here.
     }
 }
 ```
 
-> ⚠️ Remember, to always invoke the `base.Configure(builder);`, or Nano might not work correctly.  
+> ⚠️ Always call `base.Configure(builder);` in your data mappings to ensure Nano functions correctly.  
 
-Data mappings are automatically applied in Nano, and there is no need to manually apply the model data mappings. Only non-abstract, no-generic mapping types 
-will be automatically mapped.
+Nano automatically applies all data mappings, so there is no need to manually register them. Only non-abstract, non-generic mapping classes are automatically 
+detected and applied.  
 
-> ⚠️ It's highly recommended to fully map all properties on your models in your data mappings.  
+> ⚠️ It is strongly recommended to map all properties of your entity models within your data mappings to ensure consistency and correctness.
 
-Nano also supports mapping read-only views in your application. Simply derive your mapping from `BaseEntityViewMapping<TEntity>`, as shown below.  
+Nano also supports mapping read-only database views. To do this, derive your mapping from `BaseEntityViewMapping<TEntity>`.
 
 ```csharp
-public class MyEntityMapping : BaseEntityViewMapping<MyEntity>
+public class MyEntityViewMapping : BaseEntityViewMapping<MyEntity>
 {
     public override void Map(EntityTypeBuilder<MyEntity> builder)
     {
         base.Map(builder);
 
-        // Entity Framework mappings.
+        // Add custom Entity Framework mappings for the view here.
     }
 }
 ```
 
-Nano will update all unique index mappings to include `IsDeleted` property, on order to ensure soft deleted entities can co-exist.   
+Nano automatically updates all unique index mappings to include the `IsDeleted` property. This ensures that soft-deleted entities can coexist without violating 
+uniqueness constraints.  
 
 ## Migrations
-Migrations in Nano is no different than normal.  
+Migrations in Nano work the same way as standard Entity Framework migrations.  
 
-Ensure you have derived an implementation from `BaseDbContextFactory<MySqlProvider, MySqlDbContext>`. Then open powershell and add a new migration.  
+Before creating migrations, ensure you have implemented a `BaseDbContextFactory<MySqlProvider, MySqlDbContext>`. Then, in PowerShell, add a new migration.  
 
 ```powershell
-PM> dotnet ef migrations add Initial --project {project}
+dotnet ef migrations add Initial --project {project}
 ```
 
-In `Development` environment migrations are not applied automatically, unelss `UseMigrations` are enabled in the configuration.  
+Migrations are not applied automatically unless the `UseMigrations` option is enabled in the configuration.
 
-> ⚠️ It's recommended to enable `UseMigrations` configuration only in `Development`.  
+> ⚠️ It is recommended to enable `UseMigrations` **only** in `Development` environments.
 
-In `Staging` and `Production` environment migrations are applied during application deployment in GitHub Actions, as shown below.  
+In `Staging` and `Production`, migrations are applied during deployment, via GitHub Actions.
 
 ```powershell
 dotnet ef database update `
@@ -264,9 +278,11 @@ dotnet ef database update `
   --connection "$env:MYSQL_MIGRATION_CONNECTIONSTRING";
 ```
 
-> 📖 Learn more about **EF Migrations](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli)**
+> 📖 Learn more about **[EF Migrations](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli)**.
 
 ## Repositories
+EXAMPLES BOTH API AND CONSOLE
+
 Repositories represents data repositories within an application.  
 The ```IRepository``` interface contains methods for getting, querying, adding, updating and deleting models in the application. Inject this, when implementations requires access to
 the application data.  
@@ -293,13 +309,15 @@ the _environment_ is the configuration to use, and it's important the connection
 The repository can be configured for autosave. It's a convinience to not have to call `dbContext.SaveChanges(...)`.  
 If you want more fine-grained control of when changes are comitted, disable `UseAutoSave` in configuration.  
 
+## Cache
+Simple memory caching can be enabled, by setting ```Data.UseMemoryCache = true``` in the configuration. The cache stores queries once executed, for future invocations. 
+
 ## Include Annotation
 Annotating a property with the ```IncludeAttribte```, instructs the repository layer to fetch additional data when getting and querying the entity. It works similar to 
 the ```IQueryable.Include(...)``` extension, but allows for design-time definition. The property must be a class and have a navigation relations, otherwise the annotation is ignored.   
 The maximum query (join) depth for a model having properties decorated with ```IncludeAttribte```, can be set in the data options of the configuration, ```QueryIncludeDepth```.  
 When having navigations inside owned models decorated with include annotation, then the owned model property on the parent must also be annotated with Include. This will be ignored 
 by entity framework, but allows Nano to trigger the nested include.  
-Note, that when creating or updating entities the include is not interpreted.  
 
 ## Audit
 Even when audit is disabled the tables are still created. 
@@ -363,10 +381,6 @@ Nano supports the following triggers.
 * On Deleting
 
 For more details about triggers and how to use them, consult the docucmenation of [EntityFramework.Triggers](https://github.com/NickStrupat/EntityFramework.Triggers).  
-
-## Cache
-Simple memory caching can be enabled, by setting ```Data.UseMemoryCache = true``` in the configuration. The cache stores queries once executed, for future invocations. 
-
 
 ## Identity
 Even when identity is not configured the tables are still created. 
@@ -458,6 +472,18 @@ public class DefaultEntityUserMapping<TEntity> : DefaultEntityMapping<TEntity>
     }
 }
 ```
+
+When identity has been configured the following roles are automatically added
+
+| Name          | Description                          |
+| ------------- | ------------------------------------ |
+| reader        | Authorized to read.                  | 
+| writer        | Authorized to read and write.        | 
+| creator       | Authorized to create.                | 
+| editor        | Authorized to update.                | 
+| deleter       | Authorized to create.                | 
+| identity      | Authorized to use identity actions.  | 
+| Administrator | Full access to everything.           | 
 
 ## Entity Events
 Adding eventing annotations to model implementations, provides a way of synchronizing entities between applications. 

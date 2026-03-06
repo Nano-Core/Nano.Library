@@ -120,7 +120,7 @@ public class DataOptions
     /// <summary>
     /// Gets or sets the connection pool configuration options.
     /// </summary>
-    public virtual ConnectionPool? ConnectionPool { get; set; }
+    public virtual ConnectionPoolOptions? ConnectionPool { get; set; }
 
     /// <summary>
     /// Gets or sets the options for configuring health checks.

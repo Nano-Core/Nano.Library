@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using Nano.App.Config;
 
@@ -12,13 +13,13 @@ public class JwtAuthenticationOptions
     /// JWT issuer.
     /// </summary>
     [Required]
-    public virtual string Issuer { get; set; } = "issuer";
+    public virtual string Issuer { get; set; } = null!;
 
     /// <summary>
     /// JWT audience.
     /// </summary>
     [Required]
-    public virtual string Audience { get; set; } = "audience";
+    public virtual string Audience { get; set; } = null!;
 
     /// <summary>
     /// Base64-encoded public key.
@@ -33,16 +34,16 @@ public class JwtAuthenticationOptions
     public virtual string PrivateKey { get; set; } = null!;
 
     /// <summary>
-    /// Expiration in minutes for the access token.
+    /// Expiration for the access token.
     /// </summary>
     [Required]
-    public virtual int ExpirationInMinutes { get; set; } = 60;
+    public virtual TimeSpan Expiration { get; set; } = TimeSpan.FromMinutes(60);
 
     /// <summary>
-    /// Expiration in hours for the refresh token.
+    /// Expiration for the refresh token.
     /// </summary>
     [Required]
-    public virtual int RefreshExpirationInHours { get; set; } = 72;
+    public virtual TimeSpan RefreshExpiration { get; set; } = TimeSpan.FromHours(72);
 
     /// <summary>
     /// Optional root login options.
@@ -50,7 +51,7 @@ public class JwtAuthenticationOptions
     public virtual LogInRootOptions? RootLogin { get; set; }
 
     /// <summary>
-    /// External login options.
+    /// Optional external login options.
     /// </summary>
     [Required]
     public virtual ExternalLoginOptions ExternalLogins { get; set; } = new();

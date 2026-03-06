@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Config;
 
 /// <summary>
-/// Options for configuring the cache behavior.
+/// Options for configuring the connection pool behavior.
 /// </summary>
-public class ConnectionPool
+public class ConnectionPoolOptions
 {
     /// <summary>
     /// Get or set the pool size of the connection pool.

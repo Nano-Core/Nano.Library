@@ -33,7 +33,7 @@ initialized consistently from configuration, reducing boilerplate code and simpl
 > ⚠️ Before proceeding, it is highly recommended to familiarize yourself generally with **[Nano Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**.  
 
 ## Registration
-First install the [Nano.App.Console](https://www.nuget.org/packages/Nano.App.Console) NuGet package.  
+First install the **[Nano.App.Console](https://www.nuget.org/packages/Nano.App.Console)** NuGet package.  
 
 ```powershell
 dotnet add package Nano.App.Console;
@@ -91,7 +91,7 @@ The `DefaultCultureInfo` will be set to the configured default culture.
 ## Exception Handling
 Exceptions thrown by individual Nano workers are handled internally, ensuring that failures in one worker do not impact the execution of others.  
 
-When a [Logging Provider](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging) is registered, any worker that fails will automatically log the exception.  
+When a **[Logging Provider](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)** is registered, any worker that fails will automatically log the exception.  
 
 No additional configuration or setup is required.  
 
@@ -101,11 +101,11 @@ Try it out yourself using the **[Api.ExceptionHandling](https://github.com/Nano-
 Nano API clients provide a consistent and structured way for applications to communicate with other Nano API services.  
 
 In console applications, they allow worker processes to establish connections with one or more 
-[Nano API applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api), send requests, and retrieve responses in a reliable and predictable manner. 
+**[Nano API applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)**, send requests, and retrieve responses in a reliable and predictable manner. 
 This enables console workers to leverage the functionality of multiple Nano services while keeping service boundaries clear and maintaining consistent 
 error handling, logging, and response propagation across the system.
 
-> 📖 Learn more [Nano Api Clients](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-clients)
+> 📖 Learn more **[Nano Api Clients](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-clients)**
 
 ## Console Workers
 You can implement as many workers as you need by creating classes that implement `IWorker`.  
@@ -140,6 +140,6 @@ The console worker won't start until all configured start-up tasks have complete
 
 While start-up tasks are rarely required for console applications, this feature is available to ensure any necessary initialization can be performed before the worker starts.
 
-> 📖 Learn more [Nano Startup Tasks](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#startup-tasks)
+> 📖 Learn more **[Nano Startup Tasks](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#startup-tasks)**.
 
 Try it out yourself using the **[Api.StartupTasks](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.StartupTasks)** example.  

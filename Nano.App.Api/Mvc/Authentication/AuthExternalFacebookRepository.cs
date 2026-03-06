@@ -9,7 +9,7 @@ using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Exceptions;
 using Newtonsoft.Json;
 
-namespace Nano.App.Api.Identity.Authentication;
+namespace Nano.App.Api.Mvc.Authentication;
 
 /// <inheritdoc />
 public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient httpClient)
