@@ -7,15 +7,6 @@
 
 ***
 
-
-Where to put:
-### Commands
-* ```kubectl patch cronjob {{cronjob-name}} -p '{"spec": {"suspend": true}}'```  
-* ```kubectl create job --from=cronjob/{{cronjob-name}} {{job-name}}```
-
-LOOK AT THE GITHUB REPO 'Github Requirement' or soemthing like that
-
-
 ## Table of Contents
 * [Summary](#summary)
 * [Requirements](#requirements)
@@ -33,7 +24,23 @@ LOOK AT THE GITHUB REPO 'Github Requirement' or soemthing like that
   * [Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)
 
 ## Summary
-Nano is a library for rapidly building .NET applications.  
+Nano is a leight-weight library for rapidly building .NET applications.  
+
+It makes it easy to create and configure a web, api and console applications running in docker locally and in Kubernetes in staging and production environment. Nano enables registering
+providers during application startup. Providers represents the pillars in developing distributed services in layered architectures. Nano provides easy integration with
+Data, Eventing, Logging and Storage. Additionally, Nano exposes many features in data in distributed applications, allowing entity framework to synchronize entities across services
+using the Eventing provider. Also, the api-client in Nano features east integration and commincation between applications, making it seamless to create and maintain a 
+distributed archtiecure, even for small teams.
+
+Easily monitor application health, create startup-tasks, background workers, and more...
+
+Nano takes care of everything to build, deploy and host applications.
+Nano supplies it all; The application framework, easy configuration, configurable templates for Kubernetes and GitHub actions for build and deployment. Nano even supplies 
+GitHub Actions for deploying all the Azure and Kubernetes components required to use all the features of Nano.  
+
+
+
+
 
 Configure your own Nano [Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api), [Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web) 
 or [Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console) application in less than an hour. 
@@ -45,6 +52,8 @@ of Nano Consoles applications, periodically run to ensure important batch tasks 
 
 Nano contains all the boiler-blate for fast and easy create and manage applications. 
 Additionally, Nano also provides the specifications for the infrastructure required to run Nano applications securily and scalable in Kubernetes on Azure.
+
+
 
 See **[Nano.Azure](https://github.com/Nano-Core/Nano.Azure)** and **[Nano.Azure.Kubernetes](https://github.com/Nano-Core/Nano.Azure.Kubernetes)**.
 
@@ -172,6 +181,12 @@ This folder contains the Docker Compose project used to orchestrate the applicat
 || `ingress.yaml`                     | ✓   | ✓   | ✗      | Application [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) specification _(Optional)_.   |
 || `certificate.yaml`                 | ✓   | ✓   | ✗      | Application TLS [Certificate](https://cert-manager.io/docs/usage/certificate/) specification _(Optional)_. |
 || `cronjob.yaml`                     | ✗  | ✗   | ✓      | The scheduled job specification.  |
+
+### Commands
+* ```kubectl patch cronjob {{cronjob-name}} -p '{"spec": {"suspend": true}}'```  
+* ```kubectl create job --from=cronjob/{{cronjob-name}} {{job-name}}```
+
+
 
 #### `application`
 

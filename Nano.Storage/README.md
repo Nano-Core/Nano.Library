@@ -15,6 +15,7 @@
 * [Registration](#registration)
 * [Configuration](#configuration)
 * [Storage Providers](#storage-providers)
+* [Health Checks](#health-checks)
 
 ## Summary
 Add a flexible, provider-agnostic file storage layer to your Nano applications.
@@ -111,3 +112,9 @@ The following storage providers are currently supported in Nano.
 
 * [Nano.Storage.Azure](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Azure)
 * [Nano.Storage.Local](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Local)
+
+## Health Checks
+When health checks are enabled in the storage configuration, Nano automatically registers a health check for the configured storage provider.  
+
+This allows the application to verify that the underlying storage fileshare connection is available and operational. The health check integrates with ASP.NET Core's 
+health check system and can be used by monitoring tools, load balancers, or container orchestrators to determine the health status of the application.  

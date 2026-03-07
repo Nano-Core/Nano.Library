@@ -26,6 +26,7 @@
 * [Connection Pool](#connection-pool)
 * [Audit](#audit)
 * [Soft Delete](#soft-delete)
+* [Lazy Loading](#lazy-loading)
 * [Triggers](#triggers)
 * [Identity](#identity)
 * [Entity Events](#entity-events)
@@ -351,6 +352,8 @@ multiple individual add or update calls.
 
 If you need more fine-grained control over when changes are committed, you can disable `UseAutoSave` in the repository configuration.  
 
+Try it out yourself using the **[Api.Data.Repository.Autosave](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Repository.Autosave)**.  
+
 ## Cache
 Currently, Nano does not support data caching.  
 
@@ -372,6 +375,8 @@ For large collections, `SplitQuery` is recommended. If no `QuerySplitBehavior` i
 
 This feature is particularly useful because it allows you to build full entity graphs rather than retrieving single entities. When you need only the base entity, the graph inclusion 
 can easily be overridden through the various `IRepository` methods.
+
+Try it out yourself using the **[Api.Data.Repository.Includes](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Repository.Includes)**.  
 
 ## Audit
 Even when audit is disabled the tables are still created. 
@@ -401,6 +406,9 @@ When dealing with soft deleted entities, together with unique indexes, a conflic
 Nano automatically adjusts unique indexes, appending the ```IsDeleted``` property. This is with the exception of the property defined as primary key.
 
 Opposite of using regular delete, soft-deleting entities doesn't support cascading deletes.
+
+## Lazy Loading
+
 
 ## Triggers
 Nano supports mapping triggers for the models. 
@@ -560,4 +568,7 @@ Publish/Subscribe can also work bi-directionally, but it would required the mode
 **NOTE**: Avoid sharing models having ```SubscribeAttribute```, with other Nano services, as the eventing subscription will be initialized unintentionally for that service as well.  
 
 ## Health Checks
-When enabling health-checks in the data section of the confiugration, the application will be configured with a health-check for the data provider. When the application starts, a check is made to ensure that the data provider is up and running, returning a healthy status code when checked.  
+When health checks are enabled in the data configuration, Nano automatically registers a health check for the configured data provider.  
+
+This allows the application to verify that the underlying database connection is available and operational. The health check integrates with ASP.NET Core's health check system 
+and can be used by monitoring tools, load balancers, or container orchestrators to determine the health status of the application.  

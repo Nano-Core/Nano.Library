@@ -20,5 +20,5 @@ public abstract class BaseEntityCreatableAndUpdatable : BaseEntityCreatableAndUp
 /// Implements <see cref="IEntityCreatable"/>.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the entity identity.</typeparam>
-public abstract class BaseEntityCreatableAndUpdatable<TIdentity> : BaseEntityBase<TIdentity>, IEntityCreatable
+public abstract class BaseEntityCreatableAndUpdatable<TIdentity> : BaseEntityBase<TIdentity>, IEntityCreatableAndUpdatable
     where TIdentity : IEquatable<TIdentity>;

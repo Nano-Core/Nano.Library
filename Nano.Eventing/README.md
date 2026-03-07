@@ -17,6 +17,7 @@
 * [Serialization](#serialization)
 * [Eventing Providers](#eventing-providers)
 * [Publish and Subscribe](#publish-and-subscribe)
+* [Health Checks](#health-checks)
 
 ## Summary
 Nano provides a robust eventing framework that enables applications to publish events and have them consumed by other applications. 
@@ -174,3 +175,9 @@ This feature should be used sparingly, as it supports advanced or conditional ev
 
 The `overridePrefetchCount` allows an event handler to override the globally configured Eventing.PrefetchCount for a specific handler. 
 This is useful when an event requires more processing or resources, as a lower prefetch count can help prevent the consuming application from being overloaded.
+
+## Health Checks
+When health checks are enabled in the eventing configuration, Nano automatically registers a health check for the configured eventing provider.  
+
+This allows the application to verify that the underlying broker connection is available and operational. The health check integrates with ASP.NET Core's health check system 
+and can be used by monitoring tools, load balancers, or container orchestrators to determine the health status of the application.  
