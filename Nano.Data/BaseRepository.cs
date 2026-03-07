@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 using DynamicExpression.Entities;
 using DynamicExpression.Enums;
 using DynamicExpression.Extensions;
@@ -15,6 +9,12 @@ using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nano.Data;
 
@@ -475,7 +475,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, OrderingDirection orderDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
@@ -483,7 +483,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
         var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
-        return this.GetManyAsync(where, orderBy, includeDepth, orderingDirection, cancellationToken);
+        return this.GetManyAsync(where, orderBy, includeDepth, orderDirection, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -563,9 +563,12 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
         var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
-        entity = await this.AddAsync(entity, cancellationToken);
+        var entry = await this.dbContext
+            .AddAsync(entity, cancellationToken);
 
-        return await this.GetAsync<TEntity, TKey>(entity.Id, includeDepth, cancellationToken);
+        await this.SaveChangesAsync(cancellationToken);
+
+        return await this.GetAsync<TEntity, TKey>(entry.Entity.Id, includeDepth, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -621,9 +624,12 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     {
         var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
-        entity = await this.UpdateAsync(entity, cancellationToken);
+        var entry = this.dbContext
+            .Update(entity);
 
-        return await this.GetAsync<TEntity, TKey>(entity.Id, includeDepth, cancellationToken);
+        await this.SaveChangesAsync(cancellationToken);
+
+        return await this.GetAsync<TEntity, TKey>(entry.Entity.Id, includeDepth, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -634,6 +640,61 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
         this.dbContext
             .UpdateRange(entities);
+
+        if (this.options.CurrentValue.Repository.UseAutoSave)
+        {
+            return this.SaveChangesAsync(cancellationToken);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public virtual Task UpdateManyAsync<TEntity, TCriteria>(TCriteria criteria, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityUpdatable
+        where TCriteria : class, IQueryCriteria, new()
+    {
+        ArgumentNullException.ThrowIfNull(criteria);
+        ArgumentNullException.ThrowIfNull(propertyUpdates);
+
+        var updater = BuildUpdateExpression<TEntity>(propertyUpdates).Compile();
+
+        var entities = this.dbContext
+            .Set<TEntity>()
+            .Where(criteria)
+            .ToArray();
+
+        foreach (var entity in entities)
+        {
+            updater(entity);
+        }
+
+        if (this.options.CurrentValue.Repository.UseAutoSave)
+        {
+            return this.SaveChangesAsync(cancellationToken);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public virtual Task UpdateManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityUpdatable
+    {
+        ArgumentNullException.ThrowIfNull(where);
+        ArgumentNullException.ThrowIfNull(propertyUpdates);
+
+        var updater = BuildUpdateExpression<TEntity>(propertyUpdates).Compile();
+
+        var entities = this.dbContext
+            .Set<TEntity>()
+            .Where(where)
+            .ToArray();
+
+        foreach (var entity in entities)
+        {
+            updater(entity);
+        }
 
         if (this.options.CurrentValue.Repository.UseAutoSave)
         {
@@ -665,7 +726,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         ArgumentNullException.ThrowIfNull(criteria);
         ArgumentNullException.ThrowIfNull(propertyUpdates);
 
-        var updateExpression = BuildUpdateExpression<TEntity>(propertyUpdates);
+        var updateExpression = BuildBulkUpdateExpression<TEntity>(propertyUpdates);
 
         return this.dbContext
             .Set<TEntity>()
@@ -680,7 +741,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         ArgumentNullException.ThrowIfNull(where);
         ArgumentNullException.ThrowIfNull(propertyUpdates);
 
-        var updateExpression = BuildUpdateExpression<TEntity>(propertyUpdates);
+        var updateExpression = BuildBulkUpdateExpression<TEntity>(propertyUpdates);
 
         return this.dbContext
             .Set<TEntity>()
@@ -807,6 +868,42 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
+    public virtual Task DeleteManyAsync<TEntity>(IEnumerable<Guid> ids, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityDeletable, IEntityIdentity<Guid>, new()
+    {
+        ArgumentNullException.ThrowIfNull(ids);
+
+        return this.DeleteManyAsync<TEntity, Guid>(ids, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task DeleteManyAsync<TEntity>(IEnumerable<int> ids, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityDeletable, IEntityIdentity<int>, new()
+    {
+        ArgumentNullException.ThrowIfNull(ids);
+
+        return this.DeleteManyAsync<TEntity, int>(ids, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task DeleteManyAsync<TEntity>(IEnumerable<long> ids, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityDeletable, IEntityIdentity<long>, new()
+    {
+        ArgumentNullException.ThrowIfNull(ids);
+
+        return this.DeleteManyAsync<TEntity, long>(ids, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task DeleteManyAsync<TEntity>(IEnumerable<string> ids, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityDeletable, IEntityIdentity<string>, new()
+    {
+        ArgumentNullException.ThrowIfNull(ids);
+
+        return this.DeleteManyAsync<TEntity, string>(ids, cancellationToken);
+    }
+
+    /// <inheritdoc />
     public virtual Task DeleteManyAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable
     {
@@ -926,7 +1023,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         return this.dbContext
             .Set<TEntity>()
             .Where(criteria)
-            .DeleteFromQueryAsync(cancellationToken);
+            .ExecuteDeleteAsync(cancellationToken);
     }
 
     /// <inheritdoc />
@@ -938,7 +1035,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         return this.dbContext
             .Set<TEntity>()
             .Where(expression)
-            .DeleteFromQueryAsync(cancellationToken);
+            .ExecuteDeleteAsync(cancellationToken);
     }
 
     /// <inheritdoc />
@@ -1016,7 +1113,30 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
 
-    private static Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> BuildUpdateExpression<TEntity>(Dictionary<string, object> updates)
+    private static Expression<Action<TEntity>> BuildUpdateExpression<TEntity>(Dictionary<string, object> updates)
+    {
+        ArgumentNullException.ThrowIfNull(updates);
+
+        var entityParam = Expression.Parameter(typeof(TEntity), "x");
+
+        var expressions = new List<Expression>();
+
+        foreach (var (propertyName, value) in updates)
+        {
+            var property = Expression.Property(entityParam, propertyName);
+            var constant = Expression.Constant(value, property.Type);
+
+            var assign = Expression.Assign(property, constant);
+
+            expressions
+                .Add(assign);
+        }
+
+        var body = Expression.Block(expressions);
+
+        return Expression.Lambda<Action<TEntity>>(body, entityParam);
+    }
+    private static Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> BuildBulkUpdateExpression<TEntity>(Dictionary<string, object> updates)
         where TEntity : class
     {
         ArgumentNullException.ThrowIfNull(updates);

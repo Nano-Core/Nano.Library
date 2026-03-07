@@ -281,43 +281,97 @@ dotnet ef database update `
 > 📖 Learn more about **[EF Migrations](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli)**.
 
 ## Repositories
-EXAMPLES BOTH API AND CONSOLE
+Repositories in Nano provide a layer on top of Entity Framework and the `BaseDbContext`, encapsulating common functionality and features for working with entity models. 
+The `IRepository` interface defines generic methods for retrieving, querying, adding, updating, and deleting entities, where the generic parameter specifies the type of 
+entity the operation works on. For example, adding a new instance of `MyEntity` would look like this.
 
-Repositories represents data repositories within an application.  
-The ```IRepository``` interface contains methods for getting, querying, adding, updating and deleting models in the application. Inject this, when implementations requires access to
-the application data.  
-The ```BaseRepository<TContext>``` implements the interface, and ensures data is stored and retrieved through the data context defined by the generic class parameter and injected into 
-the constructor when resolved at runtime.  
-The ```DefaultRepository``` derives from ```BaseRepository<DefaultDbContext>```. and the ```DefaultDbContext``` contains overridden methods for saving changes, featuring eventing by 
-annotation and custom extensions for entity framework.  
-The services follow the ```UnitOfWork``` pattern.  
+```csharp
+this.Repository
+    .AddAsync<MyEntity>(new MyEntity());
+```
 
-The ```BaseRepository<TContext>``` implementation contains various methods for getting, querying, updating, adding and deleting entities in the data context defined by the generic 
-type parameter ```TContext```. This dependency is registered when configuring the data provider.  
-The methods definitions of ```IRepository```, has different generic type constraints, depending on the operation. For instance ```AddAsync<TEntity>```, is constrained to models 
-implementing ```IEntityCreatable```.  
-The ```IRepository``` also contains a property, to access the underlying ```DbSet``` of an entity, 
-* ```DbSet<TEntity> GetEntitySet<TEntity>()```   
-Use it for advanced operations not directly supported by the repository implementation.  
+Different methods in `IRepository` have specific generic constraints based on the type of the entity model and the operation being performed. For instance, `AddAsync<TEntity>` 
+is constrained to models implementing `IEntityCreatable`.  
 
-When adding only the raw entity is returned from IRepository, and not included columns. Use AddAndGet to refersh all the includes.
+The following table lists the methods available in `IRepository` along with their parameters, generic constraints, and a brief description.  
 
-_Name_ is the name of the migration, _project_ is the project where the ```DbContext``` implementation is located and where the migration script will be saved to. Last, 
-the _environment_ is the configuration to use, and it's important the connection-string in the settings file of the environment is valid, otherwise an error occurs and the migration fails.
+| Method                                      | Parameters                                                | TEntity Constraint           | Description                                                                        |
+| ------------------------------------------- | --------------------------------------------------------- | ---------------------------- |----------------------------------------------------------------------------------- |
+| `GetAsync<TEntity, TKey>`                   | key, includeDepth                                         | IEntityIdentity              | Gets an entity by its unique key including related entities to a specified depth.  |
+| `GetFirstAsync<TEntity, TCriteria>`         | criteria, includeDepth                                    | IEntity                      | Gets the first entity matching the specified criteria.                             |
+| `GetFirstAsync<TEntity>`                    | where, ordering, includeDepth                             | IEntity                      | Gets the first entity matching the predicate.                                      |
+| `GetManyAsync<TEntity, TKey>`               | keys, includeDepth                                        | IEntityIdentity              | Gets entities matching the specified keys.                                         |
+| `GetManyAsync<TEntity>`                     | query, includeDepth                                       | IEntity                      | Gets entities matching the specified query.                                        |
+| `GetManyAsync<TEntity, TCriteria>`          | criteria, includeDepth                                    | IEntity                      | Gets entities matching the specified criteria.                                     |
+| `GetManyAsync<TEntity>`                     | where, pagination, ordering, includeDepth                 | IEntity                      | Gets entities matching a predicate with pagination and ordering.                   |
+| `GetManyAsync<TEntity, TKey>`               | where, pagination, includeDepth, orderBy, orderDirection  | IEntity                      | Gets entities matching a predicate ordered by a key selector with pagination.      |
+| `AddAsync<TEntity>`                         | entity                                                    | IEntityCreatable             | Adds a single entity.                                                              |
+| `AddAndGetAsync<TEntity, TKey>`             | entity                                                    | IEntityIdentity              | Adds an entity and reloads it including related entities.                          |
+| `AddManyAsync<TEntity>`                     | entities                                                  | IEntityCreatable             | Adds multiple entities.                                                            |
+| `AddManyBulkAsync<TEntity>`                 | entities                                                  | IEntityCreatable             | Bulk adds multiple entities using EF Plus Enterprise.                              |
+| `UpdateAsync<TEntity>`                      | entity                                                    | IEntityUpdatable             | Updates a single entity.                                                           |
+| `UpdateAndGetAsync<TEntity, TKey>`          | entity                                                    | IEntityIdentity              | Updates an entity and reloads it including related entities.                       |
+| `UpdateManyAsync<TEntity>`                  | entities                                                  | IEntityUpdatable             | Updates multiple entities.                                                         |
+| `UpdateManyAsync<TEntity>`                  | where, propertyUpdates                                    | IEntityUpdatable             | Updates entities matching a predicate.                                        |
+| `UpdateManyAsync<TEntity, TCriteria>`       | criteria, propertyUpdates                                 | IEntityUpdatable             | Updates entities based on specified criteria.                                 |
+| `UpdateManyBulkAsync<TEntity>`              | entities                                                  | IEntityUpdatable             | Bulk updates multiple entities using EF Plus Enterprise.                           |
+| `UpdateManyBulkAsync<TEntity>`              | where, propertyUpdates                                    | IEntityUpdatable             | Bulk updates entities matching a predicate.                                        |
+| `UpdateManyBulkAsync<TEntity, TCriteria>`   | criteria, propertyUpdates                                 | IEntityUpdatable             | Bulk updates entities based on specified criteria.                                 |
+| `AddOrUpdateAsync<TEntity>`                 | entity                                                    | IEntityCreatableAndUpdatable | Adds or updates a single entity.                                                   |
+| `AddOrUpdateManyAsync<TEntity>`             | entities                                                  | IEntityCreatableAndUpdatable | Adds or updates multiple entities.                                                 |
+| `DeleteAsync<TEntity, TKey>`                | id                                                        | IEntityIdentity              | Deletes an entity by its key.                                                      |
+| `DeleteAsync<TEntity>`                      | entity                                                    | IEntityDeletable             | Deletes a specific entity instance.                                                |
+| `DeleteManyAsync<TEntity, TKey>`            | ids                                                       | IEntityIdentity              | Deletes multiple entities by their keys.                                           |
+| `DeleteManyAsync<TEntity>`                  | entities                                                  | IEntityDeletable             | Deletes multiple entities.                                                         |
+| `DeleteManyAsync<TEntity, TCriteria>`       | criteria                                                  | IEntityDeletable             | Deletes entities matching specified criteria.                                      |
+| `DeleteManyAsync<TEntity>`                  | expression                                                | IEntityDeletable             | Deletes entities matching a filter expression.                                     |
+| `DeleteManyBulkAsync<TEntity, TKey>`        | ids                                                       | IEntityIdentity              | Bulk deletes entities with specified keys.                                         |
+| `DeleteManyBulkAsync<TEntity>`              | entities                                                  | IEntityDeletable             | Bulk deletes specified entities.                                                   |
+| `DeleteManyBulkAsync<TEntity, TCriteria>`   | criteria                                                  | IEntityDeletable             | Bulk deletes entities matching specified criteria.                                 |
+| `DeleteManyBulkAsync<TEntity>`              | expression                                                | IEntityDeletable             | Bulk deletes entities matching a filter expression.                                |
+| `CountAsync<TEntity, TCriteria>`            | criteria                                                  | IEntity                      | Returns the number of entities matching the criteria.                              |
+| `CountAsync<TEntity>`                       | expression                                                | IEntity                      | Returns the number of entities matching a filter expression.                       |
+| `SumAsync<TEntity>`                         | whereExpr, sumExpr                                        | IEntity                      | Calculates the sum of a numeric expression for matching entities.                  |
+| `AverageAsync<TEntity>`                     | whereExpr, avgExpr                                        | IEntity                      | Calculates the average of a numeric expression for matching entities.              |
+| `SaveChangesAsync`                          | -                                                         | -                            | Persists all pending changes to the data store.                                    | 
+
+Several methods include overloads, which have been merged here for simplicity.  
+
+One of the most useful parameters is `includeDepth`, which overrides the globally configured include depth and determines how many levels of [Include Annotations](#include-annotation) 
+are applied in a query. This allows you to map complex entity models with related entities, while also controlling how much of the entity graph is loaded. Sometimes you may want 
+only the plain entity, while other times you may need the full inclusion tree.  
+
+Try it out yourself using the **[Api.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Mysql)** or  
+**[Console.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.Mysql)** examples. Similar examples are available for other data providers as well.  
 
 ## Autosave
-The repository can be configured for autosave. It's a convinience to not have to call `dbContext.SaveChanges(...)`.  
-If you want more fine-grained control of when changes are comitted, disable `UseAutoSave` in configuration.  
+The repository can be configured for autosave. When enabled, all methods that modify data will automatically persist changes to the database. No need to call 
+`dbContext.SaveChanges(...)` manually. Autosave is convenient for smaller queries or when adding/updating entire entity model trees in a single operation, rather than performing 
+multiple individual add or update calls.  
+
+If you need more fine-grained control over when changes are committed, you can disable `UseAutoSave` in the repository configuration.  
 
 ## Cache
-Simple memory caching can be enabled, by setting ```Data.UseMemoryCache = true``` in the configuration. The cache stores queries once executed, for future invocations. 
+Currently, Nano does not support data caching.  
+
+Future releases plan to add both in-memory caching and distributed caching with Redis. These can be used together to provide a short-lived in-memory cache 
+for fast access and a longer-lived distributed cache for shared data across instances.  
 
 ## Include Annotation
-Annotating a property with the ```IncludeAttribte```, instructs the repository layer to fetch additional data when getting and querying the entity. It works similar to 
-the ```IQueryable.Include(...)``` extension, but allows for design-time definition. The property must be a class and have a navigation relations, otherwise the annotation is ignored.   
-The maximum query (join) depth for a model having properties decorated with ```IncludeAttribte```, can be set in the data options of the configuration, ```QueryIncludeDepth```.  
-When having navigations inside owned models decorated with include annotation, then the owned model property on the parent must also be annotated with Include. This will be ignored 
-by entity framework, but allows Nano to trigger the nested include.  
+Nano provides the `IncludeAttribute`, which can be placed on entity model navigation properties. It supports both reference and collection navigations and is ignored on all other 
+property types. When retrieving entities through `IRepository` methods, any navigation property decorated with `IncludeAttribute` will be automatically included in the query, 
+similar to using `IQueryable.Include(...)`. Inclusion works recursively in all directions up to the configured include depth.  
+
+Be cautious when including collection navigations, as this can result in retrieving a large number of records. It is best used when the collection size is relatively small.  
+
+For owned entity models, if a navigation property inside the owned type has the `IncludeAttribute`, the parent property referencing the owned entity must also be annotated 
+with `IncludeAttribute`. Otherwise, Nano will not traverse into the owned type during query inclusion.  
+
+The `IncludeAttribute` also has an optional parameter, `QuerySplitBehavior`, which determines how the query is executed: `Single` (joins) or `SplitQuery` (separate queries). 
+For large collections, `SplitQuery` is recommended. If no `QuerySplitBehavior` is specified, the globally configured default is used.  
+
+This feature is particularly useful because it allows you to build full entity graphs rather than retrieving single entities. When you need only the base entity, the graph inclusion 
+can easily be overridden through the various `IRepository` methods.
 
 ## Audit
 Even when audit is disabled the tables are still created. 
@@ -503,7 +557,6 @@ public class MyEntity : DefaultEntity
 If the ```Publish``` is used on a base class, that entity type will be used when publishing the entity event. This allows discriminated types in the master service to be published as the base to subscribing services. Also, it's possible through the ```params``` parameter of the ```Publish``` annotation, to pass additional properties in the event. Also nested classes are supported by using the ```.``` operator. Property names can be split on derived and base class Subscribe annotation, and when publishing the derived class, the property names of both itself and the base class will be concatenated. Be aware that changes to properties on related entities, won't trigger a publish. In this case you need to trigger the update of the entity after the related entity has been saved.  
 Publish/Subscribe can also work bi-directionally, but it would required the models in each service to have the same required properties, and probably best to keep them identical in this case.  
 
-**NOTE**: Entity events are sent through the repository implementation and not the database context. Bypassing the repository and using the database context directly, will also bypass the entity events.  
 **NOTE**: Avoid sharing models having ```SubscribeAttribute```, with other Nano services, as the eventing subscription will be initialized unintentionally for that service as well.  
 
 ## Health Checks

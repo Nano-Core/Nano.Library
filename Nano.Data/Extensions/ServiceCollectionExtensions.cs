@@ -1,4 +1,3 @@
-using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -78,7 +77,6 @@ public static class ServiceCollectionExtensions
         services
             .AddContext<TProvider, TContext>(options)
             .AddAudit<TIdentity>(options.UseAudit)
-            .AddCache(options.Cache)
             .AddIdentity<TContext, TIdentity>(options.Identity);
 
         services
@@ -193,37 +191,6 @@ public static class ServiceCollectionExtensions
                 .AddRange(auditEntries);
         };
         AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsDeleted > 0L);
-
-        return services;
-    }
-    private static IServiceCollection AddCache(this IServiceCollection services, CacheOptions? options)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-
-        if (options == null)
-        {
-            return services;
-        }
-
-        const string CACHE_KEY_PREFIX = "EF_";
-
-        var cacheExpirationMode = options.ExpirationMode
-            .GetCacheExpirationMode();
-
-        services
-            .AddEFSecondLevelCache(x => x
-                .SkipCachingCommands(y => y.ToLower().Contains("__ef", StringComparison.Ordinal))
-                .CacheAllQueriesExceptContainingTypes(cacheExpirationMode, options.ExpirationTimeout)
-                .CacheAllQueriesExceptContainingTableNames(cacheExpirationMode, options.ExpirationTimeout, options.IgnoredTableNames)
-                .UseMemoryCacheProvider()
-                .UseCacheKeyPrefix(CACHE_KEY_PREFIX));
-
-        services
-            .AddMemoryCache(x =>
-            {
-                x.SizeLimit = options.MaxEntries;
-                x.ExpirationScanFrequency = options.ExpirationScanFrequency;
-            });
 
         return services;
     }

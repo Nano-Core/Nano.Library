@@ -13,10 +13,12 @@ internal class ActionRoutes
     internal const string EDIT_MANY = "edit/many";
     internal const string EDIT_MANY_BULK = "edit/many/bulk";
     internal const string EDIT_QUERY = "edit/query";
+    internal const string EDIT_QUERY_BULK = "edit/query/bulk";
     internal const string DELETE = "{id}/delete";
     internal const string DELETE_MANY = "delete/many";
     internal const string DELETE_MANY_BULK = "delete/many/bulk";
     internal const string DELETE_QUERY = "delete/query";
+    internal const string DELETE_QUERY_BULK = "delete/query/bulk";
     internal const string CREATE = "create";
     internal const string CREATE_GET = "create/get";
     internal const string CREATE_MANY = "create/many";

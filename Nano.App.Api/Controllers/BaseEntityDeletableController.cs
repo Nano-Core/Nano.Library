@@ -1,5 +1,4 @@
 using DynamicExpression.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.Consts;
@@ -13,6 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Nano.App.Api.Controllers;
 
@@ -175,6 +175,32 @@ public abstract class BaseEntityDeletableController<TRepository, TEntity, TIdent
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
+
+        return this.Ok();
+    }
+
+    /// <summary>
+    /// Bulk deletes entities matching the specified criteria.
+    /// </summary>
+    /// <param name="select">The criteria for selecting entities to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Entities deleted.</response>
+    /// <response code="400">Bad request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="500">Internal server error.</response>
+    [HttpPost]
+    [HttpDelete]
+    [Route(ActionRoutes.DELETE_QUERY_BULK)]
+    [Consumes(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> DeleteQueryBulkAsync([FromBody][Required] TCriteria select, CancellationToken cancellationToken = default)
+    {
+        await this.Repository
+            .DeleteManyBulkAsync<TEntity, TCriteria>(select, cancellationToken);
 
         return this.Ok();
     }

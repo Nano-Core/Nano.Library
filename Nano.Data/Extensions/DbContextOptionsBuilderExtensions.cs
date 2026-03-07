@@ -1,8 +1,6 @@
 using System;
-using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.DependencyInjection;
 using Nano.Data.Abstractions.Config;
 
 namespace Nano.Data.Extensions;
@@ -24,17 +22,6 @@ internal static class DbContextOptionsBuilderExtensions
                 x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
             })
             .UseLazyLoadingProxies(options.UseLazyLoading);
-
-        if (options.Cache == null)
-        {
-            return builder;
-        }
-
-        var interceptor = serviceProvider
-            .GetRequiredService<SecondLevelCacheInterceptor>();
-
-        builder
-            .AddInterceptors(interceptor);
 
         return builder;
     }

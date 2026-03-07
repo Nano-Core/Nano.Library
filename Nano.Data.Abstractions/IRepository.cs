@@ -475,10 +475,10 @@ public interface IRepository : IDisposable
     /// <typeparam name="TKey">The key type to order by.</typeparam>
     /// <param name="where">The where clause predicate.</param>
     /// <param name="orderBy">The key selector for ordering.</param>
-    /// <param name="orderingDirection">The <see cref="OrderingDirection"/> (ascending or descending).</param>
+    /// <param name="orderDirection">The <see cref="OrderingDirection"/> (ascending or descending).</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, OrderingDirection orderDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -600,6 +600,30 @@ public interface IRepository : IDisposable
         where TEntity : class, IEntityUpdatable;
 
     /// <summary>
+    /// Bulk updates multiple instances of <see cref="IEntityUpdatable"/> based on the given criteria.
+    /// </summary>
+    /// <typeparam name="TEntity">The type of entities to update.</typeparam>
+    /// <typeparam name="TCriteria">The type of criteria used to filter entities.</typeparam>
+    /// <param name="criteria">The criteria to select entities to update.</param>
+    /// <param name="propertyUpdates">A dictionary of property names and their new values.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task UpdateManyAsync<TEntity, TCriteria>(TCriteria criteria, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityUpdatable
+        where TCriteria : class, IQueryCriteria, new();
+
+    /// <summary>
+    /// Updates multiple instances of <see cref="IEntityUpdatable"/> matching the given where clause.
+    /// </summary>
+    /// <typeparam name="TEntity">The type of entities to update.</typeparam>
+    /// <param name="where">The predicate to select entities to update.</param>
+    /// <param name="propertyUpdates">A dictionary of property names and their new values.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task UpdateManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityUpdatable;
+
+    /// <summary>
     /// Bulk updates multiple instances of <see cref="IEntityUpdatable"/> using Entity Framework Plus Enterprise.
     /// Read more at: https://entityframework-plus.net/download
     /// </summary>
@@ -611,7 +635,7 @@ public interface IRepository : IDisposable
         where TEntity : class, IEntityUpdatable;
 
     /// <summary>
-    /// Bulk updates multiple instances of <see cref="IEntityUpdatable"/> based on the given criteria.
+    /// Bulk updates multiple instances in bulk of <see cref="IEntityUpdatable"/> based on the given criteria.
     /// </summary>
     /// <typeparam name="TEntity">The type of entities to update.</typeparam>
     /// <typeparam name="TCriteria">The type of criteria used to filter entities.</typeparam>
@@ -727,6 +751,46 @@ public interface IRepository : IDisposable
     Task DeleteManyAsync<TEntity, TKey>(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable, IEntityIdentity<TKey>, new()
         where TKey : IEquatable<TKey>;
+
+    /// <summary>
+    /// Deletes all instances of <typeparamref name="TEntity"/> with the specified <see cref="Guid"/> keys.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type to delete. Must implement <see cref="IEntityDeletable"/> and <see cref="IEntityIdentity{Guid}"/>.</typeparam>
+    /// <param name="ids">The collection of <see cref="Guid"/> keys identifying the instances to delete.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/> to cancel the operation.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous bulk delete operation.</returns>
+    Task DeleteManyAsync<TEntity>(IEnumerable<Guid> ids, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityDeletable, IEntityIdentity<Guid>, new();
+
+    /// <summary>
+    /// Deletes all instances of <typeparamref name="TEntity"/> with the specified integer keys.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type to delete. Must implement <see cref="IEntityDeletable"/> and <see cref="IEntityIdentity{Integer}"/>.</typeparam>
+    /// <param name="ids">The collection of integer keys identifying the instances to delete.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/> to cancel the operation.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous bulk delete operation.</returns>
+    Task DeleteManyAsync<TEntity>(IEnumerable<int> ids, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityDeletable, IEntityIdentity<int>, new();
+
+    /// <summary>
+    /// Deletes all instances of <typeparamref name="TEntity"/> with the specified long keys.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type to delete. Must implement <see cref="IEntityDeletable"/> and <see cref="IEntityIdentity{Long}"/>.</typeparam>
+    /// <param name="ids">The collection of long keys identifying the instances to delete.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/> to cancel the operation.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous bulk delete operation.</returns>
+    Task DeleteManyAsync<TEntity>(IEnumerable<long> ids, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityDeletable, IEntityIdentity<long>, new();
+
+    /// <summary>
+    /// Deletes all instances of <typeparamref name="TEntity"/> with the specified string keys.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type to delete. Must implement <see cref="IEntityDeletable"/> and <see cref="IEntityIdentity{String}"/>.</typeparam>
+    /// <param name="ids">The collection of string keys identifying the instances to delete.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/> to cancel the operation.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous bulk delete operation.</returns>
+    Task DeleteManyAsync<TEntity>(IEnumerable<string> ids, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityDeletable, IEntityIdentity<string>, new();
 
     /// <summary>
     /// Deletes multiple instances of <see cref="IEntityDeletable"/>.

@@ -25,6 +25,7 @@ using System.Globalization;
 using System.Linq;
 using Nano.App.Api.Mvc;
 using Nano.App.Api.Mvc.Authentication.Extensions;
+using Nano.App.Api.Mvc.Authorization.Extensions;
 using Nano.App.Api.Mvc.Documentation;
 using Nano.App.Api.Mvc.Serialization.Json;
 using Vivet.AspNetCore.RequestTimeZone.Enums;

@@ -203,10 +203,36 @@ public abstract class BaseEntityUpdatableController<TRepository, TEntity, TIdent
     public virtual async Task<IActionResult> EditQueryAsync([FromBody][Required]UpdateQuery<TCriteria> query, CancellationToken cancellationToken = default)
     {
         await this.Repository
-            .UpdateManyBulkAsync<TEntity, TCriteria>(query.Criteria, query.PropertyUpdates, cancellationToken);
+            .UpdateManyAsync<TEntity, TCriteria>(query.Criteria, query.PropertyUpdates, cancellationToken);
 
         await this.Repository
             .SaveChangesAsync(cancellationToken);
+
+        return this.Ok();
+    }
+
+    /// <summary>
+    /// Edits entities that match the specified criteria in bulk.
+    /// </summary>
+    /// <param name="query">The update query containing criteria and property updates.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Void.</returns>
+    /// <response code="200">Entities updated.</response>
+    /// <response code="400">Bad request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="500">Internal server error.</response>
+    [HttpPut]
+    [HttpPost]
+    [Route(ActionRoutes.EDIT_QUERY_BULK)]
+    [Consumes(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> EditQueryBulkAsync([FromBody][Required] UpdateQuery<TCriteria> query, CancellationToken cancellationToken = default)
+    {
+        await this.Repository
+            .UpdateManyBulkAsync<TEntity, TCriteria>(query.Criteria, query.PropertyUpdates, cancellationToken);
 
         return this.Ok();
     }

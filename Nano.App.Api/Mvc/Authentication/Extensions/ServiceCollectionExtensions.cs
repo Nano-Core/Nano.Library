@@ -1,20 +1,17 @@
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net.Http;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Nano.App.Api.Config;
 using Nano.App.Api.Mvc.Authentication.Abstractions;
-using Nano.App.Api.Mvc.Authentication.Consts;
 using Nano.App.Config;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net.Http;
 using AuthenticationOptions = Nano.App.Api.Config.AuthenticationOptions;
 
 namespace Nano.App.Api.Mvc.Authentication.Extensions;
@@ -92,44 +89,6 @@ internal static class ServiceCollectionExtensions
                 .AddAuthExternalGoogleRepository(options.Jwt.ExternalLogins.Google)
                 .AddAuthExternalMicrosoftRepository(options.Jwt.ExternalLogins.Microsoft);
         }
-
-        return services;
-    }
-
-    internal static IServiceCollection AddNanoAuthorization(this IServiceCollection services)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-
-        services
-            .AddAuthorization(x =>
-            {
-                x.FallbackPolicy = null;
-                x.InvokeHandlersAfterFailure = false;
-
-                x.AddPolicy(AuthorizationPolicies.DEFAULT, y =>
-                {
-                    y.RequireAssertion(z =>
-                    {
-                        var httpContext = z.Resource as HttpContext ?? (z.Resource as AuthorizationFilterContext)?.HttpContext;
-
-                        if (httpContext == null)
-                        {
-                            return false;
-                        }
-
-                        var schemesConfigured = httpContext.RequestServices
-                            .GetRequiredService<IAuthenticationSchemeProvider>()
-                            .GetAllSchemesAsync()
-                            .GetAwaiter()
-                            .GetResult();
-
-                        var isAuthConfigured = schemesConfigured
-                            .Any(a => a.Name == AuthenticationSchemes.JWT_OR_API_KEY);
-
-                        return !isAuthConfigured || (z.User.Identity?.IsAuthenticated ?? false);
-                    });
-                });
-            });
 
         return services;
     }

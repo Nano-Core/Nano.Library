@@ -108,11 +108,6 @@ public class DataOptions
     public virtual RepositoryOptions Repository { get; set; } = new();
 
     /// <summary>
-    /// Gets or sets the cache configuration options.
-    /// </summary>
-    public virtual CacheOptions? Cache { get; set; }
-
-    /// <summary>
     /// Gets or sets the identity configuration options.
     /// </summary>
     public virtual IdentityOptions? Identity { get; set; }
