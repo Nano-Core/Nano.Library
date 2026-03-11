@@ -200,8 +200,8 @@ HTTPS is primarily intended for local development. In production environments, s
 |  `Ports`                 | array   | []       | List of ports for HTTPS.                      |
 |  `UseHttpsRequired`      | bool    | false    | Enforce HTTPS required for all requests.      |
 |  `Certificate`           | object  | default  | SSL certificate configuration.                |
-|  `Certificate.Path`      | string  | null     | File path to the certificate.                 |
-|  `Certificate.Password`  | string  | null     | Password for the certificate.                 |
+|  `Certificate.Path`      | string  | null     | Required. File path to the certificate.       |
+|  `Certificate.Password`  | string  | null     | Required. Password for the certificate.       |
 
 ```json
 "App": {
@@ -218,6 +218,20 @@ HTTPS is primarily intended for local development. In production environments, s
   }
 }
 ```
+
+When configuring HTTPS, the `docker-compose.yml` file must also be updated:
+
+```yaml
+services:
+  {service-name}:
+    ports:
+      - 4443:4443
+    volumes:
+      - ../:/root/.dotnet/https
+```
+
+The solution should also include `certificate.yaml` and `ingress.yml` Kubernetes resources for both the `Staging` and `Production`, and the `build-and-deploy.yml` should 
+include additional environmental variables and apply commands.  
 
 Try it out yourself using the **[Api.Hosting.Https](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Hosting.Https)** example.  
 
@@ -1303,9 +1317,9 @@ in a consistent and centralized way.
 |  `FailureNotificationInterval`       | int    | 60      | Minimum interval between failure notifications, in seconds.                                                                                                               |
 |  `MaximumHistoryEntriesPerEndpoint`  | int    | 50      | Maximum number of historical entries per endpoint stored in the UI database.                                                                                              |
 |  `WebHooks`                          | array  | []      | Configured web-hooks triggered on health-check events. ⚠️ Normally, webhooks aren’t needed; in the cloud, `/healthz` is polled and monitoring uses more robust alerting.  |
-|  `WebHooks.Name`                     | string | null    | Name of the web-hook.                                                                                                                                                     |
-|  `WebHooks.Url`                      | string | null    | URL to which the web-hook will send requests.                                                                                                                             |
-|  `WebHooks.Payload`                  | string | null    | Optional payload to include in the web-hook request.                                                                                                                      |
+|  `WebHooks.Name`                     | string | null    | Required. Name of the web-hook.                                                                                                                                           |
+|  `WebHooks.Url`                      | string | null    | Required. URL to which the web-hook will send requests.                                                                                                                   |
+|  `WebHooks.Payload`                  | string | null    | Optional. Payload to include in the web-hook request.                                                                                                                     |
 
 ```json
 "App": {
@@ -1478,18 +1492,18 @@ to derive authentication functionality.
 
 The following configuration is available for authentication.  
 
-| Setting                   | Type     | Default   | Description                                                                                |
-| ------------------------- | -------- | --------- | ------------------------------------------------------------------------------------------ |
-|  `HideAuthController`     | bool     | false     | Controls whether the `AuthController` should be visible when authentication is enabled.    |
-|  `Jwt`                    | object   | null      | Optional JWT authentication configuration.                                                 |
-|  `Jwt.Issuer`             | string   | null      | JWT issuer.                                                                                |
-|  `Jwt.Audience`           | string   | null      | JWT audience.                                                                              |
-|  `Jwt.PublicKey`          | string   | null      | Base64-encoded public key.                                                                 |
-|  `Jwt.PrivateKey`         | string   | null      | Base64-encoded private key.                                                                |
-|  `Jwt.Expiration`         | TimeSpan | 00:60:00  | Expiration for the access token.                                                           |
-|  `Jwt.RefreshExpiration`  | TimeSpan | 72:00:00  | Expiration for the refresh token.                                                          |
-|  `Jwt.RootLogin`          | object   | null      | Optional root login options.                                                               |
-|  `Jwt.ExternalLogins`     | object   | null      | Optional external login options.                                                           |
+| Setting                   | Type     | Default   | Description                                                                                         |
+| ------------------------- | -------- | --------- | --------------------------------------------------------------------------------------------------- |
+|  `HideAuthController`     | bool     | false     | Controls whether the `AuthController` should be visible when authentication is enabled.             |
+|  `Jwt`                    | object   | null      | Optional JWT authentication configuration.                                                          |
+|  `Jwt.Issuer`             | string   | null      | Required. JWT issuer.                                                                               |
+|  `Jwt.Audience`           | string   | null      | Required. JWT audience.                                                                             |
+|  `Jwt.PublicKey`          | string   | null      | Required. Base64-encoded public key.                                                                |
+|  `Jwt.PrivateKey`         | string   | null      | Optional Base64-encoded private key. _This is required if the application must create JWT tokens_.  |
+|  `Jwt.Expiration`         | TimeSpan | 00:60:00  | Expiration for the access token.                                                                    |
+|  `Jwt.RefreshExpiration`  | TimeSpan | 72:00:00  | Expiration for the refresh token.                                                                   |
+|  `Jwt.RootLogin`          | object   | null      | Optional root login options.                                                                        |
+|  `Jwt.ExternalLogins`     | object   | null      | Optional external login options.                                                                    |
 
 ```json
 "App": {
@@ -1523,28 +1537,28 @@ The configuration is defined as follows.
 
 **Facebook**
 
-| Setting                    | Type   | Default  | Description               |
-| -------------------------- | ------ | -------- | ------------------------- |
-|  `Facebook.AppId`          | string | null     | Facebook App Id.          |
-|  `Facebook.AppSecret`      | string | null     | Facebook App Secret.      |
-|  `Facebook.Scopes`         | array  | []       | OAuth Scopes.             |
+| Setting                    | Type   | Default  | Description                         |
+| -------------------------- | ------ | -------- | ----------------------------------- |
+|  `Facebook.AppId`          | string | null     | Required. Facebook App Id.          |
+|  `Facebook.AppSecret`      | string | null     | Required. Facebook App Secret.      |
+|  `Facebook.Scopes`         | array  | []       | Required. OAuth Scopes.             |
 
 **Google**
 
-| Setting                    | Type   | Default  | Description               |
-| -------------------------- | ------ | -------- | ------------------------- |
-|  `Google.ClientId`         | string | null     | Google Client Id.         |
-|  `Google.ClientSecret`     | string | null     | Google Client Secret.     |
-|  `Google.Scopes`           | array  | []       | OAuth Scopes..            |
+| Setting                    | Type   | Default  | Description                         |
+| -------------------------- | ------ | -------- | ----------------------------------- |
+|  `Google.ClientId`         | string | null     | Required. Google Client Id.         |
+|  `Google.ClientSecret`     | string | null     | Required. Google Client Secret.     |
+|  `Google.Scopes`           | array  | []       | OAuth Scopes.                       |
 
 **Microsoft**
 
-| Setting                    | Type   | Default  | Description               |
-| -------------------------- | ------ | -------- | ------------------------- |
-|  `Microsoft.TenantId`      | string | null     | Microsoft Tenant Id.      |
-|  `Microsoft.ClientId`      | string | null     | Microsoft Client Id.      |
-|  `Microsoft.ClientSecret`  | string | null     | Microsoft Client Secret.  |
-|  `Microsoft.Scopes`        | array  | []       | OAuth Scopes.             |
+| Setting                    | Type   | Default  | Description                         |
+| -------------------------- | ------ | -------- | ----------------------------------- |
+|  `Microsoft.TenantId`      | string | null     | Required. Microsoft Tenant Id.      |
+|  `Microsoft.ClientId`      | string | null     | Required. Microsoft Client Id.      |
+|  `Microsoft.ClientSecret`  | string | null     | Required. Microsoft Client Secret.  |
+|  `Microsoft.Scopes`        | array  | []       | OAuth Scopes.                       |
 
 ```json
 "App": {
@@ -1771,29 +1785,33 @@ public class MyEntitysController(ILogger<MyEntitysController> logger, IRepositor
 
 When everything is configured and registered, the following endpoints becomes available for each entity controller.
 
-| Endpoint                           | Method        | Role    | Description                                                                  |
-| ---------------------------------- | ------------- | ------- | ---------------------------------------------------------------------------- |
-| `/api/{entity}s/create`            | POST          | creator | Creates a single model instance.                                             |
-| `/api/{entity}s/create/get`        | POST          | creator | Creates a single model instance and retrieves it with included navigations.  |
-| `/api/{entity}s/create/many`       | POST          | creator | Creates multiple model instances.                                            |
-| `/api/{entity}s/create/many/bulk`  | POST          | creator | Creates multiple model instances in bulk.                                    |
-| `/api/{entity}s/{id}/details`      | GET           | reader  | Gets a single entity by its identifier.                                      |
-| `/api/{entity}s/details/many`      | GET, POST     | reader  | Gets multiple entities by their identifiers.                                 |
-| `/api/{entity}s/index`             | GET, POST     | reader  | Gets all entities matching the specified query.                              |
-| `/api/{entity}s/query`             | GET, POST     | reader  | Queries entities matching the specified criteria.                            |
-| `/api/{entity}s/query/count`       | GET, POST     | reader  | Gets the total count of entities matching the specified criteria.            |
-| `/api/{entity}s/query/first`       | GET, POST     | reader  | Retrieves the first entity matching the specified criteria.                  |
-| `/api/{entity}s/edit`              | PUT, POST     | editor  | Edits a single model instance.                                               |
-| `/api/{entity}s/edit/get`          | PUT, POST     | editor  | Edits a single model instance and retrieves it with included navigations.    |
-| `/api/{entity}s/edit/many`         | PUT, POST     | editor  | Edits multiple model instances.                                              |
-| `/api/{entity}s/edit/many/bulk`    | PUT, POST     | editor  | Edits multiple model instances in bulk.                                      |
-| `/api/{entity}s/edit/query`        | PUT, POST     | editor  | Edits entities that match the specified criteria.                            |
-| `/api/{entity}s/edit/query/bulk`   | PUT, POST     | editor  | Edits entities that match the specified criteria in bulk.                    |
-| `/api/{entity}s/{id}/delete`       | POST, DELETE  | deleter | Deletes a single entity by its identifier.                                   |
-| `/api/{entity}s/delete/many`       | POST, DELETE  | deleter | Deletes multiple entities by their identifiers.                              |
-| `/api/{entity}s/delete/many/bulk`  | POST, DELETE  | deleter | Deletes multiple entities by their identifiers in bulk.                      |
-| `/api/{entity}s/delete/query`      | POST, DELETE  | deleter | Deletes entities matching the specified criteria.                            |
-| `/api/{entity}s/delete/query/bulk` | POST, DELETE  | deleter | Deletes entities matching the specified criteria in bulk.                    |
+| Endpoint                           | Method        | Paramters                        | Role    | Description                                                                  |
+| ---------------------------------- | ------------- | -------------------------------- | ------- | ---------------------------------------------------------------------------- |
+| `/api/{entity}s/create`            | POST          | entity                           | creator | Creates a single model instance.                                             |
+| `/api/{entity}s/create/get`        | POST          | entity                           | creator | Creates or retrieves a single model instance.                                |
+| `/api/{entity}s/create/reload`     | POST          | entity                           | creator | Creates a single model instance and retrieves it with included navigations.  |
+| `/api/{entity}s/create/edit`       | POST          | entity                           | creator | Creates or edits (upsert) a single model instance.                           |
+| `/api/{entity}s/create/many`       | POST          | entities                         | creator | Creates multiple model instances.                                            |
+| `/api/{entity}s/create/many/bulk`  | POST          | entities                         | creator | Creates multiple model instances in bulk.                                    |
+| `/api/{entity}s/{id}/details`      | GET           | id, includeDepth                 | reader  | Gets a single entity by its identifier.                                      |
+| `/api/{entity}s/details/many`      | GET, POST     | ids, includeDepth                | reader  | Gets multiple entities by their identifiers.                                 |
+| `/api/{entity}s/index`             | GET, POST     | query, includeDepth              | reader  | Gets all entities matching the specified query.                              |
+| `/api/{entity}s/query`             | GET, POST     | query, criteria, includeDepth    | reader  | Queries entities matching the specified criteria.                            |
+| `/api/{entity}s/query/first`       | GET, POST     | query, criteria, includeDepth    | reader  | Retrieves the first entity matching the specified criteria.                  |
+| `/api/{entity}s/query/count`       | GET, POST     | criteria, includeDepth           | reader  | Gets the total count of entities matching the specified criteria.            |
+| `/api/{entity}s/edit`              | PUT, POST     | entity                           | editor  | Edits a single model instance.                                               |
+| `/api/{entity}s/edit/reload`       | PUT, POST     | entity                           | editor  | Edits a single model instance and retrieves it with included navigations.    |
+| `/api/{entity}s/edit/many`         | PUT, POST     | entities                         | editor  | Edits multiple model instances.                                              |
+| `/api/{entity}s/edit/many/bulk`    | PUT, POST     | entities                         | editor  | Edits multiple model instances in bulk.                                      |
+| `/api/{entity}s/edit/query`        | PUT, POST     | update-query, criteria           | editor  | Edits entities that match the specified criteria.                            |
+| `/api/{entity}s/edit/query/bulk`   | PUT, POST     | update-query, criteria           | editor  | Edits entities that match the specified criteria in bulk.                    |
+| `/api/{entity}s/{id}/delete`       | POST, DELETE  | id                               | deleter | Deletes a single entity by its identifier.                                   |
+| `/api/{entity}s/delete/many`       | POST, DELETE  | ids                              | deleter | Deletes multiple entities by their identifiers.                              |
+| `/api/{entity}s/delete/many/bulk`  | POST, DELETE  | ids                              | deleter | Deletes multiple entities by their identifiers in bulk.                      |
+| `/api/{entity}s/delete/query`      | POST, DELETE  | criteria                         | deleter | Deletes entities matching the specified criteria.                            |
+| `/api/{entity}s/delete/query/bulk` | POST, DELETE  | criteria                         | deleter | Deletes entities matching the specified criteria in bulk.                    |
+
+> ⚠️ Do not set `includeDepth` higher than the configured include depth. [Response Serialization](#response-serialization) will only consider the configured value.
 
 Try it yourself using one of the **[Api.Data Lessons](https://github.com/Nano-Core/Nano.Lessons)**, such as **[Api.Data.MySql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql)**, 
 or any of the other data provider examples.
@@ -1941,7 +1959,7 @@ The ModelBinder deserializes the form field string (JSON) into the specified mod
 populating the ModelState with any validation errors. This allows clients to send a `multipart/form-data` request containing both files and structured JSON data, 
 while the controller receives fully bound and validated models.
 
-⚠️ Make sure the JSON field name matches the name of the model parameter in your action.
+> ⚠️ Make sure the JSON field name matches the name of the model parameter in your action.
 
 Try it out yourself using the **[Api.MultipartJson](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.MultipartJson)** example.  
 
@@ -1951,9 +1969,12 @@ and all `Geometry` types from `NetTopologySuite`.
 
 The serializer only serializes navigations that is of type `IEntity`, when they are annotated with `IncludeAttribute`. This is to avoid returning unwanted navigation 
 references, that is automatically added if dependent navigations are loaded separately into the data context. Read more about 
-**[Include Annotation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.App#include-annotation)**.  
+**[Include Annotation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.App#include-annotation)**. Responses that doesn't inherit from `IEntity` will be 
+serialized normally.
 
-Also, the serializer is case-insensitive.  
+> ⚠️ Serialization respects only the configured include depth. Loaded navigations within that depth may in rare cases be returned even if the request `includeDepth` is lower.
+
+The serializer is case-insensitive.  
 
 Besides that, the serializer is configured to handle various edge cases for robustness.  
 

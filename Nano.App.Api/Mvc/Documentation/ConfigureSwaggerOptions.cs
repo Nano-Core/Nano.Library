@@ -18,28 +18,12 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Nano.App.Api.Mvc.Documentation;
 
-/// <summary>
-/// Configures Swagger generation options including API documentation, security definitions, and XML comments.
-/// </summary>
-public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
+internal class ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> apiOptions, IAuthenticationSchemeProvider authenticationSchemeProvider, IApiVersionDescriptionProvider apiVersionDescriptionProvider)
+    : IConfigureOptions<SwaggerGenOptions>
 {
-    private readonly IOptionsMonitor<ApiOptions> apiOptions;
-    private readonly IAuthenticationSchemeProvider authenticationSchemeProvider;
-    private readonly IApiVersionDescriptionProvider apiVersionDescriptionProvider;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigureSwaggerOptions"/> class.
-    /// </summary>
-    /// <param name="apiOptions">The <see cref="IOptionsMonitor{ApiOptions}"/> for API configuration.</param>
-    /// <param name="authenticationSchemeProvider">The <see cref="IAuthenticationSchemeProvider"/> to retrieve authentication schemes.</param>
-    /// <param name="apiVersionDescriptionProvider">The <see cref="IApiVersionDescriptionProvider"/> for API version information.</param>
-    /// <exception cref="ArgumentNullException">Thrown if any of the parameters are null.</exception>
-    public ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> apiOptions, IAuthenticationSchemeProvider authenticationSchemeProvider, IApiVersionDescriptionProvider apiVersionDescriptionProvider)
-    {
-        this.apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
-        this.authenticationSchemeProvider = authenticationSchemeProvider ?? throw new ArgumentNullException(nameof(authenticationSchemeProvider));
-        this.apiVersionDescriptionProvider = apiVersionDescriptionProvider ?? throw new ArgumentNullException(nameof(apiVersionDescriptionProvider));
-    }
+    private readonly IOptionsMonitor<ApiOptions> apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
+    private readonly IAuthenticationSchemeProvider authenticationSchemeProvider = authenticationSchemeProvider ?? throw new ArgumentNullException(nameof(authenticationSchemeProvider));
+    private readonly IApiVersionDescriptionProvider apiVersionDescriptionProvider = apiVersionDescriptionProvider ?? throw new ArgumentNullException(nameof(apiVersionDescriptionProvider));
 
     /// <summary>
     /// Configures the <see cref="SwaggerGenOptions"/> including API info, security definitions, schema and document filters.

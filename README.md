@@ -38,7 +38,7 @@ Nano takes care of everything to build, deploy and host applications.
 Nano supplies it all; The application framework, easy configuration, configurable templates for Kubernetes and GitHub actions for build and deployment. Nano even supplies 
 GitHub Actions for deploying all the Azure and Kubernetes components required to use all the features of Nano.  
 
-
+Write about these special Nano feateurs: Entity events, include annotation, 
 
 
 

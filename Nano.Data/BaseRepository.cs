@@ -38,13 +38,15 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<TEntity?> GetAsync<TEntity, TKey>(TKey key, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> GetAsync<TEntity, TKey>(TKey key, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>
     {
+        includeDepth ??= this.options.CurrentValue.Repository.QueryIncludeDepth;
+
         return this.dbContext
             .Set<TEntity>()
-            .IncludeAnnotations(includeDepth)
+            .IncludeAnnotations(includeDepth.Value)
             .FirstOrDefaultAsync(x => x.Id.Equals(key), cancellationToken);
     }
 
@@ -66,7 +68,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<TEntity?> GetAsync<TEntity>(int key, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> GetAsync<TEntity>(int key, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<int>
     {
         return this.GetAsync<TEntity, int>(key, includeDepth, cancellationToken);
@@ -80,7 +82,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<TEntity?> GetAsync<TEntity>(long key, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> GetAsync<TEntity>(long key, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<long>
     {
         return this.GetAsync<TEntity, long>(key, includeDepth, cancellationToken);
@@ -96,7 +98,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<TEntity?> GetAsync<TEntity>(string key, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> GetAsync<TEntity>(string key, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<string>
     {
         ArgumentNullException.ThrowIfNull(key);
@@ -112,7 +114,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<TEntity?> GetAsync<TEntity>(Guid key, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> GetAsync<TEntity>(Guid key, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<Guid>
     {
         return this.GetAsync<TEntity, Guid>(key, includeDepth, cancellationToken);
@@ -131,15 +133,17 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<TEntity?> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> query, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : class, IQueryCriteria, new()
     {
         ArgumentNullException.ThrowIfNull(query);
 
+        includeDepth ??= this.options.CurrentValue.Repository.QueryIncludeDepth;
+
         return this.dbContext
             .Set<TEntity>()
-            .IncludeAnnotations(includeDepth)
+            .IncludeAnnotations(includeDepth.Value)
             .Where(query.Criteria)
             .Order(query.Order)
             .Limit(query.Paging)
@@ -158,7 +162,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
@@ -167,7 +171,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering? ordering, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
@@ -179,15 +183,17 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering? ordering, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
         ArgumentNullException.ThrowIfNull(ordering);
 
+        includeDepth ??= this.options.CurrentValue.Repository.QueryIncludeDepth;
+
         return this.dbContext
             .Set<TEntity>()
-            .IncludeAnnotations(includeDepth)
+            .IncludeAnnotations(includeDepth.Value)
             .Where(where)
             .Order(ordering)
             .FirstOrDefaultAsync(cancellationToken);
@@ -206,15 +212,17 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(IEnumerable<TKey> keys, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(IEnumerable<TKey> keys, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>
     {
         ArgumentNullException.ThrowIfNull(keys);
 
+        includeDepth ??= this.options.CurrentValue.Repository.QueryIncludeDepth;
+
         return await this.dbContext
             .Set<TEntity>()
-            .IncludeAnnotations(includeDepth)
+            .IncludeAnnotations(includeDepth.Value)
             .Where(x => keys.Contains(x.Id))
             .ToArrayAsync(cancellationToken);
     }
@@ -229,7 +237,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<int> keys, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<int> keys, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<int>
     {
         ArgumentNullException.ThrowIfNull(keys);
@@ -247,7 +255,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<long> keys, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<long> keys, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<long>
     {
         ArgumentNullException.ThrowIfNull(keys);
@@ -265,7 +273,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<string> keys, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<string> keys, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<string>
     {
         ArgumentNullException.ThrowIfNull(keys);
@@ -283,7 +291,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<Guid> keys, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<Guid> keys, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<Guid>
     {
         ArgumentNullException.ThrowIfNull(keys);
@@ -303,14 +311,16 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IQuery query, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IQuery query, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(query);
 
+        includeDepth ??= this.options.CurrentValue.Repository.QueryIncludeDepth;
+
         return await this.dbContext
             .Set<TEntity>()
-            .IncludeAnnotations(includeDepth)
+            .IncludeAnnotations(includeDepth.Value)
             .Order(query.Order)
             .Limit(query.Paging)
             .ToArrayAsync(cancellationToken);
@@ -329,15 +339,17 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> query, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : class, IQueryCriteria, new()
     {
         ArgumentNullException.ThrowIfNull(query);
 
+        includeDepth ??= this.options.CurrentValue.Repository.QueryIncludeDepth;
+
         return await this.dbContext
             .Set<TEntity>()
-            .IncludeAnnotations(includeDepth)
+            .IncludeAnnotations(includeDepth.Value)
             .Where(query.Criteria)
             .Order(query.Order)
             .Limit(query.Paging)
@@ -356,24 +368,25 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
 
+        includeDepth ??= this.options.CurrentValue.Repository.QueryIncludeDepth;
+
         return await this.dbContext
             .Set<TEntity>()
-            .IncludeAnnotations(includeDepth)
+            .IncludeAnnotations(includeDepth.Value)
             .Where(where)
             .ToArrayAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering? ordering, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
-        ArgumentNullException.ThrowIfNull(ordering);
 
         var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
@@ -381,26 +394,26 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering? ordering, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
-        ArgumentNullException.ThrowIfNull(ordering);
+
+        includeDepth ??= this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return await this.dbContext
             .Set<TEntity>()
-            .IncludeAnnotations(includeDepth)
+            .IncludeAnnotations(includeDepth.Value)
             .Where(where)
             .Order(ordering)
             .ToArrayAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination? pagination, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
-        ArgumentNullException.ThrowIfNull(pagination);
 
         var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
@@ -408,27 +421,26 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination? pagination, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
-        ArgumentNullException.ThrowIfNull(pagination);
+
+        includeDepth ??= this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return await this.dbContext
             .Set<TEntity>()
-            .IncludeAnnotations(includeDepth)
+            .IncludeAnnotations(includeDepth.Value)
             .Where(where)
             .Limit(pagination)
             .ToArrayAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, Ordering ordering, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination? pagination, Ordering? ordering, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
-        ArgumentNullException.ThrowIfNull(pagination);
-        ArgumentNullException.ThrowIfNull(ordering);
 
         var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
 
@@ -436,16 +448,16 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, Ordering ordering, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination? pagination, Ordering? ordering, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
-        ArgumentNullException.ThrowIfNull(pagination);
-        ArgumentNullException.ThrowIfNull(ordering);
+
+        includeDepth ??= this.options.CurrentValue.Repository.QueryIncludeDepth;
 
         return await this.dbContext
             .Set<TEntity>()
-            .IncludeAnnotations(includeDepth)
+            .IncludeAnnotations(includeDepth.Value)
             .Where(where)
             .Limit(pagination)
             .Order(ordering)
@@ -453,23 +465,19 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, Pagination pagination, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering? ordering, Pagination? pagination, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
-        ArgumentNullException.ThrowIfNull(ordering);
-        ArgumentNullException.ThrowIfNull(pagination);
 
         return this.GetManyAsync(where, pagination, ordering, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, Pagination pagination, int includeDepth, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering? ordering, Pagination? pagination, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
-        ArgumentNullException.ThrowIfNull(ordering);
-        ArgumentNullException.ThrowIfNull(pagination);
 
         return this.GetManyAsync(where, pagination, ordering, includeDepth, cancellationToken);
     }
@@ -487,7 +495,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, int includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, int? includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
@@ -497,7 +505,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination pagination, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination? pagination, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
@@ -510,7 +518,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination pagination, int includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination? pagination, int? includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
@@ -518,9 +526,11 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
         await Task.CompletedTask;
 
+        includeDepth ??= this.options.CurrentValue.Repository.QueryIncludeDepth;
+
         var entities = this.dbContext
             .Set<TEntity>()
-            .IncludeAnnotations(includeDepth)
+            .IncludeAnnotations(includeDepth.Value)
             .Where(where)
             .Limit(pagination)
             .AsEnumerable();
@@ -555,20 +565,30 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
+    public virtual async Task<TEntity?> AddOrGetAsync<TEntity, TKey>(TEntity entity, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityCreatable, IEntityIdentity<TKey>
+        where TKey : IEquatable<TKey>
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        var existinEntity = await this.GetAsync<TEntity, TKey>(entity.Id, cancellationToken);
+
+        return existinEntity ?? await this.AddAndGetAsync<TEntity, TKey>(entity, cancellationToken);
+    }
+
+    /// <inheritdoc />
     public virtual async Task<TEntity?> AddAndGetAsync<TEntity, TKey>(TEntity entity, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>
     {
         ArgumentNullException.ThrowIfNull(entity);
 
-        var includeDepth = this.options.CurrentValue.Repository.QueryIncludeDepth;
-
         var entry = await this.dbContext
             .AddAsync(entity, cancellationToken);
 
         await this.SaveChangesAsync(cancellationToken);
 
-        return await this.GetAsync<TEntity, TKey>(entry.Entity.Id, includeDepth, cancellationToken);
+        return await this.GetAsync<TEntity, TKey>(entry.Entity.Id, cancellationToken);
     }
 
     /// <inheritdoc />

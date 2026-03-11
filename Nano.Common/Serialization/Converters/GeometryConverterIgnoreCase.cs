@@ -4,12 +4,12 @@ using NetTopologySuite.IO.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Nano.Common.Serialization.Json.Converters;
+namespace Nano.Common.Serialization.Converters;
 
 /// <summary>
 /// A <see cref="GeometryConverter"/> that ignores case when reading JSON properties for geometries.
 /// </summary>
-internal class GeometryConverterIgnoreCase : GeometryConverter
+public class GeometryConverterIgnoreCase : GeometryConverter
 {
     /// <summary>
     /// Reads JSON into a <see cref="Geometry"/> object, renaming properties to match expected casing.

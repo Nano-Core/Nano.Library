@@ -255,7 +255,7 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
                     }));
         }
 
-        if (this.dataOptions?.CurrentValue.Identity?.Authentication.ApiKey == null)
+        if (this.dataOptions?.CurrentValue.Identity?.ApiKey == null)
         {
             disabledActions
                 .AddRange(controller.Actions

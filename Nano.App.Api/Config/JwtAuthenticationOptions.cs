@@ -30,8 +30,7 @@ public class JwtAuthenticationOptions
     /// <summary>
     /// Base64-encoded private key.
     /// </summary>
-    [Required]
-    public virtual string PrivateKey { get; set; } = null!;
+    public virtual string? PrivateKey { get; set; }
 
     /// <summary>
     /// Expiration for the access token.

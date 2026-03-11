@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Nano.Common.Serialization.Json;
+using Nano.Common.Serialization;
 using Newtonsoft.Json;
 
 namespace Nano.App.Api.Mvc.ModelBinders;

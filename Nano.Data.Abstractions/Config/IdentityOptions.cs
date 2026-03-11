@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Data.Abstractions.Config;
@@ -13,7 +14,7 @@ public class IdentityOptions
     /// Defaults to <c>24</c>.
     /// </summary>
     [Required]
-    public virtual int TokensExpirationInHours { get; set; } = 24;
+    public virtual TimeSpan TokensExpiration { get; set; } = TimeSpan.FromHours(24);
 
     /// <summary>
     /// Gets or sets the user-related options, such as uniqueness requirements and default roles.
@@ -40,8 +41,7 @@ public class IdentityOptions
     public virtual PasswordOptions Password { get; set; } = new();
 
     /// <summary>
-    /// Gets or sets the authentication options, such as API key configuration.
+    /// Gets or sets the API key options.
     /// </summary>
-    [Required]
-    public virtual AuthenticationOptions Authentication { get; set; } = new();
+    public virtual ApiKeyOptions? ApiKey { get; set; }
 }

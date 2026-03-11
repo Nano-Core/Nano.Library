@@ -2,7 +2,7 @@ using System;
 using EasyNetQ;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Mvc.HealthChecks.Extensions;
-using Nano.Common.Serialization.Json;
+using Nano.Common.Serialization;
 using Nano.Eventing.Abstractions;
 using Nano.Eventing.Abstractions.Config;
 

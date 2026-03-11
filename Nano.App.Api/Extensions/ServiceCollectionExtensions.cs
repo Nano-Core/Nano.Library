@@ -21,13 +21,11 @@ using Nano.Common.Consts;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
-using System.Globalization;
 using System.Linq;
 using Nano.App.Api.Mvc;
 using Nano.App.Api.Mvc.Authentication.Extensions;
 using Nano.App.Api.Mvc.Authorization.Extensions;
 using Nano.App.Api.Mvc.Documentation;
-using Nano.App.Api.Mvc.Serialization.Json;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
@@ -411,17 +409,7 @@ internal static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(httpOptions);
 
-        if (httpsOptions == null)
-        {
-            return services;
-        }
-
-        if (!httpOptions.UseHttpsRedirection)
-        {
-            return services;
-        }
-
-        if (httpsOptions.Ports.Length == 0)
+        if (httpsOptions == null || !httpOptions.UseHttpsRedirection || httpsOptions.Ports.Length == 0)
         {
             return services;
         }
@@ -451,25 +439,9 @@ internal static class ServiceCollectionExtensions
             })
             .AddQueryModelBinders()
             .AddSingleton<IConfigureOptions<MvcOptions>, ConfigureMvcOptions>()
+            .AddSingleton<IConfigureOptions<MvcNewtonsoftJsonOptions>, ConfigureMvcJsonOptions>()
             .AddControllersWithViews()
-            .AddNewtonsoftJson(x =>
-            {
-                var serializerSettings = SerializerSettings.GetMVcJsonSerializerSettings();
-
-                x.AllowInputFormatterExceptionMessages = true;
-
-                x.SerializerSettings.Culture = CultureInfo.CurrentCulture;
-                x.SerializerSettings.NullValueHandling = serializerSettings.NullValueHandling;
-                x.SerializerSettings.ReferenceLoopHandling = serializerSettings.ReferenceLoopHandling;
-                x.SerializerSettings.PreserveReferencesHandling = serializerSettings.PreserveReferencesHandling;
-                x.SerializerSettings.ContractResolver = serializerSettings.ContractResolver;
-
-                foreach (var serializerSettingsConverter in serializerSettings.Converters)
-                {
-                    x.SerializerSettings.Converters
-                        .Add(serializerSettingsConverter);
-                }
-            })
+            .AddNewtonsoftJson()
             .AddViewLocalization()
             .AddDataAnnotationsLocalization()
             .AddControllersAsServices();

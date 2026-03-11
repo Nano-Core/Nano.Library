@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Nano.Common.Mvc.HealthChecks.Extensions;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Extensions;
 using System;
-using Nano.Common.Mvc.HealthChecks.Extensions;
 
 namespace Nano.Data.SqLite;
 
@@ -36,6 +36,8 @@ public sealed class SqLiteProvider : IDataProvider
                 x.UseNetTopologySuite();
                 x.UseQuerySplittingBehavior(querySplittingBehavior);
             });
+
+        SQLitePCL.Batteries.Init();
     }
 
     /// <inheritdoc />

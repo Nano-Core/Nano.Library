@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.ApiClient.Requests;
 using Nano.Common.Consts;
-using Nano.Common.Serialization.Json;
+using Nano.Common.Serialization;
 using Newtonsoft.Json;
 
 namespace Nano.App.ApiClient.Extensions;

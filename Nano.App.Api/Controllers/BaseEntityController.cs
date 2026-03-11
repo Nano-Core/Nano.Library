@@ -1,11 +1,9 @@
 using DynamicExpression.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
-using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 using System;
@@ -16,6 +14,34 @@ using System.Threading.Tasks;
 
 namespace Nano.App.Api.Controllers;
 
+/// <summary>
+/// Base generic API controller that provides repository and eventing support.
+/// </summary>
+public abstract class BaseEntityController : BaseController
+{
+    /// <summary>
+    /// Repository used for data access operations within the controller.
+    /// </summary>
+    protected virtual IRepository Repository { get; }
+
+    /// <summary>
+    /// Optional eventing interface for publishing domain events.
+    /// </summary>
+    protected virtual IEventing? Eventing { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BaseEntityController"/> class.
+    /// </summary>
+    /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
+    /// <param name="repository">The repository implementing <see cref="IRepository"/>.</param>
+    /// <param name="eventing">Optional <see cref="IEventing"/> for publishing events.</param>
+    protected BaseEntityController(ILogger<BaseEntityController> logger, IRepository repository, IEventing? eventing = null)
+        : base(logger)
+    {
+        this.Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        this.Eventing = eventing;
+    }
+}
 /// <inheritdoc />
 public abstract class BaseEntityController<TEntity, TCriteria> : BaseEntityController<TEntity, Guid, TCriteria>
     where TEntity : class, IEntityIdentity<Guid>, IEntityWritable, new()
@@ -28,35 +54,19 @@ public abstract class BaseEntityController<TEntity, TCriteria> : BaseEntityContr
     }
 }
 
-/// <inheritdoc />
-public abstract class BaseEntityController<TEntity, TIdentity, TCriteria> : BaseEntityController<IRepository, TEntity, TIdentity, TCriteria>
+/// <summary>
+/// Controller providing readable and writable operations (Create, Edit, Delete).
+/// </summary>
+/// <typeparam name="TEntity">The entity type implementing <see cref="IEntity"/> handled by this controller.</typeparam>
+/// <typeparam name="TIdentity">The identifier type of <typeparamref name="TEntity"/>.</typeparam>
+/// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
+public abstract class BaseEntityController<TEntity, TIdentity, TCriteria> : BaseEntityCreatableAndEditableController<TEntity, TIdentity, TCriteria>
     where TEntity : class, IEntityIdentity<TIdentity>, IEntityWritable, new()
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
     protected BaseEntityController(ILogger<BaseEntityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
-        : base(logger, repository, eventing)
-    {
-    }
-}
-
-/// <summary>
-/// Controller providing writable operations (Create, Edit, Delete).
-/// </summary>
-/// <typeparam name="TRepository">The repository implementing <see cref="IRepository"/> used for data access.</typeparam>
-/// <typeparam name="TEntity">The entity type implementing <see cref="IEntity"/> handled by this controller.</typeparam>
-/// <typeparam name="TIdentity">The identifier type of <typeparamref name="TEntity"/>.</typeparam>
-/// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
-[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER)]
-public abstract class BaseEntityController<TRepository, TEntity, TIdentity, TCriteria> : BaseEntityCreatableAndUpdatableController<TRepository, TEntity, TIdentity, TCriteria>
-    where TRepository : class, IRepository
-    where TEntity : class, IEntityIdentity<TIdentity>, IEntityWritable, new()
-    where TCriteria : class, IQueryCriteria, new()
-    where TIdentity : IEquatable<TIdentity>
-{
-    /// <inheritdoc />
-    protected BaseEntityController(ILogger<BaseEntityController<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

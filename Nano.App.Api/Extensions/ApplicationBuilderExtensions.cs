@@ -49,17 +49,7 @@ internal static class ApplicationBuilderExtensions
         ArgumentNullException.ThrowIfNull(applicationBuilder);
         ArgumentNullException.ThrowIfNull(httpOptions);
 
-        if (httpsOptions == null)
-        {
-            return applicationBuilder;
-        }
-
-        if (httpsOptions.Ports.Length == 0)
-        {
-            return applicationBuilder;
-        }
-
-        if (!httpOptions.UseHttpsRedirection)
+        if (httpsOptions == null || httpsOptions.Ports.Length == 0 || !httpOptions.UseHttpsRedirection)
         {
             return applicationBuilder;
         }

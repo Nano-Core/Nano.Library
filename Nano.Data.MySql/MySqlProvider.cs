@@ -22,7 +22,6 @@ public sealed class MySqlProvider : IDataProvider
     public static void Configure(DbContextOptionsBuilder builder, DataOptions options)
     {
         ArgumentNullException.ThrowIfNull(builder);
-
         ArgumentNullException.ThrowIfNull(options);
 
         var batchSize = options.BatchSize;

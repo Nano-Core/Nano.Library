@@ -37,7 +37,7 @@ public static class TypesHelper
                 catch (ReflectionTypeLoadException ex)
                 {
                     return ex.Types
-                        .Where(t => t != null)!;
+                        .Where(t => t != null);
                 }
             })
             .Where(x => x != null)!;

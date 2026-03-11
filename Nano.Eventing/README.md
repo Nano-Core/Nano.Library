@@ -14,10 +14,10 @@
 * [Summary](#summary)
 * [Registration](#registration)
 * [Configuration](#configuration)
+  * [Health Checks](#health-checks)
 * [Serialization](#serialization)
 * [Eventing Providers](#eventing-providers)
 * [Publish and Subscribe](#publish-and-subscribe)
-* [Health Checks](#health-checks)
 
 ## Summary
 Nano provides a robust eventing framework that enables applications to publish events and have them consumed by other applications. 
@@ -54,18 +54,17 @@ The ```Eventing``` section in the configuration defines the eventing provider an
 
 | Setting                         | Type     | Default     | Description                                                                                                                                  |
 | ------------------------------- | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-|  `Host`                         | string   | null        | The hostname or IP address of the event broker or messaging server.                                                                          |             
+|  `Host`                         | string   | null        | Required. The hostname or IP address of the event broker or messaging server.                                                                          |             
 |  `VHost`                        | string   | /           | The virtual host or namespace on the broker to connect to, if applicable.                                                                    |
 |  `Port`                         | ushort   | 5672        | Port to connect to on the broker.                                                                                                            |
 |  `Timeout`                      | TimeSpan | 00:00:30    | Connection timeout for the broker, in seconds.                                                                                               |
 |  `UseSsl`                       | bool     | false       | Indicates whether to use SSL/TLS when connecting to the broker.                                                                              |
 |  `Heartbeat`                    | ushort   | 60          | Heartbeat or keep-alive interval in seconds to maintain the connection. Set to zero to disable heartbeat/keep-alive.                         |
 |  `PrefetchCount`                | ushort   | 50          | Prefetch count for consuming messages. Controls how many messages can be fetched at once for processing.                                     |
-|  `Credentials`                  | object   | null        | Account / credentials information for eventing.                                                                                              |
-|  `Credentials.Id`               | string   | null        | Username for authenticating.                                                                                                                 |
-|  `Credentials.Secret`           | string   | null        | Password for authenticating.                                                                                                                 |
+|  `Credentials`                  | object   | null        | Optional. Account / credentials information for eventing.                                                                                              |
+|  `Credentials.Id`               | string   | null        | Required. Username for authenticating.                                                                                                                 |
+|  `Credentials.Secret`           | string   | null        | Required. Password for authenticating.                                                                                                                 |
 |  `HealthCheck`                  | object   | null        | Eventing health check. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.                                                    |
-|  `HealthCheck.UnhealthyStatus`  | enum     | Unhealthy   | Health status level to report when the eventing provider is unavailable. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.  |
 
 ```json
 "Eventing": {
@@ -80,6 +79,22 @@ The ```Eventing``` section in the configuration defines the eventing provider an
     "Id": null,
     "Secret": null
   }
+  "HealthCheck": null
+}
+```
+
+## Health Checks
+When health checks are enabled in the eventing configuration, Nano automatically registers a health check for the configured eventing provider.  
+
+This allows the application to verify that the underlying broker connection is available and operational. The health check integrates with ASP.NET Core's health check system 
+and can be used by monitoring tools, load balancers, or container orchestrators to determine the health status of the application.  
+
+| Setting                         | Type     | Default     | Description                                                                                                                                  |
+| ------------------------------- | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+|  `HealthCheck.UnhealthyStatus`  | enum     | Unhealthy   | Health status level to report when the eventing provider is unavailable. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.  |
+
+```json
+"Eventing": {
   "HealthCheck": {
     "UnhealthyStatus": "Unhealthy"
   }
@@ -92,6 +107,8 @@ and all `Geometry` types from `NetTopologySuite`.
 
 The serializer is configured to handle various edge cases for robustness. However, event contracts should remain simple. Eventing is not intended for 
 transferring large payloads. It works best with small, well-defined message contracts that represent identifiable business events.  
+
+The serializer is case-insensitive.  
 
 ## Eventing Providers
 All eventing providers in Nano implement the `IEventingProvider` interface. This interface is responsible for configuring and setting up the underlying 
@@ -175,9 +192,3 @@ This feature should be used sparingly, as it supports advanced or conditional ev
 
 The `overridePrefetchCount` allows an event handler to override the globally configured Eventing.PrefetchCount for a specific handler. 
 This is useful when an event requires more processing or resources, as a lower prefetch count can help prevent the consuming application from being overloaded.
-
-## Health Checks
-When health checks are enabled in the eventing configuration, Nano automatically registers a health check for the configured eventing provider.  
-
-This allows the application to verify that the underlying broker connection is available and operational. The health check integrates with ASP.NET Core's health check system 
-and can be used by monitoring tools, load balancers, or container orchestrators to determine the health status of the application.  

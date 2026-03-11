@@ -12,7 +12,7 @@
 * [Summary](#summary)
 * [Registration](#registration)
 * [Configuration](#configuration)
-* [Docker](#docker)
+* [Docker Compose](#docker-compose)
 * [Kuberentes](#kuberentes)
 
 ## Summary
@@ -65,7 +65,7 @@ Add the eventing configuration.
 }
 ```
 
-## Docker
+## Docker Compose
 In addition to registering and configuring storage, you also need to configure your docker-compose setup. The rabbitmq image is the manangement image, 
 so you are able to access the interface here: **[http://localhost:15672](http://localhost:15672)** and monitor and observe event messages being published and consumed.  
 

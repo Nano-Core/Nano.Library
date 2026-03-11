@@ -9,7 +9,7 @@ namespace Nano.App.ApiClient.Requests;
 /// <summary>
 /// Represents a request to create an entity and retrieve it.
 /// </summary>
-[PostAction(ActionRoutes.CREATE_GET)]
+[PostAction(ActionRoutes.CREATE_AND_GET)]
 public class CreateAndGetRequest : BaseRequest
 {
     /// <summary>

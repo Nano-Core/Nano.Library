@@ -5,13 +5,11 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
-using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 
@@ -29,40 +27,19 @@ public abstract class BaseEntityReadOnlyController<TEntity, TCriteria> : BaseEnt
     }
 }
 
-/// <inheritdoc />
-public abstract class BaseEntityReadOnlyController<TEntity, TIdentity, TCriteria> : BaseEntityReadOnlyController<IRepository, TEntity, TIdentity, TCriteria>
+/// <summary>
+/// Controller providing read-only operations.
+/// </summary>
+/// <typeparam name="TEntity">The entity type managed by the repository.</typeparam>
+/// <typeparam name="TIdentity">The type of the entity's identifier.</typeparam>
+/// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
+public abstract class BaseEntityReadOnlyController<TEntity, TIdentity, TCriteria> : BaseEntityController
     where TEntity : class, IEntityIdentity<TIdentity>
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
     protected BaseEntityReadOnlyController(ILogger<BaseEntityReadOnlyController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
-        : base(logger, repository, eventing)
-    {
-    }
-}
-
-/// <summary>
-/// Controller providing read-only operations.
-/// </summary>
-/// <typeparam name="TRepository">The repository implementing <see cref="IRepository"/> used by this controller.</typeparam>
-/// <typeparam name="TEntity">The entity type managed by the repository.</typeparam>
-/// <typeparam name="TIdentity">The type of the entity's identifier.</typeparam>
-/// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
-[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR + "," + BuiltInUserRoles.EDITOR + "," + BuiltInUserRoles.DELETER + "," + BuiltInUserRoles.READER)]
-public abstract class BaseEntityReadOnlyController<TRepository, TEntity, TIdentity, TCriteria> : BaseController<TRepository>
-    where TRepository : class, IRepository
-    where TEntity : class, IEntityIdentity<TIdentity>
-    where TCriteria : class, IQueryCriteria, new()
-    where TIdentity : IEquatable<TIdentity>
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BaseEntityReadOnlyController{TRepository,TEntity,TIdentity,TCriteria}"/> class.
-    /// </summary>
-    /// <param name="logger">The logger instance.</param>
-    /// <param name="repository">The repository instance.</param>
-    /// <param name="eventing">Optional eventing service.</param>
-    protected BaseEntityReadOnlyController(ILogger<BaseEntityReadOnlyController<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

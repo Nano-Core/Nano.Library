@@ -73,7 +73,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
 /// <typeparam name="TIdentity">The identity key type.</typeparam>
 /// <typeparam name="TCriteria">The query criteria type.</typeparam>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.IDENTITY)]
-public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseEntityUpdatableController<TRepository, TEntity, TIdentity, TCriteria>
+public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TCriteria> : BaseEntityUpdatableController<TEntity, TIdentity, TCriteria>
     where TRepository : class, IRepository
     where TEntity : class, IEntityUser<TIdentity>, IEntityUpdatable, IEntityDeletable, IEntityIdentity<TIdentity>, new()
     where TIdentity : IEquatable<TIdentity>
@@ -110,7 +110,6 @@ public abstract class BaseIdentityController<TRepository, TEntity, TIdentity, TC
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
         this.authExternalRepository = authExternalRepository;
     }
-
 
     #region Sign Up
 

@@ -1048,7 +1048,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         apiKey = SecurePasswordGenerator.Generate(new Microsoft.AspNetCore.Identity.PasswordOptions { RequiredLength = 48 });
 
-        var secret = this.options.CurrentValue.Identity?.Authentication.ApiKey?.Secret;
+        var secret = this.options.CurrentValue.Identity?.ApiKey?.Secret;
 
         if (secret == null)
         {
@@ -1080,7 +1080,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         ArgumentNullException.ThrowIfNull(apiKey);
 
         var now = DateTimeOffset.UtcNow;
-        var secret = this.options.CurrentValue.Identity?.Authentication.ApiKey?.Secret;
+        var secret = this.options.CurrentValue.Identity?.ApiKey?.Secret;
 
         if (secret == null)
         {

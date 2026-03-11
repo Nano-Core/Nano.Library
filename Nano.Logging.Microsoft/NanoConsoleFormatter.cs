@@ -40,7 +40,7 @@ public sealed class NanoConsoleFormatter() : ConsoleFormatter(NanoConsoleFormatt
         {
             textWriter
                 .WriteLine();
-            
+
             textWriter
                 .Write(logEntry.Exception);
         }

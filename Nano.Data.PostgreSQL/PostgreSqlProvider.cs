@@ -15,7 +15,7 @@ namespace Nano.Data.PostgreSQL;
 ///     Supports retry policies, batching, spatial data via NetTopologySuite, query splitting behavior, and optional health checks.
 ///     Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.PostgreSQL
 /// </remarks>
-public sealed class PostgresProvider : IDataProvider
+public sealed class PostgresSqlProvider : IDataProvider
 {
     /// <inheritdoc />
     public static void Configure(DbContextOptionsBuilder builder, DataOptions options)

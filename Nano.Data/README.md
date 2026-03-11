@@ -14,6 +14,9 @@
 * [Summary](#summary)
 * [Registration](#registration)
 * [Configuration](#configuration)
+  * [Connection Pool](#connection-pool)
+  * [Identity](#identity)
+  * [Health Checks](#health-checks)
 * [Data Providers](#data-providers)
 * [Data Context](#data-context)
 * [Data Models](#data-models)
@@ -23,14 +26,11 @@
   * [Autosave](#autosave)
   * [Cache](#cache)
   * [Include Annotation](#include-annotation)
-* [Connection Pool](#connection-pool)
 * [Audit](#audit)
 * [Soft Delete](#soft-delete)
 * [Lazy Loading](#lazy-loading)
 * [Triggers](#triggers)
-* [Identity](#identity)
 * [Entity Events](#entity-events)
-* [Health Checks](#health-checks)
 
 ## Summary
 Nano provides a data access implementation built on top of **[Entity Framework](https://learn.microsoft.com/en-us/ef/)**, enabling applications to integrate with SQL-based 
@@ -39,10 +39,11 @@ databases in a consistent and structured way.
 To enable data support in a Nano application, a few core components must be implemented and registered. First, a **[Data Providers](#data-providers)** must be selected. Next, 
 the application must define a database context by deriving implementations from `BaseDbContext` and `BaseDbContextFactory`.  
 
-Once the context has been implemented, data services must be registered during application startup by invoking `AddDataContext<TProvider, TContext>()` in `program.cs`. 
+Once the context has been implemented, data services must be registered during application startup by invoking `AddDataContext<TProvider, TContext>()` in `program.cs`.  
+
 After registration, the application can define entity models derived from `BaseEntity`, along with their corresponding mappings derived from `BaseEntityMapping<TEntity>`.  
 
-When Nano data is registered, the `IRepository` interface becomes available for interacting with the database. This abstraction uses the Unit-Of-Work pattern, providing 
+When Nano data is registered, the `IRepository` interface becomes available for interacting with the database. This abstraction uses the unit-of-work pattern, providing 
 a consistent and safe approach for working with persistent data.
 
 The following sections describe how to configure and register Nano data in your application in more detail.## Summary
@@ -84,28 +85,27 @@ Nano abstractions.
 ## Configuration
 The `Data` section in the configuration defines the data provider and related settings used by the application.
 
-| Setting                         | Type   | Default     | Description                                                                                                                                       |
-| ------------------------------- | ------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-|  `BatchSize`                    | int    | 25          | The maximum batch size for queries.                                                                                                               |
-|  `BulkBatchSize`                | int    | 500         | The maximum batch size for bulk operations.                                                                                                       |
-|  `BulkBatchDelay`               | int    | 1000        | The delay (in milliseconds) between bulk batches.                                                                                                 |
-|  `QueryRetryCount`              | int    | 0           | The number of times a query will retry on failure.                                                                                                |
-|  `UseLazyLoading`               | bool   | false       | A value indicating whether lazy loading is enabled. ⚠️ Not recommended, use [Nano Include Annotation](#include-annotation).                       |
-|  `UseCreateDatabase`            | bool   | false       | A value indicating whether the database should be created automatically using just the mappings, bypassing migrations.                            |
-|  `UseMigrateDatabase`           | bool   | false       | A value indicating whether database migrations should be applied automatically.                                                                   |
-|  `UseSoftDeletetion`            | bool   | false       | A value indicating whether soft deletion is enabled.                                                                                              |
-|  `UseSensitiveDataLogging`      | bool   | false       | A value indicating whether sensitive data logging is enabled.                                                                                     |
-|  `UseAudit`                     | bool   | false       | A value indicating whether auditing is enabled.                                                                                                   |
-|  `QuerySplittingBehavior`       | enum   | SingleQuery | The default query splitting behavior for EF Core queries.                                                                                         |
-|  `DefaultCollation`             | string | null        | The default collation for the database.                                                                                                           |
-|  `ConnectionString`             | string | null        | The connection string for the database.                                                                                                           |
-|  `Repository`                   | object | default     | The cache configuration options. See [Repositories](#repositories).                                                                               |
-|  `Repository.UseAutoSave`       | bool   | true        | A value indicating whether automatic saving of changes in repositories is enabled.                                                                |
-|  `Repository.QueryIncludeDepth` | int    | 4           | The maximum depth for query includes.                                                                                                             |
-|  `ConnectionPool`               | object | null        | The connection pool configuration options. See [Connection Pool](#connection-pool).                                                               |
-|  `Cache`                        | object | null        | The cache configuration options. See [Cache](#cache).                                                                                             |
-|  `Identity`                     | object | null        | The identity configuration options. See [Identity](#identity).                                                                                    |
-|  `HealthCheck`                  | object | null        | The options for configuring health checks. See [HealthCheck](#health-check)  _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.   |
+| Setting                         | Type   | Default     | Description                                                                                                                                                     |
+| ------------------------------- | ------ | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|  `BatchSize`                    | int    | 25          | The maximum batch size for queries.                                                                                                                             |
+|  `BulkBatchSize`                | int    | 500         | The maximum batch size for bulk operations.                                                                                                                     |
+|  `BulkBatchDelay`               | int    | 1000        | The delay (in milliseconds) between bulk batches.                                                                                                               |
+|  `QueryRetryCount`              | int    | 0           | The number of times a query will retry on failure.                                                                                                              |
+|  `UseLazyLoading`               | bool   | false       | A value indicating whether lazy loading is enabled. See [Lazy Loading](#lazy-loading). ⚠️ Not recommended, use [Nano Include Annotation](#include-annotation).  |
+|  `UseCreateDatabase`            | bool   | false       | A value indicating whether the database should be created automatically using just the mappings, bypassing migrations.                                          |
+|  `UseMigrateDatabase`           | bool   | false       | A value indicating whether database migrations should be applied automatically.                                                                                 |
+|  `UseSoftDeletetion`            | bool   | false       | A value indicating whether soft deletion is enabled. See [Soft Delete](#soft-delete).                                                                           |
+|  `UseSensitiveDataLogging`      | bool   | false       | A value indicating whether sensitive data logging is enabled.                                                                                                   |
+|  `UseAudit`                     | bool   | false       | A value indicating whether auditing is enabled. See [Audit](#audit)                                                                                             |
+|  `QuerySplittingBehavior`       | enum   | SingleQuery | The default query splitting behavior for EF Core queries.                                                                                                       |              
+|  `DefaultCollation`             | string | null        | The default collation for the database.                                                                                                                         |
+|  `ConnectionString`             | string | null        | Required. The connection string for the database.                                                                                                               |
+|  `Repository`                   | object | default     | The cache configuration options. See [Repositories](#repositories).                                                                                             |
+|  `Repository.UseAutoSave`       | bool   | true        | A value indicating whether automatic saving of changes in repositories is enabled. See [Autosave](#autosave)                                                    |
+|  `Repository.QueryIncludeDepth` | int    | 4           | The maximum depth for query includes. See [Include Annotation](#include-annotation).                                                                            |
+|  `ConnectionPool`               | object | null        | The connection pool configuration options. See [Connection Pool](#connection-pool).                                                                             |
+|  `Identity`                     | object | null        | The identity configuration options. See [Identity](#identity).                                                                                                  |
+|  `HealthCheck`                  | object | null        | The options for configuring health checks. See [Health Check](#health-check). _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.                |
 
 ```json
 "Data": {
@@ -126,10 +126,123 @@ The `Data` section in the configuration defines the data provider and related se
     "UseAutoSave": false,
     "QueryIncludeDepth": 4
   },
-  "ConnectionPool": { },
-  "Cache": { },
-  "Identity": { },
-  "HealthCheck": { }
+  "ConnectionPool": null,
+  "Identity": null,
+  "HealthCheck": null
+}
+```
+
+## Connection Pool
+Nano supports optional connection pooling for the underlying Entity Framework data provider. When enabled, database contexts are reused from a pool, which can improve performance 
+and reduce allocation overhead.  
+
+| Setting       | Type | Default | Description                              |
+| ------------- | ---- | ------- | ---------------------------------------- |
+|  `PoolSize`   | int  | 1024    | The pool size of the connection pool.    |
+
+## Identity
+Identity configures the data store used for authentication and authorization. It manages users, roles, and related security data required for signing in and enforcing 
+access control.  
+
+> ⚠️ Even when Identity is not configured, the tables are still created to preserve the data model in case Identity is enabled later.
+
+| Setting                                | Type     | Default         | Description                                                                                     |
+| -------------------------------------- | -------- | --------------- | ----------------------------------------------------------------------------------------------- |
+|  `TokensExpirationInHours`             | TimeSpan | 24:00:00        | The expiration time for tokens in hours.                                                        |
+|  `User`                                | object   | default         | Options for user-specific settings.                                                             |
+|  `User.IsUniqueEmailAddressRequired`   | bool     | true            | A value indicating whether each user must have a unique email address.                          |
+|  `User.IsUniquePhoneNumberRequired`    | bool     | false           | A value indicating whether each user must have a unique phone number.                           |
+|  `User.AllowedUserNameCharacters`      | string   | abcde...        | The allowed characters for usernames.                                                           |
+|  `User.DefaultRoles`                   | array    | [administrator] | The allowed characters for usernames.                                                           |
+|  `SignIn`                              | object   | default         | Options for sign-in requirements.                                                               |
+|  `SignIn.RequireConfirmedEmail`        | bool     | False           | A value indicating whether users must have a confirmed email to sign in.                        |
+|  `SignIn.RequireConfirmedPhoneNumber`  | bool     | false           | A value indicating whether users must have a confirmed phone number to sign in.                 |
+|  `Lockout`                             | object   | default         | Options for account lockout policies.                                                           |
+|  `Lockout.AllowedForNewUsers`          | bool     | true            | A value indicating whether lockout is allowed for new users.                                    |
+|  `Lockout.MaxFailedAccessAttempts`     | int      | 3               | The maximum number of failed access attempts before a user is locked out.                       |
+|  `Lockout.DefaultLockoutTimeSpan`      | TImeSpan | 00:30:00        | The default lockout duration for a user.                                                        |
+|  `Password`                            | object   | default         | Options for password complexity requirements.                                                   |
+|  `Password.RequireDigit`               | bool     | false           | A value indicating whether the password must contain at least one digit.                        |
+|  `Password.RequireNonAlphanumeric`     | bool     | false           | A value indicating whether the password must contain at least one non-alphanumeric character.   |
+|  `Password.RequireLowercase`           | bool     | false           | A value indicating whether the password must contain at least one lowercase letter.             |
+|  `Password.RequirUppercase`            | bool     | false           | A value indicating whether the password must contain at least one uppercase letter.             |
+|  `Password.RequiredLength`             | bool     | false           | The minimum required length of the password.                                                    |
+|  `Password.RequiredUniqueCharacters`   | bool     | false           | The number of unique characters required in the password.                                       |
+|  `ApiKey`                              | object   | default         | Optional. Options for API keys.                                                                 |
+|  `ApiKey.Secret`                       | string   | null            | Required. The secret key used to create and validate API keys.                                  |
+
+```json
+"Data": {
+  "Identity": { 
+    "TokensExpiration": "24:00:00",
+    "User": {
+      "IsUniqueEmailAddressRequired": true,
+      "IsUniquePhoneNumberRequired": false,
+      "AllowedUserNameCharacters": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+",
+      "DefaultRoles": [
+        "administrator"
+      ]
+    },
+    "SignIn": {
+      "RequireConfirmedEmail": false,
+      "RequireConfirmedPhoneNumber": false 
+    },
+    "Lockout": {
+      "AllowedForNewUsers": true,
+      "MaxFailedAccessAttempts": 3,
+      "DefaultLockoutTimeSpan": "00:30:00"
+    },
+    "Password": {
+      "RequireDigit": false,
+      "RequireNonAlphanumeric": false,
+      "RequireLowercase": false,
+      "RequirUppercase": false,
+      "RequireDigit": false,
+      "RequiredLength": 5,
+      "RequiredUniqueCharacters": 5
+    },
+    "ApiKey": {
+      "Secret": null,
+    }
+  }
+}
+```
+
+When identity has been configured the following roles are automatically added.  
+
+| Name          | Description                          |
+| ------------- | ------------------------------------ |
+| reader        | Authorized to read.                  | 
+| writer        | Authorized to read and write.        | 
+| creator       | Authorized to create.                | 
+| editor        | Authorized to update.                | 
+| deleter       | Authorized to create.                | 
+| identity      | Authorized to use identity actions.  | 
+| Administrator | Full access to everything.           | 
+
+Identity in Nano involves more than just configuration. An identity data model and corresponding mappings must also be implemented to define how identity data is stored and accessed. 
+Read more about [Identity Data Models](#data-models) and [Identity Data Mappings](#data-mappings). Nano also provides a repository for working with identity-related functionality. 
+See [Repositories](#repositories) for more details.
+
+Nano also provides a public `SecurePasswordGenerator` class for creating strong, secure passwords.  
+
+Try it out yourself using the **[Api.Data.Identity](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity)**.  
+
+## Health Checks
+When health checks are enabled in the data configuration, Nano automatically registers a health check for the configured data provider.  
+
+This allows the application to verify that the underlying database connection is available and operational. The health check integrates with ASP.NET Core's health check system 
+and can be used by monitoring tools, load balancers, or container orchestrators to determine the health status of the application.  
+
+| Setting                         | Type   | Default     | Description                                                                                                                           |
+| ------------------------------- | ------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+|  `HealthCheck.UnhealthyStatus`  | enum   | Unhealthy   | The health status reported when the data provider is unavailable. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.  |
+
+```json
+"Data": {
+  "HealthCheck": {
+    "UnhealthyStatus": Unhealthy
+  }
 }
 ```
 
@@ -215,6 +328,20 @@ must implement the corresponding interfaces: `IEntityWritable`, `IEntityCreatabl
 > ⚠️ For simplicity and maintainability, it is recommended to derive entity models from `BaseEntity` or one of the specific base classes rather than 
 implementing the interfaces directly.  
 
+Nano also contains another important base entity model. The `BaseEntityUser` and `BaseEntityUser<TIdentity>`. When identity has been configured for an application, the entity user
+base classes defines the user model of the application and are having `IdentityUser` associated. The base class itself derives from `BaseEntity`, and behaves in the same way as regular 
+entities. It contains a single navigation property, `IdentityUser` that is included using a [Include Annotation](#include-annotation) when retreiving the user entity. This allows 
+interaction with identity functionality for the implemented user entity model. 
+
+```csharp
+public class MyEntityUser : BaseEntityUser
+{
+    // Properties
+}
+```
+
+This allows you to use an entity user model without having to deal directly with the underlying identity data when working with the model.  
+
 Nano also supports spatial `Geometry` types from `NetToplogySuite`.  
 
 ## Data Mappings
@@ -228,7 +355,7 @@ public class MyEntityMapping : BaseEntityMapping<MyEntity>
     {
         base.Configure(builder);
 
-        // Add custom Entity Framework mappings here.
+        // Add Entity Framework mappings here.
     }
 }
 ```
@@ -239,6 +366,21 @@ Nano automatically applies all data mappings, so there is no need to manually re
 detected and applied.  
 
 > ⚠️ It is strongly recommended to map all properties of your entity models within your data mappings to ensure consistency and correctness.
+
+When mapping a `BaseEntityUser`, derive the mapping implementation from `BaseEntityUserMapping<TEntity>`. Apart from this base class, the mapping is implemented in the same way 
+as for regular entity models.  
+
+```csharp
+public class MyEntityUserMapping : BaseEntityUserMapping<MyEntityUser>
+{
+    public override void Configure(EntityTypeBuilder<MyEntityUser> builder)
+    {
+        base.Configure(builder);
+
+        // Add Entity Framework mappings here.
+    }
+}
+```
 
 Nano also supports mapping read-only database views. To do this, derive your mapping from `BaseEntityViewMapping<TEntity>`.
 
@@ -296,45 +438,46 @@ is constrained to models implementing `IEntityCreatable`.
 
 The following table lists the methods available in `IRepository` along with their parameters, generic constraints, and a brief description.  
 
-| Method                                      | Parameters                                                | TEntity Constraint           | Description                                                                        |
-| ------------------------------------------- | --------------------------------------------------------- | ---------------------------- |----------------------------------------------------------------------------------- |
-| `GetAsync<TEntity, TKey>`                   | key, includeDepth                                         | IEntityIdentity              | Gets an entity by its unique key including related entities to a specified depth.  |
-| `GetFirstAsync<TEntity, TCriteria>`         | criteria, includeDepth                                    | IEntity                      | Gets the first entity matching the specified criteria.                             |
-| `GetFirstAsync<TEntity>`                    | where, ordering, includeDepth                             | IEntity                      | Gets the first entity matching the predicate.                                      |
-| `GetManyAsync<TEntity, TKey>`               | keys, includeDepth                                        | IEntityIdentity              | Gets entities matching the specified keys.                                         |
-| `GetManyAsync<TEntity>`                     | query, includeDepth                                       | IEntity                      | Gets entities matching the specified query.                                        |
-| `GetManyAsync<TEntity, TCriteria>`          | criteria, includeDepth                                    | IEntity                      | Gets entities matching the specified criteria.                                     |
-| `GetManyAsync<TEntity>`                     | where, pagination, ordering, includeDepth                 | IEntity                      | Gets entities matching a predicate with pagination and ordering.                   |
-| `GetManyAsync<TEntity, TKey>`               | where, pagination, includeDepth, orderBy, orderDirection  | IEntity                      | Gets entities matching a predicate ordered by a key selector with pagination.      |
-| `AddAsync<TEntity>`                         | entity                                                    | IEntityCreatable             | Adds a single entity.                                                              |
-| `AddAndGetAsync<TEntity, TKey>`             | entity                                                    | IEntityIdentity              | Adds an entity and reloads it including related entities.                          |
-| `AddManyAsync<TEntity>`                     | entities                                                  | IEntityCreatable             | Adds multiple entities.                                                            |
-| `AddManyBulkAsync<TEntity>`                 | entities                                                  | IEntityCreatable             | Bulk adds multiple entities using EF Plus Enterprise.                              |
-| `UpdateAsync<TEntity>`                      | entity                                                    | IEntityUpdatable             | Updates a single entity.                                                           |
-| `UpdateAndGetAsync<TEntity, TKey>`          | entity                                                    | IEntityIdentity              | Updates an entity and reloads it including related entities.                       |
-| `UpdateManyAsync<TEntity>`                  | entities                                                  | IEntityUpdatable             | Updates multiple entities.                                                         |
-| `UpdateManyAsync<TEntity>`                  | where, propertyUpdates                                    | IEntityUpdatable             | Updates entities matching a predicate.                                        |
-| `UpdateManyAsync<TEntity, TCriteria>`       | criteria, propertyUpdates                                 | IEntityUpdatable             | Updates entities based on specified criteria.                                 |
-| `UpdateManyBulkAsync<TEntity>`              | entities                                                  | IEntityUpdatable             | Bulk updates multiple entities using EF Plus Enterprise.                           |
-| `UpdateManyBulkAsync<TEntity>`              | where, propertyUpdates                                    | IEntityUpdatable             | Bulk updates entities matching a predicate.                                        |
-| `UpdateManyBulkAsync<TEntity, TCriteria>`   | criteria, propertyUpdates                                 | IEntityUpdatable             | Bulk updates entities based on specified criteria.                                 |
-| `AddOrUpdateAsync<TEntity>`                 | entity                                                    | IEntityCreatableAndUpdatable | Adds or updates a single entity.                                                   |
-| `AddOrUpdateManyAsync<TEntity>`             | entities                                                  | IEntityCreatableAndUpdatable | Adds or updates multiple entities.                                                 |
-| `DeleteAsync<TEntity, TKey>`                | id                                                        | IEntityIdentity              | Deletes an entity by its key.                                                      |
-| `DeleteAsync<TEntity>`                      | entity                                                    | IEntityDeletable             | Deletes a specific entity instance.                                                |
-| `DeleteManyAsync<TEntity, TKey>`            | ids                                                       | IEntityIdentity              | Deletes multiple entities by their keys.                                           |
-| `DeleteManyAsync<TEntity>`                  | entities                                                  | IEntityDeletable             | Deletes multiple entities.                                                         |
-| `DeleteManyAsync<TEntity, TCriteria>`       | criteria                                                  | IEntityDeletable             | Deletes entities matching specified criteria.                                      |
-| `DeleteManyAsync<TEntity>`                  | expression                                                | IEntityDeletable             | Deletes entities matching a filter expression.                                     |
-| `DeleteManyBulkAsync<TEntity, TKey>`        | ids                                                       | IEntityIdentity              | Bulk deletes entities with specified keys.                                         |
-| `DeleteManyBulkAsync<TEntity>`              | entities                                                  | IEntityDeletable             | Bulk deletes specified entities.                                                   |
-| `DeleteManyBulkAsync<TEntity, TCriteria>`   | criteria                                                  | IEntityDeletable             | Bulk deletes entities matching specified criteria.                                 |
-| `DeleteManyBulkAsync<TEntity>`              | expression                                                | IEntityDeletable             | Bulk deletes entities matching a filter expression.                                |
-| `CountAsync<TEntity, TCriteria>`            | criteria                                                  | IEntity                      | Returns the number of entities matching the criteria.                              |
-| `CountAsync<TEntity>`                       | expression                                                | IEntity                      | Returns the number of entities matching a filter expression.                       |
-| `SumAsync<TEntity>`                         | whereExpr, sumExpr                                        | IEntity                      | Calculates the sum of a numeric expression for matching entities.                  |
-| `AverageAsync<TEntity>`                     | whereExpr, avgExpr                                        | IEntity                      | Calculates the average of a numeric expression for matching entities.              |
-| `SaveChangesAsync`                          | -                                                         | -                            | Persists all pending changes to the data store.                                    | 
+| Method                                      | Parameters                                                | TEntity Constraint                | Description                                                                               |
+| ------------------------------------------- | --------------------------------------------------------- | --------------------------------- |------------------------------------------------------------------------------------------ |
+| `GetAsync<TEntity, TKey>`                   | key, includeDepth                                         | IEntityIdentity                   | Gets an entity by its unique key including related entities to a specified depth.         |
+| `GetFirstAsync<TEntity, TCriteria>`         | criteria, includeDepth                                    | IEntity                           | Gets the first entity matching the specified criteria.                                    |
+| `GetFirstAsync<TEntity>`                    | where, ordering, includeDepth                             | IEntity                           | Gets the first entity matching the predicate.                                             |
+| `GetManyAsync<TEntity, TKey>`               | keys, includeDepth                                        | IEntityIdentity                   | Gets entities matching the specified keys.                                                |
+| `GetManyAsync<TEntity>`                     | query, includeDepth                                       | IEntity                           | Gets entities matching the specified query.                                               |
+| `GetManyAsync<TEntity, TCriteria>`          | criteria, includeDepth                                    | IEntity                           | Gets entities matching the specified criteria.                                            |
+| `GetManyAsync<TEntity>`                     | where, pagination, ordering, includeDepth                 | IEntity                           | Gets entities matching a predicate with pagination and ordering.                          |
+| `GetManyAsync<TEntity, TKey>`               | where, pagination, includeDepth, orderBy, orderDirection  | IEntityIdentity                   | Gets entities matching a predicate ordered by a key selector with pagination.             |
+| `AddAsync<TEntity>`                         | entity                                                    | IEntityCreatable                  | Adds a single entity.                                                                     |
+| `AddOrGetAsync<TEntity, TKey>`              | entity                                                    | IEntityCreatable, IEntityIdentity | Adds an entity and reloads it including related entities. ⚠️ _Always uses autosave._      |
+| `AddAndGetAsync<TEntity, TKey>`             | entity                                                    | IEntityCreatable, IEntityIdentity | Adds or retreives an entity including related entities. ⚠️ _Always uses autosave._      |
+| `AddManyAsync<TEntity>`                     | entities                                                  | IEntityCreatable                  | Adds multiple entities.                                                                   |
+| `AddManyBulkAsync<TEntity>`                 | entities                                                  | IEntityCreatable                  | Bulk adds multiple entities using EF Plus Enterprise.                                     |
+| `UpdateAsync<TEntity>`                      | entity                                                    | IEntityUpdatable                  | Updates a single entity.                                                                  |
+| `UpdateAndGetAsync<TEntity, TKey>`          | entity                                                    | IEntityUpdatable, IEntityIdentity | Updates an entity and reloads it including related entities. ⚠️ _Always uses autosave._   |
+| `UpdateManyAsync<TEntity>`                  | entities                                                  | IEntityUpdatable                  | Updates multiple entities.                                                                |
+| `UpdateManyAsync<TEntity>`                  | where, propertyUpdates                                    | IEntityUpdatable                  | Updates entities matching a predicate.                                                    |
+| `UpdateManyAsync<TEntity, TCriteria>`       | criteria, propertyUpdates                                 | IEntityUpdatable                  | Updates entities based on specified criteria.                                             |
+| `UpdateManyBulkAsync<TEntity>`              | entities                                                  | IEntityUpdatable                  | Bulk updates multiple entities using EF Plus Enterprise.                                  |
+| `UpdateManyBulkAsync<TEntity>`              | where, propertyUpdates                                    | IEntityUpdatable                  | Bulk updates entities matching a predicate.                                               |
+| `UpdateManyBulkAsync<TEntity, TCriteria>`   | criteria, propertyUpdates                                 | IEntityUpdatable                  | Bulk updates entities based on specified criteria.                                        |
+| `AddOrUpdateAsync<TEntity>`                 | entity                                                    | IEntityCreatableAndUpdatable      | Adds or updates a single entity.                                                          |
+| `AddOrUpdateManyAsync<TEntity>`             | entities                                                  | IEntityCreatableAndUpdatable      | Adds or updates multiple entities.                                                        |
+| `DeleteAsync<TEntity, TKey>`                | id                                                        | IEntityDeletable, IEntityIdentity | Deletes an entity by its key.                                                             |
+| `DeleteAsync<TEntity>`                      | entity                                                    | IEntityDeletable                  | Deletes a specific entity instance.                                                       |
+| `DeleteManyAsync<TEntity, TKey>`            | ids                                                       | IEntityDeletable, IEntityIdentity | Deletes multiple entities by their keys.                                                  |
+| `DeleteManyAsync<TEntity>`                  | entities                                                  | IEntityDeletable                  | Deletes multiple entities.                                                                |
+| `DeleteManyAsync<TEntity, TCriteria>`       | criteria                                                  | IEntityDeletable                  | Deletes entities matching specified criteria.                                             |
+| `DeleteManyAsync<TEntity>`                  | expression                                                | IEntityDeletable                  | Deletes entities matching a filter expression.                                            |
+| `DeleteManyBulkAsync<TEntity, TKey>`        | ids                                                       | IEntityDeletable, IEntityIdentity | Bulk deletes entities with specified keys.                                                |
+| `DeleteManyBulkAsync<TEntity>`              | entities                                                  | IEntityDeletable                  | Bulk deletes specified entities.                                                          |
+| `DeleteManyBulkAsync<TEntity, TCriteria>`   | criteria                                                  | IEntityDeletable                  | Bulk deletes entities matching specified criteria.                                        |
+| `DeleteManyBulkAsync<TEntity>`              | expression                                                | IEntityDeletable                  | Bulk deletes entities matching a filter expression.                                       |
+| `CountAsync<TEntity, TCriteria>`            | criteria                                                  | IEntity                           | Returns the number of entities matching the criteria.                                     |
+| `CountAsync<TEntity>`                       | expression                                                | IEntity                           | Returns the number of entities matching a filter expression.                              |
+| `SumAsync<TEntity>`                         | whereExpr, sumExpr                                        | IEntity                           | Calculates the sum of a numeric expression for matching entities.                         |
+| `AverageAsync<TEntity>`                     | whereExpr, avgExpr                                        | IEntity                           | Calculates the average of a numeric expression for matching entities.                     |
+| `SaveChangesAsync`                          | -                                                         | -                                 | Persists all pending changes to the data store.                                           | 
 
 Several methods include overloads, which have been merged here for simplicity.  
 
@@ -344,6 +487,81 @@ only the plain entity, while other times you may need the full inclusion tree.
 
 Try it out yourself using the **[Api.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Mysql)** or  
 **[Console.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.Mysql)** examples. Similar examples are available for other data providers as well.  
+
+Nano also provides a dedicated repository for managing entity user models, the `IIdentityRepository` and `IIdentityRepository<TIdentity>`. These repositories expose common identity 
+operations such as login, signup, email changes, management of roles and claims, etc. Internally, the repository encapsulates functionality from `UserManager<T>`, `SignInManager<T>`, 
+and `RoleManager<T>`, providing a unified interface for working with identity features. This abstraction simplifies identity management and allows applications to interact with 
+identity logic through a single, consistent repository.  
+
+| Method                                  | Type            | Parameters                                    | Description                                                                                                          |
+| --------------------------------------- | --------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `GetExternalProviderSchemesAsync`       | Login           | —                                             | Retrieves all configured external authentication schemes available for login.                                        |
+| `SignInAsync`                           | Login           | signIn                                        | Attempts to sign in a user using the specified credentials. Returns the authenticated user if successful.            |
+| `SignInExternalAsync`                   | Login           | signInExternal                                | Attempts to sign in a user using an external authentication provider. Returns the authenticated user if successful.  |
+| `SignOutAsync`                          | Login           | —                                             | Signs out the currently authenticated user and removes any associated refresh tokens.                                |
+| `IsEmailAddressTakenAsync`              | Sign Up         | emailAddress                                  | Checks whether the specified email address is already registered. Returns true if taken.                             |
+| `IsPhoneNumberTakenAsync`               | Sign Up         | phoneNumber                                   | Checks whether the specified phone number is already registered. Returns true if taken.                              |
+| `GetPasswordOptionsAsync`               | Sign Up         | —                                             | Retrieves the password configuration options for the identity system, if available.                                  |
+| `SignUpAsync<TUser>`                    | Sign Up         | signUp                                        | Registers a new user with the specified sign-up information. Returns the created user entity.                        |
+| `SignUpExternalAsync<TUser>`            | Sign Up         | signUpExternal                                | Registers a new user using external login provider information. Returns the created user entity.                     |
+| `GetIdentityUserAsync`                  | User            | id                                            | Retrieves the identity user by its identifier. Throws if the user is not found.                                      |
+| `GetIdentityUserOrDefaultAsync`         | User            | id                                            | Retrieves the identity user by its identifier, or returns null if the user does not exist.                           |
+| `SetUsernameAsync`                      | User            | setUsername                                   | Updates the username of the specified user.                                                                          |
+| `SetPasswordAsync`                      | User            | setPassword                                   | Sets a password for the specified user.                                                                              |
+| `ChangePasswordAsync`                   | User            | changePassword                                | Changes the password of a user given the old and new passwords.                                                      |
+| `GenerateResetPasswordTokenAsync`       | User            | generateResetPasswordToken                    | Generates a password reset token for the specified user.                                                             |
+| `ResetPasswordAsync`                    | User            | resetPassword                                 | Resets the password of a user using a valid reset token.                                                             |
+| `GenerateChangeEmailTokenAsync`         | User            | generateChangeEmailToken                      | Generates a change email token for the specified user.                                                               |
+| `ChangeEmailAsync   `                   | User            | changeEmail, setUsername                      | Changes the email address of a user using a valid token.                                                             |
+| `GenerateConfirmEmailTokenAsync`        | User            | generateConfirmEmailToken                     | Generates an email confirmation token for the specified user.                                                        |
+| `ConfirmEmailAsync`                     | User            | confirmEmail                                  | Confirms the email of a user using a valid confirmation token.                                                       |
+| `GenerateChangePhoneNumberTokenAsync`   | User            | generateChangePhoneToken                      | Generates a change phone number token for a user.                                                                    |
+| `ChangePhoneNumberAsync`                | User            | changePhoneNumber                             | Changes the phone number of a user using a valid token.                                                              |
+| `GenerateConfirmPhoneNumberTokenAsync`  | User            | generateConfirmPhoneToken                     | Generates a confirm phone number token for a user.                                                                   |
+| `ConfirmPhoneNumberAsync`               | User            | confirmPhoneNumber                            | Confirms the phone number of a user using a valid token.                                                             |
+| `GenerateCustomPurposeTokenAsync`       | User            | generateCustomPurposeToken                    | Generates a custom purpose token for a user for a specific purpose.                                                  |
+| `ConfirmCustomPurposeTokenAsync`        | User            | confirmCustomPurpose                          | Confirms a custom purpose token of a user.                                                                           |
+| `ActivateIdentityUser`                  | User            | id                                            | Activates a user by setting IsActive to true.                                                                        |
+| `DeactivateIdentityUser`                | User            | id                                            | Deactivates a user by setting IsActive to false and removing refresh tokens.                                         |
+| `GetUserExternalLoginsAsync`            | External Logins | userId                                        | Retrieves all external login providers associated with a user by user id.                                            |
+| `GetUserExternalLoginsAsync`            | External Logins | identityUser                                  | Retrieves all external login providers associated with a user by identity user instance.                             |
+| `AddExternalLoginAsync`                 | External Logins | userId, externalLogInData                     | Adds an external login provider to a user. Returns the added UserLoginInfo.                                          |
+| `RemoveExternalLoginAsync`              | External Logins | removeExternalLogin                           | Removes an external login provider from a user.                                                                      |
+| `GetRefreshToken`                       | Refresh Tokens  | userId, appId                                 | Retrieves a refresh token for a specific user and application. Returns null if not found.                            |
+| `GetRefreshTokens`                      | Refresh Tokens  | userId                                        | Retrieves all refresh tokens for a specific user.                                                                    |
+| `GetActiveRefreshTokens`                | Refresh Tokens  | userId                                        | Retrieves all active (non-expired) refresh tokens for a specific user.                                               |
+| `CreateRefreshToken`                    | Refresh Tokens  | userId, refreshToken, appId                   | Creates a new refresh token for a user and application, replacing any existing token.                                |
+| `DeleteRefreshTokenAsync`               | Refresh Tokens  | id                                            | Deletes a refresh token by its identifier. Does nothing if the token does not exist.                                 |
+| `GetApiKeyAsync`                        | Api Keys        | id                                            | Retrieves an API key by its identifier. Returns null if not found.                                                   |
+| `GetApiKeysAsync`                       | Api Keys        | userId                                        | Retrieves all API keys associated with a specific user.                                                              |
+| `CreateApiKeyAsync`                     | Api Keys        | createApiKey, apiKey                          | Creates a new API key for a user. Returns the created API key and outputs the plaintext key.                         |
+| `ValidateApiKeyAsync`                   | Api Keys        | apiKey                                        | Validates a provided API key and returns its associated record if valid; otherwise null.                             |
+| `EditApiKeyAsync`                       | Api Keys        | editApiKey                                    | Updates the name or metadata of an existing API key. Returns the updated API key or null.                            |
+| `RevokeApiKeyAsync`                     | Api Keys        | revokeApiKey                                  | Revokes an API key, marking it as inactive. Returns the updated API key or null.                                     |
+| `GetAllClaims`                          | Claims          | identityUser, transientRoles, transientClaims | Retrieves all claims of a user, including role-based and optional transient claims.                                  |
+| `GetUserClaimAsync`                     | Claims          | getClaim                                      | Retrieves a specific claim of a user by claim type. Returns null if not found.                                       |
+| `GetUserClaimsAsync`                    | Claims          | userId                                        | Retrieves all claims of a user by user ID. Throws if the user does not exist.                                        |
+| `GetUserClaimsAsync`                    | Claims          | identityUser                                  | Retrieves all claims of a user. Throws if identityUser is null.                                                      |
+| `AssignUserClaimAsync`                  | Claims          | assignUserClaim                               | Assigns a claim to a user. Returns the created user claim.                                                           |
+| `ReplaceUserClaimAsync`                 | Claims          | replaceUserClaim                              | Replaces an existing claim of a user with a new value. Returns the updated claim.                                    |
+| `AssignOrReplaceUserClaimAsync`         | Claims          | assignOrReplaceUserClaim                      | Assigns a claim to a user, or replaces it if it already exists. Returns the resulting claim.                         |
+| `RemoveUserClaimAsync`                  | Claims          | removeUserClaim                               | Removes a claim from a user.                                                                                         |
+| `GetRolesAsync`                         | Roles           | —                                             | Retrieves all roles in the system.                                                                                   |
+| `CreateRoleAsync`                       | Roles           | roleName                                      | Creates a new role. Returns the created role.                                                                        |
+| `DeleteRoleAsync`                       | Roles           | roleName                                      | Deletes an existing role.                                                                                            |
+| `GetUserRolesAsync`                     | Roles           | userId                                        | Retrieves the role names assigned to a specific user by ID.                                                          |
+| `GetUserRolesAsync`                     | Roles           | identityUser                                  | Retrieves the role names assigned to a specific user instance.                                                       |
+| `AssignUserRoleAsync`                   | Roles           | assignUserRole                                | Assigns a role to a user.                                                                                            |
+| `RemoveUserRoleAsync`                   | Roles           | removeUserRole                                | Removes a role from a user.                                                                                          |
+| `GetRoleClaimAsync`                     | Role Claims     | getClaim                                      | Retrieves a specific claim of a role by claim type.                                                                  |
+| `GetRoleClaimsAsync`                    | Role Claims     | roleId                                        | Retrieves all claims of a role by role ID.                                                                           |
+| `GetRoleClaimsAsync`                    | Role Claims     | identityRole                                  | Retrieves all claims of a role instance.                                                                             |
+| `AssignRoleClaimAsync`                  | Role Claims     | assignClaim                                   | Assigns a claim to a role.                                                                                           |
+| `ReplaceRoleClaimAsync`                 | Role Claims     | replaceClaim                                  | Replaces an existing claim of a role with a new value.                                                               |
+| `AssignOrReplaceRoleClaimAsync`         | Role Claims     | assignOrReplaceRoleClaim                      | Assigns a claim to a role or replaces it if it already exists.                                                       |
+| `RemoveRoleClaimAsync`                  | Role Claims     | removeClaim                                   | Removes a claim from a role.                                                                                         |
+
+Try it out yourself using the **[Api.Data.Identity](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Mysql)** example.    
 
 ## Autosave
 The repository can be configured for autosave. When enabled, all methods that modify data will automatically persist changes to the database. No need to call 
@@ -379,24 +597,28 @@ can easily be overridden through the various `IRepository` methods.
 Try it out yourself using the **[Api.Data.Repository.Includes](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Repository.Includes)**.  
 
 ## Audit
-Even when audit is disabled the tables are still created. 
-
-Audit->Propertes has INCLUDE.
-The user needs to know the AuditEntry<TIdentity> (and the AuditEntryProperty<TIdentity>) to get them through api-client. Maybe this needs to be some place else, in Api docs??
-
-
 When audit is enabled in the data section of the configuration, changes to all entities deriving from ```IEntity``` will be tracked. 
 Auditting happens automatically and is executed asynchronously, to avoid impacting the response time.  
 
-Two additional tables are created in the database for audit data storage. 
-* ```__EFAudit```
-* ```__EFAuditProperties```  
-The tables are created even when ```UseAudit``` is disabled, but they will remain empty. This is in order to be able to switch at a later time, without having to worry about database migrations. The frist, contains a row for each change made to an entity, while the second stores one row for each property of the entity.  
+Nano comes with built-in audit entity models. The `AuditEntry` (table: __EFAudit) and with a one-to-many collection reference to the `AuditEntryProperty` (table: __EFAuditProperties), 
+which is annotated with [Include Anntation](#include-annotation). So retreiving an audit entry automically includes the audit properties.  
 
-To include a model for audit, just implement the empty interface ```IEntityAuditable```. Though normally this isn't required explicitly as all models is included when deriving from ```DefaultEntity``` and auditing is enabled for the application.  
-To exclude models implement the ```IEntityAuditableNegated``` or ```ExcludeAttribute```
+The entity models are registered and the tables created, even when audit is not enabled. This is to ensure the data model is correct, should audit later be enabled. 
 
-The audit implementation is based on the [EntityFramework Plus](https://github.com/zzzprojects/EntityFramework-Plus) project.
+
+
+
+    To include a model for audit, just implement the empty interface ```IEntityAuditable```. Though normally this isn't required explicitly as all models is included when deriving 
+    from ```DefaultEntity``` and auditing is enabled for the application. To exclude models implement the ```IEntityAuditableNegated``` or ```ExcludeAttribute```
+
+    Write about that we do a select when updating an audit is enabled. 
+
+
+
+
+The audit implementation is based on the **[EntityFramework Plus](https://github.com/zzzprojects/EntityFramework-Plus)** project.  
+
+Try it out yourself using the **[Api.Data.Repository.Autosave](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Repository.Autosave)**.  
 
 ## Soft Delete
 In order for soft deletion to be enabled, it much be enabled in the data section of the configuration.  
@@ -408,7 +630,8 @@ Nano automatically adjusts unique indexes, appending the ```IsDeleted``` propert
 Opposite of using regular delete, soft-deleting entities doesn't support cascading deletes.
 
 ## Lazy Loading
-
+we also need to consider about lazy-loading an include serialization. If a user through dbcontext get's a model, then we would now lazy load includes
+maybe that is fine? To be expected. Just document it
 
 ## Triggers
 Nano supports mapping triggers for the models. 
@@ -444,115 +667,17 @@ Nano supports the following triggers.
 
 For more details about triggers and how to use them, consult the docucmenation of [EntityFramework.Triggers](https://github.com/NickStrupat/EntityFramework.Triggers).  
 
-## Identity
-Even when identity is not configured the tables are still created. 
-
-Securing the application is about user identity, and authentication and authorization.  
-Nano provides everything required to effectively manage user identities, and still leveraging full control for customizing polices, claims and roles. The default database created by Nano includes all the required tables, and contains all the technical identity data. This is extended with a custom generic user model during signup.  
-The ```DefaultIdentityManager``` exposes methods for handling all the interaction with user identities, such as login, signup, change email, etc. The ```TransientIdentityManager``` exposes methods for authentication against non-persisted user identities. This could be through external provider login, or with the built-in administrator user.  
-**NOTE:** Without a configured ```IDataProvider```, the identity features are highly limited. Only Transient operations will be available.  
-
-Security contains many models, handling everything from login to change password, or logging in with an external provider. Most are straight forward, and is used as parameter for just one method in the ```IdentityManager```.  
-When adding the initial database migration snapshot, models and mappings related to identity is injected. The models are based on ```Microsoft.AspNetCore.Identity``` library.  
-Normally, you would derive your custom user from the ```IdentityUser<T>```, when building a store for user identity. This approach is not possible when encapsulating functionality, as the consumer would have to deal with too many factors, such as generic parameters and constraints. By using a composite user model, where the identity and user is separated, Nano is able to manage the identity part without having to worry about custom properties. The Signup methods in Nano automatically links the two tables, and when a ```CustomUser``` is retrieved, the related ```IdentityUser``` data is retrieved as well.  
-
-The ```DefaultIdentityManager```, encapsulates features of Microsoft Identity (```UserManager``` and ```SignInManager```), exposes atomic methods for managing user identity, and simplifies using custom user identities, by separating the identity from the user.  
-The ```TransientIdentityManager``` contains methods for logging in users without having a identity store. This can be used to login transiently using the  administrator user defined in the configuration, or by using one of the supported external providers. Transient logins can't be refreshed.  
-
-Also Nano exposes a `SecurePasswordGenerator` class.
-
-Identity Configuration:
-| Setting                         | Type   | Default     | Description                                                                                                      |
-| ------------------------------- | ------ | ----------- | ---------------------------------------------------------------------------------------------------------------- |
-|  `User`                         | object | default     |                                                                                                                  |
-
-```json
-"Identity": {
-  "User": {
-    "IsUniqueEmailAddressRequired": true,
-    "IsUniquePhoneNumberRequired": false,
-    "AllowedUserNameCharacters": null,
-    "DefaultRoles": [
-      "administrator"
-    ]
-  },
-  "SignIn": {
-    "RequireConfirmedEmail": false,
-    "RequireConfirmedPhoneNumber": false
-  },
-  "Lockout": {
-    "AllowedForNewUsers": true,
-    "MaxFailedAccessAttempts": 3,
-    "DefaultLockoutTimeSpan": "00:30:00"
-  },
-  "Password": {
-    "RequireDigit": false,
-    "RequireNonAlphanumeric": false,
-    "RequireLowercase": false,
-    "RequireUppercase": false,
-    "RequiredLength": 5,
-    "RequiredUniqueCharacters": 0
-  },
-  "Authentication": {
-    "ApiKey": {
-      "Secret": null
-    }
-  }
-}
-```
-
-Model:
-The identity is associated with the user through a simple foreign key navigation, and is included when the user is queried, by deriving the custom user model from the ```DefaultEntityUser```.
- ```csharp
-public class DefaultEntityUser : DefaultEntity
-{
-    [MaxLength(128)]
-    public virtual string IdentityUserId { get; set; }
-
-    [Include]
-    public virtual IdentityUser IdentityUser { get; set; }
-}
-```
-
-This isolates and hides all functionality related to the account of a user, and allows to work solely with the user  relevant to the application.
-**NOTE:** All identity email addresses, user names and phone numbers must be unique or null. At least one must not be null.  
-
-Mapping:
-When mapping the user model, derive the mapping implementation from ```DefaultEntityUserMapping<TEntity>```. Besides that, mapping is no different than models not having an identity associated.  
-```csharp
-public class DefaultEntityUserMapping<TEntity> : DefaultEntityMapping<TEntity> 
-    where TEntity : DefaultEntityUser
-{
-    public override void Map(EntityTypeBuilder<TEntity> builder)
-    {
-        base.Map(builder);
-`
-        builder
-            .HasOne(x => x.IdentityUser)
-            .WithOne()
-            .IsRequired();
-    }
-}
-```
-
-When identity has been configured the following roles are automatically added
-
-| Name          | Description                          |
-| ------------- | ------------------------------------ |
-| reader        | Authorized to read.                  | 
-| writer        | Authorized to read and write.        | 
-| creator       | Authorized to create.                | 
-| editor        | Authorized to update.                | 
-| deleter       | Authorized to create.                | 
-| identity      | Authorized to use identity actions.  | 
-| Administrator | Full access to everything.           | 
-
 ## Entity Events
+!!!!If Publish on a enity model, on update we will do a select with includes to be sure to have the navigations that might be in the Publish properties.
+
+
+
 Adding eventing annotations to model implementations, provides a way of synchronizing entities between applications. 
 
 When building micro-service applications, managing relations and dependencies of shared models, becomes a challenge. The eventing attributes provides a very simple method publishing change notifications in one application, and subscribing to it in another.  
 Eventing attributes is similar to database foreign-key relations, just in between services. The ```PublishAttribute``` publishes an ```EntityEvent``` whenever an instance is either created, updated or deleted. When receiving an event subscribed to by a model annotated with the ```SubscribeAttribute```, the built-in ```EntityEventHandler``` handles the event, and likewise creates, updates or deletes the instance.  
 The contract between the publisher and the subscriber is the type ```EntityEvent```, using the entity type name (```Type.Name```, and not ```Type.FullName```), when routing the event. The subscriber doesn't have any knowledge about the event being fired, and shouldn't. By convention, the relationship is loosely coupled.  
+
 ```csharp
 [Publish(params)]
 [Subscribe]
@@ -567,8 +692,3 @@ Publish/Subscribe can also work bi-directionally, but it would required the mode
 
 **NOTE**: Avoid sharing models having ```SubscribeAttribute```, with other Nano services, as the eventing subscription will be initialized unintentionally for that service as well.  
 
-## Health Checks
-When health checks are enabled in the data configuration, Nano automatically registers a health check for the configured data provider.  
-
-This allows the application to verify that the underlying database connection is available and operational. The health check integrates with ASP.NET Core's health check system 
-and can be used by monitoring tools, load balancers, or container orchestrators to determine the health status of the application.  

@@ -5,62 +5,73 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.ApiClient.Requests.Models;
 using Nano.App.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
-using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 
 namespace Nano.App.Api.Controllers;
 
 /// <inheritdoc />
-public abstract class BaseEntityCreatableAndUpdatableController<TEntity, TCriteria> : BaseEntityCreatableAndUpdatableController<TEntity, Guid, TCriteria>
+public abstract class BaseEntityCreatableAndEditableController<TEntity, TCriteria> : BaseEntityCreatableAndEditableController<TEntity, Guid, TCriteria>
     where TEntity : class, IEntityIdentity<Guid>, IEntityCreatableAndUpdatable
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected BaseEntityCreatableAndUpdatableController(ILogger<BaseEntityCreatableAndUpdatableController<TEntity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
-        : base(logger, repository, eventing)
-    {
-    }
-}
-
-/// <inheritdoc />
-public abstract class BaseEntityCreatableAndUpdatableController<TEntity, TIdentity, TCriteria> : BaseEntityCreatableAndUpdatableController<IRepository, TEntity, TIdentity, TCriteria>
-    where TEntity : class, IEntityIdentity<TIdentity>, IEntityCreatableAndUpdatable
-    where TCriteria : class, IQueryCriteria, new()
-    where TIdentity : IEquatable<TIdentity>
-{
-    /// <inheritdoc />
-    protected BaseEntityCreatableAndUpdatableController(ILogger<BaseEntityCreatableAndUpdatableController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
+    protected BaseEntityCreatableAndEditableController(ILogger<BaseEntityCreatableAndEditableController<TEntity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }
 }
 
 /// <summary>
-/// Controller providing create and update operations.
+/// Controller providing read, create and update operations.
 /// </summary>
-/// <typeparam name="TRepository">The repository implementing <see cref="IRepository"/> used for data access.</typeparam>
 /// <typeparam name="TEntity">The entity type implementing <see cref="IEntity"/> handled by this controller.</typeparam>
 /// <typeparam name="TIdentity">The identifier type of <typeparamref name="TEntity"/>.</typeparam>
 /// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
-[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR)]
-public abstract class BaseEntityCreatableAndUpdatableController<TRepository, TEntity, TIdentity, TCriteria> : BaseEntityCreatableController<TRepository, TEntity, TIdentity, TCriteria>
-    where TRepository : class, IRepository
+public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentity, TCriteria> : BaseEntityCreatableController<TEntity, TIdentity, TCriteria>
     where TEntity : class, IEntityIdentity<TIdentity>, IEntityCreatableAndUpdatable
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseEntityCreatableAndUpdatableController(ILogger<BaseEntityCreatableController<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
+    protected BaseEntityCreatableAndEditableController(ILogger<BaseEntityCreatableAndEditableController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
+    }
+
+    /// <summary>
+    /// Creates or edits a single model instance.
+    /// </summary>
+    /// <param name="entity">The entity to create.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The created or edited entity.</returns>
+    /// <response code="201">Entity created.</response>
+    /// <response code="400">Bad request.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="500">Internal server error.</response>
+    [HttpPost]
+    [Route(ActionRoutes.CREATE_OR_EDIT)]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> CreateOrEditAsync([FromBody][Required] TEntity entity, CancellationToken cancellationToken = default)
+    {
+        var entityAddedOrUpdated = await this.Repository
+            .AddOrUpdateAsync(entity, cancellationToken);
+
+        await this.Repository
+            .SaveChangesAsync(cancellationToken);
+
+        return this.Ok(entityAddedOrUpdated);
     }
 
     /// <summary>

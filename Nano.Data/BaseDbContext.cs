@@ -34,7 +34,7 @@ namespace Nano.Data;
 // BUG: Entity Event Map (Important)
 // 1. Make a map of Publish Attributes and their property names.
 // 2. When SaveChanges then check if any property names are affected (e.g. User.IdentityUser.Email is changed, then User needs to be fetched and published)
-// NB: Maybe make startup validation of Publish properties and use of include 
+// NB: Maybe make startup validation of Publish properties and use of include
 
 /// <inheritdoc />
 public class BaseDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> dataOptions, IEventing? eventing = null)
@@ -228,24 +228,40 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
 
         var tracked = this.ChangeTracker
             .Entries<TEntity>()
-            .FirstOrDefault(x => x.Entity == entity)?.Entity;
-
-        if (tracked == null)
-        {
-            var dbSet = this.Set<TEntity>();
-
-            tracked = dbSet
-                .FirstOrDefault(x => x == entity);
-        }
+            .FirstOrDefault(x => x.Entity == entity);
 
         if (tracked != null)
         {
-            return this
-                .Update(entity);
+            this.Entry(tracked).CurrentValues.SetValues(entity);
+
+            return tracked;
         }
 
-        return this
-            .Add(entity);
+        var idProperty = entity
+            .GetType()
+            .GetProperty(nameof(IEntityIdentity<>.Id));
+
+        if (idProperty == null)
+        {
+            throw new NullReferenceException(nameof(idProperty));
+        }
+
+        var id = idProperty.GetValue(entity);
+
+        var existing = this.Set<TEntity>()
+            .Find(id);
+
+        // BUG: reflection id
+        //var existing = this.Set<TEntity>()
+        //    .Find(entity.Id);
+
+        if (existing != null)
+        {
+            this.Entry(existing).CurrentValues.SetValues(entity);
+            return this.Entry(existing);
+        }
+
+        return this.Add(entity);
     }
 
     /// <summary>
@@ -254,7 +270,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     /// <typeparam name="TEntity">The type of the entities.</typeparam>
     /// <param name="entities">The entities to add or update.</param>
     public virtual void AddOrUpdateMany<TEntity>(IEnumerable<TEntity> entities)
-        where TEntity : class
+        where TEntity : class, IEntity // IEntityIdentity<TIdentity>
     {
         ArgumentNullException.ThrowIfNull(entities);
 

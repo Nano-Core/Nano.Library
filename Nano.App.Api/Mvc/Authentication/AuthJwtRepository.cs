@@ -43,7 +43,7 @@ public class AuthJwtRepository(JwtAuthenticationOptions options) : IAuthJwtRepos
         var notBeforeAt = DateTimeOffset.UtcNow;
         var expireAt = DateTimeOffset.UtcNow.Add(this.options.Expiration);
 
-        var rsaSecurityKey = this.options.PrivateKey
+        var rsaSecurityKey = this.options.PrivateKey?
             .CreateRsaSecurityKey();
 
         var signingCredentials = new SigningCredentials(rsaSecurityKey, SecurityAlgorithms.RsaSha512);

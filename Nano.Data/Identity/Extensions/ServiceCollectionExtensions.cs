@@ -53,7 +53,7 @@ internal static class ServiceCollectionExtensions
         services
             .Configure<DataProtectionTokenProviderOptions>(x =>
             {
-                x.TokenLifespan = TimeSpan.FromHours(options.TokensExpirationInHours);
+                x.TokenLifespan = options.TokensExpiration;
             })
             .AddDataProtection()
             .PersistKeysToDbContext<TContext>();

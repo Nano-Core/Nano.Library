@@ -6,6 +6,8 @@ using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Abstractions.Models;
 
+// BUG: can we make AuditEntry<Guid>? and it would work?
+
 /// <summary>
 /// 
 /// </summary>

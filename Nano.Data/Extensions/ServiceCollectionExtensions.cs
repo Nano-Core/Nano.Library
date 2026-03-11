@@ -94,7 +94,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddAuthentication()
-            .AddApiKeyAuthentication<TIdentity>(options.Identity?.Authentication.ApiKey);
+            .AddApiKeyAuthentication<TIdentity>(options.Identity?.ApiKey);
 
         return services;
     }
@@ -149,7 +149,7 @@ public static class ServiceCollectionExtensions
         AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
         AuditManager.DefaultConfiguration.IncludeProperty<IEntityAuditable>();
         AuditManager.DefaultConfiguration.IncludeDataAnnotation();
-        AuditManager.DefaultConfiguration.Exclude<IEntityAuditableNegated>();
+        AuditManager.DefaultConfiguration.Exclude<IEntityAuditableNegated>(); // BUG: What if IEntityAuditable and IEntityAuditableNegated
         AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
         AuditManager.DefaultConfiguration.AutoSavePreAction = (dbContext, audit) =>
         {

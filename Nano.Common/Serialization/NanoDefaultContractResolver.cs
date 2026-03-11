@@ -4,13 +4,13 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Nano.Common.Serialization.Json;
+namespace Nano.Common.Serialization;
 
 /// <summary>
 /// A <see cref="DefaultContractResolver"/> that customizes JSON serialization for entities,
 /// including support for serializing only non-empty enumerable properties.
 /// </summary>
-public class DefaultEntityContractResolver : DefaultContractResolver
+public class NanoDefaultContractResolver : DefaultContractResolver
 {
     /// <summary>
     /// Creates a <see cref="JsonProperty"/> for the given <paramref name="member"/> and configures serialization rules, including non-empty enumerable handling.

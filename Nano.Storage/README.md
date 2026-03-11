@@ -14,8 +14,8 @@
 * [Summary](#summary)
 * [Registration](#registration)
 * [Configuration](#configuration)
+  * [Health Checks](#health-checks)
 * [Storage Providers](#storage-providers)
-* [Health Checks](#health-checks)
 
 ## Summary
 Add a flexible, provider-agnostic file storage layer to your Nano applications.
@@ -77,11 +77,10 @@ The ```Storage``` section in the configuration defines the storage provider and 
 | Setting                         | Type   | Default     | Description                                                                                                                              |
 | ------------------------------- | ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 |  `ShareName`                    | string | null        | The logical container, share, or bucket name used for file storage.                                                                      |
-|  `Credentials`                  | object | null        | The credential or account of the storage provider.                                                                                       |
-|  `Credentials.Id`               | string | null        | The account id, username or tenant identifier used to authenticate with the storage provider.                                            |
-|  `Credentials.Secret`           | string | null        | The password, secret, key, password or credential used to authenticate with the storage provider.                                        |
+|  `Credentials`                  | object | null        | Optional. The credential or account of the storage provider.                                                                             |
+|  `Credentials.Id`               | string | null        | Required. The account id, username or tenant identifier used to authenticate with the storage provider.                                  |
+|  `Credentials.Secret`           | string | null        | Required. The password, secret, key, password or credential used to authenticate with the storage provider.                              |
 |  `HealthCheck`                  | object | null        | Storage health check. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_..                                                |
-|  `HealthCheck.UnhealthyStatus`  | enum   | Unhealthy   | The health status reported when the storage provider is unavailable. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.  |
 
 ```json
 "Storage": {
@@ -90,6 +89,22 @@ The ```Storage``` section in the configuration defines the storage provider and 
     "Id": null,
     "Secret": null
   },
+  "HealthCheck": null
+}
+```
+
+## Health Checks
+When health checks are enabled in the storage configuration, Nano automatically registers a health check for the configured storage provider.  
+
+This allows the application to verify that the underlying storage fileshare connection is available and operational. The health check integrates with ASP.NET Core's 
+health check system and can be used by monitoring tools, load balancers, or container orchestrators to determine the health status of the application.  
+
+| Setting                         | Type   | Default     | Description                                                                                                                              |
+| ------------------------------- | ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+|  `HealthCheck.UnhealthyStatus`  | enum   | Unhealthy   | The health status reported when the storage provider is unavailable. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.  |
+
+```json
+"Storage": {
   "HealthCheck": {
     "UnhealthyStatus": "Unhealthy"
   }
@@ -97,7 +112,7 @@ The ```Storage``` section in the configuration defines the storage provider and 
 ```
 
 > ⚠️ In order for storage healthcheck to take effect, healthchecks must be enabled for the application. 
-Read more about [Nano Health Check](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api#health-checks)
+Read more about **[Nano Health Check](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api#health-checks)**.
 
 ## Storage Providers
 Nano provides several storage providers, so usually there is no need to implement a custom provider for your application.  
@@ -110,11 +125,5 @@ and then register your provider with the application using `.AddNanoStorage<TPro
 
 The following storage providers are currently supported in Nano.  
 
-* [Nano.Storage.Azure](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Azure)
-* [Nano.Storage.Local](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Local)
-
-## Health Checks
-When health checks are enabled in the storage configuration, Nano automatically registers a health check for the configured storage provider.  
-
-This allows the application to verify that the underlying storage fileshare connection is available and operational. The health check integrates with ASP.NET Core's 
-health check system and can be used by monitoring tools, load balancers, or container orchestrators to determine the health status of the application.  
+* **[Nano.Storage.Azure](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Azure)**
+* **[Nano.Storage.Local](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Local)**

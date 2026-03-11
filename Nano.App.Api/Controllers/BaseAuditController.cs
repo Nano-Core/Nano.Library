@@ -19,5 +19,5 @@ public abstract class BaseAuditController(ILogger<BaseAuditController> logger, I
 /// <param name="repository">The repository instance.</param>
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
 public abstract class BaseAuditController<TIdentity>(ILogger<BaseAuditController<TIdentity>> logger, IRepository repository)
-    : BaseEntityReadOnlyController<IRepository, AuditEntry<TIdentity>, TIdentity, AuditEntryQueryCriteria>(logger, repository)
+    : BaseEntityReadOnlyController<AuditEntry<TIdentity>, TIdentity, AuditEntryQueryCriteria>(logger, repository)
     where TIdentity : IEquatable<TIdentity>;

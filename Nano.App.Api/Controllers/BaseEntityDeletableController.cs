@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Nano.App.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
-using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 using System;
@@ -12,7 +11,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Nano.App.Api.Controllers;
 
@@ -28,35 +26,19 @@ public abstract class BaseEntityDeletableController<TEntity, TCriteria> : BaseEn
     }
 }
 
-/// <inheritdoc />
-public abstract class BaseEntityDeletableController<TEntity, TIdentity, TCriteria> : BaseEntityDeletableController<IRepository, TEntity, TIdentity, TCriteria>
+/// <summary>
+/// Controller providing read and delete operations.
+/// </summary>
+/// <typeparam name="TEntity">The entity type implementing <see cref="IEntity"/> handled by this controller.</typeparam>
+/// <typeparam name="TIdentity">The identifier type of <typeparamref name="TEntity"/>.</typeparam>
+/// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
+public abstract class BaseEntityDeletableController<TEntity, TIdentity, TCriteria> : BaseEntityReadOnlyController<TEntity, TIdentity, TCriteria>
     where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable, new()
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
     protected BaseEntityDeletableController(ILogger<BaseEntityDeletableController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
-        : base(logger, repository, eventing)
-    {
-    }
-}
-
-/// <summary>
-/// Controller providing delete operations.
-/// </summary>
-/// <typeparam name="TRepository">The repository implementing <see cref="IRepository"/> used for data access.</typeparam>
-/// <typeparam name="TEntity">The entity type implementing <see cref="IEntity"/> handled by this controller.</typeparam>
-/// <typeparam name="TIdentity">The identifier type of <typeparamref name="TEntity"/>.</typeparam>
-/// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
-[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.DELETER)]
-public abstract class BaseEntityDeletableController<TRepository, TEntity, TIdentity, TCriteria> : BaseEntityReadOnlyController<TRepository, TEntity, TIdentity, TCriteria>
-    where TRepository : class, IRepository
-    where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable, new()
-    where TCriteria : class, IQueryCriteria, new()
-    where TIdentity : IEquatable<TIdentity>
-{
-    /// <inheritdoc />
-    protected BaseEntityDeletableController(ILogger<BaseEntityDeletableController<TRepository, TEntity, TIdentity, TCriteria>> logger, TRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

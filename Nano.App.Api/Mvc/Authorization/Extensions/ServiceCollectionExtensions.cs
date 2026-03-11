@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.App.Api.Mvc.Authentication.Consts;
 using System;
-using Nano.App.Api.Mvc.Middleware;
 
 namespace Nano.App.Api.Mvc.Authorization.Extensions;
 

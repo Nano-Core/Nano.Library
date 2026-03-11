@@ -9,7 +9,7 @@ internal class ActionRoutes
     internal const string QUERY_FIRST = "query/first";
     internal const string QUERY_COUNT = "query/count";
     internal const string EDIT = "edit";
-    internal const string EDIT_GET = "edit/get";
+    internal const string EDIT_GET = "edit/reload";
     internal const string EDIT_MANY = "edit/many";
     internal const string EDIT_MANY_BULK = "edit/many/bulk";
     internal const string EDIT_QUERY = "edit/query";
@@ -20,7 +20,9 @@ internal class ActionRoutes
     internal const string DELETE_QUERY = "delete/query";
     internal const string DELETE_QUERY_BULK = "delete/query/bulk";
     internal const string CREATE = "create";
-    internal const string CREATE_GET = "create/get";
+    internal const string CREATE_OR_GET = "create/get";
+    internal const string CREATE_AND_GET = "create/reload";
+    internal const string CREATE_OR_EDIT = "create/edit";
     internal const string CREATE_MANY = "create/many";
     internal const string CREATE_MANY_BULK = "create/many/bulk";
 

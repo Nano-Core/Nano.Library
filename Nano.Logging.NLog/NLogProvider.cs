@@ -34,7 +34,7 @@ public sealed class NLogProvider : ILoggingProvider
         var configuration = new LoggingConfiguration();
         var target = new ConsoleTarget("console")
         {
-            Layout = "${date:format=dd-MM-yyyy HH\\:mm\\:ss.ffffff} [${level:uppercase=true:truncate=3}] ${message}${onexception:${newline}${exception:format=toString}}"
+            Layout = @"${date:format=dd-MM-yyyy HH\:mm\:ss.ffffff} [${level:uppercase=true:truncate=3}] ${message}${onexception:${newline}${exception:format=toString}}"
         };
 
         configuration

@@ -8,24 +8,9 @@ using System;
 
 namespace Nano.App.Api.Mvc;
 
-/// <summary>
-/// Configures MVC options such as conventions, filters, formatters, and HTTPS requirements.
-/// </summary>
-public sealed class ConfigureMvcOptions : IConfigureOptions<MvcOptions>
+internal sealed class ConfigureMvcOptions(IOptionsMonitor<ApiOptions> apiOptions, IOptionsMonitor<DataOptions>? dataOptions = null) : IConfigureOptions<MvcOptions>
 {
-    private readonly IOptionsMonitor<ApiOptions> apiOptions;
-    private readonly IOptionsMonitor<DataOptions> dataOptions;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigureMvcOptions"/> class.
-    /// </summary>
-    /// <param name="apiOptions">The <see cref="IOptionsMonitor{ApiOptions}"/> for web API configuration.</param>
-    /// <param name="dataOptions">The <see cref="IOptionsMonitor{DataOptions}"/> for data configuration.</param>
-    public ConfigureMvcOptions(IOptionsMonitor<ApiOptions> apiOptions, IOptionsMonitor<DataOptions> dataOptions)
-    {
-        this.apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
-        this.dataOptions = dataOptions;
-    }
+    private readonly IOptionsMonitor<ApiOptions> apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
 
     /// <summary>
     /// Configures the <see cref="MvcOptions"/> including conventions, filters, and formatters.
@@ -42,7 +27,7 @@ public sealed class ConfigureMvcOptions : IConfigureOptions<MvcOptions>
         var routeAttribute = new RouteAttribute(this.apiOptions.CurrentValue.Hosting.Root);
         var routePrefixConvention = new RoutePrefixConvention(routeAttribute);
         var producesJsonConvention = new ProducesJsonConvention();
-        var conditionalActionConvention = new ConditionalActionsConvention(this.apiOptions, this.dataOptions);
+        var conditionalActionConvention = new ConditionalActionsConvention(this.apiOptions, dataOptions);
 
         options.Conventions
             .Insert(0, routePrefixConvention);

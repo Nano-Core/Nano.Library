@@ -68,6 +68,10 @@ The order of precedence for configuration sources is as follows (later items ove
 3. Environment Variables  
 4. User Secrets (`Development` environment only)
 
+Nano handles `appsettings.{environment}.json` overrides slightly differently from standard .NET configuration. In regular .NET configuration, setting an entire JSON section 
+to null is ignored. Nano supports this scenario, allowing a section defined in `appsettings.json` to be set to null in an environment-specific configuration file, 
+effectively removing that configuration for the environment.  
+
 ## Null Logger
 Nano automatically registers a `NullLogger`, ensuring that `ILogger` and related logging services are available even if no logging provider has been configured.  
 With the `NullLogger`, all log messages are discarded, so no logs are persisted.  

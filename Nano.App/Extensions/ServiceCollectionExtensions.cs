@@ -61,7 +61,7 @@ internal static class ServiceCollectionExtensions
         foreach (var type in types)
         {
             services
-                .AddScoped(typeof(IStartupTask), type!);
+                .AddScoped(typeof(IStartupTask), type);
         }
 
         services

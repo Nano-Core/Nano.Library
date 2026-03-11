@@ -1,9 +1,8 @@
-﻿using System.Globalization;
-using Nano.Common.Serialization.Json.Converters;
+﻿using Nano.Common.Serialization.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Nano.Common.Serialization.Json;
+namespace Nano.Common.Serialization;
 
 /// <summary>
 /// Provides default JSON serializer settings for the application.
@@ -18,7 +17,7 @@ public static class SerializerSettings
     ///     <item>Null values ignored</item>
     ///     <item>Reference loop handling ignored</item>
     ///     <item>No reference preservation</item>
-    ///     <item>Uses <see cref="DefaultEntityContractResolver"/></item>
+    ///     <item>Uses <see cref="NanoDefaultContractResolver"/></item>
     ///     <item>Includes converters for string enums and geometries (case-insensitive)</item>
     /// </list>
     /// </summary>
@@ -28,11 +27,10 @@ public static class SerializerSettings
         return new JsonSerializerSettings
         {
             MaxDepth = 128,
-            Culture = CultureInfo.CurrentCulture,
             NullValueHandling = NullValueHandling.Ignore,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             PreserveReferencesHandling = PreserveReferencesHandling.None,
-            ContractResolver = new DefaultEntityContractResolver(),
+            ContractResolver = new NanoDefaultContractResolver(),
             Converters =
             [
                 new StringEnumConverter(),

@@ -12,7 +12,7 @@
 * [Summary](#summary)
 * [Registration](#registration)
 * [Configuration](#configuration)
-* [Docker](#docker)
+* [Docker Compose](#docker-compose)
 * [Kuberentes](#kuberentes)
 * [GitHub Actions](#github-actions)
 
@@ -65,7 +65,7 @@ Add the storage configuration.
 }
 ```
 
-## Docker
+## Docker Compose
 In addition to registering and configuring storage, map a local folder to a container path in in your `docker-compose.yml` so the container can access the storage directory.
 
 ```yaml
@@ -118,10 +118,11 @@ That makes it easy to change the secret values later on when needed, and just re
 Last, the `build-and-deploy.yaml` needs a few additional environmental variables related to Azure storage provder.  
 
 ```yaml
-STORAGE_SHARE_NAME: {share-name}
-STORAGE_CREDENTIALS_ID: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_CREDENTIALS_ID || secrets.STAGING_STORAGE_CREDENTIALS_ID }}
-STORAGE_CREDENTIALS_SECRET: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_CREDENTIALS_SECRET || secrets.STAGING_STORAGE_CREDENTIALS_SECRET }}
-STORAGE_SIZE: 1000
+env: 
+  STORAGE_SHARE_NAME: {share-name}
+  STORAGE_CREDENTIALS_ID: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_CREDENTIALS_ID || secrets.STAGING_STORAGE_CREDENTIALS_ID }}
+  STORAGE_CREDENTIALS_SECRET: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_CREDENTIALS_SECRET || secrets.STAGING_STORAGE_CREDENTIALS_SECRET }}
+  STORAGE_SIZE: 1000
 ```
 
 Also, the Azure fileshare needs to be created during deployment if it does not already exist. Add the following step to the `build-and-deploy.yaml`.  

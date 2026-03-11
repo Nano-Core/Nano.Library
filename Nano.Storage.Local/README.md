@@ -12,16 +12,14 @@
 * [Summary](#summary)
 * [Registration](#registration)
 * [Configuration](#configuration)
-* [Docker](#docker)
+* [Docker Compose](#docker-compose)
 * [Kuberentes](#kuberentes)
 * [GitHub Actions](#github-actions)
 
 ## Summary
 Storage provider implementation for local file shares.  
 
-This provider is intended for convenience when using a local file system. Registering it with Nano gives you access to the `IPathProvider` interface.
-
-> ⚠️ In cloud environments, the file share path is expected to already exist. No external drives are created or mapped to the container or machine.
+This provider is intended for mapping a Kubernetes persistent volume as a local file system. Registering it with Nano gives you access to the `IPathProvider` interface.
 
 > 📖 Learn more about **[Nano Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)**.
 
@@ -59,7 +57,7 @@ Add the storage configuration.
 }
 ```
 
-## Docker
+## Docker Compose
 In addition to registering and configuring storage, map a local folder to a container path in your `docker-compose.yml` to give the container access to the storage directory:
 
 ```yaml
@@ -70,7 +68,9 @@ services:
 ```
 
 ## Kubernetes
-Next, As the container in Kubernetes is read-only, the following must also be added to your Kubernetes `deployment.yaml` or `cronjob.yaml` (depending on application type) 
+Next, two additional Kubernetes templates have been added to create and manage the storage, `storage-storageclass.yaml` and `storage-pvc.yaml`.  
+
+Also, as the container in Kubernetes is read-only, the following must also be added to your Kubernetes `deployment.yaml` or `cronjob.yaml` (depending on application type) 
 to ensure the file share is writable.  
 
 ```json
@@ -84,8 +84,9 @@ spec:
         - name: tmp
           mountPath: /tmp
       volumes:
-      - name: %STORAGE_SHARE_NAME%
-        emptyDir: {}
+      - name: %SERVICE_NAME%-volume
+        persistentVolumeClaim:
+          claimName: %SERVICE_NAME%-pvc
       - name: tmp
         emptyDir: {}
 ```
@@ -94,5 +95,7 @@ spec:
 Last, The `build-and-deploy.yaml` needs additional environmental variables related to local storage provder.  
 
 ```yaml
+env:
   STORAGE_SHARE_NAME: {share-name}
+  STORAGE_SIZE: {size}
 ```

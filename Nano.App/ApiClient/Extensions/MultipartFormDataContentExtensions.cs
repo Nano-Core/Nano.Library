@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Nano.App.ApiClient.Models;
 using Nano.Common.Consts;
 using Nano.Common.Extensions;
-using Nano.Common.Serialization.Json;
+using Nano.Common.Serialization;
 using Newtonsoft.Json;
 
 namespace Nano.App.ApiClient.Extensions;

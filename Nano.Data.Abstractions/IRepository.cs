@@ -39,7 +39,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>The first entity matching the given key, or null if not found.</returns>
-    Task<TEntity?> GetAsync<TEntity, TKey>(TKey key, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetAsync<TEntity, TKey>(TKey key, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>;
 
@@ -61,7 +61,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>The first entity matching the key, or null if not found.</returns>
-    Task<TEntity?> GetAsync<TEntity>(int key, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetAsync<TEntity>(int key, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<int>;
 
     /// <summary>
@@ -82,7 +82,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>The first entity matching the key, or null if not found.</returns>
-    Task<TEntity?> GetAsync<TEntity>(long key, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetAsync<TEntity>(long key, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<long>;
 
     /// <summary>
@@ -103,7 +103,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>The first entity matching the key, or null if not found.</returns>
-    Task<TEntity?> GetAsync<TEntity>(string key, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetAsync<TEntity>(string key, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<string>;
 
     /// <summary>
@@ -124,7 +124,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>The first entity matching the key, or null if not found.</returns>
-    Task<TEntity?> GetAsync<TEntity>(Guid key, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetAsync<TEntity>(Guid key, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<Guid>;
 
     /// <summary>
@@ -148,7 +148,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>The first entity matching the criteria, or null if not found.</returns>
-    Task<TEntity?> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> criteria, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> criteria, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : class, IQueryCriteria, new();
 
@@ -170,7 +170,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>The first entity matching the predicate, or null if not found.</returns>
-    Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -181,7 +181,7 @@ public interface IRepository : IDisposable
     /// <param name="ordering">The ordering to apply.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>The first entity matching the predicate, or null if not found.</returns>
-    Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering? ordering, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -193,7 +193,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>The first entity matching the predicate, or null if not found.</returns>
-    Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, int includeDepth, CancellationToken cancellationToken = default)
+    Task<TEntity?> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering? ordering, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -217,7 +217,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>The entities matching the specified keys.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(IEnumerable<TKey> keys, int includeDepth, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(IEnumerable<TKey> keys, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>;
 
@@ -239,7 +239,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>The entities matching the specified keys.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<int> keys, int includeDepth, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<int> keys, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<int>;
 
     /// <summary>
@@ -260,7 +260,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>The entities matching the specified keys.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<long> keys, int includeDepth, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<long> keys, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<long>;
 
     /// <summary>
@@ -281,7 +281,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified keys.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<string> keys, int includeDepth, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<string> keys, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<string>;
 
     /// <summary>
@@ -302,7 +302,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified keys.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<Guid> keys, int includeDepth, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IEnumerable<Guid> keys, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<Guid>;
 
     /// <summary>
@@ -323,7 +323,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified query.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IQuery query, int includeDepth, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(IQuery query, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -347,7 +347,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified criteria.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> criteria, int includeDepth, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TCriteria>(IQuery<TCriteria> criteria, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : class, IQueryCriteria, new();
 
@@ -369,7 +369,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the where clause.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, int includeDepth, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -380,7 +380,7 @@ public interface IRepository : IDisposable
     /// <param name="ordering">The ordering to apply.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the where clause and ordering.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering? ordering, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -392,7 +392,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the where clause and ordering.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, int includeDepth, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering? ordering, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -403,7 +403,7 @@ public interface IRepository : IDisposable
     /// <param name="pagination">The <see cref="Pagination"/> parameters.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the where clause and pagination.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination? pagination, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -415,7 +415,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, int includeDepth, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination? pagination, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -427,7 +427,7 @@ public interface IRepository : IDisposable
     /// <param name="ordering">The ordering to apply.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, Ordering ordering, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination? pagination, Ordering? ordering, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -440,7 +440,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination pagination, Ordering ordering, int includeDepth, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Pagination? pagination, Ordering? ordering, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -452,7 +452,7 @@ public interface IRepository : IDisposable
     /// <param name="pagination">The <see cref="Pagination"/> parameters.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, Pagination pagination, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering? ordering, Pagination? pagination, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -465,7 +465,7 @@ public interface IRepository : IDisposable
     /// <param name="includeDepth">The depth of related entities to include.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering ordering, Pagination pagination, int includeDepth, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Ordering? ordering, Pagination? pagination, int? includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -492,7 +492,7 @@ public interface IRepository : IDisposable
     /// <param name="orderingDirection">The <see cref="OrderingDirection"/> (ascending or descending).</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, int includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, int? includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -506,7 +506,7 @@ public interface IRepository : IDisposable
     /// <param name="orderingDirection">The <see cref="OrderingDirection"/> (ascending or descending).</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination pagination, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination? pagination, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -521,7 +521,7 @@ public interface IRepository : IDisposable
     /// <param name="orderingDirection">The <see cref="OrderingDirection"/> (ascending or descending).</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination pagination, int includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination? pagination, int? includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -533,6 +533,18 @@ public interface IRepository : IDisposable
     /// <returns>The added entity.</returns>
     Task<TEntity> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable;
+
+    /// <summary>
+    /// Adds a single instance of <see cref="IEntityCreatable"/> or if it already exists reload it.
+    /// </summary>
+    /// <typeparam name="TEntity">The type of entity to add.</typeparam>
+    /// <typeparam name="TKey">The type of the entity's identity.</typeparam>
+    /// <param name="entity">The entity instance to add.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
+    /// <returns>The added entity with related entities loaded, or null if not added.</returns>
+    Task<TEntity?> AddOrGetAsync<TEntity, TKey>(TEntity entity, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityCreatable, IEntityIdentity<TKey>
+        where TKey : IEquatable<TKey>;
 
     /// <summary>
     /// Adds a single instance of <see cref="IEntityCreatable"/> and reloads it to include any <see cref="IncludeAttribute"/> relations.
