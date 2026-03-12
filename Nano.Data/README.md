@@ -344,6 +344,9 @@ public class MyEntityUser : BaseEntityUser
 
 This allows you to use an entity user model without having to deal directly with the underlying identity data when working with the model.  
 
+Try it out yourself using the **[Api.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Mysql)** or  
+**[Console.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.Mysql)** examples. Similar examples are available for other data providers as well.  
+
 Nano also supports defining views in the entity model.  
 The `BaseEntityView` entity class can be used to define a model for a SQL view. 
 
@@ -415,6 +418,10 @@ public class MyEntityViewMapping : BaseEntityViewMapping<MyEntity>
 
 Nano automatically updates all unique index mappings to include the `IsDeleted` property. This ensures that soft-deleted entities can coexist without violating 
 uniqueness constraints.  
+
+Mapping of spatial types varies between data providers. Refer to your provider's spatial documentation for details.  
+
+Try it out advanced mappings yourself using the **[Api.Data.MySql.Mappings](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Mappings)** example.  
 
 ## Migrations
 Migrations in Nano work the same way as standard Entity Framework migrations.  
@@ -640,8 +647,6 @@ The audit implementation is based on the **[EntityFramework Plus](https://github
 Try it out yourself using the **[Api.Data.Repository.Autosave](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Repository.Autosave)**.  
 
 ## Soft Delete
-TEST WHAT IEntitySoftDeleted do, and if it's possible to do soft-delete on only some interfaces, maybe it shouldn't be a configuration, just enabled when entities have the interface.
-
 The `IsDeleted` column is created for all tables no matter if enabled or disabled in configuration.  
 
 In order for soft deletion to be enabled, it much be enabled in the data section of the configuration.  
