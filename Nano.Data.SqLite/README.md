@@ -41,7 +41,7 @@ Register the `SqLiteProvider` provider during application startup in the `Config
     })
 ```
 
-A `BaseDbContext` and `BaseDbContextFactory` must also be implemented, and an initial migration added.
+A `BaseDbContext` and `BaseDbContextFactory` must also be implemented and used as `TContext`, and also an initial migration added.
 
 ```powershell
 dotnet ef migrations add Initial --project {project-name}
@@ -90,7 +90,7 @@ Add SqLite as a service dependency in `docker-compose.yml`.
 
 ```yaml
 services:
-  api.data.sqlite:
+  {service-name}:
     volumes:
       - ./bin/data:/data
 ```

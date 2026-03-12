@@ -42,7 +42,7 @@ Register the `MySqlProvider` provider during application startup in the `Configu
     })
 ```
 
-A `BaseDbContext` and `BaseDbContextFactory` must also be implemented, and an initial migration added.
+A `BaseDbContext` and `BaseDbContextFactory` must also be implemented and used as `TContext`, and also an initial migration added.
 
 ```powershell
 dotnet ef migrations add Initial --project {project-name}

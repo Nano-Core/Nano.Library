@@ -42,7 +42,7 @@ Register the `PostgreSqlProvider` provider during application startup in the `Co
     })
 ```
 
-A `BaseDbContext` and `BaseDbContextFactory` must also be implemented, and an initial migration added.
+A `BaseDbContext` and `BaseDbContextFactory` must also be implemented and used as `TContext`, and also an initial migration added.
 
 ```powershell
 dotnet ef migrations add Initial --project {project-name}
@@ -92,7 +92,7 @@ Add PostgreSQL as a service dependency in `docker-compose.yml`.
 
 ```yaml
 services:
-  api.data.postgresql:
+  {service-name}:
     depends_on:
       - database
 

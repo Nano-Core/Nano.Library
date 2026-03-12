@@ -246,7 +246,8 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
             throw new NullReferenceException(nameof(idProperty));
         }
 
-        var id = idProperty.GetValue(entity);
+        var id = idProperty
+            .GetValue(entity);
 
         var existing = this.Set<TEntity>()
             .Find(id);

@@ -20,5 +20,5 @@ public abstract class BaseEntityDeletable : BaseEntityDeletable<Guid>
 /// Implements <see cref="IEntityDeletable"/>.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the entity identity.</typeparam>
-public abstract class BaseEntityDeletable<TIdentity> : BaseEntityBase<TIdentity>, IEntityDeletable
+public abstract class BaseEntityDeletable<TIdentity> : BaseEntityReadOnly<TIdentity>, IEntityDeletable
     where TIdentity : IEquatable<TIdentity>;

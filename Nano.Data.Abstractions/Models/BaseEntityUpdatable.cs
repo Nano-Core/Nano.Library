@@ -20,5 +20,5 @@ public abstract class BaseEntityUpdatable : BaseEntityUpdatable<Guid>
 /// Implements <see cref="IEntityUpdatable"/>.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the entity identity.</typeparam>
-public abstract class BaseEntityUpdatable<TIdentity> : BaseEntityBase<TIdentity>, IEntityUpdatable
+public abstract class BaseEntityUpdatable<TIdentity> : BaseEntityReadOnly<TIdentity>, IEntityUpdatable
     where TIdentity : IEquatable<TIdentity>;

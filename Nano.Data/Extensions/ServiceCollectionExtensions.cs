@@ -156,7 +156,7 @@ public static class ServiceCollectionExtensions
             var httpContextAccessor = dbContext
                 .GetService<IHttpContextAccessor>();
 
-            var requestId = httpContextAccessor.HttpContext?.TraceIdentifier;
+            var requestId = httpContextAccessor.HttpContext?.TraceIdentifier; // BUG: THis should be RequestId, also document in readme that we are adding the RequesteId to Audit
 
             var createdBy = httpContextAccessor.HttpContext?
                 .GetJwtUserId()?

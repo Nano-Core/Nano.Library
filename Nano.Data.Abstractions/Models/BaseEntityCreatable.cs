@@ -20,5 +20,5 @@ public abstract class BaseEntityCreatable : BaseEntityCreatable<Guid>
 /// Implements <see cref="IEntityCreatable"/>.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the entity identity.</typeparam>
-public abstract class BaseEntityCreatable<TIdentity> : BaseEntityBase<TIdentity>, IEntityCreatable
+public abstract class BaseEntityCreatable<TIdentity> : BaseEntityReadOnly<TIdentity>, IEntityCreatable
     where TIdentity : IEquatable<TIdentity>;

@@ -98,7 +98,7 @@ The `Data` section in the configuration defines the data provider and related se
 |  `UseSensitiveDataLogging`      | bool   | false       | A value indicating whether sensitive data logging is enabled.                                                                                                   |
 |  `UseAudit`                     | bool   | false       | A value indicating whether auditing is enabled. See [Audit](#audit)                                                                                             |
 |  `QuerySplittingBehavior`       | enum   | SingleQuery | The default query splitting behavior for EF Core queries.                                                                                                       |              
-|  `DefaultCollation`             | string | null        | The default collation for the database.                                                                                                                         |
+|  `DefaultCollation`             | string | null        | The default collation for the database. ⚠️ Note: Changing this setting affects only new migrations and will not modify existing tables or columns.              |
 |  `ConnectionString`             | string | null        | Required. The connection string for the database.                                                                                                               |
 |  `Repository`                   | object | default     | The cache configuration options. See [Repositories](#repositories).                                                                                             |
 |  `Repository.UseAutoSave`       | bool   | true        | A value indicating whether automatic saving of changes in repositories is enabled. See [Autosave](#autosave)                                                    |
@@ -298,7 +298,7 @@ No further implementation is required. The factory class simply needs to exist i
 ## Data Models
 Models in Nano, also referred to as entities, represent the tables in your database.
 
-To create a model, derive a class from `BaseEntity` or `BaseEntity<TIdentity>` if you want to use a custom primary key type. By inheriting from `BaseEntity`, your model 
+To create a model, derive a non-generic class from `BaseEntity` or `BaseEntity<TIdentity>` if you want to use a custom primary key type. By inheriting from `BaseEntity`, your model 
 automatically includes several built-in properties.  
 
 | Property      | Type            | Description                                                                                     |
@@ -317,12 +317,14 @@ public class MyEntity : BaseEntity
 If you specify a `TIdentity` type during data [Registration](#registration) and in your [Data Context](#data-context), you must use the same type when deriving your 
 concrete entities.
 
-Alternatively, you can derive your entity model from one of the specialized CRUD base classes: `BaseEntityCreatable`, `BaseEntityCreatableAndUpdatable`, `BaseEntityUpdatable`, 
-or `BaseEntityDeletable`, to restrict the allowed `IRepository` operations for that entity.  
+Alternatively, you can derive your entity model from one of the specialized CRUD base classes: `BaseEntityReadOnly`, `BaseEntityCreatable`, `BaseEntityCreatableAndUpdatable`, 
+`BaseEntityUpdatable`, or `BaseEntityDeletable`, to restrict the allowed `IRepository` operations for that entity.  
+
+> ⚠️ `BaseEntityReadOnly` is immutable and is intended to be mapped as SQL views only.
 
 For more advanced scenarios, if you do not want the built-in properties provided by Nano, you can derive your entity model from `BaseEntityIdentity` or 
 `BaseEntityIdentity<TIdentity>`. This gives your entity only the `Id` property, but limits most built-in `IRepository` operations. To restore specific operations, your entity 
-must implement the corresponding interfaces: `IEntityWritable`, `IEntityCreatable`, `IEntityCreatableAndUpdatable`, `IEntityUpdatable`, or `IEntityDeletable` 
+must implement the corresponding interfaces: `IEntityReadOnly`, `IEntityWritable`, `IEntityCreatable`, `IEntityCreatableAndUpdatable`, `IEntityUpdatable`, or `IEntityDeletable` 
 (`IEntityDeletableSoft`). These interfaces mirror the functionality of the CRUD base entity classes.  
 
 > ⚠️ For simplicity and maintainability, it is recommended to derive entity models from `BaseEntity` or one of the specific base classes rather than 
@@ -345,7 +347,7 @@ This allows you to use an entity user model without having to deal directly with
 Nano also supports spatial `Geometry` types from `NetToplogySuite`.  
 
 ## Data Mappings
-Each data model in your application should have a corresponding data mapping. Data mappings define how your entities are configured in the database and allow you 
+Each data model in your application should have a corresponding non-generic data mapping. Data mappings define how your entities are configured in the database and allow you 
 to customize Entity Framework behavior.
 
 ```csharp
@@ -621,6 +623,10 @@ The audit implementation is based on the **[EntityFramework Plus](https://github
 Try it out yourself using the **[Api.Data.Repository.Autosave](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Repository.Autosave)**.  
 
 ## Soft Delete
+TEST WHAT IEntitySoftDeleted do, and if it's possible to do soft-delete on only some interfaces, maybe it shouldn't be a configuration, just enabled when entities have the interface.
+
+The `IsDeleted` column is created for all tables no matter if enabled or disabled in configuration.  
+
 In order for soft deletion to be enabled, it much be enabled in the data section of the configuration.  
 When implementing the interface ```IEntityDeletableSoft```, or when deriving a model implementation from the ```DefaultEntity```, the entity will be soft deleted when removed from the data context. When soft deleted, the data doesn't get removed, but the row gets flagged as deleted, and filtered out in future queries.  
 

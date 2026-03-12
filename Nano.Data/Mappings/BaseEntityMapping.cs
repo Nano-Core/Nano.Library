@@ -8,7 +8,7 @@ namespace Nano.Data.Mappings;
 
 /// <inheritdoc />
 public abstract class BaseEntityMapping<TEntity> : BaseEntityMapping<TEntity, Guid>
-    where TEntity : class, IEntityBase<Guid>
+    where TEntity : class, IEntityReadOnly<Guid>
 {
     /// <inheritdoc />
     public override void Configure(EntityTypeBuilder<TEntity> builder)
@@ -26,7 +26,7 @@ public abstract class BaseEntityMapping<TEntity> : BaseEntityMapping<TEntity, Gu
 /// <typeparam name="TEntity">The type of the entity to map.</typeparam>
 /// <typeparam name="TIdentity">The type of the entity's identity key.</typeparam>
 public abstract class BaseEntityMapping<TEntity, TIdentity> : BaseEntityIdentityMapping<TEntity, TIdentity>
-    where TEntity : class, IEntityBase<TIdentity>
+    where TEntity : class, IEntityReadOnly<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

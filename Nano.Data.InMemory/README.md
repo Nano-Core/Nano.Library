@@ -36,11 +36,11 @@ Register the `InMemoryProvider` provider during application startup in the `Conf
     .ConfigureServices(services =>
     {
         services
-            .AddNanoData<InMemoryProvider>();
+            .AddNanoData<InMemoryProvider, TContext>();
     })
 ```
 
-A `BaseDbContext` must also be implemented.  
+A `BaseDbContext` must also be implemented and used as `TContext`.  
 
 ## Configuration
 Configured the application with the necessary data setup.  

@@ -20,5 +20,5 @@ public abstract class BaseEntity : BaseEntity<Guid>
 /// Implements <see cref="IEntityWritable"/>.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the entity identity.</typeparam>
-public abstract class BaseEntity<TIdentity> : BaseEntityBase<TIdentity>, IEntityWritable
+public abstract class BaseEntity<TIdentity> : BaseEntityReadOnly<TIdentity>, IEntityWritable
     where TIdentity : IEquatable<TIdentity>;
