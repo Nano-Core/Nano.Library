@@ -42,6 +42,7 @@ public abstract class BaseEntityController : BaseController
         this.Eventing = eventing;
     }
 }
+
 /// <inheritdoc />
 public abstract class BaseEntityController<TEntity, TCriteria> : BaseEntityController<TEntity, Guid, TCriteria>
     where TEntity : class, IEntityIdentity<Guid>, IEntityWritable, new()
@@ -52,7 +53,7 @@ public abstract class BaseEntityController<TEntity, TCriteria> : BaseEntityContr
         : base(logger, repository, eventing)
     {
     }
-}
+} 
 
 /// <summary>
 /// Controller providing readable and writable operations (Create, Edit, Delete).

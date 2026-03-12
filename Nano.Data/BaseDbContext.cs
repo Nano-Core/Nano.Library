@@ -222,7 +222,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     /// <param name="entity">The entity to add or update.</param>
     /// <returns>The <see cref="EntityEntry{TEntity}"/> for the entity.</returns>
     public virtual EntityEntry<TEntity> AddOrUpdate<TEntity>(TEntity entity)
-        where TEntity : class
+        where TEntity : class // BUG: 000: IEntityIdentity<TIdentity>
     {
         ArgumentNullException.ThrowIfNull(entity);
 
@@ -252,7 +252,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         var existing = this.Set<TEntity>()
             .Find(id);
 
-        // BUG: reflection id
+        // BUG: 000: reflection id
         //var existing = this.Set<TEntity>()
         //    .Find(entity.Id);
 
@@ -271,7 +271,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     /// <typeparam name="TEntity">The type of the entities.</typeparam>
     /// <param name="entities">The entities to add or update.</param>
     public virtual void AddOrUpdateMany<TEntity>(IEnumerable<TEntity> entities)
-        where TEntity : class, IEntity // IEntityIdentity<TIdentity>
+        where TEntity : class // BUG: 000: IEntityIdentity<TIdentity>
     {
         ArgumentNullException.ThrowIfNull(entities);
 

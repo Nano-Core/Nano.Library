@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Nano.Data.Abstractions.Models.Abstractions;
 using System;
+using Nano.Data.Abstractions.Models;
 
 namespace Nano.Data.Mappings;
 
@@ -12,7 +13,7 @@ namespace Nano.Data.Mappings;
 /// <typeparam name="TEntity">The type of entity.</typeparam>
 /// <typeparam name="TIdentity">The type of the entity's identity key.</typeparam>
 public abstract class BaseEntityIdentityMapping<TEntity, TIdentity> : BaseMapping<TEntity>
-    where TEntity : class, IEntityIdentity<TIdentity>
+    where TEntity : BaseEntityIdentity<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />

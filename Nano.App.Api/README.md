@@ -1700,19 +1700,23 @@ logging and correlation. See **[Request Tracing](#request-tracing)**.
 In addition to `BaseController`, Nano includes specialized base entity controllers designed for working with Nano data entities. These controllers expose standard 
 CRUD operations depending on their intended responsibility, as shown below.
 
-| Controller                                  | Get | Create | Update | Delete |
-| ------------------------------------------- | --- | ------ | ------ | ------ |
-| `BaseEntityController`                      | ✔   | ✔     | ✔     | ✔     |
-| `BaseEntityReadOnlyController`              | ✔   | ❌    | ❌     | ❌    |
-| `BaseEntityCreatableController`             | ✔   | ✔     | ❌    | ❌    |
-| `BaseEntityCreatableAndUpdatableController` | ✔   | ✔     | ✔     | ❌    |
-| `BaseEntityUpdatableController`             | ✔   | ❌    | ✔     | ❌    |
-| `BaseEntityDeletableController`             | ✔   | ❌    | ❌    | ✔     |
+| Controller                                                      | Get | Query | Create | Update | Delete |
+| --------------------------------------------------------------- | --- | ----- | ------ | ------ | ------ |
+| `BaseEntityController`                                          | ❌  | ❌   | ❌     | ❌     | ❌    |
+| `BaseEntityController<TEntity, TCriteria>`                      | ✔   | ✔   | ✔     | ✔     | ✔     |
+| `BaseEntityQueryableController<TEntity, TCriteria>`             | ❌  | ✔   | ❌    | ❌     | ❌    |
+| `BaseEntityReadOnlyController<TEntity, TCriteria>`              | ✔   | ✔   | ❌    | ❌     | ❌    |
+| `BaseEntityCreatableController<TEntity, TCriteria>`             | ✔   | ✔   | ✔     | ❌    | ❌    |
+| `BaseEntityCreatableAndUpdatableController<TEntity, TCriteria>` | ✔   | ✔   | ✔     | ✔     | ❌    |
+| `BaseEntityUpdatableController<TEntity, TCriteria>`             | ✔   | ✔   | ❌    | ✔     | ❌    |
+| `BaseEntityDeletableController<TEntity, TCriteria>`             | ✔   | ✔   | ❌    | ❌    | ✔     |
 
 Derive you concrete entity controllers classes from one of these base classes, and choose the most restrictive controller that satisfies the domain requirements 
-to keep the API surface minimal and explicit.
+to keep the API surface minimal and explicit.  
 
-> ⚠️ Entity controllers require **Nano.Data** to be configured for the application.
+When exposing entity models mapped from SQL views, use `BaseEntityQueryableController` or a higher-level base class.  
+
+> ⚠️ Entity controllers require Nano.Data to be configured for the application.
 
 Each concrete implementation of an entity controller must specify two generic parameters. First, the entity model, which defines the database table and its properties 
 that the controller will work with. This model comes from **[Nano Data Models](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#data-models)** and uses 

@@ -320,7 +320,7 @@ concrete entities.
 Alternatively, you can derive your entity model from one of the specialized CRUD base classes: `BaseEntityReadOnly`, `BaseEntityCreatable`, `BaseEntityCreatableAndUpdatable`, 
 `BaseEntityUpdatable`, or `BaseEntityDeletable`, to restrict the allowed `IRepository` operations for that entity.  
 
-> ⚠️ `BaseEntityReadOnly` is immutable and is intended to be mapped as SQL views only.
+> ⚠️ `BaseEntityReadOnly` is immutable and is not intended to be used directly.
 
 For more advanced scenarios, if you do not want the built-in properties provided by Nano, you can derive your entity model from `BaseEntityIdentity` or 
 `BaseEntityIdentity<TIdentity>`. This gives your entity only the `Id` property, but limits most built-in `IRepository` operations. To restore specific operations, your entity 
@@ -344,11 +344,24 @@ public class MyEntityUser : BaseEntityUser
 
 This allows you to use an entity user model without having to deal directly with the underlying identity data when working with the model.  
 
-Nano also supports spatial `Geometry` types from `NetToplogySuite`.  
+Nano also supports defining views in the entity model.  
+The `BaseEntityView` entity class can be used to define a model for a SQL view. 
+
+```csharp
+public class MyEntityView : BaseEntityView
+{
+    // Properties
+}
+```
+
+Try it out yourself using the **[Api.Data.MySql.Views](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Views)** example.  
+
+Spatial `Geometry` types from `NetToplogySuite` is also supported. Try it out yourself using the 
+**[Api.Data.MySql.Spatial](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Spatial)** example.  
 
 ## Data Mappings
-Each data model in your application should have a corresponding non-generic data mapping. Data mappings define how your entities are configured in the database and allow you 
-to customize Entity Framework behavior.
+Each data model in your application should have a corresponding non-generic data mapping with a parameterless constructor. Data mappings define how your entities are configured 
+in the database and allow you to customize Entity Framework behavior.  
 
 ```csharp
 public class MyEntityMapping : BaseEntityMapping<MyEntity>
@@ -393,10 +406,12 @@ public class MyEntityViewMapping : BaseEntityViewMapping<MyEntity>
     {
         base.Map(builder);
 
-        // Add custom Entity Framework mappings for the view here.
+        // Add Entity Framework mappings here.
     }
 }
 ```
+
+> ⚠️ Entity Framework does not automatically support database views in migrations. Views must be created or modified manually within a migration.
 
 Nano automatically updates all unique index mappings to include the `IsDeleted` property. This ensures that soft-deleted entities can coexist without violating 
 uniqueness constraints.  
@@ -422,6 +437,8 @@ dotnet ef database update `
   --startup-project $env:APP_NAME `
   --connection "$env:MYSQL_MIGRATION_CONNECTIONSTRING";
 ```
+
+> ⚠️ Entity Framework does not handle views, stored procedures, or functions in migrations, they must be added or modified manually.
 
 > 📖 Learn more about **[EF Migrations](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli)**.
 

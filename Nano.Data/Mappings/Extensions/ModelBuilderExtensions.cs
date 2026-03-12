@@ -16,33 +16,60 @@ internal static class ModelBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        var addMappingMethod = typeof(ModelBuilderExtensions)
-            .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
-            .Single(x =>
-                x is { Name: nameof(ModelBuilderExtensions.AddMapping), IsGenericMethodDefinition: true } &&
-                x.GetGenericArguments().Length == 3 &&
-                x.GetParameters().Length == 1);
+        var methods = typeof(ModelBuilderExtensions)
+            .GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
+
+        var addMappingMethod = methods
+            .Single(x => x is { Name: nameof(AddMapping), IsGenericMethodDefinition: true } && x.GetGenericArguments().Length == 2);
+
+        var addMappingIdentityMethod = methods
+            .Single(x => x is { Name: nameof(AddMapping), IsGenericMethodDefinition: true } && x.GetGenericArguments().Length == 3);
 
         var mappingTypes = TypesHelper
-            .GetAllTypes()
-            .Where(x =>
-                x is { IsAbstract: false, IsInterface: false, IsGenericType: false } &&
-                x.IsTypeOf(typeof(BaseMapping<>)))
+            .GetAllTypes().Where(x => x is { IsAbstract: false, IsInterface: false, IsGenericType: false } && x.IsTypeOf(typeof(BaseMapping<>)))
             .ToArray();
 
         foreach (var mappingType in mappingTypes)
         {
-            var baseType = mappingType.BaseType!;
-            var genericArgs = baseType.GetGenericArguments();
-            var entityType = genericArgs[0];
-            var identityType = typeof(TIdentity);
+            var entityType = mappingType.BaseType!
+                .GetGenericArguments()[0];
 
-            addMappingMethod
-                .MakeGenericMethod(entityType, identityType, mappingType)
-                .Invoke(null, [builder]);
+            var isIdentityMapping = mappingType
+                .IsTypeOf(typeof(BaseEntityMapping<,>));
+
+            if (isIdentityMapping)
+            {
+                var identityType = typeof(TIdentity);
+
+                addMappingIdentityMethod
+                    .MakeGenericMethod(entityType, identityType, mappingType)
+                    .Invoke(null, [builder]);
+            }
+            else
+            {
+                addMappingMethod
+                    .MakeGenericMethod(entityType, mappingType)
+                    .Invoke(null, [builder]);
+            }
         }
 
         return builder;
+    }
+
+    internal static ModelBuilder AddMapping<TEntity, TMapping>(this ModelBuilder builder)
+        where TEntity : class, IEntity
+        where TMapping : BaseMapping<TEntity>, new()
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        var mapping = new TMapping();
+
+        mapping
+            .Configure(builder.Entity<TEntity>());
+
+        return builder
+            .UpdateSoftDeleteUniuqeIndexes<TEntity>()
+            .UpdateUniuqeIndexes<TEntity>();
     }
 
     internal static ModelBuilder AddMapping<TEntity, TIdentity, TMapping>(this ModelBuilder builder)
