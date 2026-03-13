@@ -94,7 +94,6 @@ The `Data` section in the configuration defines the data provider and related se
 |  `UseLazyLoading`               | bool   | false       | A value indicating whether lazy loading is enabled. See [Lazy Loading](#lazy-loading). ⚠️ Not recommended, use [Nano Include Annotation](#include-annotation).  |
 |  `UseCreateDatabase`            | bool   | false       | A value indicating whether the database should be created automatically using just the mappings, bypassing migrations.                                          |
 |  `UseMigrateDatabase`           | bool   | false       | A value indicating whether database migrations should be applied automatically.                                                                                 |
-|  `UseSoftDeletetion`            | bool   | false       | A value indicating whether soft deletion is enabled. See [Soft Delete](#soft-delete).                                                                           |
 |  `UseSensitiveDataLogging`      | bool   | false       | A value indicating whether sensitive data logging is enabled.                                                                                                   |
 |  `UseAudit`                     | bool   | false       | A value indicating whether auditing is enabled. See [Audit](#audit)                                                                                             |
 |  `QuerySplittingBehavior`       | enum   | SingleQuery | The default query splitting behavior for EF Core queries.                                                                                                       |              
@@ -116,7 +115,6 @@ The `Data` section in the configuration defines the data provider and related se
   "UseLazyLoading": false,
   "UseCreateDatabase": false,
   "UseMigrateDatabase": false,
-  "UseSoftDeletetion": false,
   "UseSensitiveDataLogging": false,
   "UseAudit": false,
   "QuerySplittingBehavior": "SingleQuery",
@@ -647,15 +645,20 @@ The audit implementation is based on the **[EntityFramework Plus](https://github
 Try it out yourself using the **[Api.Data.Repository.Autosave](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Repository.Autosave)**.  
 
 ## Soft Delete
-The `IsDeleted` column is created for all tables no matter if enabled or disabled in configuration.  
+If you want a model to use soft-delete, simply implement the `IEntitySoftDeletable` interface.  
 
-In order for soft deletion to be enabled, it much be enabled in the data section of the configuration.  
-When implementing the interface ```IEntityDeletableSoft```, or when deriving a model implementation from the ```DefaultEntity```, the entity will be soft deleted when removed from the data context. When soft deleted, the data doesn't get removed, but the row gets flagged as deleted, and filtered out in future queries.  
+When an entity implements `IEntitySoftDeletable` and is removed from the data context, it will be soft deleted instead of physically removed. Soft-deleted entities have 
+their `IsDeleted` property set to the current Unix epoch time and are automatically filtered out in future queries. The `IsDeleted` column is created for all tables, regardless 
+of whether it is soft-deletable or not.  
 
-When dealing with soft deleted entities, together with unique indexes, a conflict can arise having one or more deleted entities with duplicate unique values. 
-Nano automatically adjusts unique indexes, appending the ```IsDeleted``` property. This is with the exception of the property defined as primary key.
+If you entity models derive from one of the `BaseEntity` classes, your model will already have the `IsDeleted` property implemented.  
 
-Opposite of using regular delete, soft-deleting entities doesn't support cascading deletes.
+Unlike regular deletes, soft-deleting entities does not support cascading deletes.  
+
+When dealing with soft-deleted entities together with unique indexes, conflicts can arise if one or more deleted entities have duplicate unique values. Nano automatically 
+adjusts unique indexes by appending the `IsDeleted` property, with the exception of the primary key.
+
+Try it out yourself using the **[Api.Data.SoftDelete](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.SoftDelete)**.  
 
 ## Lazy Loading
 Load related data from the database only when it is first accessed, not when the parent entity is retrieved. This can reduce unnecessary queries but may cause extra database 
@@ -664,7 +667,7 @@ calls if the data is accessed repeatedly.
 > ⚠️ Lazy-loading may trigger unexpected queries (N+1 problem), leading to serious performance issues. Use with caution.
 
 When lazy loading is enabled in the configuration, navigation properties will be loaded automatically during serialization if they are marked with the 
-[`Include`](#include-annotation) annotation. Normally, these properties should already be loaded, but if you retrieve entity models without including them, the serializer 
+[Include Annotation](#include-annotation). Normally, these properties should already be loaded, but if you retrieve entity models without including them, the serializer 
 will trigger lazy-loading to fetch the missing data.  
 
 Try it out yourself using the **[Api.Data.LazyLoading](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.LazyLoading)**.  
@@ -703,6 +706,8 @@ Nano supports the following triggers.
 
 For more details about triggers and how to use them, consult the docucmenation of [EntityFramework.Triggers](https://github.com/NickStrupat/EntityFramework.Triggers).  
 
+Try it out yourself using the **[Api.Data.Triggers](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Triggers)**.  
+
 ## Entity Events
 !!!!If Publish on a enity model, on update we will do a select with includes to be sure to have the navigations that might be in the Publish properties.
 
@@ -727,4 +732,3 @@ If the ```Publish``` is used on a base class, that entity type will be used when
 Publish/Subscribe can also work bi-directionally, but it would required the models in each service to have the same required properties, and probably best to keep them identical in this case.  
 
 **NOTE**: Avoid sharing models having ```SubscribeAttribute```, with other Nano services, as the eventing subscription will be initialized unintentionally for that service as well.  
-

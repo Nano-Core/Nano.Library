@@ -222,7 +222,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     /// <param name="entity">The entity to add or update.</param>
     /// <returns>The <see cref="EntityEntry{TEntity}"/> for the entity.</returns>
     public virtual EntityEntry<TEntity> AddOrUpdate<TEntity>(TEntity entity)
-        where TEntity : class // BUG: 000: IEntityIdentity<TIdentity>
+        where TEntity : class
     {
         ArgumentNullException.ThrowIfNull(entity);
 
@@ -232,33 +232,35 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
 
         if (tracked != null)
         {
-            this.Entry(tracked).CurrentValues.SetValues(entity);
+            tracked.CurrentValues
+                .SetValues(entity);
 
             return tracked;
         }
 
-        var idProperty = entity
-            .GetType()
-            .GetProperty(nameof(IEntityIdentity<>.Id));
+        var keyProperties = this.Model
+            .FindEntityType(typeof(TEntity))
+            ?.FindPrimaryKey()
+            ?.Properties;
 
-        if (idProperty == null)
+        if (keyProperties == null || keyProperties.Count == 0)
         {
-            throw new NullReferenceException(nameof(idProperty));
+            throw new InvalidOperationException($"No primary key defined for '{typeof(TEntity).Name}'");
         }
 
-        var id = idProperty
-            .GetValue(entity);
+        var keyValues = keyProperties
+            .Select(x => x.PropertyInfo?
+                .GetValue(entity))
+            .ToArray();
 
         var existing = this.Set<TEntity>()
-            .Find(id);
-
-        // BUG: 000: reflection id
-        //var existing = this.Set<TEntity>()
-        //    .Find(entity.Id);
+            .Find(keyValues);
 
         if (existing != null)
         {
-            this.Entry(existing).CurrentValues.SetValues(entity);
+            this.Entry(existing).CurrentValues
+                .SetValues(entity);
+
             return this.Entry(existing);
         }
 
@@ -271,7 +273,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     /// <typeparam name="TEntity">The type of the entities.</typeparam>
     /// <param name="entities">The entities to add or update.</param>
     public virtual void AddOrUpdateMany<TEntity>(IEnumerable<TEntity> entities)
-        where TEntity : class // BUG: 000: IEntityIdentity<TIdentity>
+        where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(entities);
 
@@ -431,13 +433,8 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     }
     private void UpdateSoftDeletedEntities()
     {
-        if (!this.options.CurrentValue.UseSoftDeletetion)
-        {
-            return;
-        }
-
         var entityEntries = this.ChangeTracker
-            .Entries<IEntityDeletableSoft>()
+            .Entries<IEntitySoftDeletable>()
             .Where(x => x.State == EntityState.Deleted);
 
         foreach (var entityEntry in entityEntries)

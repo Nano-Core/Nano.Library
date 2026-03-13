@@ -156,7 +156,7 @@ public static class ServiceCollectionExtensions
             var httpContextAccessor = dbContext
                 .GetService<IHttpContextAccessor>();
 
-            var requestId = httpContextAccessor.HttpContext?.TraceIdentifier; // BUG: THis should be RequestId, also document in readme that we are adding the RequesteId to Audit
+            var requestId = httpContextAccessor.HttpContext?.TraceIdentifier;
 
             var createdBy = httpContextAccessor.HttpContext?
                 .GetJwtUserId()?
@@ -190,7 +190,7 @@ public static class ServiceCollectionExtensions
                 .Set<AuditEntry<TIdentity>>()
                 .AddRange(auditEntries);
         };
-        AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsDeleted > 0L);
+        AuditManager.DefaultConfiguration.SoftDeleted<IEntitySoftDeletable>(x => x.IsDeleted > 0L);
 
         return services;
     }

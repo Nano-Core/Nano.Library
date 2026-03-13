@@ -70,11 +70,11 @@ public static class EntityTypeBuilderExtensions
     /// <summary>
     /// Registers a callback to be executed **after** a <typeparamref name="TEntity"/> is soft-deleted from the database.
     /// </summary>
-    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntityDeletableSoft"/>.</typeparam>
+    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntitySoftDeletable"/>.</typeparam>
     /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.</param>
     /// <param name="action">The callback action invoked after the delete operation.</param>
     public static void OnDeleted<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IDeletedEntry<TEntity>> action)
-        where TEntity : class, IEntityDeletableSoft
+        where TEntity : class, IEntitySoftDeletable
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -84,11 +84,11 @@ public static class EntityTypeBuilderExtensions
     /// <summary>
     /// Registers a callback to be executed **before** a <typeparamref name="TEntity"/> is soft-deleted from the database.
     /// </summary>
-    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntityDeletableSoft"/>.</typeparam>
+    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntitySoftDeletable"/>.</typeparam>
     /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.</param>
     /// <param name="action">The callback action invoked before the delete operation.</param>
     public static void OnDeleting<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IDeletingEntry<TEntity>> action)
-        where TEntity : class, IEntityDeletableSoft
+        where TEntity : class, IEntitySoftDeletable
     {
         ArgumentNullException.ThrowIfNull(builder);
 

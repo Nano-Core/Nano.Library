@@ -50,13 +50,6 @@ public class DataOptions
     public virtual bool UseLazyLoading { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets a value indicating whether soft deletion is enabled.
-    /// Defaults to <c>true</c>.
-    /// </summary>
-    [Required]
-    public virtual bool UseSoftDeletetion { get; set; } = false;
-
-    /// <summary>
     /// Gets or sets a value indicating whether the database should be created automatically.
     /// Defaults to <c>false</c>.
     /// </summary>

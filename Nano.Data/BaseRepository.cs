@@ -811,12 +811,20 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         where TEntity : class, IEntityDeletable, IEntityIdentity<TKey>, new()
         where TKey : IEquatable<TKey>
     {
-        var entity = this.options.CurrentValue.UseSoftDeletetion
-            ? await this.dbContext.FindAsync<TEntity>([id], cancellationToken)
-            : new TEntity
+        TEntity? entity;
+
+        if (typeof(IEntitySoftDeletable).IsAssignableFrom(typeof(TEntity)))
+        {
+            entity = await this.dbContext
+                .FindAsync<TEntity>([id], cancellationToken);
+        }
+        else
+        {
+            entity = new TEntity
             {
                 Id = id
             };
+        }
 
         if (entity == null)
         {
@@ -863,7 +871,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         ArgumentNullException.ThrowIfNull(entity);
 
         this.dbContext
-            .SingleDelete(entity);
+            .Remove(entity);
 
         if (this.options.CurrentValue.Repository.UseAutoSave)
         {

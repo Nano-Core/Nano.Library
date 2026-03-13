@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents an entity that supports soft deletion.
 /// </summary>
-public interface IEntityDeletableSoft : IEntityDeletable
+public interface IEntitySoftDeletable : IEntityDeletable
 {
     /// <summary>
     /// Gets or sets the deletion flag.

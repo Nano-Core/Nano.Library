@@ -132,7 +132,7 @@ internal static class ModelBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (!typeof(TEntity).IsTypeOf(typeof(IEntityDeletableSoft)))
+        if (!typeof(TEntity).IsTypeOf(typeof(IEntitySoftDeletable)))
         {
             return builder;
         }
