@@ -658,8 +658,16 @@ Nano automatically adjusts unique indexes, appending the ```IsDeleted``` propert
 Opposite of using regular delete, soft-deleting entities doesn't support cascading deletes.
 
 ## Lazy Loading
-we also need to consider about lazy-loading an include serialization. If a user through dbcontext get's a model, then we would now lazy load includes
-maybe that is fine? To be expected. Just document it
+Load related data from the database only when it is first accessed, not when the parent entity is retrieved. This can reduce unnecessary queries but may cause extra database 
+calls if the data is accessed repeatedly. 
+
+> ⚠️ Lazy-loading may trigger unexpected queries (N+1 problem), leading to serious performance issues. Use with caution.
+
+When lazy loading is enabled in the configuration, navigation properties will be loaded automatically during serialization if they are marked with the 
+[`Include`](#include-annotation) annotation. Normally, these properties should already be loaded, but if you retrieve entity models without including them, the serializer 
+will trigger lazy-loading to fetch the missing data.  
+
+Try it out yourself using the **[Api.Data.LazyLoading](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.LazyLoading)**.  
 
 ## Triggers
 Nano supports mapping triggers for the models. 

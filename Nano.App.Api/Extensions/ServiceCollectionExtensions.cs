@@ -26,6 +26,7 @@ using Nano.App.Api.Mvc;
 using Nano.App.Api.Mvc.Authentication.Extensions;
 using Nano.App.Api.Mvc.Authorization.Extensions;
 using Nano.App.Api.Mvc.Documentation;
+using Nano.App.Consts;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
@@ -440,6 +441,13 @@ internal static class ServiceCollectionExtensions
             .AddQueryModelBinders()
             .AddSingleton<IConfigureOptions<MvcOptions>, ConfigureMvcOptions>()
             .AddSingleton<IConfigureOptions<MvcNewtonsoftJsonOptions>, ConfigureMvcJsonOptions>()
+            .AddProblemDetails(x =>
+            {
+                x.CustomizeProblemDetails = context =>
+                {
+                    context.ProblemDetails.Extensions[ProblemDetailsExtensionKeys.TRACE_ID] = context.HttpContext.TraceIdentifier;
+                };
+            })
             .AddControllersWithViews()
             .AddNewtonsoftJson()
             .AddViewLocalization()

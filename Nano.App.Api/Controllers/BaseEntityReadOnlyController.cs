@@ -33,7 +33,7 @@ public abstract class BaseEntityReadOnlyController<TEntity, TCriteria> : BaseEnt
 /// <typeparam name="TEntity">The entity type managed by the repository.</typeparam>
 /// <typeparam name="TIdentity">The type of the entity's identifier.</typeparam>
 /// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
-public abstract class BaseEntityReadOnlyController<TEntity, TIdentity, TCriteria> : BaseEntityQueryableController<TEntity, TCriteria>
+public abstract class BaseEntityReadOnlyController<TEntity, TIdentity, TCriteria> : BaseEntityViewController<TEntity, TCriteria>
     where TEntity : class, IEntityIdentity<TIdentity>
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>

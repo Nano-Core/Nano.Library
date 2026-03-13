@@ -1702,19 +1702,19 @@ CRUD operations depending on their intended responsibility, as shown below.
 
 | Controller                                                      | Get | Query | Create | Update | Delete |
 | --------------------------------------------------------------- | --- | ----- | ------ | ------ | ------ |
-| `BaseEntityController`                                          | ❌  | ❌   | ❌     | ❌     | ❌    |
-| `BaseEntityController<TEntity, TCriteria>`                      | ✔   | ✔   | ✔     | ✔     | ✔     |
-| `BaseEntityQueryableController<TEntity, TCriteria>`             | ❌  | ✔   | ❌    | ❌     | ❌    |
-| `BaseEntityReadOnlyController<TEntity, TCriteria>`              | ✔   | ✔   | ❌    | ❌     | ❌    |
-| `BaseEntityCreatableController<TEntity, TCriteria>`             | ✔   | ✔   | ✔     | ❌    | ❌    |
-| `BaseEntityCreatableAndUpdatableController<TEntity, TCriteria>` | ✔   | ✔   | ✔     | ✔     | ❌    |
-| `BaseEntityUpdatableController<TEntity, TCriteria>`             | ✔   | ✔   | ❌    | ✔     | ❌    |
-| `BaseEntityDeletableController<TEntity, TCriteria>`             | ✔   | ✔   | ❌    | ❌    | ✔     |
+| `BaseEntityController`                                          | ❌  | ❌   | ❌     | ❌     | ❌     |
+| `BaseEntityController<TEntity, TCriteria>`                      | ✔   | ✔   | ✔      | ✔     | ✔      |
+| `BaseEntityReadOnlyController<TEntity, TCriteria>`              | ✔   | ✔   | ❌     | ❌     | ❌     |
+| `BaseEntityCreatableController<TEntity, TCriteria>`             | ✔   | ✔   | ✔      | ❌     | ❌     |
+| `BaseEntityCreatableAndUpdatableController<TEntity, TCriteria>` | ✔   | ✔   | ✔      | ✔     | ❌     |
+| `BaseEntityUpdatableController<TEntity, TCriteria>`             | ✔   | ✔   | ❌     | ✔      | ❌     |
+| `BaseEntityDeletableController<TEntity, TCriteria>`             | ✔   | ✔   | ❌     | ❌     | ✔      |
+| `BaseEntityViewController<TEntity, TCriteria>`                  | ❌  | ✔   | ❌      | ❌    | ❌     |
 
 Derive you concrete entity controllers classes from one of these base classes, and choose the most restrictive controller that satisfies the domain requirements 
 to keep the API surface minimal and explicit.  
 
-When exposing entity models mapped from SQL views, use `BaseEntityQueryableController` or a higher-level base class.  
+When exposing entity models mapped from SQL views, use `BaseEntityViewController` or a higher-level base class.  
 
 > ⚠️ Entity controllers require Nano.Data to be configured for the application.
 

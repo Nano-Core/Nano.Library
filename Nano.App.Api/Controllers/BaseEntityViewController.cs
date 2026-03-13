@@ -19,12 +19,12 @@ namespace Nano.App.Api.Controllers;
 /// </summary>
 /// <typeparam name="TEntity">The entity type managed by the repository.</typeparam>
 /// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
-public abstract class BaseEntityQueryableController<TEntity, TCriteria> : BaseEntityController
+public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityController
     where TEntity : class, IEntity
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected BaseEntityQueryableController(ILogger<BaseEntityQueryableController<TEntity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
+    protected BaseEntityViewController(ILogger<BaseEntityViewController<TEntity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

@@ -24,6 +24,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Nano.App.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
@@ -404,14 +405,14 @@ internal static class ApplicationBuilderExtensions
         applicationBuilder
             .Use((context, next) =>
             {
-                var requestId = context.Request.Headers[NanoHeaderNames.REQUEST_ID].FirstOrDefault() ?? context.TraceIdentifier;
+                context.TraceIdentifier = context.Request.GetRequestId() ?? context.TraceIdentifier;
 
-                context.Request.Headers[NanoHeaderNames.REQUEST_ID] = requestId;
+                context.Request.Headers[NanoHeaderNames.REQUEST_ID] = context.TraceIdentifier;
 
                 context.Response
                     .OnStarting(() =>
                     {
-                        context.Response.Headers[NanoHeaderNames.REQUEST_ID] = requestId;
+                        context.Response.Headers[NanoHeaderNames.REQUEST_ID] = context.TraceIdentifier;
 
                         return Task.CompletedTask;
                     });
