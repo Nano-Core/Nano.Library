@@ -7,13 +7,15 @@ using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Eventing;
 using Nano.Data.Abstractions.Identity.Extensions;
+using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Eventing;
 using Nano.Data.Identity.Authentication.Extensions;
 using Nano.Data.Identity.Extensions;
 using System;
 using System.Linq;
-using Nano.Data.Abstractions.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Interceptors;
+using Nano.Eventing.Abstractions;
 using Z.EntityFramework.Extensions;
 using Z.EntityFramework.Plus;
 
@@ -115,6 +117,18 @@ public static class ServiceCollectionExtensions
                     builder
                         .AddDataContext(provider, options);
 
+                    var eventing = provider
+                        .GetService<IEventing>();
+
+                    if (eventing != null)
+                    {
+                        builder
+                            .AddInterceptors(new EntityEventingSaveChangesInterceptor(eventing));
+                    }
+
+                    builder
+                        .AddInterceptors(new SoftDeleteSaveChangesInterceptor());
+
                     TProvider.Configure(builder, options);
                 });
         }
@@ -125,6 +139,18 @@ public static class ServiceCollectionExtensions
                 {
                     builder
                         .AddDataContext(provider, options);
+
+                    var eventing = provider
+                        .GetService<IEventing>();
+
+                    if (eventing != null)
+                    {
+                        builder
+                            .AddInterceptors(new EntityEventingSaveChangesInterceptor(eventing));
+                    }
+
+                    builder
+                        .AddInterceptors(new SoftDeleteSaveChangesInterceptor());
 
                     TProvider.Configure(builder, options);
                 }, options.ConnectionPool.PoolSize);
@@ -149,7 +175,7 @@ public static class ServiceCollectionExtensions
         AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
         AuditManager.DefaultConfiguration.IncludeProperty<IEntityAuditable>();
         AuditManager.DefaultConfiguration.IncludeDataAnnotation();
-        AuditManager.DefaultConfiguration.Exclude<IEntityAuditableNegated>(); // BUG: What if IEntityAuditable and IEntityAuditableNegated
+        AuditManager.DefaultConfiguration.Exclude<IEntityAuditableNegated>(); // BUG: AUDIT: What if IEntityAuditable and IEntityAuditableNegated
         AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
         AuditManager.DefaultConfiguration.AutoSavePreAction = (dbContext, audit) =>
         {

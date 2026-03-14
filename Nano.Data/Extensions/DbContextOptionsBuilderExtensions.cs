@@ -20,8 +20,13 @@ internal static class DbContextOptionsBuilderExtensions
                 x.Ignore(RelationalEventId.BoolWithDefaultWarning);
                 x.Log(RelationalEventId.MultipleCollectionIncludeWarning);
                 x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
-            })
-            .UseLazyLoadingProxies(options.UseLazyLoading);
+            });
+
+        if (options.UseLazyLoading)
+        {
+            builder
+                .UseLazyLoadingProxies(options.UseLazyLoading);
+        }
 
         return builder;
     }

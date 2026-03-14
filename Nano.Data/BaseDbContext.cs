@@ -8,19 +8,14 @@ using Microsoft.Extensions.Options;
 using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Eventing.Annotations;
-using Nano.Data.Abstractions.Eventing.Models;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Abstractions.Models.Identity;
-using Nano.Data.Eventing.Extensions;
-using Nano.Data.Extensions;
 using Nano.Data.Identity.Extensions;
 using Nano.Data.Mappings;
 using Nano.Data.Mappings.Extensions;
-using Nano.Eventing.Abstractions;
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -31,14 +26,9 @@ using Z.EntityFramework.Plus;
 
 namespace Nano.Data;
 
-// BUG: Entity Event Map (Important)
-// 1. Make a map of Publish Attributes and their property names.
-// 2. When SaveChanges then check if any property names are affected (e.g. User.IdentityUser.Email is changed, then User needs to be fetched and published)
-// NB: Maybe make startup validation of Publish properties and use of include
-
 /// <inheritdoc />
-public class BaseDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> dataOptions, IEventing? eventing = null)
-    : BaseDbContext<Guid>(contextOptions, dataOptions, eventing);
+public class BaseDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> dataOptions)
+    : BaseDbContext<Guid>(contextOptions, dataOptions);
 
 /// <summary>
 /// Base DbContext for identity and application data, with support for auditing, soft deletion, and entity events.
@@ -47,11 +37,7 @@ public class BaseDbContext(DbContextOptions contextOptions, IOptionsMonitor<Data
 public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserEx<TIdentity>, IdentityRole<TIdentity>, TIdentity, IdentityUserClaim<TIdentity>, IdentityUserRole<TIdentity>, IdentityUserLogin<TIdentity>, IdentityRoleClaim<TIdentity>, IdentityUserToken<TIdentity>>, IDataProtectionKeyContext
     where TIdentity : IEquatable<TIdentity>
 {
-    private bool isEntityEventEnabled = true;
-    private ConcurrentQueue<EntityEvent> pendingEvents = [];
-
     private readonly IOptionsMonitor<DataOptions> options;
-    private readonly IEventing? eventing;
 
     /// <summary>
     /// Gets or sets the DbSet for data protection keys.
@@ -63,20 +49,10 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     /// </summary>
     /// <param name="contextOptions">The <see cref="DbContextOptions"/>.</param>
     /// <param name="options">The <see cref="DataOptions"/> monitor.</param>
-    /// <param name="eventing">Optional eventing service for publishing entity events.</param>
-    protected BaseDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> options, IEventing? eventing = null)
+    protected BaseDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> options)
         : base(contextOptions)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));
-        this.eventing = eventing;
-
-        this.SavingChanges += (_, _) => this.PreSaveEntityEvents();
-        this.SavingChanges += (_, _) => this.UpdateSoftDeletedEntities();
-        this.SavedChanges += async (_, _) => await this.PublishEntityEvents();
-
-        // ReSharper disable VirtualMemberCallInConstructor
-        this.ChangeTracker.LazyLoadingEnabled = this.options.CurrentValue.UseLazyLoading;
-        // ReSharper restore VirtualMemberCallInConstructor
     }
 
     /// <summary>
@@ -294,22 +270,20 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         audit
             .PreSaveChanges(this);
 
-        var rowAffecteds = this.SaveChangesWithTriggers(this.SaveChanges);
+        var rowAffecteds = this.SaveChangesWithTriggers(base.SaveChanges); 
 
         audit
             .PostSaveChanges();
 
-        var autoSavePreAction = audit.Configuration.AutoSavePreAction ?? AuditManager.DefaultConfiguration.AutoSavePreAction;
+        var autoSavePreAction = AuditManager.DefaultConfiguration.AutoSavePreAction;
 
-        if (autoSavePreAction == null || audit.Entries.Count == 0)
+        if (autoSavePreAction != null && audit.Entries.Count > 0)
         {
-            return rowAffecteds;
+            autoSavePreAction
+                .Invoke(this, audit);
+
+            this.SaveChanges();
         }
-
-        autoSavePreAction
-            .Invoke(this, audit);
-
-        this.SaveChanges();
 
         return rowAffecteds;
     }
@@ -326,40 +300,23 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         audit
             .PreSaveChanges(this);
 
-        var rowAffecteds = await this.SaveChangesWithTriggersAsync(this.SaveChangesAsync, cancellationToken)
-            .ConfigureAwait(false);
+        var rowAffecteds = await this.SaveChangesWithTriggersAsync(base.SaveChangesAsync, cancellationToken); 
 
         audit
             .PostSaveChanges();
 
-        var autoSavePreAction = audit.Configuration.AutoSavePreAction ?? AuditManager.DefaultConfiguration.AutoSavePreAction;
+        var autoSavePreAction = AuditManager.DefaultConfiguration.AutoSavePreAction;
 
-        if (autoSavePreAction == null || audit.Entries.Count == 0)
+        if (autoSavePreAction != null && audit.Entries.Count > 0)
         {
-            return rowAffecteds;
+            autoSavePreAction
+                .Invoke(this, audit);
+
+            await this.SaveChangesAsync(cancellationToken)
+                .ConfigureAwait(false);
         }
-
-        autoSavePreAction
-            .Invoke(this, audit);
-
-        await this.SaveChangesAsync(cancellationToken)
-            .ConfigureAwait(false);
 
         return rowAffecteds;
-    }
-
-    internal virtual async Task<int> SaveChangesWithoutEntityEventsAsync(CancellationToken cancellationToken = default)
-    {
-        this.isEntityEventEnabled = false;
-
-        try
-        {
-            return await this.SaveChangesAsync(cancellationToken);
-        }
-        finally
-        {
-            this.isEntityEventEnabled = true;
-        }
     }
 
     /// <summary>
@@ -386,63 +343,6 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     }
 
 
-    private void PreSaveEntityEvents()
-    {
-        if (this.eventing == null || !this.isEntityEventEnabled)
-        {
-            return;
-        }
-
-        var entityEvents = this.ChangeTracker
-            .GetPendingEntityEvents();
-
-        foreach (var entityEvent in entityEvents)
-        {
-            this.pendingEvents
-                .Enqueue(entityEvent);
-        }
-    }
-    private async Task PublishEntityEvents(CancellationToken cancellationToken = default)
-    {
-        if (this.eventing == null || !this.isEntityEventEnabled)
-        {
-            return;
-        }
-
-        try
-        {
-            while (!this.pendingEvents.IsEmpty)
-            {
-                var success = this.pendingEvents
-                    .TryDequeue(out var entityEvent);
-
-                if (success && entityEvent != null)
-                {
-                    await this.eventing
-                        .PublishAsync(entityEvent, entityEvent.Type, cancellationToken);
-                }
-            }
-        }
-        finally
-        {
-            this.pendingEvents
-                .Clear();
-
-            this.pendingEvents = [];
-        }
-    }
-    private void UpdateSoftDeletedEntities()
-    {
-        var entityEntries = this.ChangeTracker
-            .Entries<IEntitySoftDeletable>()
-            .Where(x => x.State == EntityState.Deleted);
-
-        foreach (var entityEntry in entityEntries)
-        {
-            entityEntry.State = EntityState.Modified;
-            entityEntry.Entity.IsDeleted = DateTimeOffset.UtcNow.GetEpochTime();
-        }
-    }
     private void SetOriginalValues(object entity, object? tracked = null, EntityEntry? owner = null, string? propertName = null)
     {
         ArgumentNullException.ThrowIfNull(entity);

@@ -1716,7 +1716,7 @@ to keep the API surface minimal and explicit.
 
 When exposing entity models mapped from SQL views, use `BaseEntityViewController` or a higher-level base class.  
 
-> ⚠️ Entity controllers require Nano.Data to be configured for the application.
+> ⚠️ Entity controllers require **[Nano.Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)** to be configured for the application.
 
 Each concrete implementation of an entity controller must specify two generic parameters. First, the entity model, which defines the database table and its properties 
 that the controller will work with. This model comes from **[Nano Data Models](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#data-models)** and uses 
@@ -1728,6 +1728,10 @@ public class MyEntity : BaseEntity
     // Properties
 }
 ```
+
+The entity model used by a controller does not need to match the models used for creation, updates, or other operations. For example, it is perfectly valid to have 
+a `BaseEntity` mapped to a `BaseEntityReadOnlyController`. This allows the entity to be fully modified internally within the application, while exposing only read-only 
+actions through the controller.  
 
 > ⚠️ By convention, concrete entity controllers **must** be named pluralized relative to the entity model, e.g. `MyEntity` to `MyEntitysController`.   
 

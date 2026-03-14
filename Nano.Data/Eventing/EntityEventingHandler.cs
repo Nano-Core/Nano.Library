@@ -112,7 +112,7 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
         }
 
         await this.dbContext
-            .SaveChangesWithoutEntityEventsAsync();
+            .SaveChangesAsync();
     }
 
 

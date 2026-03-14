@@ -4,7 +4,7 @@ using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Abstractions.Models;
 
-// BUG: can we make AuditEntryProperty<Guid>? and it would work?
+// BUG: AUDIT: can we make AuditEntryProperty<Guid>? and it would work?
 // The user needs to know the AuditEntry<TIdentity> (and the AuditEntryProperty<TIdentity>) to get them through api-client. Maybe this needs to be some place else, in Api docs??
 
 

@@ -1,97 +1,156 @@
 using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
 using Nano.Data.Abstractions.Models.Abstractions;
+using System;
 
 namespace Nano.Data.Mappings.Extensions;
 
 /// <summary>
-/// Provides extension methods for <see cref="EntityTypeBuilder{TEntity}"/> to register entity lifecycle event triggers.
-/// These triggers allow executing custom logic before or after insert, update, and delete operations on entities.
+/// Entity Type Builder Extensions.
 /// </summary>
 public static class EntityTypeBuilderExtensions
 {
     /// <summary>
-    /// Registers a callback to be executed **after** a <typeparamref name="TEntity"/> is inserted into the database.
+    /// Adds an inserted event trigger to the model.
+    /// The passed <paramref name="action"/> will be invoked, after the entity of type <typeparamref name="TEntity"/> is inserted.
     /// </summary>
-    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntityCreatable"/>.</typeparam>
-    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.</param>
-    /// <param name="action">The callback action invoked after the insert operation.</param>
+    /// <typeparam name="TEntity">the type of entity.</typeparam>
+    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
+    /// <param name="action">The <see cref="Action"/> invoked.</param>
     public static void OnInserted<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IInsertedEntry<TEntity>> action)
         where TEntity : class, IEntityCreatable
     {
         ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(action);
 
         Triggers<TEntity>.Inserted += action;
     }
 
     /// <summary>
-    /// Registers a callback to be executed **before** a <typeparamref name="TEntity"/> is inserted into the database.
+    /// Adds an inserting event trigger to the model.
+    /// The passed <paramref name="action"/> will be invoked, before the entity of type <typeparamref name="TEntity"/> is inserted.
     /// </summary>
-    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntityCreatable"/>.</typeparam>
-    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.</param>
-    /// <param name="action">The callback action invoked before the insert operation.</param>
+    /// <typeparam name="TEntity">the type of entity.</typeparam>
+    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
+    /// <param name="action">The <see cref="Action"/> invoked.</param>
     public static void OnInserting<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IInsertingEntry<TEntity>> action)
         where TEntity : class, IEntityCreatable
     {
         ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(action);
 
         Triggers<TEntity>.Inserting += action;
     }
 
     /// <summary>
-    /// Registers a callback to be executed **after** a <typeparamref name="TEntity"/> is updated in the database.
+    /// Adds an insert failed event trigger to the model.
+    /// The passed <paramref name="action"/> will be invoked, before the entity of type <typeparamref name="TEntity"/> is inserted.
     /// </summary>
-    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntityUpdatable"/>.</typeparam>
-    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.</param>
-    /// <param name="action">The callback action invoked after the update operation.</param>
+    /// <typeparam name="TEntity">the type of entity.</typeparam>
+    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
+    /// <param name="action">The <see cref="Action"/> invoked.</param>
+    public static void OnInsertFailed<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IInsertFailedEntry<TEntity>> action)
+        where TEntity : class, IEntityCreatable
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(action);
+
+        Triggers<TEntity>.InsertFailed += action;
+    }
+
+    /// <summary>
+    /// Adds an updated event trigger to the model.
+    /// The passed <paramref name="action"/> will be invoked, after the entity of type <typeparamref name="TEntity"/> is updated.
+    /// </summary>
+    /// <typeparam name="TEntity">the type of entity.</typeparam>
+    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
+    /// <param name="action">The <see cref="Action"/> invoked.</param>
     public static void OnUpdated<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IUpdatedEntry<TEntity>> action)
         where TEntity : class, IEntityUpdatable
     {
         ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(action);
 
         Triggers<TEntity>.Updated += action;
     }
 
     /// <summary>
-    /// Registers a callback to be executed **before** a <typeparamref name="TEntity"/> is updated in the database.
+    /// Adds an updating event trigger to the model.
+    /// The passed <paramref name="action"/> will be invoked, before the entity of type <typeparamref name="TEntity"/> is updated.
     /// </summary>
-    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntityUpdatable"/>.</typeparam>
-    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.</param>
-    /// <param name="action">The callback action invoked before the update operation.</param>
+    /// <typeparam name="TEntity">the type of entity.</typeparam>
+    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
+    /// <param name="action">The <see cref="Action"/> invoked.</param>
     public static void OnUpdating<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IUpdatingEntry<TEntity>> action)
         where TEntity : class, IEntityUpdatable
     {
         ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(action);
 
         Triggers<TEntity>.Updating += action;
     }
 
     /// <summary>
-    /// Registers a callback to be executed **after** a <typeparamref name="TEntity"/> is soft-deleted from the database.
+    /// Adds an update failed event trigger to the model.
+    /// The passed <paramref name="action"/> will be invoked, before the entity of type <typeparamref name="TEntity"/> is updated.
     /// </summary>
-    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntitySoftDeletable"/>.</typeparam>
-    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.</param>
-    /// <param name="action">The callback action invoked after the delete operation.</param>
-    public static void OnDeleted<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IDeletedEntry<TEntity>> action)
-        where TEntity : class, IEntitySoftDeletable
+    /// <typeparam name="TEntity">the type of entity.</typeparam>
+    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
+    /// <param name="action">The <see cref="Action"/> invoked.</param>
+    public static void OnUpdateFailed<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IUpdateFailedEntry<TEntity>> action)
+        where TEntity : class, IEntityUpdatable
     {
         ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(action);
+
+        Triggers<TEntity>.UpdateFailed += action;
+    }
+
+    /// <summary>
+    /// Adds a deleted event trigger to the model.
+    /// The passed <paramref name="action"/> will be invoked, after the entity of type <typeparamref name="TEntity"/> is deleted.
+    /// </summary>
+    /// <typeparam name="TEntity">the type of entity.</typeparam>
+    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
+    /// <param name="action">The <see cref="Action"/> invoked.</param>
+    public static void OnDeleted<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IDeletedEntry<TEntity>> action)
+        where TEntity : class, IEntityDeletable
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(action);
 
         Triggers<TEntity>.Deleted += action;
     }
 
     /// <summary>
-    /// Registers a callback to be executed **before** a <typeparamref name="TEntity"/> is soft-deleted from the database.
+    /// Adds an deleted event trigger to the model.
+    /// The passed <paramref name="action"/> will be invoked, before the entity of type <typeparamref name="TEntity"/> is deleted.
     /// </summary>
-    /// <typeparam name="TEntity">The type of entity implementing <see cref="IEntitySoftDeletable"/>.</typeparam>
-    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.</param>
-    /// <param name="action">The callback action invoked before the delete operation.</param>
+    /// <typeparam name="TEntity">the type of entity.</typeparam>
+    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
+    /// <param name="action">The <see cref="Action"/> invoked.</param>
     public static void OnDeleting<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IDeletingEntry<TEntity>> action)
-        where TEntity : class, IEntitySoftDeletable
+        where TEntity : class, IEntityDeletable
     {
         ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(action);
 
         Triggers<TEntity>.Deleting += action;
+    }
+
+    /// <summary>
+    /// Adds an delete failed event trigger to the model.
+    /// The passed <paramref name="action"/> will be invoked, before the entity of type <typeparamref name="TEntity"/> is deleted.
+    /// </summary>
+    /// <typeparam name="TEntity">the type of entity.</typeparam>
+    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/>.</param>
+    /// <param name="action">The <see cref="Action"/> invoked.</param>
+    public static void OnDeleteFailed<TEntity>(this EntityTypeBuilder<TEntity> builder, Action<IDeleteFailedEntry<TEntity>> action)
+        where TEntity : class, IEntityDeletable
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(action);
+
+        Triggers<TEntity>.DeleteFailed += action;
     }
 }

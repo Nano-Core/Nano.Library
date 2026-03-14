@@ -888,9 +888,11 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     {
         ArgumentNullException.ThrowIfNull(ids);
 
-        var entities = this.dbContext
-            .Set<TEntity>()
-            .Where(x => ids.Contains(x.Id));
+        var entities = ids
+            .Select(x => new TEntity
+            {
+                Id = x
+            });
 
         return this.DeleteManyAsync(entities, cancellationToken);
     }

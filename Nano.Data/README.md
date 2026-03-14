@@ -277,8 +277,8 @@ Nano provides built-in management for the `DbContext` while still letting you us
 To integrate your database, simply derive a class from `BaseDbContext` or `BaseDbContext<TIdentity>` if you want to use a primary key type other than `Guid`.
 
 ```csharp
-public class MyDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> dataOptions, IEventing? eventing = null)
-    : BaseDbContext(contextOptions, dataOptions, eventing);
+public class MyDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> dataOptions)
+    : BaseDbContext(contextOptions, dataOptions);
 ```
 You don’t need to implement any additional logic in `MyDbContext`. Entity Framework only requires that the `DbContext` exists in the entry assembly, where `program.cs` is 
 located. Nano will automatically detect and configure all [Data Mappings](#data-mappings), so overriding the `OnModelCreating(...)` method is unnecessary.
@@ -673,38 +673,42 @@ will trigger lazy-loading to fetch the missing data.
 Try it out yourself using the **[Api.Data.LazyLoading](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.LazyLoading)**.  
 
 ## Triggers
-Nano supports mapping triggers for the models. 
-Note, these triggers are executed on code-level, as part of saving changes to the context of Entity Framework, and not to be confused with database triggers. The implementation is based on the [EntityFramework.Triggers](https://github.com/NickStrupat/EntityFramework.Triggers) library, recommended by Microsoft.  
+Triggers in Nano are logic-based events that occur before or after an add, update, or delete operation, and are not classic SQL triggers. These triggers are executed at the 
+code level as part of saving changes to the Entity Framework DbContext and should not be confused with database triggers.  
 
-The triggers are defined as part of the mapping implementation, and may be associated with either insert, update and delete. Furthermore, the action can be invoked either before or after the triggering action.  
+Nano supports the following trigger events.  
+
+| Trigger           | Lifecycle | Description                                             |
+| ----------------- | --------- | ------------------------------------------------------- |
+| `OnInserting`     | Before    | Triggered before the entity is inserted.                |
+| `OnInserted`      | After     | Triggered after the entity is inserted.                 |
+| `OnInsertFailed`  | -         | Triggered if an error occurs when inserting the entity. |
+| `OnUpdating`      | Before    | Triggered before the entity is updated.                 |
+| `OnUpdated`       | After     | Triggered after the entity is updated.                  |
+| `OnUpdateFailed`  | -         | Triggered if an error occurs when updating the entity.  |
+| `OnDeleting`      | Before    | Triggered before the entity is deleted.                 |
+| `OnDeleted`       | After     | Triggered after the entity is deleted.                  |
+| `OnDeleteFailed`  | -         | Triggered if an error occurs when deleting the entity.  |
+
+Each entity model can have one or more triggers associated with it. To add a trigger, define the action delegate in the [Data Mapping](#data-mapping), 
+as shown below for `OnInserting`.  
+
 ```csharp
-public class MyEntityMapping : DefaultEntityMapping<MyEntity>
-{
-    public override void Map(EntityTypeBuilder<MyEntity> builder)
+builder
+    .OnInserting(x => 
     {
-        base.Map(builder);
-        
-        builder
-            .OnUpdated(entry =>
-            {
-                var dbContext = entry.Context;
-                var entity = entry.Entity;
-
-                // action implementation.
-            });
-    }
-}
+        // logic
+    });
 ```
 
-Nano supports the following triggers.  
-* On Inserted
-* On Inserting
-* On Updated
-* On Updating
-* On Deleted
-* On Deleting
+Delete triggers in Nano also work with soft-delete, so they will correctly invoke `OnDeleting`, `OnDeleted`, and other related events. It is recommended not to modify the 
+entity that caused the trigger in any actions that occur after the entity has been saved to the database, as this can lead to duplicate update invocations. Use post-save events 
+for tasks other than altering the entity itself.
 
-For more details about triggers and how to use them, consult the docucmenation of [EntityFramework.Triggers](https://github.com/NickStrupat/EntityFramework.Triggers).  
+> ⚠️ You do not need to call `SaveChanges` on objects modified within triggers. Nano handles this automatically, and manual calls are discouraged.
+
+Triggers are best used for small, self-contained tasks, such as updating an `UpdatedAt` property in an `OnUpdating` trigger or calculating an aggregate value based on 
+entity properties. More complex logic should be handled in dedicated services within your application.
 
 Try it out yourself using the **[Api.Data.Triggers](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Triggers)**.  
 
