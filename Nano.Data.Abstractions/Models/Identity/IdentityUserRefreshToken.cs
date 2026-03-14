@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
-using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Abstractions.Models.Identity;
 
@@ -9,7 +8,7 @@ namespace Nano.Data.Abstractions.Models.Identity;
 /// Represents a refresh token for an identity user.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the identity key.</typeparam>
-public class IdentityUserRefreshToken<TIdentity> : BaseEntityIdentity<TIdentity>, IEntityAuditableNegated
+public class IdentityUserRefreshToken<TIdentity> : BaseEntityIdentity<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

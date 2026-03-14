@@ -95,7 +95,6 @@ The `Data` section in the configuration defines the data provider and related se
 |  `UseCreateDatabase`            | bool   | false       | A value indicating whether the database should be created automatically using just the mappings, bypassing migrations.                                          |
 |  `UseMigrateDatabase`           | bool   | false       | A value indicating whether database migrations should be applied automatically.                                                                                 |
 |  `UseSensitiveDataLogging`      | bool   | false       | A value indicating whether sensitive data logging is enabled.                                                                                                   |
-|  `UseAudit`                     | bool   | false       | A value indicating whether auditing is enabled. See [Audit](#audit)                                                                                             |
 |  `QuerySplittingBehavior`       | enum   | SingleQuery | The default query splitting behavior for EF Core queries.                                                                                                       |              
 |  `DefaultCollation`             | string | null        | The default collation for the database. ⚠️ Note: Changing this setting affects only new migrations and will not modify existing tables or columns.              |
 |  `ConnectionString`             | string | null        | Required. The connection string for the database.                                                                                                               |
@@ -116,7 +115,6 @@ The `Data` section in the configuration defines the data provider and related se
   "UseCreateDatabase": false,
   "UseMigrateDatabase": false,
   "UseSensitiveDataLogging": false,
-  "UseAudit": false,
   "QuerySplittingBehavior": "SingleQuery",
   "DefaultCollation": null,
   "ConnectionString": null,
@@ -414,6 +412,9 @@ public class MyEntityViewMapping : BaseEntityViewMapping<MyEntity>
 
 > ⚠️ Entity Framework does not automatically support database views in migrations. Views must be created or modified manually within a migration.
 
+Entity Framework does not provide direct native support for stored procedures. Nano includes an example demonstrating best practices for integrating stored procedures into 
+your application. You can explore the example in [Api.Data.MySql.StoredProcedures](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.StoredProcedures).
+
 Nano automatically updates all unique index mappings to include the `IsDeleted` property. This ensures that soft-deleted entities can coexist without violating 
 uniqueness constraints.  
 
@@ -621,6 +622,11 @@ can easily be overridden through the various `IRepository` methods.
 Try it out yourself using the **[Api.Data.Repository.Includes](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Repository.Includes)**.  
 
 ## Audit
+Audit is enabled by default, but first when you let your entity models implement the interface `IEntityAuditable` interface and the entity and all properties will be 
+tracked for audit logging. You can disable audit for certain properties using the ????? annotations.
+
+
+
 When audit is enabled in the data section of the configuration, changes to all entities deriving from ```IEntity``` will be tracked. 
 Auditting happens automatically and is executed asynchronously, to avoid impacting the response time.  
 
@@ -630,6 +636,7 @@ which is annotated with [Include Anntation](#include-annotation). So retreiving 
 The entity models are registered and the tables created, even when audit is not enabled. This is to ensure the data model is correct, should audit later be enabled. 
 
 
+WHAT ABOUT IDENTITY AUDIT LOGGING, HOW TO DEFINE THAT
 
 
     To include a model for audit, just implement the empty interface ```IEntityAuditable```. Though normally this isn't required explicitly as all models is included when deriving 
@@ -642,7 +649,7 @@ The entity models are registered and the tables created, even when audit is not 
 
 The audit implementation is based on the **[EntityFramework Plus](https://github.com/zzzprojects/EntityFramework-Plus)** project.  
 
-Try it out yourself using the **[Api.Data.Repository.Autosave](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Repository.Autosave)**.  
+Try it out yourself using the **[Api.Data.Audit](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Audit)**.  
 
 ## Soft Delete
 If you want a model to use soft-delete, simply implement the `IEntitySoftDeletable` interface.  
@@ -695,11 +702,15 @@ as shown below for `OnInserting`.
 
 ```csharp
 builder
-    .OnInserting(x => 
+    .OnInserting(entry => 
     {
         // logic
     });
 ```
+
+The `entry` parameter provides access to the entity model associated with the trigger, as well as the current `DbContext` and the application's `IServiceProvider`. This setup 
+allows you to access or resolve any services required to handle the trigger logic, such as logging, notifications, or other supporting operations. By using the `entry` parameter, 
+you can implement triggers that interact seamlessly with the rest of your application's infrastructure while keeping the trigger code clean and focused.
 
 Delete triggers in Nano also work with soft-delete, so they will correctly invoke `OnDeleting`, `OnDeleted`, and other related events. It is recommended not to modify the 
 entity that caused the trigger in any actions that occur after the entity has been saved to the database, as this can lead to duplicate update invocations. Use post-save events 

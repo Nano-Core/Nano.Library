@@ -1901,6 +1901,8 @@ Another specialized base entity controller is provided for **[Data Audit](https:
 the controller will not be available. You can expose audit data by deriving from `BaseAuditController` or `BaseAuditController<TIdentity>`. These controllers derive 
 from `BaseEntityReadOnlyController` and automatically provide read-only actions for querying audit records.  
 
+> ⚠️ The `BaseAuditController` requires the _adminstrator_ role assigned.
+
 > 📖 Learn more about **[Data Audit](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#audit)**.
 
 Try it yourself using the **[Api.Data.MySql.Audit](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Audit)**, or any of the other data provider examples.

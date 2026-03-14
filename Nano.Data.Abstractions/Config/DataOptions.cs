@@ -71,12 +71,6 @@ public class DataOptions
     public virtual bool UseSensitiveDataLogging { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets a value indicating whether auditing is enabled.
-    /// Defaults to <c>false</c>.
-    /// </summary>
-    public virtual bool UseAudit { get; set; } = false;
-
-    /// <summary>
     /// Gets or sets the query splitting behavior for EF Core queries.
     /// Defaults to <see cref="QuerySplitBehavior.SingleQuery"/>.
     /// </summary>

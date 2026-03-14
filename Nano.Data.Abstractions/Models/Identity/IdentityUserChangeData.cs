@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 using Nano.Common.Annotations;
-using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Abstractions.Models.Identity;
 
@@ -10,7 +9,7 @@ namespace Nano.Data.Abstractions.Models.Identity;
 /// Represents changes made to an identity user (e.g., email or phone number updates).
 /// </summary>
 /// <typeparam name="TIdentity">The type of the identity key.</typeparam>
-public class IdentityUserChangeData<TIdentity> : BaseEntityIdentity<TIdentity>, IEntityAuditableNegated
+public class IdentityUserChangeData<TIdentity> : BaseEntityIdentity<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

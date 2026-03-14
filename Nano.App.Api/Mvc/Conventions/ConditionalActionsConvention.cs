@@ -171,11 +171,6 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
             return;
         }
 
-        if (this.dataOptions?.CurrentValue.UseAudit ?? false)
-        {
-            return;
-        }
-
         controller.ApiExplorer.IsVisible = false;
 
         controller.Actions

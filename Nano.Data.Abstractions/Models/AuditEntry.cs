@@ -6,13 +6,14 @@ using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Abstractions.Models;
 
-// BUG: AUDIT: can we make AuditEntry<Guid>? and it would work?
+/// <inheritdoc />
+public class AuditEntry : AuditEntry<Guid>;
 
 /// <summary>
-/// 
+/// A class representing an audit entry.
 /// </summary>
-/// <typeparam name="TIdentity"></typeparam>
-public class AuditEntry<TIdentity> : BaseEntity<TIdentity>, IEntityAuditableNegated
+/// <typeparam name="TIdentity">The identity type.</typeparam>
+public class AuditEntry<TIdentity> : BaseEntity<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

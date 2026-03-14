@@ -14,8 +14,6 @@ using Nano.Data.Identity.Authentication.Extensions;
 using Nano.Data.Identity.Extensions;
 using System;
 using System.Linq;
-using Nano.Data.Interceptors;
-using Nano.Eventing.Abstractions;
 using Z.EntityFramework.Extensions;
 using Z.EntityFramework.Plus;
 
@@ -78,7 +76,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddContext<TProvider, TContext>(options)
-            .AddAudit<TIdentity>(options.UseAudit)
+            .AddAudit<TIdentity>()
             .AddIdentity<TContext, TIdentity>(options.Identity);
 
         services
@@ -130,25 +128,17 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    private static IServiceCollection AddAudit<TIdentity>(this IServiceCollection services, bool useAudit = false)
+    private static IServiceCollection AddAudit<TIdentity>(this IServiceCollection services)
         where TIdentity : IEquatable<TIdentity>
     {
         ArgumentNullException.ThrowIfNull(services);
-
-        if (!useAudit)
-        {
-            AuditManager.DefaultConfiguration.Exclude(_ => true);
-            AuditManager.DefaultConfiguration.AutoSavePreAction = null;
-
-            return services;
-        }
 
         AuditManager.DefaultConfiguration.UseUtcDateTime = true;
         AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
         AuditManager.DefaultConfiguration.IncludeProperty<IEntityAuditable>();
         AuditManager.DefaultConfiguration.IncludeDataAnnotation();
-        AuditManager.DefaultConfiguration.Exclude<IEntityAuditableNegated>(); // BUG: AUDIT: What if IEntityAuditable and IEntityAuditableNegated
         AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
+
         AuditManager.DefaultConfiguration.AutoSavePreAction = (dbContext, audit) =>
         {
             var httpContextAccessor = dbContext
