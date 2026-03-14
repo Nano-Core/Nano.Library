@@ -115,21 +115,7 @@ public static class ServiceCollectionExtensions
                 .AddDbContext<TContext>((provider, builder) =>
                 {
                     builder
-                        .AddDataContext(provider, options);
-
-                    var eventing = provider
-                        .GetService<IEventing>();
-
-                    if (eventing != null)
-                    {
-                        builder
-                            .AddInterceptors(new EntityEventingSaveChangesInterceptor(eventing));
-                    }
-
-                    builder
-                        .AddInterceptors(new SoftDeleteSaveChangesInterceptor());
-
-                    TProvider.Configure(builder, options);
+                        .AddDataContext<TProvider>(provider, options);
                 });
         }
         else
@@ -138,21 +124,7 @@ public static class ServiceCollectionExtensions
                 .AddDbContextPool<TContext>((provider, builder) =>
                 {
                     builder
-                        .AddDataContext(provider, options);
-
-                    var eventing = provider
-                        .GetService<IEventing>();
-
-                    if (eventing != null)
-                    {
-                        builder
-                            .AddInterceptors(new EntityEventingSaveChangesInterceptor(eventing));
-                    }
-
-                    builder
-                        .AddInterceptors(new SoftDeleteSaveChangesInterceptor());
-
-                    TProvider.Configure(builder, options);
+                        .AddDataContext<TProvider>(provider, options);
                 }, options.ConnectionPool.PoolSize);
         }
 
